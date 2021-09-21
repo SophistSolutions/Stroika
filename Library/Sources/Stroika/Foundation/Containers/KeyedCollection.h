@@ -380,7 +380,7 @@ namespace Stroika::Foundation::Containers {
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
-         * simply indirect to @Set<>::EqualsComparer (always defined because Set<> knows how to compare T items.
+         * Simply intdirect to KeyedCollection<>::EqualsComparer
          */
         nonvirtual bool operator== (const KeyedCollection& rhs) const;
         nonvirtual bool operator== (const Iterable<T>& rhs) const;
@@ -476,6 +476,18 @@ namespace Stroika::Foundation::Containers {
 #endif
     protected:
         nonvirtual Iterable<KEY_TYPE> _Keys_Reference_Implementation () const;
+    };
+
+    /**
+     * logically indirect to @Set<KeyType>::EqualsComparer (using this->GetEqualsComparer ()) to compare the keys
+     *  Order is meaningless in comparing KeyedCollection - this compares just by Set equality of the keys.
+     */
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    struct KeyedCollection<T, KEY_TYPE, TRAITS>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        constexpr EqualsComparer () = default;
+        nonvirtual bool operator() (const KeyedCollection& lhs, const KeyedCollection& rhs) const;
+        nonvirtual bool operator() (const KeyedCollection& lhs, const Iterable<T>& rhs) const;
+        nonvirtual bool operator() (const Iterable<T>& lhs, const KeyedCollection& rhs) const;
     };
 
 }

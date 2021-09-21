@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Containers {
     inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Contains (ArgByValueType<T> elt) const
     {
         _SafeReadRepAccessor<_IRep> r{this};
-        return r._ConstGetRep ().Lookup (r._ConstGetRep ().GetKeyExtractor (elt), nullptr);
+        return r._ConstGetRep ().Lookup (r._ConstGetRep ().GetKeyExtractor () (elt), nullptr);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline auto KeyedCollection<T, KEY_TYPE, TRAITS>::Lookup (ArgByValueType<KeyType> key) const -> optional<value_type>
@@ -225,98 +225,41 @@ namespace Stroika::Foundation::Containers {
     {
         return inherited::Where (includeIfTrue, ArchetypeContainerType{});
     }
-
+#if __cpp_impl_three_way_comparison >= 201907
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::_AssertRepValidType () const
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::operator== (const KeyedCollection& rhs) const
     {
-#if qDebug
-        [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
+        return EqualsComparer{}(*this, rhs);
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::operator== (const Iterable<T>& rhs) const
+    {
+        return EqualsComparer{}(*this, rhs);
+    }
 #endif
-    }
-
-#if 0
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename CONTAINER_OF_KEY_TYPE>
-    void KeyedCollection<T, KEY_TYPE, TRAITS>::RetainAll (const CONTAINER_OF_KEY_TYPE& items)
+    inline KeyedCollection<T, KEY_TYPE, TRAITS>& KeyedCollection<T, KEY_TYPE, TRAITS>::operator+= (ArgByValueType<T> item)
     {
-        // @see https://stroika.atlassian.net/browse/STK-539
-#if 0
-                KeyedCollection<T, KEY_TYPE, TRAITS>   result = KeyedCollection<T, KEY_TYPE, TRAITS> { _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().CloneEmpty (this) };
-                for (auto key2Keep : items) {
-                    if (auto l = this->Lookup (key2Keep)) {
-                        result.Add (key2Keep, *l);
-                    }
-                }
-                *this = result;
-#else
-        // cannot easily use STL::less because our Mapping class only requires KeyEqualsCompareFunctionType - SO - should use Stroika Set<> But don't want cross-dependencies if not needed
-        set<KEY_TYPE> tmp (items.begin (), items.end ()); // @todo - weak implementation because of 'comparison' function, and performance (if items already a set)
-        for (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> i = this->begin (); i != this->end (); ++i) {
-            if (tmp.find (i->fKey) == tmp.end ()) {
-                Remove (i);
-            }
-        }
-#endif
+        Add (item);
+        return *this;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    auto KeyedCollection<T, KEY_TYPE, TRAITS>::Where (const function<bool (ArgByValueType<KeyValuePair<key_type, mapped_type>>)>& includeIfTrue) const -> ArchetypeContainerType
+    inline KeyedCollection<T, KEY_TYPE, TRAITS>& KeyedCollection<T, KEY_TYPE, TRAITS>::operator+= (const Iterable<T>& items)
     {
-        return inherited::Where (includeIfTrue, ArchetypeContainerType{});
+        AddAll (items);
+        return *this;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename CONTAINER_OF_KEYS>
-    auto KeyedCollection<T, KEY_TYPE, TRAITS>::WithKeys (const CONTAINER_OF_KEYS& includeKeys) const -> ArchetypeContainerType
+    inline KeyedCollection<T, KEY_TYPE, TRAITS>& KeyedCollection<T, KEY_TYPE, TRAITS>::operator-= (ArgByValueType<T> item)
     {
-        return Where ([=] (const key_type& key) -> bool { return includeKeys.Contains (key); });
+        Remove (item);
+        return *this;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    auto KeyedCollection<T, KEY_TYPE, TRAITS>::WithKeys (const initializer_list<key_type>& includeKeys) const -> ArchetypeContainerType
+    inline KeyedCollection<T, KEY_TYPE, TRAITS>& KeyedCollection<T, KEY_TYPE, TRAITS>::operator-= (const Iterable<T>& items)
     {
-        Iterable<key_type> ik{includeKeys};
-        return inherited::Where ([=] (const ArgByValueType<KeyValuePair<key_type, mapped_type>>& kvp) { return ik.Contains (kvp.fKey); }, ArchetypeContainerType{});
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename CONTAINER_OF_Key_T>
-    inline CONTAINER_OF_Key_T KeyedCollection<T, KEY_TYPE, TRAITS>::As () const
-    {
-        return As_<CONTAINER_OF_Key_T> ();
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename CONTAINER_OF_Key_T>
-    CONTAINER_OF_Key_T KeyedCollection<T, KEY_TYPE, TRAITS>::As_ ([[maybe_unused]] enable_if_t<is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesInsertPair) const
-    {
-        CONTAINER_OF_Key_T result;
-        for (auto i : *this) {
-            // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
-            result.insert (result.end (), pair<KEY_TYPE, MAPPED_VALUE_TYPE> (i.fKey, i.fValue));
-        }
-        return result;
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename CONTAINER_OF_Key_T>
-    CONTAINER_OF_Key_T KeyedCollection<T, KEY_TYPE, TRAITS>::As_ (enable_if_t<!is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int>) const
-    {
-        CONTAINER_OF_Key_T result;
-        for (auto i : *this) {
-            // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
-            result.insert (result.end (), KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE> (i.fKey, i.fValue));
-        }
-        return result;
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Accumulate (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue, const function<mapped_type (ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f, mapped_type initialValue)
-    {
-        Add (key, f (LookupValue (key, initialValue), newValue));
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::erase (ArgByValueType<key_type> key)
-    {
-        Remove (key);
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::erase (const Iterator<value_type>& i)
-    {
-        Remove (i);
+        RemoveAll (items);
+        return *this;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::clear ()
@@ -324,35 +267,22 @@ namespace Stroika::Foundation::Containers {
         RemoveAll ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename CONTAINER_OF_ADDABLE>
-    inline KeyedCollection<T, KEY_TYPE, TRAITS> KeyedCollection<T, KEY_TYPE, TRAITS>::operator+ (const CONTAINER_OF_ADDABLE& items) const
+    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::erase (ArgByValueType<T> item)
     {
-        KeyedCollection<T, KEY_TYPE, TRAITS> result = *this;
-        result.AddAll (items);
-        return result;
+        this->Remove (item);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename CONTAINER_OF_ADDABLE>
-    inline KeyedCollection<T, KEY_TYPE, TRAITS>& KeyedCollection<T, KEY_TYPE, TRAITS>::operator+= (const CONTAINER_OF_ADDABLE& items)
+    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::erase (const Iterator<T>& i)
     {
-        AddAll (items);
-        return *this;
+        this->Remove (i);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename CONTAINER_OF_ADDABLE>
-    inline KeyedCollection<T, KEY_TYPE, TRAITS>& KeyedCollection<T, KEY_TYPE, TRAITS>::operator-= (const CONTAINER_OF_ADDABLE& items)
+    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::_AssertRepValidType () const
     {
-        RemoveAll (items);
-        return *this;
-    }
-#if __cpp_impl_three_way_comparison >= 201907
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::operator== (const Mapping& rhs) const
-    {
-        return EqualsComparer<>{}(*this, rhs);
-    }
+#if qDebug
+        [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
 #endif
-#endif
+    }
 
     /*
      ********************************************************************************
@@ -406,121 +336,20 @@ namespace Stroika::Foundation::Containers {
 #endif
         return MyIterable_{KeyedCollection<T, KEY_TYPE, TRAITS>{rep}};
     }
-#if 0
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation () const
-    {
-        struct MyIterable_ : Iterable<KEY_TYPE> {
-            using MyMapping_ = KeyedCollection<T, KEY_TYPE, TRAITS>;
-            struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-                using _IterableRepSharedPtr = typename Iterable<KEY_TYPE>::_IterableRepSharedPtr;
-                MyMapping_ fMapping_;
-                MyIterableRep_ (const MyMapping_& map)
-                    : fMapping_{map}
-                {
-                }
-                virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
-                {
-                    auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fMapping_.MakeIterator ());
-                    auto getNext   = [myContext] () -> optional<KEY_TYPE> {
-                        if (myContext->Done ()) {
-                            return nullopt;
-                        }
-                        else {
-                            auto result = (*myContext)->fKey;
-                            (*myContext)++;
-                            return result;
-                        }
-                    };
-                    return Traversal::CreateGeneratorIterator<KEY_TYPE> (getNext);
-                }
-                virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
-                {
-                    // For now - ignore forIterableEnvelope
-                    return Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
-                }
-            };
-            MyIterable_ (const MyMapping_& m)
-                // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
-                : Iterable<KEY_TYPE> (Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (m))
-            {
-            }
-        };
-#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        auto rep = dynamic_pointer_cast<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep> (const_cast<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
-#else
-        auto rep = const_cast<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
-#endif
-        return MyIterable_{KeyedCollection<T, KEY_TYPE, TRAITS> (rep)};
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    Iterable<MAPPED_VALUE_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep::_Values_Reference_Implementation () const
-    {
-        struct MyIterable_ : Iterable<MAPPED_VALUE_TYPE> {
-            using MyMapping_ = KeyedCollection<T, KEY_TYPE, TRAITS>;
-            struct MyIterableRep_ : Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-                using _IterableRepSharedPtr = typename Iterable<MAPPED_VALUE_TYPE>::_IterableRepSharedPtr;
-                MyMapping_ fMapping_;
-                MyIterableRep_ (const MyMapping_& map)
-                    : fMapping_{map}
-                {
-                }
-                virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
-                {
-                    auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fMapping_.MakeIterator ());
-                    auto getNext   = [myContext] () -> optional<MAPPED_VALUE_TYPE> {
-                        if (myContext->Done ()) {
-                            return nullopt;
-                        }
-                        else {
-                            auto result = (*myContext)->fValue;
-                            (*myContext)++;
-                            return result;
-                        }
-                    };
-                    return Traversal::CreateGeneratorIterator<MAPPED_VALUE_TYPE> (getNext);
-                }
-                virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
-                {
-                    // For now - ignore forIterableEnvelope
-                    return Iterable<MAPPED_VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
-                }
-            };
-            // @todo debug if/why issue with using uninform initializaiton here - fails to compile on vs2k17 and gcc ASAN giving erorrs that maybe related???
-            MyIterable_ (const MyMapping_& m)
-                // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
-                : Iterable<MAPPED_VALUE_TYPE> (Iterable<MAPPED_VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (m))
-            {
-            }
-        };
-#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        auto rep = dynamic_pointer_cast<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep> (const_cast<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
-#else
-        auto rep = const_cast<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
-#endif
-        return MyIterable_{KeyedCollection<T, KEY_TYPE, TRAITS>{rep}};
-    }
-#endif
 
-#if 0
     /*
      ********************************************************************************
      ********** KeyedCollection<T, KEY_TYPE, TRAITS>::EqualsComparer ****************
      ********************************************************************************
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename VALUE_EQUALS_COMPARER>
-    constexpr KeyedCollection<T, KEY_TYPE, TRAITS>::EqualsComparer<VALUE_EQUALS_COMPARER>::EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer)
-        : fValueEqualsComparer{valueEqualsComparer}
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::EqualsComparer::operator() (const KeyedCollection& lhs, const KeyedCollection& rhs) const
     {
+        return operator() (lhs, static_cast<const Iterable<T>&> (rhs)); // use common-code
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename VALUE_EQUALS_COMPARER>
-    bool KeyedCollection<T, KEY_TYPE, TRAITS>::EqualsComparer<VALUE_EQUALS_COMPARER>::operator() (const Mapping& lhs, const Mapping& rhs) const
+    bool KeyedCollection<T, KEY_TYPE, TRAITS>::EqualsComparer::operator() (const KeyedCollection& lhs, const Iterable<T>& rhs) const
     {
-        /*
-         *    @todo   THIS CODE IS TOO COMPLICATED, and COULD USE CLEANUP/CODE REVIEW - LGP 2014-06-11
-         */
         _SafeReadRepAccessor<_IRep> lhsR{&lhs};
         _SafeReadRepAccessor<_IRep> rhsR{&rhs};
         if (&lhsR._ConstGetRep () == &rhsR._ConstGetRep ()) {
@@ -531,41 +360,24 @@ namespace Stroika::Foundation::Containers {
         if (lhsR._ConstGetRep ().GetLength () != rhsR._ConstGetRep ().GetLength ()) {
             return false;
         }
+
         /*
-         *  Two Mappings compare equal, if they have the same domain, and map each element of that domain to the same range.
-         *  They need not be in the same order to compare equals. Still - they often are, and if they are, this algorithm is faster.
-         *  If they miss, we need to fall back to a slower strategy.
+         *  Order is meaningless for KeyedCollection<>, so treat like set. Iterate over Iterable<T> on rhs, and check for contains
+         *  on LHS (known to have relatively fast lookup).
+         * 
+         *  Leverage fact we know by this point the two iterables have the same length.
          */
-        auto li                = lhsR._ConstGetRep ().MakeIterator (this);
-        auto ri                = rhs.MakeIterator ();
-        auto keyEqualsComparer = lhs.GetKeyEqualsComparer (); // arbitrarily select left side key equals comparer
-        while (not li.Done ()) {
-            Assert (not ri.Done ()); // cuz move at same time and same size
-            bool keysEqual = keyEqualsComparer (li->fKey, ri->fKey);
-            Require (keysEqual == rhs.GetKeyEqualsComparer () (li->fKey, ri->fKey)); // if fails, cuz rhs/lhs keys equals comparers disagree
-            if (keysEqual) {
-                // then we are doing in same order so can do quick impl
-                if (not fValueEqualsComparer (li->fValue, ri->fValue)) {
-                    return false;
-                }
+        for (auto ri : rhs) {
+            if (not lhs.Contains (ri)) {
+                false;
             }
-            else {
-                // check if li maps to right value in rhs
-                auto o = rhs.Lookup (li->fKey);
-                if (not o.has_value () or not fValueEqualsComparer (*o, li->fValue)) {
-                    return false;
-                }
-                // if the keys were different, we must check the reverse direction too
-                if (not lhsR._ConstGetRep ().Lookup (ri->fKey, &o) or not fValueEqualsComparer (*o, ri->fValue)) {
-                    return false;
-                }
-            }
-            // if we got this far, all compared OK so far, so keep going
-            ++li;
-            ++ri;
         }
-        Assert (ri.Done ()); // cuz LHS done and both sides iterate at same pace, and we checked both same size
         return true;
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::EqualsComparer::operator() (const Iterable<T>& lhs, const KeyedCollection& rhs) const
+    {
+        return operator() (rhs, lhs); // use commutativity of ==
     }
 
 #if __cpp_impl_three_way_comparison < 201907
@@ -584,7 +396,6 @@ namespace Stroika::Foundation::Containers {
     {
         return not(lhs == rhs);
     }
-#endif
 #endif
 
 }

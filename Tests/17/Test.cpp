@@ -50,7 +50,10 @@ namespace {
                 VerifyTestResult (coll.Contains (1));
                 VerifyTestResult (coll.Lookup (1)->value == 201);
                 VerifyTestResult (not coll.Contains (2));
+                auto prevValue = coll;
+                VerifyTestResult (prevValue == coll);
                 coll.Add (T1{2, 102});
+                VerifyTestResult (prevValue != coll);
                 VerifyTestResult (coll.Contains (2));
                 VerifyTestResult (coll.GetLength () == 2);
                 VerifyTestResult ((coll.Keys () == Set<int>{1, 2}));
