@@ -215,9 +215,11 @@ namespace Stroika::Foundation::Containers {
         KeyedCollection (KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
         KeyedCollection (KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
         KeyedCollection (const KeyedCollection& src) noexcept = default;
-        template <typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::is_callable_v<KE>>* = nullptr>
-        KeyedCollection (const initializer_list<T>& src, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
-        KeyedCollection (const initializer_list<T>& src, KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
+        template <typename CONTAINER_OF_ADDABLE, typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and Configuration::is_callable_v<KE>>* = nullptr>
+        KeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
+        KeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
+
 #if 0
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T,KEY_TYPE,TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit KeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyExtractorType keyExtractor = typename TraitsType::DefaultKeyExtractor, KeyEqualityComparerType keyComparer = typename TraitsType::DefaultKeyEqualsComparer);

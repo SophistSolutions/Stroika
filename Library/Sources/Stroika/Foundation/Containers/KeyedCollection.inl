@@ -35,15 +35,16 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename KE, enable_if_t<Configuration::is_callable_v<KE>>*>
-    inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (const initializer_list<T>& src, KeyEqualityComparerType keyComparer)
+    template <typename CONTAINER_OF_ADDABLE, typename KE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and Configuration::is_callable_v<KE>>*>
+    inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyEqualityComparerType keyComparer)
         : KeyedCollection{TRAITS::kDefaultKeyExtractor, keyComparer}
     {
         AddAll (src);
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (const initializer_list<T>& src, KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
+    inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer)
         : KeyedCollection{keyExtractor, keyComparer}
     {
         AddAll (src);
