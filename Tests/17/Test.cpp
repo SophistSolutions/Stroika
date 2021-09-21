@@ -44,9 +44,14 @@ namespace {
                 VerifyTestResult (coll.empty ());
                 coll.Add (T1{1, 101});
                 VerifyTestResult (coll.GetLength () == 1);
+                VerifyTestResult (coll.Lookup (1)->value == 101);
                 coll.Add (T1{1, 201});
                 VerifyTestResult (coll.GetLength () == 1);
+                VerifyTestResult (coll.Contains (1));
+                VerifyTestResult (coll.Lookup (1)->value == 201);
+                VerifyTestResult (not coll.Contains (2));
                 coll.Add (T1{2, 102});
+                VerifyTestResult (coll.Contains (2));
                 VerifyTestResult (coll.GetLength () == 2);
                 VerifyTestResult ((coll.Keys () == Set<int>{1, 2}));
             };

@@ -163,13 +163,13 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto& mir = dynamic_cast<const IteratorRep_&> (ir);
             fData_.RemoveAt (mir.fIterator);
         }
-        virtual void Remove (ArgByValueType<KEY_TYPE> key) override
+        virtual bool Remove (ArgByValueType<KEY_TYPE> key) override
         {
             if (auto i = this->FindFirstThat ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); }, nullptr)) {
                 Remove (i);
-                return;
+                return true;
             }
-            AssertNotImplemented ();
+            return false;
         }
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
@@ -200,7 +200,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::KeyedCollection_LinkedList (const KeyedCollection<T, KEY_TYPE, TRAITS>& src)
-        : KeyedCollection_LinkedList {src.GetKeyExtractor (), src.GetKeyEqualityComparer ()}
+        : KeyedCollection_LinkedList{src.GetKeyExtractor (), src.GetKeyEqualityComparer ()}
     {
         this->AddAll (src);
         AssertRepValidType_ ();

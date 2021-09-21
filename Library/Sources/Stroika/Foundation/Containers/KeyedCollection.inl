@@ -62,11 +62,6 @@ namespace Stroika::Foundation::Containers {
     {
         _AssertRepValidType ();
     }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Add (ArgByValueType<T> t)
-    {
-        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (t);
-    }
 #if qDebug
     template <typename T, typename KEY_TYPE, typename TRAITS>
     KeyedCollection<T, KEY_TYPE, TRAITS>::~KeyedCollection ()
@@ -93,32 +88,32 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Keys ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::_AssertRepValidType () const
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Contains (ArgByValueType<KEY_TYPE> key) const
     {
-#if qDebug
-        [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
-#endif
-    }
-
-#if 0
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline auto KeyedCollection<T, KEY_TYPE, TRAITS>::GetKeyEqualsComparer () const -> KeyEqualsCompareFunctionType
-    {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetKeyEqualsComparer ();
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline Iterable<MAPPED_VALUE_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::MappedValues () const
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Contains (ArgByValueType<T> elt) const
     {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().MappedValues ();
+        _SafeReadRepAccessor<_IRep> r{this};
+        return r._ConstGetRep ().Lookup (r._ConstGetRep ().GetKeyExtractor (elt), nullptr);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Lookup (ArgByValueType<key_type> key, mapped_type* item) const
+    inline auto KeyedCollection<T, KEY_TYPE, TRAITS>::Lookup (ArgByValueType<KeyType> key) const -> optional<value_type>
+    {
+        optional<T> r;
+        [[maybe_unused]] bool       result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
+        Ensure (result == r.has_value ());
+        return r;
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const
     {
         if (item == nullptr) {
             return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
         }
         else {
-            optional<mapped_type> tmp;
+            optional<value_type> tmp;
             if (_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &tmp)) {
                 *item = *tmp;
                 return true;
@@ -127,96 +122,79 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Lookup (ArgByValueType<key_type> key, optional<mapped_type>* item) const
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Lookup (ArgByValueType<KeyType> key, value_type* item) const
     {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, item);
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline optional<MAPPED_VALUE_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::Lookup (ArgByValueType<key_type> key) const
-    {
-        optional<MAPPED_VALUE_TYPE> r;
-        [[maybe_unused]] bool       result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
-        Ensure (result == r.has_value ());
-        return r;
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Lookup (ArgByValueType<key_type> key, nullptr_t) const
-    {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename THROW_IF_MISSING>
-    inline MAPPED_VALUE_TYPE KeyedCollection<T, KEY_TYPE, TRAITS>::LookupChecked (ArgByValueType<key_type> key, const THROW_IF_MISSING& throwIfMissing) const
-    {
-        if (optional<MAPPED_VALUE_TYPE> r{Lookup (key)}) [[LIKELY_ATTR]] {
-            return *r;
+        if (item == nullptr) {
+            return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
         }
-        Execution::Throw (throwIfMissing);
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline MAPPED_VALUE_TYPE KeyedCollection<T, KEY_TYPE, TRAITS>::LookupValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue) const
-    {
-        optional<MAPPED_VALUE_TYPE> r{Lookup (key)};
-        return r.has_value () ? *r : defaultValue;
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline auto KeyedCollection<T, KEY_TYPE, TRAITS>::operator[] (ArgByValueType<key_type> key) const -> add_const_t<mapped_type>
-    {
-        return *Lookup (key);
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::ContainsKey (ArgByValueType<key_type> key) const
-    {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename VALUE_EQUALS_COMPARER>
-    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::ContainsMappedValue (ArgByValueType<mapped_type> v, const VALUE_EQUALS_COMPARER& valueEqualsComparer) const
-    {
-        for (MAPPED_VALUE_TYPE t : *this) {
-            if (valueEqualsComparer (t.fValue, v)) {
+        else {
+            optional<value_type> tmp;
+            if (_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &tmp)) {
+                *item = *tmp;
                 return true;
             }
+            return false;
         }
-        return false;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p, AddReplaceMode addReplaceMode)
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Lookup (ArgByValueType<KeyType> key, nullptr_t) const
     {
-        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue, addReplaceMode);
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Add (ArgByValueType<T> t)
+    {
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (t);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    unsigned int KeyedCollection<T, KEY_TYPE, TRAITS>::AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, AddReplaceMode addReplaceMode)
+    unsigned int KeyedCollection<T, KEY_TYPE, TRAITS>::AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
     {
         unsigned int cntAdded{};
+        _SafeReadWriteRepAccessor<_IRep>r{this};
         for (auto i = start; i != end; ++i) {
-            if (Add (*i, addReplaceMode)) {
+            if (r._GetWriteableRep ().Add (*i)) {
                 cntAdded++;
             }
         }
         return cntAdded;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>*>
-    inline unsigned int KeyedCollection<T, KEY_TYPE, TRAITS>::AddAll (CONTAINER_OF_KEYVALUE&& items, AddReplaceMode addReplaceMode)
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
+    inline unsigned int KeyedCollection<T, KEY_TYPE, TRAITS>::AddAll (CONTAINER_OF_ADDABLE&& items)
     {
-        /*
-         *  Note - unlike other containers - we don't need to check for this != &s because if we
-         *  attempt to add items that already exist, it would do nothing to our iteration
-         *  and therefore not lead to an infinite loop.
-         */
-        return AddAll (std::begin (items), std::end (items), addReplaceMode);
+        // avoid trouble with a.AddAll(a);
+        if (this != &items) {
+            return AddAll (std::begin (items), std::end (items));
+        }
+        return 0;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (ArgByValueType<key_type> key)
+    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (ArgByValueType<KeyType> key)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (key);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (const Iterator<value_type>& i)
+    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (ArgByValueType<T> elt)
+    {
+        _SafeReadWriteRepAccessor<_IRep> r{this};
+        r._GetWriteableRep ().Remove (r._ConstGetRep ().GetKeyExtractor () (elt));
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (const Iterator<T>& i)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveIf (ArgByValueType<KeyType> key)
+    {
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (key);
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveIf (ArgByValueType<T> elt)
+    {
+        _SafeReadWriteRepAccessor<_IRep> r{this};
+        return r._GetWriteableRep ().Remove (r._ConstGetRep ().GetKeyExtractor () (elt));
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveAll ()
@@ -243,6 +221,23 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
+    auto KeyedCollection<T, KEY_TYPE, TRAITS>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const -> ArchetypeContainerType
+    {
+        return inherited::Where (includeIfTrue, ArchetypeContainerType{});
+    }
+
+
+
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::_AssertRepValidType () const
+    {
+#if qDebug
+        [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
+#endif
+    }
+
+#if 0
+    template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename CONTAINER_OF_KEY_TYPE>
     void KeyedCollection<T, KEY_TYPE, TRAITS>::RetainAll (const CONTAINER_OF_KEY_TYPE& items)
     {
@@ -264,11 +259,6 @@ namespace Stroika::Foundation::Containers {
             }
         }
 #endif
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    auto KeyedCollection<T, KEY_TYPE, TRAITS>::Where (const function<bool (ArgByValueType<key_type>)>& includeIfTrue) const -> ArchetypeContainerType
-    {
-        return inherited::Where ([=] (const ArgByValueType<KeyValuePair<key_type, mapped_type>>& kvp) { return includeIfTrue (kvp.fKey); }, ArchetypeContainerType{});
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     auto KeyedCollection<T, KEY_TYPE, TRAITS>::Where (const function<bool (ArgByValueType<KeyValuePair<key_type, mapped_type>>)>& includeIfTrue) const -> ArchetypeContainerType
@@ -385,7 +375,7 @@ namespace Stroika::Foundation::Containers {
                 }
                 virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                 {
-                    auto myContext = make_shared<Iterator<T>> (fBaseCollection_.MakeIterator ());
+                    auto myContext    = make_shared<Iterator<T>> (fBaseCollection_.MakeIterator ());
                     auto keyExtractor = fBaseCollection_.GetKeyExtractor ();
                     auto getNext      = [myContext, keyExtractor] () -> optional<KEY_TYPE> {
                         if (myContext->Done ()) {
@@ -407,7 +397,7 @@ namespace Stroika::Foundation::Containers {
             };
             MyIterable_ (const MyMapping_& m)
                 // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
-                : Iterable<KEY_TYPE> {Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (m)}
+                : Iterable<KEY_TYPE>{Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (m)}
             {
             }
         };

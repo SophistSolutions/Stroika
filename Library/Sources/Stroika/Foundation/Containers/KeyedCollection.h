@@ -309,12 +309,14 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \note   AddAll/2 is alias for .net AddRange ()
          *
+         *  Returns the number if items actually changed (not necessarily same as end-start)
+         * 
          *  \note mutates container
          */
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        nonvirtual unsigned int AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
-        nonvirtual void AddAll (CONTAINER_OF_ADDABLE&& s);
+        nonvirtual unsigned int AddAll (CONTAINER_OF_ADDABLE&& s);
 
     public:
         /**
@@ -325,9 +327,9 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void Remove (ArgByValueType<T> item);
         nonvirtual void Remove (const Iterator<T>& i);
         nonvirtual void Remove (ArgByValueType<KeyType> item);
+        nonvirtual void Remove (ArgByValueType<T> item);
 
     public:
         /**
@@ -349,6 +351,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
+        nonvirtual bool RemoveIf (ArgByValueType<KeyType> item);
         nonvirtual bool RemoveIf (ArgByValueType<T> item);
 
     public:
@@ -447,15 +450,16 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     class KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep : public Iterable<T>::_IRep
 #if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        ,public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep>
+        ,
+                                                        public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep>
 #endif
     {
     protected:
         using _KeyedCollectionRepSharedPtr = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_KeyedCollectionRepSharedPtr;
 
     public:
-        virtual KeyExtractorType GetKeyExtractor () const = 0;
-        virtual KeyEqualityComparerType GetKeyEqualityComparer () const = 0;
+        virtual KeyExtractorType             GetKeyExtractor () const                               = 0;
+        virtual KeyEqualityComparerType      GetKeyEqualityComparer () const                        = 0;
         virtual _KeyedCollectionRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
         virtual Iterable<KEY_TYPE>           Keys () const                                          = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
@@ -465,7 +469,8 @@ namespace Stroika::Foundation::Containers {
         virtual bool Add (ArgByValueType<T> item)                              = 0;
         virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) = 0;
         virtual void Remove (const Iterator<T>& i)                             = 0;
-        virtual void Remove (ArgByValueType<KEY_TYPE> key)                     = 0;
+        // returns true iff a change made, false if elt was not present
+        virtual bool Remove (ArgByValueType<KEY_TYPE> key)                     = 0;
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
