@@ -470,7 +470,7 @@ namespace Stroika::Foundation::Containers {
         virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) = 0;
         virtual void Remove (const Iterator<T>& i)                             = 0;
         // returns true iff a change made, false if elt was not present
-        virtual bool Remove (ArgByValueType<KEY_TYPE> key)                     = 0;
+        virtual bool Remove (ArgByValueType<KEY_TYPE> key) = 0;
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

@@ -101,8 +101,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline auto KeyedCollection<T, KEY_TYPE, TRAITS>::Lookup (ArgByValueType<KeyType> key) const -> optional<value_type>
     {
-        optional<T> r;
-        [[maybe_unused]] bool       result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
+        optional<T>           r;
+        [[maybe_unused]] bool result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
         Ensure (result == r.has_value ());
         return r;
     }
@@ -150,8 +150,8 @@ namespace Stroika::Foundation::Containers {
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
     unsigned int KeyedCollection<T, KEY_TYPE, TRAITS>::AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
     {
-        unsigned int cntAdded{};
-        _SafeReadWriteRepAccessor<_IRep>r{this};
+        unsigned int                     cntAdded{};
+        _SafeReadWriteRepAccessor<_IRep> r{this};
         for (auto i = start; i != end; ++i) {
             if (r._GetWriteableRep ().Add (*i)) {
                 cntAdded++;
@@ -225,8 +225,6 @@ namespace Stroika::Foundation::Containers {
     {
         return inherited::Where (includeIfTrue, ArchetypeContainerType{});
     }
-
-
 
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::_AssertRepValidType () const
