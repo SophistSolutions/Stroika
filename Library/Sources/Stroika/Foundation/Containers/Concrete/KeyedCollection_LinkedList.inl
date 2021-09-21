@@ -120,11 +120,25 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const
         {
+            if (auto i = this->FindFirstThat ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); }, nullptr)) {
+                if (item != nullptr) {
+                    *item = *i;
+                }
+                return true;
+            }
             return false;
         }
-        virtual void Add (ArgByValueType<T> item) override
+        virtual bool Add (ArgByValueType<T> item) override
         {
-            fData_.Prepend (item);
+            KEY_TYPE key{fKeyExtractor_ (item)};
+            if (auto i = this->FindFirstThat ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); }, nullptr)) {
+                Update (i, item);
+                return false;
+            }
+            else {
+                fData_.Prepend (item);
+                return true;
+            }
         }
         virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
         {

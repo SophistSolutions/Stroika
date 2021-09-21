@@ -40,9 +40,21 @@ namespace {
         void DoIt ()
         {
 #if 1
-            KeyedCollection<T1, int>            l1{[] (T1 e) { return e.key; }};
+            auto test = [] (auto coll) {
+                VerifyTestResult (coll.empty ());
+                coll.Add (T1{1, 101});
+                VerifyTestResult (coll.GetLength () == 1);
+                coll.Add (T1{1, 201});
+                VerifyTestResult (coll.GetLength () == 1);
+                coll.Add (T1{2, 102});
+                VerifyTestResult (coll.GetLength () == 2);
+            };
+            KeyedCollection<T1, int> l1{[] (T1 e) { return e.key; }};
+            test (l1);
             KeyedCollection<T1, int, T1_Traits> l2{[] (T1 e) { return e.key; }};
+            test (l2);
             KeyedCollection<T1, int, T1_Traits> l3;
+            test (l3);
 #endif
 
 #if 0

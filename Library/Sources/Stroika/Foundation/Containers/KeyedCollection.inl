@@ -62,6 +62,11 @@ namespace Stroika::Foundation::Containers {
     {
         _AssertRepValidType ();
     }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Add (ArgByValueType<T> t)
+    {
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (t);
+    }
 #if qDebug
     template <typename T, typename KEY_TYPE, typename TRAITS>
     KeyedCollection<T, KEY_TYPE, TRAITS>::~KeyedCollection ()
@@ -164,11 +169,6 @@ namespace Stroika::Foundation::Containers {
             }
         }
         return false;
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode)
-    {
-        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (key, newElt, addReplaceMode);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p, AddReplaceMode addReplaceMode)
@@ -356,11 +356,57 @@ namespace Stroika::Foundation::Containers {
 #endif
 #endif
 
-/*
+    /*
      ********************************************************************************
      ****************** KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep *****************
      ********************************************************************************
      */
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation () const
+    {
+        struct MyIterable_ : Iterable<KEY_TYPE> {
+            using MyMapping_ = KeyedCollection<T, KEY_TYPE, TRAITS>;
+            struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
+                using _IterableRepSharedPtr = typename Iterable<KEY_TYPE>::_IterableRepSharedPtr;
+                MyMapping_ fMapping_;
+                MyIterableRep_ (const MyMapping_& map)
+                    : fMapping_{map}
+                {
+                }
+                virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
+                {
+                    auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fMapping_.MakeIterator ());
+                    auto getNext   = [myContext] () -> optional<KEY_TYPE> {
+                        if (myContext->Done ()) {
+                            return nullopt;
+                        }
+                        else {
+                            auto result = (*myContext)->fKey;
+                            (*myContext)++;
+                            return result;
+                        }
+                    };
+                    return Traversal::CreateGeneratorIterator<KEY_TYPE> (getNext);
+                }
+                virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
+                {
+                    // For now - ignore forIterableEnvelope
+                    return Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
+                }
+            };
+            MyIterable_ (const MyMapping_& m)
+                // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
+                : Iterable<KEY_TYPE> (Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (m))
+            {
+            }
+        };
+#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+        auto rep = dynamic_pointer_cast<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep> (const_cast<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
+#else
+        auto rep = const_cast<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
+#endif
+        return MyIterable_{KeyedCollection<T, KEY_TYPE, TRAITS>{rep}};
+    }
 #if 0
     template <typename T, typename KEY_TYPE, typename TRAITS>
     Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation () const

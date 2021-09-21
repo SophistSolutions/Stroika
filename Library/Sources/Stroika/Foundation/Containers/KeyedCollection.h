@@ -311,28 +311,11 @@ namespace Stroika::Foundation::Containers {
          *  it is left undefined whether or not the new (not included) attributes assocaited with the added
          *  item make it into the Set.
          *
-         *  If you really want an association list (Mapping) from one thing to another, use that.
+         *  return true if new item, and false if simply updated
          *
          *  \note mutates container
          */
-        nonvirtual void Add (ArgByValueType<T> item);
-
-    public:
-        /**
-         *  Add item if not already present, and return true if added, and false if already present.
-         *  Note - we chose to return true in the case of addition because this is the case most likely
-         *  when a caller would want to take action.
-         *
-         *  \par Example Usage
-         *      \code
-         *          if (s.AddIf (n)) {
-         *              write_to_disk (n);
-         *          }
-         *      \endcode
-         *
-         *  \note mutates container
-         */
-        nonvirtual bool AddIf (ArgByValueType<T> item);
+        nonvirtual bool Add (ArgByValueType<T> item);
 
     public:
         /**
@@ -484,13 +467,16 @@ namespace Stroika::Foundation::Containers {
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const = 0;
-        virtual void Add (ArgByValueType<T> item)                                           = 0;
-        virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue)              = 0;
-        virtual void Remove (const Iterator<T>& i)                                          = 0;
-        virtual void Remove (ArgByValueType<KEY_TYPE> key)                                  = 0;
+        // return true if new item, and false if simply updated
+        virtual bool Add (ArgByValueType<T> item)                              = 0;
+        virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) = 0;
+        virtual void Remove (const Iterator<T>& i)                             = 0;
+        virtual void Remove (ArgByValueType<KEY_TYPE> key)                     = 0;
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
+    protected:
+        nonvirtual Iterable<KEY_TYPE> _Keys_Reference_Implementation () const;
     };
 
 }
