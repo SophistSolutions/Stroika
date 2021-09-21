@@ -88,6 +88,11 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetKeyEqualityComparer ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::Keys () const
+    {
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Keys ();
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::_AssertRepValidType () const
     {
 #if qDebug
@@ -100,11 +105,6 @@ namespace Stroika::Foundation::Containers {
     inline auto KeyedCollection<T, KEY_TYPE, TRAITS>::GetKeyEqualsComparer () const -> KeyEqualsCompareFunctionType
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetKeyEqualsComparer ();
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::Keys () const
-    {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Keys ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline Iterable<MAPPED_VALUE_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::MappedValues () const
@@ -385,13 +385,14 @@ namespace Stroika::Foundation::Containers {
                 }
                 virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                 {
-                    auto myContext = make_shared<Iterator<KEY_TYPE>> (fBaseCollection_.MakeIterator ());
-                    auto getNext   = [myContext] () -> optional<KEY_TYPE> {
+                    auto myContext = make_shared<Iterator<T>> (fBaseCollection_.MakeIterator ());
+                    auto keyExtractor = fBaseCollection_.GetKeyExtractor ();
+                    auto getNext      = [myContext, keyExtractor] () -> optional<KEY_TYPE> {
                         if (myContext->Done ()) {
                             return nullopt;
                         }
                         else {
-                            auto result = (*myContext)->fKey;
+                            auto result = keyExtractor (**myContext);
                             (*myContext)++;
                             return result;
                         }

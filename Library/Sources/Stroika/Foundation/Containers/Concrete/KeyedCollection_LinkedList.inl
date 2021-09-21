@@ -123,8 +123,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual Iterable<KEY_TYPE> Keys () const override
         {
-            AssertNotImplemented ();
-            return Iterable<KEY_TYPE>{};
+            return this->_Keys_Reference_Implementation ();
         }
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const
         {

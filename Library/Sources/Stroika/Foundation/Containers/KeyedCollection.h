@@ -18,24 +18,12 @@
  *  \file
  *
  * 
- * 
- *          NYI
  *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a> --- NOFUNCTIONAL DRAFT
+ *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-133 - add regression tests for KeyedCollection/SortedKeyedCollection
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-117 KeyedCollection needs get extractor method either const or static based on type
- *
- *              Add DEFUALT_EXTRACTOR to traits (optional arg to traits type, or new traits type)
- *              and mmove arg for extractor to END so it can be defualted or overloaded.
- *
- *              UNCLEAR if this is what we want or always parameter. Not clear how to provide both
- *              sensibly.
- *
- *              Probably the answer is some SFINAE "ISDEFINED(TRAITS::EXTRACTOR)" then have one set of constructors
- *              and otherwise another set.
  */
 
 namespace Stroika::Foundation::Containers {
@@ -457,7 +445,11 @@ namespace Stroika::Foundation::Containers {
      *  the KeyedCollection<KEY_TYPE, T, TRAITS> container API.
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    class KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep : public Iterable<T>::_IRep {
+    class KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep : public Iterable<T>::_IRep
+#if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+        ,public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep>
+#endif
+    {
     protected:
         using _KeyedCollectionRepSharedPtr = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_KeyedCollectionRepSharedPtr;
 
