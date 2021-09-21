@@ -150,7 +150,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
     }
     return out;
 #elif qPlatform_Windows
-    // No real need todo this becaues boost does so well, but could be done pretty easily - see
+    // No real need todo this because boost does so well, but could be done pretty easily - see
     // http://www.debuginfo.com/examples/src/SymFromAddr.cpp -- LGP 2020-03-01
     return wstring{};
 #else

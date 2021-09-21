@@ -25,6 +25,7 @@ namespace Stroika::Foundation::Containers {
 
     template <typename KEY_TYPE, typename VALUE_TYPE>
     class Mapping;
+
 }
 
 namespace Stroika::Foundation::Containers::Factory {

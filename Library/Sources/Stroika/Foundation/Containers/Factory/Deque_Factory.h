@@ -58,6 +58,7 @@ namespace Stroika::Foundation::Containers::Factory {
     private:
         static Deque<T> Default_ ();
     };
+
 }
 
 /*
