@@ -101,6 +101,14 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep overrides
     public:
+        virtual KeyExtractorType GetKeyExtractor () const override
+        {
+            return fKeyExtractor_;
+        }
+        virtual KeyEqualityComparerType GetKeyEqualityComparer () const override
+        {
+            return fKeyComparer_;
+        }
         virtual _KeyedCollectionRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
         {
             if (fData_.HasActiveIterators ()) {
@@ -192,16 +200,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::KeyedCollection_LinkedList (const T* start, const T* end)
-        : Collection_LinkedList ()
-    {
-        Require ((start == end) or (start != nullptr and end != nullptr));
-        this->AddAll (start, end);
-        AssertRepValidType_ ();
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
     KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::KeyedCollection_LinkedList (const KeyedCollection<T, KEY_TYPE, TRAITS>& src)
-        : Collection_LinkedList ()
+        : KeyedCollection_LinkedList {src.GetKeyExtractor (), src.GetKeyEqualityComparer ()}
     {
         this->AddAll (src);
         AssertRepValidType_ ();

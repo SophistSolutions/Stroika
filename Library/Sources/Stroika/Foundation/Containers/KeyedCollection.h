@@ -223,11 +223,11 @@ namespace Stroika::Foundation::Containers {
          * 
          *        And also careful not to apply to non-iterables.
          */
-        template <typename KE = TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::is_callable_v<KE>>* = nullptr>
+        template <typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::is_callable_v<KE>>* = nullptr>
         KeyedCollection (KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
         KeyedCollection (KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
         KeyedCollection (const KeyedCollection& src) noexcept = default;
-        template <typename KE = TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::is_callable_v<KE>>* = nullptr>
+        template <typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::is_callable_v<KE>>* = nullptr>
         KeyedCollection (const initializer_list<T>& src, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
         KeyedCollection (const initializer_list<T>& src, KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
 #if 0
@@ -462,6 +462,8 @@ namespace Stroika::Foundation::Containers {
         using _KeyedCollectionRepSharedPtr = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_KeyedCollectionRepSharedPtr;
 
     public:
+        virtual KeyExtractorType GetKeyExtractor () const = 0;
+        virtual KeyEqualityComparerType GetKeyEqualityComparer () const = 0;
         virtual _KeyedCollectionRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
         virtual Iterable<KEY_TYPE>           Keys () const                                          = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());

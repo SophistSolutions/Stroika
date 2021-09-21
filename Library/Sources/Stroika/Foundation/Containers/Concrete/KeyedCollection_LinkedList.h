@@ -21,6 +21,13 @@
  *
  */
 
+namespace Stroika::Foundation::Containers {
+
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    class KeyedCollection;
+
+}
+
 namespace Stroika::Foundation::Containers::Concrete {
 
     /**
@@ -37,28 +44,27 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        using KeyExtractorType = inherited::KeyExtractorType;
+        using KeyExtractorType = typename inherited::KeyExtractorType;
 
     public:
         /**
          */
-        using KeyEqualityComparerType = inherited::KeyEqualityComparerType;
+        using KeyEqualityComparerType = typename inherited::KeyEqualityComparerType;
 
     public:
         /**
          */
-        using KeyType = inherited::KeyType;
+        using KeyType = typename inherited::KeyType;
 
     public:
         /**
          */
-        using value_type = inherited::value_type;
+        using value_type = typename inherited::value_type;
 
     public:
         /**
          */
         KeyedCollection_LinkedList (KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer);
-        KeyedCollection_LinkedList (const T* start, const T* end);
         KeyedCollection_LinkedList (const KeyedCollection<T, KEY_TYPE, TRAITS>& src);
         KeyedCollection_LinkedList (const KeyedCollection_LinkedList& src) noexcept = default;
         KeyedCollection_LinkedList (KeyedCollection_LinkedList&& src) noexcept      = default;

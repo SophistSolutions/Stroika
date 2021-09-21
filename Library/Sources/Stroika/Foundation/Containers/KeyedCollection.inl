@@ -78,6 +78,16 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline auto KeyedCollection<T, KEY_TYPE, TRAITS>::GetKeyExtractor () const -> KeyExtractorType
+    {
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetKeyExtractor ();
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline auto KeyedCollection<T, KEY_TYPE, TRAITS>::GetKeyEqualityComparer () const -> KeyEqualityComparerType
+    {
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetKeyEqualityComparer ();
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::_AssertRepValidType () const
     {
 #if qDebug
@@ -368,14 +378,14 @@ namespace Stroika::Foundation::Containers {
             using MyMapping_ = KeyedCollection<T, KEY_TYPE, TRAITS>;
             struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                 using _IterableRepSharedPtr = typename Iterable<KEY_TYPE>::_IterableRepSharedPtr;
-                MyMapping_ fMapping_;
+                MyMapping_ fBaseCollection_;
                 MyIterableRep_ (const MyMapping_& map)
-                    : fMapping_{map}
+                    : fBaseCollection_{map}
                 {
                 }
                 virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                 {
-                    auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fMapping_.MakeIterator ());
+                    auto myContext = make_shared<Iterator<KEY_TYPE>> (fBaseCollection_.MakeIterator ());
                     auto getNext   = [myContext] () -> optional<KEY_TYPE> {
                         if (myContext->Done ()) {
                             return nullopt;
@@ -396,7 +406,7 @@ namespace Stroika::Foundation::Containers {
             };
             MyIterable_ (const MyMapping_& m)
                 // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
-                : Iterable<KEY_TYPE> (Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (m))
+                : Iterable<KEY_TYPE> {Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (m)}
             {
             }
         };
