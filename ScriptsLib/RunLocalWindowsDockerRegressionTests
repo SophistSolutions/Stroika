@@ -10,18 +10,17 @@ DOCKER="${DOCKER:-docker.exe}"
 
 [[ "$($DOCKER ps -a | grep $CONTAINER_NAME)" ]] && $DOCKER rm -f $CONTAINER_NAME
 
-## Unclear why we need --interactive, but without it, the shell stops and we cannot exec anything -- LGP 2020-03-09
 # Due to https://stroika.atlassian.net/browse/STK-742 - add   --network "Default Switch" 
-#https://stackoverflow.com/questions/67162945/docker-for-windows-the-requested-resource-is-in-use-error-when-mem-limit-is-set
-#   --memory 8G 
 
-echo "Running docker build (usually takes about 5 hrs)"
+# FYI possible error: https://stackoverflow.com/questions/67162945/docker-for-windows-the-requested-resource-is-in-use-error-when-mem-limit-is-set
+
+echo "Running docker build (usually takes about 2 hrs)"
 $DOCKER run \
     --detach \
     --interactive \
     --storage-opt "size=100GB" \
+    --memory 8G \
     --cpus 8\
-    --network "Default Switch" \
     --name $CONTAINER_NAME \
     $CONTAINER_IMAGE
 
