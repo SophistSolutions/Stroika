@@ -71,6 +71,10 @@ namespace Stroika::Foundation::Containers {
                 return DEFAULT_KEY_EXTRACTOR{};
             }
         }
+
+        /**
+         *  Default extractor if not specified in constructor (e.g. default-constructor KeyedCollection())
+         */
         static const inline KeyExtractorType kDefaultKeyExtractor{mk_ ()};
 
         /**
