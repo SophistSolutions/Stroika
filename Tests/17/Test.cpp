@@ -57,6 +57,10 @@ namespace {
                 VerifyTestResult (coll.Contains (2));
                 VerifyTestResult (coll.GetLength () == 2);
                 VerifyTestResult ((coll.Keys () == Set<int>{1, 2}));
+                coll.Remove (99);
+                VerifyTestResult (coll.GetLength () == 2);
+                coll.Remove (1);
+                VerifyTestResult (coll.GetLength () == 1);
             };
             KeyedCollection<T1, int> l1{[] (T1 e) { return e.key; }};
             test (l1);

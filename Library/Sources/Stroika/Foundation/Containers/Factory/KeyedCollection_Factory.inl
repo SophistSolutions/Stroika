@@ -64,7 +64,6 @@ namespace Stroika::Foundation::Containers::Factory {
          *  maps.
          */
         return Concrete::KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>{keyExtractor, keyComparer};
-        //return *(KeyedCollection<T, KEY_TYPE, TRAITS>*)nullptr; //tmphack
     }
 
 }

@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename CONTAINER_OF_ADDABLE, typename KE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and Configuration::is_callable_v<KE>>*>
+    template <typename CONTAINER_OF_ADDABLE, typename KE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Configuration::is_callable_v<KE>>*>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyEqualityComparerType keyComparer)
         : KeyedCollection{TRAITS::kDefaultKeyExtractor, keyComparer}
     {
@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer)
         : KeyedCollection{keyExtractor, keyComparer}
     {
@@ -163,6 +163,11 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
     inline unsigned int KeyedCollection<T, KEY_TYPE, TRAITS>::AddAll (CONTAINER_OF_ADDABLE&& items)
+    {
+        return AddAll (std::begin (items), std::end (items));
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline unsigned int KeyedCollection<T, KEY_TYPE, TRAITS>::AddAll (const KeyedCollection& items)
     {
         // avoid trouble with a.AddAll(a);
         if (this != &items) {

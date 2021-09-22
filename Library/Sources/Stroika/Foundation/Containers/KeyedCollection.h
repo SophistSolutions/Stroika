@@ -19,7 +19,7 @@
  *
  * 
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-133 - add regression tests for KeyedCollection/SortedKeyedCollection
@@ -87,8 +87,8 @@ namespace Stroika::Foundation::Containers {
 
     /**
      *      KeyedCollection adds most access patterns used in Mapping to a Collection, but stores only a single
-     *      object. It takes a parameter (??? TBD but including constructor based) to extract the KEY from
-     *      the collection item value type.
+     *      object. The idea is to have the ID (from a Mapping<ID,Obj>) stored directly in the 'Obj', but still
+     *      be able to do lookups based on the ID.
      * 
      *      This can also be thought of as much like a Set<T> - where the element T has a known KEY field.
      *      You could easily make a Set<T> like this, but then lookups would require you passed in a 'T' instead
@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Containers {
      *          @see https://msdn.microsoft.com/en-us/library/ms132438%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
      *
      *  \note   Important that KeyedCollection<>::Add () will REPLACE the value, unlike with set.
-     * 
+     *
      *  \note Design Choice:
      *          Could either embed the 'extractor' function in the container type TRAITS or passed in as a
      *          constructor argument to the container. 
@@ -215,9 +215,9 @@ namespace Stroika::Foundation::Containers {
         KeyedCollection (KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
         KeyedCollection (KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
         KeyedCollection (const KeyedCollection& src) noexcept = default;
-        template <typename CONTAINER_OF_ADDABLE, typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and Configuration::is_callable_v<KE>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Configuration::is_callable_v<KE>>* = nullptr>
         KeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         KeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
 
 #if 0
@@ -318,7 +318,8 @@ namespace Stroika::Foundation::Containers {
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         nonvirtual unsigned int AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
-        nonvirtual unsigned int AddAll (CONTAINER_OF_ADDABLE&& s);
+        nonvirtual unsigned int AddAll (CONTAINER_OF_ADDABLE&& items);
+        nonvirtual unsigned int AddAll (const KeyedCollection& items);
 
     public:
         /**
