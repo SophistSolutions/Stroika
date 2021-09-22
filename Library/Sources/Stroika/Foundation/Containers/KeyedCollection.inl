@@ -375,7 +375,7 @@ namespace Stroika::Foundation::Containers {
          */
         for (auto ri : rhs) {
             if (not lhs.Contains (ri)) {
-                false;
+                return false;
             }
         }
         return true;
@@ -395,7 +395,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline bool operator== (const KeyedCollection<T, KEY_TYPE, TRAITS>& lhs, const KeyedCollection<T, KEY_TYPE, TRAITS>& rhs)
     {
-        return typename KeyedCollection<T, KEY_TYPE, TRAITS>::template EqualsComparer<>{}(lhs, rhs);
+        return typename KeyedCollection<T, KEY_TYPE, TRAITS>::EqualsComparer{}(lhs, rhs);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline bool operator!= (const KeyedCollection<T, KEY_TYPE, TRAITS>& lhs, const KeyedCollection<T, KEY_TYPE, TRAITS>& rhs)
