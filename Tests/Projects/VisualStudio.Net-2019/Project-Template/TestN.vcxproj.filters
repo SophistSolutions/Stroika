@@ -51,6 +51,9 @@
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Collection.h">
       <Filter>TestCommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_KeyedCollection.h">
+      <Filter>TestCommon</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Queue.h">
       <Filter>TestCommon</Filter>
     </ClInclude>

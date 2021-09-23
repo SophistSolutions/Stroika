@@ -9,7 +9,6 @@
 #include <sstream>
 
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
-#include "Stroika/Foundation/Containers/Set.h"
 #if 0
 #include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
@@ -20,7 +19,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
-#include "../TestCommon/CommonTests_Mapping.h"
+#include "../TestCommon/CommonTests_KeyedCollection.h"
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
@@ -29,51 +28,21 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 
 namespace {
-    namespace Test1_ {
-        struct T1 {
-            int key;
-            int value;
-        };
-        struct T1_Key_Extractor {
-            int operator() (const T1& t) const { return t.key; };
-        };
-        using T1_Traits = KeyedCollection_DefaultTraits<T1, int, equal_to<int>, T1_Key_Extractor>;
-        void DoIt ()
-        {
-            auto test = [] (auto coll) {
-                VerifyTestResult (coll.empty ());
-                coll.Add (T1{1, 101});
-                VerifyTestResult (coll.GetLength () == 1);
-                VerifyTestResult (coll.Lookup (1)->value == 101);
-                coll.Add (T1{1, 201});
-                VerifyTestResult (coll.GetLength () == 1);
-                VerifyTestResult (coll.Contains (1));
-                VerifyTestResult (coll.Lookup (1)->value == 201);
-                VerifyTestResult (not coll.Contains (2));
-                auto prevValue = coll;
-                VerifyTestResult (prevValue == coll);
-                coll.Add (T1{2, 102});
-                VerifyTestResult (prevValue != coll);
-                VerifyTestResult (coll.Contains (2));
-                VerifyTestResult (coll.GetLength () == 2);
-                VerifyTestResult ((coll.Keys () == Set<int>{1, 2}));
-                coll.Remove (99);
-                VerifyTestResult (coll.GetLength () == 2);
-                coll.Remove (1);
-                VerifyTestResult (coll.GetLength () == 1);
-            };
-            KeyedCollection<T1, int> l1{[] (T1 e) { return e.key; }};
-            test (l1);
-            KeyedCollection<T1, int, T1_Traits> l2{[] (T1 e) { return e.key; }};
-            test (l2);
-            KeyedCollection<T1, int, T1_Traits> l3;
-            test (l3);
-        }
-    }
-
     void DoRegressionTests_ ()
     {
-        Test1_::DoIt ();
+        {
+            using T1 = CommonTests::KeyedCollectionTests::Test1_Basics_::T1;
+            using T1_Traits = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Traits;
+            CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+                [] () { return KeyedCollection<T1, int>{[] (T1 e) { return e.key; }}; },
+                [] (auto) {});
+            CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+                [] () { return KeyedCollection<T1, int, T1_Traits>{[] (T1 e) { return e.key; }}; },
+                [] (auto) {});
+            CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+                [] () { return KeyedCollection<T1, int, T1_Traits>{}; },
+                [] (auto) {});
+        }
     }
 }
 
