@@ -32,11 +32,10 @@ namespace Stroika::Foundation::Containers {
      *
      */
     template <typename T, typename KEY_TYPE, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>, typename DEFAULT_KEY_WELL_ORDER_COMPARER = less<KEY_TYPE>, typename DEFAULT_KEY_EXTRACTOR = void>
-    struct SortedKeyedCollection_DefaultTraits : KeyedCollection_DefaultTraits<T, KEY_TYPE, DEFAULT_KEY_EQUALS_COMPARER, DEFAULT_KEY_EXTRACTOR> 
-    {
+    struct SortedKeyedCollection_DefaultTraits : KeyedCollection_DefaultTraits<T, KEY_TYPE, DEFAULT_KEY_EQUALS_COMPARER, DEFAULT_KEY_EXTRACTOR> {
         /**
          */
-        using KeyedCollectionTraits = KeyedCollection_DefaultTraits<T, KEY_TYPE, DEFAULT_KEY_EQUALS_COMPARER, DEFAULT_KEY_EXTRACTOR> ;
+        using KeyedCollectionTraits = KeyedCollection_DefaultTraits<T, KEY_TYPE, DEFAULT_KEY_EQUALS_COMPARER, DEFAULT_KEY_EXTRACTOR>;
 
         /**
         * #if 0
@@ -48,8 +47,8 @@ namespace Stroika::Foundation::Containers {
          * #endif
          */
         using KeyWellOrderCompareFunctionType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<KEY_TYPE>, ArgByValueType<KEY_TYPE>)>>;
- 
-       /**
+
+        /**
          *  Default comparer if not specified in constructor (e.g. default-constructor SortedKeyedCollection())
          */
         static const inline KeyWellOrderCompareFunctionType kDefaultKeyWellOrderComparer{DEFAULT_KEY_WELL_ORDER_COMPARER{}};
@@ -174,7 +173,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     class SortedKeyedCollection<T, TRAITS>::_IRep : public KeyedCollection<T>::_IRep {
     public:
-       // virtual bool Equals (const typename Collection<T>::_IRep& rhs) const = 0;
+        // virtual bool Equals (const typename Collection<T>::_IRep& rhs) const = 0;
     };
 
 }
