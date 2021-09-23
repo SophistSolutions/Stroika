@@ -47,7 +47,7 @@ jobs:
 
     - name: Install tools required to build Stroika
       run: |
-        apt-get install -y libtool-bin
+        sudo apt-get install -y libtool-bin
 
 
     # Initializes the CodeQL tools for scanning.
