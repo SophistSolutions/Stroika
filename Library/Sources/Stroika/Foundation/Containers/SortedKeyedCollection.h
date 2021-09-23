@@ -31,8 +31,28 @@ namespace Stroika::Foundation::Containers {
      *  that as well.
      *
      */
-    template <typename KEY_TYPE, typename T, typename KEY_EQUALS_COMPARER = Common::equal_to<KEY_TYPE>, typename KEY_WELL_ORDER_COMPARER = less<KEY_TYPE>>
-    struct SortedKeyedCollection_DefaultTraits : KeyedCollection_DefaultTraits<KEY_TYPE, T, KEY_EQUALS_COMPARER> {
+    template <typename T, typename KEY_TYPE, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>, typename DEFAULT_KEY_WELL_ORDER_COMPARER = less<KEY_TYPE>, typename DEFAULT_KEY_EXTRACTOR = void>
+    struct SortedKeyedCollection_DefaultTraits : KeyedCollection_DefaultTraits<T, KEY_TYPE, DEFAULT_KEY_EQUALS_COMPARER, DEFAULT_KEY_EXTRACTOR> 
+    {
+        /**
+         */
+        using KeyedCollectionTraits = KeyedCollection_DefaultTraits<T, KEY_TYPE, DEFAULT_KEY_EQUALS_COMPARER, DEFAULT_KEY_EXTRACTOR> ;
+
+        /**
+        * #if 0
+        * /// WRONG UPDATE
+         *  This is the type returned by GetElementEqualsComparer () and CAN be used as the argument to a KeyedCollection<> as EqualityComparer, but
+         *  we allow any template in the KeyedCollection<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept.
+         *
+         *  \note   @see also EqualsComparer{} to compare whole KeyedCollection<>s
+         * #endif
+         */
+        using KeyWellOrderCompareFunctionType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<KEY_TYPE>, ArgByValueType<KEY_TYPE>)>>;
+ 
+       /**
+         *  Default comparer if not specified in constructor (e.g. default-constructor SortedKeyedCollection())
+         */
+        static const inline KeyWellOrderCompareFunctionType kDefaultKeyWellOrderComparer{DEFAULT_KEY_WELL_ORDER_COMPARER{}};
     };
 
     /**
@@ -59,7 +79,7 @@ namespace Stroika::Foundation::Containers {
      *
      */
     template <typename KEY_TYPE, typename T, typename TRAITS = SortedKeyedCollection_DefaultTraits<KEY_TYPE, T>>
-    class SortedKeyedCollection : public KeyedCollection<KEY_TYPE, T> {
+    class SortedKeyedCollection : public KeyedCollection<T, KEY_TYPE, TRAITS> {
     private:
         using inherited = KeyedCollection<KEY_TYPE, T>;
 
@@ -67,13 +87,17 @@ namespace Stroika::Foundation::Containers {
         class _IRep;
 
     protected:
-        using _SharedPtrIRep = typename inherited::template PtrImplementationTemplate<_IRep>;
+#if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
+        using _SharedIRepPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
+#else
+        using _SharedIRepPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+#endif
 
     public:
         /**
          *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
          */
-        using ArchetypeContainerType = SortedKeyedCollection<KEY_TYPE, T, TRAITS>;
+        using ArchetypeContainerType = SortedKeyedCollection<T, KEY_TYPE, TRAITS>;
 
     public:
         /**
@@ -91,25 +115,51 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+        * 
+        * &&& WRONG TODO UPDATE - CLONED FROM BASE CLASS &&& DOCS &&&
+        * 
+         *  For the CTOR overload with CONTAINER_OF_ADDABLE, its anything that supports c.begin(), c.end () to find
+         *  all the elements.
+         *
+         *  All constructors either copy their source comparer (copy/move CTOR), or use the provided argument comparer
+         *  (which in turn defaults to equal_to<T>).
+         *
+         *  If TRAITS (TraitsType) has a valid default extractor, enable certain constructors.
+         *
+         *  \note For efficiency sake, the base constructor takes a templated EQUALS_COMPARER (avoiding translation to function<bool(T,T)>>, but
+         *        for simplicity sake, many of the other constructors force that conversion.
+         *
+         * \req IsEqualsComparer<EQUALS_COMPARER> () - for constructors with that type parameter
+         *
+         *  \par Example Usage
+         *      \code
+         *      \endcode
+         *
+         *  \note Implementation note:
+         *        Reason for the not is_base_of_v<> restriction on CTOR/1(CONTAINER_OF_ADDABLE&&) is to prevent compiler from
+         *        instantiating that constructor template for argument subclasses of this container type, and having those take precedence over the
+         *        default X(const X&) CTOR.
+         * 
+         *        And also careful not to apply to non-iterables.
          */
-        SortedKeyedCollection ();
-        SortedKeyedCollection (const SortedKeyedCollection& src)  = default;
-        SortedKeyedCollection (const SortedKeyedCollection&& src) = default;
-        SortedKeyedCollection (const initializer_list<T>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>::value and not is_base_of_v<SortedKeyedCollection<KEY_TYPE, T, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        explicit SortedKeyedCollection (const CONTAINER_OF_ADDABLE& src);
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        SortedKeyedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::is_callable_v<KE>>* = nullptr>
+        SortedKeyedCollection (KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
+        SortedKeyedCollection (KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
+        SortedKeyedCollection (const KeyedCollection& src) noexcept = default;
+        template <typename CONTAINER_OF_ADDABLE, typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Configuration::is_callable_v<KE>>* = nullptr>
+        SortedKeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        SortedKeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
 
     protected:
-        explicit SortedKeyedCollection (const _SharedPtrIRep& src);
-        explicit SortedKeyedCollection (_SharedPtrIRep&& src);
+        explicit SortedKeyedCollection (const _SharedIRepPtr& src);
+        explicit SortedKeyedCollection (_SharedIRepPtr&& src);
 
     public:
         /**
          */
-        nonvirtual SortedKeyedCollection<T, TRAITS>& operator= (const SortedKeyedCollection<T, TRAITS>& rhs);
-        nonvirtual SortedKeyedCollection<T, TRAITS>& operator= (SortedKeyedCollection<T, TRAITS>&& rhs) = default;
+        nonvirtual SortedKeyedCollection<T, TRAITS>& operator= (const SortedKeyedCollection<T, KEY_TYPE, TRAITS>& rhs);
+        nonvirtual SortedKeyedCollection<T, TRAITS>& operator= (SortedKeyedCollection<T, KEY_TYPE, TRAITS>&& rhs) = default;
 
     protected:
         nonvirtual void _AssertRepValidType () const;
@@ -122,12 +172,9 @@ namespace Stroika::Foundation::Containers {
      *  the SortedKeyedCollection<T, TRAITS> container API.
      */
     template <typename T, typename TRAITS>
-    class SortedKeyedCollection<T, TRAITS>::_IRep : public Collection<T>::_IRep {
+    class SortedKeyedCollection<T, TRAITS>::_IRep : public KeyedCollection<T>::_IRep {
     public:
-        virtual bool Equals (const typename Collection<T>::_IRep& rhs) const = 0;
-        virtual bool Contains (ArgByValueType<T> item) const                 = 0;
-        using Collection<T>::_IRep::Remove;
-        virtual void Remove (ArgByValueType<T> item) = 0;
+       // virtual bool Equals (const typename Collection<T>::_IRep& rhs) const = 0;
     };
 
 }
