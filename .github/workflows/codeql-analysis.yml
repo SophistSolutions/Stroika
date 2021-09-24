@@ -43,7 +43,7 @@ jobs:
 
     - name: Install tools required to build Stroika
       run: |
-        sudo apt-get install -y libtool-bin
+        sudo apt-get install -y libtool-bin pkg-config cmake automake autoconf libtool-bin libasan5 libubsan1
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
