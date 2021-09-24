@@ -29,7 +29,8 @@ namespace CommonTests {
                 int operator() (const T1& t) const { return t.key; };
             };
             using T1_Traits = KeyedCollection_DefaultTraits<T1, int, equal_to<int>, T1_Key_Extractor>;
-            void RunTest (auto coll, auto testFunction)
+            template <typename CONTAINER, typename TEST_FUNCTION>
+            void RunTest (CONTAINER coll, TEST_FUNCTION testFunction)
             {
                 VerifyTestResult (coll.empty ());
                 testFunction (coll);
