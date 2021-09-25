@@ -451,7 +451,6 @@ namespace Stroika::Foundation::Containers {
                 }
             };
             MyIterable_ (const MyMapping_& m)
-                // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
                 : Iterable<KEY_TYPE> (Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (m))
             {
             }

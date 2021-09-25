@@ -299,11 +299,11 @@ namespace Stroika::Foundation::Containers {
     Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation () const
     {
         struct MyIterable_ : Iterable<KEY_TYPE> {
-            using MyMapping_ = KeyedCollection<T, KEY_TYPE, TRAITS>;
+            using BaseCollectionType_ = KeyedCollection<T, KEY_TYPE, TRAITS>;
             struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                 using _IterableRepSharedPtr = typename Iterable<KEY_TYPE>::_IterableRepSharedPtr;
-                MyMapping_ fBaseCollection_;
-                MyIterableRep_ (const MyMapping_& map)
+                BaseCollectionType_ fBaseCollection_;
+                MyIterableRep_ (const BaseCollectionType_& map)
                     : fBaseCollection_{map}
                 {
                 }
@@ -329,8 +329,7 @@ namespace Stroika::Foundation::Containers {
                     return Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
                 }
             };
-            MyIterable_ (const MyMapping_& m)
-                // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
+            MyIterable_ (const BaseCollectionType_& m)
                 : Iterable<KEY_TYPE>{Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (m)}
             {
             }
