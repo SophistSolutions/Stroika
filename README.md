@@ -92,7 +92,7 @@ For more details on individual release changes, see:
 
 &nbsp;&nbsp;&nbsp;&nbsp;[Release-Notes.md](Release-Notes.md)
 
-"Getting Started" build instructions, as well as design and other documentation can be found in:
+"Getting Started", build instructions, design and other documentation:
 
 &nbsp;&nbsp;&nbsp;&nbsp; [Documentation/](Documentation/ReadMe.md)
 
