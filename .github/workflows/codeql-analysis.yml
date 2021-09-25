@@ -13,8 +13,8 @@ on:
     branches:
       - v2.1-Dev
       - v2.1-Release
-  schedule:
-    - cron: '44 12 * * 6'
+  # schedule:
+  #   - cron: '44 12 * * 6'
 
 jobs:
   analyze:
@@ -34,7 +34,7 @@ jobs:
         # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
 
     env:
-      # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
+      # QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
 
     steps:
@@ -67,8 +67,8 @@ jobs:
         # Prefix the list here with "+" to use these queries and those in the config file.
         # queries: ./path/to/local/query, your-org/your-repo/queries@main
 
-    - name: Make Stroika libraries
-      run: make libraries
+    - name: Make Stroika
+      run: make all
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
