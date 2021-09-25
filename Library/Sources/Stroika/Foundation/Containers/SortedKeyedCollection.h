@@ -113,8 +113,8 @@ namespace Stroika::Foundation::Containers {
         using KeyInOrderKeyComparerType = typename TraitsType::KeyInOrderKeyComparerType;
 
     public:
-        using KeyEqualityComparerType = inherited::KeyEqualityComparerType;
-        using KeyExtractorType        = inherited::KeyExtractorType;
+        using KeyEqualityComparerType = typename inherited::KeyEqualityComparerType;
+        using KeyExtractorType        = typename inherited::KeyExtractorType;
 
     public:
         /**
