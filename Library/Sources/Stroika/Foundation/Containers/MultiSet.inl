@@ -392,7 +392,7 @@ namespace Stroika::Foundation::Containers {
 #if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
         _IRepSharedPtr ss = dynamic_pointer_cast<typename _IRepSharedPtr::element_type> (const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ());
 #else
-        _IRepSharedPtr        ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
+        _IRepSharedPtr ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
 #endif
         AssertNotNull (ss.get ());
         return ss->Elements (ss);
@@ -404,7 +404,7 @@ namespace Stroika::Foundation::Containers {
 #if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
         _IRepSharedPtr ss = dynamic_pointer_cast<typename _IRepSharedPtr::element_type> (const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ());
 #else
-        _IRepSharedPtr        ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
+        _IRepSharedPtr ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
 #endif
         AssertNotNull (ss.get ());
         return ss->UniqueElements (ss);
