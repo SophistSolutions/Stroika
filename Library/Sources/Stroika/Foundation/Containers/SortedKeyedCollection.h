@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers {
      *  that as well.
      *
      */
-    template <typename T, typename KEY_TYPE, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>, typename DEFAULT_KEY_WELL_ORDER_COMPARER = less<KEY_TYPE>, typename DEFAULT_KEY_EXTRACTOR = void>
+    template <typename T, typename KEY_TYPE, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>, typename DEFAULT_KEY_IN_ORDER_COMPARER = less<KEY_TYPE>, typename DEFAULT_KEY_EXTRACTOR = void>
     struct SortedKeyedCollection_DefaultTraits : KeyedCollection_DefaultTraits<T, KEY_TYPE, DEFAULT_KEY_EQUALS_COMPARER, DEFAULT_KEY_EXTRACTOR> {
         /**
          */
@@ -46,12 +46,12 @@ namespace Stroika::Foundation::Containers {
          *  \note   @see also EqualsComparer{} to compare whole KeyedCollection<>s
          * #endif
          */
-        using KeyWellOrderCompareFunctionType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<KEY_TYPE>, ArgByValueType<KEY_TYPE>)>>;
+        using KeyInOrderKeyComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<KEY_TYPE>, ArgByValueType<KEY_TYPE>)>>;
 
         /**
          *  Default comparer if not specified in constructor (e.g. default-constructor SortedKeyedCollection())
          */
-        static const inline KeyWellOrderCompareFunctionType kDefaultKeyWellOrderComparer{DEFAULT_KEY_WELL_ORDER_COMPARER{}};
+        static const inline KeyInOrderKeyComparerType kDefaultKeyInOrderComparer{DEFAULT_KEY_IN_ORDER_COMPARER{}};
     };
 
     /**
@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Containers {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Automatically-LEGACY_Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
      *
      */
-    template <typename KEY_TYPE, typename T, typename TRAITS = SortedKeyedCollection_DefaultTraits<KEY_TYPE, T>>
+    template <typename T, typename KEY_TYPE, typename TRAITS = SortedKeyedCollection_DefaultTraits<KEY_TYPE, T>>
     class SortedKeyedCollection : public KeyedCollection<T, KEY_TYPE, TRAITS> {
     private:
         using inherited = KeyedCollection<KEY_TYPE, T>;
@@ -107,10 +107,14 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Just a short-hand for the WellOrderCompareFunctionType specified through traits. This is often handy to use in
+         *  Just a short-hand for the KeyInOrderKeyComparerType specified through traits. This is often handy to use in
          *  building other templates.
          */
-        using WellOrderCompareFunctionType = typename TraitsType::WellOrderCompareFunctionType;
+        using KeyInOrderKeyComparerType = typename TraitsType::KeyInOrderKeyComparerType;
+
+    public:
+        using KeyEqualityComparerType = inherited::KeyEqualityComparerType;
+        using KeyExtractorType        = inherited::KeyExtractorType;
 
     public:
         /**
@@ -144,7 +148,7 @@ namespace Stroika::Foundation::Containers {
         template <typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::is_callable_v<KE>>* = nullptr>
         SortedKeyedCollection (KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
         SortedKeyedCollection (KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
-        SortedKeyedCollection (const KeyedCollection& src) noexcept = default;
+        SortedKeyedCollection (const SortedKeyedCollection& src) noexcept = default;
         template <typename CONTAINER_OF_ADDABLE, typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Configuration::is_callable_v<KE>>* = nullptr>
         SortedKeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
@@ -157,8 +161,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual SortedKeyedCollection<T, TRAITS>& operator= (const SortedKeyedCollection<T, KEY_TYPE, TRAITS>& rhs);
-        nonvirtual SortedKeyedCollection<T, TRAITS>& operator= (SortedKeyedCollection<T, KEY_TYPE, TRAITS>&& rhs) = default;
+        nonvirtual SortedKeyedCollection& operator= (const SortedKeyedCollection& rhs) = default;
 
     protected:
         nonvirtual void _AssertRepValidType () const;
@@ -168,10 +171,10 @@ namespace Stroika::Foundation::Containers {
      *  \brief  Implementation detail for SortedKeyedCollection<T, TRAITS> implementors.
      *
      *  Protected abstract interface to support concrete implementations of
-     *  the SortedKeyedCollection<T, TRAITS> container API.
+     *  the SortedKeyedCollection<T, KEY_TYPE, TRAITS> container API.
      */
-    template <typename T, typename TRAITS>
-    class SortedKeyedCollection<T, TRAITS>::_IRep : public KeyedCollection<T>::_IRep {
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    class SortedKeyedCollection<T, KEY_TYPE, TRAITS>::_IRep : public KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep {
     public:
         // virtual bool Equals (const typename Collection<T>::_IRep& rhs) const = 0;
     };

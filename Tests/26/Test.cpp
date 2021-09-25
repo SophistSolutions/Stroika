@@ -5,7 +5,8 @@
 //      STATUS  Alpha-Late
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-///TODO INCLUDFE BUT NOT BUILDING YET - #include "Stroika/Foundation/Containers/SortedKeyedCollection.h"
+#include "Stroika/Foundation/Containers/SortedKeyedCollection.h"
+
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 

@@ -63,7 +63,7 @@ namespace CommonTests {
         void SimpleKeyedCollectionTest_TestBasics (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
         {
             Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::SimpleKeyedCollectionTest_TestBasics"};
-            Test1_Basics_::RunTest (factory(), applyToContainer);
+            Test1_Basics_::RunTest (factory (), applyToContainer);
         }
 
     }
