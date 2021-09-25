@@ -1,6 +1,6 @@
 # Docker Build Containers
 
-There is no need to use this, but it can provide a quickstart to building Stroika
+Stroika does **not** depend on Docker, but Docker can provide a quickstart to building Stroika.
 
 Just create one or more of these docker images, and run them as in:
 

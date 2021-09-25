@@ -92,13 +92,13 @@ For more details on individual release changes, see:
 
 &nbsp;&nbsp;&nbsp;&nbsp;[Release-Notes.md](Release-Notes.md)
 
-"Getting Started" build instructions can be found in:
+"Getting Started" build instructions, as well as design and other documentation can be found in:
 
-&nbsp;&nbsp;&nbsp;&nbsp; [Documentation/Building Stroika.md](Documentation/Building%20Stroika.md)
+&nbsp;&nbsp;&nbsp;&nbsp; [Documentation/](Documentation/ReadMe.md)
 
 Looking through the samples is also a good way to start:
 
-&nbsp;&nbsp;&nbsp;&nbsp;[Samples/ReadMe.md](Samples/ReadMe.md)
+&nbsp;&nbsp;&nbsp;&nbsp;[Samples/](Samples/ReadMe.md)
 
 Please report bugs/issues at:
 

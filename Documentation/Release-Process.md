@@ -1,6 +1,6 @@
 # Stroika Release Process
 
-(rough draft)
+Rough steps I go through do do each release (rough draft)
 
 ## Release notes
 
@@ -14,7 +14,7 @@ Then summarize them into Release-Notes.md
 
 ## Update STROIKA\_-_VERSION file
 
-Just delete the 'x' in the version#, and save/checkin/commit
+Just delete the 'x' in the version#, and save/checkin/commit.
 
 ## Docker tag the latest containers, and push
 
@@ -46,3 +46,8 @@ make push-images
 ```
 
 ## Git tag and push
+
+## Update STROIKA\_-_VERSION file
+
+Change to next version, including the suffix 'x' on version name.
+
