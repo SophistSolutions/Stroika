@@ -10,7 +10,7 @@ The Frameworks depend on the Foundation; Foundation modules frequently depend on
 
 - Nearly all public interfaces and methods are well documented; implementations are clear and well commented.
 - An elaborate system of built-in assertions (including thread-safety assertions) helps document and enforce usage patterns (without performance cost in production builds).
-- Each release is tested with Valgrind, Google Sanitizers, and a variety of platforms and compilers, as well as a large body of regression tests (including most documentation examples) to help assure library correctness.
+- Each release is tested with Valgrind, Google Sanitizers, Github CodeQL, and a variety of platforms and compilers, as well as a large body of regression tests (including most documentation examples) to help assure library correctness.
 - [Sample applications](Samples/ReadMe.md) help show common use cases (like building a web server into your app to deliver web-service content and APIs).
 - [Quick start using pre-built Docker containers](/Documentation/Building%20Stroika.md#build-with-docker) (for Windows, and Linux).
 
