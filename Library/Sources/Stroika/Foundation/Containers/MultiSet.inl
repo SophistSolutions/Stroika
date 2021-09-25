@@ -251,13 +251,13 @@ namespace Stroika::Foundation::Containers {
         return true;
     }
     template <typename T, typename TRAITS>
-    Iterable<T> MultiSet<T, TRAITS>::_IRep::_Elements_Reference_Implementation (const _MultiSetRepSharedPtr& rep) const
+    Iterable<T> MultiSet<T, TRAITS>::_IRep::_Elements_Reference_Implementation (const _IRepSharedPtr& rep) const
     {
         Require (rep.get () == this); // allows reference counting but without using enable_shared_from_this (so cheap!)
         return _ElementsIterableHelper (rep);
     }
     template <typename T, typename TRAITS>
-    Iterable<T> MultiSet<T, TRAITS>::_IRep::_UniqueElements_Reference_Implementation (const _MultiSetRepSharedPtr& rep) const
+    Iterable<T> MultiSet<T, TRAITS>::_IRep::_UniqueElements_Reference_Implementation (const _IRepSharedPtr& rep) const
     {
         Require (rep.get () == this); // allows reference counting but without using enable_shared_from_this (so cheap!)
         return _UniqueElementsHelper (rep);
@@ -299,13 +299,13 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    inline MultiSet<T, TRAITS>::MultiSet (const _MultiSetRepSharedPtr& rep) noexcept
+    inline MultiSet<T, TRAITS>::MultiSet (const _IRepSharedPtr& rep) noexcept
         : inherited{(RequireNotNull (rep), rep)}
     {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    inline MultiSet<T, TRAITS>::MultiSet (_MultiSetRepSharedPtr&& rep) noexcept
+    inline MultiSet<T, TRAITS>::MultiSet (_IRepSharedPtr&& rep) noexcept
         : inherited{(RequireNotNull (rep), move (rep))}
     {
         _AssertRepValidType ();
@@ -390,9 +390,9 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadRepAccessor<_IRep> accessor{this};
 #if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        _MultiSetRepSharedPtr ss = dynamic_pointer_cast<typename _MultiSetRepSharedPtr::element_type> (const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ());
+        _IRepSharedPtr ss = dynamic_pointer_cast<typename _IRepSharedPtr::element_type> (const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ());
 #else
-        _MultiSetRepSharedPtr ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
+        _IRepSharedPtr        ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
 #endif
         AssertNotNull (ss.get ());
         return ss->Elements (ss);
@@ -402,9 +402,9 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadRepAccessor<_IRep> accessor{this};
 #if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        _MultiSetRepSharedPtr ss = dynamic_pointer_cast<typename _MultiSetRepSharedPtr::element_type> (const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ());
+        _IRepSharedPtr ss = dynamic_pointer_cast<typename _IRepSharedPtr::element_type> (const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ());
 #else
-        _MultiSetRepSharedPtr ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
+        _IRepSharedPtr        ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
 #endif
         AssertNotNull (ss.get ());
         return ss->UniqueElements (ss);

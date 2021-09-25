@@ -71,9 +71,9 @@ namespace Stroika::Foundation::Containers {
 
     protected:
 #if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
-        using _SortedMultiSetRepSharedPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
+        using _IRepSharedPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
 #else
-        using _SortedMultiSetRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 #endif
 
     public:
@@ -119,8 +119,8 @@ namespace Stroika::Foundation::Containers {
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit SortedMultiSet (const _SortedMultiSetRepSharedPtr& src) noexcept;
-        explicit SortedMultiSet (_SortedMultiSetRepSharedPtr&& src) noexcept;
+        explicit SortedMultiSet (const _IRepSharedPtr& src) noexcept;
+        explicit SortedMultiSet (_IRepSharedPtr&& src) noexcept;
 
     public:
         /**

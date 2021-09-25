@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Containers {
         class _IRep;
 
     protected:
-        using _SharedPtrIRep = typename inherited::template PtrImplementationTemplate<_IRep>;
+        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 
     public:
         /**
@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Containers {
         PriorityQueue (const PriorityQueue& src) = default;
 
     protected:
-        explicit PriorityQueue (const _SharedPtrIRep& rep);
+        explicit PriorityQueue (const _IRepSharedPtr& rep);
 
 #if qDebug
     public:
@@ -165,10 +165,10 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep ();
 
     protected:
-        using _SharedPtrIRep = typename PriorityQueue<T>::_SharedPtrIRep;
+        using _IRepSharedPtr = typename PriorityQueue<T>::_IRepSharedPtr;
 
     public:
-        virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+        virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
         virtual void           Enqueue (T item, Priority priority)                    = 0;
         virtual T              Dequeue ()                                             = 0;
         virtual T              Head () const                                          = 0;

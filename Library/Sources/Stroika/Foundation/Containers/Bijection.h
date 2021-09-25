@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Containers {
         class _IRep;
 
     protected:
-        using _BijectionRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 
     public:
         /**
@@ -191,8 +191,8 @@ namespace Stroika::Foundation::Containers {
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end);
 
     protected:
-        explicit Bijection (const _BijectionRepSharedPtr& src) noexcept;
-        explicit Bijection (_BijectionRepSharedPtr&& src) noexcept;
+        explicit Bijection (const _IRepSharedPtr& src) noexcept;
+        explicit Bijection (_IRepSharedPtr&& src) noexcept;
 
 #if qDebug
     public:
@@ -532,7 +532,7 @@ namespace Stroika::Foundation::Containers {
 #endif
 
     protected:
-        using _BijectionRepSharedPtr = typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_BijectionRepSharedPtr;
+        using _IRepSharedPtr = typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRepSharedPtr;
 
     protected:
         _IRep () = default;
@@ -541,7 +541,7 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     public:
-        virtual _BijectionRepSharedPtr          CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+        virtual _IRepSharedPtr                  CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
         virtual bool                            Equals (const _IRep& rhs) const                        = 0;
         virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const                       = 0;
         virtual RangeEqualsCompareFunctionType  GetRangeEqualsComparer () const                        = 0;

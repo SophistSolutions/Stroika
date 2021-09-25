@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
         using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
         using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
-        using _QueueRepSharedPtr    = typename Queue<T>::_QueueRepSharedPtr;
+        using _QueueRepSharedPtr    = typename Queue<T>::_IRepSharedPtr;
 
     public:
         Rep_ ()                 = default;

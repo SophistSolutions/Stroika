@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Containers {
         class _IRep;
 
     protected:
-        using _QueueRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 
     public:
         /**
@@ -137,8 +137,8 @@ namespace Stroika::Foundation::Containers {
         Queue (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit Queue (const _QueueRepSharedPtr& rep) noexcept;
-        explicit Queue (_QueueRepSharedPtr&& rep) noexcept;
+        explicit Queue (const _IRepSharedPtr& rep) noexcept;
+        explicit Queue (_IRepSharedPtr&& rep) noexcept;
 
 #if qDebug
     public:
@@ -290,15 +290,15 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     protected:
-        using _QueueRepSharedPtr = typename Queue<T>::_QueueRepSharedPtr;
+        using _IRepSharedPtr = typename Queue<T>::_IRepSharedPtr;
 
     public:
-        virtual _QueueRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-        virtual void               AddTail (ArgByValueType<T> item)                       = 0;
-        virtual T                  RemoveHead ()                                          = 0;
-        virtual optional<T>        RemoveHeadIf ()                                        = 0;
-        virtual T                  Head () const                                          = 0;
-        virtual optional<T>        HeadIf () const                                        = 0;
+        virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+        virtual void           AddTail (ArgByValueType<T> item)                       = 0;
+        virtual T              RemoveHead ()                                          = 0;
+        virtual optional<T>    RemoveHeadIf ()                                        = 0;
+        virtual T              Head () const                                          = 0;
+        virtual optional<T>    HeadIf () const                                        = 0;
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

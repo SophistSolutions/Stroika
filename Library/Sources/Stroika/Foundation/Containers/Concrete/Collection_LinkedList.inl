@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         using _IterableRepSharedPtr   = typename Iterable<T>::_IterableRepSharedPtr;
-        using _CollectionRepSharedPtr = typename inherited::_CollectionRepSharedPtr;
+        using _CollectionRepSharedPtr = typename inherited::_IRepSharedPtr;
         using _APPLY_ARGTYPE          = typename inherited::_APPLY_ARGTYPE;
         using _APPLYUNTIL_ARGTYPE     = typename inherited::_APPLYUNTIL_ARGTYPE;
 

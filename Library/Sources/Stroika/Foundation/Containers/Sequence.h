@@ -222,9 +222,9 @@ namespace Stroika::Foundation::Containers {
 
     protected:
 #if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
-        using _SequenceRepSharedPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
+        using _IRepSharedPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
 #else
-        using _SequenceRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 #endif
 
     public:
@@ -278,8 +278,8 @@ namespace Stroika::Foundation::Containers {
         Sequence (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit Sequence (const _SequenceRepSharedPtr& rep) noexcept;
-        explicit Sequence (_SequenceRepSharedPtr&& rep) noexcept;
+        explicit Sequence (const _IRepSharedPtr& rep) noexcept;
+        explicit Sequence (_IRepSharedPtr&& rep) noexcept;
 
 #if qDebug
     public:
@@ -653,10 +653,10 @@ namespace Stroika::Foundation::Containers {
         static constexpr size_t _kSentinalLastItemIndex = numeric_limits<size_t>::max ();
 
     protected:
-        using _SequenceRepSharedPtr = typename Sequence<T>::_SequenceRepSharedPtr;
+        using _IRepSharedPtr = typename Sequence<T>::_IRepSharedPtr;
 
     public:
-        virtual _SequenceRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+        virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
         // 'i' argument to GetAt MAYBE kBadSequenceIndex - indictating last element
         virtual T      GetAt (size_t i) const                                    = 0;
         virtual void   SetAt (size_t i, ArgByValueType<T> item)                  = 0;

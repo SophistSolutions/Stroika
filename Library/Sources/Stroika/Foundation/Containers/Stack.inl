@@ -32,14 +32,14 @@ namespace Stroika::Foundation::Containers {
         //                AddAll (s);
     }
     template <typename T>
-    inline Stack<T>::Stack (const _StackRepSharedPtr& src) noexcept
+    inline Stack<T>::Stack (const _IRepSharedPtr& src) noexcept
         : inherited (src)
     {
         RequireNotNull (src);
         _AssertRepValidType ();
     }
     template <typename T>
-    inline Stack<T>::Stack (_StackRepSharedPtr&& src) noexcept
+    inline Stack<T>::Stack (_IRepSharedPtr&& src) noexcept
         : inherited{(RequireNotNull (src), move (src))}
     {
         _AssertRepValidType ();

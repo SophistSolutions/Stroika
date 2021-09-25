@@ -26,13 +26,13 @@ namespace Stroika::Foundation::Containers {
         this->_AssertRepValidType ();
     }
     template <typename T, typename... INDEXES>
-    inline SparseDataHyperRectangle<T, INDEXES...>::SparseDataHyperRectangle (const _DataHyperRectangleRepSharedPtr& src) noexcept
+    inline SparseDataHyperRectangle<T, INDEXES...>::SparseDataHyperRectangle (const _IRepSharedPtr& src) noexcept
         : inherited{(RequireNotNull (src), src)}
     {
         this->_AssertRepValidType ();
     }
     template <typename T, typename... INDEXES>
-    inline SparseDataHyperRectangle<T, INDEXES...>::SparseDataHyperRectangle (_DataHyperRectangleRepSharedPtr&& src) noexcept
+    inline SparseDataHyperRectangle<T, INDEXES...>::SparseDataHyperRectangle (_IRepSharedPtr&& src) noexcept
         : inherited{(RequireNotNull (src), move (src))}
     {
         this->_AssertRepValidType ();

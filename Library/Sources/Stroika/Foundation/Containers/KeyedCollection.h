@@ -138,9 +138,9 @@ namespace Stroika::Foundation::Containers {
 
     protected:
 #if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
-        using _KeyedCollectionRepSharedPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
+        using _IRepSharedPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
 #else
-        using _KeyedCollectionRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 #endif
 
     public:
@@ -231,8 +231,8 @@ namespace Stroika::Foundation::Containers {
         KeyedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, KeyExtractorType keyExtractor = typename TraitsType::DefaultKeyExtractor, KeyEqualityComparerType keyComparer = typename TraitsType::DefaultKeyEqualsComparer);
 #endif
     protected:
-        explicit KeyedCollection (const _KeyedCollectionRepSharedPtr& rep) noexcept;
-        explicit KeyedCollection (_KeyedCollectionRepSharedPtr&& rep) noexcept;
+        explicit KeyedCollection (const _IRepSharedPtr& rep) noexcept;
+        explicit KeyedCollection (_IRepSharedPtr&& rep) noexcept;
 
 #if qDebug
     public:
@@ -462,13 +462,13 @@ namespace Stroika::Foundation::Containers {
 #endif
     {
     protected:
-        using _KeyedCollectionRepSharedPtr = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_KeyedCollectionRepSharedPtr;
+        using _IRepSharedPtr = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRepSharedPtr;
 
     public:
-        virtual KeyExtractorType             GetKeyExtractor () const                               = 0;
-        virtual KeyEqualityComparerType      GetKeyEqualityComparer () const                        = 0;
-        virtual _KeyedCollectionRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-        virtual Iterable<KEY_TYPE>           Keys () const                                          = 0;
+        virtual KeyExtractorType        GetKeyExtractor () const                               = 0;
+        virtual KeyEqualityComparerType GetKeyEqualityComparer () const                        = 0;
+        virtual _IRepSharedPtr          CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+        virtual Iterable<KEY_TYPE>      Keys () const                                          = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const = 0;

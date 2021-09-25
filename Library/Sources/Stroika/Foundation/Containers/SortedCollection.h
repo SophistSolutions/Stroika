@@ -82,9 +82,9 @@ namespace Stroika::Foundation::Containers {
 
     protected:
 #if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
-        using _SortedCollectionRepSharedPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
+        using _IRepSharedPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
 #else
-        using _SortedCollectionRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 #endif
 
     public:
@@ -130,8 +130,8 @@ namespace Stroika::Foundation::Containers {
         SortedCollection (INORDER_COMPARER&& inOrderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit SortedCollection (const _SortedCollectionRepSharedPtr& src) noexcept;
-        explicit SortedCollection (_SortedCollectionRepSharedPtr&& src) noexcept;
+        explicit SortedCollection (const _IRepSharedPtr& src) noexcept;
+        explicit SortedCollection (_IRepSharedPtr&& src) noexcept;
 
     public:
         /**

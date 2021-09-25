@@ -103,9 +103,9 @@ namespace Stroika::Foundation::Containers {
 
     protected:
 #if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
-        using _SetRepSharedPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
+        using _IRepSharedPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
 #else
-        using _SetRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 #endif
 
     public:
@@ -195,8 +195,8 @@ namespace Stroika::Foundation::Containers {
         Set (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit Set (const _SetRepSharedPtr& rep) noexcept;
-        explicit Set (_SetRepSharedPtr&& rep) noexcept;
+        explicit Set (const _IRepSharedPtr& rep) noexcept;
+        explicit Set (_IRepSharedPtr&& rep) noexcept;
 
 #if qDebug
     public:
@@ -489,11 +489,11 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     protected:
-        using _SetRepSharedPtr = typename Set<T>::_SetRepSharedPtr;
+        using _IRepSharedPtr = typename Set<T>::_IRepSharedPtr;
 
     public:
         virtual ElementEqualityComparerType GetElementEqualsComparer () const                      = 0;
-        virtual _SetRepSharedPtr            CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+        virtual _IRepSharedPtr              CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
         virtual bool                        Equals (const typename Iterable<T>::_IRep& rhs) const  = 0;
         virtual bool                        Contains (ArgByValueType<T> item) const                = 0;
         virtual optional<T>                 Lookup (ArgByValueType<T> item) const                  = 0;

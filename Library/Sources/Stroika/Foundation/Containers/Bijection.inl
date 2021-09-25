@@ -99,14 +99,14 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const _BijectionRepSharedPtr& src) noexcept
+    inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const _IRepSharedPtr& src) noexcept
         : inherited{src}
     {
         RequireNotNull (src);
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (_BijectionRepSharedPtr&& src) noexcept
+    inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (_IRepSharedPtr&& src) noexcept
         : inherited{(RequireNotNull (src), move (src))}
     {
         _AssertRepValidType ();
@@ -244,7 +244,7 @@ namespace Stroika::Foundation::Containers {
     {
         // @todo - fix very primitive implementation
         _SafeReadRepAccessor<_IRep> lhs{this};
-        //Bijection                   result = dynamic_pointer_cast<_BijectionRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty (this));
+        //Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty (this));
         Bijection result;
         for (auto&& i : *this) {
             if (includeIfTrue (i)) {
@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Containers {
     {
         // @todo - fix very primitive implementation
         _SafeReadRepAccessor<_IRep> lhs{this};
-        //Bijection                   result = dynamic_pointer_cast<_BijectionRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty (this));
+        //Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty (this));
         Bijection result;
         for (auto&& i : *this) {
             if (domainValues.Contains (i.first, this->GetDomainEqualsComparer ())) {
@@ -272,7 +272,7 @@ namespace Stroika::Foundation::Containers {
     {
         // @todo - fix very primitive implementation
         _SafeReadRepAccessor<_IRep> lhs{this};
-        //Bijection                   result = dynamic_pointer_cast<_BijectionRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty (this));
+        //Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty (this));
         Bijection result;
         for (auto&& i : *this) {
             if (rangeValues.Contains (i.second, this->GetRangeEqualsComparer ())) {

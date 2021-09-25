@@ -121,9 +121,9 @@ namespace Stroika::Foundation::Containers {
 
     protected:
 #if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
-        using _CollectionRepSharedPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
+        using _IRepSharedPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
 #else
-        using _CollectionRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 #endif
 
     public:
@@ -166,8 +166,8 @@ namespace Stroika::Foundation::Containers {
         Collection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit Collection (const _CollectionRepSharedPtr& src) noexcept;
-        explicit Collection (_CollectionRepSharedPtr&& src) noexcept;
+        explicit Collection (const _IRepSharedPtr& src) noexcept;
+        explicit Collection (_IRepSharedPtr&& src) noexcept;
 
 #if qDebug
     public:
@@ -340,13 +340,13 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     protected:
-        using _CollectionRepSharedPtr = typename Collection<T>::_CollectionRepSharedPtr;
+        using _IRepSharedPtr = typename Collection<T>::_IRepSharedPtr;
 
     public:
-        virtual _CollectionRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const    = 0;
-        virtual void                    Add (ArgByValueType<T> item)                              = 0;
-        virtual void                    Update (const Iterator<T>& i, ArgByValueType<T> newValue) = 0;
-        virtual void                    Remove (const Iterator<T>& i)                             = 0;
+        virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const    = 0;
+        virtual void           Add (ArgByValueType<T> item)                              = 0;
+        virtual void           Update (const Iterator<T>& i, ArgByValueType<T> newValue) = 0;
+        virtual void           Remove (const Iterator<T>& i)                             = 0;
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

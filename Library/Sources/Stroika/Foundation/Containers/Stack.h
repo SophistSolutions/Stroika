@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Containers {
         class _IRep;
 
     protected:
-        using _StackRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 
     public:
         /**
@@ -122,8 +122,8 @@ namespace Stroika::Foundation::Containers {
         Stack (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit Stack (const _StackRepSharedPtr& src) noexcept;
-        explicit Stack (_StackRepSharedPtr&& src) noexcept;
+        explicit Stack (const _IRepSharedPtr& src) noexcept;
+        explicit Stack (_IRepSharedPtr&& src) noexcept;
 
     public:
         /**
@@ -224,13 +224,13 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     protected:
-        using _StackRepSharedPtr = typename Stack<T>::_StackRepSharedPtr;
+        using _IRepSharedPtr = typename Stack<T>::_IRepSharedPtr;
 
     public:
-        virtual _StackRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-        virtual void               Push (ArgByValueType<T> item)                          = 0;
-        virtual T                  Pop ()                                                 = 0;
-        virtual T                  Top () const                                           = 0;
+        virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+        virtual void           Push (ArgByValueType<T> item)                          = 0;
+        virtual T              Pop ()                                                 = 0;
+        virtual T              Top () const                                           = 0;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

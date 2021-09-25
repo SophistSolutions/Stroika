@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Containers {
         class _IRep;
 
     protected:
-        using _MappingRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 
     public:
         /**
@@ -197,8 +197,8 @@ namespace Stroika::Foundation::Containers {
         Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit Mapping (const _MappingRepSharedPtr& rep) noexcept;
-        explicit Mapping (_MappingRepSharedPtr&& rep) noexcept;
+        explicit Mapping (const _IRepSharedPtr& rep) noexcept;
+        explicit Mapping (_IRepSharedPtr&& rep) noexcept;
 
 #if qDebug
     public:
@@ -590,11 +590,11 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     protected:
-        using _MappingRepSharedPtr = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_MappingRepSharedPtr;
+        using _IRepSharedPtr = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRepSharedPtr;
 
     public:
         virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const                          = 0;
-        virtual _MappingRepSharedPtr         CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+        virtual _IRepSharedPtr               CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
         virtual Iterable<key_type>           Keys () const                                          = 0;
         virtual Iterable<mapped_type>        MappedValues () const                                  = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());

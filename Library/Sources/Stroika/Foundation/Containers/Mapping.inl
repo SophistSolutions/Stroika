@@ -109,14 +109,14 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (const _MappingRepSharedPtr& rep) noexcept
+    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (const _IRepSharedPtr& rep) noexcept
         : inherited{rep}
     {
         RequireNotNull (rep);
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (_MappingRepSharedPtr&& rep) noexcept
+    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (_IRepSharedPtr&& rep) noexcept
         : inherited{(RequireNotNull (rep), move (rep))}
     {
         _AssertRepValidType ();

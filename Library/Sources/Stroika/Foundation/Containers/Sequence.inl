@@ -117,13 +117,13 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    inline Sequence<T>::Sequence (const _SequenceRepSharedPtr& rep) noexcept
+    inline Sequence<T>::Sequence (const _IRepSharedPtr& rep) noexcept
         : inherited{(RequireNotNull (rep), rep)}
     {
         _AssertRepValidType ();
     }
     template <typename T>
-    inline Sequence<T>::Sequence (_SequenceRepSharedPtr&& rep) noexcept
+    inline Sequence<T>::Sequence (_IRepSharedPtr&& rep) noexcept
         : inherited{(RequireNotNull (rep), move (rep))}
     {
         _AssertRepValidType ();

@@ -87,9 +87,9 @@ namespace Stroika::Foundation::Containers {
 
     protected:
 #if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
-        using _SharedIRepPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
+        using _IRepSharedPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
 #else
-        using _SharedIRepPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 #endif
 
     public:
@@ -155,8 +155,8 @@ namespace Stroika::Foundation::Containers {
         SortedKeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
 
     protected:
-        explicit SortedKeyedCollection (const _SharedIRepPtr& src);
-        explicit SortedKeyedCollection (_SharedIRepPtr&& src);
+        explicit SortedKeyedCollection (const _IRepSharedPtr& src);
+        explicit SortedKeyedCollection (_IRepSharedPtr&& src);
 
     public:
         /**

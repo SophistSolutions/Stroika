@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         using _IterableRepSharedPtr        = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IterableRepSharedPtr;
-        using _MappingRepSharedPtr         = typename inherited::_MappingRepSharedPtr;
+        using _MappingRepSharedPtr         = typename inherited::_IRepSharedPtr;
         using _APPLY_ARGTYPE               = typename inherited::_APPLY_ARGTYPE;
         using _APPLYUNTIL_ARGTYPE          = typename inherited::_APPLYUNTIL_ARGTYPE;
         using KeyEqualsCompareFunctionType = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::KeyEqualsCompareFunctionType;

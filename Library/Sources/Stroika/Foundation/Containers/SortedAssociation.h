@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Containers {
         class _IRep;
 
     protected:
-        using _SortedAssociationRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 
     public:
         /**
@@ -89,8 +89,8 @@ namespace Stroika::Foundation::Containers {
         SortedAssociation (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
     protected:
-        explicit SortedAssociation (const _SortedAssociationRepSharedPtr& src) noexcept;
-        explicit SortedAssociation (_SortedAssociationRepSharedPtr&& src) noexcept;
+        explicit SortedAssociation (const _IRepSharedPtr& src) noexcept;
+        explicit SortedAssociation (_IRepSharedPtr&& src) noexcept;
 
     public:
         /**

@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Containers {
         class _IRep;
 
     protected:
-        using _DequeRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 
     public:
         /**
@@ -105,8 +105,8 @@ namespace Stroika::Foundation::Containers {
     protected:
         /**
          */
-        explicit Deque (const _DequeRepSharedPtr& src) noexcept;
-        explicit Deque (_DequeRepSharedPtr&& src) noexcept;
+        explicit Deque (const _IRepSharedPtr& src) noexcept;
+        explicit Deque (_IRepSharedPtr&& src) noexcept;
 
     public:
         /**
