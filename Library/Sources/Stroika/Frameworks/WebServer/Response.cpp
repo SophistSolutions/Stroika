@@ -375,7 +375,7 @@ void Response::write (const byte* s, const byte* e)
         }
         if (InChunkedMode_ ()) {
             if (not fHeadMode_) {
-                string n = CString::Format ("%x\r\n", e - s);
+                string n = CString::Format ("%x\r\n", static_cast<unsigned int> (e - s));
                 fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (n)), reinterpret_cast<const byte*> (Containers::End (n)));
                 fUseOutStream_.Write (s, e);
                 const char kCRLF[] = "\r\n";

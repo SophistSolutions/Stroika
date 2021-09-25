@@ -130,7 +130,7 @@ void* SimpleSizeCountingGeneralPurposeAllocator::Allocate (size_t size)
     MemWithExtraStuff* p             = reinterpret_cast<MemWithExtraStuff*> (fBaseAllocator_.Allocate (effectiveSize));
     p->fPreGuard                     = kPreGUARD;
     p->fBlockSize                    = size;
-    memcpy (reinterpret_cast<byte*> (p) + size + sizeof (MemWithExtraStuff), &kPost_GUARD, sizeof (kPost_GUARD));
+    (void)::memcpy (reinterpret_cast<byte*> (p) + size + sizeof (MemWithExtraStuff), &kPost_GUARD, sizeof (kPost_GUARD));
     fNetAllocationCount_++;
     fNetAllocatedByteCount_ += static_cast<int32_t> (size);
     return (reinterpret_cast<byte*> (p) + sizeof (MemWithExtraStuff));
