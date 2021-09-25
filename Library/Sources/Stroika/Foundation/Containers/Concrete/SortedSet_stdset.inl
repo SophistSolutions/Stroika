@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         using _IterableRepSharedPtr       = typename Iterable<T>::_IterableRepSharedPtr;
-        using _SetSharedPtrIRep           = typename Set<T>::_SetRepSharedPtr;
+        using _SetSharedPtrIRep           = typename Set<T>::_IRepSharedPtr;
         using _APPLY_ARGTYPE              = typename inherited::_APPLY_ARGTYPE;
         using _APPLYUNTIL_ARGTYPE         = typename inherited::_APPLYUNTIL_ARGTYPE;
         using ElementEqualityComparerType = typename Set<T>::ElementEqualityComparerType;

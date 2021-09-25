@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         using _IterableRepSharedPtr           = typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IterableRepSharedPtr;
-        using _BijectionRepSharedPtr          = typename inherited::_BijectionRepSharedPtr;
+        using _BijectionRepSharedPtr          = typename inherited::_IRepSharedPtr;
         using _APPLY_ARGTYPE                  = typename inherited::_APPLY_ARGTYPE;
         using _APPLYUNTIL_ARGTYPE             = typename inherited::_APPLYUNTIL_ARGTYPE;
         using DomainEqualsCompareFunctionType = typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::DomainEqualsCompareFunctionType;

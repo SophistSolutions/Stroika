@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         using _IterableRepSharedPtr       = typename Iterable<CountedValue<T>>::_IterableRepSharedPtr;
-        using _MultiSetRepSharedPtr       = typename inherited::_MultiSetRepSharedPtr;
+        using _MultiSetRepSharedPtr       = typename inherited::_IRepSharedPtr;
         using _APPLY_ARGTYPE              = typename inherited::_APPLY_ARGTYPE;
         using _APPLYUNTIL_ARGTYPE         = typename inherited::_APPLYUNTIL_ARGTYPE;
         using CounterType                 = typename inherited::CounterType;
@@ -189,11 +189,11 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return i->second;
         }
-        virtual Iterable<T> Elements (const typename MultiSet<T, TRAITS>::_MultiSetRepSharedPtr& rep) const override
+        virtual Iterable<T> Elements (const _MultiSetRepSharedPtr& rep) const override
         {
             return this->_Elements_Reference_Implementation (rep);
         }
-        virtual Iterable<T> UniqueElements (const typename MultiSet<T, TRAITS>::_MultiSetRepSharedPtr& rep) const override
+        virtual Iterable<T> UniqueElements (const _MultiSetRepSharedPtr& rep) const override
         {
             return this->_UniqueElements_Reference_Implementation (rep);
         }

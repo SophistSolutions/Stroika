@@ -217,11 +217,11 @@ namespace Stroika::Foundation::Containers::Concrete {
             Assert (index < fData_.GetLength ());
             return fData_[index].fCount;
         }
-        virtual Iterable<T> Elements (const typename MultiSet<T, TRAITS>::_MultiSetRepSharedPtr& rep) const override
+        virtual Iterable<T> Elements (const typename MultiSet<T, TRAITS>::_IRepSharedPtr& rep) const override
         {
             return this->_Elements_Reference_Implementation (rep);
         }
-        virtual Iterable<T> UniqueElements (const typename MultiSet<T, TRAITS>::_MultiSetRepSharedPtr& rep) const override
+        virtual Iterable<T> UniqueElements (const typename MultiSet<T, TRAITS>::_IRepSharedPtr& rep) const override
         {
             return this->_UniqueElements_Reference_Implementation (rep);
         }
