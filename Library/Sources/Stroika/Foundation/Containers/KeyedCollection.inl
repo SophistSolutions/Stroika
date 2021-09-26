@@ -28,14 +28,20 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
+    template <typename KEY_EXTRACTOR,
+              typename KEY_EQUALS_COMPARER,
+              enable_if_t<
+                  Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer)
-        : inherited (Factory::KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>{keyExtractor, keyComparer}())
+        : inherited (Factory::KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>{forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_EQUALS_COMPARER> (keyComparer)}())
     {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename CONTAINER_OF_ADDABLE, typename KE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Configuration::is_callable_v<KE>>*>
+    template <typename CONTAINER_OF_ADDABLE,
+              typename DEFAULT_KEY_EXTRACTOR,
+              enable_if_t<
+                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, DEFAULT_KEY_EXTRACTOR> ()>*>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (CONTAINER_OF_ADDABLE&& src)
         : KeyedCollection{TRAITS::kDefaultKeyExtractor, typename TRAITS::DefaultKeyEqualsComparer{}}
     {

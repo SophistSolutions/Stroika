@@ -22,10 +22,10 @@ namespace Stroika::Foundation::Containers::Factory {
      */
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
-    atomic<KeyedCollection<T, KEY_TYPE, TRAITS> (*) (KEY_EXTRACTOR keyExtractor, KEY_EQUALS_COMPARER keyComparer)> KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::sFactory_ (nullptr);
+    atomic<KeyedCollection<T, KEY_TYPE, TRAITS> (*) (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer)> KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::sFactory_ (nullptr);
 #endif
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
-    inline KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::KeyedCollection_Factory (KEY_EXTRACTOR keyExtractor, KEY_EQUALS_COMPARER keyComparer)
+    inline KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::KeyedCollection_Factory (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer)
         : fKeyExtractorType_{keyExtractor}
         , fKeyEqualsComparer_{keyComparer}
     {
@@ -48,12 +48,12 @@ namespace Stroika::Foundation::Containers::Factory {
         }
     }
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
-    void KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::Register (KeyedCollection<T, KEY_TYPE, TRAITS> (*factory) (KEY_EXTRACTOR keyExtractor, KEY_EQUALS_COMPARER keyComparer))
+    void KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::Register (KeyedCollection<T, KEY_TYPE, TRAITS> (*factory) (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer))
     {
         sFactory_ = factory;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
-    inline KeyedCollection<T, KEY_TYPE, TRAITS> KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::Default_ (KEY_EXTRACTOR keyExtractor, KEY_EQUALS_COMPARER keyComparer)
+    inline KeyedCollection<T, KEY_TYPE, TRAITS> KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::Default_ (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer)
     {
         /*
          *  Note - though this is not an efficient implementation of KeyedCollection<> for large sizes, its probably the most

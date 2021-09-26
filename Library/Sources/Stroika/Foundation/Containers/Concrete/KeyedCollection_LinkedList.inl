@@ -31,8 +31,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     class KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::Rep_ : public IImplRep_, public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EXTRACTOR, KEY_EQUALS_COMPARER>> {
     private:
         using inherited = IImplRep_;
-        KEY_EXTRACTOR       fKeyExtractor_;
-        KEY_EQUALS_COMPARER fKeyComparer_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] KEY_EXTRACTOR       fKeyExtractor_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] KEY_EQUALS_COMPARER fKeyComparer_;
 
     public:
         using _IterableRepSharedPtr        = typename Iterable<T>::_IterableRepSharedPtr;
@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using _APPLYUNTIL_ARGTYPE          = typename inherited::_APPLYUNTIL_ARGTYPE;
 
     public:
-        Rep_ (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer)
+        Rep_ (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer)
             : fKeyExtractor_{keyExtractor}
             , fKeyComparer_{keyComparer}
         {
@@ -196,7 +196,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
     inline KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::KeyedCollection_LinkedList (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer)
-        : inherited (inherited::template MakeSmartPtr<Rep_<KEY_EXTRACTOR, KEY_EQUALS_COMPARER>> (keyExtractor, keyComparer))
+        : inherited (inherited::template MakeSmartPtr<Rep_<KEY_EXTRACTOR, KEY_EQUALS_COMPARER>> (forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_EQUALS_COMPARER> (keyComparer)))
     {
         AssertRepValidType_ ();
     }
