@@ -28,7 +28,7 @@ namespace CommonTests {
             struct T1_Key_Extractor {
                 int operator() (const T1& t) const { return t.key; };
             };
-            using T1_Traits = KeyedCollection_DefaultTraits<T1, int, equal_to<int>, T1_Key_Extractor>;
+            using T1_Traits = KeyedCollection_DefaultTraits<T1, int, T1_Key_Extractor>;
             template <typename CONTAINER, typename TEST_FUNCTION>
             void RunTest (CONTAINER coll, TEST_FUNCTION testFunction)
             {

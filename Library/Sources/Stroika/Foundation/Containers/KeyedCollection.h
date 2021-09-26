@@ -30,8 +30,9 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterable;
     using Traversal::Iterator;
 
-
-    // @todo SB concept
+    /**
+     *  @todo SB concept
+     */
     template <typename T, typename KEY_TYPE, typename POTENTIAL_KEY_EXTRACTOR>
     constexpr bool KeyedCollection_IsKeyExctractor ()
     {
@@ -45,57 +46,12 @@ namespace Stroika::Foundation::Containers {
      *  \note its OK if DEFAULT_KEY_EXTRACTOR is invalid, it just means you must specify the default-key-extractor in the 
      *        constructor for KeyedCollection<>
      */
-    template <typename T, typename KEY_TYPE, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>, typename DEFAULT_KEY_EXTRACTOR = void>
+    template <typename T, typename KEY_TYPE, typename DEFAULT_KEY_EXTRACTOR = void>
     struct KeyedCollection_DefaultTraits {
-        /**
-         */
-        using KeyType = KEY_TYPE;
-
-        /**
-         */
-        using value_type = T;
-
-        /**
-         */
-        using KeyExtractorType = function<KEY_TYPE (ArgByValueType<T>)>;
-
-        /**
-         *  This is the type returned by GetElementEqualsComparer () and CAN be used as the argument to a KeyedCollection<> as EqualityComparer, but
-         *  we allow any template in the KeyedCollection<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept.
-         *
-         *  \note   @see also EqualsComparer{} to compare whole KeyedCollection<>s
-         */
-        using KeyEqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (ArgByValueType<KEY_TYPE>, ArgByValueType<KEY_TYPE>)>>;
-
         /**
          *  Default extractor if not specified in constructor (e.g. default-constructor KeyedCollection())
          */
         using DefaultKeyExtractor = DEFAULT_KEY_EXTRACTOR;
-        static inline KeyExtractorType mk_ ()
-        {
-            if constexpr (is_same_v<DEFAULT_KEY_EXTRACTOR, void>) {
-                return nullptr;
-            }
-            else {
-                return DEFAULT_KEY_EXTRACTOR{};
-            }
-        }
-
-        /**
-         *  Default extractor if not specified in constructor (e.g. default-constructor KeyedCollection())
-         */
-        static const inline KeyExtractorType kDefaultKeyExtractor{mk_ ()};
-
-        /**
-         *  Default comparer if not specified in constructor (e.g. default-constructor KeyedCollection())
-         */
-        using DefaultKeyEqualsComparer = DEFAULT_KEY_EQUALS_COMPARER;
-
-        /**
-         *  Define typedef for this KeyedCollection traits object (so other traits can generically allow recovery of the
-         *  underlying KeyedCollection's TRAITS objects.
-         */
-        using KeyedCollectionTraitsType = KeyedCollection_DefaultTraits<T, KEY_TYPE, DEFAULT_KEY_EQUALS_COMPARER>;
     };
 
     /**
@@ -224,10 +180,10 @@ namespace Stroika::Foundation::Containers {
          * 
          *        And also careful not to apply to non-iterables.
          */
-        template <typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::is_callable_v<KE>>* = nullptr>
-        KeyedCollection (KeyEqualityComparerType keyComparer = typename TraitsType::DefaultKeyEqualsComparer{});
-        template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER = typename TRAITS::DefaultKeyEqualsComparer, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
-        KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER keyComparer = KEY_EQUALS_COMPARER{});
+        template <typename KEY_EQUALS_COMPARER, typename DEFAULT_KEY_EXTRACTOR = typename TraitsType::DefaultKeyExtractor, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, DEFAULT_KEY_EXTRACTOR> ()>* = nullptr>
+        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer = equal_to<KEY_TYPE>{});
+        template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+        KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
         KeyedCollection (const KeyedCollection& src) noexcept = default;
         template <typename CONTAINER_OF_ADDABLE, typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Configuration::is_callable_v<KE>>* = nullptr>
         KeyedCollection (CONTAINER_OF_ADDABLE&& src);
@@ -238,9 +194,9 @@ namespace Stroika::Foundation::Containers {
 
 #if 0
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T,KEY_TYPE,TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        explicit KeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyExtractorType keyExtractor = typename TraitsType::DefaultKeyExtractor, KeyEqualityComparerType keyComparer = typename TraitsType::DefaultKeyEqualsComparer);
+        explicit KeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyExtractorType keyExtractor = typename TraitsType::DefaultKeyExtractor, KeyEqualityComparerType keyComparer = equal_to<KEY_TYPE>{});
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>* = nullptr>
-        KeyedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, KeyExtractorType keyExtractor = typename TraitsType::DefaultKeyExtractor, KeyEqualityComparerType keyComparer = typename TraitsType::DefaultKeyEqualsComparer);
+        KeyedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, KeyExtractorType keyExtractor = typename TraitsType::DefaultKeyExtractor, KeyEqualityComparerType keyComparer = equal_to<KEY_TYPE>);
 #endif
     protected:
         explicit KeyedCollection (const _IRepSharedPtr& rep) noexcept;
