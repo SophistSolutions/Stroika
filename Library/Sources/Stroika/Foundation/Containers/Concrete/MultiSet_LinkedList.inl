@@ -215,11 +215,11 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return 0;
         }
-        virtual Iterable<T> Elements (const  _MultiSetRepSharedPtr& rep) const override
+        virtual Iterable<T> Elements (const _MultiSetRepSharedPtr& rep) const override
         {
             return this->_Elements_Reference_Implementation (rep);
         }
-        virtual Iterable<T> UniqueElements (const  _MultiSetRepSharedPtr& rep) const override
+        virtual Iterable<T> UniqueElements (const _MultiSetRepSharedPtr& rep) const override
         {
             return this->_UniqueElements_Reference_Implementation (rep);
         }
