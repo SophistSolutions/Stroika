@@ -64,6 +64,7 @@ namespace Stroika::Foundation::Containers::Factory {
     private:
         static SortedCollection<T> Default_ (const INORDER_COMPARER& inorderComparer);
     };
+
 }
 
 /*

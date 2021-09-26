@@ -19,40 +19,13 @@
  *
  *
  *  TODO:
+ *      @todo REDO AT LEAST the key extractor and probably also comparer arguments to CTORs to use templates
+ *            so they can be forwarded to the underlying type through the factory and ultimately avoid
+ *            std::function<> objects (as we do for other types like the regular Collection/SortedCollection<> classes
  *
  */
 
 namespace Stroika::Foundation::Containers {
-
-    /**
-     *  Traits to define the well-ordering of elements of the SortedKeyedCollection.
-     *
-     *  Note - that a well-ordering also imputes a notion of equality (not (a<b or b < a)), so we define
-     *  that as well.
-     *
-     */
-    template <typename T, typename KEY_TYPE, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>, typename DEFAULT_KEY_IN_ORDER_COMPARER = less<KEY_TYPE>, typename DEFAULT_KEY_EXTRACTOR = void>
-    struct SortedKeyedCollection_DefaultTraits : KeyedCollection_DefaultTraits<T, KEY_TYPE, DEFAULT_KEY_EQUALS_COMPARER, DEFAULT_KEY_EXTRACTOR> {
-        /**
-         */
-        using KeyedCollectionTraits = KeyedCollection_DefaultTraits<T, KEY_TYPE, DEFAULT_KEY_EQUALS_COMPARER, DEFAULT_KEY_EXTRACTOR>;
-
-        /**
-        * #if 0
-        * /// WRONG UPDATE
-         *  This is the type returned by GetElementEqualsComparer () and CAN be used as the argument to a KeyedCollection<> as EqualityComparer, but
-         *  we allow any template in the KeyedCollection<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept.
-         *
-         *  \note   @see also EqualsComparer{} to compare whole KeyedCollection<>s
-         * #endif
-         */
-        using KeyInOrderKeyComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<KEY_TYPE>, ArgByValueType<KEY_TYPE>)>>;
-
-        /**
-         *  Default comparer if not specified in constructor (e.g. default-constructor SortedKeyedCollection())
-         */
-        static const inline KeyInOrderKeyComparerType kDefaultKeyInOrderComparer{DEFAULT_KEY_IN_ORDER_COMPARER{}};
-    };
 
     /**
      *  \brief  A SortedKeyedCollection is a KeyedCollection<T> which remains sorted (iteration produces items sorted) even as you add and remove entries.
@@ -77,10 +50,10 @@ namespace Stroika::Foundation::Containers {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Automatically-LEGACY_Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
      *
      */
-    template <typename T, typename KEY_TYPE, typename TRAITS = SortedKeyedCollection_DefaultTraits<KEY_TYPE, T>>
+    template <typename T, typename KEY_TYPE, typename TRAITS = KeyedCollection_DefaultTraits<T, KEY_TYPE>>
     class SortedKeyedCollection : public KeyedCollection<T, KEY_TYPE, TRAITS> {
     private:
-        using inherited = KeyedCollection<KEY_TYPE, T>;
+        using inherited = KeyedCollection<T, KEY_TYPE, TRAITS>;
 
     protected:
         class _IRep;
@@ -110,7 +83,7 @@ namespace Stroika::Foundation::Containers {
          *  Just a short-hand for the KeyInOrderKeyComparerType specified through traits. This is often handy to use in
          *  building other templates.
          */
-        using KeyInOrderKeyComparerType = typename TraitsType::KeyInOrderKeyComparerType;
+        using KeyInOrderKeyComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (ArgByValueType<KEY_TYPE>, ArgByValueType<KEY_TYPE>)>>;
 
     public:
         using KeyEqualityComparerType = typename inherited::KeyEqualityComparerType;
@@ -145,23 +118,44 @@ namespace Stroika::Foundation::Containers {
          * 
          *        And also careful not to apply to non-iterables.
          */
+
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
+        SortedKeyedCollection (INORDER_COMPARER&& inOrderComparer);
+
+        SortedKeyedCollection (const SortedKeyedCollection& src) noexcept = default;
+
+#if 0
         template <typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::is_callable_v<KE>>* = nullptr>
         SortedKeyedCollection (KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
         SortedKeyedCollection (KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
-        SortedKeyedCollection (const SortedKeyedCollection& src) noexcept = default;
         template <typename CONTAINER_OF_ADDABLE, typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Configuration::is_callable_v<KE>>* = nullptr>
-        SortedKeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
+        SortedKeyedCollection (CONTAINER_OF_ADDABLE&& src);
+        template <typename CONTAINER_OF_ADDABLE, typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Configuration::is_callable_v<KE>>* = nullptr>
+        SortedKeyedCollection (KeyEqualityComparerType keyComparer, CONTAINER_OF_ADDABLE&& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        SortedKeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
+        SortedKeyedCollection (KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer, CONTAINER_OF_ADDABLE&& src);
+#endif
 
     protected:
-        explicit SortedKeyedCollection (const _IRepSharedPtr& src);
-        explicit SortedKeyedCollection (_IRepSharedPtr&& src);
+        explicit SortedKeyedCollection (const _IRepSharedPtr& src) noexcept;
+        explicit SortedKeyedCollection (_IRepSharedPtr&& src) noexcept;
 
     public:
         /**
          */
         nonvirtual SortedKeyedCollection& operator= (const SortedKeyedCollection& rhs) = default;
+
+    protected:
+        /**
+         */
+        template <typename T2>
+        using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
+
+    protected:
+        /**
+         */
+        template <typename T2>
+        using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
     protected:
         nonvirtual void _AssertRepValidType () const;

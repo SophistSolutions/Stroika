@@ -21,6 +21,9 @@ using namespace Stroika::Foundation::Containers;
 namespace {
     void DoRegressionTests_ ()
     {
+        using T1        = CommonTests::KeyedCollectionTests::Test1_Basics_::T1;
+        using T1_Traits = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Traits;
+        KeyedCollection<T1, int>{[] (T1 e) { return e.key; }};
     }
 }
 
