@@ -41,11 +41,9 @@ namespace {
                 [] (auto) {});
 
             static_assert (KeyedCollection_IsKeyExctractor<T1, int, T1_Traits::DefaultKeyExtractor> ());
-#if 0
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
                 [] () { return KeyedCollection<T1, int, T1_Traits>{}; },
                 [] (auto) {});
-#endif
         }
     }
 }

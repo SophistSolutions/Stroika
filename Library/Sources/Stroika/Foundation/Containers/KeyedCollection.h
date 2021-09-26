@@ -180,9 +180,15 @@ namespace Stroika::Foundation::Containers {
          * 
          *        And also careful not to apply to non-iterables.
          */
-        template <typename KEY_EQUALS_COMPARER, typename DEFAULT_KEY_EXTRACTOR = typename TraitsType::DefaultKeyExtractor, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, DEFAULT_KEY_EXTRACTOR> ()>* = nullptr>
-        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer = equal_to<KEY_TYPE>{});
-        template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+        template <typename KEY_EQUALS_COMPARER   = equal_to<KEY_TYPE>,
+                  typename DEFAULT_KEY_EXTRACTOR = typename TraitsType::DefaultKeyExtractor,
+                  enable_if_t<
+                      Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, DEFAULT_KEY_EXTRACTOR> ()>* = nullptr>
+        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
+        template <typename KEY_EXTRACTOR,
+                  typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
+                  enable_if_t<
+                      Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
         KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
         KeyedCollection (const KeyedCollection& src) noexcept = default;
         template <typename CONTAINER_OF_ADDABLE, typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Configuration::is_callable_v<KE>>* = nullptr>
