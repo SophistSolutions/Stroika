@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Containers::Factory {
 #endif
     template <typename T, typename INORDER_COMPARER>
     inline SortedCollection_Factory<T, INORDER_COMPARER>::SortedCollection_Factory (const INORDER_COMPARER& inorderComparer)
-        : fInorderComparer_ (inorderComparer)
+        : fInorderComparer_{inorderComparer}
     {
     }
     template <typename T, typename INORDER_COMPARER>
@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename INORDER_COMPARER>
     inline SortedCollection<T> SortedCollection_Factory<T, INORDER_COMPARER>::Default_ (const INORDER_COMPARER& inorderComparer)
     {
-        return Concrete::SortedCollection_LinkedList<T> (inorderComparer);
+        return Concrete::SortedCollection_LinkedList<T>{inorderComparer};
     }
 
 }

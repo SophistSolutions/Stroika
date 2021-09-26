@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers::Factory {
         static void Register (SortedMultiSet<T, TRAITS> (*factory) (const INORDER_COMPARER&) = nullptr);
 
     private:
-        const INORDER_COMPARER fInOrderComparer_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] const INORDER_COMPARER fInOrderComparer_;
 
     private:
         static SortedMultiSet<T, TRAITS> Default_ (const INORDER_COMPARER&);
