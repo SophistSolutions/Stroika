@@ -20,10 +20,8 @@
  */
 
 namespace Stroika::Foundation::Containers {
-
     template <typename T>
     class Collection;
-
 }
 
 namespace Stroika::Foundation::Containers::Factory {

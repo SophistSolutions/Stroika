@@ -31,8 +31,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     class KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::Rep_ : public IImplRep_, public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EXTRACTOR, KEY_EQUALS_COMPARER>> {
     private:
         using inherited = IImplRep_;
-        [[NO_UNIQUE_ADDRESS_ATTR]] KEY_EXTRACTOR       fKeyExtractor_;
-        [[NO_UNIQUE_ADDRESS_ATTR]] KEY_EQUALS_COMPARER fKeyComparer_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_EXTRACTOR       fKeyExtractor_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_EQUALS_COMPARER fKeyComparer_;
 
     public:
         using _IterableRepSharedPtr        = typename Iterable<T>::_IterableRepSharedPtr;

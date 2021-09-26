@@ -39,8 +39,6 @@ namespace {
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
                 [] () { return KeyedCollection<T1, int, T1_Traits>{[] (T1 e) { return e.key; }}; },
                 [] (auto) {});
-
-            static_assert (KeyedCollection_IsKeyExctractor<T1, int, T1_Traits::DefaultKeyExtractor> ());
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
                 [] () { return KeyedCollection<T1, int, T1_Traits>{}; },
                 [] (auto) {});

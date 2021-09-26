@@ -16,10 +16,10 @@
  */
 
 namespace Stroika::Foundation::Containers {
-
     template <typename T>
     class SortedCollection;
 }
+
 namespace Stroika::Foundation::Containers::Factory {
 
     /**

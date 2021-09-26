@@ -18,7 +18,6 @@
  */
 
 namespace Stroika::Foundation::Containers {
-
     template <typename KEY_TYPE, typename VALUE_TYPE>
     class SortedMapping;
 }
@@ -53,7 +52,7 @@ namespace Stroika::Foundation::Containers::Factory {
         static void Register (SortedMapping<KEY_TYPE, VALUE_TYPE> (*factory) (const KEY_INORDER_COMPARER&) = nullptr);
 
     private:
-        [[NO_UNIQUE_ADDRESS_ATTR]] KEY_INORDER_COMPARER fInOrderComparer_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_INORDER_COMPARER fInOrderComparer_;
 
     private:
         static SortedMapping<KEY_TYPE, VALUE_TYPE> Default_ (const KEY_INORDER_COMPARER&);

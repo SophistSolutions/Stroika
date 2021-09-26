@@ -15,7 +15,6 @@
  */
 
 namespace Stroika::Foundation::Containers {
-
     template <typename T, typename... INDEXES>
     class DenseDataHyperRectangle;
 }

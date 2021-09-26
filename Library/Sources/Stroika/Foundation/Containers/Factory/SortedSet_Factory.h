@@ -14,7 +14,6 @@
  */
 
 namespace Stroika::Foundation::Containers {
-
     template <typename T>
     class SortedSet;
 }

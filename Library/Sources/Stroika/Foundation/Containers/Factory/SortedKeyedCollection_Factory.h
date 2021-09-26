@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Containers::Factory {
         static void Register (SortedKeyedCollection<T, KEY_TYPE, TRAITS> (*factory) (const KEY_INORDER_COMPARER&) = nullptr);
 
     private:
-        KEY_INORDER_COMPARER fInOrderComparer_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] KEY_INORDER_COMPARER fInOrderComparer_;
 
     private:
         static SortedKeyedCollection<T, KEY_TYPE, TRAITS> Default_ (const KEY_INORDER_COMPARER&);

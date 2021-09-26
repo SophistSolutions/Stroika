@@ -15,7 +15,6 @@
  */
 
 namespace Stroika::Foundation::Containers {
-
     template <typename T, typename... INDEXES>
     class SparseDataHyperRectangle;
 }
@@ -54,6 +53,7 @@ namespace Stroika::Foundation::Containers::Factory {
     private:
         static SparseDataHyperRectangle<T, INDEXES...> Default_ (Configuration::ArgByValueType<T> defaultItem);
     };
+
 }
 
 /*

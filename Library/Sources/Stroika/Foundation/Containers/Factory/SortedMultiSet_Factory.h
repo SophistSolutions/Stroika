@@ -18,7 +18,6 @@
  */
 
 namespace Stroika::Foundation::Containers {
-
     template <typename T, typename TRAITS>
     class SortedMultiSet;
 }

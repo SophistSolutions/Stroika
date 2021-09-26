@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers::Factory {
         static void Register (MultiSet<T, TRAITS> (*factory) (const EQUALS_COMPARER&) = nullptr);
 
     private:
-        const EQUALS_COMPARER fEqualsComparer_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] const EQUALS_COMPARER fEqualsComparer_;
 
     private:
         static MultiSet<T, TRAITS> Default_ (const EQUALS_COMPARER&);

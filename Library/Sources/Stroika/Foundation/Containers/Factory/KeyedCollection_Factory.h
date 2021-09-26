@@ -16,10 +16,8 @@
  */
 
 namespace Stroika::Foundation::Containers {
-
     template <typename T, typename KEY_TYPE, typename TRAITS>
     class KeyedCollection;
-
 }
 
 namespace Stroika::Foundation::Containers::Factory {
@@ -57,8 +55,8 @@ namespace Stroika::Foundation::Containers::Factory {
         static void Register (KeyedCollection<T, KEY_TYPE, TRAITS> (*factory) (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer) = nullptr);
 
     private:
-        [[NO_UNIQUE_ADDRESS_ATTR]] KEY_EXTRACTOR       fKeyExtractorType_;
-        [[NO_UNIQUE_ADDRESS_ATTR]] KEY_EQUALS_COMPARER fKeyEqualsComparer_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_EXTRACTOR       fKeyExtractorType_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_EQUALS_COMPARER fKeyEqualsComparer_;
 
     private:
         static KeyedCollection<T, KEY_TYPE, TRAITS> Default_ (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer);

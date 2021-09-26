@@ -22,10 +22,10 @@
  */
 
 namespace Stroika::Foundation::Containers {
-
     template <typename T>
     class Set;
 }
+
 namespace Stroika::Foundation::Containers::Factory {
 
     /**
@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Containers::Factory {
         static void Register (Set<T> (*factory) (const EQUALS_COMPARER&) = nullptr);
 
     private:
-        const EQUALS_COMPARER fEqualsComparer_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] const EQUALS_COMPARER fEqualsComparer_;
 
     private:
         static Set<T> Default_ (const EQUALS_COMPARER& equalsComparer);

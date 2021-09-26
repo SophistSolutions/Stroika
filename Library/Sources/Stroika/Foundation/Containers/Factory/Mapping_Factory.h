@@ -22,10 +22,8 @@
  */
 
 namespace Stroika::Foundation::Containers {
-
     template <typename KEY_TYPE, typename VALUE_TYPE>
     class Mapping;
-
 }
 
 namespace Stroika::Foundation::Containers::Factory {
@@ -69,7 +67,7 @@ namespace Stroika::Foundation::Containers::Factory {
         static void Register (Mapping<KEY_TYPE, VALUE_TYPE> (*factory) (const KEY_EQUALS_COMPARER&) = nullptr);
 
     private:
-        [[NO_UNIQUE_ADDRESS_ATTR]] KEY_EQUALS_COMPARER fKeyEqualsComparer_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_EQUALS_COMPARER fKeyEqualsComparer_;
 
     private:
         static Mapping<KEY_TYPE, VALUE_TYPE> Default_ (const KEY_EQUALS_COMPARER&);

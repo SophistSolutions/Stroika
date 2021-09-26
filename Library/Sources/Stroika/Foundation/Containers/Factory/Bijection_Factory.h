@@ -22,7 +22,6 @@
  */
 
 namespace Stroika::Foundation::Containers {
-
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     class Bijection;
 }
