@@ -21,17 +21,17 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
-    atomic<KeyedCollection<T, KEY_TYPE, TRAITS> (*) (KeyExtractorType keyExtractor, KEY_EQUALS_COMPARER keyComparer)> KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::sFactory_ (nullptr);
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
+    atomic<KeyedCollection<T, KEY_TYPE, TRAITS> (*) (KEY_EXTRACTOR keyExtractor, KEY_EQUALS_COMPARER keyComparer)> KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::sFactory_ (nullptr);
 #endif
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
-    inline KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::KeyedCollection_Factory (KeyExtractorType keyExtractor, KEY_EQUALS_COMPARER keyComparer)
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
+    inline KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::KeyedCollection_Factory (KEY_EXTRACTOR keyExtractor, KEY_EQUALS_COMPARER keyComparer)
         : fKeyExtractorType_{keyExtractor}
         , fKeyEqualsComparer_{keyComparer}
     {
     }
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
-    inline KeyedCollection<T, KEY_TYPE, TRAITS> KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::operator() () const
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
+    inline KeyedCollection<T, KEY_TYPE, TRAITS> KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::operator() () const
     {
         /*
          *  Would have been more performant to just and assure always properly set, but to initialize
@@ -47,13 +47,13 @@ namespace Stroika::Foundation::Containers::Factory {
             return Default_ (fKeyExtractorType_, fKeyEqualsComparer_);
         }
     }
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
-    void KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::Register (KeyedCollection<T, KEY_TYPE, TRAITS> (*factory) (KeyExtractorType keyExtractor, KEY_EQUALS_COMPARER keyComparer))
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
+    void KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::Register (KeyedCollection<T, KEY_TYPE, TRAITS> (*factory) (KEY_EXTRACTOR keyExtractor, KEY_EQUALS_COMPARER keyComparer))
     {
         sFactory_ = factory;
     }
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
-    inline KeyedCollection<T, KEY_TYPE, TRAITS> KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::Default_ (KeyExtractorType keyExtractor, KEY_EQUALS_COMPARER keyComparer)
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
+    inline KeyedCollection<T, KEY_TYPE, TRAITS> KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::Default_ (KEY_EXTRACTOR keyExtractor, KEY_EQUALS_COMPARER keyComparer)
     {
         /*
          *  Note - though this is not an efficient implementation of KeyedCollection<> for large sizes, its probably the most
@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Containers::Factory {
          *  Calls may use an explicit initializer of KeyedCollection_xxx<> to get better performance for large sized
          *  maps.
          */
-        return Concrete::KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>{keyExtractor, keyComparer};
+        return Concrete::KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>{keyExtractor, keyComparer};
     }
 
 }

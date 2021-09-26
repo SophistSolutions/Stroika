@@ -20,17 +20,18 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
     */
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
-    class KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::IImplRep_ : public KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep {
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    class KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::IImplRep_ : public KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep {
     };
 
     /*
      */
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
-    class KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::Rep_ : public IImplRep_, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
+    class KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::Rep_ : public IImplRep_, public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EXTRACTOR, KEY_EQUALS_COMPARER>> {
     private:
         using inherited = IImplRep_;
-        KeyExtractorType    fKeyExtractor_;
+        KEY_EXTRACTOR       fKeyExtractor_;
         KEY_EQUALS_COMPARER fKeyComparer_;
 
     public:
@@ -40,7 +41,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using _APPLYUNTIL_ARGTYPE          = typename inherited::_APPLYUNTIL_ARGTYPE;
 
     public:
-        Rep_ (KeyExtractorType keyExtractor, KEY_EQUALS_COMPARER keyComparer)
+        Rep_ (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer)
             : fKeyExtractor_{keyExtractor}
             , fKeyComparer_{keyComparer}
         {
@@ -192,24 +193,25 @@ namespace Stroika::Foundation::Containers::Concrete {
      ************************** KeyedCollection_LinkedList<T> ***********************
      ********************************************************************************
      */
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
-    inline KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::KeyedCollection_LinkedList (KeyExtractorType keyExtractor, KEY_EQUALS_COMPARER keyComparer)
-        : inherited (inherited::template MakeSmartPtr<Rep_> (keyExtractor, keyComparer))
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
+    inline KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::KeyedCollection_LinkedList (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer)
+        : inherited (inherited::template MakeSmartPtr<Rep_<KEY_EXTRACTOR, KEY_EQUALS_COMPARER>> (keyExtractor, keyComparer))
     {
         AssertRepValidType_ ();
     }
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
-    KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::KeyedCollection_LinkedList (const KeyedCollection<T, KEY_TYPE, TRAITS>& src)
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::KeyedCollection_LinkedList (const KeyedCollection<T, KEY_TYPE, TRAITS>& src)
         : KeyedCollection_LinkedList{src.GetKeyExtractor (), src.GetKeyEqualityComparer ()}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
-    inline void KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::AssertRepValidType_ () const
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline void KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::AssertRepValidType_ () const
     {
 #if qDebug
-        typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber
+        typename inherited::template _SafeReadRepAccessor<IImplRep_> tmp{this}; // for side-effect of AssertMemeber
 #endif
     }
 

@@ -33,20 +33,17 @@ namespace Stroika::Foundation::Containers::Factory {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      */
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
+    template <typename T, typename KEY_TYPE, typename TRAITS,  typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
     class KeyedCollection_Factory {
-    public:
-        using KeyExtractorType = typename KeyedCollection<T, KEY_TYPE, TRAITS>::KeyExtractorType;
-
     private:
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-        static atomic<KeyedCollection<T, KEY_TYPE, TRAITS> (*) (KeyExtractorType keyExtractor, KEY_EQUALS_COMPARER keyComparer)> sFactory_;
+        static atomic<KeyedCollection<T, KEY_TYPE, TRAITS> (*) (KEY_EXTRACTOR keyExtractor, KEY_EQUALS_COMPARER keyComparer)> sFactory_;
 #else
-        static inline atomic<KeyedCollection<T, KEY_TYPE, TRAITS> (*) (KeyExtractorType keyExtractor, KEY_EQUALS_COMPARER keyComparer)> sFactory_{nullptr};
+        static inline atomic<KeyedCollection<T, KEY_TYPE, TRAITS> (*) (KEY_EXTRACTOR keyExtractor, KEY_EQUALS_COMPARER keyComparer)> sFactory_{nullptr};
 #endif
 
     public:
-        KeyedCollection_Factory (KeyExtractorType keyExtractor, KEY_EQUALS_COMPARER keyComparer);
+        KeyedCollection_Factory (KEY_EXTRACTOR keyExtractor, KEY_EQUALS_COMPARER keyComparer);
 
     public:
         /**
@@ -58,14 +55,14 @@ namespace Stroika::Foundation::Containers::Factory {
         /**
          *  Register a replacement creator/factory for the given KeyedCollection<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
          */
-        static void Register (KeyedCollection<T, KEY_TYPE, TRAITS> (*factory) (KeyExtractorType keyExtractor, KEY_EQUALS_COMPARER keyComparer) = nullptr);
+        static void Register (KeyedCollection<T, KEY_TYPE, TRAITS> (*factory) (KEY_EXTRACTOR keyExtractor, KEY_EQUALS_COMPARER keyComparer) = nullptr);
 
     private:
-        KeyExtractorType    fKeyExtractorType_;
+        KEY_EXTRACTOR       fKeyExtractorType_;
         KEY_EQUALS_COMPARER fKeyEqualsComparer_;
 
     private:
-        static KeyedCollection<T, KEY_TYPE, TRAITS> Default_ (KeyExtractorType keyExtractor, KEY_EQUALS_COMPARER keyComparer);
+        static KeyedCollection<T, KEY_TYPE, TRAITS> Default_ (KEY_EXTRACTOR keyExtractor, KEY_EQUALS_COMPARER keyComparer);
     };
 
 }

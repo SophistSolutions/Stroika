@@ -30,6 +30,17 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterable;
     using Traversal::Iterator;
 
+
+    // @todo SB concept
+    template <typename T, typename KEY_TYPE, typename POTENTIAL_KEY_EXTRACTOR>
+    constexpr bool KeyedCollection_IsKeyExctractor ()
+    {
+        if constexpr (is_invocable_v<POTENTIAL_KEY_EXTRACTOR, T>) {
+            return std::is_convertible_v<std::invoke_result_t<POTENTIAL_KEY_EXTRACTOR, T>, KEY_TYPE>;
+        }
+        return false;
+    }
+
     /**
      *  \note its OK if DEFAULT_KEY_EXTRACTOR is invalid, it just means you must specify the default-key-extractor in the 
      *        constructor for KeyedCollection<>
@@ -215,8 +226,8 @@ namespace Stroika::Foundation::Containers {
          */
         template <typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::is_callable_v<KE>>* = nullptr>
         KeyedCollection (KeyEqualityComparerType keyComparer = typename TraitsType::DefaultKeyEqualsComparer{});
-        template <typename KEY_EQUALS_COMPARER = typename TRAITS::DefaultKeyEqualsComparer, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>* = nullptr>
-        KeyedCollection (KeyExtractorType keyExtractor, KEY_EQUALS_COMPARER keyComparer = KEY_EQUALS_COMPARER{});
+        template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER = typename TRAITS::DefaultKeyEqualsComparer, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+        KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER keyComparer = KEY_EQUALS_COMPARER{});
         KeyedCollection (const KeyedCollection& src) noexcept = default;
         template <typename CONTAINER_OF_ADDABLE, typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Configuration::is_callable_v<KE>>* = nullptr>
         KeyedCollection (CONTAINER_OF_ADDABLE&& src);

@@ -28,9 +28,9 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>*>
-    inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (KeyExtractorType keyExtractor, KEY_EQUALS_COMPARER keyComparer)
-        : inherited (Factory::KeyedCollection_Factory<T, KEY_TYPE, TRAITS>{keyExtractor, keyComparer}())
+    template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
+    inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER keyComparer)
+        : inherited (Factory::KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>{keyExtractor, keyComparer}())
     {
         _AssertRepValidType ();
     }
