@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename CONTAINER_OF_ADDABLE, typename KE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Configuration::is_callable_v<KE>>*>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (CONTAINER_OF_ADDABLE&& src)
-        : KeyedCollection{TRAITS::kDefaultKeyExtractor, TRAITS::kDefaultKeyEqualsComparer}
+        : KeyedCollection{TRAITS::kDefaultKeyExtractor, typename TRAITS::DefaultKeyEqualsComparer{}}
     {
         AddAll (src);
         _AssertRepValidType ();

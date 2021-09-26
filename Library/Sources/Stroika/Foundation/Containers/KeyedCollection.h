@@ -75,11 +75,10 @@ namespace Stroika::Foundation::Containers {
          */
         static const inline KeyExtractorType kDefaultKeyExtractor{mk_ ()};
 
-        using DefaultKeyEqualsComparer = DEFAULT_KEY_EQUALS_COMPARER;
         /**
          *  Default comparer if not specified in constructor (e.g. default-constructor KeyedCollection())
          */
-        static const inline KeyEqualityComparerType kDefaultKeyEqualsComparer{DEFAULT_KEY_EQUALS_COMPARER{}};
+        using DefaultKeyEqualsComparer = DEFAULT_KEY_EQUALS_COMPARER;
 
         /**
          *  Define typedef for this KeyedCollection traits object (so other traits can generically allow recovery of the
@@ -215,7 +214,7 @@ namespace Stroika::Foundation::Containers {
          *        And also careful not to apply to non-iterables.
          */
         template <typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::is_callable_v<KE>>* = nullptr>
-        KeyedCollection (KeyEqualityComparerType keyComparer = TraitsType::kDefaultKeyEqualsComparer);
+        KeyedCollection (KeyEqualityComparerType keyComparer = typename TraitsType::DefaultKeyEqualsComparer{});
         template <typename KEY_EQUALS_COMPARER = typename TRAITS::DefaultKeyEqualsComparer, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>* = nullptr>
         KeyedCollection (KeyExtractorType keyExtractor, KEY_EQUALS_COMPARER keyComparer = KEY_EQUALS_COMPARER{});
         KeyedCollection (const KeyedCollection& src) noexcept = default;
