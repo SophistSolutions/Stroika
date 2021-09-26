@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      */
-    template <typename T, typename KEY_TYPE, typename TRAITS = KeyedCollection_DefaultTraits<T, KEY_TYPE>>
+    template <typename T, typename KEY_TYPE, typename TRAITS = KeyedCollection_DefaultTraits<T, KEY_TYPE>, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
     class KeyedCollection_LinkedList : public KeyedCollection<T, KEY_TYPE, TRAITS> {
     private:
         using inherited = KeyedCollection<T, KEY_TYPE, TRAITS>;
@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        KeyedCollection_LinkedList (KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer);
+        KeyedCollection_LinkedList (KeyExtractorType keyExtractor, KEY_EQUALS_COMPARER keyComparer);
         KeyedCollection_LinkedList (const KeyedCollection<T, KEY_TYPE, TRAITS>& src);
         KeyedCollection_LinkedList (const KeyedCollection_LinkedList& src) noexcept = default;
         KeyedCollection_LinkedList (KeyedCollection_LinkedList&& src) noexcept      = default;

@@ -36,12 +36,14 @@ namespace {
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
                 [] () { return KeyedCollection<T1, int>{[] (T1 e) { return e.key; }}; },
                 [] (auto) {});
+#if 0
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
                 [] () { return KeyedCollection<T1, int, T1_Traits>{[] (T1 e) { return e.key; }}; },
                 [] (auto) {});
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
                 [] () { return KeyedCollection<T1, int, T1_Traits>{}; },
                 [] (auto) {});
+#endif
         }
     }
 }
