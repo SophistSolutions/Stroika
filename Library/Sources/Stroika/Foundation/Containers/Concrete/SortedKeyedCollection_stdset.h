@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         template <typename KEY_INORDER_COMPARER  = less<KEY_TYPE>,
-                  typename DEFAULT_KEY_EXTRACTOR = typename TraitsType::DefaultKeyExtractor,
+                  typename DEFAULT_KEY_EXTRACTOR = typename TRAITS::DefaultKeyExtractor,
                   enable_if_t<
                       Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, DEFAULT_KEY_EXTRACTOR> ()>* = nullptr>
         SortedKeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{});
