@@ -165,10 +165,19 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual bool Add (ArgByValueType<T> item) override
         {
-            size_t prevSize = fData_.size ();
-            fData_.insert (item);
-            // @todo must patch!!!
-            return fData_.size () > prevSize;
+            pair<typename DataStructureImplType_::iterator, bool> flagAndI = fData_.insert (item);
+            if (flagAndI.second) {
+                return true;
+            }
+            else {
+                // @todo must patch!!!
+                // in case of update, set<> wont update the value so we must remove and re-add, but todo that, use previous iterator as hint
+                typename DataStructureImplType_::iterator hint = flagAndI.first;
+                hint++;
+                fData_.erase (flagAndI.first);
+                fData_.insert (hint, item);
+                return false;
+            }
         }
         virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
         {
@@ -230,10 +239,6 @@ namespace Stroika::Foundation::Containers::Concrete {
                 , fKeyComparer_{inorderComparer}
             {
             }
-            int operator() (const KEY_TYPE& lhs, const KEY_TYPE& rhs) const
-            {
-                return fKeyComparer_ (lhs, rhs);
-            };
             int operator() (const T& lhs, const KEY_TYPE& rhs) const
             {
                 return fKeyComparer_ (fKeyExtractor_ (lhs), rhs);
