@@ -276,7 +276,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  Add when T is already present has may have no effect (logically has no effect) on the
-         *  container (not an error or exception).
+         *  container (not an error or exception) (except that if T contains fields not part of comparison, those will be updated).
          *
          *  So for a user-defined type T (or any type where the caller specifies the compare function)
          *  it is left undefined whether or not the new (not included) attributes assocaited with the added
@@ -292,7 +292,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \note   AddAll/2 is alias for .net AddRange ()
          *
-         *  Returns the number if items actually changed (not necessarily same as end-start)
+         *  Returns the number if items actually added (not necessarily same as end-start)
          * 
          *  \note mutates container
          */
