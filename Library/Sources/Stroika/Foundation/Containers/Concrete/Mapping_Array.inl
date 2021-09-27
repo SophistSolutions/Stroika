@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         Rep_ (const Rep_& from) = delete;
         Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            :  fKeyEqualsComparer_{from->fKeyEqualsComparer_}
+            : fKeyEqualsComparer_{from->fKeyEqualsComparer_}
             , fData_{&from->fData_, forIterableEnvelope}
         {
             RequireNotNull (from);
