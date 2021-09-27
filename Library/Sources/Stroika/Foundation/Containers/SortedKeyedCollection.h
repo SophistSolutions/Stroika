@@ -118,10 +118,16 @@ namespace Stroika::Foundation::Containers {
          * 
          *        And also careful not to apply to non-iterables.
          */
-
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
-        SortedKeyedCollection (INORDER_COMPARER&& inOrderComparer);
-
+        template <typename KEY_INORDER_COMPARER  = less<KEY_TYPE>,
+                  typename DEFAULT_KEY_EXTRACTOR = typename TraitsType::DefaultKeyExtractor,
+                  enable_if_t<
+                      Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, DEFAULT_KEY_EXTRACTOR> ()>* = nullptr>
+        SortedKeyedCollection (KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{});
+        template <typename KEY_EXTRACTOR,
+                  typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
+                  enable_if_t<
+                      Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+        SortedKeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{});
         SortedKeyedCollection (const SortedKeyedCollection& src) noexcept = default;
 
 #if 0

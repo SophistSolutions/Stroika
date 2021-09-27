@@ -15,22 +15,24 @@ namespace Stroika::Foundation::Containers {
      ************* SortedKeyedCollection<T, KEY_TYPE, TRAITS> ***********************
      ********************************************************************************
      */
-#if 0
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection ()
-        : SortedKeyedCollection{less<T>{}}
+    template <typename KEY_INORDER_COMPARER,
+              typename DEFAULT_KEY_EXTRACTOR,
+              enable_if_t<
+                  Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, DEFAULT_KEY_EXTRACTOR> ()>*>
+    inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (KEY_INORDER_COMPARER&& keyComparer)
+        : SortedKeyedCollection{DEFAULT_KEY_EXTRACTOR{}, keyComparer}
     {
-        _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>*>
-    inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (INORDER_COMPARER&& inorderComparer)
-        : inherited (Factory::SortedKeyedCollection_Factory<T, INORDER_COMPARER>{forward<INORDER_COMPARER> (inorderComparer)}())
+    template <typename KEY_EXTRACTOR,
+              typename KEY_INORDER_COMPARER,
+              enable_if_t<
+                  Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
+    SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer)
+        : inherited (Factory::SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_INORDER_COMPARER>{forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_INORDER_COMPARER> (keyComparer)}())
     {
-        static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedKeyedCollection");
-        _AssertRepValidType ();
     }
-#endif
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (const _IRepSharedPtr& src) noexcept
         : inherited{src}

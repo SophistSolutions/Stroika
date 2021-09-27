@@ -24,20 +24,20 @@ namespace Stroika::Foundation::Containers {
 
 namespace Stroika::Foundation::Containers::Factory {
 
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_INORDER_COMPARER = less<KEY_TYPE>>
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER = less<KEY_TYPE>>
     class SortedKeyedCollection_Factory {
     private:
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-        static atomic<SortedKeyedCollection<KEY_TYPE, VALUE_TYPE> (*) (const KEY_INORDER_COMPARER&)> sFactory_;
+        static atomic<SortedKeyedCollection<KEY_TYPE, VALUE_TYPE> (*) (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer)> sFactory_;
 #else
-        static inline atomic<SortedKeyedCollection<T, KEY_TYPE, TRAITS> (*) (const KEY_INORDER_COMPARER&)> sFactory_{nullptr};
+        static inline atomic<SortedKeyedCollection<T, KEY_TYPE, TRAITS> (*) (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer)> sFactory_{nullptr};
 #endif
 
     public:
         static_assert (Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER> (), "StrictInOrder comparer required with SortedKeyedCollection");
 
     public:
-        SortedKeyedCollection_Factory (const KEY_INORDER_COMPARER& keyInOrderComparer = {});
+        SortedKeyedCollection_Factory (const KEY_EXTRACTOR& keyExtractor = {}, const KEY_INORDER_COMPARER& keyComparer = {});
 
     public:
         /**
@@ -49,13 +49,14 @@ namespace Stroika::Foundation::Containers::Factory {
         /**
          *  Register a replacement creator/factory for the given Mapping<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
          */
-        static void Register (SortedKeyedCollection<T, KEY_TYPE, TRAITS> (*factory) (const KEY_INORDER_COMPARER&) = nullptr);
+        static void Register (SortedKeyedCollection<T, KEY_TYPE, TRAITS> (*factory) (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer) = nullptr);
 
     private:
-        [[NO_UNIQUE_ADDRESS_ATTR]] KEY_INORDER_COMPARER fInOrderComparer_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_EXTRACTOR        fKeyExtractor_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_INORDER_COMPARER fInOrderComparer_;
 
     private:
-        static SortedKeyedCollection<T, KEY_TYPE, TRAITS> Default_ (const KEY_INORDER_COMPARER&);
+        static SortedKeyedCollection<T, KEY_TYPE, TRAITS> Default_ (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer);
     };
 
 }
