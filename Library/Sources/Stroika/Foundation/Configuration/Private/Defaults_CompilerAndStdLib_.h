@@ -1826,7 +1826,8 @@ TRIED alignas to fix on the array but no luck
 #if defined(__clang__) && defined(__APPLE__)
 // see on XCOde 11
 // reproduced on XCode 12
-#define qMacUBSanitizerifreqAlignmentIssue_Buggy ((11 <= __clang_major__) && (__clang_major__ <= 12))
+// reproduced on XCode 13
+#define qMacUBSanitizerifreqAlignmentIssue_Buggy ((11 <= __clang_major__) && (__clang_major__ <= 13))
 #else
 #define qMacUBSanitizerifreqAlignmentIssue_Buggy 0
 #endif
