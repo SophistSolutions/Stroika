@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             // remove and re-add, but re-adding with a hint of old iterator value is O(1)
             const typename Iterator<T>::IRep& ir = i.ConstGetRep ();
             AssertMember (&ir, IteratorRep_);
-            const IteratorRep_&                             mir  = dynamic_cast<const IteratorRep_&> (ir);
+            const IteratorRep_&                       mir  = dynamic_cast<const IteratorRep_&> (ir);
             typename DataStructureImplType_::iterator hint = mir.fIterator.fStdIterator;
             hint++;
             mir.fIterator.RemoveCurrent (); //fData_.erase (mir.fIterator.fStdIterator);
