@@ -182,21 +182,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<T>::IRep&                         ir = i.ConstGetRep ();
+            // std::set doesn't appear to let you update an element because it doesn't know what parts go into the key, so you must
+            // remove and re-add, but re-adding with a hint of old iterator value is O(1)
+            const typename Iterator<T>::IRep& ir = i.ConstGetRep ();
             AssertMember (&ir, IteratorRep_);
-            //     auto& mir = dynamic_cast<const IteratorRep_&> (ir);
-            // If ORDER of element unchanged, OK to just update the value. But if order changes
-            // we must remove and re-insert
-#if 0
-            if (GetKeyEqualityComparer () (fKeyExtractor_ (*i), fKeyExtractor_ (newValue))) {
-                *mir.fIterator = newValue;
-            }
-            else
-#endif
-            {
-                Remove (i);
-                Add (newValue);
-            }
+            const IteratorRep_&                             mir  = dynamic_cast<const IteratorRep_&> (ir);
+            typename DataStructureImplType_::iterator hint = mir.fIterator.fStdIterator;
+            hint++;
+            mir.fIterator.RemoveCurrent (); //fData_.erase (mir.fIterator.fStdIterator);
+            fData_.insert (hint, newValue); // @todo FIX PATCHING!!!! (not sure needed for insert)
         }
         virtual void Remove (const Iterator<T>& i) override
         {
