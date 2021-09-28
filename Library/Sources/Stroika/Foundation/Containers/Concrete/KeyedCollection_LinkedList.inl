@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return this->_Keys_Reference_Implementation ();
         }
-        virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const
+        virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const override
         {
             if (auto i = this->FindFirstThat ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); }, nullptr)) {
                 if (item != nullptr) {

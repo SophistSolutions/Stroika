@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return this->_Keys_Reference_Implementation ();
         }
-        virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const
+        virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             auto                                                       i = fData_.find (key);
