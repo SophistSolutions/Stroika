@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Containers::Factory {
     class SortedKeyedCollection_Factory {
     private:
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-        static atomic<SortedKeyedCollection<KEY_TYPE, VALUE_TYPE> (*) (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer)> sFactory_;
+        static atomic<SortedKeyedCollection<T, KEY_TYPE, TRAITS> (*) (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer)> sFactory_;
 #else
         static inline atomic<SortedKeyedCollection<T, KEY_TYPE, TRAITS> (*) (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer)> sFactory_{nullptr};
 #endif
