@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Containers {
               enable_if_t<
                   Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, DEFAULT_KEY_EXTRACTOR> ()>*>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (CONTAINER_OF_ADDABLE&& src)
-        : KeyedCollection{TRAITS::kDefaultKeyExtractor, typename TRAITS::DefaultKeyEqualsComparer{}}
+        : KeyedCollection{typename TRAITS::DefaultKeyExtractor{}, equal_to<KEY_TYPE>{}}
     {
         AddAll (src);
         _AssertRepValidType ();
@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename CONTAINER_OF_ADDABLE, typename KE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Configuration::is_callable_v<KE>>*>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (KeyEqualityComparerType keyComparer, CONTAINER_OF_ADDABLE&& src)
-        : KeyedCollection{TRAITS::kDefaultKeyExtractor, keyComparer}
+        : KeyedCollection{typename TRAITS::DefaultKeyExtractor{}, keyComparer}
     {
         AddAll (src);
         _AssertRepValidType ();
