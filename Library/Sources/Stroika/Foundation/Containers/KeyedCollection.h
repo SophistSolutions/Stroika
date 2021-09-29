@@ -19,9 +19,6 @@
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- *  TODO:
- *      @todo   https://stroika.atlassian.net/browse/STK-133 - add regression tests for KeyedCollection/SortedKeyedCollection
- *
  */
 
 namespace Stroika::Foundation::Containers {
@@ -55,6 +52,8 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
+     *  \brief a cross between Mapping<KEY, T> and Collection<T> and Set<T>
+     * 
      *      KeyedCollection adds most access patterns used in Mapping to a Collection, but stores only a single
      *      object. The idea is to have the ID (from a Mapping<ID,Obj>) stored directly in the 'Obj', but still
      *      be able to do lookups based on the ID.
@@ -180,10 +179,10 @@ namespace Stroika::Foundation::Containers {
          * 
          *        And also careful not to apply to non-iterables.
          */
-        template <typename KEY_EQUALS_COMPARER   = equal_to<KEY_TYPE>,
-                  typename DEFAULT_KEY_EXTRACTOR = typename TraitsType::DefaultKeyExtractor,
+        template <typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
+                  typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
                   enable_if_t<
-                      Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, DEFAULT_KEY_EXTRACTOR> ()>* = nullptr>
+                      Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
         KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
         template <typename KEY_EXTRACTOR,
                   typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
@@ -192,21 +191,38 @@ namespace Stroika::Foundation::Containers {
         KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
         KeyedCollection (const KeyedCollection& src) noexcept = default;
         template <typename CONTAINER_OF_ADDABLE,
-                  typename DEFAULT_KEY_EXTRACTOR = typename TraitsType::DefaultKeyExtractor,
+                  typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
+                  typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   enable_if_t<
-                      Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, DEFAULT_KEY_EXTRACTOR> ()>* = nullptr>
+                      Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
         KeyedCollection (CONTAINER_OF_ADDABLE&& src);
-        template <typename CONTAINER_OF_ADDABLE, typename KE = typename TraitsType::DefaultKeyExtractor, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Configuration::is_callable_v<KE>>* = nullptr>
-        KeyedCollection (KeyEqualityComparerType keyComparer, CONTAINER_OF_ADDABLE&& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        KeyedCollection (KeyExtractorType keyExtractor, KeyEqualityComparerType keyComparer, CONTAINER_OF_ADDABLE&& src);
+        template <typename CONTAINER_OF_ADDABLE,
+                  typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
+                  typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
+                  enable_if_t<
+                      Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
+        template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE,
+                  enable_if_t<
+                      KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
+        KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
+        template <typename COPY_FROM_ITERATOR_OF_ADDABLE,
+                  typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
+                  typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
+                  enable_if_t<
+                      Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>* = nullptr>
+        KeyedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename COPY_FROM_ITERATOR_OF_ADDABLE,
+                  typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
+                  typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
+                  enable_if_t<
+                      Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>* = nullptr>
+        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE,
+                  enable_if_t<
+                      KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>* = nullptr>
+        KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
-#if 0
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T,KEY_TYPE,TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        explicit KeyedCollection (CONTAINER_OF_ADDABLE&& src, KeyExtractorType keyExtractor = typename TraitsType::DefaultKeyExtractor, KeyEqualityComparerType keyComparer = equal_to<KEY_TYPE>{});
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>* = nullptr>
-        KeyedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, KeyExtractorType keyExtractor = typename TraitsType::DefaultKeyExtractor, KeyEqualityComparerType keyComparer = equal_to<KEY_TYPE>);
-#endif
     protected:
         explicit KeyedCollection (const _IRepSharedPtr& rep) noexcept;
         explicit KeyedCollection (_IRepSharedPtr&& rep) noexcept;
@@ -223,11 +239,16 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  Returns the extractor (but wrapped as a function<> object, so perhaps slightly less efficient
+         *  to use than the type passed in via CTOR).
          */
         nonvirtual KeyExtractorType GetKeyExtractor () const;
 
     public:
         /**
+         *  Returns the key equality comparer (but wrapped as a function<> object, so perhaps slightly less efficient
+         *  to use than the type passed in via CTOR). Actually - could be MUCH less efficient if what was passed in was less<T> for example,
+         *  an ordered comparer, and that gets mapped to an equality comparer. But this will work.
          */
         nonvirtual KeyEqualityComparerType GetKeyEqualityComparer () const;
 
