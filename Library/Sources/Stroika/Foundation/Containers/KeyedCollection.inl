@@ -75,19 +75,34 @@ namespace Stroika::Foundation::Containers {
               typename KEY_EQUALS_COMPARER,
               enable_if_t<
                   Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>*>
-    KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+    KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+        : KeyedCollection{KEY_EXTRACTOR{}, KEY_EQUALS_COMPARER{}}
+    {
+        AddAll (start, end);
+        _AssertRepValidType ();
+    }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE,
               typename KEY_EXTRACTOR,
               typename KEY_EQUALS_COMPARER,
               enable_if_t<
                   Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>*>
-    KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+    KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+        : KeyedCollection{KEY_EXTRACTOR{} , forward<KEY_EQUALS_COMPARER> (keyComparer)}
+    {
+        AddAll (start, end);
+        _AssertRepValidType ();
+    }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE,
               enable_if_t<
                   KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
-    KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+    KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+        : KeyedCollection{forward<KEY_EXTRACTOR> (keyExtractor) , forward<KEY_EQUALS_COMPARER> (keyComparer)}
+    {
+        AddAll (start, end);
+        _AssertRepValidType ();
+    }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (const _IRepSharedPtr& rep) noexcept
         : inherited{rep}
