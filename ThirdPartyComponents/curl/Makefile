@@ -20,8 +20,9 @@ ifeq ($(shell uname), Darwin)
 # Undefined symbols for architecture x86_64: "_SCDynamicStoreCopyProxies", referenced from:  _Curl_resolv in libcurl.a(libcurl_la-hostip.o)
 VERSION=7.76.1
 else
-VERSION=7.78.0
+VERSION=7.79.1
 endif
+#VERSION=7.78.0
 #VERSION=7.77.0
 #VERSION=7.76.1
 #VERSION=7.75.0
