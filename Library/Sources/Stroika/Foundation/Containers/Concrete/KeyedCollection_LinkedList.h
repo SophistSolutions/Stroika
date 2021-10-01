@@ -64,11 +64,56 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
+        #if 0
         template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_LinkedList (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer);
         KeyedCollection_LinkedList (const KeyedCollection<T, KEY_TYPE, TRAITS>& src);
         KeyedCollection_LinkedList (const KeyedCollection_LinkedList& src) noexcept = default;
         KeyedCollection_LinkedList (KeyedCollection_LinkedList&& src) noexcept      = default;
+        #endif
+        template <typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
+                  typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
+                  enable_if_t<
+                      Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+        KeyedCollection_LinkedList (KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
+        template <typename KEY_EXTRACTOR,
+                  typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
+                  enable_if_t<
+                      Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+        KeyedCollection_LinkedList (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
+        KeyedCollection_LinkedList (const KeyedCollection_LinkedList& src) noexcept = default;
+        template <typename CONTAINER_OF_ADDABLE,
+                  typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
+                  typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
+                  enable_if_t<
+                      Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+        KeyedCollection_LinkedList (CONTAINER_OF_ADDABLE&& src);
+        template <typename CONTAINER_OF_ADDABLE,
+                  typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
+                  typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
+                  enable_if_t<
+                      Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+        KeyedCollection_LinkedList (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
+        template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE,
+                  enable_if_t<
+                      KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
+        KeyedCollection_LinkedList (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
+        template <typename COPY_FROM_ITERATOR_OF_ADDABLE,
+                  typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
+                  typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
+                  enable_if_t<
+                      Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>* = nullptr>
+        KeyedCollection_LinkedList (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename COPY_FROM_ITERATOR_OF_ADDABLE,
+                  typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
+                  typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
+                  enable_if_t<
+                      Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>* = nullptr>
+        KeyedCollection_LinkedList (KEY_EQUALS_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE,
+                  enable_if_t<
+                      KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>* = nullptr>
+        KeyedCollection_LinkedList (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     public:
         nonvirtual KeyedCollection_LinkedList& operator= (const KeyedCollection_LinkedList& rhs) = default;

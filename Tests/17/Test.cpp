@@ -9,13 +9,7 @@
 #include <sstream>
 
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
-#if 0
-#include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
-#include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
-#include "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
-#include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
-#include "Stroika/Foundation/Containers/Mapping.h"
-#endif
+#include "Stroika/Foundation/Containers/Concrete/KeyedCollection_LinkedList.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
@@ -41,6 +35,9 @@ namespace {
                 [] (auto) {});
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
                 [] () { return KeyedCollection<T1, int, T1_Traits>{}; },
+                [] (auto) {});
+            CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+                [] () { return Concrete::KeyedCollection_LinkedList<T1, int>{[] (T1 e) { return e.key; }}; },
                 [] (auto) {});
         }
     }
