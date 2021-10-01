@@ -85,6 +85,10 @@ namespace {
 #endif
                     //https://stroika.atlassian.net/browse/STK-679
                     // MAYBE RELATED TO/SAME AS qCompilerAndStdLib_arm_openssl_valgrind_Buggy
+                    if (lce.code () == error_code{CURLE_SSL_CONNECT_ERROR, LibCurl_error_category ()} and Debug::IsRunningUnderValgrind ()) {
+                        DbgTrace ("Warning - ignored exception doing LibCurl/ssl - - see qCompilerAndStdLib_openssl3_helgrind_Buggy");
+                        return;
+                    }
                     if (lce.code () == error_code{CURLE_RECV_ERROR, LibCurl_error_category ()} and Debug::IsRunningUnderValgrind ()) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - - see https://stroika.atlassian.net/browse/STK-679");
                         return;
