@@ -56,10 +56,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_INORDER_COMPARER fKeyComparer_;
 
     public:
-        using KeyExtractorType        = typename KeyedCollection<T, KEY_TYPE, TRAITS>::KeyExtractorType;
-        using KeyEqualityComparerType = typename KeyedCollection<T, KEY_TYPE, TRAITS>::KeyEqualityComparerType;
-        using KeyType                 = typename KeyedCollection<T, KEY_TYPE, TRAITS>::KeyType;
-        using value_type              = typename KeyedCollection<T, KEY_TYPE, TRAITS>::value_type;
+        using KeyExtractorType          = typename SortedKeyedCollection<T, KEY_TYPE, TRAITS>::KeyExtractorType;
+        using KeyEqualityComparerType   = typename SortedKeyedCollection<T, KEY_TYPE, TRAITS>::KeyEqualityComparerType;
+        using KeyInOrderKeyComparerType = typename SortedKeyedCollection<T, KEY_TYPE, TRAITS>::KeyInOrderKeyComparerType;
+        using KeyType                   = typename SortedKeyedCollection<T, KEY_TYPE, TRAITS>::KeyType;
+        using value_type                = typename SortedKeyedCollection<T, KEY_TYPE, TRAITS>::value_type;
 
         using _IterableRepSharedPtr        = typename inherited::_IterableRepSharedPtr;
         using _KeyedCollectionRepSharedPtr = typename inherited::_IRepSharedPtr;
@@ -219,12 +220,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // SortedKeyedCollection<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides
     public:
-#if 0
         virtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const override
         {
-            return KeyInOrderKeyComparerType{fData_.key_comp ()};
+            return KeyInOrderKeyComparerType{fKeyComparer_};
         }
-#endif
 
     private:
         struct SetInOrderComparer_ {

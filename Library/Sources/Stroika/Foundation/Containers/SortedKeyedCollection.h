@@ -13,15 +13,7 @@
 /**
  *  \file
  *
- *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
- *                  (DRAFT/placeholder - no where near functional)
- *
- *
- *  TODO:
- *      @todo REDO AT LEAST the key extractor and probably also comparer arguments to CTORs to use templates
- *            so they can be forwarded to the underlying type through the factory and ultimately avoid
- *            std::function<> objects (as we do for other types like the regular Collection/SortedCollection<> classes
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  */
 
@@ -171,6 +163,11 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual SortedKeyedCollection& operator= (const SortedKeyedCollection& rhs) = default;
 
+    public:
+        /**
+         */
+        nonvirtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const;
+
     protected:
         /**
          */
@@ -196,7 +193,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     class SortedKeyedCollection<T, KEY_TYPE, TRAITS>::_IRep : public KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep {
     public:
-        // virtual bool Equals (const typename Collection<T>::_IRep& rhs) const = 0;
+        virtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const = 0;
     };
 
 }

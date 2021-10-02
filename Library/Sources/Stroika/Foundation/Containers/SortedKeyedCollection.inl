@@ -35,6 +35,21 @@ namespace Stroika::Foundation::Containers {
     {
         _AssertRepValidType ();
     }
+
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+
+    template <typename CONTAINER_OF_ADDABLE,
+              typename KEY_EXTRACTOR,
+              typename KEY_INORDER_COMPARER,
+              enable_if_t<
+                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedKeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
+    inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (CONTAINER_OF_ADDABLE&& src)
+        : SortedKeyedCollection{KEY_EXTRACTOR{}, KEY_INORDER_COMPARER{}}
+    {
+        this->AddAll (src);
+        _AssertRepValidType ();
+    }
+
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename CONTAINER_OF_ADDABLE,
               typename KEY_EXTRACTOR,
@@ -43,8 +58,8 @@ namespace Stroika::Foundation::Containers {
                   Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedKeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (KEY_INORDER_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src)
     {
-        _AssertRepValidType ();
         this->AddAll (src);
+        _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER, typename CONTAINER_OF_ADDABLE,
@@ -53,8 +68,8 @@ namespace Stroika::Foundation::Containers {
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src)
         : SortedKeyedCollection{forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_INORDER_COMPARER> (keyComparer)}
     {
-        _AssertRepValidType ();
         this->AddAll (src);
+        _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE,
@@ -65,8 +80,8 @@ namespace Stroika::Foundation::Containers {
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
         : SortedKeyedCollection{KEY_EXTRACTOR{}, KEY_INORDER_COMPARER{}}
     {
-        _AssertRepValidType ();
         this->AddAll (start, end);
+        _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE,
@@ -77,8 +92,8 @@ namespace Stroika::Foundation::Containers {
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (KEY_INORDER_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
         : SortedKeyedCollection{KEY_EXTRACTOR{}, forward<KEY_INORDER_COMPARER> (keyComparer)}
     {
-        _AssertRepValidType ();
         this->AddAll (start, end);
+        _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE,
@@ -87,8 +102,8 @@ namespace Stroika::Foundation::Containers {
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
         : SortedKeyedCollection{forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_INORDER_COMPARER> (keyComparer)}
     {
-        _AssertRepValidType ();
         this->AddAll (start, end);
+        _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (const _IRepSharedPtr& src) noexcept
@@ -110,25 +125,11 @@ namespace Stroika::Foundation::Containers {
         _SafeReadRepAccessor<_IRep>{this};
 #endif
     }
-#if 0
-    template <typename T>
-    inline auto SortedKeyedCollection<T, KEY_TYPE, TRAITS>::GetInOrderComparer () const -> InOrderComparerType
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline auto SortedKeyedCollection<T, KEY_TYPE, TRAITS>::GetInOrderKeyComparer () const -> KeyInOrderKeyComparerType
     {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetInOrderComparer ();
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetInOrderKeyComparer ();
     }
-#if __cpp_impl_three_way_comparison >= 201907
-    template <typename T>
-    inline bool SortedKeyedCollection<T, KEY_TYPE, TRAITS>::operator== (const SortedKeyedCollection& rhs) const
-    {
-        return typename Iterable<T>::SequentialEqualsComparer{Common::EqualsComparerAdapter (GetInOrderComparer ())}(*this, rhs);
-    }
-    template <typename T>
-    inline strong_ordering SortedKeyedCollection<T, KEY_TYPE, TRAITS>::operator<=> (const SortedKeyedCollection& rhs) const
-    {
-        return typename Iterable<T>::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetInOrderComparer ())}(*this, rhs);
-    }
-#endif
-#endif
 
 }
 
