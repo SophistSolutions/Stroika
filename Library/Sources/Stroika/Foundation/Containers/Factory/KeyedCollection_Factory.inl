@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename CHECK_T>
     KeyedCollection<T, KEY_TYPE, TRAITS> KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::Default_SFINAE_ (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer, CHECK_T*, enable_if_t<Configuration::has_lt<CHECK_T>::value>*)
     {
-        if (typeid (KEY_EQUALS_COMPARER) == typeid (equal_to<T>)) {
+        if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<T>>) {
             return Concrete::KeyedCollection_stdset<T, KEY_TYPE, TRAITS>{keyExtractor};
         }
         else {

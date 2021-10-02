@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename CHECK_T>
     inline Set<T> Set_Factory<T, EQUALS_COMPARER>::Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, CHECK_T*, enable_if_t<Configuration::has_lt<CHECK_T>::value>*)
     {
-        if (typeid (EQUALS_COMPARER) == typeid (equal_to<T>)) {
+        if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>>) {
             return Concrete::Set_stdset<T>{};
         }
         else {
