@@ -9,6 +9,7 @@
 #include <sstream>
 
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/KeyedCollection_stdset.h"
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -38,6 +39,9 @@ namespace {
                 [] (auto) {});
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
                 [] () { return Concrete::KeyedCollection_LinkedList<T1, int>{[] (T1 e) { return e.key; }}; },
+                [] (auto) {});
+            CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+                [] () { return Concrete::KeyedCollection_stdset<T1, int>{[] (T1 e) { return e.key; }}; },
                 [] (auto) {});
         }
     }
