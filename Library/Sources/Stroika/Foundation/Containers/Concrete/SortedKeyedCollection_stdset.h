@@ -30,6 +30,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = SortedKeyedCollection<T, KEY_TYPE, TRAITS>;
 
     public:
+        using TraitsType = typename inherited::TraitsType;
+
+    public:
         template <typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
                   typename KEY_EXTRACTOR        = typename TraitsType::DefaultKeyExtractor,
                   enable_if_t<
