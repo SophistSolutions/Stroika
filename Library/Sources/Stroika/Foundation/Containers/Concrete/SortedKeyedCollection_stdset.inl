@@ -288,10 +288,21 @@ namespace Stroika::Foundation::Containers::Concrete {
               typename KEY_INORDER_COMPARER,
               enable_if_t<
                   Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
+    inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (CONTAINER_OF_ADDABLE&& src)
+    {
+        this->AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    template <typename CONTAINER_OF_ADDABLE,
+              typename KEY_EXTRACTOR,
+              typename KEY_INORDER_COMPARER,
+              enable_if_t<
+                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
     inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src)
     {
-        AssertRepValidType_ ();
         this->AddAll (src);
+        AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER, typename CONTAINER_OF_ADDABLE,
@@ -312,8 +323,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
         : SortedKeyedCollection_stdset{KEY_EXTRACTOR{}, KEY_INORDER_COMPARER{}}
     {
-        AssertRepValidType_ ();
         this->AddAll (start, end);
+        AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE,
@@ -324,8 +335,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
         : SortedKeyedCollection_stdset{KEY_EXTRACTOR{}, forward<KEY_INORDER_COMPARER> (keyComparer)}
     {
-        AssertRepValidType_ ();
         this->AddAll (start, end);
+        AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE,
@@ -334,8 +345,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
         : SortedKeyedCollection_stdset{forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_INORDER_COMPARER> (keyComparer)}
     {
-        AssertRepValidType_ ();
         this->AddAll (start, end);
+        AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::AssertRepValidType_ () const

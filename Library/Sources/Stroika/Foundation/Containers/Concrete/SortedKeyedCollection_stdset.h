@@ -73,19 +73,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                   enable_if_t<
                       KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>* = nullptr>
         SortedKeyedCollection_stdset (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-#if 0
-        template <typename KEY_INORDER_COMPARER  = less<KEY_TYPE>,
-                  typename DEFAULT_KEY_EXTRACTOR = typename TRAITS::DefaultKeyExtractor,
-                  enable_if_t<
-                      Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, DEFAULT_KEY_EXTRACTOR> ()>* = nullptr>
-        SortedKeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{});
-        template <typename KEY_EXTRACTOR,
-                  typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
-                  enable_if_t<
-                      Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
-        SortedKeyedCollection_stdset (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{});
-        SortedKeyedCollection_stdset (const SortedKeyedCollection_stdset& src) noexcept = default;
-#endif
+
     public:
         /**
          */
