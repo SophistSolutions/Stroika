@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     using Traversal::IteratorOwnerID;
 
     /*
-    */
+     */
     template <typename T, typename KEY_TYPE, typename TRAITS>
     class KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::IImplRep_ : public KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep {
     };

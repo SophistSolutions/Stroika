@@ -69,13 +69,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        #if 0
-        template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
-        KeyedCollection_LinkedList (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer);
-        KeyedCollection_LinkedList (const KeyedCollection<T, KEY_TYPE, TRAITS>& src);
-        KeyedCollection_LinkedList (const KeyedCollection_LinkedList& src) noexcept = default;
-        KeyedCollection_LinkedList (KeyedCollection_LinkedList&& src) noexcept      = default;
-        #endif
         template <typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
                   enable_if_t<
