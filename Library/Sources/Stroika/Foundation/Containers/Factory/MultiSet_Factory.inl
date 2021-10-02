@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename TRAITS, typename EQUALS_COMPARER>
     inline MultiSet<T, TRAITS> MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::Default_ (const EQUALS_COMPARER& equalsComparer)
     {
-        return Concrete::MultiSet_Array<T, TRAITS> (equalsComparer);
+        return Concrete::MultiSet_Array<T, TRAITS>{equalsComparer};
     }
 
 }

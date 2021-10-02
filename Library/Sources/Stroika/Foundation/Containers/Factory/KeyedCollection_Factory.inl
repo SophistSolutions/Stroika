@@ -12,6 +12,7 @@
 #define _Stroika_Foundation_Containers_Concrete_KeyedCollection_Factory_inl_
 
 #include "../Concrete/KeyedCollection_LinkedList.h"
+#include "../Concrete/KeyedCollection_stdset.h"
 
 namespace Stroika::Foundation::Containers::Factory {
 

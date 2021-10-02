@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename INORDER_COMPARER>
     inline SortedSet<T> SortedSet_Factory<T, INORDER_COMPARER>::Default_ (const INORDER_COMPARER& inorderComparer)
     {
-        return Concrete::SortedSet_stdset<T> (inorderComparer);
+        return Concrete::SortedSet_stdset<T>{inorderComparer};
     }
 
 }

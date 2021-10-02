@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T>
     inline Deque<T> Deque_Factory<T>::Default_ ()
     {
-        return Concrete::Deque_DoublyLinkedList<T> ();
+        return Concrete::Deque_DoublyLinkedList<T>{};
     }
 
 }

@@ -65,10 +65,10 @@ namespace Stroika::Foundation::Containers::Factory {
     inline Set<T> Set_Factory<T, EQUALS_COMPARER>::Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, CHECK_T*, enable_if_t<Configuration::has_lt<CHECK_T>::value>*)
     {
         if (typeid (EQUALS_COMPARER) == typeid (equal_to<T>)) {
-            return Concrete::Set_stdset<T> ();
+            return Concrete::Set_stdset<T>{};
         }
         else {
-            return Concrete::Set_LinkedList<T> (equalsComparer);
+            return Concrete::Set_LinkedList<T>{equalsComparer};
         }
     }
     template <typename T, typename EQUALS_COMPARER>
@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Containers::Factory {
             *  such as operator< (or a traits less) or a hash function. And its quite reasonable for
             *  small Sets's - which are often the case.
             */
-        return Concrete::Set_LinkedList<T> (equalsComparer);
+        return Concrete::Set_LinkedList<T>{equalsComparer};
     }
 
 }

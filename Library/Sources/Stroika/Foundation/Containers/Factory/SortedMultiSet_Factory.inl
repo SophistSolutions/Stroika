@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename TRAITS, typename INORDER_COMPARER>
     inline SortedMultiSet<T, TRAITS> SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER>::Default_ (const INORDER_COMPARER& inOrderComparer)
     {
-        return Concrete::SortedMultiSet_stdmap<T, TRAITS> (inOrderComparer);
+        return Concrete::SortedMultiSet_stdmap<T, TRAITS>{inOrderComparer};
     }
 
 }

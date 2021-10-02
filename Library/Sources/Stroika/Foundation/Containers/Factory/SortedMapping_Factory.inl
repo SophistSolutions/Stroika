@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
     inline SortedMapping<KEY_TYPE, VALUE_TYPE> SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::Default_ (const KEY_INORDER_COMPARER& inOrderComparer)
     {
-        return Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE> (inOrderComparer);
+        return Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>{inOrderComparer};
     }
 
 }
