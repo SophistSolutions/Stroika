@@ -20,6 +20,7 @@
 #include "../Configuration/Enumeration.h"
 #include "../Containers/Bijection.h"
 #include "../Containers/Collection.h"
+#include "../Containers/KeyedCollection.h"
 #include "../Containers/Mapping.h"
 #include "../Containers/MultiSet.h"
 #include "../Containers/Sequence.h"
@@ -140,6 +141,7 @@ namespace Stroika::Foundation::Memory {
 namespace Stroika::Foundation::DataExchange {
 
     using Characters::String;
+    using Containers::KeyedCollection;
     using Containers::Mapping;
     using Containers::Sequence;
     using Containers::Set;
@@ -779,8 +781,7 @@ namespace Stroika::Foundation::DataExchange {
          */
         struct TypesRegistry {
         public:
-            TypesRegistry (const Mapping<type_index, TypeMappingDetails>& src);
-            TypesRegistry (const Set<TypeMappingDetails>& src);
+            TypesRegistry (const Traversal::Iterable<TypeMappingDetails>& src);
 
         public:
             nonvirtual optional<TypeMappingDetails> Lookup (type_index t) const;
@@ -809,7 +810,11 @@ namespace Stroika::Foundation::DataExchange {
             nonvirtual String ToString () const;
 
         private:
-            Mapping<type_index, TypeMappingDetails> fSerializers_;
+            struct TypeMappingDetails_Extractor_ {
+                auto operator() (const TypeMappingDetails& t) const { return t.fForType; };
+            };
+            using T1_Traits_ = Containers::KeyedCollection_DefaultTraits<TypeMappingDetails, type_index, TypeMappingDetails_Extractor_>;
+            KeyedCollection<TypeMappingDetails, type_index, T1_Traits_> fSerializers_;
         };
 
     private:

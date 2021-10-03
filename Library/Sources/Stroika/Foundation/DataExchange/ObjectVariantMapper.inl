@@ -129,13 +129,9 @@ namespace Stroika::Foundation::DataExchange {
      ************** DataExchange::ObjectVariantMapper::TypesRegistry ****************
      ********************************************************************************
      */
-    inline ObjectVariantMapper::TypesRegistry::TypesRegistry (const Mapping<type_index, TypeMappingDetails>& src)
+    inline ObjectVariantMapper::TypesRegistry::TypesRegistry (const Traversal::Iterable<TypeMappingDetails>& src)
         : fSerializers_{src}
     {
-    }
-    inline ObjectVariantMapper::TypesRegistry::TypesRegistry (const Set<TypeMappingDetails>& src)
-    {
-        src.Apply ([this] (const TypeMappingDetails& t) { fSerializers_.Add (t.fForType, t); });
     }
     inline optional<ObjectVariantMapper::TypeMappingDetails> ObjectVariantMapper::TypesRegistry::Lookup (type_index t) const
     {
@@ -143,11 +139,11 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline void ObjectVariantMapper::TypesRegistry::Add (const TypeMappingDetails& typeMapDetails)
     {
-        fSerializers_.Add (typeMapDetails.fForType, typeMapDetails);
+        fSerializers_.Add (typeMapDetails);
     }
     inline void ObjectVariantMapper::TypesRegistry::Add (const Traversal::Iterable<TypeMappingDetails>& typeMapDetails)
     {
-        typeMapDetails.Apply ([this] (auto i) { fSerializers_.Add (i.fForType, i); });
+        fSerializers_ += typeMapDetails;
     }
     inline void ObjectVariantMapper::TypesRegistry::operator+= (const TypeMappingDetails& typeMapDetails)
     {
@@ -159,7 +155,7 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline Traversal::Iterable<ObjectVariantMapper::TypeMappingDetails> ObjectVariantMapper::TypesRegistry::GetMappers () const
     {
-        return fSerializers_.MappedValues ();
+        return fSerializers_;
     }
 
     /*
