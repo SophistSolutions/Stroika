@@ -156,7 +156,7 @@ namespace {
         // Note - /procfs files always unseekable
         static const filesystem::path                                                            kUseFile2List_{"/proc/mounts"};
         static const Watcher_Proc_Mounts_                                                        sWatcher_{kUseFile2List_};
-        static Execution::Synchronized<KeyedCollection<MountedFilesystemType, filesystem::path>> sLastResult_;
+        static Execution::Synchronized<KeyedCollection<MountedFilesystemType, filesystem::path>> sLastResult_{[] (const MountedFilesystemType& e) { return e.fMountedOn; }};
         static bool                                                                              sFirstTime_{true};
         if (sFirstTime_ or sWatcher_.IsNewAvail ()) {
             sLastResult_ = ReadMountInfo_MTabLikeFile_ (FileInputStream::New (kUseFile2List_, FileInputStream::eNotSeekable));
