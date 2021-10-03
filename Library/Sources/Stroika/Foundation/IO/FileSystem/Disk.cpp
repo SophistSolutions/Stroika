@@ -219,9 +219,9 @@ namespace {
         return IO::FileSystem::ToPath (Characters::Format (L"\\\\.\\PhysicalDrive%d", i));
     }
 }
-Collection<DiskInfoType> FileSystem::GetAvailableDisks ()
+KeyedCollection<DiskInfoType, filesystem::path> FileSystem::GetAvailableDisks ()
 {
-    Collection<DiskInfoType> result{};
+    KeyedCollection<DiskInfoType, filesystem::path> result{[] (DiskInfoType e) { return e.fDeviceName; }};
 
 #if qPlatform_Windows
 #if qCaptureDiskDeviceInfoWindows_ && 0

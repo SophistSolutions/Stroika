@@ -38,6 +38,7 @@
 #include "../../Characters/StringBuilder.h"
 #include "../../Characters/ToString.h"
 #include "../../Containers/Collection.h"
+#include "../../Containers/KeyedCollection.h"
 #include "../../Containers/Mapping.h"
 #include "../../DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "../../Debug/Sanitizer.h"
@@ -455,9 +456,7 @@ namespace {
         Traversal::Iterable<Interface>
         GetInterfaces_POSIX_ ()
     {
-        // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
-        //Collection<Interface> result;
-        Mapping<String, Interface> results;
+        KeyedCollection<Interface, String> results{[] (const Interface& i) { return i.fInternalInterfaceID; }};
 
         ifreq  ifreqs[128]{};
         ifconf ifconf{sizeof (ifreqs), {reinterpret_cast<char*> (ifreqs)}};
@@ -479,7 +478,7 @@ namespace {
             // to be smarter about merging these
             Interface newInterface = GetInterfaces_POSIX_mkInterface_ (sd, i, results.Lookup (interfaceName));
 
-            results.Add (newInterface.fInternalInterfaceID, newInterface);
+            results.Add (newInterface);
 
             // On MacOS (at least) I needed to use IFNAMESIZ + addr.size - as suggested
             // in https://gist.githubusercontent.com/OrangeTide/909204/raw/ed097cf0fc73eb0c44de1b26118f041a36424e3f/showif.c
@@ -494,7 +493,7 @@ namespace {
 #endif
             i = reinterpret_cast<const ifreq*> (reinterpret_cast<const byte*> (i) + len);
         }
-        return results.MappedValues ();
+        return results;
     }
 }
 #endif
@@ -774,10 +773,8 @@ namespace {
                 Execution::ReThrow ();
             }
         }
-        // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
-        //Collection<Interface> result;
-        Mapping<String, Interface>     results;
-        ULONG                          flags  = GAA_FLAG_INCLUDE_PREFIX | GAA_FLAG_INCLUDE_GATEWAYS;
+        KeyedCollection<Interface, String> results{[] (const Interface& i) { return i.fInternalInterfaceID; }};
+        ULONG                              flags  = GAA_FLAG_INCLUDE_PREFIX | GAA_FLAG_INCLUDE_GATEWAYS;
         ULONG                          family = AF_UNSPEC; // Both IPv4 and IPv6 addresses
         Memory::SmallStackBuffer<byte> buf;
     Again:
@@ -916,7 +913,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"newInterface=%s", Characters::ToString (newInterface).c_str ());
 #endif
-                results.Add (newInterface.fInternalInterfaceID, newInterface);
+                results.Add (newInterface);
             }
         }
         else if (dwRetVal == ERROR_BUFFER_OVERFLOW) {
@@ -933,7 +930,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"returning %s", Characters::ToString (results.MappedValues ()).c_str ());
 #endif
-        return results.MappedValues ();
+        return results;
     }
 }
 #endif
@@ -948,8 +945,6 @@ Traversal::Iterable<Interface> SystemInterfacesMgr::GetAll ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("SystemInterfacesMgr::GetAll");
 #endif
-    // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
-    //Collection<Interface> result;
 #if qPlatform_POSIX
     Traversal::Iterable<Interface> results = GetInterfaces_POSIX_ ();
 #elif qPlatform_Windows

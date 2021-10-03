@@ -11,7 +11,7 @@
 
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
-#include "../../Containers/Collection.h"
+#include "../../Containers/KeyedCollection.h"
 
 /**
  *  \file
@@ -21,7 +21,7 @@
  * TODO:
  *      @todo   Underneath DiskInfoType - include partitions (which I think maybe like volumnes for windows - maybe not)
  *
- *      @todo   Collection<DiskInfoType> FileSystem::GetAvailableDisks ()
+ *      @todo   KeyedCollection<DiskInfoType> FileSystem::GetAvailableDisks ()
  *              for linux
  *              https://github.com/karelzak/util-linux/blob/master/misc-utils/lsblk.c
  *              iterate_block_devices
@@ -100,11 +100,9 @@ namespace Stroika::Foundation::IO::FileSystem {
     };
 
     /**
-     *  Fetch all th...
-     *
-     *  @todo redo with KeyedCollection - once thats implemented
+     *  Fetch all the available disks (DiskInfoType) installed on the system, keyed by fDeviceName
      */
-    Containers::Collection<DiskInfoType> GetAvailableDisks ();
+    Containers::KeyedCollection<DiskInfoType, filesystem::path> GetAvailableDisks ();
 
 }
 

@@ -84,10 +84,10 @@ namespace {
 #if qPlatform_MacOS
 namespace {
     // this also works on Linux, but is a horrible API
-    Collection<MountedFilesystemType> ReadMountInfo_getfsent_ ()
+    Containers::KeyedCollection<MountedFilesystemType, filesystem::path> ReadMountInfo_getfsent_ ()
     {
         // @todo - note - this only appears to capture 'fixed disks' - not network mounts, and and virtual mount points like /dev/
-        Collection<MountedFilesystemType> results{};
+        KeyedCollection<MountedFilesystemType, filesystem::path> results{[] (const MountedFilesystemType& e) { return e.fMountedOn; }};
         static mutex                      sMutex_; // this API (getfsent) is NOT threadsafe, but we can at least make our use re-entrant
         [[maybe_unused]] auto&&           critSec = lock_guard{sMutex_};
         [[maybe_unused]] auto&&           cleanup = Execution::Finally ([&] () noexcept { ::endfsent (); });
@@ -103,7 +103,7 @@ namespace {
     /* 
      *  Something like this is used on many unix systems.
      */
-    Collection<MountedFilesystemType> ReadMountInfo_MTabLikeFile_ (const Streams::InputStream<byte>::Ptr& readStream)
+    KeyedCollection<MountedFilesystemType, filesystem::path> ReadMountInfo_MTabLikeFile_ (const Streams::InputStream<byte>::Ptr& readStream)
     {
         /*
          *  I haven't found this clearly documented yet, but it appears that a filesystem can be over-mounted.
@@ -120,8 +120,8 @@ namespace {
          *       sysfs /sys sysfs rw,nosuid,nodev,noexec,noatime 0 0
          *       ...
          */
-        Collection<MountedFilesystemType>                      results;
-        DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
+        KeyedCollection<MountedFilesystemType, filesystem::path> results{[] (const MountedFilesystemType& e) { return e.fMountedOn; }};
+        DataExchange::Variant::CharacterDelimitedLines::Reader   reader{{' ', '\t'}};
         for (Sequence<String> line : reader.ReadMatrix (readStream)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"in IO::FileSystem::{}::ReadMountInfo_MTabLikeFile_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
@@ -151,12 +151,12 @@ namespace {
 }
 #if qPlatform_Linux
 namespace {
-    Collection<MountedFilesystemType> ReadMountInfo_FromProcFSMounts_ ()
+    Containers::KeyedCollection<MountedFilesystemType, filesystem::path> ReadMountInfo_FromProcFSMounts_ ()
     {
         // Note - /procfs files always unseekable
         static const filesystem::path                                     kUseFile2List_{"/proc/mounts"};
         static const Watcher_Proc_Mounts_                                 sWatcher_{kUseFile2List_};
-        static Execution::Synchronized<Collection<MountedFilesystemType>> sLastResult_;
+        static Execution::Synchronized<KeyedCollection<MountedFilesystemType, filesystem::path>> sLastResult_;
         static bool                                                       sFirstTime_{true};
         if (sFirstTime_ or sWatcher_.IsNewAvail ()) {
             sLastResult_ = ReadMountInfo_MTabLikeFile_ (FileInputStream::New (kUseFile2List_, FileInputStream::eNotSeekable));
@@ -228,9 +228,9 @@ namespace {
     DISABLE_COMPILER_MSC_WARNING_END (6262)
 
     DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
-    Collection<MountedFilesystemType> GetMountedFilesystems_Windows_ ()
+    Containers::KeyedCollection<MountedFilesystemType, filesystem::path> GetMountedFilesystems_Windows_ ()
     {
-        Collection<MountedFilesystemType> results{};
+        Containers::KeyedCollection<MountedFilesystemType, filesystem::path> results{[] (const MountedFilesystemType& e) { return e.fMountedOn; }};
         TCHAR                             volumeNameBuf[1024]; // intentionally uninitialized since OUT parameter and not used unless FindFirstVolume success
 
         HANDLE                  hVol    = INVALID_HANDLE_VALUE;
@@ -304,7 +304,7 @@ String MountedFilesystemType::ToString () const
  ******************** IO::FileSystem::GetMountedFilesystems *********************
  ********************************************************************************
  */
-Containers::Collection<MountedFilesystemType> IO::FileSystem::GetMountedFilesystems ()
+Containers::KeyedCollection<MountedFilesystemType, filesystem::path> IO::FileSystem::GetMountedFilesystems ()
 {
 #if qPlatform_Linux
     return ReadMountInfo_FromProcFSMounts_ ();

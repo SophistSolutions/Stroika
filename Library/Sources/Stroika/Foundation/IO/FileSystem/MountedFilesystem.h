@@ -106,10 +106,8 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     /**
      *  Fetch all the mounted filesystems on this computer. Somewhat analagous to the UNIX 'df' command, or cat /etc/mtab
-     *
-     *  @todo redo with KeyedCollection - once thats implemented
      */
-    Containers::Collection<MountedFilesystemType> GetMountedFilesystems ();
+    Containers::KeyedCollection<MountedFilesystemType, filesystem::path> GetMountedFilesystems ();
 
 }
 
