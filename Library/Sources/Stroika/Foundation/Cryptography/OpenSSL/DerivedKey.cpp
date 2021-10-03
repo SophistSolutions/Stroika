@@ -5,12 +5,14 @@
 
 #if qHasFeature_OpenSSL
 #include <openssl/evp.h>
-#include <openssl/md5.h>
 #endif
 
 #include "../../Characters/StringBuilder.h"
 #include "../../Characters/ToString.h"
 #include "../../Containers/Common.h"
+#include "../../Cryptography/Digest/Algorithm/MD5.h"
+#include "../../Cryptography/Digest/Digester.h"
+#include "../../Cryptography/Digest/Hash.h"
 #include "../../Debug/Assertions.h"
 #include "../../Execution/Common.h"
 #include "../../Execution/Synchronized.h"
@@ -163,11 +165,12 @@ namespace {
             }
         }
         Require (digestAlgorithm == DigestAlgorithms::kMD5); // else NYI
-        uint8_t md5OutputBuf[2 * MD5_DIGEST_LENGTH];
-        (void)::MD5 (reinterpret_cast<unsigned char*> (buf1), NEltsOf (buf1), md5OutputBuf);
-        (void)::MD5 (reinterpret_cast<unsigned char*> (buf2), NEltsOf (buf2), md5OutputBuf + MD5_DIGEST_LENGTH);
-        Assert (keyLen <= NEltsOf (md5OutputBuf)); // NYI otherwise - but we could zero fill
-        BLOB resultKey{begin (md5OutputBuf), begin (md5OutputBuf) + std::min (NEltsOf (md5OutputBuf), keyLen)};
+        Digest::Algorithm::DigesterAlgorithm<Digest::Algorithm::MD5>::ReturnType encodedResults[] = {
+            Digest::ComputeDigest<Digest::Algorithm::MD5> (begin (buf1), end (buf1)),
+            Digest::ComputeDigest<Digest::Algorithm::MD5> (begin (buf2), end (buf2))};
+        Assert (keyLen <= sizeof (encodedResults)); // NYI otherwise - but we could zero fill
+        const byte* encodedResultBytes = reinterpret_cast<const byte*> (begin (encodedResults));
+        BLOB        resultKey{encodedResultBytes, encodedResultBytes + std::min (sizeof (encodedResults), keyLen)};
         BLOB iv;
         return pair<BLOB, BLOB>{resultKey, iv};
     }
