@@ -43,15 +43,6 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   It would be nice of offer a way to define mappers using c++ user defined attributes
- *              if these existed (@see https://manu343726.github.io/2019-07-14-reflections-on-user-defined-attributes/)
- *              
- *              The current approach is more MODULAR (so not bad), but slightly more verbose, and most other languages
- *              (e.g. c#, java) allow directly annotating objects for serialization (more convenient/terse - appropriate
- *              for some cases like private-ish objects).
- * 
- *              But will have to wait a bit it appears (MSFT still doesn't support reflections TS, and I'm not sure
- *              this can be done with reflections TS).
  *        
  *      @todo   https://stroika.atlassian.net/browse/STK-558 ObjectVariantMapper::TypesRegistry should use KeyedCollection when that code is ready
  *              use KeyedCollection<> instead of Mapping for fSerializers - was using Set<> which is closer API wise, but Set<> has misfeature
@@ -125,6 +116,8 @@
  *              VariantValue - that was smart about how to it would accessed etc. Needs some thought.
  *
  *              Anyhow - this is a long-term todo item, so no need to work out details now.
+ *
+ *      @todo   https://stroika.atlassian.net/browse/STK-743 - Add SupportsAdder concept and use that to simplify use in ObjectVariantMapper
  */
 
 namespace Stroika::Foundation::DataExchange {
@@ -192,6 +185,17 @@ namespace Stroika::Foundation::DataExchange {
      *              ...
      *          }
      *      \endcode
+     * 
+     *  \note   Future Design Note:
+     *              It would be nice of offer a way to define mappers using c++ user defined attributes
+     *              if these existed (@see https://manu343726.github.io/2019-07-14-reflections-on-user-defined-attributes/)
+     *              
+     *              The current approach is more MODULAR (so not bad), but slightly more verbose, and most other languages
+     *              (e.g. c#, java) allow directly annotating objects for serialization (more convenient/terse - appropriate
+     *              for some cases like private-ish objects).
+     * 
+     *              But will have to wait a bit it appears (MSFT still doesn't support reflections TS, and I'm not sure
+     *              this can be done with reflections TS).
      */
     class ObjectVariantMapper {
     public:

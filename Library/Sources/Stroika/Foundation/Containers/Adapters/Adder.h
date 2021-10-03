@@ -20,6 +20,9 @@
  *  \file
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ * 
+ *  TODO:
+ *      @todo https://stroika.atlassian.net/browse/STK-743 - Add SupportsAdder concept and use that to simplify use in ObjectVariantMapper
  *
  */
 
