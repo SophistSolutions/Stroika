@@ -196,6 +196,21 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
+    template <typename THROW_IF_MISSING>
+    inline auto KeyedCollection<T, KEY_TYPE, TRAITS>::LookupChecked (ArgByValueType<KeyType> key, const THROW_IF_MISSING& throwIfMissing) const -> value_type
+    {
+        if (optional<value_type> r{Lookup (key)}) [[LIKELY_ATTR]] {
+            return *r;
+        }
+        Execution::Throw (throwIfMissing);
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline auto KeyedCollection<T, KEY_TYPE, TRAITS>::LookupValue (ArgByValueType<KeyType> key, ArgByValueType<value_type> defaultValue) const -> value_type
+    {
+        optional<value_type> r{Lookup (key)};
+        return r.has_value () ? *r : defaultValue;
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
     inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Add (ArgByValueType<T> t)
     {
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (t);

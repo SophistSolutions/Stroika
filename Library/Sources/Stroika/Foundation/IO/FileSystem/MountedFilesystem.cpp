@@ -88,9 +88,9 @@ namespace {
     {
         // @todo - note - this only appears to capture 'fixed disks' - not network mounts, and and virtual mount points like /dev/
         KeyedCollection<MountedFilesystemType, filesystem::path> results{[] (const MountedFilesystemType& e) { return e.fMountedOn; }};
-        static mutex                      sMutex_; // this API (getfsent) is NOT threadsafe, but we can at least make our use re-entrant
-        [[maybe_unused]] auto&&           critSec = lock_guard{sMutex_};
-        [[maybe_unused]] auto&&           cleanup = Execution::Finally ([&] () noexcept { ::endfsent (); });
+        static mutex                                             sMutex_; // this API (getfsent) is NOT threadsafe, but we can at least make our use re-entrant
+        [[maybe_unused]] auto&&                                  critSec = lock_guard{sMutex_};
+        [[maybe_unused]] auto&&                                  cleanup = Execution::Finally ([&] () noexcept { ::endfsent (); });
         while (fstab* fs = ::getfsent ()) {
             results += MountedFilesystemType{fs->fs_file, Containers::Set<filesystem::path>{fs->fs_spec}, String::FromNarrowSDKString (fs->fs_vfstype)};
         }
@@ -154,10 +154,10 @@ namespace {
     Containers::KeyedCollection<MountedFilesystemType, filesystem::path> ReadMountInfo_FromProcFSMounts_ ()
     {
         // Note - /procfs files always unseekable
-        static const filesystem::path                                     kUseFile2List_{"/proc/mounts"};
-        static const Watcher_Proc_Mounts_                                 sWatcher_{kUseFile2List_};
+        static const filesystem::path                                                            kUseFile2List_{"/proc/mounts"};
+        static const Watcher_Proc_Mounts_                                                        sWatcher_{kUseFile2List_};
         static Execution::Synchronized<KeyedCollection<MountedFilesystemType, filesystem::path>> sLastResult_;
-        static bool                                                       sFirstTime_{true};
+        static bool                                                                              sFirstTime_{true};
         if (sFirstTime_ or sWatcher_.IsNewAvail ()) {
             sLastResult_ = ReadMountInfo_MTabLikeFile_ (FileInputStream::New (kUseFile2List_, FileInputStream::eNotSeekable));
             sFirstTime_  = false;
@@ -231,7 +231,7 @@ namespace {
     Containers::KeyedCollection<MountedFilesystemType, filesystem::path> GetMountedFilesystems_Windows_ ()
     {
         Containers::KeyedCollection<MountedFilesystemType, filesystem::path> results{[] (const MountedFilesystemType& e) { return e.fMountedOn; }};
-        TCHAR                             volumeNameBuf[1024]; // intentionally uninitialized since OUT parameter and not used unless FindFirstVolume success
+        TCHAR                                                                volumeNameBuf[1024]; // intentionally uninitialized since OUT parameter and not used unless FindFirstVolume success
 
         HANDLE                  hVol    = INVALID_HANDLE_VALUE;
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { if (hVol != INVALID_HANDLE_VALUE) { ::CloseHandle (hVol); } });

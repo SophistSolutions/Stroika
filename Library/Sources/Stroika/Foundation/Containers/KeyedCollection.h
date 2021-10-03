@@ -322,6 +322,21 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \note Alias LookupOrException
+         */
+        template <typename THROW_IF_MISSING>
+        nonvirtual value_type LookupChecked (ArgByValueType<KeyType> key, const THROW_IF_MISSING& throwIfMissing) const;
+
+    public:
+        /**
+         *  Always safe to call. If result of Lookup () !has_value, returns argument 'default' or 'sentinal' value.
+         *
+         *  \note Alias LookupOrDefault
+         */
+        nonvirtual value_type LookupValue (ArgByValueType<KeyType> key, ArgByValueType<value_type> defaultValue = value_type{}) const;
+
+    public:
+        /**
          *  Add when T is already present has may have no effect (logically has no effect) on the
          *  container (not an error or exception) (except that if T contains fields not part of comparison, those will be updated).
          *

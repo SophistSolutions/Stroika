@@ -301,7 +301,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note Alias LookupOrDefault
          */
-        nonvirtual mapped_type LookupValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue = mapped_type ()) const;
+        nonvirtual mapped_type LookupValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue = mapped_type{}) const;
 
     public:
         /**
