@@ -314,14 +314,14 @@ namespace Stroika::Foundation::DataExchange {
         (void)Lookup_ (typeid (T)); // just for side-effect of assert check
 #endif
     }
-     template <typename T, typename KEY_TYPE, typename TRAITS>
+    template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (Containers::KeyedCollection<T, KEY_TYPE, TRAITS>*)
     {
 #if qDebug
         (void)Lookup_ (typeid (T));        // just for side-effect of assert check
         (void)Lookup_ (typeid (KEY_TYPE)); // just for side-effect of assert check
 #endif
-     }
+    }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Mapping<KEY_TYPE, VALUE_TYPE>*)
     {

@@ -735,7 +735,7 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE>*);
         template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const optional<T>*);
-        template <typename T , typename KEY_TYPE, typename TRAITS>
+        template <typename T, typename KEY_TYPE, typename TRAITS>
         static TypeMappingDetails MakeCommonSerializer_ (const Containers::KeyedCollection<T, KEY_TYPE, TRAITS>*);
         template <typename T, typename TRAITS>
         static TypeMappingDetails MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*);
