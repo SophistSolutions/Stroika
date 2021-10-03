@@ -26,6 +26,7 @@
 #include "../Containers/Sequence.h"
 #include "../Containers/Set.h"
 #include "../Containers/SortedCollection.h"
+#include "../Containers/SortedKeyedCollection.h"
 #include "../Containers/SortedMapping.h"
 #include "../Containers/SortedSet.h"
 #include "../Execution/Synchronized.h"
@@ -568,6 +569,7 @@ namespace Stroika::Foundation::DataExchange {
          *      o   Bjjection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>
          *      o   Collection<T>
          *      o   Traversal::DiscreteRange<T, TRAITS>
+         *      o   KeyedCollection<T, KEY_TYPE, TRAITS>
          *      o   Mapping<Key,Value>
          *      o   optional<T>
          *      o   Optional<T>
@@ -575,6 +577,7 @@ namespace Stroika::Foundation::DataExchange {
          *      o   Sequence<T>
          *      o   Set<T>
          *      o   SortedCollection<T>
+         *      o   SortedKeyedCollection<T, KEY_TYPE, TRAITS>
          *      o   SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>
          *      o   SortedSet<T>
          *      o   Synchronized<T>
@@ -686,6 +689,8 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual void AssertDependentTypesAlreadyInRegistry_ (Containers::Collection<T>*);
         template <typename T, typename TRAITS>
         nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Traversal::DiscreteRange<T, TRAITS>*);
+        template <typename T, typename KEY_TYPE, typename TRAITS>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (Containers::KeyedCollection<T, KEY_TYPE, TRAITS>*);
         template <typename KEY_TYPE, typename VALUE_TYPE>
         nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Mapping<KEY_TYPE, VALUE_TYPE>*);
         template <typename T>
@@ -698,6 +703,8 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Set<T>*);
         template <typename T>
         nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedCollection<T>*);
+        template <typename T, typename KEY_TYPE, typename TRAITS>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (Containers::SortedKeyedCollection<T, KEY_TYPE, TRAITS>*);
         template <typename KEY_TYPE, typename VALUE_TYPE>
         nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE>*);
         template <typename T>
@@ -728,6 +735,8 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE>*);
         template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const optional<T>*);
+        template <typename T , typename KEY_TYPE, typename TRAITS>
+        static TypeMappingDetails MakeCommonSerializer_ (const Containers::KeyedCollection<T, KEY_TYPE, TRAITS>*);
         template <typename T, typename TRAITS>
         static TypeMappingDetails MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*);
         template <typename T>
@@ -736,6 +745,8 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const Set<T>*);
         template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const Containers::SortedCollection<T>*);
+        template <typename T, typename KEY_TYPE, typename TRAITS>
+        static TypeMappingDetails MakeCommonSerializer_ (const Containers::SortedKeyedCollection<T, KEY_TYPE, TRAITS>*);
         template <typename KEY_TYPE, typename VALUE_TYPE>
         static TypeMappingDetails MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE>*);
         template <typename T>

@@ -314,6 +314,14 @@ namespace Stroika::Foundation::DataExchange {
         (void)Lookup_ (typeid (T)); // just for side-effect of assert check
 #endif
     }
+     template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (Containers::KeyedCollection<T, KEY_TYPE, TRAITS>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T));        // just for side-effect of assert check
+        (void)Lookup_ (typeid (KEY_TYPE)); // just for side-effect of assert check
+#endif
+     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Mapping<KEY_TYPE, VALUE_TYPE>*)
     {
@@ -348,6 +356,14 @@ namespace Stroika::Foundation::DataExchange {
     {
 #if qDebug
         (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+#endif
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (Containers::SortedKeyedCollection<T, KEY_TYPE, TRAITS>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T));        // just for side-effect of assert check
+        (void)Lookup_ (typeid (KEY_TYPE)); // just for side-effect of assert check
 #endif
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
@@ -493,6 +509,11 @@ namespace Stroika::Foundation::DataExchange {
     {
         return MakeCommonSerializer_WithAdder<Containers::Collection<T>> ();
     }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::KeyedCollection<T, KEY_TYPE, TRAITS>*)
+    {
+        return MakeCommonSerializer_WithAdder<Containers::KeyedCollection<T, KEY_TYPE, TRAITS>> ();
+    }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE>*)
     {
@@ -625,6 +646,11 @@ namespace Stroika::Foundation::DataExchange {
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedCollection<T>*)
     {
         return MakeCommonSerializer_WithAdder<Containers::SortedCollection<T>> ();
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedKeyedCollection<T, KEY_TYPE, TRAITS>*)
+    {
+        return MakeCommonSerializer_WithAdder<Containers::SortedKeyedCollection<T, KEY_TYPE, TRAITS>> ();
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE>*)
