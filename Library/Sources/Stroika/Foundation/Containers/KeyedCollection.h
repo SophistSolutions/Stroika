@@ -174,6 +174,28 @@ namespace Stroika::Foundation::Containers {
          *
          *  \par Example Usage
          *      \code
+         *          struct T1 {
+         *              int key;
+         *              int value;
+         *          };
+         *          struct T1_Key_Extractor {
+         *              int operator() (const T1& t) const { return t.key; };
+         *          };
+         *          using T1_Traits = KeyedCollection_DefaultTraits<T1, int, T1_Key_Extractor>;
+         *
+         *          KeyedCollection<T1, int> kc1 {[] (T1 e) { return e.key; }};     // specify extractor explicitly
+         *          KeyedCollection<T1, int, T1_Traits> kc2 {[] (T1 e) { return e.key; }};
+         *          KeyedCollection<T1, int, T1_Traits> kc3{};                      // get the extractor from the TRAITS
+         *      \endcode
+         *
+         *  \par Example Usage
+         *      \code
+         *          KeyedCollection<DiskInfoType, filesystem::path> result{[] (DiskInfoType e) { return e.fDeviceName; }};
+         *      \endcode
+         *
+         *  \par Example Usage
+         *      \code
+         *          KeyedCollection<DiskInfoType, filesystem::path> result{[] (DiskInfoType e) { return e.fDeviceName; }};
          *      \endcode
          *
          *  \note Implementation note:
