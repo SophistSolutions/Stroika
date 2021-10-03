@@ -42,6 +42,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
      */
     template <>
     class DigesterAlgorithm<CRC32> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<CRC32>::ReturnType> {
+    public:
         using ReturnType = DigesterDefaultTraitsForAlgorithm<CRC32>::ReturnType;
 
     public:

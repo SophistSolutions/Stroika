@@ -45,6 +45,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
      */
     template <>
     class DigesterAlgorithm<Jenkins> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<Jenkins>::ReturnType> {
+    public:
         using ReturnType = DigesterDefaultTraitsForAlgorithm<Jenkins>::ReturnType;
 
     public:

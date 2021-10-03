@@ -54,6 +54,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
      */
     template <>
     class DigesterAlgorithm<SuperFastHash> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<SuperFastHash>::ReturnType> {
+    public:
         using ReturnType = DigesterDefaultTraitsForAlgorithm<SuperFastHash>::ReturnType;
 
     public:

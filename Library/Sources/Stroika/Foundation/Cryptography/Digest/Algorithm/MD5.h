@@ -40,6 +40,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
      */
     template <>
     class DigesterAlgorithm<MD5> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<MD5>::ReturnType> {
+    public:
         using ReturnType = DigesterDefaultTraitsForAlgorithm<MD5>::ReturnType;
 
     public:
@@ -56,7 +57,6 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
         virtual ReturnType Complete () override;
 
     private:
-        //   public: //tmphack til we get rid of other class
         using UINT4 = uint32_t;
         struct MD5_CTX {
             UINT4         i[2];       /* number of _bits_ handled mod 2^64 */

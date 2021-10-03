@@ -17,8 +17,15 @@
 
 namespace Stroika::Foundation::Cryptography::Digest {
 
-    using Result128BitType = array<uint8_t, 16>; // 16 bytes, but 128 bits
-    using Result160BitType = array<uint8_t, 20>; // 20 bytes, but 160 bits
+    /**
+     *  16 bytes, but 128 bits
+     */
+    using Result128BitType = array<uint8_t, 16>;
+
+    /**
+     *  20 bytes, but 160 bits
+     */
+    using Result160BitType = array<uint8_t, 20>;
 
     /**
      *  Convert the various 'hash' / 'digest' output formats amongst each other. NOT ALL
