@@ -125,15 +125,6 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  EXPERIMENTAL REPLACEMENT FOR KeyedCollection<T>
-         * 
-         *  Instead do Set<T> with equalsComparer = mkSetComparerByIDExtract ([] (T t) { return t.fID; });
-         */
-        template <typename ID>
-        static ElementEqualityComparerType mkComparerByIDExtract (const function<ID (T)>& idExtractor);
-
-    public:
-        /**
          *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add ()
          *
          *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates

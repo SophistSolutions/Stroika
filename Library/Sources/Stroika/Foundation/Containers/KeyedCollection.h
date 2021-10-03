@@ -63,6 +63,10 @@ namespace Stroika::Foundation::Containers {
      *      of just the Key. That lookup by key is basically the 'feature' that KeyedCollection provides.
      *
      *  \note   Considered using Set<T> (to avoid using this concept) with helper mkComparerByIDExtract.
+     *              auto Set<T>::mkComparerByIDExtract (const function<ID (T)>& idExtractor) -> ElementEqualityComparerType
+     *              {
+     *                  return [idExtractor] (const T& lhs, const T& rhs) { return idExtractor (lhs) == idExtractor (rhs); };
+     *              }
      *          This is close (for adding/removing items works fine). But - you need to be able to lookup items by
      *          ID, and that required forcing the type T to be constructible just from an ID (awkward and potentially
      *          expensive).

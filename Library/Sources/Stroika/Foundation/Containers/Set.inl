@@ -16,12 +16,6 @@ namespace Stroika::Foundation::Containers {
      ********************************************************************************
      */
     template <typename T>
-    template <typename ID>
-    auto Set<T>::mkComparerByIDExtract (const function<ID (T)>& idExtractor) -> ElementEqualityComparerType
-    {
-        return [idExtractor] (const T& lhs, const T& rhs) { return idExtractor (lhs) == idExtractor (rhs); };
-    }
-    template <typename T>
     inline Set<T>::Set ()
         : Set{equal_to<T>{}}
     {
