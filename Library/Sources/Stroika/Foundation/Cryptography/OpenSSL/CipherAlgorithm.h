@@ -67,6 +67,16 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     public:
         /**
          */
+        nonvirtual size_t KeyLength () const;
+
+    public:
+        /**
+         */
+        nonvirtual size_t IVLength () const;
+
+    public:
+        /**
+         */
         nonvirtual String ToString () const;
 
     private:

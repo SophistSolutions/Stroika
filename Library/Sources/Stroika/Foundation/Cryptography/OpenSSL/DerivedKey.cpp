@@ -98,6 +98,7 @@ namespace {
  ********************** Cryptography::OpenSSL::DerivedKey ***********************
  ********************************************************************************
  */
+#if 0
 size_t DerivedKey::KeyLength (CipherAlgorithm cipherAlgorithm)
 {
     return ::EVP_CIPHER_key_length (cipherAlgorithm);
@@ -107,7 +108,7 @@ size_t DerivedKey::IVLength (CipherAlgorithm cipherAlgorithm)
 {
     return ::EVP_CIPHER_iv_length (cipherAlgorithm);
 }
-
+#endif
 String DerivedKey::ToString () const
 {
     Characters::StringBuilder result;

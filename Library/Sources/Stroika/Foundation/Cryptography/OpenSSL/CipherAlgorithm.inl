@@ -51,6 +51,14 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     {
         return String::FromASCII (::EVP_CIPHER_name (fCipher_));
     }
+    inline size_t CipherAlgorithm::KeyLength () const
+    {
+        return ::EVP_CIPHER_key_length (fCipher_);
+    }
+    inline size_t CipherAlgorithm::IVLength () const
+    {
+        return ::EVP_CIPHER_iv_length (fCipher_);
+    }
 
     [[deprecated ("Since Stroika 2.1b12")]] inline const EVP_CIPHER* Convert2OpenSSL (CipherAlgorithm alg)
     {
