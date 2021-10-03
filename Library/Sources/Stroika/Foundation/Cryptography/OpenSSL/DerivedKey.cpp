@@ -171,7 +171,7 @@ namespace {
         Assert (keyLen <= sizeof (encodedResults)); // NYI otherwise - but we could zero fill
         const byte* encodedResultBytes = reinterpret_cast<const byte*> (begin (encodedResults));
         BLOB        resultKey{encodedResultBytes, encodedResultBytes + std::min (sizeof (encodedResults), keyLen)};
-        BLOB iv;
+        BLOB        iv;
         return pair<BLOB, BLOB>{resultKey, iv};
     }
     size_t mkDefKeyLen_ (WinCryptDeriveKey::Provider provider, CipherAlgorithm cipherAlgorithm)
