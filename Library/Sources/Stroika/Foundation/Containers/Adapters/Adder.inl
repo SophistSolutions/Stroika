@@ -31,6 +31,13 @@ namespace Stroika::Foundation::Containers::Adapters {
         container->Add (value);
     }
     template <typename CONTAINER_TYPE>
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline void Adder<CONTAINER_TYPE>::Add_ (KeyedCollection<T, KEY_TYPE, TRAITS>* container, Configuration::ArgByValueType<T> value)
+    {
+        RequireNotNull (container);
+        container->Add (value);
+    }
+    template <typename CONTAINER_TYPE>
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline void Adder<CONTAINER_TYPE>::Add_ (Mapping<KEY_TYPE, VALUE_TYPE>* container, Configuration::ArgByValueType<value_type> value)
     {
