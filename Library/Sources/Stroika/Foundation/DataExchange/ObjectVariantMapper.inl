@@ -130,7 +130,7 @@ namespace Stroika::Foundation::DataExchange {
      ********************************************************************************
      */
     inline ObjectVariantMapper::TypesRegistry::TypesRegistry (const Traversal::Iterable<TypeMappingDetails>& src)
-        : fSerializers_ { src }
+        : fSerializers_{src}
     {
     }
     inline optional<ObjectVariantMapper::TypeMappingDetails> ObjectVariantMapper::TypesRegistry::Lookup (type_index t) const

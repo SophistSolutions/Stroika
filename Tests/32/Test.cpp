@@ -555,7 +555,7 @@ namespace {
                 unsigned int     nCipherTests{};
                 unsigned int     nFailures{};
                 MultiSet<String> failingCiphers;
-                const size_t     totalDigestAlgorithms = OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().GetLength ();
+                [[maybe_unused]]const size_t     totalDigestAlgorithms = OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().GetLength ();
                 for (BLOB passphrase : kPassphrases_) {
                     for (BLOB inputMessage : kTestMessages_) {
                         for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ()) {
