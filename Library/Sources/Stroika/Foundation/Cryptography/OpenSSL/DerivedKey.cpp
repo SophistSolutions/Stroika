@@ -47,74 +47,16 @@ using Memory::SmallStackBuffer;
 #endif
 
 #if qHasFeature_OpenSSL
-namespace {
-    // This trick counts on the fact that EVP_BytesToKey() only ever looks at key_len and iv_len
-    struct FakeCryptoAlgo_
-#if OPENSSL_VERSION_NUMBER < 0x1010000fL
-        : ::EVP_CIPHER
-#endif
-    {
-#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
-        ::EVP_CIPHER* tmpCipher{};
-#endif
-        FakeCryptoAlgo_ ()                       = delete;
-        FakeCryptoAlgo_ (const FakeCryptoAlgo_&) = delete;
-        FakeCryptoAlgo_ (size_t keyLength, size_t ivLength)
-        {
-#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
-            Assert (keyLength < size_t (numeric_limits<int>::max ())); // for static cast below
-            Assert (ivLength < size_t (numeric_limits<int>::max ()));  // for static cast below
-            tmpCipher = ::EVP_CIPHER_meth_new (0, 0, static_cast<int> (keyLength));
-            ::EVP_CIPHER_meth_set_iv_length (tmpCipher, static_cast<int> (ivLength));
-#else
-            (void)::memset (this, 0, sizeof (*this));
-            DISABLE_COMPILER_MSC_WARNING_START (4267)
-            this->key_len = keyLength;
-            this->iv_len  = ivLength;
-            DISABLE_COMPILER_MSC_WARNING_END (4267)
-#endif
-        }
-#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
-        ~FakeCryptoAlgo_ ()
-        {
-            ::EVP_CIPHER_meth_free (tmpCipher);
-        }
-#endif
-        operator const ::EVP_CIPHER* () const
-        {
-#if OPENSSL_VERSION_NUMBER >= 0x1010000fL
-            return tmpCipher;
-#else
-            return this;
-#endif
-        }
-    };
-}
-#endif
-
-#if qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ********************** Cryptography::OpenSSL::DerivedKey ***********************
  ********************************************************************************
  */
-#if 0
-size_t DerivedKey::KeyLength (CipherAlgorithm cipherAlgorithm)
-{
-    return ::EVP_CIPHER_key_length (cipherAlgorithm);
-}
-
-size_t DerivedKey::IVLength (CipherAlgorithm cipherAlgorithm)
-{
-    return ::EVP_CIPHER_iv_length (cipherAlgorithm);
-}
-#endif
 String DerivedKey::ToString () const
 {
     Characters::StringBuilder result;
     result += L"{";
-    result += L"key: " + Characters::ToString (fKey);
-    result += L", ";
+    result += L"key: " + Characters::ToString (fKey) + L", ";
     result += L"IV: " + Characters::ToString (fIV);
     result += L"}";
     return result.str ();
@@ -220,17 +162,17 @@ WinCryptDeriveKey::WinCryptDeriveKey (Provider provider, CipherAlgorithm cipherA
  ********************************************************************************
  */
 namespace {
-    pair<BLOB, BLOB> mkEVP_BytesToKey_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
+    pair<BLOB, BLOB> mkEVP_BytesToKey_ (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
     {
         Require (nRounds >= 1);
-        SmallStackBuffer<byte> useKey{SmallStackBufferCommon::eUninitialized, keyLen};
-        SmallStackBuffer<byte> useIV{SmallStackBufferCommon::eUninitialized, ivLen};
+        SmallStackBuffer<byte> useKey{SmallStackBufferCommon::eUninitialized, cipherAlgorithm.KeyLength ()};
+        SmallStackBuffer<byte> useIV{SmallStackBufferCommon::eUninitialized, cipherAlgorithm.IVLength ()};
         if (salt and salt->GetSize () != 8) [[UNLIKELY_ATTR]] {
             // Could truncate and fill to adapt to different sized salt...
             Execution::Throw (Execution::Exception{L"only 8-byte salt with EVP_BytesToKey"sv});
         }
         int i = ::EVP_BytesToKey (
-            FakeCryptoAlgo_ (keyLen, ivLen),
+            cipherAlgorithm,
             digestAlgorithm,
             reinterpret_cast<const unsigned char*> (salt ? NullCoalesce (salt).begin () : nullptr),
             reinterpret_cast<const unsigned char*> (passwd.begin ()),
@@ -241,13 +183,13 @@ namespace {
         if (i == 0) {
             Cryptography::OpenSSL::Exception::ThrowLastError ();
         }
-        Assert (i == static_cast<int> (keyLen));
+        Assert (i == cipherAlgorithm.KeyLength ());
         return pair<BLOB, BLOB>{BLOB{useKey.begin (), useKey.end ()}, BLOB{useIV.begin (), useIV.end ()}};
     }
 }
 template <>
-EVP_BytesToKey::EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
-    : DerivedKey{mkEVP_BytesToKey_ (keyLen, ivLen, digestAlgorithm, passwd, nRounds, salt)}
+EVP_BytesToKey::EVP_BytesToKey (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
+    : DerivedKey{mkEVP_BytesToKey_ (cipherAlgorithm, digestAlgorithm, passwd, nRounds, salt)}
 {
 }
 
@@ -274,7 +216,7 @@ namespace {
             Execution::Throw (Execution::Exception{L"PKCS5_PBKDF2_HMAC error"sv});
         }
         const byte* p = outBuf.begin ();
-        return pair<BLOB, BLOB> (BLOB (p, p + keyLen), BLOB (p + keyLen, p + keyLen + ivLen));
+        return pair<BLOB, BLOB> (BLOB{p, p + keyLen}, BLOB{p + keyLen, p + keyLen + ivLen});
     }
 }
 template <>

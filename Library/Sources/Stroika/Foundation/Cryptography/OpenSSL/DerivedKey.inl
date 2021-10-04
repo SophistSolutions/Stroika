@@ -55,13 +55,8 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
      ********************************************************************************
      */
     template <typename PASSWORD_TYPE>
-    inline EVP_BytesToKey::EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds, const optional<BLOB>& salt)
-        : EVP_BytesToKey{keyLen, ivLen, digestAlgorithm, NormalizePassword (passwd), nRounds, salt}
-    {
-    }
-    template <typename PASSWORD_TYPE, typename CIPHER_ALGORITHM_TYPE>
-    inline EVP_BytesToKey::EVP_BytesToKey (CIPHER_ALGORITHM_TYPE cipherAlgorithm, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds, const optional<BLOB>& salt)
-        : EVP_BytesToKey{KeyLength (cipherAlgorithm), IVLength (cipherAlgorithm), digestAlgorithm, passwd, nRounds, salt}
+    inline EVP_BytesToKey::EVP_BytesToKey (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds, const optional<BLOB>& salt)
+        : EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, NormalizePassword (passwd), nRounds, salt}
     {
     }
 

@@ -111,13 +111,15 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
          *  nRounds defaults to 1, because thats what is used in the openssl comamndline tool (so it makes
          *  it easier to get the same results as it). But RFC 2898 suggests an iteration count of at least 1000.
          */
+        //template <typename PASSWORD_TYPE>
+        //EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1, const optional<BLOB>& salt = nullopt);
         template <typename PASSWORD_TYPE>
-        EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1, const optional<BLOB>& salt = nullopt);
-        template <typename PASSWORD_TYPE, typename CIPHER_ALGORITHM_TYPE>
-        EVP_BytesToKey (CIPHER_ALGORITHM_TYPE cipherAlgorithm, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1, const optional<BLOB>& salt = nullopt);
+        EVP_BytesToKey (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1, const optional<BLOB>& salt = nullopt);
     };
+    //template <>
+    //EVP_BytesToKey::EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt);
     template <>
-    EVP_BytesToKey::EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt);
+    EVP_BytesToKey::EVP_BytesToKey (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt);
 
     /**
      *  PKCS5_PBKDF2_HMAC CAN be object sliced. Its a simple construction wrapper on a DerivedKey. PKCS5_PBKDF1
