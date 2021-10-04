@@ -101,9 +101,9 @@ This mostly conists of GNU make, and perl (see details below depending on your p
 
 - Compiler
   - gcc 8 or later OR
-    - Stroika v2.1 is currently tested with gcc8, gcc9, and gcc10
+    - Stroika v2.1 is currently tested with gcc-8, gcc-9, gcc-10, and gcc-11
   - llvm (clang++) 6 or later
-    - Stroika v2.1 is currently tested with clang6, clang7, clang8, clang9, clang10
+    - Stroika v2.1 is currently tested with clang6, clang-7, clang-8, clang-9, clang-10, clang-11, clang-12
 - automake (if building curl)
 - libtool (gnu version) – (if building curl)
 
