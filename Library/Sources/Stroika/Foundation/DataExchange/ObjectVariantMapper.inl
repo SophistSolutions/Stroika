@@ -130,22 +130,8 @@ namespace Stroika::Foundation::DataExchange {
      ********************************************************************************
      */
     inline ObjectVariantMapper::TypesRegistry::TypesRegistry (const Traversal::Iterable<TypeMappingDetails>& src)
-        :
-#if qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy
-        fSerializers_
+        : fSerializers_ { src }
     {
-        [] (const TypeMappingDetails& t) -> type_index { return t.fForType; }
-    }
-#else
-        fSerializers_
-    {
-        src
-    }
-#endif
-    {
-#if qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy
-        fSerializers_ += src;
-#endif
     }
     inline optional<ObjectVariantMapper::TypeMappingDetails> ObjectVariantMapper::TypesRegistry::Lookup (type_index t) const
     {
