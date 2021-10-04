@@ -61,7 +61,7 @@
 #if (__clang_major__ < 11) || (__clang_major__ == 11 && (__clang_minor__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 (older clang versions supported by Stroika v2.0) does not support versions prior to APPLE clang++ 11 (XCode 11)"
 #endif
-#if (__clang_major__ > 12) || (__clang_major__ == 12 && (__clang_minor__ > 0))
+#if (__clang_major__ > 13) || (__clang_major__ == 13 && (__clang_minor__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ (APPLE) - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -1470,7 +1470,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 #if defined(__clang__) && defined(__APPLE__)
 // VERIFIED BROKEN on XCode 11.0
 // VERIFIED BROKEN on XCode 12.0
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+// VERIFIED BROKEN on XCode 13.0
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
 // still broken in clang++-8
 // still broken in clang++-9
@@ -1525,7 +1526,8 @@ Test.cpp:173:31: error: template template argument has different template parame
 #if defined(__clang__) && defined(__APPLE__)
 // VERIFIED BROKEN on XCode 11.0
 // VERIFIED BROKEN on XCode 12.0
-#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+// VERIFIED BROKEN on XCode 13.0
+#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
 // verified still broken in clang++-10
 // verified still broken in clang++-11
@@ -2138,7 +2140,8 @@ stHarness/SimpleClass.cpp ...
 // Still broken XCode 10 - beta
 // VERIFIED STILL BROKEN on XCode 11.0
 // VERIFIED STILL BROKEN on XCode 12.0
-#define qCompilerAndStdLib_quick_exit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+// VERIFIED STILL BROKEN on XCode 13.0
+#define qCompilerAndStdLib_quick_exit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #else
 #define qCompilerAndStdLib_quick_exit_Buggy 0
 #endif
