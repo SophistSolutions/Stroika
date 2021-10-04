@@ -552,10 +552,10 @@ namespace {
                     Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Skipping provider=%s, due to exception: %s", provider.c_str (), Characters::ToString (current_exception ()).c_str ()).c_str ());
                     continue;
                 }
-                unsigned int     nCipherTests{};
-                unsigned int     nFailures{};
-                MultiSet<String> failingCiphers;
-                [[maybe_unused]]const size_t     totalDigestAlgorithms = OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().GetLength ();
+                unsigned int                  nCipherTests{};
+                unsigned int                  nFailures{};
+                MultiSet<String>              failingCiphers;
+                [[maybe_unused]] const size_t totalDigestAlgorithms = OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().GetLength ();
                 for (BLOB passphrase : kPassphrases_) {
                     for (BLOB inputMessage : kTestMessages_) {
                         for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ()) {

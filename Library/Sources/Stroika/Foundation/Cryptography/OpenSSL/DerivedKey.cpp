@@ -180,10 +180,11 @@ namespace {
             nRounds,
             reinterpret_cast<unsigned char*> (useKey.begin ()),
             reinterpret_cast<unsigned char*> (useIV.begin ()));
+        Assert (i >= 0);
         if (i == 0) {
             Cryptography::OpenSSL::Exception::ThrowLastError ();
         }
-        Assert (i == cipherAlgorithm.KeyLength ());
+        Assert (i == static_cast<int> (cipherAlgorithm.KeyLength ()));
         return pair<BLOB, BLOB>{BLOB{useKey.begin (), useKey.end ()}, BLOB{useIV.begin (), useIV.end ()}};
     }
 }
