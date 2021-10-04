@@ -1109,7 +1109,7 @@ In file included from ./ObjectVariantMapper.h:950:
 
 #if defined(__clang__) && defined(__APPLE__)
 // FIrst noticed BROKEN in XCODE 13
-#define qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((13 <= __clang_major__))
+#define qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
 // FIrst noticed BROKEN in clang 11
 #define qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
