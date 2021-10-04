@@ -125,8 +125,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual KeyEqualityComparerType GetKeyEqualityComparer () const override
         {
-            return KeyEqualityComparerType{[=] (const KEY_TYPE& lhs, const KEY_TYPE& rhs) {
-                return fKeyComparer_ (lhs, rhs) and fKeyComparer_ (rhs, lhs);
+            auto keyComparer = fKeyComparer_;
+            return KeyEqualityComparerType{[keyComparer] (const KEY_TYPE& lhs, const KEY_TYPE& rhs) {
+                return keyComparer (lhs, rhs) and keyComparer (rhs, lhs);
             }};
             //return KeyEqualityComparerType{Common::EqualsComparerAdapter{Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eInOrderOrEquals, function<bool (KEY_TYPE, KEY_TYPE)>>{fData_.key_comp ()}}};
         }
