@@ -1088,11 +1088,31 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 
 #endif
 
+/*
+n file included from ObjectVariantMapper.cpp:24:
+In file included from ./ObjectVariantMapper.h:950:
+./ObjectVariantMapper.inl:140:9: error: no matching constructor for initialization of 'KeyedCollection<Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails, std::__1::type_index, Stroika::Foundation::DataExchange::ObjectVariantMapper::TypesRegistry::TypeMappingDetails_Traits_>' (aka 'KeyedCollection<Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails, std::__1::type_index, KeyedCollection_DefaultTraits<Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails, std::__1::type_index, Stroika::Foundation::DataExchange::ObjectVariantMapper::TypesRegistry::TypeMappingDetails_Extractor_> >')
+        fSerializers_
+        ^
+./../Characters/../Containers/KeyedCollection.h:218:9: note: candidate constructor not viable: no known conversion from 'const Traversal::Iterable<TypeMappingDetails>' to 'const Stroika::Foundation::Containers::KeyedCollection<Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails, std::__1::type_index, Stroika::Foundation::Containers::KeyedCollection_DefaultTraits<Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails, std::__1::type_index, Stroika::Foundation::DataExchange::ObjectVariantMapper::TypesRegistry::TypeMappingDetails_Extractor_> >' for 1st argument
+        KeyedCollection (const KeyedCollection& src) noexcept = default;
+        ^
+./../Characters/../Containers/KeyedCollection.h:253:18: note: candidate constructor not viable: no known conversion from 'const Traversal::Iterable<TypeMappingDetails>' to 'const Stroika::Foundation::Containers::KeyedCollection<Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails, std::__1::type_index, Stroika::Foundation::Containers::KeyedCollection_DefaultTraits<Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails, std::__1::type_index, Stroika::Foundation::DataExchange::ObjectVariantMapper::TypesRegistry::TypeMappingDetails_Extractor_> >::_IRepSharedPtr' (aka 'const std::__1::shared_ptr<Stroika::Foundation::Containers::KeyedCollection<Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails, std::__1::type_index, Stroika::Foundation::Containers::KeyedCollection_DefaultTraits<Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails, std::__1::type_index, Stroika::Foundation::DataExchange::ObjectVariantMapper::TypesRegistry::TypeMappingDetails_Extractor_> >::_IRep>') for 1st argument
+        explicit KeyedCollection (const _IRepSharedPtr& rep) noexcept;
+                 ^
+./../Characters/../Containers/KeyedCollection.h:254:18: note: candidate constructor not viable: no known conversion from 'const Traversal::Iterable<TypeMappingDetails>' to 'Stroika::Foundation::Containers::KeyedCollection<Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails, std::__1::type_index, Stroika::Foundation::Containers::KeyedCollection_DefaultTraits<Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails, std::__1::type_index, Stroika::Foundation::DataExchange::ObjectVariantMapper::TypesRegistry::TypeMappingDetails_Extractor_> >::_IRepSharedPtr' (aka 'std::__1::shared_ptr<Stroika::Foundation::Containers::KeyedCollection<Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails, std::__1::type_index, Stroika::Foundation::Containers::KeyedCollection_DefaultTraits<Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails, std::__1::type_index, Stroika::Foundation::DataExchange::ObjectVariantMapper::TypesRegistry::TypeMappingDetails_Extractor_> >::_IRep>') for 1st argument
+        explicit KeyedCollection (_IRepSharedPtr&& rep) noexcept;
+                 ^
+*/
+
 #ifndef qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
 // FIrst noticed BROKEN in XCODE 13
 #define qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((13 <= __clang_major__))
+#elif defined(__clang__) && !defined(__APPLE__)
+// FIrst noticed BROKEN in clang 11
+#define qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
 #else
 #define qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy 0
 #endif
