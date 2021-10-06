@@ -61,8 +61,20 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   i = b.begin ();  // same type
   ```
 
+  NOTE that this means you can declare
+  ```
+  void f(Iterator<T> start, Iterator<T> end) {...}
+  ```
+  instead of 
+  ```
+  template<typename IT>
+  void f(IT start, IT end) {...}
+  ```
+  and still have 'f' work with different types of containers.
+  
+
 - Stroika containers are lazy copied (copy-on-write - aka COW)
-  - Performance tradeoff: some access patterns are slower due to extra vtable lookup per operation, but most common operations (copying etc) much faster, and abstraction allowing changing representations often makes much faster. Plus, if you use functional apis, these generally avoid the vtable lookup cost.
+  - Performance tradeoff: some access patterns are slower due to extra vtable lookup per operation, but most common operations (copying etc) much faster, and abstraction allowing changing representations often makes faster still. Plus, if you use functional apis, these generally avoid much of the vtable lookup cost. And smart compiles (especially link time codegen) can avoid most of the cost.
 - A sensible taxonmy of containers based on access pattern, and for each, multiple backend data structures to implement them.
 - Linq-like rich variety of functional accessors, like Apply (), FindFirstThat (), Where, Select (), Distinct (), OrderBy (), Accumulate (), Min/Max (), Any (), etc inherited from Iterable\<T>
 
@@ -72,6 +84,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 
 
 ## Supported Containers Archtypes
+---
 
 - [Association\<KEY_TYPE, VALUE_TYPE>](Association.h)
   - Allows for the association of two elements, and key and one or more values
@@ -83,6 +96,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - a container to manage an un-ordered collection of items, without equality defined for T
   - Supported backends: Array, LinkedList, std::fowrad_list
 - [DataHyperRectange\< T, ... INDEXES>](DataHyperRectange.h)
+  - a multi-dimensional Sequence\<T>
   - Aliases: Data-Cube, Date Cube, Hyper-Cube, Hypercube
 - [DenseDataHyperRectange\< T, ... INDEXES>](DenseDataHyperRectange.h)
   - Supported backends: Vector
@@ -91,6 +105,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - Supported backends: DoublyLinkedList
 - [KeyedCollection\<T, KEY_TYPE, TRAITS>](KeyedCollection.h)
   - KeyedCollection adds most access patterns used in Mapping to a Collection, but stores only a single object. It takes a parameter
+  - Supported backends: LinkedList, std::set
 - [Mapping\<KEY_TYPE, VALUE_TYPE>](Mapping.h)
   - Allows for the association of two elements: a key and a value. The key UNIQUELY specifies its associated value
   - Supported backends: Array, LinkedList, std::map
@@ -117,6 +132,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - Supported backends: LinkedList
 - [SortedKeyedCollection\<T, KEY_TYPE, TRAITS>](SortedKeyedCollection.h)
   - See KeyedCollection; but adds parameter saying how T items sorted (by key)
+  - Supported backends: std::set
 - [SortedMapping\<KEY_TYPE, VALUE_TYPE>](SortedMapping.h)
   - See Mapping; but adds parameter saying how KEY_TYPE items sorted
   - Supported backends: std::map
@@ -135,6 +151,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 
 
 ## Implementation notes
+---
 
 - Due to use of COW, const methods of reps need no locking (just use Debug::AssertExternallySyncrhonized).
 - Due to use of COW, non-const methods of reps ALSO don't need loocking, since the COW code assures there is only one reference at a time (and therefore one Envelope class, which itself asserts externally synchronized)
@@ -144,29 +161,30 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 ---
 
 - Make KEYs a UNIFYING concept for containers
-- Think about somehow making KEYs a UNIFYING concept for containers?
-  Special case of unsticky keys -
-  like array indexes? In that sense, a KEY is almost like an ITERATOR. In fact,
-  an interator is somewhat better than a key.
-- We may want Find() to (optionally) return an iterator positioned at the first entry
-  (unclear what ++ would do).
+  - Think about somehow making KEYs a UNIFYING concept for containers?
+    Special case of unsticky keys -
+    like array indexes? In that sense, a KEY is almost like an ITERATOR. In fact,
+    an interator is somewhat better than a key.
+- We may want Find() to (optionally) return an iterator positioned at the first entry (like STL).
+  - **Reason Rejected**:
+    unclear what ++ would do. I know what it does in STL, but thats fairly meaningless/arbitrary. Better to return optional<>
 - We may want a[i] or some rough analog for sequnces to get a sequence - offset by I.
-- **Reason Rejected**:
-  This really only applies to randomly accessed containers (so not stack, deque etc).
-  Though its possible to define for them, not usefully. Its probably better to just
-  keep key as a 'key' concept for Map<>, and use 'index' - which is analagous - but different -
-  for sequence (important difference is stickiness of assocation when container is modified).
+  - **Reason Rejected**:
+    This really only applies to randomly accessed containers (so not stack, deque etc).
+    Though its possible to define for them, not usefully. Its probably better to just
+    keep key as a 'key' concept for Map<>, and use 'index' - which is analagous - but different -
+    for sequence (important difference is stickiness of assocation when container is modified).
 
 - No Compact() methods
-- Stroika 1.0 had Compact() methods - that could be used to generically request that a container
-  be compacted.
-  We decided against that for Stroika v2 because
-  1.  We COULD always add it back.
-  2.  Its just a class of optimziations which makes sense for some backends. But other
-      optimizations make snese for other classes of backends. You can always retain a smartptr
-      with OUR type of backend! So really can be added just for \_Array<> impls. Note - this
-      rationale doesn't work perfectly due to copy-by-values semantics with 'casts' but still
-      OK.
+  - Stroika 1.0 had Compact() methods - that could be used to generically request that a container
+    be compacted.
+    We decided against that for Stroika v2 because
+    1.  We COULD always add it back.
+    2.  Its just a class of optimziations which makes sense for some backends. But other
+        optimizations make snese for other classes of backends. You can always retain a smartptr
+        with OUR type of backend! So really can be added just for \_Array<> impls. Note - this
+        rationale doesn't work perfectly due to copy-by-values semantics with 'casts' but still
+        OK.
 
 - [Bag\<T>](Bag.h)
   - The idea is to mimic that of a black bag (not like SmallTalk Bag\<T> which Stroika Collection<> is closest to) - but randomized collection.
