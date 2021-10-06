@@ -336,7 +336,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Adapters\Adder.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Association.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bijection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Collection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Common.h" />
@@ -774,7 +773,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Adapters\Adder.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Association.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Bijection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Collection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Common.inl" />
