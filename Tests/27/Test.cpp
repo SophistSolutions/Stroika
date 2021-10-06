@@ -1,20 +1,17 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
-//  TEST    Foundation::Containers::SortedMapping
-//      STATUS  Alpha-Late
+//  TEST    Foundation::Containers::SortedMultiSet
+//      STATUS  very minimal/incomplete
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <iostream>
-#include <sstream>
-
-#include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
-#include "Stroika/Foundation/Containers/SortedMapping.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMultiSet_stdmap.h"
+#include "Stroika/Foundation/Containers/SortedMultiSet.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 
-#include "../TestCommon/CommonTests_Mapping.h"
+#include "../TestCommon/CommonTests_MultiSet.h"
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
@@ -22,98 +19,66 @@ using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 
-using Concrete::SortedMapping_stdmap;
+using Concrete::SortedMultiSet_stdmap;
 
 namespace {
     template <typename CONCRETE_CONTAINER>
-    void DoTestForConcreteContainer_ ()
-    {
-        using namespace CommonTests::MappingTests;
-        auto testSchema                      = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{};
-        testSchema.ApplyToContainerExtraTest = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
-            // verify in sorted order
-            using value_type = typename CONCRETE_CONTAINER::value_type;
-            optional<value_type> last;
-            for (value_type i : m) {
-                if (last.has_value ()) {
-                    VerifyTestResult (Common::ThreeWayComparerAdapter (m.GetInOrderKeyComparer ()) (last->fKey, i.fKey) <= 0);
-                }
-                last = i;
-            }
-        };
-        SimpleMappingTest_All_ (testSchema);
-        SimpleMappingTest_WithDefaultEqCompaerer_ (testSchema);
-    }
-    template <typename CONCRETE_CONTAINER, typename FACTORY, typename VALUE_EQUALS_COMPARER_TYPE>
-    void DoTestForConcreteContainer_ (FACTORY factory, VALUE_EQUALS_COMPARER_TYPE valueEqualsComparer)
-    {
-        using namespace CommonTests::MappingTests;
-        auto testSchema                      = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER, FACTORY, VALUE_EQUALS_COMPARER_TYPE>{factory, valueEqualsComparer};
-        testSchema.ApplyToContainerExtraTest = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
-            // verify in sorted order
-            using value_type = typename CONCRETE_CONTAINER::value_type;
-            optional<value_type> last;
-            for (value_type i : m) {
-                if (last.has_value ()) {
-                    VerifyTestResult (Common::ThreeWayComparerAdapter (m.GetInOrderKeyComparer ()) (last->fKey, i.fKey) <= 0);
-                }
-                last = i;
-            }
-        };
-        SimpleMappingTest_All_ (testSchema);
-    }
-}
-
-namespace {
-    namespace Test3_ConvertMapping2SortedMapping {
-        void TestAll ()
+    struct UseBasicTestingSchemas_ : CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER> {
+        static void ApplyToContainerExtraTest (const typename CONCRETE_CONTAINER::ArchetypeContainerType& t)
         {
-            Mapping<int, int>       m{pair<int, int>{1, 2}, pair<int, int>{2, 4}};
-            SortedMapping<int, int> ms{m};
-            VerifyTestResult (ms.size () == 2);
-#if __cpp_impl_three_way_comparison >= 201907
-            VerifyTestResult ((*ms.begin () == pair<int, int>{1, 2}));
-#endif
+            using MultiSetOfElementType = typename CONCRETE_CONTAINER::MultiSetOfElementType;
+            // verify in sorted order
+            optional<MultiSetOfElementType> last;
+            using COMPARER_TYPE = less<MultiSetOfElementType>;
+            for (CountedValue<MultiSetOfElementType> i : t) {
+                if (last.has_value ()) {
+                    VerifyTestResult (COMPARER_TYPE () (*last, i.fValue));
+                }
+                last = i.fValue;
+            }
         }
+    };
+
+    template <typename CONCRETE_CONTAINER, typename SCHEMA = UseBasicTestingSchemas_<CONCRETE_CONTAINER>>
+    void DoTestForConcreteContainer_ (const SCHEMA& schema = {})
+    {
+        Debug::TraceContextBumper ctx{L"{}::DoTestForConcreteContainer_"};
+        CommonTests::MultiSetTests::All_For_Type (schema);
     }
 }
 
 namespace {
+
     void DoRegressionTests_ ()
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-            using value_type = SimpleClassWithoutComparisonOperators;
-            bool operator() (const value_type& v1, const value_type& v2) const
-            {
-                return v1.GetValue () == v2.GetValue ();
-            }
-        };
         struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
-            using value_type = SimpleClassWithoutComparisonOperators;
-            bool operator() (const value_type& v1, const value_type& v2) const
+            bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
             {
-                return v1.GetValue () < v2.GetValue ();
+                return lhs.GetValue () < rhs.GetValue ();
             }
         };
 
-        DoTestForConcreteContainer_<SortedMapping<size_t, size_t>> ();
-        DoTestForConcreteContainer_<SortedMapping<SimpleClass, SimpleClass>> ();
-        DoTestForConcreteContainer_<SortedMapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () { return SortedMapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+        {
+            DoTestForConcreteContainer_<SortedMultiSet<size_t>> ();
+            DoTestForConcreteContainer_<SortedMultiSet<SimpleClass>> ();
+            auto msFactory = [] () { return SortedMultiSet<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}}; };
+            DoTestForConcreteContainer_<SortedMultiSet<SimpleClassWithoutComparisonOperators>> (
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithLess_, decltype (msFactory)> (msFactory));
+        }
 
-        DoTestForConcreteContainer_<SortedMapping_stdmap<size_t, size_t>> ();
-        DoTestForConcreteContainer_<SortedMapping_stdmap<SimpleClass, SimpleClass>> ();
-        DoTestForConcreteContainer_<SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () { return SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
-
-        Test3_ConvertMapping2SortedMapping::TestAll ();
+        {
+            DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
+            DoTestForConcreteContainer_<SortedMultiSet_stdmap<SimpleClass>> ();
+            auto msFactory = [] () { return SortedMultiSet_stdmap<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}}; };
+            DoTestForConcreteContainer_<SortedMultiSet_stdmap<SimpleClassWithoutComparisonOperators>> (
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithLess_, decltype (msFactory)> (msFactory));
+        }
     }
 }
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
     Stroika::TestHarness::Setup ();
-    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+    Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+    return EXIT_SUCCESS;
 }

@@ -1,876 +1,1338 @@
 ﻿/*
-* Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
-*/
-//  TEST    Foundation::DataExchangeFormat::ObjectVariantMapper
+ * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ */
+//  TEST    Foundation::DataExchangeFormat::XML::SaxParser
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Configuration/Enumeration.h"
-#include "Stroika/Foundation/Configuration/Locale.h"
-#include "Stroika/Foundation/Containers/Bijection.h"
-#include "Stroika/Foundation/DataExchange/BadFormatException.h"
-#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
-#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
-#include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include <iostream>
+#include <sstream>
+
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/SortedMapping.h"
+#include "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
+#include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
-#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
-#include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
-#include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
-#include "Stroika/Foundation/IO/Network/CIDR.h"
-#include "Stroika/Foundation/IO/Network/URI.h"
-#include "Stroika/Foundation/Math/Common.h"
-#include "Stroika/Foundation/Streams/MemoryStream.h"
-#include "Stroika/Foundation/Time/DateTime.h"
-#include "Stroika/Foundation/Time/Duration.h"
-#include "Stroika/Foundation/Traversal/Range.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
+#include "Stroika/Foundation/Memory/SmallStackBuffer.h"
+#include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
+#include "Stroika/Foundation/Time/Realtime.h"
 
 #include "../TestHarness/TestHarness.h"
 
 using std::byte;
 
 using namespace Stroika::Foundation;
-using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
+using namespace Stroika::Foundation::DataExchange::XML;
 
-using Time::Date;
-using Time::DateTime;
-using Time::Duration;
-using Time::TimeOfDay;
+using Common::KeyValuePair;
+using Containers::Sequence;
+using Containers::Set;
+using Containers::SortedMapping;
+using Debug::TraceContextBumper;
+using Streams::InputStream;
+using Streams::iostream::InputStreamFromStdIStream;
 
 namespace {
-    namespace DoRegressionTests_BasicDataRoundtrips_1_ {
-        template <typename T>
-        void RoundTripTest_ (T v)
-        {
-            VariantValue mv = v;
-            VerifyTestResult (mv.As<T> () == v);
-        }
-        template <typename T>
-        void RoundTripMinMax_ ()
-        {
-            RoundTripTest_ (numeric_limits<T>::lowest ());
-            RoundTripTest_ (numeric_limits<T>::max ());
-        }
-        void DoAll ()
-        {
-            Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_BasicDataRoundtrips_1_"};
-            RoundTripMinMax_<int> ();
-            RoundTripMinMax_<unsigned int> ();
-            RoundTripMinMax_<long> ();
-            RoundTripMinMax_<unsigned long> ();
-            RoundTripMinMax_<long long> ();
-            RoundTripMinMax_<unsigned long long> ();
-            RoundTripMinMax_<int8_t> ();
-            RoundTripMinMax_<uint8_t> ();
-            RoundTripMinMax_<int16_t> ();
-            RoundTripMinMax_<uint16_t> ();
-            RoundTripMinMax_<int32_t> ();
-            RoundTripMinMax_<uint32_t> ();
-            RoundTripMinMax_<int64_t> ();
-            RoundTripMinMax_<uint64_t> ();
-            RoundTripMinMax_<float> ();
-            RoundTripMinMax_<float> ();
-            RoundTripMinMax_<double> ();
-            RoundTripMinMax_<double> ();
-            //enum class Fred { Barny };
-            //RoundTripMinMax_<Fred> ();
-            RoundTripTest_<int> (3);
-        }
+    //
+    // PUT THIS OR SOMETHING LIKE IT TO STROIKA EVENTUALLY
+    //  void    StreamUtils::WriteTextStream (const wstring& w, ostream& out)
+    void WriteTextStream_ (const wstring& w, ostream& out)
+    {
+        CodePageConverter              cpc (kCodePage_UTF8, CodePageConverter::eHandleBOM);
+        size_t                         sz = cpc.MapFromUNICODE_QuickComputeOutBufSize (w.c_str (), w.length ());
+        Memory::SmallStackBuffer<char> buf (sz + 1);
+        size_t                         charCnt = sz;
+        cpc.MapFromUNICODE (w.c_str (), w.length (), buf, &charCnt);
+        Assert (charCnt <= sz);
+        out.write (buf, charCnt);
     }
 }
 
 namespace {
-    void DoRegressionTests_SimpleMapToFromJSON_2_ ()
+    void Test_1_SAXParser_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_SimpleMapToFromJSON_2_"};
-        const bool                kWrite2FileAsWell_ = true; // just for debugging
+        TraceContextBumper ctx ("Test_1_SAXParser_");
+        const wstring      kNSTest = L"Test-NAMESPACE";
+        //NYI
+        //Schema    gSchema     =   Schema (kNSTest);
+        wstring newDocXML =
+            L"<PHRModel xmlns=\"" + wstring (kNSTest) + L"\">\n"
+                                                        L"      <BasicInformation id=\"id=101\">\n"
+                                                        L"              <ContactInfo>\n"
+                                                        L"                      <PersonName/>\n"
+                                                        L"                      <Locations>\n";
+        newDocXML +=
+            L"                          <Location id=\"id=102\">\n"
+            L"                                  <Name>Primary Residence</Name>\n"
+            L"                                  <Address/>\n"
+            L"                          </Location>\n";
+        newDocXML +=
+            L"                          <Location id=\"id=103\">\n"
+            L"                                  <Name>Residence2</Name>\n"
+            L"                                  <Address/>\n"
+            L"                          </Location>\n";
+        newDocXML +=
+            L"                  </Locations>\n"
+            L"          </ContactInfo>\n";
+        newDocXML +=
+            L"          <AdvanceDirectives id=\"id=104\"/>\n"
+            L"          <BirthInfo id=\"id=105\"/>\n";
+        newDocXML +=
+            L"  </BasicInformation>\n"
+            L"  <Calendar/>\n"
+            L"  <FamilyMembers/>\n"
+            L"  <ProviderOrganizations/>\n"
+            L"  <Providers/>\n"
+            L"  <Activities/>\n"
+            L"  <Allergies/>\n"
+            L"  <Attachments/>\n"
+            L"  <Communications/>\n"
+            L"  <Conditions/>\n"
+            L"  <Devices/>\n"
+            L"  <Expenses/>\n"
+            L"  <InsurancePolicies/>\n"
+            L"  <Journals/>\n"
+            L"  <JournalEntries/>\n"
+            L"  <Links/>\n"
+            L"  <Medications/>\n"
+            L"  <Tests/>\n"
+            L"  <Treatments/>\n"
+            L"  <Immunizations/>\n"
+            L"  <Visits/>\n"
+            L"  <PageCustomizations/>\n"
+            L"</PHRModel>\n";
 
-        struct SharedContactsConfig_ {
-            bool                      fEnabled{false};
-            optional<DateTime>        fLastSynchronizedAt;
-            Mapping<String, String>   fThisPHRsIDToSharedContactID;
-            Bijection<String, String> fThisPHRsIDToSharedContactID2;
-
-            SharedContactsConfig_ () = default;
-
-            bool operator== (const SharedContactsConfig_& rhs) const
+        class MyCallback : public StructuredStreamEvents::IConsumer {
+        public:
+            virtual void StartDocument () override
             {
-                return fEnabled == rhs.fEnabled and
-                       fLastSynchronizedAt == rhs.fLastSynchronizedAt and
-                       fThisPHRsIDToSharedContactID == rhs.fThisPHRsIDToSharedContactID and
-                       fThisPHRsIDToSharedContactID2 == rhs.fThisPHRsIDToSharedContactID2;
+                fEltDepthCount = 0;
             }
+            virtual void EndDocument () override
+            {
+                VerifyTestResult (fEltDepthCount == 0);
+            }
+            virtual void StartElement (const StructuredStreamEvents::Name& name) override
+            {
+                fEltDepthCount++;
+                fEltStack.push_back (Memory::NullCoalesce (name.fNamespaceURI) + L"/" + name.fLocalName);
+            }
+            virtual void EndElement (const StructuredStreamEvents::Name& name) override
+            {
+                VerifyTestResult (fEltStack.back () == Memory::NullCoalesce (name.fNamespaceURI) + L"/" + name.fLocalName);
+                fEltStack.pop_back ();
+                fEltDepthCount--;
+            }
+            unsigned int   fEltDepthCount;
+            vector<String> fEltStack;
         };
-
-        ObjectVariantMapper mapper;
-
-        mapper.AddCommonType<Bijection<String, String>> ();
-
-        // register each of your mappable (even private) types
-        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled}},
-            {L"Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt}},
-            {L"This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID}},
-            {L"This-HR-ContactID-To-SharedContactID-Bijection", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID2}},
-        });
-
-        bool                  newEnabled = true;
-        SharedContactsConfig_ tmp;
-        tmp.fEnabled = newEnabled;
-        tmp.fThisPHRsIDToSharedContactID.Add (L"A", L"B");
-        tmp.fThisPHRsIDToSharedContactID2.Add (L"A", L"B");
-        tmp.fLastSynchronizedAt = DateTime{Time::Date{Time::Year (1998), Time::MonthOfYear::eApril, Time::DayOfMonth::e11}, Time::TimeOfDay::Parse (L"3pm", locale::classic ())};
-
-        VariantValue v = mapper.FromObject (tmp);
-
-        // at this point - we should have VariantValue object with "Enabled" field.
-        // This can then be serialized using
-
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
-        Variant::JSON::Writer{}.Write (v, tmpStream);
-
-        if (kWrite2FileAsWell_) {
-            IO::FileSystem::FileOutputStream::Ptr tmpFileStream = IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt");
-            Variant::JSON::Writer{}.Write (v, tmpFileStream);
-        }
-
-        if (kWrite2FileAsWell_) {
-            IO::FileSystem::FileInputStream::Ptr tmpFileStream = IO::FileSystem::FileInputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt");
-            SharedContactsConfig_                tmp2          = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpFileStream));
-        }
-
-        // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
+        stringstream tmpStrm;
+        WriteTextStream_ (newDocXML, tmpStrm);
+        MyCallback myCallback;
+        XML::SAXParse (InputStreamFromStdIStream<byte>::New (tmpStrm), myCallback);
     }
 }
 
 namespace {
-    void DoRegressionTests_SimpleMapToFromJSON_3_ ()
-    {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_SimpleMapToFromJSON_3_"};
-        const bool                kWrite2FileAsWell_ = true; // just for debugging
-
-        struct SharedContactsConfig_ {
-            int                fInt1;
-            unsigned long long fInt2;
-            long long          fInt3;
-            int32_t            fInt4;
-
-            SharedContactsConfig_ ()
-                : fInt1 (0)
-                , fInt2 (0)
-                , fInt3 (0)
-                , fInt4 (0)
-            {
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return fInt1 == rhs.fInt1 and
-                       fInt2 == rhs.fInt2 and
-                       fInt3 == rhs.fInt3 and
-                       fInt4 == rhs.fInt4;
-            }
+    namespace SAX_ObjectReader_EXAMPLE_1_ {
+        const wstring kNSTest = L"Test-NAMESPACE";
+        struct Person_ {
+            String           firstName;
+            String           lastName;
+            optional<String> middleName;
         };
-
-        ObjectVariantMapper mapper;
-
-        // register each of your mappable (even private) types
-        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"Int1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
-            {L"Int2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}},
-            {L"Int3", StructFieldMetaInfo{&SharedContactsConfig_::fInt3}},
-            {L"Int4", StructFieldMetaInfo{&SharedContactsConfig_::fInt4}},
-        });
-
-        SharedContactsConfig_ tmp;
-        tmp.fInt1 = 2;
-        tmp.fInt2 = numeric_limits<decltype (tmp.fInt2)>::max ();
-        tmp.fInt3 = numeric_limits<decltype (tmp.fInt3)>::max ();
-        tmp.fInt4 = numeric_limits<decltype (tmp.fInt4)>::min ();
-
-        VariantValue v = mapper.FromObject (tmp);
-
-        // at this point - we should have VariantValue object with "Enabled" field.
-        // This can then be serialized using
-
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
-        Variant::JSON::Writer{}.Write (v, tmpStream);
-
-        if (kWrite2FileAsWell_) {
-            filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt"sv;
-            Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
-        }
-
-        // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
-    }
-}
-
-namespace {
-    void DoRegressionTests_SimpleMapRangeTypes_4_ ()
-    {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_SimpleMapRangeTypes_4_"};
-        using namespace Traversal;
-        const bool kWrite2FileAsWell_ = true; // just for debugging
-
-        struct SharedContactsConfig_ {
-            Range<int>         fIntRange;
-            DiscreteRange<int> fDiscIntRange2;
-
-            SharedContactsConfig_ ()
-                : fIntRange (-3, 99)
-                , fDiscIntRange2 (4, 19)
-            {
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return fIntRange == rhs.fIntRange and fDiscIntRange2 == rhs.fDiscIntRange2;
-            }
+        struct Appointment_ {
+            optional<DateTime> when;
+            Person_            withWhom;
         };
-
-        ObjectVariantMapper mapper;
-
-        mapper.AddCommonType<Range<int>> ();
-        mapper.AddCommonType<DiscreteRange<int>> ();
-
-        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"fIntRange", StructFieldMetaInfo{&SharedContactsConfig_::fIntRange}},
-            {L"fDiscIntRange2", StructFieldMetaInfo{&SharedContactsConfig_::fDiscIntRange2}},
-        });
-
-        SharedContactsConfig_ tmp;
-        tmp.fIntRange      = Range<int> (1, 10);
-        tmp.fDiscIntRange2 = DiscreteRange<int> (38, 39);
-        VariantValue v     = mapper.FromObject (tmp);
-
-        // at this point - we should have VariantValue object with "Enabled" field.
-        // This can then be serialized using
-
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
-        Variant::JSON::Writer{}.Write (v, tmpStream);
-
-        if (kWrite2FileAsWell_) {
-            filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "4.txt"sv;
-            Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
-        }
-
-        // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
-    }
-}
-
-namespace {
-    void DoRegressionTests_SimpleEnumTypes_5_ ()
-    {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_SimpleEnumTypes_5_"};
-        using namespace Traversal;
-        const bool kWrite2FileAsWell_ = true; // just for debugging
-
-        enum class Fred {
-            a = -3,
-            b,
-            c,
-            d,
-            e,
-            f,
-            g,
-            h,
-
-            Stroika_Define_Enum_Bounds (a, h)
-        };
-        const Configuration::EnumNames<Fred> Fred_NAMES = {
-            {Fred::a, L"a"},
-            {Fred::b, L"b"},
-            {Fred::c, L"c"},
-            {Fred::d, L"d"},
-            {Fred::e, L"e"},
-            {Fred::f, L"f"},
-            {Fred::g, L"g"},
-            {Fred::h, L"h"},
-        };
-        struct SharedContactsConfig_ {
-            Fred fEnum1;
-
-            SharedContactsConfig_ ()
-                : fEnum1 (Fred::a)
-            {
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return fEnum1 == rhs.fEnum1;
-            }
-        };
-
+        Memory::BLOB mkdata_ ()
         {
-            ObjectVariantMapper mapper;
+            wstring newDocXML =
+                L"<Calendar xmlns=\"" + wstring (kNSTest) + L"\">\n"
+                                                            L"  <Appointment>\n"
+                                                            L"    <When>2005-06-01T13:00:00-05:00</When>"
+                                                            L"    <WithWhom>\n"
+                                                            L"            <FirstName>Jim</FirstName>"
+                                                            L"            <LastName>Smith</LastName>"
+                                                            L"            <MiddleName>Up</MiddleName>"
+                                                            L"    </WithWhom>\n"
+                                                            L"  </Appointment>\n"
+                                                            L"  <Appointment>\n"
+                                                            L"    <When>2005-08-01T13:00:00-05:00</When>"
+                                                            L"    <WithWhom>\n"
+                                                            L"            <FirstName>Fred</FirstName>"
+                                                            L"            <LastName>Down</LastName>"
+                                                            L"    </WithWhom>\n"
+                                                            L"  </Appointment>\n"
+                                                            L"</Calendar>\n";
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+        }
+        void Test_2a_ObjectReader_viaRegistry_ ()
+        {
+            TraceContextBumper traceCtx{"Test_2a_ObjectReader_viaRegistry_"};
 
-            mapper.Add (ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations<Fred> (Fred_NAMES));
-            mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                {L"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
+            ObjectReader::Registry registry;
+
+            registry.AddCommonType<DateTime> ();
+            registry.AddCommonType<optional<DateTime>> ();
+            registry.AddCommonType<String> ();
+            registry.AddCommonType<optional<String>> ();
+
+            registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+                {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+                {Name{L"MiddleName"}, StructFieldMetaInfo{&Person_::middleName}},
+            });
+            registry.AddCommonReader_Class<Appointment_> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"When"}, StructFieldMetaInfo{&Appointment_::when}},
+                {Name{L"WithWhom"}, StructFieldMetaInfo{&Appointment_::withWhom}},
+            });
+            registry.AddCommonType<vector<Appointment_>> (Name{L"Appointment"});
+
+            {
+                vector<Appointment_>                     calendar;
+                ObjectReader::IConsumerDelegateToContext ctx{
+                    registry,
+                    make_shared<ObjectReader::ReadDownToReader> (
+                        make_shared<ObjectReader::RepeatedElementReader<vector<Appointment_>>> (&calendar),
+                        Name{L"Appointment"})};
+                XML::SAXParse (mkdata_ (), ctx);
+                VerifyTestResult (calendar.size () == 2);
+                VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
+                VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
+                VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
+                VerifyTestResult (calendar[0].when and calendar[0].when->GetDate () == Time::Date (Time::Year (2005), Time::MonthOfYear::eJune, Time::DayOfMonth (1)));
+                VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
+                VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
+            }
+            // must figure out how to get below working
+            {
+                vector<Appointment_>                     calendar;
+                ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&calendar))};
+                XML::SAXParse (mkdata_ (), ctx);
+                VerifyTestResult (calendar.size () == 2);
+                VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
+                VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
+                VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
+                VerifyTestResult (calendar[0].when and calendar[0].when->GetDate () == Time::Date (Time::Year (2005), Time::MonthOfYear::eJune, Time::DayOfMonth (1)));
+                VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
+                VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
+            }
+        }
+    }
+    void Test_SAX_ObjectReader_EXAMPLE_1_ ()
+    {
+        using namespace SAX_ObjectReader_EXAMPLE_1_;
+        Test_2a_ObjectReader_viaRegistry_ ();
+    }
+}
+
+namespace {
+    namespace T3_SAXObjectReader_ReadDown2Sample_ {
+        struct Person_ {
+            String firstName;
+            String lastName;
+            bool   operator== (const Person_& rhs) const { return firstName == rhs.firstName and lastName == rhs.lastName; }
+        };
+        Memory::BLOB mkdata_ ()
+        {
+            wstring newDocXML =
+                L"<envelope1>\n"
+                L"  <envelope2>\n"
+                L"        <When>2005-06-01T13:00:00-05:00</When>"
+                L"        <WithWhom>\n"
+                L"                <FirstName>Jim</FirstName>"
+                L"                <LastName>Smith</LastName>"
+                L"        </WithWhom>\n"
+                L"  </envelope2>\n"
+                L"  <envelope2>\n"
+                L"        <When>2005-08-01T13:00:00-05:00</When>"
+                L"        <WithWhom>\n"
+                L"                <FirstName>Fred</FirstName>"
+                L"                <LastName>Down</LastName>"
+                L"        </WithWhom>\n"
+                L"  </envelope2>\n"
+                L"</envelope1>\n";
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+        }
+        void DoTest ()
+        {
+            ObjectReader::Registry registry;
+            registry.AddCommonType<String> ();
+
+            registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+                {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
             });
 
-            SharedContactsConfig_ tmp;
-            tmp.fEnum1     = Fred::b;
-            VariantValue v = mapper.FromObject (tmp);
+            vector<Person_> people;
+            {
+                ObjectReader::IConsumerDelegateToContext ctx{
+                    registry,
+                    make_shared<ObjectReader::ReadDownToReader> (
+                        make_shared<ObjectReader::RepeatedElementReader<vector<Person_>>> (&people),
+                        Name (L"envelope2"), Name (L"WithWhom"))};
+                XML::SAXParse (mkdata_ (), ctx);
 
-            // at this point - we should have VariantValue object with "Enabled" field.
-            // This can then be serialized using
-
-            Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
-            Variant::JSON::Writer{}.Write (v, tmpStream);
-
-            if (kWrite2FileAsWell_) {
-                filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "5.txt"sv;
-                Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-                [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
+                VerifyTestResult (people.size () == 2);
+                VerifyTestResult (people[0].firstName == L"Jim");
+                VerifyTestResult (people[0].lastName == L"Smith");
+                VerifyTestResult (people[1].firstName == L"Fred");
+                VerifyTestResult (people[1].lastName == L"Down");
             }
 
-            // THEN deserialized, and mapped back to C++ object form
-            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-            VerifyTestResult (tmp2 == tmp);
+            vector<Person_> people2; // add the vector type to the registry instead of explicitly constructing the right reader
+            {
+                ObjectReader::Registry newRegistry = registry;
+                newRegistry.AddCommonType<vector<Person_>> (Name (L"WithWhom"));
+                ObjectReader::IConsumerDelegateToContext ctx{newRegistry, make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people2), Name (L"envelope2"))};
+                XML::SAXParse (mkdata_ (), ctx);
+                VerifyTestResult (people2 == people);
+            }
+
+            Sequence<Person_> people3; // use sequence instead of vector
+            {
+                ObjectReader::Registry newRegistry = registry;
+                newRegistry.AddCommonType<Sequence<Person_>> (Name (L"WithWhom"));
+                ObjectReader::IConsumerDelegateToContext ctx{newRegistry, make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people3), Name (L"envelope2"))};
+                XML::SAXParse (mkdata_ (), ctx);
+                VerifyTestResult (people3.As<vector<Person_>> () == people);
+            }
+        }
+    }
+}
+
+namespace {
+    namespace T4_SAXObjectReader_ReadDown2Sample_MixedContent_ {
+        struct ManagedObjectReference {
+            String type;
+            String value;
+        };
+        struct ObjectContent {
+            ManagedObjectReference obj;
+        };
+        Memory::BLOB mkdata_ ()
+        {
+            wstring newDocXML =
+                L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                L"<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n"
+                L"   <soapenv:Body>\n"
+                L"      <RetrievePropertiesResponse xmlns=\"urn:vim25\">\n"
+                L"         <returnval>\n"
+                L"            <obj type=\"VirtualMachine\">8</obj>"
+                L"            <propSet>"
+                L"               <name>availableField</name>\n"
+                L"               <val xsi:type=\"ArrayOfCustomFieldDef\" />\n"
+                L"            </propSet>\n"
+                L"            <propSet>"
+                L"               <name>capability</name>\n"
+                L"               <val xsi:type=\"VirtualMachineCapability\">\n"
+                L"                  <snapshotOperationsSupported>true</snapshotOperationsSupported>\n"
+                L"               </val>\n"
+                L"            </propSet>\n"
+                L"         </returnval>\n"
+                L"         <returnval>\n"
+                L"            <obj type=\"VirtualMachine\">9</obj>"
+                L"            <propSet>"
+                L"               <name>capability</name>\n"
+                L"               <val xsi:type=\"VirtualMachineCapability\">\n"
+                L"                  <snapshotOperationsSupported>true</snapshotOperationsSupported>\n"
+                L"               </val>\n"
+                L"            </propSet>\n"
+                L"         </returnval>\n"
+                L"      </RetrievePropertiesResponse>\n"
+                L"   </soapenv:Body>\n"
+                L"</soapenv:Envelope>\n";
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
         }
 
+        void DoTest ()
         {
-            ObjectVariantMapper mapper;
+            ObjectReader::Registry mapper;
 
-            mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Fred> (Bijection<Fred, String> (Fred_NAMES)));
-            mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                {L"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
+            mapper.AddCommonType<String> ();
+
+            mapper.AddCommonReader_Class<ManagedObjectReference> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"type", Name::eAttribute}, StructFieldMetaInfo{&ManagedObjectReference::type}},
+                {Name{Name::eValue}, StructFieldMetaInfo{&ManagedObjectReference::value}}});
+            mapper.AddCommonReader_Class<ObjectContent> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"obj"}, StructFieldMetaInfo{&ObjectContent::obj}}
+                /// wrong - must be mapping of this --metaInfo.Add (L"propSet", pair<type_index, size_t> {typeid(decltype (ObjectContent::value)), offsetof(ObjectContent, propSet)});
             });
 
-            SharedContactsConfig_ tmp;
-            tmp.fEnum1     = Fred::b;
-            VariantValue v = mapper.FromObject (tmp);
+            vector<ObjectContent>                    objsContent;
+            ObjectReader::IConsumerDelegateToContext ctx{
+                mapper,
+                make_shared<ObjectReader::ReadDownToReader> (
+                    make_shared<ObjectReader::RepeatedElementReader<vector<ObjectContent>>> (&objsContent),
+                    Name (L"RetrievePropertiesResponse"), Name (L"returnval"))};
+            XML::SAXParse (mkdata_ (), ctx);
 
-            // at this point - we should have VariantValue object with "Enabled" field.
-            // This can then be serialized using
-
-            Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
-            Variant::JSON::Writer{}.Write (v, tmpStream);
-
-            if (kWrite2FileAsWell_) {
-                filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "5.txt"sv;
-                Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-                [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
-            }
-
-            // THEN deserialized, and mapped back to C++ object form
-            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-            VerifyTestResult (tmp2 == tmp);
+            VerifyTestResult (objsContent.size () == 2);
+            VerifyTestResult (objsContent[0].obj.type == L"VirtualMachine");
+            VerifyTestResult (objsContent[0].obj.value == L"8");
+            VerifyTestResult (objsContent[1].obj.type == L"VirtualMachine");
+            VerifyTestResult (objsContent[1].obj.value == L"9");
         }
     }
 }
 
 namespace {
-    void DoRegressionTests_DurationsDateTime_6_ ()
-    {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_DurationsDateTime_6_"};
-        using namespace Traversal;
-        const bool kWrite2FileAsWell_ = true; // just for debugging
-
-        struct SharedContactsConfig_ {
-            Duration            fDuration1;
-            optional<DateTime>  fDateTime1;
-            optional<DateTime>  fDate1;
-            optional<TimeOfDay> fTimeOfDay1;
-
-            SharedContactsConfig_ ()
-                : fDuration1 (chrono::milliseconds (200))
-            {
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return fDuration1 == rhs.fDuration1 and fDateTime1 == rhs.fDateTime1 and fDate1 == rhs.fDate1 and fTimeOfDay1 == rhs.fTimeOfDay1;
-            }
+    namespace T5_SAXObjectReader_DocSamples_ {
+        struct Person_ {
+            String firstName;
+            String lastName;
         };
-
-        ObjectVariantMapper mapper;
-        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"fDuration1", StructFieldMetaInfo{&SharedContactsConfig_::fDuration1}},
-            {L"fDateTime1", StructFieldMetaInfo{&SharedContactsConfig_::fDateTime1}},
-            {L"fDate1", StructFieldMetaInfo{&SharedContactsConfig_::fDate1}},
-            {L"fTimeOfDay1", StructFieldMetaInfo{&SharedContactsConfig_::fTimeOfDay1}},
-        });
-
-        SharedContactsConfig_ tmp;
-        tmp.fDate1      = Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12);
-        tmp.fDateTime1  = DateTime (Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12), Time::TimeOfDay::Parse (L"3pm", locale::classic ()));
-        tmp.fTimeOfDay1 = tmp.fDateTime1->GetTimeOfDay ();
-        Assert (tmp.fTimeOfDay1.has_value ());
-        tmp.fTimeOfDay1 = TimeOfDay (tmp.fTimeOfDay1->GetAsSecondsCount () + 60);
-        VariantValue v  = mapper.FromObject (tmp);
-
-        // at this point - we should have VariantValue object with "Enabled" field.
-        // This can then be serialized using
-
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
-        Variant::JSON::Writer{}.Write (v, tmpStream);
-
-        if (kWrite2FileAsWell_) {
-            filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "6.txt"sv;
-            Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
-        }
-
-        // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
-    }
-}
-
-namespace {
-    void DoRegressionTests_VariantValue_7_ ()
-    {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_VariantValue_7_"};
-        using namespace Traversal;
-        const bool kWrite2FileAsWell_ = true; // just for debugging
-
-        struct SharedContactsConfig_ {
-            VariantValue fVV1;
-
-            SharedContactsConfig_ ()
-                : fVV1 ()
-            {
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return fVV1 == rhs.fVV1;
-            }
-        };
-
-        ObjectVariantMapper mapper;
-        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"fVV1", StructFieldMetaInfo{&SharedContactsConfig_::fVV1}},
-        });
-
-        SharedContactsConfig_ tmp;
-        tmp.fVV1       = Date{Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12};
-        VariantValue v = mapper.FromObject (tmp);
-
-        // at this point - we should have VariantValue object with "Enabled" field.
-        // This can then be serialized using
-
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
-        Variant::JSON::Writer{}.Write (v, tmpStream);
-
-        if (kWrite2FileAsWell_) {
-            filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "7.txt"sv;
-            Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
-        }
-
-        // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
-    }
-}
-
-namespace {
-    void DoRegressionTests_MakeCommonSerializer_8_ ()
-    {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_MakeCommonSerializer_8_"};
-        using namespace Traversal;
-        const bool kWrite2FileAsWell_ = true; // just for debugging
-
-        struct SharedContactsConfig_ {
-            int                fInt1;
-            optional<int>      fInt2;
-            Mapping<int, int>  fMapping1;
-            Sequence<int>      fSequence1;
-            int                fBasicArray1[5];
-            Set<int>           fSet1_;
-            vector<int>        fVector1_;
-            pair<int, String>  fPair1_;
-            tuple<int, String> fTuple2_;
-
-            SharedContactsConfig_ ()
-                : fInt1 (3)
-            {
-                memset (&fBasicArray1, 0, sizeof (fBasicArray1));
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                if (memcmp (fBasicArray1, rhs.fBasicArray1, sizeof (fBasicArray1)) != 0) {
-                    return false;
-                }
-                return fInt1 == rhs.fInt1 and
-                       fInt2 == rhs.fInt2 and
-                       fMapping1 == rhs.fMapping1 and
-                       fSequence1 == rhs.fSequence1 and
-                       fSet1_ == rhs.fSet1_ and
-                       fVector1_ == rhs.fVector1_ and
-                       fPair1_ == rhs.fPair1_ and
-                       fTuple2_ == rhs.fTuple2_;
-            }
-        };
-
-        ObjectVariantMapper mapper;
-
-        mapper.AddCommonType<optional<int>> ();
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<int, int>> ());
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Sequence<int>> ());
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<vector<int>> ());
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Set<int>> ());
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<int[5]> ());
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<pair<int, String>> ());
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<tuple<int, String>> ());
-
-        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
-            {L"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}},
-            {L"fMapping1", StructFieldMetaInfo{&SharedContactsConfig_::fMapping1}},
-            {L"fSequence1", StructFieldMetaInfo{&SharedContactsConfig_::fSequence1}},
-            {L"fBasicArray1", StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}},
-            {L"fSet1_", StructFieldMetaInfo{&SharedContactsConfig_::fSet1_}},
-            {L"fVector1_", StructFieldMetaInfo{&SharedContactsConfig_::fVector1_}},
-            {L"fPair1_", StructFieldMetaInfo{&SharedContactsConfig_::fPair1_}},
-            {L"fTuple2", StructFieldMetaInfo{&SharedContactsConfig_::fTuple2_}},
-        });
-
-        SharedContactsConfig_ tmp;
-        tmp.fInt1 = 4;
-        tmp.fInt2 = 6;
-        tmp.fSequence1.Append (19);
-        tmp.fMapping1.Add (3, 5);
-        tmp.fBasicArray1[3] = 5;
-        tmp.fSet1_.Add (193);
-        tmp.fVector1_.push_back (3);
-        tmp.fVector1_.push_back (-91);
-        tmp.fPair1_    = pair<int, String>{3, L"test"};
-        tmp.fTuple2_   = tuple<int, String>{4, L"test4"};
-        VariantValue v = mapper.FromObject (tmp);
-
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
-        Variant::JSON::Writer{}.Write (v, tmpStream);
-
-        if (kWrite2FileAsWell_) {
-            filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "8.txt"sv;
-            Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
-        }
-
-        // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
-    }
-}
-
-namespace {
-    void DoRegressionTests_Subclass_9_ ()
-    {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_Subclass_9_"};
-        using namespace Traversal;
-
-        struct BaseObj_ {
-            int  fVV1{};
-            bool operator== (const BaseObj_& rhs) const
-            {
-                return fVV1 == rhs.fVV1;
-            }
-        };
-
-        struct Derived_ : BaseObj_ {
-            int  fVV2{};
-            bool operator== (const Derived_& rhs) const
-            {
-                return BaseObj_::operator== (rhs) and fVV2 == rhs.fVV2;
-            }
-        };
-
-        ObjectVariantMapper mapper;
-        mapper.AddClass<BaseObj_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"fVV1", StructFieldMetaInfo{&BaseObj_::fVV1}},
-        });
-        mapper.AddSubClass<Derived_, BaseObj_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"fVV2", StructFieldMetaInfo{&Derived_::fVV2}},
-        });
-
-        Derived_ tmp;
-        tmp.fVV1       = 55;
-        tmp.fVV2       = 345;
-        VariantValue v = mapper.FromObject (tmp);
-
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
-        Variant::JSON::Writer{}.Write (v, tmpStream);
-
-        // THEN deserialized, and mapped back to C++ object form
-        Derived_ tmp2 = mapper.ToObject<Derived_> (Variant::JSON::Reader{}.Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
-    }
-}
-
-namespace {
-    void DoRegressionTests_FileTypeConverterOverride_10_ ()
-    {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_FileTypeConverterOverride_10_"};
-        using namespace Traversal;
-        const bool kWrite2FileAsWell_ = true; // just for debugging
-
-        struct SharedContactsConfig_ {
-            int               fInt1;
-            optional<int>     fInt2;
-            Mapping<int, int> fMapping1;
-            Sequence<int>     fSequence1;
-            int               fBasicArray1[5];
-            Set<int>          fSet1_;
-            vector<int>       fVector1_;
-            IO::Network::URI  fURL1_;
-            IO::Network::URI  fURL2_;
-
-            SharedContactsConfig_ ()
-                : fInt1 (3)
-            {
-                memset (&fBasicArray1, 0, sizeof (fBasicArray1));
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                if (memcmp (fBasicArray1, rhs.fBasicArray1, sizeof (fBasicArray1)) != 0) {
-                    return false;
-                }
-                return fInt1 == rhs.fInt1 and
-                       fInt2 == rhs.fInt2 and
-                       fMapping1 == rhs.fMapping1 and
-                       fSequence1 == rhs.fSequence1 and
-                       fSet1_ == rhs.fSet1_ and
-                       fVector1_ == rhs.fVector1_ and
-                       fURL1_ == rhs.fURL1_ and
-                       fURL2_ == rhs.fURL2_;
-            }
-        };
-
-        ObjectVariantMapper mapper;
-
-        mapper.AddCommonType<optional<int>> ();
-        mapper.AddCommonType<Mapping<int, int>> ();
-        mapper.AddCommonType<Sequence<int>> ();
-        mapper.AddCommonType<vector<int>> ();
-
-        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
-            {L"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
-            {L"fMapping1", StructFieldMetaInfo{&SharedContactsConfig_::fMapping1}},
-            {L"fSequence1", StructFieldMetaInfo{&SharedContactsConfig_::fSequence1}},
-            {L"fBasicArray1", StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
-            {L"fSet1_", StructFieldMetaInfo{&SharedContactsConfig_::fSet1_}, ObjectVariantMapper::MakeCommonSerializer<Set<int>> ()},
-            {L"fVector1_", StructFieldMetaInfo{&SharedContactsConfig_::fVector1_}},
-            {L"fURL1_", StructFieldMetaInfo{&SharedContactsConfig_::fURL1_}, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()},
-            {L"fURL2_", StructFieldMetaInfo{&SharedContactsConfig_::fURL2_}, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()},
-        });
-
-        SharedContactsConfig_ tmp;
-        tmp.fInt1 = 4;
-        tmp.fInt2 = 6;
-        tmp.fSequence1.Append (19);
-        tmp.fMapping1.Add (3, 5);
-        tmp.fBasicArray1[3] = 5;
-        tmp.fSet1_.Add (193);
-        tmp.fVector1_.push_back (3);
-        tmp.fVector1_.push_back (-91);
-        tmp.fURL1_ = IO::Network::URI (L"http://localhost:3344/fred");
-        tmp.fURL2_ = IO::Network::URI (L"http://localhost:1234");
-
-        VariantValue v = mapper.FromObject (tmp);
-
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
-        Variant::JSON::Writer{}.Write (v, tmpStream);
-
-        if (kWrite2FileAsWell_) {
-            filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "10.txt"sv;
-            Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
-        }
-
-        // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
-    }
-}
-
-namespace {
-
-    void DoRegressionTests_CustomMapper_11_ ()
-    {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_CustomMapper_11_"};
+        Memory::BLOB mkdata_ ()
         {
-            ObjectVariantMapper mapper;
-            using IO::Network::CIDR;
-            mapper.Add<CIDR> ([] ([[maybe_unused]] const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { return obj->ToString (); },
-                              [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { *intoObj = CIDR{d.As<String> ()}; });
+            wstring newDocXML =
+                L"        <PERSON>\n"
+                L"                <FirstName>Jim</FirstName>"
+                L"                <LastName>Smith</LastName>"
+                L"        </PERSON>\n";
+            ;
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
         }
+        void DoTest1 ()
         {
-            struct RGBColor {
-                uint8_t red;
-                uint8_t green;
-                uint8_t blue;
-                bool    operator== (const RGBColor& rhs) const { return red == rhs.red and green == rhs.green and blue == rhs.blue; }
+            ObjectReader::Registry mapper;
+            mapper.AddCommonType<String> ();
+            mapper.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+                {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+            });
+            Person_                                  p;
+            ObjectReader::IConsumerDelegateToContext tmp{mapper, make_shared<ObjectReader::ReadDownToReader> (mapper.MakeContextReader (&p))};
+            XML::SAXParse (mkdata_ (), tmp);
+            VerifyTestResult (p.firstName == L"Jim");
+            VerifyTestResult (p.lastName == L"Smith");
+        }
+        void DoTests ()
+        {
+            DoTest1 ();
+        }
+    }
+}
+
+namespace {
+    namespace T6_SAXObjectReader_RepeatedElementReader_Sample_ {
+        enum class GenderType_ {
+            Male,
+            Female,
+            Stroika_Define_Enum_Bounds (Male, Female)
+        };
+        struct Person_ {
+            String                firstName;
+            String                lastName;
+            optional<GenderType_> gender;
+        };
+        struct Address_ {
+            String city;
+            String state;
+        };
+        struct Data_ {
+            vector<Person_>  people;
+            vector<Address_> addresses;
+        };
+        Memory::BLOB mkdata_ ()
+        {
+            wstring newDocXML =
+                L"<envelope1>\n"
+                L"        <person>\n"
+                L"                <FirstName>Jim</FirstName>"
+                L"                <LastName>Smith</LastName>"
+                L"                <Gender>Male</Gender>"
+                L"        </person>\n"
+                L"        <person>\n"
+                L"                <FirstName>Fred</FirstName>"
+                L"                <LastName>Down</LastName>"
+                L"        </person>\n"
+                L"        <address>\n"
+                L"                <city>Boston</city>"
+                L"                <state>MA</state>"
+                L"        </address>\n"
+                L"        <address>\n"
+                L"                <city>New York</city>"
+                L"                <state>NY</state>"
+                L"        </address>\n"
+                L"        <address>\n"
+                L"                <city>Albany</city>"
+                L"                <state>NY</state>"
+                L"        </address>\n"
+                L"</envelope1>\n";
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+        }
+
+        void DoTest ()
+        {
+            ObjectReader::Registry registry;
+            registry.AddCommonType<String> ();
+            registry.AddCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String>{
+                pair<GenderType_, String>{GenderType_::Male, L"Male"},
+                pair<GenderType_, String>{GenderType_::Female, L"Female"},
+            });
+            registry.AddCommonType<optional<GenderType_>> ();
+            registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+                {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+                {Name{L"Gender"}, StructFieldMetaInfo{&Person_::gender}},
+            });
+            registry.AddCommonType<vector<Person_>> ();
+            registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
+            registry.AddCommonReader_Class<Address_> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"city"}, StructFieldMetaInfo{&Address_::city}},
+                {Name{L"state"}, StructFieldMetaInfo{&Address_::state}},
+            });
+            registry.Add<vector<Address_>> (ObjectReader::RepeatedElementReader<vector<Address_>>::AsFactory ());
+            registry.AddCommonReader_Class<Data_> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"person"}, StructFieldMetaInfo{&Data_::people}},
+                {Name{L"address"}, StructFieldMetaInfo{&Data_::addresses}},
+            });
+
+            Data_ data;
+            {
+                ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
+                XML::SAXParse (mkdata_ (), ctx);
+                VerifyTestResult (data.people.size () == 2);
+                VerifyTestResult (data.people[0].firstName == L"Jim");
+                VerifyTestResult (data.people[0].lastName == L"Smith");
+                VerifyTestResult (data.people[0].gender == GenderType_::Male);
+                VerifyTestResult (data.people[1].firstName == L"Fred");
+                VerifyTestResult (data.people[1].lastName == L"Down");
+                VerifyTestResult (not data.people[1].gender.has_value ());
+                VerifyTestResult (data.addresses.size () == 3);
+                VerifyTestResult (data.addresses[0].city == L"Boston");
+                VerifyTestResult (data.addresses[0].state == L"MA");
+                VerifyTestResult (data.addresses[1].city == L"New York");
+                VerifyTestResult (data.addresses[1].state == L"NY");
+                VerifyTestResult (data.addresses[2].city == L"Albany");
+                VerifyTestResult (data.addresses[2].state == L"NY");
+            }
+        }
+    }
+}
+
+namespace {
+    namespace T7_SAXObjectReader_BLKQCL_ReadSensors_ {
+        enum class TunerNumberType_ {
+            eT1 = 1,
+            eT2 = 2,
+            eT3 = 3,
+            eT4 = 4,
+            Stroika_Define_Enum_Bounds (eT1, eT4)
+        };
+        using WaveNumberType_  = double;
+        using TemperatureType_ = double;
+        using CurrentType_     = double;
+        struct TECPowerConsumptionStatsType_ {
+            Mapping<TunerNumberType_, CurrentType_> TunerTECCurrent;
+        };
+        struct SensorDataType_ {
+            optional<TunerNumberType_>                  ActiveLaser;
+            optional<WaveNumberType_>                   ActiveLaserWaveNumber;
+            optional<TemperatureType_>                  DetectorTemperature;
+            optional<TemperatureType_>                  OpticsTemperature;
+            optional<TemperatureType_>                  ExternalTemperature1;
+            Mapping<TunerNumberType_, TemperatureType_> LaserTemperatures;
+            Mapping<TunerNumberType_, CurrentType_>     LaserCurrents;
+            Mapping<TunerNumberType_, TemperatureType_> MirrorTemperatures;
+            optional<TECPowerConsumptionStatsType_>     TECPowerConsumptionStats;
+        };
+        Memory::BLOB mkdata_ ()
+        {
+            wstring newDocXML =
+                L"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:blk201505=\"http://tempuri.org/blk201505.xsd\" xmlns:blk201605=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/\" xmlns:blk2016052=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IConfiguration\" xmlns:blk2016053=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILaserOperation\" xmlns:blk2016054=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IDeviceManagement\" xmlns:blk2016055=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IManufacturing\" xmlns:blk2016056=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILowLevelHardwareAccess\" xmlns:blk2016057=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IBasicPersistence\" xmlns:blk2016058=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IScanPersistence\" xmlns:ns1=\"http://www.blockeng.com/Schemas/2015-05/BLKQCL-Common/\" xmlns:ns2=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL-App/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
+                L"   <SOAP-ENV:Header>\n"
+                L"      <blk201505:timestamp>8557.8791092709998</blk201505:timestamp>\n"
+                L"   </SOAP-ENV:Header>\n"
+                L"   <SOAP-ENV:Body>\n"
+                L"      <blk201605:ReadSensorsResponse>\n"
+                L"         <blk201605:Sensors>\n"
+                L"            <blk201605:DetectorTemperature>13.1</blk201605:DetectorTemperature>\n"
+                L"            <blk201605:OpticsTemperature>0.86115019791435543</blk201605:OpticsTemperature>\n"
+                L"            <blk201605:LaserTemperature>\n"
+                L"               <blk201605:Temperature Tuner=\"1\">20.899877489241646</blk201605:Temperature>\n"
+                L"            </blk201605:LaserTemperature>\n"
+                L"            <blk201605:LaserCurrent>\n"
+                L"               <blk201605:Current Tuner=\"1\">0.86871794871794872</blk201605:Current>\n"
+                L"            </blk201605:LaserCurrent>\n"
+                L"             <blk201605:MirrorTemperature>\n"
+                L"               <blk201605:Temperature Tuner=\"2\">0.86115019791435543</blk201605:Temperature>\n"
+                L"            </blk201605:MirrorTemperature>\n"
+                L"            <blk201605:TECPowerConsumptionStats>\n"
+                L"               <blk201605:TunerTECCurrent Tuner=\"1\">-0.0015262515262515208</blk201605:TunerTECCurrent>\n"
+                L"               <blk201605:TunerTECCurrent Tuner=\"2\">0</blk201605:TunerTECCurrent>\n"
+                L"               <blk201605:TunerTECCurrent Tuner=\"3\">0</blk201605:TunerTECCurrent>\n"
+                L"               <blk201605:TunerTECCurrent Tuner=\"4\">0</blk201605:TunerTECCurrent>\n"
+                L"            </blk201605:TECPowerConsumptionStats>\n"
+                L"            <blk201605:ExternalTemperature1>0</blk201605:ExternalTemperature1>\n"
+                L"         </blk201605:Sensors>\n"
+                L"      </blk201605:ReadSensorsResponse>\n"
+                L"   </SOAP-ENV:Body>\n"
+                L"</SOAP-ENV:Envelope>\n";
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+        }
+        /*
+         *   <blk201605:LaserTemperature>\n"
+         *      <blk201605:Temperature Tuner=\"1\">20.899877489241646</blk201605:Temperature>\n"
+         *   </blk201605:LaserTemperature>\n"
+         *
+         *   Mapping<TunerNumberType,Temperature>    LaserTemperature;
+         */
+        template <typename TARGET_TYPE>
+        struct TunerMappingReader_ : public ObjectReader::IElementConsumer {
+            Mapping<TunerNumberType_, TARGET_TYPE>* fValuePtr_;
+            TunerMappingReader_ (Mapping<TunerNumberType_, TARGET_TYPE>* v)
+                : fValuePtr_ (v)
+            {
+            }
+            virtual shared_ptr<IElementConsumer> HandleChildStart ([[maybe_unused]] const Name& name) override
+            {
+                using namespace ObjectReader;
+                DISABLE_COMPILER_MSC_WARNING_START (4573)
+                static const ReaderFromVoidStarFactory sEltReader_ =
+                    [] () -> ReaderFromVoidStarFactory {
+#if qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy
+                    typedef KeyValuePair<TunerNumberType_, TARGET_TYPE> KVPType_;
+#else
+                    using KVPType_ = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
+#endif
+                    return Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
+                        {Name{L"Tuner", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
+                        {Name{Name::eValue}, StructFieldMetaInfo{&KVPType_::fValue}},
+                    });
+                }();
+                DISABLE_COMPILER_MSC_WARNING_END (4573)
+                return make_shared<RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>>> (fValuePtr_, sEltReader_);
+            }
+            static ObjectReader::ReaderFromVoidStarFactory AsFactory ()
+            {
+                return IElementConsumer::AsFactory<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_> ();
+            }
+        };
+        void DoTest ()
+        {
+            ObjectReader::Registry registry;
+            registry.AddCommonReader_NamedEnumerations<TunerNumberType_> (Containers::Bijection<TunerNumberType_, String>{
+                pair<TunerNumberType_, String>{TunerNumberType_::eT1, L"1"},
+                pair<TunerNumberType_, String>{TunerNumberType_::eT2, L"2"},
+                pair<TunerNumberType_, String>{TunerNumberType_::eT3, L"3"},
+                pair<TunerNumberType_, String>{TunerNumberType_::eT4, L"4"},
+            });
+            registry.AddCommonType<optional<TunerNumberType_>> ();
+            registry.AddCommonType<WaveNumberType_> ();
+            registry.AddCommonType<optional<WaveNumberType_>> ();
+            registry.AddCommonType<TemperatureType_> ();
+            registry.AddCommonType<optional<TemperatureType_>> ();
+            registry.AddCommonType<CurrentType_> ();
+            registry.Add<Mapping<TunerNumberType_, TemperatureType_>> (TunerMappingReader_<TemperatureType_>::AsFactory ());
+            registry.Add<Mapping<TunerNumberType_, CurrentType_>> (TunerMappingReader_<CurrentType_>::AsFactory ());
+            registry.Add<TECPowerConsumptionStatsType_> (TunerMappingReader_<CurrentType_>::AsFactory ());
+            registry.AddCommonType<optional<TECPowerConsumptionStatsType_>> ();
+            registry.AddCommonReader_Class<SensorDataType_> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"ActiveLaser"}, StructFieldMetaInfo{&SensorDataType_::ActiveLaser}},
+                {Name{L"DetectorTemperature"}, StructFieldMetaInfo{&SensorDataType_::DetectorTemperature}},
+                {Name{L"OpticsTemperature"}, StructFieldMetaInfo{&SensorDataType_::OpticsTemperature}},
+                {Name{L"ExternalTemperature1"}, StructFieldMetaInfo{&SensorDataType_::ExternalTemperature1}},
+                {Name{L"LaserTemperature"}, StructFieldMetaInfo{&SensorDataType_::LaserTemperatures}},
+                {Name{L"LaserCurrent"}, StructFieldMetaInfo{&SensorDataType_::LaserCurrents}},
+                {Name{L"MirrorTemperature"}, StructFieldMetaInfo{&SensorDataType_::MirrorTemperatures}},
+                {Name{L"TECPowerConsumptionStats"}, StructFieldMetaInfo{&SensorDataType_::TECPowerConsumptionStats}},
+            });
+
+            SensorDataType_ data;
+            {
+                ObjectReader::IConsumerDelegateToContext consumerCallback{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"Sensors"})};
+                //consumerCallback.fContext.fTraceThisReader = true;
+                XML::SAXParse (mkdata_ (), consumerCallback);
+                DbgTrace (L"LaserTemperatures=%s", Characters::ToString (data.LaserTemperatures).c_str ());
+                DbgTrace (L"MirrorTemperature=%s", Characters::ToString (data.MirrorTemperatures).c_str ());
+                DbgTrace (L"LaserCurrents=%s", Characters::ToString (data.LaserCurrents).c_str ());
+                DbgTrace (L"TECPowerConsumptionStats=%s", Characters::ToString (data.TECPowerConsumptionStats->TunerTECCurrent).c_str ());
+                VerifyTestResult (not data.ActiveLaser.has_value ());
+                VerifyTestResult (Math::NearlyEquals (*data.DetectorTemperature, 13.1));
+                VerifyTestResult (Math::NearlyEquals (*data.OpticsTemperature, 0.86115019791435543));
+                VerifyTestResult ((data.LaserTemperatures.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT1}));
+                VerifyTestResult (Math::NearlyEquals (*data.LaserTemperatures.Lookup (TunerNumberType_::eT1), 20.899877489241646));
+                VerifyTestResult ((data.LaserCurrents.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT1}));
+                VerifyTestResult (Math::NearlyEquals (*data.LaserCurrents.Lookup (TunerNumberType_::eT1), 0.86871794871794872));
+                VerifyTestResult ((data.MirrorTemperatures.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT2}));
+                VerifyTestResult (Math::NearlyEquals (*data.MirrorTemperatures.Lookup (TunerNumberType_::eT2), 0.86115019791435543));
+                VerifyTestResult ((data.TECPowerConsumptionStats->TunerTECCurrent.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT1, TunerNumberType_::eT2, TunerNumberType_::eT3, TunerNumberType_::eT4}));
+                VerifyTestResult (Math::NearlyEquals (*data.ExternalTemperature1, 0.0));
+            }
+        }
+    }
+}
+namespace Stroika::Foundation::Configuration {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-const-variable\"")
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
+    template <>
+#endif
+    constexpr EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_> DefaultNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_>::k{
+        EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_>::BasicArrayInitializer{{
+            {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT1, L"eT1"},
+            {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT2, L"eT2"},
+            {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT3, L"eT3"},
+            {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT4, L"eT4"},
+        }}};
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-const-variable\"")
+}
+
+namespace {
+    namespace T8_SAXObjectReader_BLKQCL_ReadAlarms_ {
+        using AlarmType_ = String;
+        Memory::BLOB mkdata_ ()
+        {
+            wstring newDocXML =
+                L"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:blk201505=\"http://tempuri.org/blk201505.xsd\" xmlns:blk201605=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/\" xmlns:blk2016052=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IConfiguration\" xmlns:blk2016053=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILaserOperation\" xmlns:blk2016054=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IDeviceManagement\" xmlns:blk2016055=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IManufacturing\" xmlns:blk2016056=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILowLevelHardwareAccess\" xmlns:blk2016057=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IBasicPersistence\" xmlns:blk2016058=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IScanPersistence\" xmlns:ns1=\"http://www.blockeng.com/Schemas/2015-05/BLKQCL-Common/\" xmlns:ns2=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL-App/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
+                L"   <SOAP-ENV:Header>\n"
+                L"      <blk201505:timestamp>8557.8791092709998</blk201505:timestamp>\n"
+                L"   </SOAP-ENV:Header>\n"
+                L"   <SOAP-ENV:Body>\n"
+                L"                      <blk201605:GetAlarmsResponse>\n"
+                L"                              <blk201605:Alarm>Fred</blk201605:Alarm>\n"
+                L"                              <blk201605:Alarm>Critical_LaserOverheating</blk201605:Alarm>\n"
+                L"                      </blk201605:GetAlarmsResponse>>\n"
+                L"   </SOAP-ENV:Body>\n"
+                L"</SOAP-ENV:Envelope>\n";
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+        }
+        void DoTest ()
+        {
+            ObjectReader::Registry registry;
+            registry.AddCommonType<AlarmType_> ();
+            registry.Add<Set<AlarmType_>> (ObjectReader::RepeatedElementReader<Set<AlarmType_>>::AsFactory ());
+            {
+                // Example matching ANY sub-element
+                Set<AlarmType_> data;
+                {
+                    ObjectReader::IConsumerDelegateToContext consumerCallback{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"GetAlarmsResponse"}, Name{L"Alarm"})};
+                    XML::SAXParse (mkdata_ (), consumerCallback);
+                    DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
+                }
+                VerifyTestResult ((data == Set<AlarmType_>{L"Fred", L"Critical_LaserOverheating"}));
+            }
+            const Name kAlarmName_ = Name{L"Alarm"};
+            registry.Add<Set<AlarmType_>> (ObjectReader::RepeatedElementReader<Set<AlarmType_>>::AsFactory (kAlarmName_));
+            {
+                // Example matching THE RIGHT sub-element
+                Set<AlarmType_> data;
+                {
+                    ObjectReader::IConsumerDelegateToContext consumerCallback{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"GetAlarmsResponse"}, kAlarmName_)};
+                    XML::SAXParse (mkdata_ (), consumerCallback);
+                    DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
+                }
+                VerifyTestResult ((data == Set<AlarmType_>{L"Fred", L"Critical_LaserOverheating"}));
+            }
+            const Name kWrongAlarmName_ = Name{L"xxxAlarm"};
+            registry.Add<Set<AlarmType_>> (ObjectReader::RepeatedElementReader<Set<AlarmType_>>::AsFactory (kWrongAlarmName_));
+            {
+                // Example matching THE WRONG sub-element
+                Set<AlarmType_> data;
+                {
+                    ObjectReader::IConsumerDelegateToContext consumerCallback{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"GetAlarmsResponse"}, kWrongAlarmName_)};
+                    XML::SAXParse (mkdata_ (), consumerCallback);
+                    DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
+                }
+                VerifyTestResult ((data == Set<AlarmType_>{}));
+            }
+        }
+    }
+}
+
+namespace {
+    namespace T9_SAXObjectReader_BLKQCL_ReadScanDetails_ {
+
+        using ScanIDType_                 = uint32_t;
+        using WaveNumberType_             = double;
+        using IntensityType_              = double;
+        using SpectrumType_               = SortedMapping<double, double>;
+        using PersistenceScanAuxDataType_ = Mapping<String, String>;
+        struct PersistentScanDetailsType_ {
+            ScanIDType_                 ScanID{};
+            optional<DateTime>          ScanStart;
+            optional<DateTime>          ScanEnd;
+            optional<String>            ScanLabel;
+            optional<SpectrumType_>     RawSpectrum;
+            PersistenceScanAuxDataType_ AuxData;
+        };
+        Memory::BLOB mkdata_ ()
+        {
+            wstring newDocXML =
+                L"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:blk201505=\"http://tempuri.org/blk201505.xsd\" xmlns:blk201605=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/\" xmlns:blk2016052=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IConfiguration\" xmlns:blk2016053=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILaserOperation\" xmlns:blk2016054=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IDeviceManagement\" xmlns:blk2016055=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IManufacturing\" xmlns:blk2016056=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILowLevelHardwareAccess\" xmlns:blk2016057=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IBasicPersistence\" xmlns:blk2016058=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IScanPersistence\" xmlns:ns1=\"http://www.blockeng.com/Schemas/2015-05/BLKQCL-Common/\" xmlns:ns2=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL-App/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
+                L"   <SOAP-ENV:Header>\n"
+                L"      <blk201505:timestamp>8557.8791092709998</blk201505:timestamp>\n"
+                L"   </SOAP-ENV:Header>\n"
+                L"   <SOAP-ENV:Body>\n"
+                L"              <blk201605:ScanPersistenceGetScanDetailsResponse>\n"
+                L"                      <blk201605:Scan>\n"
+                L"                              <blk201605:ScanID>8320</blk201605:ScanID>\n"
+                L"                              <blk201605:ScanStart>2016-07-28T20:14:30Z</blk201605:ScanStart>\n"
+                L"                              <blk201605:ScanEnd>2016-07-28T20:14:44Z</blk201605:ScanEnd>\n"
+                L"                              <blk201605:ScanKind>Reference</blk201605:ScanKind>\n"
+                L"                              <blk201605:RawSpectrum>\n"
+                L"                                      <ns1:Measurement intensity=\"0\" waveNumber=\"901.5\"/>\n"
+                L"                                      <ns1:Measurement intensity=\"1\" waveNumber=\"902.5\"/>\n"
+                //...
+                L"                              </blk201605:RawSpectrum>\n"
+                L"                              <blk201605:AuxData>\n"
+                L"                                      <blk201605:KeyValuePair Value=\"1000\" Key=\"Cell-Pressure\"/>\n"
+                L"                                      <blk201605:KeyValuePair Value=\"0\" Key=\"Cell-Temperature\"/>\n"
+                L"                                      <blk201605:KeyValuePair Value=\"B1E56F82-B217-40D3-A24D-FAC491EDCDE8\" Key=\"EngineId\"/>\n"
+                L"                              </blk201605:AuxData>\n"
+                L"                      </blk201605:Scan>\n"
+                L"              </blk201605:ScanPersistenceGetScanDetailsResponse>\n"
+                L"   </SOAP-ENV:Body>\n"
+                L"</SOAP-ENV:Envelope>\n";
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+        }
+        namespace PRIVATE_ {
+
+            struct SpectrumReader_ : public ObjectReader::IElementConsumer {
+                SpectrumType_* fValuePtr_;
+                SpectrumReader_ (SpectrumType_* v)
+                    : fValuePtr_{v}
+                {
+                }
+                virtual shared_ptr<IElementConsumer> HandleChildStart ([[maybe_unused]] const Name& name) override
+                {
+                    using namespace ObjectReader;
+                    DISABLE_COMPILER_MSC_WARNING_START (4573)
+                    static const ReaderFromVoidStarFactory sEltReader_ =
+                        [] () -> ReaderFromVoidStarFactory {
+#if qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy
+                        typedef SpectrumType_::value_type KVPType_;
+#else
+                        using KVPType_ = SpectrumType_::value_type;
+#endif
+                        return Registry::MakeClassReader<KVPType_> (
+                            initializer_list<StructFieldInfo>{
+                                {Name{L"waveNumber", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
+                                {Name{L"intensity", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
+                            });
+                    }();
+                    DISABLE_COMPILER_MSC_WARNING_END (4573)
+                    return make_shared<RepeatedElementReader<SpectrumType_>> (fValuePtr_, sEltReader_);
+                }
+                static ObjectReader::ReaderFromVoidStarFactory AsFactory ()
+                {
+                    return IElementConsumer::AsFactory<SpectrumType_, SpectrumReader_> ();
+                }
             };
-
-            ObjectVariantMapper mapper;
-
-            mapper.Add<RGBColor> (
-                [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const RGBColor* obj) -> VariantValue {
-                    return L"#" + Characters::Format (L"%2x%2x%2x", obj->red, obj->green, obj->blue);
-                },
-                [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
-                    String tmpInBuf = d.As<String> ();
-                    if (tmpInBuf.length () != 7) {
-                        Execution::Throw (DataExchange::BadFormatException{L"RGBColor sb length 7"});
-                    }
-                    if (tmpInBuf[0] != '#') {
-                        Execution::Throw (DataExchange::BadFormatException{L"RGBColor must start with #"});
-                    }
-                    auto readColorComponent = [] (const wchar_t* start, const wchar_t* end) -> uint8_t {
-                        wchar_t buf[1024];
-                        Require (end - start < static_cast<ptrdiff_t> (Memory::NEltsOf (buf)));
-                        memcpy (buf, start, (end - start) * sizeof (wchar_t));
-                        buf[(end - start)] = '\0';
-                        wchar_t* e         = nullptr;
-                        auto     result    = std::wcstoul (buf, &e, 16);
-                        if (e != buf + 2) {
-                            Execution::Throw (DataExchange::BadFormatException (L"expected 6 hex bytes"));
-                        }
-                        Assert (result <= 255);
-                        return static_cast<uint8_t> (result);
-                    };
-                    intoObj->red   = readColorComponent (tmpInBuf.c_str () + 1, tmpInBuf.c_str () + 3);
-                    intoObj->green = readColorComponent (tmpInBuf.c_str () + 3, tmpInBuf.c_str () + 5);
-                    intoObj->blue  = readColorComponent (tmpInBuf.c_str () + 5, tmpInBuf.c_str () + 7);
-                });
-
-            RGBColor     tmp = RGBColor{255, 255, 255};
-            VariantValue v   = mapper.FromObject (tmp);
-
-            Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
-            Variant::JSON::Writer{}.Write (v, tmpStream);
-
-            // THEN deserialized, and mapped back to C++ object form
-            RGBColor tmp2 = mapper.ToObject<RGBColor> (Variant::JSON::Reader{}.Read (tmpStream));
-            VerifyTestResult (tmp2 == tmp);
-        }
-    }
-}
-
-#if !qCompilerAndStdLib_lambda_expand_in_namespace_Buggy
-namespace {
-    namespace aaa {
-        struct dev {
-            static const ObjectVariantMapper kMapper_;
-        };
-    }
-    using namespace aaa;
-    const ObjectVariantMapper dev::kMapper_ = [] () {
-        ObjectVariantMapper mapper;
-        using IO::Network::CIDR;
-        mapper.Add<CIDR> ([] ([[maybe_unused]] const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { return obj->ToString (); },
-                          [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { *intoObj = CIDR{d.As<String> ()}; });
-        return mapper;
-    }();
-}
+            struct StringKVStringReader : public ObjectReader::IElementConsumer {
+                Mapping<String, String>* fValuePtr_;
+                StringKVStringReader (Mapping<String, String>* v)
+                    : fValuePtr_{v}
+                {
+                }
+                virtual shared_ptr<IElementConsumer> HandleChildStart ([[maybe_unused]] const Name& name) override
+                {
+                    using namespace ObjectReader;
+                    static const ReaderFromVoidStarFactory sEltReader_ =
+                        [] () -> ReaderFromVoidStarFactory {
+#if qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy
+                        typedef KeyValuePair<String, String> KVPType_;
+#else
+                        using KVPType_ = KeyValuePair<String, String>;
 #endif
 
-namespace {
-    void DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_ ()
-    {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_"};
-        using namespace Traversal;
-        const bool kWrite2FileAsWell_ = true; // just for debugging
-
-        enum class Fred {
-            a = -3,
-            b,
-            c,
-            d,
-            e,
-            f,
-            g,
-            h,
-
-            Stroika_Define_Enum_Bounds (a, h)
-        };
-
-        struct SharedContactsConfig_ {
-            Fred fEnum1;
-
-            SharedContactsConfig_ ()
-                : fEnum1 (Fred::a)
-            {
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return fEnum1 == rhs.fEnum1;
-            }
-        };
-
+                        return Registry::MakeClassReader<KVPType_> (
+                            initializer_list<StructFieldInfo>{
+                                {Name{L"Key", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
+                                {Name{L"Value", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
+                            });
+                    }();
+                    return make_shared<RepeatedElementReader<Mapping<String, String>>> (fValuePtr_, sEltReader_);
+                }
+                static ObjectReader::ReaderFromVoidStarFactory AsFactory ()
+                {
+                    return IElementConsumer::AsFactory<Mapping<String, String>, StringKVStringReader> ();
+                }
+            };
+        }
+        void DoTest ()
         {
-            ObjectVariantMapper mapper;
+            ObjectReader::Registry registry;
+            registry.AddCommonType<ScanIDType_> ();
+            registry.AddCommonType<WaveNumberType_> ();
+            registry.AddCommonType<IntensityType_> ();
+            registry.AddCommonType<DateTime> ();
+            registry.AddCommonType<optional<DateTime>> ();
+            registry.AddCommonType<String> ();
+            registry.AddCommonType<optional<String>> ();
+            registry.Add<SpectrumType_> (PRIVATE_::SpectrumReader_::AsFactory ());
+            registry.AddCommonType<optional<SpectrumType_>> ();
+            registry.Add<PersistenceScanAuxDataType_> (PRIVATE_::StringKVStringReader::AsFactory ());
+            registry.AddCommonReader_Class<PersistentScanDetailsType_> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"ScanID"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanID}},
+                {Name{L"ScanStart"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanStart}},
+                {Name{L"ScanEnd"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanEnd}},
+                {Name{L"ScanLabel"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanLabel}},
+                {Name{L"RawSpectrum"}, StructFieldMetaInfo{&PersistentScanDetailsType_::RawSpectrum}},
+                {Name{L"AuxData"}, StructFieldMetaInfo{&PersistentScanDetailsType_::AuxData}},
+            });
+            PersistentScanDetailsType_ data;
+            {
+                ObjectReader::IConsumerDelegateToContext consumerCallback{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"ScanPersistenceGetScanDetailsResponse"}, Name{L"Scan"})};
+                //consumerCallback.fContext.fTraceThisReader = true;
+                XML::SAXParse (mkdata_ (), consumerCallback);
+                DbgTrace (L"ScanID=%s", Characters::ToString (data.ScanID).c_str ());
+                DbgTrace (L"ScanStart=%s", Characters::ToString (data.ScanStart).c_str ());
+                DbgTrace (L"ScanEnd=%s", Characters::ToString (data.ScanEnd).c_str ());
+                if (data.ScanLabel) {
+                    DbgTrace (L"ScanLabel=%s", Characters::ToString (*data.ScanLabel).c_str ());
+                }
+                if (data.RawSpectrum) {
+                    DbgTrace (L"RawSpectrum=%s", Characters::ToString (*data.RawSpectrum).c_str ());
+                }
+                DbgTrace (L"AuxData=%s", Characters::ToString (data.AuxData).c_str ());
+                VerifyTestResult (data.ScanID == 8320);
+                VerifyTestResult (data.ScanStart == DateTime::Parse (L"2016-07-28T20:14:30Z", DateTime::kISO8601Format));
+                VerifyTestResult (data.ScanEnd == DateTime::Parse (L"2016-07-28T20:14:44Z", DateTime::kISO8601Format));
+                VerifyTestResult (not data.ScanLabel.has_value ());
+                VerifyTestResult ((data.RawSpectrum == Mapping<WaveNumberType_, IntensityType_>{pair<WaveNumberType_, IntensityType_>{901.5, 0}, pair<WaveNumberType_, IntensityType_>{902.5, 1}}));
+                VerifyTestResult ((data.AuxData == Mapping<String, String>{pair<String, String>{L"Cell-Pressure", L"1000"}, pair<String, String>{L"Cell-Temperature", L"0"}, pair<String, String>{L"EngineId", L"B1E56F82-B217-40D3-A24D-FAC491EDCDE8"}}));
+            }
+        }
+    }
+}
 
-            mapper.Add (ObjectVariantMapper::MakeCommonSerializer_EnumAsInt<Fred> ());
-            mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                {L"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
+namespace {
+    namespace T10_SAXObjectReader_NANValues_ {
+        namespace PRIVATE_ {
+            struct Values_ {
+                double valueMissing;
+                double valueExplicitGood;
+                double valueExplicitNAN1;
+                double valueExplicitNAN2;
+            };
+            Memory::BLOB mkdata_ ()
+            {
+                wstring newDocXML =
+                    L"<Values>\n"
+                    //L"          <valueMissing></valueMissing>"
+                    L"            <valueExplicitGood>3.0</valueExplicitGood>"
+                    L"            <valueExplicitNAN1>NAN</valueExplicitNAN1>"
+                    L"            <valueExplicitNAN2>NAN</valueExplicitNAN2>"
+                    L"</Values>\n";
+                stringstream tmpStrm;
+                WriteTextStream_ (newDocXML, tmpStrm);
+                return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+            }
+        }
+        void DoTest ()
+        {
+            using namespace PRIVATE_;
+            TraceContextBumper     traceCtx ("T10_SAXObjectReader_NANValues_");
+            ObjectReader::Registry registry;
+            registry.AddCommonType<double> ();
+            registry.AddCommonReader_Class<Values_> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"valueMissing"}, StructFieldMetaInfo{&Values_::valueMissing}},
+                {Name{L"valueExplicitGood"}, StructFieldMetaInfo{&Values_::valueExplicitGood}},
+                {Name{L"valueExplicitNAN1"}, StructFieldMetaInfo{&Values_::valueExplicitNAN1}},
+                {Name{L"valueExplicitNAN2"}, StructFieldMetaInfo{&Values_::valueExplicitNAN2}},
+            });
+            {
+                Values_ values{};
+                values.valueMissing = 999;
+                ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{L"Values"})};
+                XML::SAXParse (mkdata_ (), ctx);
+                VerifyTestResult (values.valueMissing == 999);
+                VerifyTestResult (Math::NearlyEquals (values.valueExplicitGood, 3.0));
+                VerifyTestResult (isnan (values.valueExplicitNAN1));
+                VerifyTestResult (isnan (values.valueExplicitNAN2));
+            }
+        }
+    }
+}
+
+namespace {
+    namespace T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_ {
+        enum class TunerNumberType_ {
+            eT1 = 1,
+            eT2 = 2,
+            eT3 = 3,
+            eT4 = 4,
+            Stroika_Define_Enum_Bounds (eT1, eT4)
+        };
+        using FrequencyType_ = double;
+        struct PerTunerFactorySettingsType_ {
+            optional<FrequencyType_> MirrorOperationFrequency;
+            optional<FrequencyType_> MirrorResonantFrequency;
+            nonvirtual String        ToString () const
+            {
+                StringBuilder out;
+                out += L"{";
+                if (MirrorOperationFrequency) {
+                    out += L"MirrorOperationFrequency: '" + Characters::ToString (*MirrorOperationFrequency) + L"',";
+                }
+                if (MirrorResonantFrequency) {
+                    out += L"MirrorResonantFrequency: '" + Characters::ToString (*MirrorResonantFrequency) + L"',";
+                }
+                out += L"}";
+                return out.str ();
+            }
+        };
+        struct FactorySettingsType_ {
+            Mapping<TunerNumberType_, PerTunerFactorySettingsType_> Tuners;
+        };
+        Memory::BLOB mkdata_ ()
+        {
+            wstring newDocXML =
+                L"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"http://www.blockeng.com/Schemas/2015-05/BLKQCL-Common/\" xmlns:ns2=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL-App/\" xmlns:blk2017042=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IConfiguration\" xmlns:blk2017043=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-ILaserOperation\" xmlns:blk2017044=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IDeviceManagement\" xmlns:blk2017045=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IManufacturing\" xmlns:blk2017046=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-ILowLevelHardwareAccess\" xmlns:blk2017047=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IBasicPersistence\" xmlns:blk2017048=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IScanPersistence\" xmlns:blk201704=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/\" xmlns:blk201505=\"http://tempuri.org/blk201505.xsd\">\n"
+                L"   <SOAP-ENV:Header>\n"
+                L"      <blk201505:timestamp>465.104564455</blk201505:timestamp>\n"
+                L"   </SOAP-ENV:Header>\n"
+                L"   <SOAP-ENV:Body>\n"
+                L"      <blk201704:GetFactorySettingsResponse>\n"
+                L"         <blk201704:Tuners>\n"
+                L"            <blk201704:Tuner Tuner=\"1\">\n"
+                L"               <blk201704:MirrorResonantFrequency>150</blk201704:MirrorResonantFrequency>\n"
+                L"               <blk201704:MirrorOperationFrequency>40</blk201704:MirrorOperationFrequency>\n"
+                L"            </blk201704:Tuner>\n"
+                L"            <blk201704:Tuner Tuner=\"2\">\n"
+                L"               <blk201704:MirrorResonantFrequency>151</blk201704:MirrorResonantFrequency>\n"
+                L"               <blk201704:MirrorOperationFrequency>41</blk201704:MirrorOperationFrequency>\n"
+                L"            </blk201704:Tuner>\n"
+                L"         </blk201704:Tuners>\n"
+                L"      </blk201704:GetFactorySettingsResponse>\n"
+                L"   </SOAP-ENV:Body>\n"
+                L"</SOAP-ENV:Envelope>\n";
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+        }
+
+        static const ObjectReader::ReaderFromVoidStarFactory k_PerTunerFactorySettingsType_ReaderFactory_ =
+            ObjectReader::Registry::MakeClassReader<PerTunerFactorySettingsType_> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"MirrorOperationFrequency"}, StructFieldMetaInfo{&PerTunerFactorySettingsType_::MirrorOperationFrequency}},
+                {Name{L"MirrorResonantFrequency"}, StructFieldMetaInfo{&PerTunerFactorySettingsType_::MirrorResonantFrequency}},
             });
 
-            SharedContactsConfig_ tmp;
-            tmp.fEnum1     = Fred::b;
-            VariantValue v = mapper.FromObject (tmp);
-
-            // at this point - we should have VariantValue object with "Enabled" field.
-            // This can then be serialized using
-
-            Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
-            Variant::JSON::Writer{}.Write (v, tmpStream);
-
-            if (kWrite2FileAsWell_) {
-                filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "12.txt"sv;
-                Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-                [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
+        /*
+         *  <blk201704:Tuners>\n"
+         *      <blk201704:Tuner Tuner=\"3\">\n"
+         *               <blk201704:MirrorResonantFrequency>150</blk201704:MirrorResonantFrequency>\n"
+         *               <blk201704:MirrorOperationFrequency>40</blk201704:MirrorOperationFrequency>\n"
+         *      </blk201605:Tuner>\n"
+         *  </blk201704:Tuners>\n"
+         *
+         *   Mapping<TunerNumberType,Temperature>    LaserTemperature;
+         */
+        struct TunerMappingReader_ : public ObjectReader::IElementConsumer {
+            Mapping<TunerNumberType_, PerTunerFactorySettingsType_>* fValuePtr_;
+            TunerMappingReader_ (Mapping<TunerNumberType_, PerTunerFactorySettingsType_>* v)
+                : fValuePtr_ (v)
+            {
             }
-
-            // THEN deserialized, and mapped back to C++ object form
-            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-            VerifyTestResult (tmp2 == tmp);
-        }
-    }
-}
-
-namespace {
-    namespace Test13_ObjVarMapperAndGUID_ {
-        void DoIt ()
+            virtual shared_ptr<IElementConsumer> HandleChildStart ([[maybe_unused]] const Name& name) override
+            {
+                using namespace ObjectReader;
+                struct MyKVPReader_ : MixinReader<KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>> {
+                    static Sequence<MixinEltTraits> mkMixinHelpers_ ()
+                    {
+                        using KVPType_ = KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>;
+                        static const ReaderFromVoidStarFactory kTunerReader_ =
+                            Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
+                                {Name{L"Tuner", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
+                            });
+                        Sequence<MixinEltTraits> tmp;
+                        tmp += MixinEltTraits{kTunerReader_, [] (const Name& name) { return name == Name{L"Tuner", Name::eAttribute}; }, [] (KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fKey); }};
+                        tmp += MixinEltTraits{k_PerTunerFactorySettingsType_ReaderFactory_, [] (const Name& name) { return name != Name{L"Tuner", Name::eAttribute}; }, [] (KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fValue); }};
+                        return tmp;
+                    }
+                    MyKVPReader_ (KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>* v)
+                        : MixinReader<KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>> (v, mkMixinHelpers_ ())
+                    {
+                    }
+                    static ReaderFromVoidStarFactory AsFactory ()
+                    {
+                        return IElementConsumer::AsFactory<KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>, MyKVPReader_> ();
+                    }
+                };
+                return make_shared<RepeatedElementReader<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>>> (fValuePtr_, MyKVPReader_::AsFactory ());
+            }
+            static ObjectReader::ReaderFromVoidStarFactory AsFactory ()
+            {
+                return IElementConsumer::AsFactory<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>, TunerMappingReader_> ();
+            }
+        };
+        void DoTest ()
         {
-            ObjectVariantMapper m;
-            Common::GUID        g = Common::GUID::GenerateNew ();
-            VerifyTestResult (m.ToObject<Common::GUID> (m.FromObject (g)) == g);
+            ObjectReader::Registry registry;
+            registry.AddCommonReader_NamedEnumerations<TunerNumberType_> (Containers::Bijection<TunerNumberType_, String>{
+                pair<TunerNumberType_, String>{TunerNumberType_::eT1, L"1"},
+                pair<TunerNumberType_, String>{TunerNumberType_::eT2, L"2"},
+                pair<TunerNumberType_, String>{TunerNumberType_::eT3, L"3"},
+                pair<TunerNumberType_, String>{TunerNumberType_::eT4, L"4"},
+            });
+            registry.AddCommonType<optional<TunerNumberType_>> ();
+            registry.AddCommonType<FrequencyType_> ();
+            registry.AddCommonType<optional<FrequencyType_>> ();
+            registry.Add<PerTunerFactorySettingsType_> (k_PerTunerFactorySettingsType_ReaderFactory_);
+            registry.Add<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>> (TunerMappingReader_::AsFactory ());
+            registry.AddCommonReader_Class<FactorySettingsType_> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"Tuners"}, StructFieldMetaInfo{&FactorySettingsType_::Tuners}},
+            });
+
+            FactorySettingsType_ data;
+            {
+                ObjectReader::IConsumerDelegateToContext consumerCallback{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"GetFactorySettingsResponse"})};
+                //consumerCallback.fContext.fTraceThisReader = true;
+                XML::SAXParse (mkdata_ (), consumerCallback);
+                DbgTrace (L"Tuners=%s", Characters::ToString (data.Tuners).c_str ());
+                VerifyTestResult ((data.Tuners.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT1, TunerNumberType_::eT2}));
+                VerifyTestResult (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT1)->MirrorOperationFrequency, 40.0));
+                VerifyTestResult (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT1)->MirrorResonantFrequency, 150.0));
+                VerifyTestResult (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT2)->MirrorOperationFrequency, 41.0));
+                VerifyTestResult (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT2)->MirrorResonantFrequency, 151.0));
+            }
+        }
+    }
+}
+namespace Stroika::Foundation::Configuration {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-const-variable\"")
+    // for ToString ()
+#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
+    template <>
+#endif
+    constexpr EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_> DefaultNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::k{
+        EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::BasicArrayInitializer{{
+            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT1, L"eT1"},
+            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT2, L"eT2"},
+            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT3, L"eT3"},
+            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT4, L"eT4"},
+        }}};
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-const-variable\"")
+}
+
+namespace {
+    namespace T12_RangeReader_ {
+        namespace PRIVATE_ {
+            using Traversal::Range;
+            using MY_TEST_RANGE_ = Range<double>;
+            struct Values_ {
+                MY_TEST_RANGE_ r{};
+            };
+            Memory::BLOB mkdata_ ()
+            {
+                wstring newDocXML =
+                    L"<Values>\n"
+                    L"            <r LowerBound=\"3.0\" UpperBound=\"6.0\"/>"
+                    L"</Values>\n";
+                stringstream tmpStrm;
+                WriteTextStream_ (newDocXML, tmpStrm);
+                return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+            }
+        }
+        void DoTest ()
+        {
+            using namespace PRIVATE_;
+            TraceContextBumper     traceCtx ("T12_RangeReader_");
+            ObjectReader::Registry registry;
+            registry.AddCommonType<MY_TEST_RANGE_::value_type> ();
+            registry.Add<MY_TEST_RANGE_> (ObjectReader::RangeReader<MY_TEST_RANGE_>::AsFactory ());
+            registry.AddCommonReader_Class<Values_> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"r"}, StructFieldMetaInfo{&Values_::r}},
+            });
+            {
+                Values_                                  values{};
+                ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{L"Values"})};
+                XML::SAXParse (mkdata_ (), ctx);
+                VerifyTestResult (Math::NearlyEquals (values.r.GetLowerBound (), 3.0));
+                VerifyTestResult (Math::NearlyEquals (values.r.GetUpperBound (), 6.0));
+            }
         }
     }
 }
 
 namespace {
+
+    namespace T13_SAXObjectReader_OverrideTypeInStructInfo_ {
+        enum class GenderType_ {
+            Male,
+            Female,
+            Stroika_Define_Enum_Bounds (Male, Female)
+        };
+        struct Person_ {
+            String      firstName;
+            String      lastName;
+            GenderType_ gender;
+        };
+        struct Data_ {
+            vector<Person_> people;
+        };
+        Memory::BLOB mkdata_ ()
+        {
+            wstring newDocXML =
+                L"<envelope1>\n"
+                L"        <person>\n"
+                L"                <FirstName>Jim</FirstName>"
+                L"                <LastName>Smith</LastName>"
+                L"                <Gender>Male</Gender>"
+                L"        </person>\n"
+                L"        <person>\n"
+                L"                <FirstName>Fred</FirstName>"
+                L"                <LastName>Down</LastName>"
+                L"                <Gender>Female</Gender>"
+                L"        </person>\n"
+                L"</envelope1>\n";
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+        }
+        void DoTest ()
+        {
+            ObjectReader::Registry registry;
+            registry.AddCommonType<String> ();
+            static const auto kGenderType_Reader_ = ObjectReader::Registry::MakeCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String>{
+                pair<GenderType_, String>{GenderType_::Male, L"Male"},
+                pair<GenderType_, String>{GenderType_::Female, L"Female"},
+            });
+            registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+                {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+                {Name{L"Gender"}, StructFieldMetaInfo{&Person_::gender}, kGenderType_Reader_},
+            });
+            registry.AddCommonType<vector<Person_>> ();
+            registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
+            registry.AddCommonReader_Class<Data_> (initializer_list<ObjectReader::StructFieldInfo>{
+                {Name{L"person"}, StructFieldMetaInfo{&Data_::people}},
+            });
+
+            Data_ data;
+            {
+                ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
+                XML::SAXParse (mkdata_ (), ctx);
+                VerifyTestResult (data.people.size () == 2);
+                VerifyTestResult (data.people[0].firstName == L"Jim");
+                VerifyTestResult (data.people[0].lastName == L"Smith");
+                VerifyTestResult (data.people[0].gender == GenderType_::Male);
+                VerifyTestResult (data.people[1].firstName == L"Fred");
+                VerifyTestResult (data.people[1].lastName == L"Down");
+                VerifyTestResult (data.people[1].gender == GenderType_::Female);
+            }
+        }
+    }
+}
+
+namespace T14_SAXObjectReader_CustomSimpleType_ {
+
+    // Custom Type will require a custom reader, but thats easy to do for most simple types
+    // Use MakeCommonReader_SimpleStringish for this type
+    struct GenderType_ {
+        String fRep;
+    };
+
+    struct Person_ {
+        String      firstName;
+        String      lastName;
+        GenderType_ gender;
+    };
+    struct Data_ {
+        vector<Person_> people;
+    };
+    Memory::BLOB mkdata_ ()
+    {
+        wstring newDocXML =
+            L"<envelope1>\n"
+            L"        <person>\n"
+            L"                <FirstName>Jim</FirstName>"
+            L"                <LastName>Smith</LastName>"
+            L"                <Gender>Male</Gender>"
+            L"        </person>\n"
+            L"        <person>\n"
+            L"                <FirstName>Fred</FirstName>"
+            L"                <LastName>Down</LastName>"
+            L"                <Gender>Female</Gender>"
+            L"        </person>\n"
+            L"</envelope1>\n";
+        stringstream tmpStrm;
+        WriteTextStream_ (newDocXML, tmpStrm);
+        return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+    }
+    void DoTest ()
+    {
+        ObjectReader::Registry registry;
+        registry.AddCommonType<String> ();
+        registry.AddCommonReader_Simple<GenderType_> ([] (String s) -> GenderType_ { GenderType_ result; result.fRep = s; return result; });
+        registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
+            {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+            {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+            {Name{L"Gender"}, StructFieldMetaInfo{&Person_::gender}},
+        });
+        registry.AddCommonType<vector<Person_>> ();
+        registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
+        registry.AddCommonReader_Class<Data_> (initializer_list<ObjectReader::StructFieldInfo>{
+            {Name{L"person"}, StructFieldMetaInfo{&Data_::people}},
+        });
+
+        Data_ data;
+        {
+            ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
+            XML::SAXParse (mkdata_ (), ctx);
+            VerifyTestResult (data.people.size () == 2);
+            VerifyTestResult (data.people[0].firstName == L"Jim");
+            VerifyTestResult (data.people[0].lastName == L"Smith");
+            VerifyTestResult (data.people[0].gender.fRep == L"Male");
+            VerifyTestResult (data.people[1].firstName == L"Fred");
+            VerifyTestResult (data.people[1].lastName == L"Down");
+            VerifyTestResult (data.people[1].gender.fRep == L"Female");
+        }
+    }
+}
+
+namespace {
+
     void DoRegressionTests_ ()
     {
-        DoRegressionTests_BasicDataRoundtrips_1_::DoAll ();
-        DoRegressionTests_SimpleMapToFromJSON_2_ ();
-        DoRegressionTests_SimpleMapToFromJSON_3_ ();
-        DoRegressionTests_SimpleMapRangeTypes_4_ ();
-        DoRegressionTests_SimpleEnumTypes_5_ ();
-        DoRegressionTests_DurationsDateTime_6_ ();
-        DoRegressionTests_VariantValue_7_ ();
-        DoRegressionTests_MakeCommonSerializer_8_ ();
-        DoRegressionTests_Subclass_9_ ();
-        DoRegressionTests_FileTypeConverterOverride_10_ ();
-        DoRegressionTests_CustomMapper_11_ ();
-        DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_ ();
-        Test13_ObjVarMapperAndGUID_::DoIt ();
+        try {
+            Test_1_SAXParser_ ();
+            Test_SAX_ObjectReader_EXAMPLE_1_ ();
+            T3_SAXObjectReader_ReadDown2Sample_::DoTest ();
+            T4_SAXObjectReader_ReadDown2Sample_MixedContent_::DoTest ();
+            T5_SAXObjectReader_DocSamples_::DoTests ();
+            T6_SAXObjectReader_RepeatedElementReader_Sample_::DoTest ();
+            T7_SAXObjectReader_BLKQCL_ReadSensors_::DoTest ();
+            T8_SAXObjectReader_BLKQCL_ReadAlarms_::DoTest ();
+            T9_SAXObjectReader_BLKQCL_ReadScanDetails_::DoTest ();
+            T10_SAXObjectReader_NANValues_::DoTest ();
+            T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::DoTest ();
+            T12_RangeReader_::DoTest ();
+            T13_SAXObjectReader_OverrideTypeInStructInfo_::DoTest ();
+            T14_SAXObjectReader_CustomSimpleType_::DoTest ();
+        }
+        catch (const Execution::RequiredComponentMissingException&) {
+#if !qHasLibrary_Xerces
+// OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+// This is more like the absence of a feature beacuse of the missing component.
+#else
+            Execution::ReThrow ();
+#endif
+        }
     }
 }
 
