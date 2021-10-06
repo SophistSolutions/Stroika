@@ -12,28 +12,29 @@
 VER=`ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 
 : "${USE_TEST_BASENAME:=UNKNOWN}"
+: "${PERF_TEST:=Test52}"
 
 MULTIPLIER=${MULTIPLIER-15}
 if [ "$(uname -s)" == "Darwin" ] ; then
-    EXE=${EXE-"Builds/Release/Tests/Test53"}
+    EXE=${EXE-"Builds/Release/Tests/$PERF_TEST"}
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="MacOS-x86-XCode"; fi
     CMDRUN_PREFIX="nice -10 "
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
     # Do something under GNU/Linux platform
-    EXE=${EXE-"Builds/g++-optimized/Tests/Test53"}
-	if [ ! -e "$EXE" ] ; then EXE="Builds/Release/Tests/Test53"; fi
-	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-8-release-c++17/Tests/Test53"; fi
-	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-10-release-c++17/Tests/Test53"; fi
+    EXE=${EXE-"Builds/g++-optimized/Tests/$PERF_TEST"}
+	if [ ! -e "$EXE" ] ; then EXE="Builds/Release/Tests/$PERF_TEST"; fi
+	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-8-release-c++17/Tests/$PERF_TEST"; fi
+	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-10-release-c++17/Tests/$PERF_TEST"; fi
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="linux-g++-7.3-x64"; fi
     CMDRUN_PREFIX="nice -10 taskset -c 0 "
 elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ] ; then
     # Do something under Windows NT platform
-    EXE=${EXE-"Builds/Release-x86/Tests/Test53"}
+    EXE=${EXE-"Builds/Release-x86/Tests/$PERF_TEST"}
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="Windows-x86-vs2k19"; fi
     CMDRUN_PREFIX=""
 elif [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
     # Do something under Windows NT platform
-    EXE=${EXE-"Builds/Release-x86/Tests/Test53"}
+    EXE=${EXE-"Builds/Release-x86/Tests/$PERF_TEST"}
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="Windows-x86-vs2k19"; fi
     CMDRUN_PREFIX=""
 else
