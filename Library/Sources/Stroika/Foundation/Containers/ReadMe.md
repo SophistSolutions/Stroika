@@ -34,22 +34,42 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 
 ---
 
+- Stroika containers abstract acccess patterns and have virtual 'implementation' (representational polymorphism)
+
+  This allows implementations of that access pattern in a variety of ways. You can even transparently transform / change representation in one part of a program and still access it through the same access pattern in other parts of the program).
+  -  Examples
+     - a Mapping<> as a linkedlist, tree, or hashtable
+     - Sequence can change representation from linked list to vector, to sparse array
+
+      ```
+      Mapping<int,int> m = Mapping_Array<int,int> ();  // good while small
+      ... while constructing map
+      if (m.size () > 100) {
+        m = Mapping_stdmap<int,int>{m);
+      }
+      ... now switch to hash lookup once structure is stable
+      m = Mapping_Hashtable<int,int>{m};
+      ... all the while, code to operator on mapping same - using Mapping<int,int> interface
+      ```
+
+- iterators are much easier to deal with, and typed more sensibly, because their type is the ONLY dependent on the type they iterate over, not the type of the container they iterate over
+
+  ```
+  Sequence<int> a;
+  Collection<int> b;
+  Iterator<int> i = a.begin ();
+  i = b.begin ();  // same type
+  ```
+
 - Stroika containers are lazy copied (copy-on-write - aka COW)
+  - Performance tradeoff: some access patterns are slower due to extra vtable lookup per operation, but most common operations (copying etc) much faster, and abstraction allowing changing representations often makes much faster. Plus, if you use functional apis, these generally avoid the vtable lookup cost.
+- A sensible taxonmy of containers based on access pattern, and for each, multiple backend data structures to implement them.
+- Linq-like rich variety of functional accessors, like Apply (), FindFirstThat (), Where, Select (), Distinct (), OrderBy (), Accumulate (), Min/Max (), Any (), etc inherited from Iterable\<T>
 
-  - Key advantages
+- Internal thread safety checks, (generally) assure threadsafe access (see Debug::AssertExternallySyncrhonized)
 
-    - Allows representational polymorphism (so a sequence can change representation from linked list to vector, to sparse array depending on situation while maintaining same coding interface)
-    - iterators are much easier to deal with, and typed more sensibly, because their type is the ONLY dependent on the type they iterate over, not the type of the container they iterate over
+- PATCHING - DISCUSS WITH STERLING
 
-      ```
-      Sequence<int> a;
-      Collection<int> b;
-      Iterator<int> i = a.begin ();
-      i = b.begin ();  // same type
-      ```
-
-    - A sensible taxonmy of containers based on access pattern, and for each, multiple backend data structures to implement them.
-    - Linq-like rich variety of functional accessors, like Apply (), FindFirstThat (), Where, Select (), Distinct (), OrderBy (), Accumulate (), Min/Max (), Any (), etc inherited from Iterable\<T>
 
 ## Supported Containers Archtypes
 
@@ -59,9 +79,6 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 - [Bijection\<DOMAIN_TYPE, RANGE_TYPE>](Bijection.h)
   - Bijection allows for the bijective (1-1) association of two elements
   - Supported backends: LinkedList
-- [Bag\<T>](Bag.h)
-  - The idea is to mimic that of a black bag (not like SmallTalk Bag\<T> which Stroika Collection<> is closest to) - but randomized collection.
-  - NYI
 - [Collection\<T>](Collection.h)
   - a container to manage an un-ordered collection of items, without equality defined for T
   - Supported backends: Array, LinkedList, std::fowrad_list
@@ -72,9 +89,8 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 - [Deque\<T>](Deque.h)
   - A Deque is a Queue that allows additions and removals at either end
   - Supported backends: DoublyLinkedList
-- [KeyedCollection\<KEY_TYPE, T>](KeyedCollection.h)
+- [KeyedCollection\<T, KEY_TYPE, TRAITS>](KeyedCollection.h)
   - KeyedCollection adds most access patterns used in Mapping to a Collection, but stores only a single object. It takes a parameter
-  - NYI
 - [Mapping\<KEY_TYPE, VALUE_TYPE>](Mapping.h)
   - Allows for the association of two elements: a key and a value. The key UNIQUELY specifies its associated value
   - Supported backends: Array, LinkedList, std::map
@@ -99,9 +115,8 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 - [SortedCollection\<T>](SortedCollection.h)
   - See Collection; but adds parameter saying how T items sorted
   - Supported backends: LinkedList
-- [SortedKeyedCollection\<KEY_TYPE, T>](SortedKeyedCollection.h)
-  - See KeyedCollection; but adds parameter saying how T items sorted
-  - NYI
+- [SortedKeyedCollection\<T, KEY_TYPE, TRAITS>](SortedKeyedCollection.h)
+  - See KeyedCollection; but adds parameter saying how T items sorted (by key)
 - [SortedMapping\<KEY_TYPE, VALUE_TYPE>](SortedMapping.h)
   - See Mapping; but adds parameter saying how KEY_TYPE items sorted
   - Supported backends: std::map
@@ -117,6 +132,12 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 - [Stack\<T>](Stack.h)
   - Standard LIFO (Last in first out) Stack. See Sedgewick, 30-31. Iteration proceeds from the top to the bottom of the stack. Top is the FIRST IN (also first out).
   - Supported backends: LinkedList
+
+
+## Implementation notes
+
+- Due to use of COW, const methods of reps need no locking (just use Debug::AssertExternallySyncrhonized).
+- Due to use of COW, non-const methods of reps ALSO don't need loocking, since the COW code assures there is only one reference at a time (and therefore one Envelope class, which itself asserts externally synchronized)
 
 ## Rejected Ideas
 
@@ -146,3 +167,9 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
       with OUR type of backend! So really can be added just for \_Array<> impls. Note - this
       rationale doesn't work perfectly due to copy-by-values semantics with 'casts' but still
       OK.
+
+- [Bag\<T>](Bag.h)
+  - The idea is to mimic that of a black bag (not like SmallTalk Bag\<T> which Stroika Collection<> is closest to) - but randomized collection.
+  - So far idea rejected, because I dont have a clear use case of where this would be helpful. MAYBE in game/simulation? Need a more concrete use case though to be sure this is helpful, and not more easily done another way
+  - Seriously consider renaming this file to RandomizedCollection<>. Maybe can             even SUBCLASS from Collection.
+  - Method shake creates new randomized collection from same items (or updates in place)
