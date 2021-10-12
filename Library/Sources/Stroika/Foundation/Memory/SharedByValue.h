@@ -143,10 +143,10 @@ namespace Stroika::Foundation::Memory {
         SharedByValue (nullptr_t n) noexcept;
         SharedByValue (const SharedByValue& from) noexcept;
         SharedByValue (SharedByValue&& from) noexcept;
-        explicit SharedByValue (const element_type& from, const element_copier_type& copier = element_copier_type ()) noexcept;
-        explicit SharedByValue (const shared_ptr_type& from, const element_copier_type& copier = element_copier_type ()) noexcept;
-        explicit SharedByValue (shared_ptr_type&& from, const element_copier_type&& copier = element_copier_type ()) noexcept;
-        explicit SharedByValue (element_type* from, const element_copier_type& copier = element_copier_type ());
+        explicit SharedByValue (const element_type& from, const element_copier_type& copier = element_copier_type{}) noexcept;
+        explicit SharedByValue (const shared_ptr_type& from, const element_copier_type& copier = element_copier_type{}) noexcept;
+        explicit SharedByValue (shared_ptr_type&& from, const element_copier_type&& copier = element_copier_type{}) noexcept;
+        explicit SharedByValue (element_type* from, const element_copier_type& copier = element_copier_type{});
 
     public:
         nonvirtual SharedByValue& operator= (const SharedByValue& src);
