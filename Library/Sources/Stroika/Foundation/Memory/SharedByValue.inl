@@ -170,6 +170,27 @@ namespace Stroika::Foundation::Memory {
         return get ();
     }
     template <typename T, typename TRAITS>
+    template <typename... COPY_ARGS>
+    auto SharedByValue<T, TRAITS>::GetAndMaybeCopySavingOriginal (shared_ptr_type* oldValue, COPY_ARGS&&... copyArgs) -> shared_ptr_type
+    {
+        RequireNotNull (oldValue);
+        /*
+         *  Increment refCount before assureNReferences/breakreferencs so we can save
+         *  the original shared_ptr and return it in case its needed (e.g. to update iterators).
+         * 
+         *  Save this way so no race (after Assure1Reference() other remaining ptr could go away.
+         */
+        shared_ptr_type origPtr = fSharedImpl_;
+        *oldValue               = origPtr;
+        if (origPtr != nullptr) {
+            Assure2AtLeastReferences (forward<COPY_ARGS> (copyArgs)...);
+            shared_ptr_type result = fSharedImpl_;
+            Ensure (result.count () == 1 or (result.count () == 3 and result == origPtr));
+            return result;
+        }
+        return nullptr;
+    }
+    template <typename T, typename TRAITS>
     inline const typename SharedByValue<T, TRAITS>::element_type* SharedByValue<T, TRAITS>::operator-> () const
     {
         return fSharedImpl_.get ();
@@ -250,6 +271,14 @@ namespace Stroika::Foundation::Memory {
     inline void SharedByValue<T, TRAITS>::Assure1Reference (COPY_ARGS&&... copyArgs)
     {
         if (fSharedImpl_.use_count () > 1) {
+            BreakReferences_ (forward<COPY_ARGS> (copyArgs)...);
+        }
+    }
+    template <typename T, typename TRAITS>
+    template <typename... COPY_ARGS>
+    inline void SharedByValue<T, TRAITS>::Assure2OrFewerReferences (COPY_ARGS&&... copyArgs)
+    {
+        if (fSharedImpl_.use_count () > 2) {
             BreakReferences_ (forward<COPY_ARGS> (copyArgs)...);
         }
     }

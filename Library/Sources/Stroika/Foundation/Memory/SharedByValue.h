@@ -164,10 +164,22 @@ namespace Stroika::Foundation::Memory {
          *  to the element_copier_type::Copy () function specified in the SharedByValue traits object.
          *
          *  This defaults to no parameters.
+         * 
+         *  @see GetAndMaybeCopySavingOriginal
          */
         nonvirtual const element_type* get () const noexcept;
         template <typename... COPY_ARGS>
         nonvirtual element_type* get (COPY_ARGS&&... copyArgs);
+
+    public:
+        /**
+         *  Somewhat like get(), but though this MAY BreakReferences if needed.
+         *  but this will ALSO return a copy of the original smartPtr in oldValue (if breakreferences was called).
+         *  @see get
+         */
+        template <typename... COPY_ARGS>
+        nonvirtual shared_ptr_type GetAndMaybeCopySavingOriginal (shared_ptr_type* oldValue, COPY_ARGS&&... copyArgs);
+
 
     public:
         /**
@@ -251,9 +263,23 @@ namespace Stroika::Foundation::Memory {
         /**
          * Assure there is a single reference to this object, and if there are more, break references.
          * This method should be applied before destructive operations are applied to the shared object.
+         * 
+         * @see Assure2OrFewerReferences
          */
         template <typename... COPY_ARGS>
         nonvirtual void Assure1Reference (COPY_ARGS&&... copyArgs);
+
+    public:
+        /**
+         * Assure there are at most references to this object, and if there are more, break references.
+         * This method should be applied before destructive operations are applied to the shared object.
+         * 
+         * Use this in preference to Assure1Reference if saving the original shared_ptr (threadsafely).
+         * 
+         * @see Assure1Reference
+         */
+        template <typename... COPY_ARGS>
+        nonvirtual void Assure2OrFewerReferences (COPY_ARGS&&... copyArgs);
 
     private:
         template <typename... COPY_ARGS>
