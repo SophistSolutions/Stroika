@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename SHARED_IMLP>
     inline SHARED_IMLP SharedByValue_CopyByDefault<T, SHARED_IMLP>::operator() (const T& t) const
     {
-        return SHARED_IMLP (new T (t));
+        return SHARED_IMLP{new T (t)};
     }
 
     /*
@@ -182,7 +182,7 @@ namespace Stroika::Foundation::Memory {
          */
         shared_ptr_type origPtr = fSharedImpl_;
         *oldValue               = origPtr;
-        if (origPtr != nullptr) {
+        if (origPtr != nullptr) [[LIKELY_ATTR]] {
             Assure2AtLeastReferences (forward<COPY_ARGS> (copyArgs)...);
             shared_ptr_type result = fSharedImpl_;
             Ensure (result.count () == 1 or (result.count () == 3 and result == origPtr));
@@ -304,7 +304,7 @@ namespace Stroika::Foundation::Memory {
         //Require (!SHARED_IMLP::unique ());    This is not NECESSARILY so. Another thread could have just released this pointer, in which case
         // the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
         // value and it should go away.
-        *this = SharedByValue<T, TRAITS> (fCopier_ (*ptr, forward<COPY_ARGS> (copyArgs)...), fCopier_);
+        *this = SharedByValue<T, TRAITS>{fCopier_ (*ptr, forward<COPY_ARGS> (copyArgs)...), fCopier_};
 
 #if qDebug
         //Ensure (fSharedImpl_.unique ());
