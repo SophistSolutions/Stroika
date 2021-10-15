@@ -311,7 +311,7 @@ namespace Stroika::Foundation::Memory {
     template <typename COPIER>
     inline void SharedByValue<T, TRAITS>::AssureNOrFewerReferences_nu (unsigned int n, COPIER&& copier)
     {
-        if (fSharedImpl_.use_count () > n) [[UNLIKELY_ATTR]]  {
+        if (fSharedImpl_.use_count () > n) [[UNLIKELY_ATTR]] {
             BreakReferences_nu_ (forward<COPIER> (copier));
         }
     }
@@ -376,7 +376,6 @@ namespace Stroika::Foundation::Memory {
         Ensure (unique ());
 #endif
     }
-
 
 }
 
