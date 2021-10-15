@@ -184,9 +184,9 @@ namespace Stroika::Foundation::Memory {
         shared_ptr_type origPtr = fSharedImpl_;
         *oldValue               = origPtr;
         if (origPtr != nullptr) [[LIKELY_ATTR]] {
-            Assure2AtLeastReferences (forward<COPY_ARGS> (copyArgs)...);
+            Assure2OrFewerReferences (forward<COPY_ARGS> (copyArgs)...);
             shared_ptr_type result = fSharedImpl_;
-            Ensure (result.count () == 1 or (result.count () == 3 and result == origPtr));
+            Ensure (result.use_count () == 1 or (result.use_count () == 3 and result == origPtr));
             return result;
         }
         return nullptr;

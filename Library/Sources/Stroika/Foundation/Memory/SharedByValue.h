@@ -180,7 +180,6 @@ namespace Stroika::Foundation::Memory {
         template <typename... COPY_ARGS>
         nonvirtual shared_ptr_type GetAndMaybeCopySavingOriginal (shared_ptr_type* oldValue, COPY_ARGS&&... copyArgs);
 
-
     public:
         /**
          *  cget is equivalent to get () on a const pointer. The reason to have/use this method
