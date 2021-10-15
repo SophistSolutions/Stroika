@@ -32,6 +32,14 @@
 
 namespace Stroika::Foundation::Memory {
 
+    // @todo redo as C++ concept in C++20
+    template <typename T, typename SHARED_IMLP, typename COPIER>
+    constexpr bool SharedByValue_IsCopier ()
+    {
+        // @todo should match API function<SHARED_IMLP(SHARED_IMLP)>
+        return true;
+    }
+
     /**
      *  \brief  SharedByValue_CopyByDefault is the default template parameter for copying SharedByValue
      *

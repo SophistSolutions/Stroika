@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Memory {
         if (origPtr != nullptr) [[LIKELY_ATTR]] {
             Assure2OrFewerReferences (forward<COPY_ARGS> (copyArgs)...);
             shared_ptr_type result = fSharedImpl_;
-            Ensure (result.use_count () == 1 or (result.use_count () == 3 and result == origPtr));
+            Ensure ((result != origPtr and result.use_count () == 2) or (result == origPtr and result.use_count () == 3));
             return result;
         }
         return nullptr;
@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Memory {
         if (origPtr != nullptr) [[LIKELY_ATTR]] {
             AssureNOrFewerReferences_nu (2, forward<COPIER> (copier));
             shared_ptr_type result = fSharedImpl_;
-            Ensure (result.use_count () == 1 or (result.use_count () == 3 and result == origPtr));
+            Ensure ((result != origPtr and result.use_count () == 2) or (result == origPtr and result.use_count () == 3));
             return result;
         }
         return nullptr;
