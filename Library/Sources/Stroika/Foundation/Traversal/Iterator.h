@@ -618,9 +618,7 @@ namespace Stroika::Foundation::Traversal {
 
     private:
         unique_ptr<IRep> fIterator_;
-
-    private:
-        optional<T> fCurrent_;
+        optional<T>      fCurrent_;
 
     private:
         static RepSmartPtr Clone_ (const IRep& rep);

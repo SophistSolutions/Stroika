@@ -1176,15 +1176,13 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual Memory::SharedByValue_State _GetSharingState () const;
 
     private:
-        struct Rep_Cloner_ {
-            inline PtrImplementationTemplate<_IRep> operator() (const _IRep& t, IteratorOwnerID forIterableEnvelope) const
-            {
-                return Iterable<T>::Clone_ (t, forIterableEnvelope);
-            }
-        };
+        static _IterableRepSharedPtr Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope);
 
     private:
-        static _IterableRepSharedPtr Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope);
+        using Rep_Cloner_ = decltype (
+            [] (const _IRep& t, IteratorOwnerID forIterableEnvelope) -> PtrImplementationTemplate<_IRep> {
+                return Iterable<T>::Clone_ (t, forIterableEnvelope);
+            });
 
     private:
         template <typename CONTAINER_OF_T>

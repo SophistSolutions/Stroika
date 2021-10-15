@@ -185,7 +185,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS>
     constexpr Iterator<T, ITERATOR_TRAITS> Iterator<T, ITERATOR_TRAITS>::GetEmptyIterator ()
     {
-        return Iterator<T, ITERATOR_TRAITS> (ConstructionFlagForceAtEnd_::ForceAtEnd);
+        return Iterator<T, ITERATOR_TRAITS>{ConstructionFlagForceAtEnd_::ForceAtEnd};
     }
 
 #if __cpp_impl_three_way_comparison < 201907

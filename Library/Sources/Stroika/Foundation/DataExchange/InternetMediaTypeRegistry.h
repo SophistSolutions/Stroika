@@ -218,10 +218,10 @@ namespace Stroika::Foundation::DataExchange {
         struct IFrontendRep_;
         struct FrontendRep_;
 
-        struct _Rep_Cloner {
+        struct Rep_Cloner_ {
             shared_ptr<IFrontendRep_> operator() (const IFrontendRep_& t) const;
         };
-        using SharedRepByValuePtr_ = Memory::SharedByValue<IFrontendRep_, Memory::SharedByValue_Traits<IFrontendRep_, shared_ptr<IFrontendRep_>, _Rep_Cloner>>;
+        using SharedRepByValuePtr_ = Memory::SharedByValue<IFrontendRep_, Memory::SharedByValue_Traits<IFrontendRep_, shared_ptr<IFrontendRep_>, Rep_Cloner_>>;
 
         SharedRepByValuePtr_ fFrontEndRep_;
 

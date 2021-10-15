@@ -220,7 +220,7 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
  *************************** InternetMediaTypeRegistry **************************
  ********************************************************************************
  */
-auto InternetMediaTypeRegistry::_Rep_Cloner::operator() (const IFrontendRep_& t) const -> shared_ptr<IFrontendRep_>
+auto InternetMediaTypeRegistry::Rep_Cloner_::operator() (const IFrontendRep_& t) const -> shared_ptr<IFrontendRep_>
 {
     return make_shared<FrontendRep_> (t.GetBackendRep (), t.GetOverrides ());
 };
