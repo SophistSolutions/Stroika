@@ -1179,10 +1179,19 @@ namespace Stroika::Foundation::Traversal {
         static _IterableRepSharedPtr Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope);
 
     private:
+#if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_20
+        struct Rep_Cloner_ {
+            auto operator() (const _IRep& t, IteratorOwnerID forIterableEnvelope) const -> PtrImplementationTemplate<_IRep>
+            {
+                return Iterable<T>::Clone_ (t, forIterableEnvelope);
+            }
+        };
+#else
         using Rep_Cloner_ = decltype (
             [] (const _IRep& t, IteratorOwnerID forIterableEnvelope) -> PtrImplementationTemplate<_IRep> {
                 return Iterable<T>::Clone_ (t, forIterableEnvelope);
             });
+#endif
 
     private:
         template <typename CONTAINER_OF_T>
