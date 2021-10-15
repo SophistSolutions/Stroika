@@ -10,6 +10,7 @@
  ********************************************************************************
  */
 
+#include "../Debug/Assertions.h"
 #include "../Debug/Trace.h"
 
 namespace Stroika::Foundation::Memory {
@@ -307,12 +308,9 @@ namespace Stroika::Foundation::Memory {
         *this = SharedByValue<T, TRAITS>{fCopier_ (*ptr, forward<COPY_ARGS> (copyArgs)...), fCopier_};
 
 #if qDebug
-        //Ensure (fSharedImpl_.unique ());
         // technically not 100% guaranteed if two threads did this at the same time, but so rare interesting if ever triggered.
-        // may need to lose this assert - maybe replace with #if qDebug DbgTrace
-        if (not unique ()) {
-            DbgTrace ("probably a bug, but not necessarily...");
-        }
+        // probably a bug, but not necessarily
+        WeakAssert (unique ());
 #endif
     }
 
