@@ -182,6 +182,14 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
+         */
+        /* REPLACEMENT FOR get()  and GetAndMaybeCopySavingOriginal but taking COPIER arg instead of COPY_ARGS*/
+        nonvirtual shared_ptr_type get_nu ();
+        template <typename COPIER>
+        nonvirtual shared_ptr_type get_nu (COPIER&& copier);
+
+    public:
+        /**
          *  cget is equivalent to get () on a const pointer. The reason to have/use this method
          *  is just to avoid accidentally getting a reference to the non-const overload of get ().
          *
@@ -279,10 +287,14 @@ namespace Stroika::Foundation::Memory {
          */
         template <typename... COPY_ARGS>
         nonvirtual void Assure2OrFewerReferences (COPY_ARGS&&... copyArgs);
+        template <typename COPIER>
+        nonvirtual void AssureNOrFewerReferences_nu (unsigned int n, COPIER&& copier);
 
     private:
         template <typename... COPY_ARGS>
         nonvirtual void BreakReferences_ (COPY_ARGS&&... copyArgs);
+        template <typename COPIER>
+        nonvirtual void BreakReferences_nu_ (COPIER&& copier);
     };
 
 }

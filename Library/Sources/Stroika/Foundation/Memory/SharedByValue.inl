@@ -192,6 +192,30 @@ namespace Stroika::Foundation::Memory {
         return nullptr;
     }
     template <typename T, typename TRAITS>
+    inline auto SharedByValue<T, TRAITS>::get_nu () -> shared_ptr_type
+    {
+        return get_nu (fCopier_);
+    }
+    template <typename T, typename TRAITS>
+    template <typename COPIER>
+    inline auto SharedByValue<T, TRAITS>::get_nu (COPIER&& copier) -> shared_ptr_type
+    {
+        /*
+         *  Increment refCount before assureNReferences/breakreferencs so we can save
+         *  the original shared_ptr and return it in case its needed (e.g. to update iterators).
+         * 
+         *  Save this way so no race (after Assure1Reference() other remaining ptr could go away.
+         */
+        shared_ptr_type origPtr = fSharedImpl_;
+        if (origPtr != nullptr) [[LIKELY_ATTR]] {
+            AssureNOrFewerReferences_nu (2, forward<COPIER> (copier));
+            shared_ptr_type result = fSharedImpl_;
+            Ensure (result.use_count () == 1 or (result.use_count () == 3 and result == origPtr));
+            return result;
+        }
+        return nullptr;
+    }
+    template <typename T, typename TRAITS>
     inline const typename SharedByValue<T, TRAITS>::element_type* SharedByValue<T, TRAITS>::operator-> () const
     {
         return fSharedImpl_.get ();
@@ -284,6 +308,14 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T, typename TRAITS>
+    template <typename COPIER>
+    inline void SharedByValue<T, TRAITS>::AssureNOrFewerReferences_nu (unsigned int n, COPIER&& copier)
+    {
+        if (fSharedImpl_.use_count () > n) [[UNLIKELY_ATTR]]  {
+            BreakReferences_nu_ (forward<COPIER> (copier));
+        }
+    }
+    template <typename T, typename TRAITS>
     template <typename... COPY_ARGS>
     void SharedByValue<T, TRAITS>::BreakReferences_ (COPY_ARGS&&... copyArgs)
     {
@@ -313,6 +345,38 @@ namespace Stroika::Foundation::Memory {
         WeakAssert (unique ());
 #endif
     }
+    template <typename T, typename TRAITS>
+    template <typename COPIER>
+    void SharedByValue<T, TRAITS>::BreakReferences_nu_ (COPIER&& copier)
+    {
+        shared_ptr_type ptr2Clone{shared_impl_copier_type::Load (fSharedImpl_)}; // other thread could change this (if other thread accesses same envelope)
+        /*
+         *      For a valid pointer that is reference counted and multiply shared,
+         *  make a copy of that pointer via our fCloner function, and assign
+         *  that cloned reference to this.
+         *
+         *      Note that by doing so, we remove any references to the current
+         *  item, and end up with our having the sole reference to the new copy of fPtr.
+         *
+         *      Since we will be cloning the given pointer, we assume(assert) that
+         *  it is non-nullptr.
+         */
+        //Require (!SHARED_IMLP::unique ());    This is not NECESSARILY so. Another thread could have just released this pointer, in which case
+        // the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
+        // value and it should go away.
+        *this = SharedByValue<T, TRAITS>{forward<COPIER> (copier) (ptr2Clone), fCopier_};
+
+#if qDebug
+        // technically not 100% guaranteed if two threads did this at the same time, but so rare interesting if ever triggered.
+        // probably a bug, but not necessarily
+        WeakAssert (unique ());
+
+        // NO - this requires overwriting THIS object, so must be externally syncrhonized. ASSERT EXTERNALLY SYNCRHONIZED HERE
+        // so treat this as real assertion erorr -- LGP 2021-10-15
+        Ensure (unique ());
+#endif
+    }
+
 
 }
 
