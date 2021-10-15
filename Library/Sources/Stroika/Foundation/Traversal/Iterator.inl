@@ -26,14 +26,13 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::Iterator (const Iterator& src)
-        : fIterator_ (src.fIterator_ == nullptr ? nullptr : Clone_ (*src.fIterator_))
-        , fCurrent_ (src.fCurrent_)
+        : fIterator_{src.fIterator_ == nullptr ? nullptr : Clone_ (*src.fIterator_)}
+        , fCurrent_{src.fCurrent_}
     {
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::Iterator (RepSmartPtr&& rep)
-        : fIterator_ (move (rep))
-        , fCurrent_ ()
+        : fIterator_{move (rep)}
     {
         RequireNotNull (fIterator_);
         // Reason for cast stuff is to avoid Clone if unneeded.
@@ -41,13 +40,12 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T, typename ITERATOR_TRAITS>
     constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (nullptr_t)
-        : Iterator (ConstructionFlagForceAtEnd_::ForceAtEnd)
+        : Iterator{ConstructionFlagForceAtEnd_::ForceAtEnd}
     {
     }
     template <typename T, typename ITERATOR_TRAITS>
     constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (ConstructionFlagForceAtEnd_)
-        : fIterator_ (nullptr)
-        , fCurrent_ ()
+        : fIterator_{nullptr}
     {
         Assert (Done ());
     }
