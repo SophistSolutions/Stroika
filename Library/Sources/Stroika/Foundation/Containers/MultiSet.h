@@ -259,7 +259,7 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual void Remove (ArgByValueType<T> item);
         nonvirtual void Remove (ArgByValueType<T> item, CounterType count);
-        nonvirtual void Remove (const Iterator<CountedValue<T>>& i);
+        nonvirtual Iterator<CountedValue<T>> Remove (const Iterator<CountedValue<T>>& i);
 
     public:
         /**
@@ -426,7 +426,7 @@ namespace Stroika::Foundation::Containers {
         virtual bool                        Contains (ArgByValueType<T> item) const                                = 0;
         virtual void                        Add (ArgByValueType<T> item, CounterType count)                        = 0;
         virtual void                        Remove (ArgByValueType<T> item, CounterType count)                     = 0;
-        virtual void                        Remove (const Iterator<CountedValue<T>>& i)                            = 0;
+        virtual Iterator<CountedValue<T>>   Remove (const Iterator<CountedValue<T>>& i)                            = 0;
         virtual void                        UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) = 0;
         virtual CounterType                 OccurrencesOf (ArgByValueType<T> item) const                           = 0;
         // Subtle point - shared rep argument to Elements() allows shared ref counting

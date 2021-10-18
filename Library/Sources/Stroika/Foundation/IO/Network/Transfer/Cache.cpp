@@ -197,7 +197,7 @@ Transfer::Cache::Element::Element (const Response& response)
     : fBody{response.GetData ()}
 {
     Mapping<String, String> headers = response.GetHeaders ();
-    for (auto i = headers.begin (); i != headers.end (); ++i) {
+    for (auto hi = headers.begin (); hi != headers.end ();) {
         // HTTP Date formats:
         //
         // According to https://tools.ietf.org/html/rfc7234#section-5.3
@@ -206,37 +206,37 @@ Transfer::Cache::Element::Element (const Response& response)
         //      The preferred format is
         //      a fixed - length and single - zone subset of the date and time specification used by the Internet Message Format[RFC5322].
         //
-        if (i->fKey == HTTP::HeaderName::kETag) {
-            if (i->fValue.size () < 2 or not i->fValue.StartsWith (L"\"") or not i->fValue.EndsWith (L"\"")) {
+        if (hi->fKey == HTTP::HeaderName::kETag) {
+            if (hi->fValue.size () < 2 or not hi->fValue.StartsWith (L"\"") or not hi->fValue.EndsWith (L"\"")) {
                 Execution::Throw (Execution::Exception{L"malformed etag"sv});
             }
-            fETag = i->fValue.SubString (1, -1);
-            headers.erase (i);
+            fETag = hi->fValue.SubString (1, -1);
+            hi    = headers.erase (hi);
         }
-        else if (i->fKey == HTTP::HeaderName::kExpires) {
+        else if (hi->fKey == HTTP::HeaderName::kExpires) {
             try {
-                fExpires = DateTime::Parse (i->fValue, DateTime::kRFC1123Format);
+                fExpires = DateTime::Parse (hi->fValue, DateTime::kRFC1123Format);
             }
             catch (...) {
                 // treat invalid dates as if the resource has already exipred
                 //fExpires = DateTime::min ();  // better but cannot convert back to date - fix stk date stuff so this works
                 fExpires = DateTime::Now ();
-                DbgTrace (L"Malformed expires (%s) treated as expires immediately", Characters::ToString (i->fValue).c_str ());
+                DbgTrace (L"Malformed expires (%s) treated as expires immediately", Characters::ToString (hi->fValue).c_str ());
             }
-            headers.erase (i);
+            hi = headers.erase (hi);
         }
-        else if (i->fKey == HTTP::HeaderName::kLastModified) {
+        else if (hi->fKey == HTTP::HeaderName::kLastModified) {
             try {
-                fLastModified = DateTime::Parse (i->fValue, DateTime::kRFC1123Format);
+                fLastModified = DateTime::Parse (hi->fValue, DateTime::kRFC1123Format);
             }
             catch (...) {
-                DbgTrace (L"Malformed last-modfied (%s) treated as ignored", Characters::ToString (i->fValue).c_str ());
+                DbgTrace (L"Malformed last-modfied (%s) treated as ignored", Characters::ToString (hi->fValue).c_str ());
             }
-            headers.erase (i);
+            hi = headers.erase (hi);
         }
-        else if (i->fKey == HTTP::HeaderName::kCacheControl) {
-            fCacheControl = Set<String>{i->fValue.Tokenize ({','})};
-            headers.erase (i);
+        else if (hi->fKey == HTTP::HeaderName::kCacheControl) {
+            fCacheControl = Set<String>{hi->fValue.Tokenize ({','})};
+            hi            = headers.erase (hi);
             static const String kMaxAgeEquals_{L"max-age="sv};
             for (String cci : *fCacheControl) {
                 if (cci.StartsWith (kMaxAgeEquals_)) {
@@ -244,9 +244,12 @@ Transfer::Cache::Element::Element (const Response& response)
                 }
             }
         }
-        else if (i->fKey == HTTP::HeaderName::kContentType) {
-            fContentType = DataExchange::InternetMediaType{i->fValue};
-            headers.erase (i);
+        else if (hi->fKey == HTTP::HeaderName::kContentType) {
+            fContentType = DataExchange::InternetMediaType{hi->fValue};
+            hi           = headers.erase (hi);
+        }
+        else {
+            hi++;
         }
     }
     fOtherHeaders = headers;

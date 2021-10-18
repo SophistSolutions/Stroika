@@ -470,9 +470,9 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (item, count);
     }
     template <typename T, typename TRAITS>
-    inline void MultiSet<T, TRAITS>::Remove (const Iterator<CountedValue<T>>& i)
+    inline auto MultiSet<T, TRAITS>::Remove (const Iterator<CountedValue<T>>& i) -> Iterator<CountedValue<T>>
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
     }
     template <typename T, typename TRAITS>
     inline void MultiSet<T, TRAITS>::UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount)

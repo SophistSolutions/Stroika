@@ -281,6 +281,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         const typename LinkedList<T>::Link* _fCurrent;
 
     protected:
+    public:
         bool _fSuppressMore; // Indicates if More should do anything, or if were already Mored...
 
 #if qDebug
