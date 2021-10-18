@@ -71,6 +71,12 @@ namespace Stroika::Foundation::Traversal {
         return *fIterator_;
     }
     template <typename T, typename ITERATOR_TRAITS>
+    inline void Iterator<T, ITERATOR_TRAITS>::Refresh () const
+    {
+        auto mutableThis = const_cast<Iterator*> (this);
+        mutableThis->fIterator_->More (&mutableThis->fCurrent_, false);
+    }
+    template <typename T, typename ITERATOR_TRAITS>
     inline T Iterator<T, ITERATOR_TRAITS>::Current () const
     {
         RequireNotNull (fIterator_);

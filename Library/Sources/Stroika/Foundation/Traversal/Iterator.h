@@ -616,6 +616,14 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual const IRep& ConstGetRep () const;
 
+    public:
+        /*
+         *  \brief Refresh the current iterator state based on what is in the underlying IRep
+         * 
+         *  Useful when you change the rep directly.
+         */
+        nonvirtual void Refresh () const;
+
     private:
         unique_ptr<IRep> fIterator_;
         optional<T>      fCurrent_;
