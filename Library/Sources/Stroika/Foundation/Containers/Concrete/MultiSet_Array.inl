@@ -185,18 +185,6 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto resultRep = Iterator<CountedValue<T>>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
             resultRep->fIterator.SetIndex (nextIdx);
             return Iterator<CountedValue<T>>{move (resultRep)};
-#if 0
-            using iteratorType = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
-            lock_guard<const Debug::AssertExternallySynchronizedLock>                 critSec{fData_};
-            const typename Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::IRep& ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto&  mir     = dynamic_cast<const IteratorRep_&> (ir);
-            size_t nextIdx = mir.fIterator.CurrentIndex ();
-            fData_.RemoveAt (mir.fIterator);
-            auto resultRep = iteratorType::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
-            resultRep->fIterator.SetIndex (nextIdx);
-            return Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>{move (resultRep)};
-#endif
         }
         virtual void UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
         {
