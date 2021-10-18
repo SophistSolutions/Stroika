@@ -232,6 +232,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void SetIndex (size_t i);
 
     public:
+        /*
+         *      NB: We can only call invariant after we've fixed things up, since realloc
+         * has happened by now, but things don't point to the right places yet.
+         */
+        void PatchForDataChange ()
+        {
+            const T* oldStart = this->_fStart;
+            this->_fStart     = this->_fData->_fItems;
+            this->_fCurrent   = this->_fData->_fItems + (this->_fCurrent - oldStart);
+            this->_fEnd       = this->_fData->_fItems + this->_fData->GetLength ();
+            Ensure (this->_fStart <= this->_fCurrent and this->_fCurrent <= this->_fEnd);
+        }
+
+    public:
         nonvirtual bool Equals (const typename Array<T>::_ArrayIteratorBase& rhs) const;
 
     public:

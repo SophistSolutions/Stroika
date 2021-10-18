@@ -47,10 +47,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
         }
         Rep_ (const Rep_& from) = delete;
-        Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
+        Rep_ (Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
             : fKeyExtractor_{from->fKeyExtractor_}
             , fKeyComparer_{from->fKeyComparer_}
-            , fData_{&from->fData_, forIterableEnvelope}
+            , fData_{from->fData_}
         {
             RequireNotNull (from);
         }
@@ -110,17 +110,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return KeyEqualityComparerType{fKeyComparer_};
         }
-        virtual _KeyedCollectionRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+        virtual _KeyedCollectionRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
-            if (fData_.HasActiveIterators ()) {
-                // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                auto r = Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                r->fData_.RemoveAll ();
-                return r;
-            }
-            else {
-                return Iterable<T>::template MakeSmartPtr<Rep_> (this->fKeyExtractor_, this->fKeyComparer_);
-            }
+            return Iterable<T>::template MakeSmartPtr<Rep_> (this->fKeyExtractor_, this->fKeyComparer_);
         }
         virtual Iterable<KEY_TYPE> Keys () const override
         {
@@ -173,16 +165,16 @@ namespace Stroika::Foundation::Containers::Concrete {
             return false;
         }
 #if qDebug
-        virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
+        virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+            //            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
         }
 #endif
 
     private:
-        using DataStructureImplType_ = Private::PatchingDataStructures::LinkedList<T>;
-        using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
+        using DataStructureImplType_ = DataStructures::LinkedList<T>;
+        using IteratorRep_           = typename Private::IteratorImplHelper2_<T, DataStructureImplType_>;
 
     private:
         DataStructureImplType_ fData_;

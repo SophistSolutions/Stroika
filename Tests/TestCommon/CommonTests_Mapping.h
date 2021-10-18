@@ -86,6 +86,25 @@ namespace CommonTests {
                         VerifyTestResult (m.GetLength () == oldLength);
                     }
 
+                    {
+                        m.RemoveAll ();
+                        m.Add (1, 2);
+                        m.Add (3, 66);
+                        VerifyTestResult (m.GetLength () == 2);
+                        m.erase (1);
+                        VerifyTestResult (m.GetLength () == 1);
+                        auto i = m.erase (m.begin ());
+                        //
+                        VerifyTestResult (m.size () == 0);
+                        m.Add (1, 2);
+                        m.Add (3, 66);
+                        m.Add (5, 66);
+                        VerifyTestResult (m.GetLength () == 3);
+                        i = m.begin ();
+                        i = m.erase (i);
+                        VerifyTestResult (m.GetLength () == 2);
+                    }
+
                     m.RemoveAll ();
                     VerifyTestResult (m.size () == 0);
                 }
@@ -327,6 +346,21 @@ namespace CommonTests {
                     VerifyTestResult (c.Keys ().SetEquals (Iterable<KT>{3}, c.GetKeyEqualsComparer ()));
                 }
             }
+            namespace Test10_NewIteratorPatching {
+                template <typename DEFAULT_TESTING_SCHEMA>
+                void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
+                {
+                    Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test10_NewIteratorPatching"};
+                    using ConcreteContainerType   = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
+                    ConcreteContainerType headers = testingSchema.Factory ();
+                    headers.Add (1, 2);
+                    headers.Add (2, 3);
+                    ConcreteContainerType headers2 = headers; // up ref count before change
+                    for (auto hi = headers.begin (); hi != headers.end ();) {
+                        hi = headers.erase (hi);
+                    }
+                }
+            }
         }
         template <typename DEFAULT_TESTING_SCHEMA>
         void SimpleMappingTest_All_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
@@ -339,6 +373,7 @@ namespace CommonTests {
             Private_::Test7_Keys::DoAllTests_ (testingSchema);
             Private_::Test_8_Iteration_With_Value_Comparer::DoAllTests_ (testingSchema);
             Private_::Test4_Equals::DoAllTests_ (testingSchema);
+            Private_::Test10_NewIteratorPatching::DoAllTests_ (testingSchema);
         }
 
         template <typename DEFAULT_TESTING_SCHEMA>

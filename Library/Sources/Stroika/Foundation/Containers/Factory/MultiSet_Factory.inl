@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Containers::Factory {
 #endif
     template <typename T, typename TRAITS, typename EQUALS_COMPARER>
     inline MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::MultiSet_Factory (const EQUALS_COMPARER& equalsComparer)
-        : fEqualsComparer_ (equalsComparer)
+        : fEqualsComparer_{equalsComparer}
     {
     }
     template <typename T, typename TRAITS, typename EQUALS_COMPARER>
