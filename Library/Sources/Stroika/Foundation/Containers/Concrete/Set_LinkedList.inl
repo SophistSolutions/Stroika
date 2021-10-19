@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
 #include "../Private/IteratorImplHelper.h"
@@ -158,9 +159,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual Iterator<T> Remove (const Iterator<T>& i) override
         {
-            const typename Iterator<T>::IRep& ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto&                                                     mir = dynamic_cast<const IteratorRep_&> (ir);
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> lg{fData_};
             auto                                                      next = mir.fIterator._fCurrent->fNext;
             fData_.RemoveAt (mir.fIterator);

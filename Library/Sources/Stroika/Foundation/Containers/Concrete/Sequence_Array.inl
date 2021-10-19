@@ -10,9 +10,9 @@
  ********************************************************************************
  */
 
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 #include "../Common.h"
-#include "../Debug/Cast.h"
 
 #include "../Private/IteratorImplHelper.h"
 #include "../Private/PatchingDataStructures/Array.h"
