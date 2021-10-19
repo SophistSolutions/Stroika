@@ -11,6 +11,7 @@
  */
 #include <vector>
 
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
 #include "../Private/IteratorImplHelper.h"
@@ -117,9 +118,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual size_t IndexOf (const Iterator<T>& i) const override
         {
-            const typename Iterator<T>::IRep& ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto&                                                      mir = dynamic_cast<const IteratorRep_&> (ir);
+            auto&                                                      mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return mir.fIterator.CurrentIndex ();
         }
@@ -127,8 +126,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Require (not i.Done ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            AssertMember (&i.ConstGetRep (), IteratorRep_);
-            auto& mir = dynamic_cast<const IteratorRep_&> (i.ConstGetRep ());
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.fData == &fData_);
             auto nextI         = fData_.erase (mir.fIterator.fStdIterator);
             using iteratorType = Iterator<T>;
@@ -139,9 +137,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<T>::IRep&                         ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto& mir = dynamic_cast<const IteratorRep_&> (ir);
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             fData_.Invariant ();
             *mir.fIterator.fStdIterator = newValue;
             fData_.Invariant ();

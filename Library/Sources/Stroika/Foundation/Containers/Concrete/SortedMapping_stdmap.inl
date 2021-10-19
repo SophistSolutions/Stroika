@@ -12,6 +12,7 @@
 
 #include <map>
 
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 #include "../STL/Compare.h"
 
@@ -127,8 +128,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
             auto                                                      result = Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            AssertMember (&i->ConstGetRep (), IteratorRep_);
-            auto& mir = dynamic_cast<const IteratorRep_&> (i->ConstGetRep ());
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             return result;
         }
@@ -188,12 +188,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            using iteratorType                    = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
-            const typename iteratorType::IRep& ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto& mir       = dynamic_cast<const IteratorRep_&> (ir);
-            auto  nextI     = fData_.erase (mir.fIterator.fStdIterator);
-            auto  resultRep = iteratorType::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
+            using iteratorType = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
+            auto& mir          = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            auto  nextI        = fData_.erase (mir.fIterator.fStdIterator);
+            auto  resultRep    = iteratorType::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
             resultRep->fIterator.SetCurrentLink (nextI);
             return Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>{move (resultRep)};
         }
