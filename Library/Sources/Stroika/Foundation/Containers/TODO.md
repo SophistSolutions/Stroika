@@ -5,15 +5,6 @@ TODO (Foundation::Containers)
 			allocate it as a free pool of objects (a bit like the block-allocated code but they remain
 			constructed and I don't make an array of them).
 
-	(o)		In PatchingDataStructures - we do more or less the same thing on top of each basic
-			cotnainer. Especially code to track iterators.
-
-			Try writing  a GENERIC helper layer - that can be used to share code among these
-			various Patching implementations.
-
-			Do that BEFORE trying to incorporate SkipLists and other sterl stuff, as it will make doing
-			so easier.
-
 	(o)		Rep_::CloneEmpty () - is needlessly inefficient, for each concrete type, but only for the case of during iteration.
 			Not a biggie, but probably worth fixing. Issue is our existing code to do the move of running iterators
 			ALSO does copy of data.
