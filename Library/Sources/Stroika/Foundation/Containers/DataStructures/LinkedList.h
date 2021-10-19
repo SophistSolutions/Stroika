@@ -141,8 +141,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  Performance:
          *      Worst Case: O(1)
+         * 
+         *  Returns iterator pointing at next item.
          */
-        nonvirtual void RemoveAt (const ForwardIterator& i);
+        nonvirtual ForwardIterator RemoveAt (const ForwardIterator& i);
 
     public:
         /**
@@ -167,13 +169,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         nonvirtual void AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
 
-#if 0
     public:
         /**
          *  Note - does nothing if item not found.
          */
-        nonvirtual  void    Remove (ArgByValueType<T> item);
-#endif
+        template <typename EQUALS_COMPARER>
+        nonvirtual void Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer);
 
     public:
         nonvirtual void RemoveAll ();

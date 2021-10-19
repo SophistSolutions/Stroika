@@ -199,9 +199,9 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (item);
     }
     template <typename T>
-    inline void Set<T>::Remove (const Iterator<T>& i)
+    inline Iterator<T> Set<T>::Remove (const Iterator<T>& i)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
     }
     template <typename T>
     inline bool Set<T>::RemoveIf (ArgByValueType<T> item)
@@ -444,9 +444,9 @@ namespace Stroika::Foundation::Containers {
         Remove (item);
     }
     template <typename T>
-    inline void Set<T>::erase (const Iterator<T>& i)
+    inline Iterator<T> Set<T>::erase (const Iterator<T>& i)
     {
-        Remove (i);
+        return Remove (i);
     }
     template <typename T>
     inline void Set<T>::_AssertRepValidType () const

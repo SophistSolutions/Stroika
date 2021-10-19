@@ -298,7 +298,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         nonvirtual void Remove (ArgByValueType<T> item);
-        nonvirtual void Remove (const Iterator<T>& i);
+        nonvirtual Iterator<T> Remove (const Iterator<T>& i);
 
     public:
         /**
@@ -448,7 +448,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         nonvirtual void erase (ArgByValueType<T> item);
-        nonvirtual void erase (const Iterator<T>& i);
+        nonvirtual Iterator<T> erase (const Iterator<T>& i);
 
     protected:
         /**
@@ -496,7 +496,7 @@ namespace Stroika::Foundation::Containers {
         virtual optional<T>                 Lookup (ArgByValueType<T> item) const                  = 0;
         virtual void                        Add (ArgByValueType<T> item)                           = 0;
         virtual void                        Remove (ArgByValueType<T> item)                        = 0;
-        virtual void                        Remove (const Iterator<T>& i)                          = 0;
+        virtual Iterator<T>                 Remove (const Iterator<T>& i)                          = 0;
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

@@ -49,9 +49,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
         }
         Rep_ (const Rep_& from) = delete;
-        Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
+        Rep_ (Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
             : fInorderComparer_{from->fInorderComparer_}
-            , fData_{&from->fData_, forIterableEnvelope}
+            , fData_{from->fData_}
         {
             RequireNotNull (from);
         }
@@ -106,17 +106,9 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Collection<T>::_IRep overrides
     public:
-        virtual _CollectionRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+        virtual _CollectionRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
-            if (fData_.HasActiveIterators ()) {
-                // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                auto r = Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                r->fData_.RemoveAll ();
-                return r;
-            }
-            else {
-                return Iterable<T>::template MakeSmartPtr<Rep_> (fInorderComparer_);
-            }
+            return Iterable<T>::template MakeSmartPtr<Rep_> (fInorderComparer_);
         }
         virtual void Add (ArgByValueType<T> item) override
         {
@@ -139,19 +131,20 @@ namespace Stroika::Foundation::Containers::Concrete {
                 AddWithoutLocks_ (newValue);
             }
         }
-        virtual void Remove (const Iterator<T>& i) override
+        virtual Iterator<T> Remove (const Iterator<T>& i) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             const typename Iterator<T>::IRep&                         ir = i.ConstGetRep ();
             AssertMember (&ir, IteratorRep_);
             auto& mir = dynamic_cast<const IteratorRep_&> (ir);
             fData_.RemoveAt (mir.fIterator);
+            return i; //@todo tmphack
         }
 #if qDebug
-        virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
+        virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+            //      fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
         }
 #endif
 
@@ -170,19 +163,19 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Contains (ArgByValueType<T> item) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            return fData_.Lookup (item, Common::EqualsComparerAdapter (fInorderComparer_)) != nullptr;
+            return fData_.Lookup (item, Common::EqualsComparerAdapter{fInorderComparer_}) != nullptr;
         }
         virtual void Remove (ArgByValueType<T> item) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            fData_.Remove (item, Common::EqualsComparerAdapter (fInorderComparer_));
+            fData_.Remove (item, Common::EqualsComparerAdapter{fInorderComparer_});
         }
 
     private:
         nonvirtual void AddWithoutLocks_ (ArgByValueType<T> item)
         {
             using Traversal::kUnknownIteratorOwnerID;
-            typename Rep_::DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_);
+            typename Rep_::DataStructureImplType_::ForwardIterator it{&fData_};
             // skip the smaller items
             while (it.More (nullptr, true) and fInorderComparer_ (it.Current (), item))
                 ;
@@ -191,8 +184,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 
     private:
-        using DataStructureImplType_ = Private::PatchingDataStructures::LinkedList<T>;
-        using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
+        using DataStructureImplType_ = DataStructures::LinkedList<T>;
+        using IteratorRep_           = typename Private::IteratorImplHelper2_<T, DataStructureImplType_>;
 
     private:
         DataStructureImplType_ fData_;

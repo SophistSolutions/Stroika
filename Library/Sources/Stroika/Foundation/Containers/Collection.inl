@@ -174,9 +174,9 @@ namespace Stroika::Foundation::Containers {
         return nRemoved;
     }
     template <typename T>
-    inline void Collection<T>::Remove (const Iterator<T>& i)
+    inline Iterator<T> Collection<T>::Remove (const Iterator<T>& i)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
     }
     template <typename T>
     template <typename PREDICATE>
@@ -202,9 +202,9 @@ namespace Stroika::Foundation::Containers {
         Remove (item, equalsComparer);
     }
     template <typename T>
-    inline void Collection<T>::erase (const Iterator<T>& i)
+    inline Iterator<T> Collection<T>::erase (const Iterator<T>& i)
     {
-        Remove (i);
+        return Remove (i);
     }
     template <typename T>
     inline Collection<T> Collection<T>::Where (const function<bool (ArgByValueType<T>)>& doToElement) const

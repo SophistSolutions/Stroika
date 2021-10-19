@@ -406,10 +406,13 @@ namespace {
             for (size_t i = 0; i < 100; ++i) {
                 s.Append (i);
             }
-            for (auto i = s.begin (); i != s.end (); ++i) {
-                // remove the 5th element, but note after deletion, all index will be for the 5th elt if we keep deleting the 5th
+            for (auto i = s.begin (); i != s.end ();) {
+                // remove the 5th element
                 if (s.IndexOf (i) == 5 and s.size () == 100) {
-                    s.Remove (i);
+                    i = s.Remove (i);
+                }
+                else {
+                    ++i;
                 }
             }
             VerifyTestResult (s.size () == 99);
