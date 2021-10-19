@@ -25,6 +25,8 @@ namespace Stroika::Foundation::Debug {
      *      auto&   mir = static_cast<const IteratorRep_&> (ir);
      * 
      *  The purpose of this function is to gain the performance of static_cast<> but the safety / checking of dynamic_cast (in debug builds).
+     * 
+     *  \see https://stackoverflow.com/questions/28002/regular-cast-vs-static-cast-vs-dynamic-cast
      */
     template <typename T, typename T1>
     T UncheckedDynamicCast (T1&& arg);
