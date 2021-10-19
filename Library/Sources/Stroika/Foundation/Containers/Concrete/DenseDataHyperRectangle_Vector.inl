@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
 #include "../Private/IteratorImplHelper.h"

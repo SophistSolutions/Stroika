@@ -11,6 +11,7 @@
  */
 #include <map>
 
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
 #include "../STL/Compare.h"
@@ -144,8 +145,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Require (not i.Done ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            AssertMember (&i.ConstGetRep (), IteratorRep_);
-            auto& mir = dynamic_cast<const IteratorRep_&> (i.ConstGetRep ());
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.fData == &fData_);
             auto nextI         = fData_.erase (mir.fIterator.fStdIterator);
             using iteratorType = Iterator<CountedValue<T>>;
@@ -155,9 +155,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
         {
-            const typename Iterator<CountedValue<T>>::IRep& ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto&                                                     mir = dynamic_cast<const IteratorRep_&> (ir);
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             if (newCount == 0) {
                 mir.fIterator.fStdIterator = fData_.erase (mir.fIterator.fStdIterator);

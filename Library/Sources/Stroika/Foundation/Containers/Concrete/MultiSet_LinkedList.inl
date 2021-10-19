@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
 #include "../Private/IteratorImplHelper.h"
@@ -175,10 +176,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<CountedValue<T>> Remove (const Iterator<CountedValue<T>>& i) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<CountedValue<T>>::IRep&           ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto& mir  = dynamic_cast<const IteratorRep_&> (ir);
-            auto  next = mir.fIterator._fCurrent->fNext;
+            auto&                                                     mir  = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            auto                                                      next = mir.fIterator._fCurrent->fNext;
             fData_.RemoveAt (mir.fIterator);
             auto resultRep = Iterator<CountedValue<T>>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
             resultRep->fIterator.SetCurrentLink (next);
@@ -187,9 +186,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<CountedValue<T>>::IRep&           ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto& mir = dynamic_cast<const IteratorRep_&> (ir);
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             if (newCount == 0) {
                 fData_.RemoveAt (mir.fIterator);
             }

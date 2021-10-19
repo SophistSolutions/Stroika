@@ -11,6 +11,7 @@
  */
 #include <forward_list>
 
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
 #include "../Private/PatchingDataStructures/STLContainerWrapper.h"
@@ -97,19 +98,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<T>::IRep&                         ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto& mir = dynamic_cast<const IteratorRep_&> (ir);
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (not i.Done ());
             *mir.fIterator.fStdIterator = newValue;
         }
         virtual Iterator<T> Remove (const Iterator<T>& i) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<T>::IRep&                         ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto& mir                  = dynamic_cast<const IteratorRep_&> (ir);
-            mir.fIterator.fStdIterator = fData_.erase_after (mir.fIterator.fStdIterator);
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            mir.fIterator.fStdIterator                                    = fData_.erase_after (mir.fIterator.fStdIterator);
             return i; //@todo tmphack
 #if 0
             // HORRIBLE BUT ADEQUITE IMPL...FOR NOW...

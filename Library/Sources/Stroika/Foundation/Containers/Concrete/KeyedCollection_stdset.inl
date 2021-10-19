@@ -12,6 +12,7 @@
 
 #include <set>
 
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 #include "../STL/Compare.h"
 
@@ -177,9 +178,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             // std::set doesn't appear to let you update an element because it doesn't know what parts go into the key, so you must
             // remove and re-add, but re-adding with a hint of old iterator value is O(1)
-            const typename Iterator<T>::IRep& ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            const IteratorRep_&                       mir  = dynamic_cast<const IteratorRep_&> (ir);
+            auto&                                     mir  = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             typename DataStructureImplType_::iterator hint = mir.fIterator.fStdIterator;
             hint++;
             // mir.fIterator.RemoveCurrent (); //fData_.erase (mir.fIterator.fStdIterator);
@@ -189,10 +188,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (const Iterator<T>& i) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<T>::IRep&                         ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto& mir                  = dynamic_cast<const IteratorRep_&> (ir);
-            mir.fIterator.fStdIterator = fData_.erase (mir.fIterator.fStdIterator);
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            mir.fIterator.fStdIterator                                    = fData_.erase (mir.fIterator.fStdIterator);
         }
         virtual bool Remove (ArgByValueType<KEY_TYPE> key) override
         {

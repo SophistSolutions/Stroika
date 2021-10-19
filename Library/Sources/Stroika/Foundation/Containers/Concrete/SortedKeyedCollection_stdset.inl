@@ -12,6 +12,7 @@
 
 #include <set>
 
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 #include "../STL/Compare.h"
 
@@ -177,9 +178,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             // std::set doesn't appear to let you update an element because it doesn't know what parts go into the key, so you must
             // remove and re-add, but re-adding with a hint of old iterator value is O(1)
-            const typename Iterator<T>::IRep& ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            const IteratorRep_&                       mir  = dynamic_cast<const IteratorRep_&> (ir);
+            const IteratorRep_&                       mir  = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             typename DataStructureImplType_::iterator hint = mir.fIterator.fStdIterator;
             hint++;
             fData_.erase (mir.fIterator.fStdIterator);
@@ -190,8 +189,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Require (not i.Done ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            AssertMember (&i.ConstGetRep (), IteratorRep_);
-            auto& mir = dynamic_cast<const IteratorRep_&> (i.ConstGetRep ());
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.fData == &fData_);
             auto nextI         = fData_.erase (mir.fIterator.fStdIterator);
             using iteratorType = Iterator<T>;

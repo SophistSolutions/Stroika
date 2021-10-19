@@ -11,6 +11,7 @@
  */
 #include <map>
 
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
 #include "../Private/IteratorImplHelper.h"
@@ -183,9 +184,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             virtual bool Equals (const typename Iterator<tuple<T, INDEXES...>>::IRep* rhs) const override
             {
                 RequireNotNull (rhs);
-                using ActualIterImplType_ = MyIteratorImplHelper_<PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>;
-                RequireMember (rhs, ActualIterImplType_);
-                const ActualIterImplType_* rrhs = dynamic_cast<const ActualIterImplType_*> (rhs);
+                using ActualIterImplType_       = MyIteratorImplHelper_<PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>;
+                const ActualIterImplType_* rrhs = Debug::UncheckedDynamicCast<const ActualIterImplType_*> (rhs);
                 AssertNotNull (rrhs);
                 shared_lock<const Debug::AssertExternallySynchronizedLock> critSec1 (*fIterator.GetPatchableContainerHelper ());
                 shared_lock<const Debug::AssertExternallySynchronizedLock> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());

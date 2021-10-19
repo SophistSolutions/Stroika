@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
 #include "../Private/IteratorImplHelper.h"
@@ -177,10 +178,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<CountedValue<T>> Remove (const Iterator<CountedValue<T>>& i) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<CountedValue<T>>::IRep&           ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto&  mir     = dynamic_cast<const IteratorRep_&> (ir);
-            size_t nextIdx = mir.fIterator.CurrentIndex ();
+            auto&                                                     mir     = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            size_t                                                    nextIdx = mir.fIterator.CurrentIndex ();
             fData_.RemoveAt (mir.fIterator);
             auto resultRep = Iterator<CountedValue<T>>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
             resultRep->fIterator.SetIndex (nextIdx);
@@ -189,9 +188,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<CountedValue<T>>::IRep&           ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto& mir = dynamic_cast<const IteratorRep_&> (ir);
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             if (newCount == 0) {
                 fData_.RemoveAt (mir.fIterator);
             }
