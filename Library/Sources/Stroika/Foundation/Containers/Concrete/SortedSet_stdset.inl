@@ -14,8 +14,8 @@
 #include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
+#include "../DataStructures/STLContainerWrapper.h"
 #include "../Private/IteratorImplHelper.h"
-#include "../Private/PatchingDataStructures/STLContainerWrapper.h"
 #include "../STL/Compare.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
