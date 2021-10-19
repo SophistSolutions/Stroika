@@ -12,6 +12,7 @@
 
 #include "../../Memory/BlockAllocated.h"
 #include "../Common.h"
+#include "../Debug/Cast.h"
 
 #include "../Private/IteratorImplHelper.h"
 #include "../Private/PatchingDataStructures/Array.h"
@@ -127,19 +128,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual size_t IndexOf (const Iterator<T>& i) const override
         {
-            const typename Iterator<T>::IRep& ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto&                                                      mir = dynamic_cast<const IteratorRep_&> (ir);
+            auto&                                                      mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return mir.fIterator.CurrentIndex ();
         }
         virtual Iterator<T> Remove (const Iterator<T>& i) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<T>::IRep&                         ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto&  mir     = dynamic_cast<const IteratorRep_&> (ir);
-            size_t nextIdx = mir.fIterator.CurrentIndex ();
+            auto&                                                     mir     = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            size_t                                                    nextIdx = mir.fIterator.CurrentIndex ();
             fData_.RemoveAt (mir.fIterator);
             auto resultRep = Iterator<T>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
             resultRep->fIterator.SetIndex (nextIdx);
@@ -148,9 +145,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<T>::IRep&                         ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto& mir = dynamic_cast<const IteratorRep_&> (ir);
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             fData_.SetAt (mir.fIterator, newValue);
         }
         virtual void Insert (size_t at, const T* from, const T* to) override

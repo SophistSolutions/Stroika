@@ -12,6 +12,7 @@
 #include <set>
 
 #include "../../Memory/BlockAllocated.h"
+#include "../Debug/Cast.h"
 
 #include "../Private/IteratorImplHelper.h"
 #include "../Private/PatchingDataStructures/STLContainerWrapper.h"
@@ -142,8 +143,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Require (not i.Done ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            AssertMember (&i.ConstGetRep (), IteratorRep_);
-            auto& mir = dynamic_cast<const IteratorRep_&> (i.ConstGetRep ());
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.fData == &fData_);
             auto nextI         = fData_.erase (mir.fIterator.fStdIterator);
             using iteratorType = Iterator<T>;
