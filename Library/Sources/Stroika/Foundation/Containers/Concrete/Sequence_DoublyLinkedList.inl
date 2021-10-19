@@ -13,8 +13,8 @@
 #include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
+#include "../DataStructures/DoublyLinkedList.h"
 #include "../Private/IteratorImplHelper.h"
-#include "../Private/PatchingDataStructures/DoublyLinkedList.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 

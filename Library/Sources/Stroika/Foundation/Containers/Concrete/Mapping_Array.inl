@@ -12,7 +12,7 @@
 #include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
-#include "../Private/PatchingDataStructures/Array.h"
+#include "../DataStructures/Array.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 

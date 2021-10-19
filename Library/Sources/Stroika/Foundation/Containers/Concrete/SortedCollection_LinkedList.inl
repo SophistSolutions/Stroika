@@ -12,8 +12,8 @@
 #include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
+#include "../DataStructures/LinkedList.h"
 #include "../Private/IteratorImplHelper.h"
-#include "../Private/PatchingDataStructures/LinkedList.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 
