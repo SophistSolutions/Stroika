@@ -251,12 +251,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
         const_cast<Link*> (i._fCurrent)->fNext = new Link (newValue, i._fCurrent->fNext);
     }
     template <typename T>
-    void LinkedList<T>::RemoveAt (const ForwardIterator& i)
+    auto LinkedList<T>::RemoveAt (const ForwardIterator& i) -> ForwardIterator
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Require (not i.Done ());
         Invariant ();
         i.Invariant ();
+
+        ForwardIterator next = i;
+        next.More (nullptr, true);
 
         Link* victim = const_cast<Link*> (i._fCurrent);
 
@@ -286,31 +289,30 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         i.Invariant ();
         Invariant ();
+        return next;
     }
-#if 0
-    template      <typename  T>
-    void    LinkedList<T>::Remove (ArgByValueType<T> item)
+    template <typename T>
+    template <typename EQUALS_COMPARER>
+    void LinkedList<T>::Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
     {
         Invariant ();
 
-        if (item == _fHead->fItem) {
-            RemoveFirst ();
-        }
-        else {
-            Link*    prev    =   nullptr;
-            for (Link* link = _fHead; link != nullptr; prev = link, link = link->fNext) {
-                if (link->fItem == item) {
-                    AssertNotNull (prev);       // cuz otherwise we would have hit it in first case!
-                    prev->fNext = link->fNext;
-                    delete (link);
-                    break;
-                }
+        /*
+            *  Base class impl is fine, but doesn't do patching, and doesn't
+            *  provide the hooks so I can do the patching from here.
+            *
+            *  @todo   We may want to correct that (see STL container impl -
+            *  returning ptr to next node would do it).
+            */
+        optional<T> current;
+        for (ForwardIterator it{this}; it.More (&current, true), current.has_value ();) {
+            if (equalsComparer (*current, item)) {
+                this->RemoveAt (it);
+                break;
             }
         }
-
         Invariant ();
     }
-#endif
     template <typename T>
     template <typename EQUALS_COMPARER>
     T* LinkedList<T>::Lookup (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)

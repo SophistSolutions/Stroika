@@ -317,9 +317,9 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (start, end);
     }
     template <typename T>
-    inline void Sequence<T>::Remove (const Iterator<T>& i)
+    inline Iterator<T> Sequence<T>::Remove (const Iterator<T>& i)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
     }
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE>

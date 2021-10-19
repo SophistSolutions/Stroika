@@ -218,7 +218,11 @@ namespace Stroika::Foundation::Traversal {
                     return result;
                 };
 
-                Iterator<RangeType> startI = fSubRanges_.FindFirstThat ([rStart] (const RangeType& r) -> bool { return r.GetLowerBound () >= rStart or r.Contains (rStart); });
+                auto findStartI = [this, &rStart] () -> Iterator<RangeType> {
+                    return fSubRanges_.FindFirstThat ([&rStart] (const RangeType& r) -> bool { return r.GetLowerBound () >= rStart or r.Contains (rStart); });
+                };
+
+                Iterator<RangeType> startI = findStartI ();
                 bool                extendedRange{false};
                 if (startI == fSubRanges_.end ()) {
                     if (sNoisyDebugTrace_) {
@@ -263,6 +267,8 @@ namespace Stroika::Foundation::Traversal {
                     fSubRanges_.Insert (startI, r);
                 }
 
+                startI = findStartI (); // refresh iterator cuz container changed
+
                 /*
                  *  Next adjust RHS of rhs-most element.
                  */
@@ -292,17 +298,22 @@ namespace Stroika::Foundation::Traversal {
                     fSubRanges_.Append (r);
                 }
 
+                startI = findStartI (); // refresh iterator cuz container changed
+
                 // then merge out uneeded items in between
                 // @todo/CLEANUP/REVIEW - not sure we always have startI <= endI...
                 if (extendedRange and startI != fSubRanges_.end ()) {
-                    for (auto i = startI; i != endI and i != fSubRanges_.end (); ++i) {
+                    for (auto i = startI; i != endI and i != fSubRanges_.end ();) {
                         if (i != startI and i != endI) {
                             if (sNoisyDebugTrace_) {
                                 DbgTrace ("Removing redundant subrange element %d from %f/%f to %f/%f",
                                           fSubRanges_.IndexOf (i),
                                           static_cast<double> (i->GetLowerBound ()), static_cast<double> (i->GetUpperBound ()));
                             }
-                            fSubRanges_.Remove (i);
+                            i = fSubRanges_.Remove (i);
+                        }
+                        else {
+                            ++i;
                         }
                     }
                 }

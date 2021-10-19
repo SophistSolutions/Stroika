@@ -349,12 +349,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         pi->_fData    = this;
     }
     template <typename T>
-    void DoublyLinkedList<T>::RemoveAt (const ForwardIterator& i)
+    auto DoublyLinkedList<T>::RemoveAt (const ForwardIterator& i) -> ForwardIterator
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Require (not i.Done ());
         this->Invariant ();
-#if 1
+        ForwardIterator next = i;
+        next.More (nullptr, true);
+
         Link* victim = const_cast<Link*> (i._fCurrent);
         AssertNotNull (victim); // cuz not done
         /*
@@ -399,31 +401,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
         }
         delete victim;
-#else
-        Link* victim = const_cast<Link*> (i._fCurrent);
-        /*
-         *      At this point we need the fPrev pointer. But it may have been lost
-         *  in a patch. If it was, its value will be nullptr (NB: nullptr could also mean
-         *  _fCurrent == fData->_fHead). If it is nullptr, recompute. Be careful if it
-         *  is still nullptr, that means update _fHead.
-         */
-        Link* prev = nullptr;
-        if (this->_fHead != victim) {
-            AssertNotNull (this->_fHead); // cuz there must be something to remove current
-            for (prev = this->_fHead; prev->fNext != victim; prev = prev->fNext) {
-                AssertNotNull (prev); // cuz that would mean victim not in DoublyLinkedList!!!
-            }
-        }
-        if (prev == nullptr) {
-            this->_fHead = victim->fNext;
-        }
-        else {
-            Assert (prev->fNext == victim);
-            prev->fNext = victim->fNext;
-        }
-        delete victim;
-#endif
         this->Invariant ();
+        return next;
     }
     template <typename T>
     inline void DoublyLinkedList<T>::SetAt (const ForwardIterator& i, ArgByValueType<T> newValue)

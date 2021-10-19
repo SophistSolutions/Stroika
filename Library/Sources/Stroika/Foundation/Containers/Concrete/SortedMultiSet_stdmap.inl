@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
         }
         Rep_ (const Rep_& from) = delete;
-        Rep_ (Rep_* from, [[maybe_unused]]IteratorOwnerID forIterableEnvelope)
+        Rep_ (Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
             : fData_{from->fData_}
         {
             RequireNotNull (from);
@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return ElementEqualityComparerType{Common::EqualsComparerAdapter (fData_.key_comp ())};
         }
-        virtual _MultiSetRepSharedPtr CloneEmpty ([[maybe_unused]]IteratorOwnerID forIterableEnvelope) const override
+        virtual _MultiSetRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
             return Iterable<CountedValue<T>>::template MakeSmartPtr<Rep_> (fData_.key_comp ());
         }
@@ -185,10 +185,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             return this->_UniqueElements_Reference_Implementation (rep);
         }
 #if qDebug
-        virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]]IteratorOwnerID oBeingDeleted) const override
+        virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-           // fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+            // fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
         }
 #endif
 
