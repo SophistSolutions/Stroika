@@ -359,7 +359,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         RequireNotNull (pi);
         RequireNotNull (movedFrom);
-        [[maybe_unused]]size_t currentIdx = pi->CurrentIndex ();
+        [[maybe_unused]] size_t currentIdx = pi->CurrentIndex ();
         Require (currentIdx <= this->GetLength ());
         Require (pi->_fData == movedFrom);
         pi->_fData = this;

@@ -74,6 +74,7 @@ namespace Stroika::Foundation::Containers::Private {
     public:
         mutable PATCHABLE_CONTAINER_ITERATOR fIterator;
     };
+
     template <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR = typename PATCHABLE_CONTAINER::ForwardIterator, typename PATCHABLE_CONTAINER_VALUE = T>
     class IteratorImplHelper2_ : public Iterator<T>::IRep, public Memory::UseBlockAllocationIfAppropriate<IteratorImplHelper2_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>> {
     private:

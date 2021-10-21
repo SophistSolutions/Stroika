@@ -41,6 +41,17 @@ namespace {
             }
             {
 #if qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
+                SparseDataHyperRectangle<int, size_t, size_t, size_t> x;
+#else
+                SparseDataHyperRectangleN<int, 3> x;
+#endif
+                VerifyTestResult (x.empty ());
+                VerifyTestResult (x.GetAt (1, 2, 3) == 0);
+                x.SetAt (1, 2, 3, 99);
+                VerifyTestResult (x.GetAt (1, 2, 3) == 99);
+            }
+            {
+#if qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
                 DataHyperRectangle<int, size_t, size_t> x = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
 #else
                 DataHyperRectangleN<int, 2> x = Concrete::SparseDataHyperRectangle_stdmapN<int, 2>{};
@@ -49,6 +60,19 @@ namespace {
                 for ([[maybe_unused]] auto t : x) {
                 }
                 x.SetAt (2, 2, 4);
+                for ([[maybe_unused]] auto t : x) {
+                }
+            }
+            {
+#if qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
+                DataHyperRectangle<int, size_t, size_t, size_t> x = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
+#else
+                DataHyperRectangleN<int, 3> x = Concrete::SparseDataHyperRectangle_stdmapN<int, 3>{};
+#endif
+                Verify (x.GetAt (1, 2, 3) == 0);
+                for ([[maybe_unused]] auto t : x) {
+                }
+                x.SetAt (1, 2, 3, 99);
                 for ([[maybe_unused]] auto t : x) {
                 }
             }

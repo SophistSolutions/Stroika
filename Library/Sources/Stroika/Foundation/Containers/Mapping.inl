@@ -321,8 +321,8 @@ namespace Stroika::Foundation::Containers {
         set<KEY_TYPE> tmp (items.begin (), items.end ()); // @todo - weak implementation because of 'comparison' function, and performance (if items already a set)
         for (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> i = this->begin (); i != this->end ();) {
             if (tmp.find (i->fKey) == tmp.end ()) {
-                [[maybe_unused]]size_t sz = this->size ();
-                i         = this->erase (i);
+                [[maybe_unused]] size_t sz = this->size ();
+                i                          = this->erase (i);
                 Assert (this->size () == sz - 1u);
             }
             else {

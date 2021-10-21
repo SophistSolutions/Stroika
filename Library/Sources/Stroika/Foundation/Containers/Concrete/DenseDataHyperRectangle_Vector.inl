@@ -12,8 +12,8 @@
 #include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
+#include "../DataStructures/STLContainerWrapper.h"
 #include "../Private/IteratorImplHelper.h"
-#include "../Private/PatchingDataStructures/STLContainerWrapper.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 
@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ******** DenseDataHyperRectangle_Vector<T, INDEXES...>::Rep_ *******************
+     *********** DenseDataHyperRectangle_Vector<T, INDEXES...>::Rep_ ****************
      ********************************************************************************
      */
     template <typename T, typename... INDEXES>
@@ -42,8 +42,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             //  AssertNotImplemented ();
         }
         Rep_ (const Rep_& from) = delete;
-        Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : fData_{&from->fData_, forIterableEnvelope}
+        Rep_ (Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
+            : fData_{from->fData_}
         {
             RequireNotNull (from);
         }
@@ -110,17 +110,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _DataHyperRectangleRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
         {
-            if (fData_.HasActiveIterators ()) {
-                // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                auto r = Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                r->fData_.clear (); //wrong - must checkjust zero out elts
-                return r;
-            }
-            else {
-                AssertNotReached ();
-                return nullptr;
-                ///return Iterable<T>::template MakeSmartPtr<Rep_> (forward<INDEXES> (fDimensions_)...);
-            }
+            // @todo - fix so using differnt CTOR - with no data to remove
+            auto r = Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+            r->fData_.clear (); //wrong - must checkjust zero out elts
+            return r;
         }
         DISABLE_COMPILER_MSC_WARNING_START (4100)
         virtual T GetAt (INDEXES... indexes) const override
@@ -138,8 +131,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         DISABLE_COMPILER_MSC_WARNING_END (4100)
 
     private:
-        using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<vector<T>>;
-        using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
+        using DataStructureImplType_ = DataStructures::STLContainerWrapper<vector<T>>;
+        using IteratorRep_           = typename Private::IteratorImplHelper2_<T, DataStructureImplType_>;
 
     private:
         tuple<INDEXES...>      fDimensions_;
