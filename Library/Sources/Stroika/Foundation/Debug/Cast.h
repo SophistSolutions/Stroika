@@ -26,6 +26,11 @@ namespace Stroika::Foundation::Debug {
      * 
      *  The purpose of this function is to gain the performance of static_cast<> but the safety / checking of dynamic_cast (in debug builds).
      * 
+     *  \par Example Usage
+     *      \code
+     *          auto&   mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+     *      \endcode
+     * 
      *  \see https://stackoverflow.com/questions/28002/regular-cast-vs-static-cast-vs-dynamic-cast
      */
     template <typename T, typename T1>
