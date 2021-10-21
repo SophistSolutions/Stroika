@@ -122,17 +122,13 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return mir.fIterator.CurrentIndex ();
         }
-        virtual Iterator<T> Remove (const Iterator<T>& i) override
+        virtual void Remove (const Iterator<T>& i) override
         {
             Require (not i.Done ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.fData == &fData_);
-            auto nextI         = fData_.erase (mir.fIterator.fStdIterator);
-            using iteratorType = Iterator<T>;
-            auto resultRep     = iteratorType::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
-            resultRep->fIterator.SetCurrentLink (nextI);
-            return iteratorType{move (resultRep)};
+            (void)fData_.erase (mir.fIterator.fStdIterator);
         }
         virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
         {

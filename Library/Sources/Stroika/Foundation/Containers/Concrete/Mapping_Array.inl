@@ -69,15 +69,6 @@ namespace Stroika::Foundation::Containers::Concrete {
             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
             return Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
         }
-        virtual _MappingRepSharedPtr CloneAndPatchIterator ([[maybe_unused]] Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* i, IteratorOwnerID obsoleteForIterableEnvelope) const
-        {
-            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-            auto                                                      result = Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
-            result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
-            return result;
-        }
         virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
             Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
@@ -123,6 +114,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _MappingRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
             return Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<Rep_> (fKeyEqualsComparer_);
+        }
+        virtual _MappingRepSharedPtr CloneAndPatchIterator ([[maybe_unused]] Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* i, IteratorOwnerID obsoleteForIterableEnvelope) const
+        {
+            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+            auto                                                      result = Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            return result;
         }
         virtual Iterable<KEY_TYPE> Keys () const override
         {
@@ -178,19 +178,23 @@ namespace Stroika::Foundation::Containers::Concrete {
                 }
             }
         }
-        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i) override
+        virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i) override
         {
-            using iteratorType = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
-            lock_guard<const Debug::AssertExternallySynchronizedLock>                 critSec{fData_};
-            const typename Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::IRep& ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto&  mir     = dynamic_cast<const IteratorRep_&> (ir);
-            size_t nextIdx = mir.fIterator.CurrentIndex ();
-            fData_.RemoveAt (mir.fIterator);
-            auto resultRep = iteratorType::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
-            resultRep->fIterator.SetIndex (nextIdx);
-            return Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>{move (resultRep)};
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
         }
+        virtual void PatchIteratorBeforeRemove (const optional<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>>& adjustmentAt, Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* i) const override
+        {
+            RequireNotNull (i);
+            auto iRep = Debug::UncheckedDynamicCast<const IteratorRep_*> (&i->ConstGetRep ());
+            if (adjustmentAt) {
+                iRep->fIterator.PatchBeforeRemove (&Debug::UncheckedDynamicCast<const IteratorRep_&> (adjustmentAt->ConstGetRep ()).fIterator);
+            }
+            else {
+                iRep->fIterator.PatchBeforeRemove (nullptr);
+            }
+        }
+
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override
         {

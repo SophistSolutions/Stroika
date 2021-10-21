@@ -108,12 +108,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             fData_.SetAt (mir.fIterator, newValue);
         }
-        virtual Iterator<T> Remove (const Iterator<T>& i) override
+        virtual void Remove (const Iterator<T>& i) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            fData_.RemoveAt (mir.fIterator);
-            return i; // @todo tmphack
+            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
         }
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override

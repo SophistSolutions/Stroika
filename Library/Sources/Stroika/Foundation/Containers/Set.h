@@ -83,6 +83,10 @@ namespace Stroika::Foundation::Containers {
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
      *
+     *  \note Note About Update method
+     *      We intentionally omit the Update () method since update given an iterator would do the same thing
+     *      as Container::Add(). We COULD enhance Add () to take an optional hint parameter in a future version of Stroika.
+     *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison equality (==, <=> etc) - because all sets have an equalsComparer for their elements
      *        o ordering (<,<=> etc) not provided, because a set has no intrinsic ordering between the set elements

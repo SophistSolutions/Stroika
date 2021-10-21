@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             SHARED_REP_TYPE resultRep      = Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
             resultRep->fIterator.SetIndex (i);
             // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
-            return RESULT_TYPE (move (resultRep));
+            return RESULT_TYPE{move (resultRep)};
         }
 
         // Sequence<T>::_IRep overrides
@@ -132,15 +132,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return mir.fIterator.CurrentIndex ();
         }
-        virtual Iterator<T> Remove (const Iterator<T>& i) override
+        virtual void Remove (const Iterator<T>& i) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto&                                                     mir     = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            size_t                                                    nextIdx = mir.fIterator.CurrentIndex ();
-            fData_.RemoveAt (mir.fIterator);
-            auto resultRep = Iterator<T>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
-            resultRep->fIterator.SetIndex (nextIdx);
-            return Iterator<T>{move (resultRep)};
+            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
         }
         virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
         {

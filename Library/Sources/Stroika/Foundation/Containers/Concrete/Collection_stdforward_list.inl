@@ -102,12 +102,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             Assert (not i.Done ());
             *mir.fIterator.fStdIterator = newValue;
         }
-        virtual Iterator<T> Remove (const Iterator<T>& i) override
+        virtual void Remove (const Iterator<T>& i) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            mir.fIterator.fStdIterator                                    = fData_.erase_after (mir.fIterator.fStdIterator);
-            return i; //@todo tmphack
+            (void)fData_.erase_after (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.fStdIterator);
 #if 0
             // HORRIBLE BUT ADEQUITE IMPL...FOR NOW...
             {

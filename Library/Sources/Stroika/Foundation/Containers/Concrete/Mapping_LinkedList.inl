@@ -160,7 +160,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt, AddReplaceMode addReplaceMode) override
         {
-            using Traversal::kUnknownIteratorOwnerID;
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
                 if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
@@ -181,7 +180,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (ArgByValueType<KEY_TYPE> key) override
         {
-            using Traversal::kUnknownIteratorOwnerID;
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                 if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
@@ -190,16 +188,20 @@ namespace Stroika::Foundation::Containers::Concrete {
                 }
             }
         }
-        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i) override
+        virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i) override
         {
-            using iteratorType = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto&                                                     mir  = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            auto                                                      next = mir.fIterator._fCurrent->fNext;
-            fData_.RemoveAt (mir.fIterator);
-            auto resultRep = iteratorType::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
-            resultRep->fIterator.SetCurrentLink (next);
-            return Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>{move (resultRep)};
+            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+        }
+        virtual void PatchIteratorBeforeRemove (const optional<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>>& adjustmentAt, Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* i) const override
+        {
+            RequireNotNull (i);
+            if (adjustmentAt == *i) {
+                ++(*i); // advance to next item if deleting current one
+            }
+            else {
+                // nothing needed for other links
+            }
         }
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override
@@ -258,6 +260,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
 #endif
     }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Concrete_Mapping_LinkedList_inl_ */

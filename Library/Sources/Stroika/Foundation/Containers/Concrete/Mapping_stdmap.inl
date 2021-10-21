@@ -179,17 +179,23 @@ namespace Stroika::Foundation::Containers::Concrete {
                 fData_.erase (i);
             }
         }
-        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i) override
+        virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i) override
         {
             Require (not i.Done ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.fData == &fData_);
-            auto nextI         = fData_.erase (mir.fIterator.fStdIterator);
-            using iteratorType = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
-            auto resultRep     = iteratorType::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
-            resultRep->fIterator.SetCurrentLink (nextI);
-            return iteratorType{move (resultRep)};
+            (void)fData_.erase (mir.fIterator.fStdIterator);
+        }
+        virtual void PatchIteratorBeforeRemove ([[maybe_unused]] const optional<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>>& adjustmentAt, [[maybe_unused]] Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* i) const override
+        {
+            RequireNotNull (i);
+            if (adjustmentAt == *i) {
+                ++(*i); // advance to next item if deleting current one
+            }
+            else {
+                // nothing needed for other links
+            }
         }
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override

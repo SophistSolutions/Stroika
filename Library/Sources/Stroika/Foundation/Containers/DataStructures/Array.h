@@ -209,11 +209,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *      _ArrayIteratorBase<T> is an un-advertised implementation
      *  detail designed to help in source-code sharing among various
      *  iterator implementations.
+     * 
+     *  \note Design note:
+     *      Use index instead of cursored pointer, since performance appears same either way, and
+     *      cursored pointer requires patching considerations on 'realloc'.
      */
     template <typename T>
     class Array<T>::_ArrayIteratorBase {
     private:
-        _ArrayIteratorBase (); // not defined - do not call.
+        _ArrayIteratorBase () = delete;
 
     public:
         _ArrayIteratorBase (const Array<T>* data);
@@ -228,21 +232,93 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool   More (T* current, bool advance);
         nonvirtual bool   Done () const;
 
+    protected:
+        nonvirtual size_t _CurrentIndex () const; // no invariant called
+
     public:
         nonvirtual void SetIndex (size_t i);
 
     public:
-        /*
-         *      NB: We can only call invariant after we've fixed things up, since realloc
-         * has happened by now, but things don't point to the right places yet.
-         */
-        void PatchForDataChange ()
+        nonvirtual void PatchBeforeAdd (const _ArrayIteratorBase& adjustmentAt)
         {
-            const T* oldStart = this->_fStart;
-            this->_fStart     = this->_fData->_fItems;
-            this->_fCurrent   = this->_fData->_fItems + (this->_fCurrent - oldStart);
-            this->_fEnd       = this->_fData->_fItems + this->_fData->GetLength ();
-            Ensure (this->_fStart <= this->_fCurrent and this->_fCurrent <= this->_fEnd);
+            this->Invariant ();
+            /*
+             *      If we added an item to past our cursor, it has no effect
+             *  on our - by index - addressing, and so ignore it. We will eventually
+             *  reach that new item.
+             *
+             *      If we added an item left of the cursor, then we are now pointing to
+             *  the item before the one we used to, and so incrementing (ie Next)
+             *  would cause us to revisit (in the forwards case, or skip one in the
+             *  reverse case). To correct our index, we must increment it so that
+             *  it.Current () refers to the same entity.
+             *
+             *      Note that this should indeed by <=, since (as opposed to <) since
+             *  if we are a direct hit, and someone tries to insert something at
+             *  the position we are at, the same argument as before applies - we
+             *  would be revisiting, or skipping forwards an item.
+             */
+            if (adjustmentAt.CurrentIndex () <= this->CurrentIndex ()) {
+                this->_fCurrentIdx++;
+            }
+        }
+        nonvirtual void PatchBeforeRemove (const _ArrayIteratorBase* adjustmentAt)
+        {
+            this->Invariant ();
+            /*
+             *      If we are removing an item from past our cursor, it has no effect
+             *  on our - by index - addressing, and so ignore it.
+             *
+             *      On the other hand, if we are removing the item from the left of our cursor,
+             *  things are more complex:
+             *
+             *      If we are removing an item from the left of the cursor, then we are now
+             *  pointing to the item after the one we used to, and so decrementing (ie Next)
+             *  would cause us to skip one. To correct our index, we must decrement it so that
+             *  it.Current () refers to the same entity.
+             *
+             *      In the case where we are directly hit, just set _fSuppressMore
+             *  to true. If we are going forwards, are are already pointing where
+             *  we should be (and this works for repeat deletions). If we are
+             *  going backwards, then _fSuppressMore will be ignored, but for the
+             *  sake of code sharing, its tough to do much about that waste.
+             */
+            if (adjustmentAt) {
+                size_t adjustmentAtIndex = adjustmentAt->CurrentIndex ();
+                size_t thisCurrentIndex  = _fCurrentIdx;
+
+                if (adjustmentAtIndex < thisCurrentIndex) {
+                    Assert (thisCurrentIndex >= 1);
+                    this->_fCurrentIdx--;
+                }
+                else if (adjustmentAtIndex == thisCurrentIndex) {
+#if 0
+                    if (thisCurrentIndex == 0) {
+                        this->_fCurrentIdx = this->_dataLength () - 1; // magic to indicate done (minus 1 cuz about to delete one)
+                    }
+#endif
+                    //  this->_fSuppressMore = true;
+                }
+#if 0
+                if (adjustmentAtIndex < thisCurrentIndex) {
+                    Assert (thisCurrentIndex >= 1);
+                    this->_fCurrent--;
+                }
+                else if (adjustmentAtIndex == thisCurrentIndex) {
+                    if (thisCurrentIndex == 0) {
+                        this->_fCurrent = this->_dataEnd (); // magic to indicate done
+                    }
+                    else {
+                        Assert (this->_fCurrent > this->_dataStart ());
+                        this->_fCurrent--;
+                    }
+                    // this->_fSuppressMore = true;
+                }
+#endif
+            }
+            else {
+                this->_fCurrentIdx = 0; // magic to indicate done (this->_dataLength () will be zero after delete all)
+            }
         }
 
     public:
@@ -257,13 +333,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     protected:
-        const Array<T>* _fData;
+        const Array<T>* _fData{nullptr};
+        size_t          _fCurrentIdx{0};
+        bool            _fSuppressMore{false}; // Indicates if More should do anything, or if were already Mored...
 
     protected:
-        const T* _fStart;        // points to FIRST elt
-        const T* _fEnd;          // points 1 PAST last elt
-        const T* _fCurrent;      // points to CURRENT elt (SUBCLASSES MUST INITIALIZE THIS!)
-        bool     _fSuppressMore; // Indicates if More should do anything, or if were already Mored...
+        const T* _dataStart () const { return _fData->_fItems; }
+        const T* _dataEnd () const { return _dataStart () + _fData->_fLength; }
+        size_t   _dataLength () const { return _fData->_fLength; }
 
     private:
         friend class Array<T>;
@@ -292,6 +369,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *      Use this iterator to iterate backwards over the array. Be careful
      *  not to add or remove things from the array while using this iterator,
      *  since it is not safe. Use BackwardIterator_Patch for those cases.
+     * 
+     *      // NOTE - I THINK NYI (fully) and not used
      */
     template <typename T>
     class Array<T>::BackwardIterator : public Array<T>::_ArrayIteratorBase {

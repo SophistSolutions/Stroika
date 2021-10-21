@@ -173,18 +173,6 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return false;
             }
         }
-        virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
-        {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            // std::set doesn't appear to let you update an element because it doesn't know what parts go into the key, so you must
-            // remove and re-add, but re-adding with a hint of old iterator value is O(1)
-            auto&                                     mir  = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            typename DataStructureImplType_::iterator hint = mir.fIterator.fStdIterator;
-            hint++;
-            // mir.fIterator.RemoveCurrent (); //fData_.erase (mir.fIterator.fStdIterator);
-            fData_.erase (mir.fIterator.fStdIterator);
-            mir.fIterator.fStdIterator = fData_.insert (hint, newValue);
-        }
         virtual void Remove (const Iterator<T>& i) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};

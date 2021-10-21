@@ -116,6 +116,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return Iterable<CountedValue<T>>::template MakeSmartPtr<Rep_> (fEqualsComparer_);
         }
+        virtual _MultiSetRepSharedPtr CloneAndPatchIterator (Iterator<CountedValue<T>>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
+        {
+            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+            auto                                                      result = Iterable<CountedValue<T>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            return result;
+        }
         virtual bool Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override
         {
             return this->_Equals_Reference_Implementation (rhs);
@@ -173,15 +182,10 @@ namespace Stroika::Foundation::Containers::Concrete {
                 }
             }
         }
-        virtual Iterator<CountedValue<T>> Remove (const Iterator<CountedValue<T>>& i) override
+        virtual void Remove (const Iterator<CountedValue<T>>& i) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto&                                                     mir  = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            auto                                                      next = mir.fIterator._fCurrent->fNext;
-            fData_.RemoveAt (mir.fIterator);
-            auto resultRep = Iterator<CountedValue<T>>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
-            resultRep->fIterator.SetCurrentLink (next);
-            return Iterator<CountedValue<T>>{move (resultRep)};
+            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
         }
         virtual void UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
         {
@@ -215,6 +219,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterable<T> UniqueElements (const _MultiSetRepSharedPtr& rep) const override
         {
             return this->_UniqueElements_Reference_Implementation (rep);
+        }
+        virtual void PatchIteratorBeforeRemove (const optional<Iterator<CountedValue<T>>>& adjustmentAt, Iterator<CountedValue<T>>* i) const override
+        {
+            RequireNotNull (i);
+            if (adjustmentAt == *i) {
+                ++(*i); // advance to next item if deleting current one
+            }
+            else {
+                // nothing needed for other links
+            }
         }
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override

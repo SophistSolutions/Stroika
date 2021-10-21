@@ -102,16 +102,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
         {
-            auto&                                                      mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            fData_.SetAt (mir.fIterator, newValue);
+            fData_.SetAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator, newValue);
         }
-        virtual Iterator<T> Remove (const Iterator<T>& i) override
+        virtual void Remove (const Iterator<T>& i) override
         {
-            auto&                                                      mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            fData_.RemoveAt (mir.fIterator);
-            return i; //@todo tmphack
+            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
         }
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override

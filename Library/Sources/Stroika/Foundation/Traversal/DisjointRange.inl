@@ -310,7 +310,7 @@ namespace Stroika::Foundation::Traversal {
                                           fSubRanges_.IndexOf (i),
                                           static_cast<double> (i->GetLowerBound ()), static_cast<double> (i->GetUpperBound ()));
                             }
-                            i = fSubRanges_.Remove (i);
+                            i = fSubRanges_.erase (i);
                         }
                         else {
                             ++i;

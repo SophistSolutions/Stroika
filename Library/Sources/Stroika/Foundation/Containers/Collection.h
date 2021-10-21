@@ -244,7 +244,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
-        nonvirtual Iterator<T> Remove (const Iterator<T>& i);
+        nonvirtual void Remove (const Iterator<T>& i, Iterator<T>* nextI = nullptr);
         template <typename PREDICATE>
         nonvirtual bool Remove (const PREDICATE& p);
 
@@ -352,7 +352,7 @@ namespace Stroika::Foundation::Containers {
         virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const    = 0;
         virtual void           Add (ArgByValueType<T> item)                              = 0;
         virtual void           Update (const Iterator<T>& i, ArgByValueType<T> newValue) = 0;
-        virtual Iterator<T>    Remove (const Iterator<T>& i)                             = 0;
+        virtual void           Remove (const Iterator<T>& i)                             = 0;
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

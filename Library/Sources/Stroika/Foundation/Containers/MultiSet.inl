@@ -381,6 +381,14 @@ namespace Stroika::Foundation::Containers {
         return sum;
     }
     template <typename T, typename TRAITS>
+    inline Iterator<CountedValue<T>> MultiSet<T, TRAITS>::erase (const Iterator<CountedValue<T>>& i)
+    {
+        Iterator<CountedValue<T>> result{nullptr};
+        this->Remove (i, &result);
+        return result;
+    }
+
+    template <typename T, typename TRAITS>
     inline void MultiSet<T, TRAITS>::clear ()
     {
         RemoveAll ();
@@ -470,9 +478,23 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (item, count);
     }
     template <typename T, typename TRAITS>
-    inline auto MultiSet<T, TRAITS>::Remove (const Iterator<CountedValue<T>>& i) -> Iterator<CountedValue<T>>
+    inline void MultiSet<T, TRAITS>::Remove (const Iterator<CountedValue<T>>& i, Iterator<CountedValue<T>>* nextI)
     {
-        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
+        Require (not i.Done ());
+        using shared_ptr_type                = typename inherited::_SharedByValueRepType::shared_ptr_type;
+        Iterator<value_type> patchedIterator = i;
+        shared_ptr_type      writerRep       = this->_fRep.get_nu (
+            [&, this] (const shared_ptr_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {
+                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator, this);
+            });
+        if (nextI != nullptr) {
+            *nextI = patchedIterator;
+            Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->PatchIteratorBeforeRemove (patchedIterator, nextI);
+        }
+        Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->Remove (patchedIterator);
+        if (nextI != nullptr) {
+            nextI->Refresh (); // update to reflect changes made to rep
+        }
     }
     template <typename T, typename TRAITS>
     inline void MultiSet<T, TRAITS>::UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount)

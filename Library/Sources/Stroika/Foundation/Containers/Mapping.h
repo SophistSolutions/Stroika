@@ -396,7 +396,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         nonvirtual void Remove (ArgByValueType<key_type> key);
-        nonvirtual Iterator<value_type> Remove (const Iterator<value_type>& i);
+        nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
 
     public:
         /**
@@ -605,9 +605,12 @@ namespace Stroika::Foundation::Containers {
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<mapped_type>* item) const = 0;
         // return true if NEW mapping added (container enlarged) - if replaceExistingMapping we unconditionally update but can still return false
-        virtual bool                                                Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode) = 0;
-        virtual void                                                Remove (ArgByValueType<KEY_TYPE> key)                                                                 = 0;
-        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i)                                 = 0;
+        virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode) = 0;
+        virtual void Remove (ArgByValueType<KEY_TYPE> key)                                                                 = 0;
+        virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i)                                 = 0;
+        //  call before remove - if adjustAt == nullopt, means removedAll
+        virtual void PatchIteratorBeforeRemove (const optional<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>>& adjustmentAt, Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* i) const = 0;
+
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

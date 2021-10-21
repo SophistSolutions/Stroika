@@ -133,19 +133,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             KEY_TYPE key{fKeyExtractor_ (item)};
             if (auto i = this->FindFirstThat ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); }, nullptr)) {
-                Update (i, item);
+                auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+                fData_.SetAt (mir.fIterator, item);
                 return false;
             }
             else {
                 fData_.Prepend (item);
                 return true;
             }
-        }
-        virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
-        {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            fData_.SetAt (mir.fIterator, newValue);
         }
         virtual void Remove (const Iterator<T>& i) override
         {

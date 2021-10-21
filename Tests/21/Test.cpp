@@ -409,7 +409,7 @@ namespace {
             for (auto i = s.begin (); i != s.end ();) {
                 // remove the 5th element
                 if (s.IndexOf (i) == 5 and s.size () == 100) {
-                    i = s.Remove (i);
+                    i = s.erase (i);
                 }
                 else {
                     ++i;

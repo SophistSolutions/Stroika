@@ -129,7 +129,7 @@ namespace CommonTests {
                         VerifyTestResult (s.GetLength () == kTestSize);
                         {
                             for (auto it = s.begin (); it != s.end ();) {
-                                it = s.Remove (it);
+                                it = s.erase (it);
                                 applyToContainer (s);
                             }
                             VerifyTestResult (s.IsEmpty ());
@@ -167,7 +167,7 @@ namespace CommonTests {
                                 applyToContainer (s);
                                 s.UpdateCount (it3, 3);
                                 applyToContainer (s);
-                                it3 = s.Remove (it3);
+                                it3 = s.erase (it3);
                                 applyToContainer (s);
                             }
                         }

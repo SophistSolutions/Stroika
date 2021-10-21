@@ -356,9 +356,13 @@ namespace CommonTests {
                     headers.Add (1, 2);
                     headers.Add (2, 3);
                     ConcreteContainerType headers2 = headers; // up ref count before change
+                    VerifyTestResult (headers.size () == 2);
+                    VerifyTestResult (headers2.size () == 2);
                     for (auto hi = headers.begin (); hi != headers.end ();) {
                         hi = headers.erase (hi);
                     }
+                    VerifyTestResult (headers2.size () == 2);
+                    VerifyTestResult (headers.empty ());
                 }
             }
         }
