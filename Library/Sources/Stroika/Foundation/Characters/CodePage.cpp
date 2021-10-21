@@ -3421,7 +3421,7 @@ namespace {
     BOOL FAR PASCAL           EnumCodePagesProc_ (LPTSTR lpCodePageString)
     {
         s_EnumCodePagesProc_Accumulator_->insert (_ttoi (lpCodePageString));
-        return (1);
+        return 1;
     }
 #endif
 }

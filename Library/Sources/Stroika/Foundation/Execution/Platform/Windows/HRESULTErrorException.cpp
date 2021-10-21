@@ -48,27 +48,27 @@ namespace {
         {
             switch (hr) {
                 case E_FAIL:
-                    return ("E_FAIL");
+                    return "E_FAIL";
                 case E_ACCESSDENIED:
-                    return ("E_ACCESSDENIED");
+                    return "E_ACCESSDENIED";
                 case E_INVALIDARG:
-                    return ("E_INVALIDARG");
+                    return "E_INVALIDARG";
                 case E_NOINTERFACE:
-                    return ("E_NOINTERFACE");
+                    return "E_NOINTERFACE";
                 case E_POINTER:
-                    return ("E_POINTER");
+                    return "E_POINTER";
                 case E_HANDLE:
-                    return ("E_HANDLE");
+                    return "E_HANDLE";
                 case E_ABORT:
-                    return ("E_ABORT");
+                    return "E_ABORT";
                 case DISP_E_TYPEMISMATCH:
-                    return ("DISP_E_TYPEMISMATCH");
+                    return "DISP_E_TYPEMISMATCH";
                 case DISP_E_EXCEPTION:
-                    return ("DISP_E_EXCEPTION");
+                    return "DISP_E_EXCEPTION";
                 case INET_E_RESOURCE_NOT_FOUND:
-                    return ("INET_E_RESOURCE_NOT_FOUND");
+                    return "INET_E_RESOURCE_NOT_FOUND";
                 case REGDB_E_CLASSNOTREG:
-                    return ("REGDB_E_CLASSNOTREG");
+                    return "REGDB_E_CLASSNOTREG";
             }
             if (HRESULT_FACILITY (hr) == FACILITY_WIN32) {
                 return system_category ().message (HRESULT_CODE (hr));

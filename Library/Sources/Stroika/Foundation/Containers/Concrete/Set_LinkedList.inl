@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             const T*                                                   l = fData_.Lookup (item, fEqualsComparer_);
-            return (l == nullptr) ? optional<T> () : optional<T> (*l);
+            return (l == nullptr) ? optional<T>{} : optional<T>{*l};
         }
         virtual void Add (ArgByValueType<T> item) override
         {

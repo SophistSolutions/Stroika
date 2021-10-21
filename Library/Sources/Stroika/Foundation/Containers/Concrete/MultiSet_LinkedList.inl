@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual size_t GetLength () const override
         {
-            return (fData_.GetLength ());
+            return fData_.GetLength ();
         }
         virtual bool IsEmpty () const override
         {
@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (&c, true);) {
                 if (fEqualsComparer_ (c.fValue, item)) {
                     Assert (c.fCount != 0);
-                    return (true);
+                    return true;
                 }
             }
             return false;

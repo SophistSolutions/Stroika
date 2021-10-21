@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Time {
         }
         Date::JulianRepType c  = static_cast<int> (year) / 100;
         Date::JulianRepType ya = static_cast<int> (year) - 100 * c;
-        return (((146097 * c) >> 2) + ((1461 * ya) >> 2) + (153 * static_cast<int> (month) + 2) / 5 + static_cast<int> (day) + 1721119);
+        return ((146097 * c) >> 2) + ((1461 * ya) >> 2) + (153 * static_cast<int> (month) + 2) / 5 + static_cast<int> (day) + 1721119;
     }
     constexpr inline Date::JulianRepType Date::Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
     {

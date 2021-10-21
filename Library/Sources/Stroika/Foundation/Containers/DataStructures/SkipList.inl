@@ -327,7 +327,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         if (fHead.size () == 0) {
             return nullptr;
         }
-        return (fHead[0]);
+        return fHead[0];
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     typename SkipList<KEY, VALUE, TRAITS>::Node* SkipList<KEY, VALUE, TRAITS>::GetLast () const

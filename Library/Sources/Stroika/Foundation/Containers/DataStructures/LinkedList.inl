@@ -445,7 +445,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         _fCurrent      = rhs._fCurrent;
         _fSuppressMore = rhs._fSuppressMore;
         Invariant ();
-        return (*this);
+        return *this;
     }
     template <typename T>
     inline void LinkedList<T>::ForwardIterator::Invariant () const

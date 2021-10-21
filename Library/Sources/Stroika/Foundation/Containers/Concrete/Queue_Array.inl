@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             T                                                         item = fData_.GetAt (0);
             fData_.RemoveAt (0);
-            return (item);
+            return item;
         }
         virtual optional<T> RemoveHeadIf () override
         {
