@@ -143,6 +143,12 @@ namespace Stroika::Foundation::Containers {
          */
         using CounterType = typename TraitsType::CounterType;
 
+    public:
+        /**
+         *  @see inherited::value_type
+         */
+        using value_type = typename inherited::value_type;
+
     protected:
         class _IRep;
 

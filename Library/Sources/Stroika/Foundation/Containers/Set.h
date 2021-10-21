@@ -116,6 +116,12 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  @see inherited::value_type
+         */
+        using value_type = typename inherited::value_type;
+
+    public:
+        /**
          *  This is the type returned by GetElementEqualsComparer () and CAN be used as the argument to a Set<> as EqualityComparer, but
          *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept.
          *

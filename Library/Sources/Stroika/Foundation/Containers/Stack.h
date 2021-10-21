@@ -95,6 +95,12 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  @see inherited::value_type
+         */
+        using value_type = typename inherited::value_type;
+
+    public:
+        /**
          *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add (Push)
          *
          *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates

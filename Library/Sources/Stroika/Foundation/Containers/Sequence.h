@@ -229,6 +229,12 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  @see inherited::value_type
+         */
+        using value_type = typename inherited::value_type;
+
+    public:
+        /**
          *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
          */
         using ArchetypeContainerType = Sequence<T>;
