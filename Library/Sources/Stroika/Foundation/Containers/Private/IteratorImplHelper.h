@@ -75,44 +75,6 @@ namespace Stroika::Foundation::Containers::Private {
         mutable PATCHABLE_CONTAINER_ITERATOR fIterator;
     };
 
-    template <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR = typename PATCHABLE_CONTAINER::ForwardIterator, typename PATCHABLE_CONTAINER_VALUE = T>
-    class IteratorImplHelper2_ : public Iterator<T>::IRep, public Memory::UseBlockAllocationIfAppropriate<IteratorImplHelper2_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>> {
-    private:
-        using inherited = typename Iterator<T>::IRep;
-
-    public:
-        using RepSmartPtr                 = typename Iterator<T>::RepSmartPtr;
-        using DataStructureImplValueType_ = PATCHABLE_CONTAINER_VALUE;
-
-    public:
-        IteratorImplHelper2_ ()                            = delete;
-        IteratorImplHelper2_ (const IteratorImplHelper2_&) = default;
-        explicit IteratorImplHelper2_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data);
-
-    public:
-        virtual ~IteratorImplHelper2_ () = default;
-
-        // Iterator<T>::IRep
-    public:
-        virtual RepSmartPtr     Clone () const override;
-        virtual IteratorOwnerID GetOwner () const override;
-        virtual void            More (optional<T>* result, bool advance) override;
-        virtual bool            Equals (const typename Iterator<T>::IRep* rhs) const override;
-
-    private:
-        /*
-         *  More_SFINAE_ () trick is cuz if types are the same, we can just pass pointer, but if they differ, we need
-         *  a temporary, and to copy.
-         */
-        template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
-        nonvirtual void More_SFINAE_ (optional<T>* result, bool advance, enable_if_t<is_same_v<T, CHECK_KEY>>* = 0);
-        template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
-        nonvirtual void More_SFINAE_ (optional<T>* result, bool advance, enable_if_t<!is_same_v<T, CHECK_KEY>>* = 0);
-
-    public:
-        mutable PATCHABLE_CONTAINER_ITERATOR fIterator;
-    };
-
 }
 
 /*

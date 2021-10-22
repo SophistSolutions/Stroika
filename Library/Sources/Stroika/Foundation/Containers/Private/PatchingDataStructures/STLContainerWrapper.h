@@ -10,7 +10,9 @@
 
 #include "PatchableContainerHelper.h"
 
-/**
+_DeprecatedFile_ ("Since Stroika 2.1b14 - no longer support this style of patching")
+
+    /**
  *  \file
  *
  *  TODO:
@@ -31,7 +33,8 @@
  *
  */
 
-namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
+    namespace Stroika::Foundation::Containers::Private::PatchingDataStructures
+{
 
     /**
      *  Patching Support:
@@ -165,7 +168,6 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     private:
         friend CONTAINER_TYPE;
     };
-
 }
 
 /*

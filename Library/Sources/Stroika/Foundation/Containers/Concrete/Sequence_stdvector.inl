@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using DataStructureImplType_ = DataStructures::STLContainerWrapper<vector<T>>;
-        using IteratorRep_           = typename Private::IteratorImplHelper2_<T, DataStructureImplType_>;
+        using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
     private:
         DataStructureImplType_ fData_;

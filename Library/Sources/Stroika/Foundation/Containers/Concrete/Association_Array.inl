@@ -11,7 +11,7 @@
 */
 #include "../../Memory/BlockAllocated.h"
 
-#include "../Private/PatchingDataStructures/Array.h"
+#include "../DataStructures/Array.h"
 
 namespace Stroika ::Foundation::Containers ::Concrete {
 
@@ -167,7 +167,7 @@ namespace Stroika ::Foundation::Containers ::Concrete {
 
     private:
         using NonPatchingDataStructureImplType_ = DataStructures::Array<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
-        using DataStructureImplType_            = Private::PatchingDataStructures::Array<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
+        using DataStructureImplType_            = DataStructures::Array<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
 
     private:
         using IteratorRep_ = typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>, DataStructureImplType_>;

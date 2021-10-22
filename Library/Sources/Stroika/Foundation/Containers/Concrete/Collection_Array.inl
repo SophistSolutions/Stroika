@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using DataStructureImplType_ = DataStructures::Array<T>;
 
     private:
-        using IteratorRep_ = typename Private::IteratorImplHelper2_<T, DataStructureImplType_>;
+        using IteratorRep_ = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
     private:
         DataStructureImplType_ fData_;

@@ -250,7 +250,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
     private:
         using DataStructureImplType_ = DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>;
-        using IteratorRep_           = Private::IteratorImplHelper2_<pair<DOMAIN_TYPE, RANGE_TYPE>, DataStructureImplType_>;
+        using IteratorRep_           = Private::IteratorImplHelper_<pair<DOMAIN_TYPE, RANGE_TYPE>, DataStructureImplType_>;
 
     private:
         DataStructureImplType_ fData_;

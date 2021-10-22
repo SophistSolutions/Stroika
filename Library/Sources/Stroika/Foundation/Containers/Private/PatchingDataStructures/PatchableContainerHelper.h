@@ -10,7 +10,9 @@
 #include "../../../Memory/SmallStackBuffer.h"
 #include "../../../Traversal/Iterator.h"
 
-/**
+_DeprecatedFile_ ("Since Stroika 2.1b14 - no longer support this style of patching")
+
+    /**
  * TODO:
  *      @todo   DOCUMENT THIS CLASS/LAYER MUCH BETTER
  *
@@ -20,7 +22,8 @@
  *              are iterating over change.
  */
 
-namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
+    namespace Stroika::Foundation::Containers::Private::PatchingDataStructures
+{
 
     using Traversal::IteratorOwnerID;
 
@@ -139,7 +142,6 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     private:
         friend struct PatchableContainerHelper;
     };
-
 }
 
 /*

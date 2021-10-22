@@ -261,7 +261,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using DataStructureImplType_ = DataStructures::Array<CountedValue<T>>;
-        using IteratorRep_           = typename Private::IteratorImplHelper2_<CountedValue<T>, DataStructureImplType_>;
+        using IteratorRep_           = typename Private::IteratorImplHelper_<CountedValue<T>, DataStructureImplType_>;
 
     private:
         DataStructureImplType_ fData_;
