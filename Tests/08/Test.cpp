@@ -7,7 +7,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "Stroika/Foundation/Containers/Private/PatchingDataStructures/DoublyLinkedList.h"
+#include "Stroika/Foundation/Containers/DataStructures/DoublyLinkedList.h"
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -19,14 +19,13 @@ using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Containers::DataStructures;
-using namespace Stroika::Foundation::Containers::Private::PatchingDataStructures;
 
 using Traversal::kUnknownIteratorOwnerID;
 
 namespace {
     static void Test1 ()
     {
-        Private::PatchingDataStructures::DoublyLinkedList<size_t> someLL;
+        DataStructures::DoublyLinkedList<size_t> someLL;
         const size_t                                              kBigSize = 1001;
 
         Assert (kBigSize > 100);
@@ -61,7 +60,7 @@ namespace {
         {
             size_t i = 1;
             size_t cur;
-            for (Private::PatchingDataStructures::DoublyLinkedList<size_t>::ForwardIterator it (kUnknownIteratorOwnerID, &someLL); it.More (&cur, true); i++) {
+            for (DataStructures::DoublyLinkedList<size_t>::ForwardIterator it (&someLL); it.More (&cur, true); i++) {
                 if (i == 100) {
                     someLL.AddAfter (it, 1);
                     break;
@@ -81,7 +80,7 @@ namespace {
 
     static void Test2 ()
     {
-        Private::PatchingDataStructures::DoublyLinkedList<SimpleClass> someLL;
+        DataStructures::DoublyLinkedList<SimpleClass> someLL;
         const size_t                                                   kBigSize = 1000;
 
         VerifyTestResult (someLL.GetLength () == 0);
