@@ -381,6 +381,21 @@ namespace Stroika::Foundation::Containers {
 
     protected:
         /**
+         *  \brief Utility to get WRITABLE underlying shared_ptr (replacement for what we normally do - _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ())
+         *         but where we also handle the cloning/patching of the associated iterator
+         * 
+         *  When you have a non-const operation (such as Remove) with an argument of an Iterator<>, then due to COW,
+         *  you may end up cloning the container rep, and yet the Iterator<> contains a pointer to the earlier rep (and so maybe unusable).
+         * 
+         *  Prior to Stroika 2.1b14, this was handled elegantly, and automatically, by the iterator patching mechanism. But that was deprecated (due to cost, and
+         *  rarity of use), in favor of this more restricted feature, where we just patch the iterators on an as-needed basis.
+         * 
+         *  \todo @todo - could be smarter about moves and avoid some copies here - I think, and this maybe performance sensitive enough to look into that... (esp for COMMON case where no COW needed)
+         */
+        nonvirtual tuple<typename inherited::_SharedByValueRepType::shared_ptr_type, Iterator<value_type>> _GetWriterRepAndPatchAssociatedIterator (const Iterator<value_type>& i);
+
+    protected:
+        /**
          */
         template <typename T2>
         using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;

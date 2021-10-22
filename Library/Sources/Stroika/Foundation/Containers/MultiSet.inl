@@ -481,12 +481,7 @@ namespace Stroika::Foundation::Containers {
     inline void MultiSet<T, TRAITS>::Remove (const Iterator<CountedValue<T>>& i, Iterator<CountedValue<T>>* nextI)
     {
         Require (not i.Done ());
-        using shared_ptr_type                = typename inherited::_SharedByValueRepType::shared_ptr_type;
-        Iterator<value_type> patchedIterator = i;
-        shared_ptr_type      writerRep       = this->_fRep.get_nu (
-            [&, this] (const shared_ptr_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {
-                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator, this);
-            });
+        auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
         if (nextI != nullptr) {
             *nextI = patchedIterator;
             Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->PatchIteratorBeforeRemove (patchedIterator, nextI);
@@ -530,6 +525,18 @@ namespace Stroika::Foundation::Containers {
             Add (i->fValue, i->fCount);
         }
         return *this;
+    }
+    template <typename T, typename TRAITS>
+    auto MultiSet<T, TRAITS>::_GetWriterRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<typename inherited::_SharedByValueRepType::shared_ptr_type, Iterator<value_type>>
+    {
+        Require (not i.Done ());
+        using shared_ptr_type                = typename inherited::_SharedByValueRepType::shared_ptr_type;
+        Iterator<value_type> patchedIterator = i;
+        shared_ptr_type      writerRep       = this->_fRep.get_nu (
+            [&, this] (const shared_ptr_type& prevRepPtr) -> shared_ptr_type {
+                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator, this);
+            });
+        return make_tuple (writerRep, patchedIterator);
     }
     template <typename T, typename TRAITS>
     inline void MultiSet<T, TRAITS>::_AssertRepValidType () const
