@@ -1387,8 +1387,6 @@ clang says:
 
 #endif
 
-
-
 #ifndef qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
@@ -1403,8 +1401,6 @@ clang says:
 #endif
 
 #endif
-
-
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
