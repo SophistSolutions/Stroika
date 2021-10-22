@@ -13,7 +13,7 @@
 
 #include "PatchableContainerHelper.h"
 
-_DeprecatedFile_ ("Since Stroika 2.1b14 - no longer support this style of patching")
+_DeprecatedFile_ ("Since Stroika 2.1b14 - Patching/DoublyLinkedList no longer support this style of patching")
 
     /*
  *

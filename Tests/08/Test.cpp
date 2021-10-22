@@ -26,7 +26,7 @@ namespace {
     static void Test1 ()
     {
         DataStructures::DoublyLinkedList<size_t> someLL;
-        const size_t                                              kBigSize = 1001;
+        const size_t                             kBigSize = 1001;
 
         Assert (kBigSize > 100);
         VerifyTestResult (someLL.GetLength () == 0);
@@ -81,7 +81,7 @@ namespace {
     static void Test2 ()
     {
         DataStructures::DoublyLinkedList<SimpleClass> someLL;
-        const size_t                                                   kBigSize = 1000;
+        const size_t                                  kBigSize = 1000;
 
         VerifyTestResult (someLL.GetLength () == 0);
 

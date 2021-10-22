@@ -1387,7 +1387,6 @@ clang says:
 
 #endif
 
-
 /*
  ERROR ON GCC VERY WEIRD g++-11-debug-c++2a
 
@@ -1466,8 +1465,6 @@ In file included from ../Characters/String.h:18,
   
   */
 #ifndef qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
-
-
 
 #if defined(__clang__) && defined(__APPLE__)
 // WAG?
