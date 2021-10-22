@@ -8,7 +8,7 @@
 #include <sstream>
 
 #include "Stroika/Foundation/Containers/DataStructures/LinkedList.h"
-#include "Stroika/Foundation/Containers/Private/PatchingDataStructures/LinkedList.h"
+//#include "Stroika/Foundation/Containers/Private/PatchingDataStructures/LinkedList.h"
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -20,16 +20,14 @@ using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Containers::DataStructures;
-using namespace Stroika::Foundation::Containers::Private;
-using namespace Stroika::Foundation::Containers::Private::PatchingDataStructures;
 
 using Traversal::kUnknownIteratorOwnerID;
 
 namespace {
     static void Test1 ()
     {
-        PatchingDataStructures::LinkedList<size_t> someLL;
-        const size_t                               kBigSize = 1001;
+        DataStructures::LinkedList<size_t> someLL;
+        const size_t                       kBigSize = 1001;
 
         Assert (kBigSize > 100);
         VerifyTestResult (someLL.GetLength () == 0);
@@ -63,7 +61,7 @@ namespace {
         {
             size_t i = 1;
             size_t cur;
-            for (PatchingDataStructures::LinkedList<size_t>::ForwardIterator it (kUnknownIteratorOwnerID, &someLL); it.More (&cur, true); i++) {
+            for (DataStructures::LinkedList<size_t>::ForwardIterator it (&someLL); it.More (&cur, true); i++) {
                 if (i == 100) {
                     someLL.AddAfter (it, 1);
                     break;
@@ -83,8 +81,8 @@ namespace {
 
     static void Test2 ()
     {
-        PatchingDataStructures::LinkedList<SimpleClass> someLL;
-        const size_t                                    kBigSize = 1000;
+        DataStructures::LinkedList<SimpleClass> someLL;
+        const size_t                            kBigSize = 1000;
 
         VerifyTestResult (someLL.GetLength () == 0);
 

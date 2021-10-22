@@ -11,12 +11,13 @@
  */
 #include <map>
 
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
 #include "../STL/Compare.h"
 
+#include "../DataStructures/STLContainerWrapper.h"
 #include "../Private/IteratorImplHelper.h"
-#include "../Private/PatchingDataStructures/STLContainerWrapper.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 
@@ -54,8 +55,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
         }
         Rep_ (const Rep_& from) = delete;
-        Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : fData_{&from->fData_, forIterableEnvelope}
+        Rep_ (Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
+            : fData_{from->fData_}
         {
             RequireNotNull (from);
         }
@@ -105,17 +106,18 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return ElementEqualityComparerType{Common::EqualsComparerAdapter (fData_.key_comp ())};
         }
-        virtual _MultiSetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+        virtual _MultiSetRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
-            if (fData_.HasActiveIterators ()) {
-                // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                auto r = Iterable<CountedValue<T>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                r->fData_.clear_WithPatching ();
-                return r;
-            }
-            else {
-                return Iterable<CountedValue<T>>::template MakeSmartPtr<Rep_> (fData_.key_comp ());
-            }
+            return Iterable<CountedValue<T>>::template MakeSmartPtr<Rep_> (fData_.key_comp ());
+        }
+        virtual _MultiSetRepSharedPtr CloneAndPatchIterator (Iterator<CountedValue<T>>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
+        {
+            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+            auto                                                      result = Iterable<CountedValue<T>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            return result;
         }
         virtual bool Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override
         {
@@ -154,26 +156,21 @@ namespace Stroika::Foundation::Containers::Concrete {
                 Require (i->second >= count);
                 i->second -= count;
                 if (i->second == 0) {
-                    fData_.erase_WithPatching (i);
+                    fData_.erase (i);
                 }
             }
         }
         virtual void Remove (const Iterator<CountedValue<T>>& i) override
         {
-            const typename Iterator<CountedValue<T>>::IRep& ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto&                                                     mir = dynamic_cast<const IteratorRep_&> (ir);
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            mir.fIterator.RemoveCurrent ();
+            (void)fData_.erase (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.fStdIterator);
         }
         virtual void UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
         {
-            const typename Iterator<CountedValue<T>>::IRep& ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto&                                                     mir = dynamic_cast<const IteratorRep_&> (ir);
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             if (newCount == 0) {
-                mir.fIterator.RemoveCurrent ();
+                mir.fIterator.fStdIterator = fData_.erase (mir.fIterator.fStdIterator);
             }
             else {
                 mir.fIterator.fStdIterator->second = newCount;
@@ -197,16 +194,26 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return this->_UniqueElements_Reference_Implementation (rep);
         }
+        virtual void PatchIteratorBeforeRemove (const optional<Iterator<CountedValue<T>>>& adjustmentAt, Iterator<CountedValue<T>>* i) const override
+        {
+            RequireNotNull (i);
+            if (adjustmentAt == *i) {
+                ++(*i); // advance to next item if deleting current one
+            }
+            else {
+                // nothing needed for other links
+            }
+        }
 #if qDebug
-        virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
+        virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+            //            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
         }
 #endif
 
     private:
-        using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<T, CounterType, INORDER_COMPARER>>;
+        using DataStructureImplType_ = DataStructures::STLContainerWrapper<map<T, CounterType, INORDER_COMPARER>>;
         using IteratorRep_           = Private::IteratorImplHelper_<CountedValue<T>, DataStructureImplType_, typename DataStructureImplType_::ForwardIterator, pair<T, CounterType>>;
 
     private:

@@ -97,24 +97,24 @@ namespace CommonTests {
                         {
 #if qCompilerAndStdLib_attributes_before_template_in_Template_Buggy
                             for (CountedValue<T> it : s) {
-                                for (size_t i = 1; i <= kTestSize; i++) {
-                                    VerifyTestResult (s.Contains (i));
-                                    VerifyTestResult (s.GetLength () == kTestSize - i + 1);
-                                    s.Remove (i);
-                                    VerifyTestResult (not s.Contains (i - 1));
-                                }
+                            }
+                            for (size_t i = 1; i <= kTestSize; i++) {
+                                VerifyTestResult (s.Contains (i));
+                                VerifyTestResult (s.GetLength () == kTestSize - i + 1);
+                                s.Remove (i);
+                                VerifyTestResult (not s.Contains (i - 1));
                             }
 #else
                             for ([[maybe_unused]] CountedValue<T> it : s) {
 #if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
                                 &it;
 #endif
-                                for (size_t i = 1; i <= kTestSize; i++) {
-                                    VerifyTestResult (s.Contains (i));
-                                    VerifyTestResult (s.GetLength () == kTestSize - i + 1);
-                                    s.Remove (i);
-                                    VerifyTestResult (not s.Contains (i - 1));
-                                }
+                            }
+                            for (size_t i = 1; i <= kTestSize; i++) {
+                                VerifyTestResult (s.Contains (i));
+                                VerifyTestResult (s.GetLength () == kTestSize - i + 1);
+                                s.Remove (i);
+                                VerifyTestResult (not s.Contains (i - 1));
                             }
 #endif
                             VerifyTestResult (s.IsEmpty ());
@@ -128,8 +128,8 @@ namespace CommonTests {
                         applyToContainer (s);
                         VerifyTestResult (s.GetLength () == kTestSize);
                         {
-                            for (auto it = s.begin (); it != s.end (); ++it) {
-                                s.Remove (it);
+                            for (auto it = s.begin (); it != s.end ();) {
+                                it = s.erase (it);
                                 applyToContainer (s);
                             }
                             VerifyTestResult (s.IsEmpty ());
@@ -141,14 +141,17 @@ namespace CommonTests {
                             applyToContainer (s);
                         }
                         VerifyTestResult (s.GetLength () == kTestSize);
-                        for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
-                            s.Remove (it2.Current ().fValue);
+                        for (auto it2 = s.begin (); it2 != s.end ();) {
+                            auto current = it2.Current ().fValue;
+                            it2          = s.end (); // cannot keep live iterator during remove
+                            s.Remove (current);
+                            it2 = s.begin ();
                         }
                         VerifyTestResult (s.GetLength () == 0);
                     }
 
                     /*
-                    * Try removes multiple iterators present.
+                    * Try removes multiple with iteration
                     */
                     {
                         s.RemoveAll ();
@@ -159,23 +162,13 @@ namespace CommonTests {
                             applyToContainer (s);
                         }
                         VerifyTestResult (s.GetLength () == kTestSize);
-                        size_t i = 1;
-
-                        for (auto it = s.begin (); it != s.end (); ++it) {
-                            for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
-                                for (auto it3 = s.begin (); it3 != s.end (); ++it3) {
-                                    if (s.GetLength () != 0) {
-                                        applyToContainer (s);
-                                        s.UpdateCount (it3, 3);
-                                        applyToContainer (s);
-                                        s.Remove (it3);
-                                        applyToContainer (s);
-                                        s.Add (i);
-                                        applyToContainer (s);
-                                        s.Remove (i);
-                                        applyToContainer (s);
-                                    }
-                                }
+                        for (auto it3 = s.begin (); it3 != s.end ();) {
+                            if (s.GetLength () != 0) {
+                                applyToContainer (s);
+                                s.UpdateCount (it3, 3);
+                                applyToContainer (s);
+                                it3 = s.erase (it3);
+                                applyToContainer (s);
                             }
                         }
                     }
@@ -275,7 +268,7 @@ namespace CommonTests {
                     {
                         auto saved = s;
                         s.Add (32);
-                        for (auto it1 [[maybe_unused]] : s) {
+                        {
                             s.RemoveAll ();
                             applyToContainer (s);
                         }
@@ -283,15 +276,15 @@ namespace CommonTests {
                     }
 
                     {
-                        for (auto it [[maybe_unused]] = s.begin (); it != s.end (); ++it) {
+                        {
                             [[maybe_unused]] auto tmp = s;
                             s.Add (1);
                         }
-                        for (auto it = s.begin (); it != s.end (); ++it) {
+                        {
                             auto tmp = s;
+                            s.Add (1);
                             for (auto it1 [[maybe_unused]] : tmp) {
                             }
-                            s.Add (1);
                         }
                         for (auto it = s.begin (); it != s.end (); ++it) {
                             auto tmp = s.Elements ();
@@ -300,12 +293,12 @@ namespace CommonTests {
                         }
                     }
 
-                    for (auto it = s.begin (); it != s.end (); ++it) {
+                    {
                         auto tmp = s.Elements ();
                         s.Add (1);
                     }
 
-                    for (auto it = s.begin (); it != s.end (); ++it) {
+                    {
                         for (auto it1 [[maybe_unused]] : s.Elements ()) {
                             if (s.TotalOccurrences () < 25) {
                                 s.Add (1);
@@ -314,14 +307,14 @@ namespace CommonTests {
                             break;
                         }
                     }
-                    for (auto it = s.begin (); it != s.end (); ++it) {
+                    {
                         for (auto it1 [[maybe_unused]] : s.Elements ()) {
                             s.RemoveAll ();
                             applyToContainer (s);
                         }
                     }
                     s.Add (3);
-                    for (auto it = s.begin (); it != s.end (); ++it) {
+                    {
                         for (auto it1 [[maybe_unused]] : s.UniqueElements ()) {
                             s.RemoveAll ();
                             applyToContainer (s);
@@ -440,7 +433,7 @@ namespace CommonTests {
                     for (size_t i = 1; i <= K / 50; i++) {
                         s.Add (i);
                     }
-                    for (auto it = s.begin (); it != s.end (); ++it) {
+                    {
                         for ([[maybe_unused]] auto it1 : s.Elements ()) {
 #if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
                             &it1;
@@ -464,7 +457,7 @@ namespace CommonTests {
                         s.Add (i);
                     }
                     testingSchema.ApplyToContainerExtraTest (s);
-                    for (auto it = s.begin (); it != s.end (); ++it) {
+                    {
                         for ([[maybe_unused]] auto it1 : s.Elements ()) {
 #if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
                             &it1;

@@ -10,10 +10,11 @@
  ********************************************************************************
  */
 
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
+#include "../DataStructures/Array.h"
 #include "../Private/IteratorImplHelper.h"
-#include "../Private/PatchingDataStructures/Array.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 
@@ -31,8 +32,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         Rep_ ()                 = default;
         Rep_ (const Rep_& from) = delete;
-        Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : fData_{&from->fData_, forIterableEnvelope}
+        Rep_ (Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
+            : fData_{from->fData_}
         {
             RequireNotNull (from);
         }
@@ -42,7 +43,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Iterable<T>::_IRep overrides
     public:
-        virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
+        virtual _IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
             return Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
@@ -87,17 +88,9 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Queue<T>::_IRep overrides
     public:
-        virtual _QueueRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+        virtual _QueueRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
-            if (fData_.HasActiveIterators ()) {
-                // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                auto r = Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                r->fData_.RemoveAll ();
-                return r;
-            }
-            else {
-                return Iterable<T>::template MakeSmartPtr<Rep_> ();
-            }
+            return Iterable<T>::template MakeSmartPtr<Rep_> ();
         }
         virtual void AddTail (ArgByValueType<T> item) override
         {
@@ -109,7 +102,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             T                                                         item = fData_.GetAt (0);
             fData_.RemoveAt (0);
-            return (item);
+            return item;
         }
         virtual optional<T> RemoveHeadIf () override
         {
@@ -134,15 +127,15 @@ namespace Stroika::Foundation::Containers::Concrete {
             return fData_.GetAt (0);
         }
 #if qDebug
-        virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
+        virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+            //     fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
         }
 #endif
 
     private:
-        using DataStructureImplType_ = Private::PatchingDataStructures::Array<T>;
+        using DataStructureImplType_ = DataStructures::Array<T>;
         using IteratorRep_           = Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
     private:

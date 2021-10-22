@@ -83,6 +83,10 @@ namespace Stroika::Foundation::Containers {
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
      *
+     *  \note Note About Update method
+     *      We intentionally omit the Update () method since update given an iterator would do the same thing
+     *      as Container::Add(). We COULD enhance Add () to take an optional hint parameter in a future version of Stroika.
+     *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison equality (==, <=> etc) - because all sets have an equalsComparer for their elements
      *        o ordering (<,<=> etc) not provided, because a set has no intrinsic ordering between the set elements
@@ -298,7 +302,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         nonvirtual void Remove (ArgByValueType<T> item);
-        nonvirtual void Remove (const Iterator<T>& i);
+        nonvirtual Iterator<T> Remove (const Iterator<T>& i);
 
     public:
         /**
@@ -448,7 +452,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         nonvirtual void erase (ArgByValueType<T> item);
-        nonvirtual void erase (const Iterator<T>& i);
+        nonvirtual Iterator<T> erase (const Iterator<T>& i);
 
     protected:
         /**
@@ -496,7 +500,7 @@ namespace Stroika::Foundation::Containers {
         virtual optional<T>                 Lookup (ArgByValueType<T> item) const                  = 0;
         virtual void                        Add (ArgByValueType<T> item)                           = 0;
         virtual void                        Remove (ArgByValueType<T> item)                        = 0;
-        virtual void                        Remove (const Iterator<T>& i)                          = 0;
+        virtual Iterator<T>                 Remove (const Iterator<T>& i)                          = 0;
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

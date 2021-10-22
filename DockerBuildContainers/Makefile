@@ -42,6 +42,7 @@ ifeq (Windows,$(findstring Windows,$(OS)))
 	#docker build -m 4GB --network "Default Switch" -f Windows-Cygwin-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 .
 	# as of 2021-09-20 - on new laptop  fails to build with -m, but works without (crazy buggy docker)
 	docker build --network "Default Switch" -f Windows-Cygwin-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 .
+	docker build --network "Default Switch" -f Windows-Cygwin-VS2k22/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 .
 	#docker build -f Windows-MinGW-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-mingw-vs2k19 .
 endif
 

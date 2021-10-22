@@ -390,10 +390,13 @@ namespace Stroika::Foundation::Containers {
          *      TBD in the case of Remove() on in iterator???? Probably should have consistent
          *      answers but review Remove()for other containers as well.
          *
+         *  Remove with iterator returns the adjusted iterator value, now pointing to the next value to use (as in save that iterator value, i++) and remove the
+         *  i iterator value).
+         *
          *  \note mutates container
          */
         nonvirtual void Remove (ArgByValueType<key_type> key);
-        nonvirtual void Remove (const Iterator<value_type>& i);
+        nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
 
     public:
         /**
@@ -515,7 +518,7 @@ namespace Stroika::Foundation::Containers {
          * \brief STL-ish alias for Remove ().
          */
         nonvirtual void erase (ArgByValueType<key_type> key);
-        nonvirtual void erase (const Iterator<value_type>& i);
+        nonvirtual Iterator<value_type> erase (const Iterator<value_type>& i);
 
     public:
         /**
@@ -593,10 +596,11 @@ namespace Stroika::Foundation::Containers {
         using _IRepSharedPtr = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRepSharedPtr;
 
     public:
-        virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const                          = 0;
-        virtual _IRepSharedPtr               CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-        virtual Iterable<key_type>           Keys () const                                          = 0;
-        virtual Iterable<mapped_type>        MappedValues () const                                  = 0;
+        virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const                                                                                                     = 0;
+        virtual _IRepSharedPtr               CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                                                            = 0;
+        virtual _IRepSharedPtr               CloneAndPatchIterator (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
+        virtual Iterable<key_type>           Keys () const                                                                                                                     = 0;
+        virtual Iterable<mapped_type>        MappedValues () const                                                                                                             = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<mapped_type>* item) const = 0;
@@ -604,6 +608,9 @@ namespace Stroika::Foundation::Containers {
         virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode) = 0;
         virtual void Remove (ArgByValueType<KEY_TYPE> key)                                                                 = 0;
         virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i)                                 = 0;
+        //  call before remove - if adjustAt == nullopt, means removedAll
+        virtual void PatchIteratorBeforeRemove (const optional<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>>& adjustmentAt, Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* i) const = 0;
+
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

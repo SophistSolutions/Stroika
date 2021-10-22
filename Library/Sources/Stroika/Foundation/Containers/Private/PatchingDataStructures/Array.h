@@ -10,7 +10,9 @@
 
 #include "PatchableContainerHelper.h"
 
-/**
+_DeprecatedFile_ ("Since Stroika 2.1b14 - no longer support this style of patching")
+
+    /**
  *
  *  TODO
  *
@@ -26,7 +28,8 @@
  *              And update code that uses these iterators - patching arrays - to replace that for RemoveCurrnet()
  */
 
-namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
+    namespace Stroika::Foundation::Containers::Private::PatchingDataStructures
+{
 
     /*
      *  Patching Support:
@@ -199,7 +202,6 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     protected:
         virtual void PatchRemoveCurrent () override;
     };
-
 }
 
 /*

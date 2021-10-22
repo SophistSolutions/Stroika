@@ -11,10 +11,11 @@
  */
 #include <vector>
 
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
+#include "../DataStructures/STLContainerWrapper.h"
 #include "../Private/IteratorImplHelper.h"
-#include "../Private/PatchingDataStructures/STLContainerWrapper.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 
@@ -39,8 +40,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             : fData_ (move (src))
         {
         }
-        Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : fData_{&from->fData_, forIterableEnvelope}
+        Rep_ (Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
+            : fData_{from->fData_}
         {
             RequireNotNull (from);
         }
@@ -95,17 +96,9 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Sequence<T>::_IRep overrides
     public:
-        virtual _SequenceRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+        virtual _SequenceRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
-            if (fData_.HasActiveIterators ()) {
-                // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                auto r = Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                r->fData_.clear_WithPatching ();
-                return r;
-            }
-            else {
-                return Iterable<T>::template MakeSmartPtr<Rep_> ();
-            }
+            return Iterable<T>::template MakeSmartPtr<Rep_> ();
         }
         virtual T GetAt (size_t i) const override
         {
@@ -125,26 +118,22 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual size_t IndexOf (const Iterator<T>& i) const override
         {
-            const typename Iterator<T>::IRep& ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto&                                                      mir = dynamic_cast<const IteratorRep_&> (ir);
+            auto&                                                      mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return mir.fIterator.CurrentIndex ();
         }
         virtual void Remove (const Iterator<T>& i) override
         {
+            Require (not i.Done ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<T>::IRep&                         ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto& mir = dynamic_cast<const IteratorRep_&> (ir);
-            mir.fIterator.RemoveCurrent ();
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            Assert (mir.fIterator.fData == &fData_);
+            (void)fData_.erase (mir.fIterator.fStdIterator);
         }
         virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<T>::IRep&                         ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto& mir = dynamic_cast<const IteratorRep_&> (ir);
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             fData_.Invariant ();
             *mir.fIterator.fStdIterator = newValue;
             fData_.Invariant ();
@@ -156,41 +145,26 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (at == _kSentinalLastItemIndex) {
                 at = fData_.size ();
             }
-            // quickie poor impl. Could do save / patch once, not multiple times...
-            {
-                size_t capacity{ReserveSpeedTweekAddNCapacity (fData_, to - from)};
-                if (capacity != static_cast<size_t> (-1)) {
-                    Memory::SmallStackBuffer<size_t> patchOffsets (0);
-                    fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (&patchOffsets);
-                    fData_.reserve (capacity);
-                    if (patchOffsets.GetSize () != 0) {
-                        fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (patchOffsets);
-                    }
-                }
-            }
-            for (auto i = from; i != to; ++i) {
-                fData_.insert_toVector_WithPatching (fData_.begin () + at, *i);
-                at++;
-            }
+            fData_.insert (fData_.begin () + at, from, to);
         }
         virtual void Remove (size_t from, size_t to) override
         {
             // quickie poor impl (patch once, not multiple times...)
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             for (size_t i = from; i < to; ++i) {
-                fData_.erase_WithPatching (fData_.begin () + from);
+                fData_.erase (fData_.begin () + from);
             }
         }
 #if qDebug
-        virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
+        virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+            //    fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
         }
 #endif
 
     private:
-        using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<vector<T>>;
+        using DataStructureImplType_ = DataStructures::STLContainerWrapper<vector<T>>;
         using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
     private:

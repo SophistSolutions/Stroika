@@ -364,7 +364,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
             *current = *this->_fCurrent;
         }
         this->Invariant ();
-        return (not this->Done ());
+        return not this->Done ();
     }
     template <typename T>
     inline void Array<T>::ForwardIterator::More (optional<T>* result, bool advance)
@@ -427,23 +427,23 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
                 if (not this->Done ()) {
                     *current = *(this->_fCurrent);
                 }
-                return (not this->Done ());
+                return not this->Done ();
             }
             else {
                 if (this->Done ()) {
-                    return (false);
+                    return false;
                 }
                 else {
                     if (this->_fCurrent == this->fStart) {
                         this->_fCurrent = this->_fEnd; // magic to indicate done
                         Ensure (this->Done ());
-                        return (false);
+                        return false;
                     }
                     else {
                         this->_fCurrent--;
                         *current = *(this->_fCurrent);
                         Ensure (not this->Done ());
-                        return (true);
+                        return true;
                     }
                 }
             }

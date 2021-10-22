@@ -9,10 +9,11 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
+#include "../DataStructures/LinkedList.h"
 #include "../Private/IteratorImplHelper.h"
-#include "../Private/PatchingDataStructures/LinkedList.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 
@@ -50,9 +51,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
         }
         Rep_ (const Rep_& from) = delete;
-        Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
+        Rep_ (Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
             : fEqualsComparer_{from->fEqualsComparer_}
-            , fData_{&from->fData_, forIterableEnvelope}
+            , fData_{from->fData_}
         {
             RequireNotNull (from);
         }
@@ -72,7 +73,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual size_t GetLength () const override
         {
-            return (fData_.GetLength ());
+            return fData_.GetLength ();
         }
         virtual bool IsEmpty () const override
         {
@@ -111,17 +112,18 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return ElementEqualityComparerType{fEqualsComparer_};
         }
-        virtual _MultiSetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+        virtual _MultiSetRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
-            if (fData_.HasActiveIterators ()) {
-                // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                auto r = Iterable<CountedValue<T>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                r->fData_.RemoveAll ();
-                return r;
-            }
-            else {
-                return Iterable<CountedValue<T>>::template MakeSmartPtr<Rep_> (fEqualsComparer_);
-            }
+            return Iterable<CountedValue<T>>::template MakeSmartPtr<Rep_> (fEqualsComparer_);
+        }
+        virtual _MultiSetRepSharedPtr CloneAndPatchIterator (Iterator<CountedValue<T>>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
+        {
+            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+            auto                                                      result = Iterable<CountedValue<T>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            return result;
         }
         virtual bool Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override
         {
@@ -131,10 +133,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             CountedValue<T>                                            c = item;
-            for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true);) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (&c, true);) {
                 if (fEqualsComparer_ (c.fValue, item)) {
                     Assert (c.fCount != 0);
-                    return (true);
+                    return true;
                 }
             }
             return false;
@@ -145,7 +147,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (count != 0) {
                 CountedValue<T>                                           current (item);
                 lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true);) {
+                for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (&current, true);) {
                     if (fEqualsComparer_ (current.fValue, item)) {
                         current.fCount += count;
                         fData_.SetAt (it, current);
@@ -161,7 +163,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (count != 0) {
                 CountedValue<T>                                           current (item);
                 lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true);) {
+                for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (&current, true);) {
                     if (fEqualsComparer_ (current.fValue, item)) {
                         if (current.fCount > count) {
                             current.fCount -= count;
@@ -183,17 +185,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (const Iterator<CountedValue<T>>& i) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<CountedValue<T>>::IRep&           ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto& mir = dynamic_cast<const IteratorRep_&> (ir);
-            fData_.RemoveAt (mir.fIterator);
+            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
         }
         virtual void UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<CountedValue<T>>::IRep&           ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto& mir = dynamic_cast<const IteratorRep_&> (ir);
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             if (newCount == 0) {
                 fData_.RemoveAt (mir.fIterator);
             }
@@ -207,7 +204,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             CountedValue<T>                                            c = item;
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true);) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (&c, true);) {
                 if (fEqualsComparer_ (c.fValue, item)) {
                     Ensure (c.fCount != 0);
                     return c.fCount;
@@ -223,18 +220,27 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return this->_UniqueElements_Reference_Implementation (rep);
         }
+        virtual void PatchIteratorBeforeRemove (const optional<Iterator<CountedValue<T>>>& adjustmentAt, Iterator<CountedValue<T>>* i) const override
+        {
+            RequireNotNull (i);
+            if (adjustmentAt == *i) {
+                ++(*i); // advance to next item if deleting current one
+            }
+            else {
+                // nothing needed for other links
+            }
+        }
 #if qDebug
-        virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
+        virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+            //            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
         }
 #endif
 
     private:
-        using NonPatchingDataStructureImplType_ = DataStructures::LinkedList<CountedValue<T>>;
-        using DataStructureImplType_            = Private::PatchingDataStructures::LinkedList<CountedValue<T>>;
-        using IteratorRep_                      = typename Private::IteratorImplHelper_<CountedValue<T>, DataStructureImplType_>;
+        using DataStructureImplType_ = DataStructures::LinkedList<CountedValue<T>>;
+        using IteratorRep_           = typename Private::IteratorImplHelper_<CountedValue<T>, DataStructureImplType_>;
 
     private:
         DataStructureImplType_ fData_;

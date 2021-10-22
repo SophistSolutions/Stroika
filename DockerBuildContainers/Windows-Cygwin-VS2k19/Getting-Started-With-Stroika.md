@@ -14,8 +14,8 @@ make default-configurations
 
 ## Make one configuration
 
-make CONFIGURATION=Debug-U-32 all -j4
+make CONFIGURATION=Debug all -j8
 
 ## Make all configurations
 
-make all -j4
+make all -j8

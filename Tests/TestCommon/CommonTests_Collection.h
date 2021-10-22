@@ -105,9 +105,9 @@ namespace CommonTests {
 #if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
                         &it1;
 #endif
-                        s.RemoveAll ();
                     }
                 }
+                s.RemoveAll ();
                 VerifyTestResult (s.IsEmpty ());
                 VerifyTestResult (s.GetLength () == 0);
 

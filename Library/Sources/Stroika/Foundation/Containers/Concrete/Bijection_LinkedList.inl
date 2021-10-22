@@ -9,10 +9,11 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
+#include "../DataStructures/LinkedList.h"
 #include "../Private/IteratorImplHelper.h"
-#include "../Private/PatchingDataStructures/LinkedList.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 
@@ -60,12 +61,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
         }
         Rep_ (const Rep_& from) = delete;
-        Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
+        Rep_ (Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
             : inherited{}
             , fInjectivityViolationPolicy_{from->fInjectivityViolationPolicy_}
             , fDomainEqualsComparer_{from->fDomainEqualsComparer_}
             , fRangeEqualsComparer_{from->fRangeEqualsComparer_}
-            , fData_{&from->fData_, forIterableEnvelope}
+            , fData_{from->fData_}
         {
             RequireNotNull (from);
         }
@@ -122,17 +123,9 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Bijection<DOMAIN_TYPE, RANGE_TYPE::BijectionTraitsType>::_IRep overrides
     public:
-        virtual _BijectionRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+        virtual _BijectionRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
-            if (fData_.HasActiveIterators ()) {
-                // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                auto r = Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                r->fData_.RemoveAll ();
-                return r;
-            }
-            else {
-                return Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSmartPtr<Rep_> (fInjectivityViolationPolicy_, fDomainEqualsComparer_, fRangeEqualsComparer_);
-            }
+            return Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSmartPtr<Rep_> (fInjectivityViolationPolicy_, fDomainEqualsComparer_, fRangeEqualsComparer_);
         }
         virtual bool Equals (const typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep& rhs) const override
         {
@@ -157,7 +150,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, optional<RANGE_TYPE>* item) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+            for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
                 if (fDomainEqualsComparer_ (it.Current ().first, key)) {
                     if (item != nullptr) {
                         *item = it.Current ().second;
@@ -173,7 +166,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool InverseLookup (ArgByValueType<RANGE_TYPE> key, optional<DOMAIN_TYPE>* item) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+            for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
                 if (fRangeEqualsComparer_ (it.Current ().second, key)) {
                     if (item != nullptr) {
                         *item = it.Current ().first;
@@ -212,7 +205,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 default:
                     AssertNotReached ();
             }
-            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
                 if (fDomainEqualsComparer_ (it.Current ().first, key)) {
                     fData_.SetAt (it, pair<DOMAIN_TYPE, RANGE_TYPE> (key, newElt));
                     return;
@@ -224,7 +217,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             using Traversal::kUnknownIteratorOwnerID;
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
                 if (fDomainEqualsComparer_ (it.Current ().first, d)) {
                     fData_.RemoveAt (it);
                     return;
@@ -235,7 +228,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             using Traversal::kUnknownIteratorOwnerID;
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
                 if (fRangeEqualsComparer_ (it.Current ().second, r)) {
                     fData_.RemoveAt (it);
                     return;
@@ -244,21 +237,19 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i) override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock>     critSec{fData_};
-            const typename Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>::IRep& ir = i.ConstGetRep ();
-            AssertMember (&ir, IteratorRep_);
-            auto& mir = dynamic_cast<const IteratorRep_&> (ir);
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             fData_.RemoveAt (mir.fIterator);
         }
 #if qDebug
-        virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
+        virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+            //          fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
         }
 #endif
     private:
-        using DataStructureImplType_ = Private::PatchingDataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>;
+        using DataStructureImplType_ = DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>;
         using IteratorRep_           = Private::IteratorImplHelper_<pair<DOMAIN_TYPE, RANGE_TYPE>, DataStructureImplType_>;
 
     private:

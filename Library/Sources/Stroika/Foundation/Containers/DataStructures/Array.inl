@@ -359,13 +359,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         RequireNotNull (pi);
         RequireNotNull (movedFrom);
-        size_t currentIdx = pi->_fCurrent - pi->_fStart;
+        [[maybe_unused]] size_t currentIdx = pi->CurrentIndex ();
         Require (currentIdx <= this->GetLength ());
         Require (pi->_fData == movedFrom);
-        pi->_fData    = this;
-        pi->_fStart   = &_fItems[0];
-        pi->_fEnd     = &this->_fItems[this->GetLength ()];
-        pi->_fCurrent = pi->_fStart + currentIdx;
+        pi->_fData = this;
+        //   pi->_fStart   = &_fItems[0];
+        //   pi->_fEnd     = &this->_fItems[this->GetLength ()];
+        //pi->_fCurrent = pi->_dataStart () + currentIdx;
     }
     template <typename T>
     inline T Array<T>::GetAt (size_t i) const
@@ -481,15 +481,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename T>
     inline Array<T>::_ArrayIteratorBase::_ArrayIteratorBase (const Array<T>* data)
-        : _fData (data)
-        , _fStart (&data->_fItems[0])
-        , _fEnd (&data->_fItems[data->GetLength ()])
+        : _fData{data}
+        //   , _fStart (&data->_fItems[0])
+        //     , _fEnd (&data->_fItems[data->GetLength ()])
         //, _fCurrent ()                           don't initialize - done in subclasses...
-        , _fSuppressMore (true) // first time thru - cuz of how used in for loops...
+        , _fSuppressMore{true} // first time thru - cuz of how used in for loops...
     {
         RequireNotNull (data);
 #if qDebug
-        _fCurrent = nullptr; // more likely to cause bugs...
+        //   _fCurrent = nullptr; // more likely to cause bugs...
 #endif
         /*
          * Cannot call invariant () here since _fCurrent not yet setup.
@@ -500,17 +500,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline Array<T>::_ArrayIteratorBase::~_ArrayIteratorBase ()
     {
         // hack so crash and debug easier
-        _fData    = reinterpret_cast<Array<T>*> (-1);
-        _fStart   = reinterpret_cast<T*> (-1);
-        _fEnd     = reinterpret_cast<T*> (-1);
-        _fCurrent = reinterpret_cast<T*> (-1);
+        _fData = reinterpret_cast<Array<T>*> (-1);
+        //  _fStart   = reinterpret_cast<T*> (-1);
+        //  _fEnd     = reinterpret_cast<T*> (-1);
+        //_fCurrent = reinterpret_cast<T*> (-1);
+        _fCurrentIdx = numeric_limits<size_t>::max ();
     }
 #endif
     template <typename T>
     nonvirtual bool Array<T>::_ArrayIteratorBase::Equals (const typename Array<T>::_ArrayIteratorBase& rhs) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
-        return _fCurrent == rhs._fCurrent and _fSuppressMore == rhs._fSuppressMore;
+        return _fCurrentIdx == rhs._fCurrentIdx and _fSuppressMore == rhs._fSuppressMore;
     }
     template <typename T>
     inline bool Array<T>::_ArrayIteratorBase::More (T* current, bool advance)
@@ -522,7 +523,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
         if (not Done ()) [[LIKELY_ATTR]] {
             if (current != nullptr) [[LIKELY_ATTR]] {
-                *current = *_fCurrent;
+                *current = (*_fData)[_fCurrentIdx];
             }
             return true;
         }
@@ -535,7 +536,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
 #endif
         Invariant ();
-        return bool (_fCurrent == _fEnd);
+        return bool (_fCurrentIdx == _dataLength ());
     }
     template <typename T>
     inline size_t Array<T>::_ArrayIteratorBase::CurrentIndex () const
@@ -545,22 +546,31 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * NB: This can be called if we are done - if so, it returns GetLength().
          */
         Invariant ();
-        return _fCurrent - _fStart;
+        return _CurrentIndex ();
+    }
+    template <typename T>
+    inline size_t Array<T>::_ArrayIteratorBase::_CurrentIndex () const
+    {
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
+        //return _fCurrent - _dataStart ();
+        return _fCurrentIdx;
     }
     template <typename T>
     inline T Array<T>::_ArrayIteratorBase::Current () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
         Invariant ();
-        EnsureNotNull (_fCurrent);
-        return *_fCurrent;
+        return (*_fData)[_fCurrentIdx];
+        //        EnsureNotNull (_fCurrent);
+        //      return *_fCurrent;
     }
     template <typename T>
     inline void Array<T>::_ArrayIteratorBase::SetIndex (size_t i)
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
-        Require (i <= size_t (_fEnd - _fStart));
-        _fCurrent      = _fStart + i;
+        Require (i <= _dataLength ());
+        // _fCurrent      = _dataStart () + i;
+        _fCurrentIdx   = i;
         _fSuppressMore = false;
     }
     template <typename T>
@@ -578,9 +588,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
 #endif
         AssertNotNull (_fData);
-        Assert (_fStart == _fData->_fItems);
-        Assert (size_t (_fEnd - _fStart) == _fData->GetLength ());
-        Assert ((_fCurrent >= _fStart) and (_fCurrent <= _fEnd)); // ANSI C requires this is always TRUE
+        //Assert ((_fCurrent >= _dataStart ()) and (_fCurrent <= _dataEnd ())); // ANSI C requires this is always TRUE
+        Assert (0 <= _fCurrentIdx and _fCurrentIdx <= _dataLength ());
     }
 #endif
 
@@ -591,10 +600,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename T>
     inline Array<T>::ForwardIterator::ForwardIterator (const Array<T>* data)
-        : inherited (data)
+        : inherited{data}
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
-        this->_fCurrent = this->_fStart;
+        this->_fCurrentIdx = 0;
         this->Invariant ();
     }
     template <typename T>
@@ -604,8 +613,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         this->Invariant ();
         if (advance) [[LIKELY_ATTR]] {
             if (not this->_fSuppressMore and not this->Done ()) [[LIKELY_ATTR]] {
-                Assert (this->_fCurrent < this->_fEnd);
-                this->_fCurrent++;
+                Assert (this->_fCurrentIdx < this->_dataLength ());
+                this->_fCurrentIdx++;
             }
         }
         return inherited::More (current, advance);
@@ -621,8 +630,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
             else {
                 if (not this->Done ()) {
-                    Assert (this->_fCurrent < this->_fEnd);
-                    this->_fCurrent++;
+                    Assert (this->_fCurrentIdx < this->_dataLength ());
+                    this->_fCurrentIdx++;
                 }
             }
         }
@@ -631,7 +640,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             *result = nullopt;
         }
         else {
-            *result = *this->_fCurrent;
+            *result = (*this->_fData)[this->_fCurrentIdx];
         }
     }
     template <typename T>

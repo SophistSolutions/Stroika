@@ -599,6 +599,29 @@ sub	SetInitialDefaults_
 		$PROJECTPLATFORMSUBDIR = 'Unix';
 	}
 	if ("$^O" eq "cygwin") {
+		# try vs 2k22
+		if ($PROJECTPLATFORMSUBDIR eq "") {
+			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
+			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2022/*/VC >/dev/null 2> /dev/null');
+			if ($? == 0) {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
+			}
+			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2022/*/VC >/dev/null 2> /dev/null');
+			if ($? == 0) {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
+			}
+			#autodetect ATLMFC (Express verison missing it)
+			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2022") {
+				system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2022/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
+				if ($? == 0) {
+					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
+				}
+				else  {
+					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
+				}
+			}
+		}
 		# try vs 2k19
 		if ($PROJECTPLATFORMSUBDIR eq "") {
 			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
@@ -1764,7 +1787,7 @@ sub	CHECK_OPTIONS_
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2015") {
 		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2015");
 	}
-	my @validProjectPlatfromSubDirs = ("Unix", "VisualStudio.Net-2017", "VisualStudio.Net-2019");
+	my @validProjectPlatfromSubDirs = ("Unix", "VisualStudio.Net-2017", "VisualStudio.Net-2019", "VisualStudio.Net-2022");
 	my %params = map { $_ => 1 } @validProjectPlatfromSubDirs;
 	if (not exists ($params{$PROJECTPLATFORMSUBDIR})) {
 		die ("Unrecognized --platfrom argument: valid ones include: " . join(",", @validProjectPlatfromSubDirs));

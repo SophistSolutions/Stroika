@@ -31,25 +31,27 @@ namespace Stroika::Foundation::Containers::Private {
     using Traversal::IteratorOwnerID;
 
     /**
+     *  \brief helper to wrap a low level 'DataStructure Container Iterator' into a 'Stroika' Iterator::IRep iterator.
+     * 
      *  There is no requirement that Stroika contcrete containers use this class. However, it
      *  so far has appeared a handy code sharing utility.
      *
      *  Plus, its details are intimately tied to how the Stroika containers manage lifetime, so
      *  its not likely well suited for use elsewhere.
      */
-    template <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR = typename PATCHABLE_CONTAINER::ForwardIterator, typename PATCHABLE_CONTAINER_VALUE = T>
-    class IteratorImplHelper_ : public Iterator<T>::IRep, public Memory::UseBlockAllocationIfAppropriate<IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>> {
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR = typename DATASTRUCTURE_CONTAINER::ForwardIterator, typename DATASTRUCTURE_CONTAINER_VALUE = T>
+    class IteratorImplHelper_ : public Iterator<T>::IRep, public Memory::UseBlockAllocationIfAppropriate<IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>> {
     private:
         using inherited = typename Iterator<T>::IRep;
 
     public:
         using RepSmartPtr                 = typename Iterator<T>::RepSmartPtr;
-        using DataStructureImplValueType_ = PATCHABLE_CONTAINER_VALUE;
+        using DataStructureImplValueType_ = DATASTRUCTURE_CONTAINER_VALUE;
 
     public:
         IteratorImplHelper_ ()                           = delete;
         IteratorImplHelper_ (const IteratorImplHelper_&) = default;
-        explicit IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data);
+        explicit IteratorImplHelper_ (IteratorOwnerID owner, DATASTRUCTURE_CONTAINER* data);
 
     public:
         virtual ~IteratorImplHelper_ () = default;
@@ -66,13 +68,13 @@ namespace Stroika::Foundation::Containers::Private {
          *  More_SFINAE_ () trick is cuz if types are the same, we can just pass pointer, but if they differ, we need
          *  a temporary, and to copy.
          */
-        template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
+        template <typename CHECK_KEY = typename DATASTRUCTURE_CONTAINER::value_type>
         nonvirtual void More_SFINAE_ (optional<T>* result, bool advance, enable_if_t<is_same_v<T, CHECK_KEY>>* = 0);
-        template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
+        template <typename CHECK_KEY = typename DATASTRUCTURE_CONTAINER::value_type>
         nonvirtual void More_SFINAE_ (optional<T>* result, bool advance, enable_if_t<!is_same_v<T, CHECK_KEY>>* = 0);
 
     public:
-        mutable PATCHABLE_CONTAINER_ITERATOR fIterator;
+        mutable DATASTRUCTURE_CONTAINER_ITERATOR fIterator;
     };
 
 }

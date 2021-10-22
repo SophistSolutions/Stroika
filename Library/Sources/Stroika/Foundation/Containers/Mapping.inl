@@ -12,6 +12,8 @@
 #include <set>
 
 #include "../Debug/Assertions.h"
+#include "../Debug/Cast.h"
+#include "../Execution/Finally.h"
 #include "../Traversal/Generator.h"
 #include "Factory/Mapping_Factory.h"
 
@@ -254,9 +256,23 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (key);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Remove (const Iterator<value_type>& i)
+    inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
+        Require (not i.Done ());
+        using shared_ptr_type                = typename inherited::_SharedByValueRepType::shared_ptr_type;
+        Iterator<value_type> patchedIterator = i;
+        shared_ptr_type      writerRep       = this->_fRep.get_nu (
+            [&, this] (const shared_ptr_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {
+                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator, this);
+            });
+        if (nextI != nullptr) {
+            *nextI = patchedIterator;
+            Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->PatchIteratorBeforeRemove (patchedIterator, nextI);
+        }
+        Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->Remove (patchedIterator);
+        if (nextI != nullptr) {
+            nextI->Refresh (); // update to reflect changes made to rep
+        }
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll ()
@@ -270,8 +286,13 @@ namespace Stroika::Foundation::Containers {
     template <typename CONTAINER_OF_ADDABLE>
     void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (const CONTAINER_OF_ADDABLE& items)
     {
-        for (auto i : items) {
-            Remove (i.first);
+        if (this == &items) {
+            RemoveAll ();
+        }
+        else {
+            for (auto i : items) {
+                Remove (i.first);
+            }
         }
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -298,9 +319,14 @@ namespace Stroika::Foundation::Containers {
 #else
         // cannot easily use STL::less because our Mapping class only requires KeyEqualsCompareFunctionType - SO - should use Stroika Set<> But don't want cross-dependencies if not needed
         set<KEY_TYPE> tmp (items.begin (), items.end ()); // @todo - weak implementation because of 'comparison' function, and performance (if items already a set)
-        for (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> i = this->begin (); i != this->end (); ++i) {
+        for (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> i = this->begin (); i != this->end ();) {
             if (tmp.find (i->fKey) == tmp.end ()) {
-                Remove (i);
+                [[maybe_unused]] size_t sz = this->size ();
+                i                          = this->erase (i);
+                Assert (this->size () == sz - 1u);
+            }
+            else {
+                ++i;
             }
         }
 #endif
@@ -366,9 +392,11 @@ namespace Stroika::Foundation::Containers {
         Remove (key);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::erase (const Iterator<value_type>& i)
+    inline auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::erase (const Iterator<value_type>& i) -> Iterator<value_type>
     {
-        Remove (i);
+        Iterator<value_type> nextI{nullptr};
+        Remove (i, &nextI);
+        return nextI;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::clear ()

@@ -255,8 +255,13 @@ namespace Stroika::Foundation::Containers {
         r._GetWriteableRep ().Remove (r._ConstGetRep ().GetKeyExtractor () (elt));
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (const Iterator<T>& i)
+    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (const Iterator<T>& i, const Iterator<T>* nextI)
     {
+        if (nextI != nullptr) {
+            // @todo fix with handle GetWritableRep clone stuff
+            *nextI = i;
+            ++(*nextI);
+        }
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
@@ -346,9 +351,11 @@ namespace Stroika::Foundation::Containers {
         this->Remove (item);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::erase (const Iterator<T>& i)
+    inline Iterator<T> KeyedCollection<T, KEY_TYPE, TRAITS>::erase (const Iterator<T>& i)
     {
-        this->Remove (i);
+        Iterator<T> nextI{nullptr};
+        this->Remove (i, &nextI);
+        return nextI;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::_AssertRepValidType () const

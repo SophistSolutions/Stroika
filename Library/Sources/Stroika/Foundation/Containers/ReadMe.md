@@ -80,9 +80,6 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 
 - Internal thread safety checks, (generally) assure threadsafe access (see Debug::AssertExternallySyncrhonized)
 
-- PATCHING - DISCUSS WITH STERLING
-
-
 ## Supported Containers Archtypes
 ---
 
@@ -185,6 +182,46 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
         with OUR type of backend! So really can be added just for \_Array<> impls. Note - this
         rationale doesn't work perfectly due to copy-by-values semantics with 'casts' but still
         OK.
+
+- Iterator Patching
+  Before Stroika 2.1b14, updates to containers used to automatically update all existing running iterators. This was a nice, elegant feature. But it cost
+  too much for its quite modest value.
+  - In made the backend implementations of containers significantly more complex, due to having to implement a patching strategy
+    for all kinds of iterators, on all kinds of container modifying operations. This wasn't that hard (as it fell into a few cases), but it was some work.
+    And it added a lot of template mixin mumbo-jumbo, just to get all containers tracking all their iterators.
+  - It forced introduction of this concept of IteratorOwners (MAY still need that for other replacement debug checking - TBD - LGP 2021-10-05).
+  - It added SIGNIFICANT (though never really measured - at least not yet) - performance overhead, due to the fact that all teh code to
+    create iterators/and destroy them required adding and removing objects to a linked list and more importantly, that operation - at least as impleemented -
+    required LOCKS (so big performance cost).
+  - And due to the now prevalance of threads, and thread safety issues, this was just a very minor, and similar sort of problem. If the iterators weren't magically
+    threadsafe, there was little value in other sorts of safety (use while iterating). The casea where thsi comes up are narrow.
+  - EXAMPLE
+    code like:
+    ```
+      for (view* v : s) {
+          if (v->invisible)  {
+              s.remove (v);
+          }
+      }
+    ```
+    must now be written as:  
+    ```
+      for (Iterator<view> i = s.begin() ; i != s.end (); ) {
+          if ((*i))->invisible) {
+            s.remove (i);
+          }
+          else {
+            ++i;
+          }
+      }
+    ```
+    for NOW, failure to do this MAY result in an undetected error, but my PLAN is to add back similar logic, but only in DEBUG code
+    for these sorts of cases.
+
+    Note also, a good practice would be to do this instead:
+    ```
+      s.RemoveAllIf ([] (view* v) { return v->visible; });  // NYI, but also @todo
+    ```
 
 - [Bag\<T>](Bag.h)
   - The idea is to mimic that of a black bag (not like SmallTalk Bag\<T> which Stroika Collection<> is closest to) - but randomized collection.

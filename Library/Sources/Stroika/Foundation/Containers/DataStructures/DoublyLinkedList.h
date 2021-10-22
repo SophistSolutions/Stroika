@@ -194,8 +194,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  Performance:
          *      Worst Case: O(1)
+         * 
+         *  returns the next link
          */
-        nonvirtual void RemoveAt (const ForwardIterator& i);
+        nonvirtual ForwardIterator RemoveAt (const ForwardIterator& i);
 
     public:
         /**

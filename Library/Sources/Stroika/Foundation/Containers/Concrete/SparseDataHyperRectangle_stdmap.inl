@@ -11,10 +11,11 @@
  */
 #include <map>
 
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
+#include "../DataStructures/STLContainerWrapper.h"
 #include "../Private/IteratorImplHelper.h"
-#include "../Private/PatchingDataStructures/STLContainerWrapper.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 
@@ -42,8 +43,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
         }
         Rep_ (const Rep_& from) = delete;
-        Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : fData_{&from->fData_, forIterableEnvelope}
+        Rep_ (Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
+            : fData_{from->fData_}
         {
             RequireNotNull (from);
         }
@@ -99,8 +100,9 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // DataHyperRectangle<T, INDEXES...>::_IRep overrides
     public:
-        virtual _DataHyperRectangleRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+        virtual _DataHyperRectangleRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
+#if 0
             if (fData_.HasActiveIterators ()) {
                 // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                 auto r = Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
@@ -110,6 +112,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             else {
                 return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (fDefaultValue_);
             }
+#endif
+            return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (fDefaultValue_);
         }
         virtual T GetAt (INDEXES... indexes) const override
         {
@@ -126,7 +130,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (v == fDefaultValue_) {
                 auto i = fData_.find (tuple<INDEXES...> (indexes...));
                 if (i != fData_.end ()) {
-                    fData_.erase_WithPatching (i);
+                    fData_.erase (i);
                 }
             }
             else {
@@ -152,8 +156,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         public:
             MyIteratorImplHelper_ ()                             = delete;
             MyIteratorImplHelper_ (const MyIteratorImplHelper_&) = default;
-            explicit MyIteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data)
-                : fIterator{owner, data}
+            explicit MyIteratorImplHelper_ ([[maybe_unused]] IteratorOwnerID owner, PATCHABLE_CONTAINER* data)
+                : fIterator{data}
             {
                 RequireNotNull (data);
                 fIterator.More (static_cast<pair<tuple<INDEXES...>, T>*> (nullptr), true); //tmphack cuz current backend iterators require a first more() - fix that!
@@ -170,25 +174,25 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             virtual IteratorOwnerID GetOwner () const override
             {
-                return fIterator.GetOwner ();
+                return nullptr;
+                //return fIterator.GetOwner ();
             }
             virtual void More (optional<tuple<T, INDEXES...>>* result, bool advance) override
             {
                 RequireNotNull (result);
                 // NOTE: the reason this is Debug::AssertExternallySynchronizedLock, is because we only modify data on the newly cloned (breakreferences)
                 // iterator, and that must be in the thread (so externally synchronized) of the modifier
-                shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.GetPatchableContainerHelper ());
+                // shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.GetPatchableContainerHelper ());
                 More_SFINAE_ (result, advance);
             }
             virtual bool Equals (const typename Iterator<tuple<T, INDEXES...>>::IRep* rhs) const override
             {
                 RequireNotNull (rhs);
-                using ActualIterImplType_ = MyIteratorImplHelper_<PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>;
-                RequireMember (rhs, ActualIterImplType_);
-                const ActualIterImplType_* rrhs = dynamic_cast<const ActualIterImplType_*> (rhs);
+                using ActualIterImplType_       = MyIteratorImplHelper_<PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>;
+                const ActualIterImplType_* rrhs = Debug::UncheckedDynamicCast<const ActualIterImplType_*> (rhs);
                 AssertNotNull (rrhs);
-                shared_lock<const Debug::AssertExternallySynchronizedLock> critSec1 (*fIterator.GetPatchableContainerHelper ());
-                shared_lock<const Debug::AssertExternallySynchronizedLock> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
+                //          shared_lock<const Debug::AssertExternallySynchronizedLock> critSec1 (*fIterator.GetPatchableContainerHelper ());
+                //          shared_lock<const Debug::AssertExternallySynchronizedLock> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
                 return fIterator.Equals (rrhs->fIterator);
             }
 
@@ -222,7 +226,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         };
 
     private:
-        using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<tuple<INDEXES...>, T>>;
+        using DataStructureImplType_ = DataStructures::STLContainerWrapper<map<tuple<INDEXES...>, T>>;
         using IteratorRep_           = MyIteratorImplHelper_<DataStructureImplType_>;
 
     private:

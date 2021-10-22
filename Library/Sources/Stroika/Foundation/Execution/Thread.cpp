@@ -1159,11 +1159,14 @@ void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, 
         Time::DurationSecondsType           timeOfLastAborts  = timeOfLastWarning;
         Set<Ptr>                            threads2WaitOn{threads};
         while (not threads2WaitOn.empty ()) {
-            for (Traversal::Iterator<Ptr> i = threads2WaitOn.begin (); i != threads2WaitOn.end (); ++i) {
+            for (Traversal::Iterator<Ptr> i = threads2WaitOn.begin (); i != threads2WaitOn.end ();) {
                 constexpr Time::DurationSecondsType kMinWaitThreshold_ = min (kTimeBetweenDbgTraceWarnings_, kAbortAndWaitForDoneUntil_TimeBetweenAborts_);
                 Time::DurationSecondsType           to                 = min (Time::GetTickCount () + kMinWaitThreshold_, timeoutAt);
                 if (i->WaitForDoneUntilQuietly (to)) {
-                    threads2WaitOn.erase (i);
+                    i = threads2WaitOn.erase (i);
+                }
+                else {
+                    i++;
                 }
             }
             if (not threads2WaitOn.empty () and timeOfLastWarning + kTimeBetweenDbgTraceWarnings_ < Time::GetTickCount ()) {

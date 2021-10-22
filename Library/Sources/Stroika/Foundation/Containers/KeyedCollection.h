@@ -149,7 +149,6 @@ namespace Stroika::Foundation::Containers {
          */
         using value_type = typename inherited::value_type;
 
-
     public:
         /**
          *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add ()
@@ -347,6 +346,9 @@ namespace Stroika::Foundation::Containers {
          *  item make it into the Set.
          *
          *  return true if new item, and false if simply updated
+         * 
+         *  \note - because Add and Update logic are identical, KeyedCollection<> has no explicit Update (iterator) method.
+         *          it COULD someday add an overload with optional Iterator<> hint argument, like in STL
          *
          *  \note mutates container
          */
@@ -375,7 +377,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void Remove (const Iterator<T>& i);
+        nonvirtual void Remove (const Iterator<T>& i, const Iterator<T>* nextI = nullptr);
         nonvirtual void Remove (ArgByValueType<KeyType> item);
         nonvirtual void Remove (ArgByValueType<T> item);
 
@@ -471,7 +473,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         nonvirtual void erase (ArgByValueType<T> item);
-        nonvirtual void erase (const Iterator<T>& i);
+        nonvirtual Iterator<T> erase (const Iterator<T>& i);
 
     protected:
         /**
@@ -514,9 +516,8 @@ namespace Stroika::Foundation::Containers {
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const = 0;
         // return true if new item, and false if simply updated
-        virtual bool Add (ArgByValueType<T> item)                              = 0;
-        virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) = 0;
-        virtual void Remove (const Iterator<T>& i)                             = 0;
+        virtual bool Add (ArgByValueType<T> item)  = 0;
+        virtual void Remove (const Iterator<T>& i) = 0;
         // returns true iff a change made, false if elt was not present
         virtual bool Remove (ArgByValueType<KEY_TYPE> key) = 0;
 #if qDebug

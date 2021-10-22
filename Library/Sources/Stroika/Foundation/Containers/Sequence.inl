@@ -317,8 +317,12 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (start, end);
     }
     template <typename T>
-    inline void Sequence<T>::Remove (const Iterator<T>& i)
+    inline void Sequence<T>::Remove (const Iterator<T>& i, Iterator<T>* nextI)
     {
+        if (nextI != nullptr) {
+            *nextI = i;
+            ++(*nextI);
+        }
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
     }
     template <typename T>
@@ -393,9 +397,11 @@ namespace Stroika::Foundation::Containers {
         this->Remove (i);
     }
     template <typename T>
-    inline void Sequence<T>::erase (const Iterator<T>& i)
+    inline Iterator<T> Sequence<T>::erase (const Iterator<T>& i)
     {
-        this->Remove (i);
+        Iterator<T> nextI{nullptr};
+        this->Remove (i, &nextI);
+        return nullptr;
     }
     template <typename T>
     inline Sequence<T>& Sequence<T>::operator+= (ArgByValueType<T> item)

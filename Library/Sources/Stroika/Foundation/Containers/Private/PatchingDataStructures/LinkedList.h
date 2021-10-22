@@ -13,14 +13,17 @@
 
 #include "PatchableContainerHelper.h"
 
-/**
+_DeprecatedFile_ ("Since Stroika 2.1b14 - no longer support this style of patching")
+
+    /**
  *
  * TODO:
  *      @todo   Track 'prev' in iterator, for greater performance on addbefore (cacehd prevptr)
  *
  */
 
-namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
+    namespace Stroika::Foundation::Containers::Private::PatchingDataStructures
+{
 
     using Configuration::ArgByValueType;
     using Traversal::IteratorOwnerID;
@@ -163,7 +166,6 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     private:
         friend class LinkedList<T>;
     };
-
 }
 
 /*

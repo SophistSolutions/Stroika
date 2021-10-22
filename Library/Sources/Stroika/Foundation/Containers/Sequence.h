@@ -543,7 +543,7 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual void Remove (size_t i);
         nonvirtual void Remove (size_t start, size_t end);
-        nonvirtual void Remove (const Iterator<T>& i);
+        nonvirtual void Remove (const Iterator<T>& i, Iterator<T>* nextI = nullptr);
 
     public:
         /*
@@ -614,7 +614,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         nonvirtual void erase (size_t i);
-        nonvirtual void erase (const Iterator<T>& i);
+        nonvirtual Iterator<T> erase (const Iterator<T>& i);
 
     public:
         nonvirtual Sequence<T>& operator+= (ArgByValueType<T> item);

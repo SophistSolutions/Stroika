@@ -13,12 +13,15 @@
 
 #include "PatchableContainerHelper.h"
 
-/*
+_DeprecatedFile_ ("Since Stroika 2.1b14 - no longer support this style of patching")
+
+    /*
  *
  * TODO:
  */
 
-namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
+    namespace Stroika::Foundation::Containers::Private::PatchingDataStructures
+{
 
     using Configuration::ArgByValueType;
     using Traversal::IteratorOwnerID;
@@ -151,7 +154,6 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     private:
         friend class DoublyLinkedList<T>;
     };
-
 }
 
 /*

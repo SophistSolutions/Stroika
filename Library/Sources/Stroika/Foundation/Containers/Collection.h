@@ -244,7 +244,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
-        nonvirtual void Remove (const Iterator<T>& i);
+        nonvirtual void Remove (const Iterator<T>& i, Iterator<T>* nextI = nullptr);
         template <typename PREDICATE>
         nonvirtual bool Remove (const PREDICATE& p);
 
@@ -293,7 +293,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual void erase (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
-        nonvirtual void erase (const Iterator<T>& i);
+        nonvirtual Iterator<T> erase (const Iterator<T>& i);
 
     public:
         /**
