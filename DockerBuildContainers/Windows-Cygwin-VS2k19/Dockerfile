@@ -3,7 +3,9 @@
 # SEE https://hub.docker.com/_/microsoft-windows-servercore for list of versions
 #ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:2004
 #ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
-ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019
+#ARG BASE_IMAGE=mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019
+#ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019
+ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022
 FROM ${BASE_IMAGE}
 
 
@@ -28,6 +30,7 @@ ARG VS_16_11_1=https://download.visualstudio.microsoft.com/download/pr/9efbe138-
 ARG VS_16_11_3=https://download.visualstudio.microsoft.com/download/pr/22c17f05-944c-48dc-9f68-b1663f9df4cb/f3f6868ff82ea90b510c3ef76b8ee3ed2b559795da8dd80f3706fb8a7f7510d6/vs_BuildTools.exe
 ARG VS_16_11_5=https://download.visualstudio.microsoft.com/download/pr/5a50b8ac-2c22-47f1-ba60-70d4257a78fa/4e0f5197da02b62b9fa48f05b55f2e206265785a6f0bab7235ef88fbdbe49e5e/vs_BuildTools.exe
 
+
 SHELL ["powershell"]
 RUN Invoke-WebRequest "$env:VS_16_11_5" `
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
@@ -37,6 +40,10 @@ RUN %TEMP%\vs_buildtools.exe `
     --add Microsoft.VisualStudio.Workload.UniversalBuildTools `
     --add Microsoft.VisualStudio.Component.VC.ATLMFC `
     --includeRecommended `
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 `
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 `
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 `
+    --remove Microsoft.VisualStudio.Component.Windows81SDK `
     --quiet --wait --norestart --noUpdateInstaller `
     || IF "%ERRORLEVEL%"=="3010" EXIT 0
 
