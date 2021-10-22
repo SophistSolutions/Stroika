@@ -13,7 +13,9 @@ namespace Stroika::Foundation::Debug {
     inline T UncheckedDynamicCast (T1&& arg)
     {
         static_assert (is_reference_v<T> or is_pointer_v<T>);
+        #if qDebug
         using DECAYED_T = conditional_t<is_reference_v<T>, decay_t<T>, remove_pointer_t<decay_t<T>>>; // remove_reference_t
+        #endif
         if constexpr (is_reference_v<T>) {
             // must special case here cuz if we compare two references wont compare POINTERS, but instead call operator== on the underlying T type
             Require (static_cast<const DECAYED_T*> (&arg) == dynamic_cast<const DECAYED_T*> (&arg));
