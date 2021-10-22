@@ -75,12 +75,15 @@ sub GetDefaultToolsBuildDir ()
 {
 	local $PLATFORM = shift;
 
-	local @names = ("2017", "2019");
+	local @names = ("2017", "2019", "2022");
 	if ($PLATFORM eq "VisualStudio.Net-2017") {
 		@names = ("2017");
 	}
 	elsif ($PLATFORM eq "VisualStudio.Net-2019") {
 		@names = ("2019");
+	}
+	elsif ($PLATFORM eq "VisualStudio.Net-2022") {
+		@names = ("2022");
 	}
 	elsif ($PLATFORM eq "VisualStudio.Net") {
 		# keep default
