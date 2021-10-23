@@ -1468,7 +1468,7 @@ In file included from ../Characters/String.h:18,
 
 #if defined(__clang__) && defined(__APPLE__)
 // WAG?
-#define CompilerAndStdLib_AssumeBuggyIfNewerCheck_ CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+#define qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
 #elif defined(__clang__) && !defined(__APPLE__)
 // First noted in C++20 mode on clang++-12
 // https://en.cppreference.com/w/cpp/20 says maybe fixed in clang++13 or 14
