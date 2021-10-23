@@ -142,6 +142,7 @@ my $BuildByDefault = "always";	# for now default to always...
 my $FEATUREFLAG_ActivePerl = undef;
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
 my $FEATUREFLAG_boost = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_boost_userspecified = 0;
 my $FEATUREFLAG_OpenSSL = "";
 my $FEATUREFLAG_OpenSSLExtraArgs = "";
 my $FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
@@ -202,7 +203,7 @@ sub	DoHelp_
 		print("	    --arch {ARCH}                                   /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */\n");
 		print("	    [--config-tag {TAG-NAME}]*                      /* Add TAG-NAME to the list of tags associated with this configuration (for now limit one). Maybe repeated */\n");
 		print("	    --build-by-default never|always|{uname}         /* Mark configuration to be built by default always (DEFAULT), never, or only if host uname/uname -o equals ARGUMENT */\n");
-		print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2017, VisualStudio.Net-2019) - usually auto-detected */\n");
+		print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2017, VisualStudio.Net-2019, VisualStudio.Net-2022) - usually auto-detected */\n");
 		print("	    --target-platforms {TARGET_PLATFORMS}           /* Specifies the target-platforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected */\n");
 		print("	    --build-tools-root {BUILD_TOOLS_ROOT}           /* Specifies the BUILD_TOOLS_ROOT - initially just for visual studio - usually auto-detected */\n");
 		print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
@@ -599,29 +600,9 @@ sub	SetInitialDefaults_
 		$PROJECTPLATFORMSUBDIR = 'Unix';
 	}
 	if ("$^O" eq "cygwin") {
-		# try vs 2k22
-		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2022/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
-			}
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2022/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
-			}
-			#autodetect ATLMFC (Express verison missing it)
-			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2022") {
-				system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2022/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
-				if ($? == 0) {
-					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
-				}
-				else  {
-					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
-				}
-			}
-		}
+
+		## FOR NOW - try vs2k19 before vs2k22 - since vs2k22 not fully working - LGP 2021-10-22
+
 		# try vs 2k19
 		if ($PROJECTPLATFORMSUBDIR eq "") {
 			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
@@ -637,6 +618,29 @@ sub	SetInitialDefaults_
 			#autodetect ATLMFC (Express verison missing it)
 			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2019") {
 				system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2019/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
+				if ($? == 0) {
+					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
+				}
+				else  {
+					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
+				}
+			}
+		}
+		# try vs 2k22
+		if ($PROJECTPLATFORMSUBDIR eq "") {
+			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
+			system ('ls -l "/cygdrive/c/Program Files/Microsoft Visual Studio/"2022/*/VC >/dev/null 2> /dev/null');
+			if ($? == 0) {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
+			}
+			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2022/*/VC >/dev/null 2> /dev/null');
+			if ($? == 0) {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
+			}
+			#autodetect ATLMFC (Express verison missing it)
+			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2022") {
+				system ('ls -l /cygdrive/c/Program Files*/"Microsoft Visual Studio/2022"/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
 				if ($? == 0) {
 					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
 				}
@@ -1080,7 +1084,12 @@ sub	SetDefaultForCompilerDriver_
 		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_No;
 	}
 	elsif (! defined $FEATUREFLAG_Xerces) {
-		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
+		if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2022") {
+			$FEATUREFLAG_Xerces = "no";
+		}
+		else {
+			$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
+		}
 	}
 
 	# This doesn't work with (at least how I've setup) centos8 under docker - not sure how to get the libs there...
@@ -1378,6 +1387,7 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $args[$i];
 			$FEATUREFLAG_boost = $var;
+			$FEATUREFLAG_boost_userspecified = 1;
 		}
 		elsif ((lc ($var) eq "-openssl") or (lc ($var) eq "--openssl")) {
 			$i++;
@@ -2046,6 +2056,15 @@ sub PostProcessOptions_ ()
 	if ($isVisualStudio) {
 		if (! defined $BUILD_TOOLS_ROOT) {
 			$BUILD_TOOLS_ROOT = GetDefaultToolsBuildDir($PROJECTPLATFORMSUBDIR);
+		}
+	}
+
+	# TMPHACK since boost doesn't build with VS2k22 yet --LGP 2021-10-22
+	if ($isVisualStudio) {
+		if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2022") {
+			if ($FEATUREFLAG_boost_userspecified eq 0) {
+				$FEATUREFLAG_boost = "no";
+			}
 		}
 	}
 

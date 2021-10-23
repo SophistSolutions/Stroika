@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release-Logging|Win32">
+      <Configuration>Release-Logging</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug-x86|Win32">
+      <Configuration>Debug-x86</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug-x86_64|Win32">
+      <Configuration>Debug-x86_64</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release-x86|Win32">
+      <Configuration>Release-x86</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release-x86_64|Win32">
+      <Configuration>Release-x86_64</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectGuid>{8EA91AE8-5DE9-2A75-8211-18478ED91741}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros">
+    <JOBS_FLAG>-j8</JOBS_FLAG>
+  </PropertyGroup>
+  <Import Project="$(ProjectDir)\..\..\..\..\Library\Projects\VisualStudio.net\Microsoft.Cpp.stroika.AllConfigs.props" Condition="exists('$(ProjectDir)\..\..\..\..\Library\Projects\VisualStudio.net\Microsoft.Cpp.stroika.AllConfigs.props')" Label="Stroika-Configuration" />
+  <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  <PropertyGroup Label="UserMacros">
+  </PropertyGroup>
+  <PropertyGroup>
+    <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\ CONFIGURATION=$(CONFIGURATION) $(JOBS_FLAG) --silent all</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>make --directory $(ProjectDir)\..\..\ CONFIGURATION=$(CONFIGURATION) clean --silent</NMakeCleanCommandLine>
+    <OutDir>$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-LedLineIt\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-LedLineIt\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NMakeIncludeSearchPath>$(ProjectDir)\..\..\;$(ProjectDir)\..\..\..\..\Library\Sources\;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <AdditionalOptions>/std:c++latest</AdditionalOptions>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\Makefile" />
+    <None Include="..\..\ReadMe.md" />
+    <None Include="..\..\Sources\AboutBoxImage.bmp" />
+    <None Include="..\..\Sources\AboutBoxImage.vsd" />
+    <None Include="..\..\Sources\IToolbar.bmp" />
+    <None Include="..\..\Sources\LedLineIt.ico" />
+    <None Include="..\..\Sources\PreComp.pch" />
+    <None Include="..\..\Sources\Toolbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\FontMenu.cpp" />
+    <ClCompile Include="..\..\Sources\LedLineItApplication.cpp" />
+    <ClCompile Include="..\..\Sources\LedLineItDocFrame.cpp" />
+    <ClCompile Include="..\..\Sources\LedLineItDocument.cpp" />
+    <ClCompile Include="..\..\Sources\LedLineItInPlaceFrame.cpp" />
+    <ClCompile Include="..\..\Sources\LedLineItMainFrame.cpp" />
+    <ClCompile Include="..\..\Sources\LedLineItServerItem.cpp" />
+    <ClCompile Include="..\..\Sources\LedLineItView.cpp" />
+    <ClCompile Include="..\..\Sources\Options.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\FontMenu.h" />
+    <ClInclude Include="..\..\Sources\LedLineItApplication.h" />
+    <ClInclude Include="..\..\Sources\LedLineItConfig.h" />
+    <ClInclude Include="..\..\Sources\LedLineItDocFrame.h" />
+    <ClInclude Include="..\..\Sources\LedLineItDocument.h" />
+    <ClInclude Include="..\..\Sources\LedLineItInPlaceFrame.h" />
+    <ClInclude Include="..\..\Sources\LedLineItMainFrame.h" />
+    <ClInclude Include="..\..\Sources\LedLineItServerItem.h" />
+    <ClInclude Include="..\..\Sources\LedLineItView.h" />
+    <ClInclude Include="..\..\Sources\Options.h" />
+    <ClInclude Include="..\..\Sources\Resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="..\..\Sources\LedLineIt.odl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Sources\LedLineIt.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

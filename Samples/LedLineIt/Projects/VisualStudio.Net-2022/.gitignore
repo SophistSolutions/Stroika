@@ -1,0 +1,6 @@
+*.vcxproj.user
+*.opensdf
+*.sdf
+*.suo
+LedLineIt_i.c
+ipch/

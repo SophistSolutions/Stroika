@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release-Logging|Win32">
+      <Configuration>Release-Logging</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug-x86|Win32">
+      <Configuration>Debug-x86</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug-x86_64|Win32">
+      <Configuration>Debug-x86_64</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release-x86|Win32">
+      <Configuration>Release-x86</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release-x86_64|Win32">
+      <Configuration>Release-x86_64</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectGuid>{CB990386-9FDE-4FBA-9B1F-8A373322E978}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros">
+    <JOBS_FLAG>-j8</JOBS_FLAG>
+  </PropertyGroup>
+  <Import Project="$(ProjectDir)\..\..\..\..\Library\Projects\VisualStudio.net\Microsoft.Cpp.stroika.AllConfigs.props" Condition="exists('$(ProjectDir)\..\..\..\..\Library\Projects\VisualStudio.net\Microsoft.Cpp.stroika.AllConfigs.props')" Label="Stroika-Configuration" />
+  <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  <PropertyGroup Label="UserMacros">
+  </PropertyGroup>
+  <PropertyGroup>
+    <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\ CONFIGURATION=$(CONFIGURATION) $(JOBS_FLAG) --silent all</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>make --directory $(ProjectDir)\..\..\ CONFIGURATION=$(CONFIGURATION) clean --silent</NMakeCleanCommandLine>
+    <OutDir>$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-LedIt\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-LedIt\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NMakeIncludeSearchPath>$(ProjectDir)\..\..\;$(ProjectDir)\..\..\..\..\Library\Sources\;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <AdditionalOptions>/std:c++latest</AdditionalOptions>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\Makefile" />
+    <None Include="..\..\ReadMe.md" />
+    <None Include="..\..\Sources\AboutBoxImage.bmp" />
+    <None Include="..\..\Sources\AboutBoxImage.vsd" />
+    <None Include="..\..\Sources\AboutBoxImage.xpm" />
+    <None Include="..\..\Sources\CarbonPreComp.pch" />
+    <None Include="..\..\Sources\CarbonUNICODEPreComp.pch" />
+    <None Include="..\..\Sources\Font.bmp" />
+    <None Include="..\..\Sources\FormatBa.bmp" />
+    <None Include="..\..\Sources\IToolbar.bmp" />
+    <None Include="..\..\Sources\LedIt.ico" />
+    <None Include="..\..\Sources\LedIt.r" />
+    <None Include="..\..\Sources\LedItDocument.ico" />
+    <None Include="..\..\Sources\LedItRTFDocument.ico" />
+    <None Include="..\..\Sources\PreComp.pch" />
+    <None Include="..\..\Sources\RulerBl.bmp" />
+    <None Include="..\..\Sources\RulerBlM.bmp" />
+    <None Include="..\..\Sources\RulerDo.bmp" />
+    <None Include="..\..\Sources\RulerDoM.bmp" />
+    <None Include="..\..\Sources\RulerTa.bmp" />
+    <None Include="..\..\Sources\RulerTaM.bmp" />
+    <None Include="..\..\Sources\RulerUp.bmp" />
+    <None Include="..\..\Sources\RulerUpM.bmp" />
+    <None Include="..\..\Sources\Toolbar.bmp" />
+    <None Include="..\..\Sources\UnknownEmbeddingIcon.bmp" />
+    <None Include="..\..\Sources\UnsupportedPictFormat.bmp" />
+    <None Include="..\..\Sources\URLEmbeddingIcon.bmp" />
+    <None Include="..\Unix\Makefile" />
+    <None Include="..\Unix\UNIXInstall.sh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\ColorMenu.cpp" />
+    <ClCompile Include="..\..\Sources\FilteredFilePicker.cpp" />
+    <ClCompile Include="..\..\Sources\FormatToolbar.cpp" />
+    <ClCompile Include="..\..\Sources\LedItApplication.cpp" />
+    <ClCompile Include="..\..\Sources\LedItControlItem.cpp" />
+    <ClCompile Include="..\..\Sources\LedItDocument.cpp" />
+    <ClCompile Include="..\..\Sources\LedItInPlaceFrame.cpp" />
+    <ClCompile Include="..\..\Sources\LedItMainFrame.cpp" />
+    <ClCompile Include="..\..\Sources\LedItServerItem.cpp" />
+    <ClCompile Include="..\..\Sources\LedItView.cpp" />
+    <ClCompile Include="..\..\Sources\Main.cpp" />
+    <ClCompile Include="..\..\Sources\Options.cpp" />
+    <ClCompile Include="..\..\Sources\RulerToolbar.cpp" />
+    <ClCompile Include="..\..\Sources\Units.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\ColorMenu.h" />
+    <ClInclude Include="..\..\Sources\FilteredFilePicker.h" />
+    <ClInclude Include="..\..\Sources\FormatToolbar.h" />
+    <ClInclude Include="..\..\Sources\LedItApplication.h" />
+    <ClInclude Include="..\..\Sources\LedItConfig.h" />
+    <ClInclude Include="..\..\Sources\LedItControlItem.h" />
+    <ClInclude Include="..\..\Sources\LedItDocument.h" />
+    <ClInclude Include="..\..\Sources\LedItInPlaceFrame.h" />
+    <ClInclude Include="..\..\Sources\LedItMainFrame.h" />
+    <ClInclude Include="..\..\Sources\LedItResources.h" />
+    <ClInclude Include="..\..\Sources\LedItServerItem.h" />
+    <ClInclude Include="..\..\Sources\LedItView.h" />
+    <ClInclude Include="..\..\Sources\Options.h" />
+    <ClInclude Include="..\..\Sources\RulerToolbar.h" />
+    <ClInclude Include="..\..\Sources\Units.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="..\..\Sources\LedIt.odl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Sources\LedIt.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

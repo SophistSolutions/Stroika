@@ -1676,25 +1676,18 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const
     {
-#if qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy
-        static constexpr auto eDefaultUpdate   = TextInteractor::eDefaultUpdate;
-        static constexpr auto eImmediateUpdate = TextInteractor::eImmediateUpdate;
-#else
-        using TextInteractor::eDelayedUpdate;
-        using TextInteractor::eImmediateUpdate;
-#endif
         HWND hWnd = GetHWND ();
         if (hWnd != nullptr) {
             Assert (::IsWindow (hWnd));
             updateMode = this->RealUpdateMode (updateMode);
             switch (updateMode) {
-                case eDelayedUpdate: {
+                case TextInteractor::eDelayedUpdate: {
                     if (not windowRectArea.IsEmpty ()) {
                         RECT tmp = AsRECT (windowRectArea);
                         Verify (::InvalidateRect (hWnd, &tmp, true));
                     }
                 } break;
-                case eImmediateUpdate: {
+                case TextInteractor::eImmediateUpdate: {
                     if (not windowRectArea.IsEmpty ()) {
                         RECT tmp = AsRECT (windowRectArea);
                         Verify (::RedrawWindow (hWnd, &tmp, nullptr, RDW_INVALIDATE | RDW_UPDATENOW));
@@ -2819,13 +2812,6 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgSetFont (WPARAM wParam, LPARAM lParam)
     {
-#if qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy
-        static constexpr auto eDefaultUpdate   = TextInteractor::eDefaultUpdate;
-        static constexpr auto eImmediateUpdate = TextInteractor::eImmediateUpdate;
-#else
-        using TextInteractor::eDefaultUpdate;
-        using TextInteractor::eNoUpdate;
-#endif
         IncrementalFontSpecification fontSpec;
         {
             HFONT fontToUse = reinterpret_cast<HFONT> (wParam);
@@ -2836,7 +2822,7 @@ namespace Stroika::Frameworks::Led::Platform {
             ::GetObject (fontToUse, sizeof (lf), &lf);
             fontSpec.SetOSRep (lf);
         }
-        this->SetDefaultFont (fontSpec, lParam ? eDefaultUpdate : eNoUpdate);
+        this->SetDefaultFont (fontSpec, lParam ? TextInteractor::eDefaultUpdate : TextInteractor::eNoUpdate);
         return 0;
     }
 
