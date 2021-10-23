@@ -71,6 +71,7 @@ help:
 	@$(ECHO) "    default-configurations:      -    Creates the default configurations in Configurations folder; see ./configure -help for environment variables"
 	@$(ECHO) "                                      e.g. EXTRA_CONFIGURE_ARGS='--openssl-extraargs purify --block-allocation disable' make default-configurations"
 	@$(ECHO) "                                      OR EXTRA_CONFIGURE_ARGS='--platform VisualStudio.Net-2019' make default-configurations"
+	@$(ECHO) "                                      OR PLATFORM='VisualStudio.Net-2022' make default-configurations"
 	@$(ECHO) "    list-configurations:         -    prints all available configurations (each can be used as arg to CONFIGURAITON= make lines)"
 	@$(ECHO) "    list-configuration-tags:     -    prints a list of all configurtion tags (configuration tags impute groups of configurations)"
 	@$(ECHO) "    check-prerequisite-tools:    -    Check the tools needed to build Stroika are installed."
