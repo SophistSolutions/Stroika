@@ -3439,9 +3439,9 @@ void StyledTextIOReader_RTF::ReadObjData (vector<char>* data)
 void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo ([[maybe_unused]] ReaderContext& readerContext, [[maybe_unused]] TWIPS_Point size, [[maybe_unused]] size_t nBytes, [[maybe_unused]] const void* data)
 {
 #if qPlatform_Windows
-    using RTFOLEEmbedding                                                   = RTFIO::RTFOLEEmbedding;
+    using RTFOLEEmbedding = RTFIO::RTFOLEEmbedding;
     //const Led_ClipFormat                                kOLEEmbedClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T ("Object Descriptor")));
-    const vector<EmbeddedObjectCreatorRegistry::Assoc>& types               = EmbeddedObjectCreatorRegistry::Get ().GetAssocList ();
+    const vector<EmbeddedObjectCreatorRegistry::Assoc>& types = EmbeddedObjectCreatorRegistry::Get ().GetAssocList ();
     for (size_t i = 0; i < types.size (); i++) {
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
         if (memcmp (assoc.fEmbeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0) {
