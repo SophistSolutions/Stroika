@@ -277,7 +277,7 @@ namespace {
                  *      o   some values involve casts of integers of byte array data which depends on endianness
                  *      but otherwise I dont think these values should float/vary (thus the VerifyTestResult tests).
                  */
-                if (sizeof (wchar_t) == 2) {
+                if constexpr (sizeof (wchar_t) == 2) {
                     VerifyTestResult (h1 == 1969025828);                                                                 // before Stroika 2.1b10 (2512011991)
                     VerifyTestResult (h2 == 36);                                                                         // before Stroika 2.1b10 (215)
                     VerifyTestResult (h3[0] == std::byte{0x24} and h3[1] == std::byte{0xf3} and h3[39] == std::byte{0}); // value before Stroika 2.1b10 215, 66,... 0
@@ -285,7 +285,7 @@ namespace {
                         VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x1969025828")); // value before Stroika 2.1b10 ("0x2512011991")
                     }
                 }
-                else if (sizeof (wchar_t) == 4) {
+                else if constexpr (sizeof (wchar_t) == 4) {
                     VerifyTestResult (h1 == 4259971568);                                                              // before Stroika 2.1b10 3490201358
                     VerifyTestResult (h2 == 240);                                                                     // before Stroika 2.1b10 (14)
                     VerifyTestResult (h3[0] == std::byte{0xf0} and h3[1] == std::byte{1} and h3[39] == std::byte{0}); // value before Stroika 2.1b10 14, 63,... 0
@@ -311,11 +311,11 @@ namespace {
                  *  NOTE - basically ALL these tests vary on a number of parameters.
                  *      o   default serializer for string depends on sizeof wchar_t
                  */
-                if (sizeof (wchar_t) == 2) {
+                if constexpr (sizeof (wchar_t) == 2) {
                     VerifyTestResult (digesterWithResult_string (value2Hash) == "06d0b6f01666443614f2502b44386721");
                     VerifyTestResult ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash) == L"06d0b6f01666443614f2502b44386721"));
                 }
-                if (sizeof (wchar_t) == 4) {
+                if constexpr (sizeof (wchar_t) == 4) {
                     VerifyTestResult (digesterWithResult_string (value2Hash) == "32e6a57de2f9324edfc93863838d9015");
                     VerifyTestResult ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash) == L"32e6a57de2f9324edfc93863838d9015"));
                 }
@@ -334,12 +334,12 @@ namespace {
                  *  NOTE - basically ALL these tests vary on a number of parameters.
                  *      o   default serializer for string depends on sizeof wchar_t
                  */
-                if (sizeof (wchar_t) == 2) {
+                if constexpr (sizeof (wchar_t) == 2) {
                     VerifyTestResult (h1 == 1969025828);                                                                 // experimentally derived values but they shouldn't float (before Stroika 2.1b10 was 2512011991)
                     VerifyTestResult (h2 == 36);                                                                         // before Stroika 2.1b10, value was 215
                     VerifyTestResult (h3[0] == std::byte{0x24} and h3[1] == std::byte{0xf3} and h3[39] == std::byte{0}); // before Stroika 2.1b10, value was 215, 66, ...0
                 }
-                if (sizeof (wchar_t) == 4) {
+                if constexpr (sizeof (wchar_t) == 4) {
                     VerifyTestResult (h1 == 4259971568);                                                              // experimentally derived values but they shouldn't float (before Stroika 2.1b10 was 3490201358)
                     VerifyTestResult (h2 == 240);                                                                     // before Stroika 2.1b10, value was 14
                     VerifyTestResult (h3[0] == std::byte{0xf0} and h3[1] == std::byte{1} and h3[39] == std::byte{0}); // before Stroika 2.1b10, value was 14, 63, ...0
@@ -394,10 +394,10 @@ namespace {
                 VerifyTestResult ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (1)) == 10338022));
                 VerifyTestResult ((Cryptography::Digest::Hash<string, USE_DIGESTER_>{}("1") == 2154528969));
                 // DefaultSerializer<String> MAY produce different byte patterns depending on sizeof (wchar_t)
-                if (sizeof (wchar_t) == 2) {
+                if constexpr (sizeof (wchar_t) == 2) {
                     VerifyTestResult ((Cryptography::Digest::Hash<Characters::String, USE_DIGESTER_>{}(L"1") == 1243634960));
                 }
-                else if (sizeof (wchar_t) == 4) {
+                else if constexpr (sizeof (wchar_t) == 4) {
                     VerifyTestResult ((Cryptography::Digest::Hash<Characters::String, USE_DIGESTER_>{}(L"1") == 2036516137));
                 }
                 VerifyTestResult ((Cryptography::Digest::Hash<string, USE_DIGESTER_>{"mysalt"}("1") == 1355707049));
@@ -534,7 +534,7 @@ namespace {
                 BLOB::Raw (kSrc4_, Memory::NEltsOf (kSrc4_) - 1)};
 
             Set<String> providers2Try{OpenSSL::LibraryContext::kDefaultProvider};
-            if (OPENSSL_VERSION_NUMBER >= 0x30000000L) {
+            if constexpr (OPENSSL_VERSION_NUMBER >= 0x30000000L) {
                 providers2Try += OpenSSL::LibraryContext::kLegacyProvider;
             }
             for (String provider : providers2Try) {
