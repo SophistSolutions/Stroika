@@ -91,7 +91,7 @@ This mostly conists of GNU make, and perl (see details below depending on your p
 #### For Windows
 
 - Visual Studio.net 2017 (or later)
-  - Currently tested with Visual Studio.net 2017 and Visual Studio.net 2019 (see release notes for details)
+  - Currently tested with Visual Studio.net 2017, Visual Studio.net 2019, and Visual Studio.net 2022 (see release notes for details)
 - Cygwin
   Including
   - dos2unix
