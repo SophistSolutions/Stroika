@@ -2053,15 +2053,6 @@ sub PostProcessOptions_ ()
 		}
 	}
 
-	# TMPHACK since boost doesn't build with VS2k22 yet --LGP 2021-10-22
-	if ($isVisualStudio) {
-		if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2022") {
-			if ($FEATUREFLAG_boost_userspecified eq 0) {
-				$FEATUREFLAG_boost = "no";
-			}
-		}
-	}
-
 	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 		$HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = true;
 	}
