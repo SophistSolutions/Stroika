@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         public:
             MyIteratorImplHelper_ ()                             = delete;
             MyIteratorImplHelper_ (const MyIteratorImplHelper_&) = default;
-            explicit MyIteratorImplHelper_ ([[maybe_unused]] IteratorOwnerID owner, PATCHABLE_CONTAINER* data)
+            explicit MyIteratorImplHelper_ (IteratorOwnerID /*owner*/, PATCHABLE_CONTAINER* data)
                 : fIterator{data}
             {
                 RequireNotNull (data);
