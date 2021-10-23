@@ -1054,12 +1054,7 @@ sub	SetDefaultForCompilerDriver_
 		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_No;
 	}
 	elsif (! defined $FEATUREFLAG_Xerces) {
-		if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2022") {
-			$FEATUREFLAG_Xerces = "no";
-		}
-		else {
-			$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
-		}
+		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
 	}
 
 	# This doesn't work with (at least how I've setup) centos8 under docker - not sure how to get the libs there...
@@ -1114,7 +1109,8 @@ sub	SetDefaultForPlatform_
 		}
 	}
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2022") {
-		system ('ls -l /cygdrive/c/Program Files*/"Microsoft Visual Studio/2022"/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
+		# in VS2k22, separate checkboxes for ATL and MFC and we need MFC AND ATL
+		system ('ls -l /cygdrive/c/"Program Files/Microsoft Visual Studio"/2022/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
 		if ($? == 0) {
 			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
 		}
