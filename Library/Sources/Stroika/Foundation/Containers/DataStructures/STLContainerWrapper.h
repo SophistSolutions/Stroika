@@ -123,16 +123,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename STL_CONTAINER_OF_T>
     class STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator {
     public:
-        using CONTAINER_TYPE = STLContainerWrapper<STL_CONTAINER_OF_T>;
-
-    public:
         using value_type = typename STLContainerWrapper<STL_CONTAINER_OF_T>::value_type;
 
     public:
         /**
          *          @see https://stroika.atlassian.net/browse/STK-538
          */
-        explicit ForwardIterator (const CONTAINER_TYPE* data);
+        explicit ForwardIterator (const STLContainerWrapper<STL_CONTAINER_OF_T>* data);
         explicit ForwardIterator (const ForwardIterator& from) = default;
 
     public:
@@ -151,54 +148,24 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual size_t CurrentIndex () const;
 
     public:
-        nonvirtual void SetCurrentLink (typename CONTAINER_TYPE::iterator l);
+        nonvirtual void SetCurrentLink (typename STLContainerWrapper<STL_CONTAINER_OF_T>::iterator l);
 
     public:
         nonvirtual bool Equals (const ForwardIterator& rhs) const;
 
     public:
-        nonvirtual void PatchBeforeRemove (const ForwardIterator* adjustmentAt)
-        {
-            RequireNotNull (adjustmentAt);
-            if (this->fStdIterator == adjustmentAt->fStdIterator) {
-                this->fStdIterator++;
-            }
-        }
+        nonvirtual void PatchBeforeRemove (const ForwardIterator* adjustmentAt);
 
     public:
         // moved from patching code
-        void MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper* movedFrom)
-        {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-            // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
-            // only way
-            //
-            // For STL containers, not sure how to find an equiv new iterator for an old one, but my best guess is to iterate through
-            // old for old, and when I match, stop on new
-            Require (pi->fData == movedFrom);
-            auto                  newI = this->begin ();
-            [[maybe_unused]] auto newE = this->end ();
-            auto                  oldI = movedFrom->begin ();
-            [[maybe_unused]] auto oldE = movedFrom->end ();
-            while (oldI != pi->fStdIterator) {
-                Assert (newI != newE);
-                Assert (oldI != oldE);
-                newI++;
-                oldI++;
-                Assert (newI != newE);
-                Assert (oldI != oldE);
-            }
-            Assert (oldI == pi->fStdIterator);
-            pi->fStdIterator = newI;
-            pi->fData        = this;
-        }
+        nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper* movedFrom);
 
     public:
         /**
          *          @see https://stroika.atlassian.net/browse/STK-538
          */
-        CONTAINER_TYPE*                   fData;
-        typename CONTAINER_TYPE::iterator fStdIterator;
+        STLContainerWrapper<STL_CONTAINER_OF_T>*                   fData;
+        typename STLContainerWrapper<STL_CONTAINER_OF_T>::iterator fStdIterator;
 
     protected:
         bool fSuppressMore{true};

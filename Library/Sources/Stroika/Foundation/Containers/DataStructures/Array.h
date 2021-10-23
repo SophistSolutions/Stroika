@@ -239,90 +239,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void SetIndex (size_t i);
 
     public:
-        nonvirtual void PatchBeforeAdd (const _ArrayIteratorBase& adjustmentAt)
-        {
-            this->Invariant ();
-            /*
-             *      If we added an item to past our cursor, it has no effect
-             *  on our - by index - addressing, and so ignore it. We will eventually
-             *  reach that new item.
-             *
-             *      If we added an item left of the cursor, then we are now pointing to
-             *  the item before the one we used to, and so incrementing (ie Next)
-             *  would cause us to revisit (in the forwards case, or skip one in the
-             *  reverse case). To correct our index, we must increment it so that
-             *  it.Current () refers to the same entity.
-             *
-             *      Note that this should indeed by <=, since (as opposed to <) since
-             *  if we are a direct hit, and someone tries to insert something at
-             *  the position we are at, the same argument as before applies - we
-             *  would be revisiting, or skipping forwards an item.
-             */
-            if (adjustmentAt.CurrentIndex () <= this->CurrentIndex ()) {
-                this->_fCurrentIdx++;
-            }
-        }
-        nonvirtual void PatchBeforeRemove (const _ArrayIteratorBase* adjustmentAt)
-        {
-            this->Invariant ();
-            /*
-             *      If we are removing an item from past our cursor, it has no effect
-             *  on our - by index - addressing, and so ignore it.
-             *
-             *      On the other hand, if we are removing the item from the left of our cursor,
-             *  things are more complex:
-             *
-             *      If we are removing an item from the left of the cursor, then we are now
-             *  pointing to the item after the one we used to, and so decrementing (ie Next)
-             *  would cause us to skip one. To correct our index, we must decrement it so that
-             *  it.Current () refers to the same entity.
-             *
-             *      In the case where we are directly hit, just set _fSuppressMore
-             *  to true. If we are going forwards, are are already pointing where
-             *  we should be (and this works for repeat deletions). If we are
-             *  going backwards, then _fSuppressMore will be ignored, but for the
-             *  sake of code sharing, its tough to do much about that waste.
-             */
-            if (adjustmentAt) {
-                size_t adjustmentAtIndex = adjustmentAt->CurrentIndex ();
-                size_t thisCurrentIndex  = _fCurrentIdx;
-
-                if (adjustmentAtIndex < thisCurrentIndex) {
-                    Assert (thisCurrentIndex >= 1);
-                    this->_fCurrentIdx--;
-                }
-                else if (adjustmentAtIndex == thisCurrentIndex) {
-#if 0
-                    if (thisCurrentIndex == 0) {
-                        this->_fCurrentIdx = this->_dataLength () - 1; // magic to indicate done (minus 1 cuz about to delete one)
-                    }
-#endif
-                    //  this->_fSuppressMore = true;
-                }
-#if 0
-                if (adjustmentAtIndex < thisCurrentIndex) {
-                    Assert (thisCurrentIndex >= 1);
-                    this->_fCurrent--;
-                }
-                else if (adjustmentAtIndex == thisCurrentIndex) {
-                    if (thisCurrentIndex == 0) {
-                        this->_fCurrent = this->_dataEnd (); // magic to indicate done
-                    }
-                    else {
-                        Assert (this->_fCurrent > this->_dataStart ());
-                        this->_fCurrent--;
-                    }
-                    // this->_fSuppressMore = true;
-                }
-#endif
-            }
-            else {
-                this->_fCurrentIdx = 0; // magic to indicate done (this->_dataLength () will be zero after delete all)
-            }
-        }
+        nonvirtual bool Equals (const typename Array<T>::_ArrayIteratorBase& rhs) const;
 
     public:
-        nonvirtual bool Equals (const typename Array<T>::_ArrayIteratorBase& rhs) const;
+        nonvirtual void PatchBeforeAdd (const _ArrayIteratorBase& adjustmentAt);
+
+    public:
+        nonvirtual void PatchBeforeRemove (const _ArrayIteratorBase* adjustmentAt);
 
     public:
         nonvirtual void Invariant () const;

@@ -50,14 +50,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
     using Configuration::ArgByValueType;
 
     /*
-        *      DoublyLinkedList<T> is a generic link (non-intrusive) list implementation.
-        *  It keeps a length count so access to its length is rapid. We provide
-        *  no public means to access the links themselves.
-        *
-        *      Since this class provides no patching support, it is not generally
-        *  used - more likely you want to use DoublyLinkedList<T>. Use this if you
-        *  will manage all patching, or know that none is necessary.
-        */
+     *      DoublyLinkedList<T> is a generic link (non-intrusive) list implementation.
+     *  It keeps a length count so access to its length is rapid. We provide
+     *  no public means to access the links themselves.
+     *
+     *      Since this class provides no patching support, it is not generally
+     *  used - more likely you want to use DoublyLinkedList<T>. Use this if you
+     *  will manage all patching, or know that none is necessary.
+     */
     template <typename T>
     class DoublyLinkedList : public Debug::AssertExternallySynchronizedLock {
     public:
@@ -140,6 +140,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         template <typename FUNCTION>
         nonvirtual void Apply (FUNCTION doToElement) const;
+
+    public:
+        /**
+         */
         template <typename FUNCTION>
         nonvirtual Link* FindFirstThat (FUNCTION doToElement) const;
 
@@ -291,10 +295,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant () const;
 
     protected:
-    public: /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN ``<> - until those cleaned up a bit
-        const DoublyLinkedList<T>* _fData;
-        const Link*                _fCurrent;
-        bool                       _fSuppressMore; // Indicates if More should do anything, or if were already Mored...
+        // public: /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN ``<> - until those cleaned up a bit
+        const DoublyLinkedList<T>* _fData{nullptr};
+        const Link*                _fCurrent{nullptr};
+        bool                       _fSuppressMore{false}; // Indicates if More should do anything, or if were already Mored...
 
 #if qDebug
     protected:

@@ -433,15 +433,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline LinkedList<T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
         //: fCachedPrev (nullptr)
-        : _fData (from._fData)
-        , _fCurrent (from._fCurrent)
-        , _fSuppressMore (from._fSuppressMore)
+        : _fData{from._fData}
+        , _fCurrent{from._fCurrent}
+            , _fSuppressMore{from._fSuppressMore}
     {
     }
     template <typename T>
     inline typename LinkedList<T>::ForwardIterator& LinkedList<T>::ForwardIterator::operator= (const ForwardIterator& rhs)
     {
         Invariant ();
+        _fData         = rhs._fData;
         _fCurrent      = rhs._fCurrent;
         _fSuppressMore = rhs._fSuppressMore;
         Invariant ();
@@ -464,7 +465,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline bool LinkedList<T>::ForwardIterator::More (T* current, bool advance)
     {
         Invariant ();
-
         if (advance) {
             /*
              * We could already be done since after the last Done() call, we could
@@ -537,6 +537,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return i;
     }
     template <typename T>
+    inline auto LinkedList<T>::ForwardIterator::GetCurrentLink () const -> Link*
+    {
+        return _fCurrent;
+    }
+    template <typename T>
     inline void LinkedList<T>::ForwardIterator::SetCurrentLink (Link* l)
     {
         // MUUST COME FROM THIS LIST
@@ -548,6 +553,36 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline bool LinkedList<T>::ForwardIterator::Equals (const typename LinkedList<T>::ForwardIterator& rhs) const
     {
         return _fCurrent == rhs._fCurrent and _fSuppressMore == rhs._fSuppressMore;
+    }
+    template <typename T>
+    inline void LinkedList<T>::ForwardIterator::PatchBeforeRemove (const ForwardIterator* adjustmentAt)
+    {
+        RequireNotNull (adjustmentAt);
+        this->Invariant ();
+        auto link = adjustmentAt->_fCurrent;
+        RequireNotNull (link);
+
+        /*
+         *  There are basicly three cases:
+         *
+         *  (1)     We remove the current. In this case, we just advance current to the next
+         *          item (prev is already all set), and set _fSuppressMore since we are advanced
+         *          to the next item.
+         *  (2)     We remove our previous. Technically this poses no problems, except then
+         *          our previos pointer is invalid. We could recompute it, but that would
+         *          involve rescanning the list from the beginning - slow. And we probably
+         *          will never need the next pointer (unless we get a remove current call).
+         *          So just set it to nullptr, which conventionally means no valid value.
+         *          It will be recomputed if needed.
+         *  (3)     We are deleting some other value. No probs.
+         */
+        if (this->_fCurrent == link) {
+            this->_fCurrent = this->_fCurrent->fNext;
+            // fPrev remains the same - right now it points to a bad item, since
+            // PatchRemove() called before the actual removal, but right afterwards
+            // it will point to our new _fCurrent.
+            //     this->_fSuppressMore = true; // Since we advanced cursor...
+        }
     }
 #if qDebug
     template <typename T>

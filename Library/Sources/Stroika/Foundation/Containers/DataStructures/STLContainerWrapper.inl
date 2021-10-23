@@ -130,8 +130,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename STL_CONTAINER_OF_T>
     inline STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const STLContainerWrapper<STL_CONTAINER_OF_T>* data)
-        : fData (const_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (data))
-        , fStdIterator ((const_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (data))->begin ())
+        : fData{const_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (data)}
+        , fStdIterator{(const_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (data))->begin ()}
     {
         RequireNotNull (data);
     }
@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fStdIterator - fData->begin ();
     }
     template <typename STL_CONTAINER_OF_T>
-    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::SetCurrentLink (typename CONTAINER_TYPE::iterator l)
+    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::SetCurrentLink (typename STLContainerWrapper<STL_CONTAINER_OF_T>::iterator l)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*fData};
         // MUUST COME FROM THIS stl container
@@ -212,6 +212,40 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*fData};
         return fStdIterator == rhs.fStdIterator;
+    }
+    template <typename STL_CONTAINER_OF_T>
+    void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::PatchBeforeRemove (const ForwardIterator* adjustmentAt)
+    {
+        RequireNotNull (adjustmentAt);
+        if (this->fStdIterator == adjustmentAt->fStdIterator) {
+            this->fStdIterator++;
+        }
+    }
+    template <typename STL_CONTAINER_OF_T>
+    void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper* movedFrom)
+    {
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
+        // only way
+        //
+        // For STL containers, not sure how to find an equiv new iterator for an old one, but my best guess is to iterate through
+        // old for old, and when I match, stop on new
+        Require (pi->fData == movedFrom);
+        auto                  newI = this->begin ();
+        [[maybe_unused]] auto newE = this->end ();
+        auto                  oldI = movedFrom->begin ();
+        [[maybe_unused]] auto oldE = movedFrom->end ();
+        while (oldI != pi->fStdIterator) {
+            Assert (newI != newE);
+            Assert (oldI != oldE);
+            newI++;
+            oldI++;
+            Assert (newI != newE);
+            Assert (oldI != oldE);
+        }
+        Assert (oldI == pi->fStdIterator);
+        pi->fStdIterator = newI;
+        pi->fData        = this;
     }
 
 }

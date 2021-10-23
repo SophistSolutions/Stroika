@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> lg{fData_};
-            auto                                                      next = mir.fIterator._fCurrent->fNext;
+            auto                                                      next = mir.fIterator.GetCurrentLink ()->fNext;
             fData_.RemoveAt (mir.fIterator);
             auto resultRep = Iterator<T>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
             resultRep->fIterator.SetCurrentLink (next);

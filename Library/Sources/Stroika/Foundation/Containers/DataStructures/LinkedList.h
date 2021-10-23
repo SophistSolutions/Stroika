@@ -263,41 +263,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual size_t CurrentIndex () const;
 
     public:
+        nonvirtual Link* GetCurrentLink () const;
+
+    public:
         nonvirtual void SetCurrentLink (Link* l);
 
     public:
         nonvirtual bool Equals (const typename LinkedList<T>::ForwardIterator& rhs) const;
 
     public:
-        nonvirtual void PatchBeforeRemove (const ForwardIterator* adjustmentAt)
-        {
-            RequireNotNull (adjustmentAt);
-            this->Invariant ();
-            auto link = adjustmentAt->_fCurrent;
-            RequireNotNull (link);
-
-            /*
-         *  There are basicly three cases:
-         *
-         *  (1)     We remove the current. In this case, we just advance current to the next
-         *          item (prev is already all set), and set _fSuppressMore since we are advanced
-         *          to the next item.
-         *  (2)     We remove our previous. Technically this poses no problems, except then
-         *          our previos pointer is invalid. We could recompute it, but that would
-         *          involve rescanning the list from the beginning - slow. And we probably
-         *          will never need the next pointer (unless we get a remove current call).
-         *          So just set it to nullptr, which conventionally means no valid value.
-         *          It will be recomputed if needed.
-         *  (3)     We are deleting some other value. No probs.
-         */
-            if (this->_fCurrent == link) {
-                this->_fCurrent = this->_fCurrent->fNext;
-                // fPrev remains the same - right now it points to a bad item, since
-                // PatchRemove() called before the actual removal, but right afterwards
-                // it will point to our new _fCurrent.
-                //     this->_fSuppressMore = true; // Since we advanced cursor...
-            }
-        }
+        nonvirtual void PatchBeforeRemove (const ForwardIterator* adjustmentAt);
 
     public:
         nonvirtual void Invariant () const;
@@ -306,14 +281,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         const LinkedList<T>* _fData;
 
     protected:
-        //const typename LinkedList<T,TRAITS>::Link*     fCachedPrev;        // either nullptr or valid cached prev
-    protected:
-    public:
         ///@todo - tmphack - this SB protected probably???
         const typename LinkedList<T>::Link* _fCurrent;
 
     protected:
-    public:
         bool _fSuppressMore; // Indicates if More should do anything, or if were already Mored...
 
 #if qDebug
