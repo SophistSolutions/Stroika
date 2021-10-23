@@ -615,16 +615,6 @@ sub	SetInitialDefaults_
 			if ($? == 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
 			}
-			#autodetect ATLMFC (Express verison missing it)
-			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2019") {
-				system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2019/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
-				if ($? == 0) {
-					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
-				}
-				else  {
-					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
-				}
-			}
 		}
 		# try vs 2k22
 		if ($PROJECTPLATFORMSUBDIR eq "") {
@@ -638,16 +628,6 @@ sub	SetInitialDefaults_
 			if ($? == 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
 			}
-			#autodetect ATLMFC (Express verison missing it)
-			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2022") {
-				system ('ls -l /cygdrive/c/Program Files*/"Microsoft Visual Studio/2022"/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
-				if ($? == 0) {
-					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
-				}
-				else  {
-					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
-				}
-			}
 		}
 		# try vs 2k17
 		if ($PROJECTPLATFORMSUBDIR eq "") {
@@ -660,16 +640,6 @@ sub	SetInitialDefaults_
 			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >/dev/null 2> /dev/null');
 			if ($? == 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
-			}
-			#autodetect ATLMFC (Express verison missing it)
-			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
-				system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2017/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
-				if ($? == 0) {
-					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
-				}
-				else  {
-					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
-				}
 			}
 		}
 	}
@@ -1123,6 +1093,34 @@ sub	SetDefaultForPlatform_
 		#$COMPILER_DRIVER = "clang++";
 		#$COMPILER_DRIVER = "gcc";
 		#$COMPILER_DRIVER = "g++ -V5.0";
+	}
+	#autodetect ATLMFC (Express verison missing it)
+	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
+		system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2017/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
+		if ($? == 0) {
+			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
+		}
+		else  {
+			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
+		}
+	}
+	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2019") {
+		system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2019/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
+		if ($? == 0) {
+			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
+		}
+		else  {
+			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
+		}
+	}
+	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2022") {
+		system ('ls -l /cygdrive/c/Program Files*/"Microsoft Visual Studio/2022"/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
+		if ($? == 0) {
+			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
+		}
+		else  {
+			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
+		}
 	}
 }
 
