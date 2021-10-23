@@ -165,9 +165,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Invariant ();
-
         _fHead = new Link (item, _fHead);
-
         Invariant ();
     }
     template <typename T>
@@ -192,13 +190,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Require (not IsEmpty ());
         AssertNotNull (_fHead);
-
         Invariant ();
-
         Link* victim = _fHead;
         _fHead       = victim->fNext;
-        delete (victim);
-
+        delete victim;
         Invariant ();
     }
     template <typename T>
@@ -208,9 +203,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (not i.Done ());
         Invariant ();
         i.Invariant ();
-
         const_cast<Link*> (i._fCurrent)->fItem = newValue;
-
         Invariant ();
     }
     template <typename T>
@@ -296,14 +289,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void LinkedList<T>::Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
     {
         Invariant ();
-
         /*
-            *  Base class impl is fine, but doesn't do patching, and doesn't
-            *  provide the hooks so I can do the patching from here.
-            *
-            *  @todo   We may want to correct that (see STL container impl -
-            *  returning ptr to next node would do it).
-            */
+         *  Base class impl is fine, but doesn't do patching, and doesn't
+         *  provide the hooks so I can do the patching from here.
+         *
+         *  @todo   We may want to correct that (see STL container impl -
+         *  returning ptr to next node would do it).
+         */
         optional<T> current;
         for (ForwardIterator it{this}; it.More (&current, true), current.has_value ();) {
             if (equalsComparer (*current, item)) {
@@ -363,14 +355,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Invariant ();
-
         for (Link* i = _fHead; i != nullptr;) {
             Link* deleteMe = i;
             i              = i->fNext;
             delete (deleteMe);
         }
         _fHead = nullptr;
-
         Invariant ();
         Ensure (IsEmpty ());
     }
@@ -423,19 +413,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename T>
     inline LinkedList<T>::ForwardIterator::ForwardIterator (const LinkedList<T>* data)
-        //: fCachedPrev (nullptr)
-        : _fData (data)
-        , _fCurrent (data->_fHead)
-        , _fSuppressMore (true)
+        : _fData{data}
+        , _fCurrent{data->_fHead}
+        , _fSuppressMore{true}
     {
         RequireNotNull (data);
     }
     template <typename T>
     inline LinkedList<T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
-        //: fCachedPrev (nullptr)
         : _fData{from._fData}
         , _fCurrent{from._fCurrent}
-            , _fSuppressMore{from._fSuppressMore}
+        , _fSuppressMore{from._fSuppressMore}
     {
     }
     template <typename T>
@@ -537,7 +525,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return i;
     }
     template <typename T>
-    inline auto LinkedList<T>::ForwardIterator::GetCurrentLink () const -> Link*
+    inline auto LinkedList<T>::ForwardIterator::GetCurrentLink () const -> const Link*
     {
         return _fCurrent;
     }

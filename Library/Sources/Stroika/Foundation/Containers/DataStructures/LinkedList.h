@@ -263,7 +263,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual size_t CurrentIndex () const;
 
     public:
-        nonvirtual Link* GetCurrentLink () const;
+        nonvirtual const Link* GetCurrentLink () const;
 
     public:
         nonvirtual void SetCurrentLink (Link* l);
@@ -281,11 +281,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         const LinkedList<T>* _fData;
 
     protected:
-        ///@todo - tmphack - this SB protected probably???
         const typename LinkedList<T>::Link* _fCurrent;
-
-    protected:
-        bool _fSuppressMore; // Indicates if More should do anything, or if were already Mored...
+        bool                                _fSuppressMore; // Indicates if More should do anything, or if were already Mored...
 
 #if qDebug
         virtual void Invariant_ () const;
