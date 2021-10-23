@@ -176,11 +176,16 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Collection<T>::Remove (const Iterator<T>& i, Iterator<T>* nextI)
     {
+        Require (not i.Done ());
+        auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
         if (nextI != nullptr) {
-            *nextI = i;
-            ++(*nextI); // @todo must handle cloneing on getwriteablerep changing iterator @todo
+            *nextI = patchedIterator;
+            Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->PatchIteratorBeforeRemove (patchedIterator, nextI);
         }
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
+        Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->Remove (patchedIterator);
+        if (nextI != nullptr) {
+            nextI->Refresh (); // update to reflect changes made to rep
+        }
     }
     template <typename T>
     template <typename PREDICATE>
@@ -230,6 +235,18 @@ namespace Stroika::Foundation::Containers {
         return *this;
     }
     template <typename T>
+    auto Collection<T>::_GetWriterRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<typename inherited::_SharedByValueRepType::shared_ptr_type, Iterator<value_type>>
+    {
+        Require (not i.Done ());
+        using shared_ptr_type                = typename inherited::_SharedByValueRepType::shared_ptr_type;
+        Iterator<value_type> patchedIterator = i;
+        shared_ptr_type      writerRep       = this->_fRep.get_nu (
+            [&, this] (const shared_ptr_type& prevRepPtr) -> shared_ptr_type {
+                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator, this);
+            });
+        return make_tuple (writerRep, patchedIterator);
+    }
+    template <typename T>
     inline void Collection<T>::_AssertRepValidType () const
     {
 #if qDebug
@@ -263,7 +280,6 @@ namespace Stroika::Foundation::Containers {
         result += rhs;
         return result;
     }
-
 }
 
 #endif /* _Stroika_Foundation_Containers_Collection_inl_ */

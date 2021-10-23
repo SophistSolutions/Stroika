@@ -154,7 +154,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void SetCurrentLink (typename CONTAINER_TYPE::iterator l);
 
     public:
-        nonvirtual bool Equals (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const;
+        nonvirtual bool Equals (const ForwardIterator& rhs) const;
+
+    public:
+        nonvirtual void PatchBeforeRemove (const ForwardIterator* adjustmentAt)
+        {
+            RequireNotNull (adjustmentAt);
+            if (this->fStdIterator == adjustmentAt->fStdIterator) {
+                this->fStdIterator++;
+            }
+        }
 
     public:
         // moved from patching code
