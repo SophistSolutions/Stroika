@@ -228,7 +228,9 @@ endif
 
 #### SEE IF OTHER GENERATORS WORK WELL/BETTER??? https://www.mankier.com/7/cmake-generators
 CMAKE_USE_GENERATOR=Unix Makefiles
-ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
+ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2022)
+CMAKE_USE_GENERATOR=Visual Studio 17 2022
+else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
 CMAKE_USE_GENERATOR=Visual Studio 16 2019
 else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2017)
 CMAKE_USE_GENERATOR=Visual Studio 15 2017
@@ -263,7 +265,13 @@ CMAKE_ARGS+= -DCMAKE_C_COMPILER="$(CC)"
 CMAKE_ARGS+= -DCMAKE_CXX_COMPILER="$(CXX)"
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
+ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2022)
+ifeq (x86_64,$(ARCH))
+CMAKE_ARGS+= -A x64
+else
+CMAKE_ARGS+= -A Win32
+endif
+else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
 ifeq (x86_64,$(ARCH))
 CMAKE_ARGS+= -A x64
 else
