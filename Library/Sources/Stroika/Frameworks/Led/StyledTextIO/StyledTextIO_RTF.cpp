@@ -3440,7 +3440,7 @@ void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo ([[maybe_unused]] 
 {
 #if qPlatform_Windows
     using RTFOLEEmbedding                                                   = RTFIO::RTFOLEEmbedding;
-    const Led_ClipFormat                                kOLEEmbedClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T ("Object Descriptor")));
+    //const Led_ClipFormat                                kOLEEmbedClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T ("Object Descriptor")));
     const vector<EmbeddedObjectCreatorRegistry::Assoc>& types               = EmbeddedObjectCreatorRegistry::Get ().GetAssocList ();
     for (size_t i = 0; i < types.size (); i++) {
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
