@@ -212,7 +212,27 @@ endif
 
 
 ### Run b2.exe --help
+
+# this selects a bunch of parameters, but the compiler itself can still be overriden by other parameters - just the
+# darwin.jam file (basically) - and other defaults sort of related to that.
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2022)
+TOOLSET_NAME=msvc-14.3
+else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
+TOOLSET_NAME=msvc-14.2
+else
+TOOLSET_NAME=msvc
+endif
+else ifeq ($(shell uname -s),Darwin)
+#using the name darwin caused errors with XCode 11.4, but otherwise appears to make sense (and we used til 11.4) -- LGP 2020-04-12
+#TOOLSET_NAME=darwin
+TOOLSET_NAME=clang-darwin
+else
+TOOLSET_NAME=gcc
+endif
+
 B2_CONFIGURATION_ARGS=
+B2_CONFIGURATION_ARGS +=	toolset=$(TOOLSET_NAME)
 B2_CONFIGURATION_ARGS +=	link=static
 B2_CONFIGURATION_ARGS +=	runtime-link=static
 B2_CONFIGURATION_ARGS +=	threading=multi
@@ -242,23 +262,6 @@ else
 B2_CONFIGURATION_ARGS += variant=debug
 endif
 
-# this selects a bunch of parameters, but the compiler itself can still be overriden by other parameters - just the
-# darwin.jam file (basically) - and other defaults sort of related to that.
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2022)
-TOOLSET_NAME=msvc-14.3
-else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
-TOOLSET_NAME=msvc-14.2
-else
-TOOLSET_NAME=msvc
-endif
-else ifeq ($(shell uname -s),Darwin)
-#using the name darwin caused errors with XCode 11.4, but otherwise appears to make sense (and we used til 11.4) -- LGP 2020-04-12
-#TOOLSET_NAME=darwin
-TOOLSET_NAME=clang-darwin
-else
-TOOLSET_NAME=gcc
-endif
 
 ### @todo - redo this using new ADDRESS_MODEL field in CONFIGURE (JAM) file
 ### MAYBE can do soemthing like toolset=${TOOLSET_NAME}-$(ARCH) change; but didn't appear to work
