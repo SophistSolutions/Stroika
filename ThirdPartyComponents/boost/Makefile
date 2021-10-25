@@ -270,39 +270,9 @@ endif
 
 
 #
-##
-### NOTE - all this nonsense is for a few reasons:
-###		o	make builds a bit faster
-###		o	GNU make makes it very hard to figure out what -j parameter was passed to make
-###		o	boost uses b2, which has a parallel make feature, just one thats incompatiple with the gnu make version
-##
+# NB: Attempted to figure out how to pass along the -j JOBS flag to b2, and had some tricky code for a while (til Stroika 2.1b14)
+# but that code never worked, was complex, and didn't improve performance, so KISS, and do nothing.
 #
-export JOBS
-ifndef JOBS
-#no easy way to know right number; but hints from https://stackoverflow.com/questions/5303553/gnu-make-extracting-argument-to-j-within-makefile
-#not reasonable - https://blog.jgc.org/2015/03/gnu-make-insanity-finding-value-of-j.html
-MAKE_PID := $(shell echo $$PPID)
-JOB_FLAG_ := $(filter -j%, $(subst -j ,-j,$(shell ps T | grep "^\s*$(MAKE_PID).*$(MAKE)")))
-JOBS     ?= $(subst -j,,$(JOB_FLAG_))
-endif
-
-ifndef JOBS_FLAG
-ifeq ($(JOBS),)
-# if we cannot detect, safest thing is none, but on windows/mac this never works, so there default to 5
-ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
-JOBS_FLAG:=	-j5
-else ifeq ($(shell uname -s),Darwin)
-JOBS_FLAG:=	-j5
-else
-# probably no -j on parent make, so none on b2; but - alas - very frequently the above doesn't work, so use '5' instead
-#JOBS_FLAG:=
-JOBS_FLAG:=	-j5
-endif
-endif
-endif
-
-
-B2_CONFIGURATION_ARGS +=	$(JOBS_FLAG)
 
 
 
