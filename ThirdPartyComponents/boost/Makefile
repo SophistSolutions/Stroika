@@ -245,7 +245,13 @@ endif
 # this selects a bunch of parameters, but the compiler itself can still be overriden by other parameters - just the
 # darwin.jam file (basically) - and other defaults sort of related to that.
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2022)
+TOOLSET_NAME=msvc-14.3
+else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
+TOOLSET_NAME=msvc-14.2
+else
 TOOLSET_NAME=msvc
+endif
 else ifeq ($(shell uname -s),Darwin)
 #using the name darwin caused errors with XCode 11.4, but otherwise appears to make sense (and we used til 11.4) -- LGP 2020-04-12
 #TOOLSET_NAME=darwin
@@ -263,6 +269,7 @@ else ifeq ($(ARCH),x86_64)
 B2_CONFIGURATION_ARGS +=	address-model=64
 endif
 endif
+
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 B2_CONFIGURATION_ARGS +=	-sBOOST_BUILD_USER_CONFIG=${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/user-config.jam
