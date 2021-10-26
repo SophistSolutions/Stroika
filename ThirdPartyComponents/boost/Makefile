@@ -33,7 +33,8 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
-VERSION=1_76_0
+VERSION=1_77_0
+#VERSION=1_76_0
 #VERSION=1_75_0
 #VERSION=1_74_0
 #VERSION=1_73_0
@@ -217,7 +218,8 @@ endif
 # darwin.jam file (basically) - and other defaults sort of related to that.
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2022)
-TOOLSET_NAME=msvc-14.3
+### This SHOULD be 14.3, but must use 14.2 for the time being since thats all thats supported in boost 1_77_0
+TOOLSET_NAME=msvc-14.2
 else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
 TOOLSET_NAME=msvc-14.2
 else
