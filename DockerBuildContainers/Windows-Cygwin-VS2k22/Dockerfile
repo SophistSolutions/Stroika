@@ -8,6 +8,13 @@
 ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022
 FROM ${BASE_IMAGE}
 
+# Sometimes we get sporadic failures building, and I THINK this is due to running out of disk space in builder, so
+# adding this to the docker engine config may help:
+# "storage-opts": [
+# "size=300GB"
+# ]
+# https://unrealcontainers.com/docs/environments/local-windows-10
+
 
 #
 # List of workloads and components to add from
@@ -30,11 +37,6 @@ FROM ${BASE_IMAGE}
 #       https://docs.microsoft.com/en-us/visualstudio/releases/2019/history
 #
 ARG VS_Latest=https://aka.ms/vs/16/release/vs_buildtools.exe
-ARG VS_16_7_7=https://download.visualstudio.microsoft.com/download/pr/a319c7ec-a0bd-4619-b966-4c58a50f7c76/8ba9f0872faf7640709098adbd88f156902529de9032d214844bec363865d99e/vs_BuildTools.exe
-ARG VS_16_9_6=https://download.visualstudio.microsoft.com/download/pr/e730a0bd-baf1-4f4c-9341-ca5a9caf0f9f/9a5f58f745e70806220238cb31d9da147462331eaa6ff61af1607052010b20e0/vs_BuildTools.exe
-ARG VS_16_11_0=https://download.visualstudio.microsoft.com/download/pr/45dfa82b-c1f8-4c27-a5a0-1fa7a864ae21/75e7f5779a42dddabc647af82a7eae4bf1417484f0cd1ac9e8fd87cbe7450c39/vs_BuildTools.exe
-ARG VS_16_11_1=https://download.visualstudio.microsoft.com/download/pr/9efbe138-ff42-4deb-95c9-1d78cdc1f98b/920981c883089c445a6a3a617396d089e7999437c1d70fc4629f557a75ac4fa5/vs_BuildTools.exe
-ARG VS_16_11_3=https://download.visualstudio.microsoft.com/download/pr/22c17f05-944c-48dc-9f68-b1663f9df4cb/f3f6868ff82ea90b510c3ef76b8ee3ed2b559795da8dd80f3706fb8a7f7510d6/vs_BuildTools.exe
 ARG VS_16_11_5=https://download.visualstudio.microsoft.com/download/pr/5a50b8ac-2c22-47f1-ba60-70d4257a78fa/4e0f5197da02b62b9fa48f05b55f2e206265785a6f0bab7235ef88fbdbe49e5e/vs_BuildTools.exe
 
 #ARG VS_17_Preview=https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=BuildTools&ch=pre&rel=17
@@ -47,12 +49,24 @@ SHELL ["powershell"]
 RUN Invoke-WebRequest "$env:VS_17_Preview" `
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 SHELL ["cmd", "/S", "/C"]
+## Component.VC.14.20 ... components added for the sake of building old boost versions... (1.77.0 and earlier) - TRIED - DIDNT WORK
+# --add Microsoft.VisualStudio.Component.VC.14.20.x86.x64 `
+# --add Microsoft.VisualStudio.Component.VC.14.20.ATLMFC `
+# ADDED explicitly versioned VC loads
 RUN %TEMP%\vs_buildtools.exe `
-    --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools" `
+    --installPath "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools" `
+    --includeRecommended `
+    # --includeOptional `
     --add Microsoft.VisualStudio.Workload.VCTools `
     --add Microsoft.VisualStudio.Workload.UniversalBuildTools `
     --add Microsoft.VisualStudio.Component.VC.ATLMFC `
-    --includeRecommended `
+    # --add Microsoft.VisualStudio.Component.VC.ATL `
+    # --add Microsoft.VisualStudio.Component.VC.14.30.17.0.x86.x64 `
+    # --add Microsoft.VisualStudio.Component.VC.14.30.17.0.ATL `
+    # --add Microsoft.VisualStudio.Component.VC.14.30.17.0.MFC `
+    # --add Microsoft.VisualStudio.Component.VC.14.29.16.11.x86.x64 `
+    # --add Microsoft.VisualStudio.Component.VC.14.29.16.11.ATL `
+    # --add Microsoft.VisualStudio.Component.VC.14.29.16.11.MFC `
     --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 `
     --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 `
     --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 `
