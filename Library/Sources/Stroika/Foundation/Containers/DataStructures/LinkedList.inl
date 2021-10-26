@@ -278,7 +278,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             prevLink->fNext = victim->fNext;
         }
 
-        delete (victim);
+        delete victim;
 
         i.Invariant ();
         Invariant ();
