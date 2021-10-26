@@ -153,8 +153,9 @@ checkin from one spot.
 
 - Must be done on Windows machine (currently doesnt work on - even windows - vm)
 
-  ```dos
-  sh ScriptsLib\RunLocalWindowsDockerRegressionTests
+  ```sh
+   ./ScriptsLib/RunLocalWindowsDockerRegressionTests
+   CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 USE_TEST_BASENAME=Windows_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
   ```
 
 - WSL (tested on Ubuntu 20.04) test

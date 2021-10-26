@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# EXAMPLE RUN:
+#       ./ScriptsLib/RunLocalWindowsDockerRegressionTests
+#       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 USE_TEST_BASENAME=Windows_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
+#       
 CONTAINER_IMAGE="${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19}"
 CONTAINER_NAME="${CONTAINER_NAME:-DockerWindowsStroikaRegressionTester1}"
 USE_TEST_BASENAME="${USE_TEST_BASENAME:-Windows_VS2k19-In-Docker}"
