@@ -454,7 +454,7 @@ namespace Stroika::Foundation::Containers {
         virtual bool                        Contains (ArgByValueType<T> item) const                                                                 = 0;
         virtual void                        Add (ArgByValueType<T> item, CounterType count)                                                         = 0;
         virtual void                        Remove (ArgByValueType<T> item, CounterType count)                                                      = 0;
-        virtual void                        Remove (const Iterator<CountedValue<T>>& i)                                                             = 0;
+        virtual void                        Remove (const Iterator<CountedValue<T>>& i, Iterator<CountedValue<T>>* nextI)                           = 0;
         virtual void                        UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount)                                  = 0;
         virtual CounterType                 OccurrencesOf (ArgByValueType<T> item) const                                                            = 0;
         // Subtle point - shared rep argument to Elements() allows shared ref counting
@@ -463,8 +463,6 @@ namespace Stroika::Foundation::Containers {
         // Subtle point - shared rep argument to Elements() allows shared ref counting
         // without the cost of a clone or enable_shared_from_this
         virtual Iterable<T> UniqueElements (const _IRepSharedPtr& rep) const = 0;
-        //  call before remove - if adjustAt == nullopt, means removedAll
-        virtual void PatchIteratorBeforeRemove (const optional<Iterator<CountedValue<T>>>& adjustmentAt, Iterator<CountedValue<T>>* i) const = 0;
 
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;

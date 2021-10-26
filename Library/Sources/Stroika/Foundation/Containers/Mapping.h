@@ -622,9 +622,8 @@ namespace Stroika::Foundation::Containers {
         // return true if NEW mapping added (container enlarged) - if replaceExistingMapping we unconditionally update but can still return false
         virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode) = 0;
         virtual void Remove (ArgByValueType<KEY_TYPE> key)                                                                 = 0;
-        virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i)                                 = 0;
-        //  call before remove - if adjustAt == nullopt, means removedAll
-        virtual void PatchIteratorBeforeRemove (const optional<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>>& adjustmentAt, Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* i) const = 0;
+        // if nextI is non-null, its filled in with the next item in iteration order after i (has been removed)
+        virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i, Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* nextI) = 0;
 
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;

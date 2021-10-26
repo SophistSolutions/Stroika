@@ -142,6 +142,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            i->Refresh (); // reflect updated rep
             return result;
         }
         virtual bool Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override
@@ -184,10 +185,19 @@ namespace Stroika::Foundation::Containers::Concrete {
                 }
             }
         }
-        virtual void Remove (const Iterator<CountedValue<T>>& i) override
+        virtual void Remove (const Iterator<CountedValue<T>>& i, Iterator<CountedValue<T>>* nextI) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            if (nextI != nullptr) {
+                *nextI = i;
+                auto iRep = Debug::UncheckedDynamicCast<const IteratorRep_*> (&nextI->ConstGetRep ());
+                    iRep->fIterator.PatchBeforeRemove (&Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+
+            }
             fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+            if (nextI != nullptr) {
+                nextI->Refresh (); // update to reflect changes made to rep
+            }
         }
         virtual void UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
         {
@@ -221,17 +231,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterable<T> UniqueElements (const typename MultiSet<T, TRAITS>::_IRepSharedPtr& rep) const override
         {
             return this->_UniqueElements_Reference_Implementation (rep);
-        }
-        virtual void PatchIteratorBeforeRemove (const optional<Iterator<CountedValue<T>>>& adjustmentAt, Iterator<CountedValue<T>>* i) const override
-        {
-            RequireNotNull (i);
-            auto iRep = Debug::UncheckedDynamicCast<const IteratorRep_*> (&i->ConstGetRep ());
-            if (adjustmentAt) {
-                iRep->fIterator.PatchBeforeRemove (&Debug::UncheckedDynamicCast<const IteratorRep_&> (adjustmentAt->ConstGetRep ()).fIterator);
-            }
-            else {
-                iRep->fIterator.PatchBeforeRemove (nullptr);
-            }
         }
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override

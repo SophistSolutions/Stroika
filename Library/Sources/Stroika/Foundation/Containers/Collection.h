@@ -368,9 +368,7 @@ namespace Stroika::Foundation::Containers {
         virtual _IRepSharedPtr CloneAndPatchIterator (Iterator<T>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
         virtual void           Add (ArgByValueType<T> item)                                                              = 0;
         virtual void           Update (const Iterator<T>& i, ArgByValueType<T> newValue)                                 = 0;
-        virtual void           Remove (const Iterator<T>& i)                                                             = 0;
-        //  call before remove - if adjustAt == nullopt, means removedAll
-        virtual void PatchIteratorBeforeRemove (const optional<Iterator<T>>& adjustmentAt, Iterator<T>* i) const = 0;
+        virtual void           Remove (const Iterator<T>& i, Iterator<T>* nextI)                                         = 0;
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

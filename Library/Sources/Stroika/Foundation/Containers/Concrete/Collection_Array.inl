@@ -101,6 +101,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            i->Refresh (); // reflect updated rep
             return result;
         }
         virtual void Add (ArgByValueType<T> item) override
@@ -114,20 +115,17 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             fData_.SetAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator, newValue);
         }
-        virtual void Remove (const Iterator<T>& i) override
+        virtual void Remove (const Iterator<T>& i, Iterator<T>* nextI) override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
-        }
-        virtual void PatchIteratorBeforeRemove (const optional<Iterator<T>>& adjustmentAt, Iterator<T>* i) const override
-        {
-            RequireNotNull (i);
-            auto iRep = Debug::UncheckedDynamicCast<const IteratorRep_*> (&i->ConstGetRep ());
-            if (adjustmentAt) {
-                iRep->fIterator.PatchBeforeRemove (&Debug::UncheckedDynamicCast<const IteratorRep_&> (adjustmentAt->ConstGetRep ()).fIterator);
+            if (nextI != nullptr) {
+                *nextI = i;
+                auto iRep = Debug::UncheckedDynamicCast<const IteratorRep_*> (&nextI->ConstGetRep ());
+                iRep->fIterator.PatchBeforeRemove (&Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
             }
-            else {
-                iRep->fIterator.PatchBeforeRemove (nullptr);
+            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+            if (nextI != nullptr) {
+                nextI->Refresh (); // update to reflect changes made to rep
             }
         }
 #if qDebug

@@ -97,6 +97,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            i->Refresh (); // reflect updated rep
             return result;
         }
         virtual void Add (ArgByValueType<T> item) override
@@ -111,10 +112,17 @@ namespace Stroika::Foundation::Containers::Concrete {
             Assert (not i.Done ());
             *mir.fIterator.fStdIterator = newValue;
         }
-        virtual void Remove (const Iterator<T>& i) override
+        virtual void Remove (const Iterator<T>& i, Iterator<T>* nextI) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            if (nextI != nullptr) {
+                *nextI = i;
+                ++(*nextI);
+            }
             (void)fData_.erase_after (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.fStdIterator);
+            if (nextI != nullptr) {
+                nextI->Refresh (); // update to reflect changes made to rep
+            }
 #if 0
             // HORRIBLE BUT ADEQUITE IMPL...FOR NOW...
             {
@@ -131,17 +139,6 @@ namespace Stroika::Foundation::Containers::Concrete {
                 }
             }
 #endif
-        }
-        virtual void PatchIteratorBeforeRemove (const optional<Iterator<T>>& adjustmentAt, Iterator<T>* i) const override
-        {
-            RequireNotNull (i);
-            auto iRep = Debug::UncheckedDynamicCast<const IteratorRep_*> (&i->ConstGetRep ());
-            if (adjustmentAt) {
-                iRep->fIterator.PatchBeforeRemove (&Debug::UncheckedDynamicCast<const IteratorRep_&> (adjustmentAt->ConstGetRep ()).fIterator);
-            }
-            else {
-                iRep->fIterator.PatchBeforeRemove (nullptr);
-            }
         }
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override

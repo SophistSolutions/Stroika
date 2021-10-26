@@ -117,13 +117,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<Rep_> (fData_.key_comp ());
         }
-        virtual _MappingRepSharedPtr CloneAndPatchIterator ([[maybe_unused]] Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
+        virtual _MappingRepSharedPtr CloneAndPatchIterator (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
         {
             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
             auto                                                      result = Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            i->Refresh (); // reflect updated rep
             return result;
         }
         virtual Iterable<KEY_TYPE> Keys () const override
@@ -179,22 +180,19 @@ namespace Stroika::Foundation::Containers::Concrete {
                 fData_.erase (i);
             }
         }
-        virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i) override
+        virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i, Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* nextI) override
         {
             Require (not i.Done ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            if (nextI != nullptr) {
+                *nextI = i;
+                    ++(*nextI); // advance to next item if deleting current one
+            }
             auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.fData == &fData_);
             (void)fData_.erase (mir.fIterator.fStdIterator);
-        }
-        virtual void PatchIteratorBeforeRemove ([[maybe_unused]] const optional<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>>& adjustmentAt, [[maybe_unused]] Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* i) const override
-        {
-            RequireNotNull (i);
-            if (adjustmentAt == *i) {
-                ++(*i); // advance to next item if deleting current one
-            }
-            else {
-                // nothing needed for other links
+            if (nextI != nullptr) {
+                nextI->Refresh (); // update to reflect changes made to rep
             }
         }
 #if qDebug

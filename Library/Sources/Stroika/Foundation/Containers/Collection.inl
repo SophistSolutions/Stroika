@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Containers {
     {
         for (Iterator<T> i = this->begin (); i != this->end (); ++i) {
             if (equalsComparer (*i, item)) {
-                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
+                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i, nullptr);
                 return true;
             }
         }
@@ -178,14 +178,7 @@ namespace Stroika::Foundation::Containers {
     {
         Require (not i.Done ());
         auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
-        if (nextI != nullptr) {
-            *nextI = patchedIterator;
-            Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->PatchIteratorBeforeRemove (patchedIterator, nextI);
-        }
-        Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->Remove (patchedIterator);
-        if (nextI != nullptr) {
-            nextI->Refresh (); // update to reflect changes made to rep
-        }
+        Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->Remove (patchedIterator, nextI);
     }
     template <typename T>
     template <typename PREDICATE>

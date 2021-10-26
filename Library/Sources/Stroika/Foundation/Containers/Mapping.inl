@@ -260,14 +260,7 @@ namespace Stroika::Foundation::Containers {
     {
         Require (not i.Done ());
         auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
-        if (nextI != nullptr) {
-            *nextI = patchedIterator;
-            Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->PatchIteratorBeforeRemove (patchedIterator, nextI);
-        }
-        Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->Remove (patchedIterator);
-        if (nextI != nullptr) {
-            nextI->Refresh (); // update to reflect changes made to rep by PatchIteratorBeforeRemove
-        }
+        Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->Remove (patchedIterator, nextI);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll ()
