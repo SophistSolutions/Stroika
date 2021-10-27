@@ -44,6 +44,10 @@ ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
 ###tmphack for pre-release 1.67 release
 #VERSION_WITH_2DOTS=1.67.0
 
+# IF CENTOS, THEN USE OLDER BOOST - 1.76... - to avoid fail to compile...
+ifneq (,$(wildcard /etc/redhat-release))
+     VERSION=1_76_0
+endif
 
 
 ifneq (,$(findstring /cygdrive/,$(PATH)))
