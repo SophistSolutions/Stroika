@@ -38,6 +38,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = SortedCollection<T>;
 
     public:
+        using value_type          = typename inherited::value_type;
+        using InOrderComparerType = typename SortedCollection<T>::InOrderComparerType;
+
+    public:
         /**
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */
@@ -53,6 +57,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         nonvirtual SortedCollection_LinkedList& operator= (const SortedCollection_LinkedList& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr   = typename Iterable<T>::_IterableRepSharedPtr;
+        using _CollectionRepSharedPtr = typename Collection<T>::_IRepSharedPtr;
 
     private:
         class IImplRepBase_;

@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Traversal {
         return GetLength () == 0;
     }
     template <typename T>
-    inline void Iterable<T>::_IRep::_Apply (_APPLY_ARGTYPE doToElement) const
+    inline void Iterable<T>::_IRep::_Apply (const function<void (ArgByValueType<T> item)>& doToElement) const
     {
         RequireNotNull (doToElement);
         for (Iterator<T> i = MakeIterator (this); i != Iterable<T>::end (); ++i) {
@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    inline Iterator<T> Iterable<T>::_IRep::_FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+    inline Iterator<T> Iterable<T>::_IRep::_FindFirstThat (const function<bool (ArgByValueType<T> item)>& doToElement, IteratorOwnerID suggestedOwner) const
     {
         RequireNotNull (doToElement);
         for (Iterator<T> i = MakeIterator (suggestedOwner); i != Iterable<T>::end (); ++i) {

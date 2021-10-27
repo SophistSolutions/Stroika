@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Containers {
          *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, pair<DOMAIN_TYPE, RANGE_TYPE>>;
+        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
 
     public:
         /**
@@ -184,9 +184,9 @@ namespace Stroika::Foundation::Containers {
         explicit Bijection (InjectivityViolationPolicy injectivityCheckPolicy, DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer);
         Bijection (const Bijection& src) noexcept = default;
         Bijection (Bijection&& src) noexcept      = default;
-        Bijection (const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
+        Bijection (const initializer_list<value_type>& src);
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> ()>* = nullptr>
-        Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
+        Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const initializer_list<value_type>& src);
         template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, Configuration::remove_cvref_t<CONTAINER_OF_SINGLEVALUE_ADD_ARGS>>>* = nullptr>
         explicit Bijection (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src);
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>>* = nullptr>
@@ -395,7 +395,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \note mutates container
          */
-        nonvirtual void Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i, Iterator<value_type>* nextI = nullptr);
+        nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
 
     public:
         /**
@@ -514,7 +514,7 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         template <typename T2>
-        using _SafeReadRepAccessor = typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template _SafeReadRepAccessor<T2>;
+        using _SafeReadRepAccessor = typename Iterable<value_type>::template _SafeReadRepAccessor<T2>;
 
     protected:
         /**
@@ -551,7 +551,7 @@ namespace Stroika::Foundation::Containers {
 #endif
     {
     private:
-        using inherited = typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep;
+        using inherited = typename Iterable<value_type>::_IRep;
 
 #if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
     protected:
@@ -570,21 +570,21 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     public:
-        virtual _IRepSharedPtr                  CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                                                = 0;
-        virtual _IRepSharedPtr                  CloneAndPatchIterator (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
-        virtual bool                            Equals (const _IRep& rhs) const                                                                                       = 0;
-        virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const                                                                                      = 0;
-        virtual RangeEqualsCompareFunctionType  GetRangeEqualsComparer () const                                                                                       = 0;
-        virtual Iterable<DomainType>            Preimage () const                                                                                                     = 0;
-        virtual Iterable<RangeType>             Image () const                                                                                                        = 0;
+        virtual _IRepSharedPtr                  CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                             = 0;
+        virtual _IRepSharedPtr                  CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
+        virtual bool                            Equals (const _IRep& rhs) const                                                                    = 0;
+        virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const                                                                   = 0;
+        virtual RangeEqualsCompareFunctionType  GetRangeEqualsComparer () const                                                                    = 0;
+        virtual Iterable<DomainType>            Preimage () const                                                                                  = 0;
+        virtual Iterable<RangeType>             Image () const                                                                                     = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
-        virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, optional<RangeType>* item) const              = 0;
-        virtual bool InverseLookup (ArgByValueType<RANGE_TYPE> key, optional<DomainType>* item) const       = 0;
-        virtual void Add (ArgByValueType<DOMAIN_TYPE> key, ArgByValueType<RANGE_TYPE> newElt)               = 0;
-        virtual void RemoveDomainElement (ArgByValueType<DOMAIN_TYPE> d)                                    = 0;
-        virtual void RemoveRangeElement (ArgByValueType<RANGE_TYPE> r)                                      = 0;
-        virtual void Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i, Iterator<value_type>* nextI) = 0;
+        virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, optional<RangeType>* item) const        = 0;
+        virtual bool InverseLookup (ArgByValueType<RANGE_TYPE> key, optional<DomainType>* item) const = 0;
+        virtual void Add (ArgByValueType<DOMAIN_TYPE> key, ArgByValueType<RANGE_TYPE> newElt)         = 0;
+        virtual void RemoveDomainElement (ArgByValueType<DOMAIN_TYPE> d)                              = 0;
+        virtual void RemoveRangeElement (ArgByValueType<RANGE_TYPE> r)                                = 0;
+        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)              = 0;
 
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;

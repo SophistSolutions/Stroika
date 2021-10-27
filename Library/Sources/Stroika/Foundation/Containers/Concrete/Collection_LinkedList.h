@@ -35,6 +35,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Collection<T>;
 
     public:
+        using value_type = typename inherited::value_type;
+
+    public:
         /**
          */
         Collection_LinkedList ();
@@ -45,6 +48,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         nonvirtual Collection_LinkedList& operator= (const Collection_LinkedList& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr   = typename Iterable<T>::_IterableRepSharedPtr;
+        using _CollectionRepSharedPtr = typename Collection<T>::_IRepSharedPtr;
 
     private:
         class IImplRep_;

@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Containers {
          */
         Collection ();
         Collection (const Collection& src) noexcept = default;
-        Collection (const initializer_list<T>& src);
+        Collection (const initializer_list<value_type>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Collection<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Collection (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Containers {
          * \brief Compares items with TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {}) const;
+        nonvirtual bool Contains (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer = {}) const;
 
     public:
         /**
@@ -196,7 +196,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void Add (ArgByValueType<T> item);
+        nonvirtual void Add (ArgByValueType<value_type> item);
 
     public:
         /**
@@ -223,7 +223,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue);
+        nonvirtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue);
 
     public:
         /**
@@ -243,8 +243,8 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
-        nonvirtual void Remove (const Iterator<T>& i, Iterator<T>* nextI = nullptr);
+        nonvirtual bool Remove (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer = {});
+        nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
         template <typename PREDICATE>
         nonvirtual bool Remove (const PREDICATE& p);
 
@@ -275,7 +275,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  @see Iterable<T>::Where
          */
-        nonvirtual Collection<T> Where (const function<bool (ArgByValueType<T>)>& doToElement) const;
+        nonvirtual Collection<T> Where (const function<bool (ArgByValueType<value_type>)>& doToElement) const;
 
     public:
         /**
@@ -292,8 +292,8 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual void erase (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
-        nonvirtual Iterator<T> erase (const Iterator<T>& i);
+        nonvirtual void erase (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer = {});
+        nonvirtual Iterator<value_type> erase (const Iterator<value_type>& i);
 
     public:
         /**
@@ -307,8 +307,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual Collection<T>& operator+= (ArgByValueType<T> item);
-        nonvirtual Collection<T>& operator+= (const Iterable<T>& items);
+        nonvirtual Collection& operator+= (ArgByValueType<value_type> item);
+        nonvirtual Collection& operator+= (const Iterable<value_type>& items);
 
     protected:
         /**
@@ -361,14 +361,14 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     protected:
-        using _IRepSharedPtr = typename Collection<T>::_IRepSharedPtr;
+        //      using _IRepSharedPtr = typename Collection<T>::_IRepSharedPtr;
 
     public:
-        virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                    = 0;
-        virtual _IRepSharedPtr CloneAndPatchIterator (Iterator<T>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
-        virtual void           Add (ArgByValueType<T> item)                                                              = 0;
-        virtual void           Update (const Iterator<T>& i, ArgByValueType<T> newValue)                                 = 0;
-        virtual void           Remove (const Iterator<T>& i, Iterator<T>* nextI)                                         = 0;
+        virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                             = 0;
+        virtual _IRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
+        virtual void           Add (ArgByValueType<value_type> item)                                                              = 0;
+        virtual void           Update (const Iterator<value_type>& i, ArgByValueType<T> newValue)                                 = 0;
+        virtual void           Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                = 0;
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

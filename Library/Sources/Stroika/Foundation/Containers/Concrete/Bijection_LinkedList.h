@@ -56,6 +56,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         nonvirtual Bijection_LinkedList& operator= (const Bijection_LinkedList& rhs) = default;
 
+    protected:
+        using _IterableRepSharedPtr  = typename inherited::_IterableRepSharedPtr;
+        using _BijectionRepSharedPtr = typename inherited::_IRepSharedPtr;
+
     private:
         class IImplRepBase_;
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>

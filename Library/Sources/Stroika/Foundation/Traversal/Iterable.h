@@ -1329,6 +1329,7 @@ namespace Stroika::Foundation::Traversal {
         using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
 
     public:
+        // @todo MAKE THESE DEPRECATED
         using _APPLY_ARGTYPE      = const function<void (ArgByValueType<T> item)>&;
         using _APPLYUNTIL_ARGTYPE = const function<bool (ArgByValueType<T> item)>&;
 
@@ -1348,11 +1349,11 @@ namespace Stroika::Foundation::Traversal {
          *      I think its good enough that particular subtypes - where tracking an owner makes sense and
          *      is useful, we be done. And when not useful, it can be optimized away.
          */
-        virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const                       = 0;
-        virtual size_t      GetLength () const                                                        = 0;
-        virtual bool        IsEmpty () const                                                          = 0;
-        virtual void        Apply (_APPLY_ARGTYPE doToElement) const                                  = 0;
-        virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE, IteratorOwnerID suggestedOwner) const = 0;
+        virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const                                                  = 0;
+        virtual size_t      GetLength () const                                                                                   = 0;
+        virtual bool        IsEmpty () const                                                                                     = 0;
+        virtual void        Apply (const function<void (ArgByValueType<T> item)>& doToElement) const                             = 0;
+        virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<T> item)>&, IteratorOwnerID suggestedOwner) const = 0;
 
     protected:
         /*
@@ -1360,8 +1361,8 @@ namespace Stroika::Foundation::Traversal {
          * actual subclasses.
          */
         nonvirtual bool _IsEmpty () const;
-        nonvirtual void _Apply (_APPLY_ARGTYPE doToElement) const;
-        nonvirtual Iterator<T> _FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const;
+        nonvirtual void _Apply (const function<void (ArgByValueType<T> item)>& doToElement) const;
+        nonvirtual Iterator<T> _FindFirstThat (const function<bool (ArgByValueType<T> item)>& doToElement, IteratorOwnerID suggestedOwner) const;
     };
 
     /**

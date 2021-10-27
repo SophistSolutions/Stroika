@@ -26,12 +26,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     class Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::IImplRepBase_ : public Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep {
     private:
         using inherited = typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep;
-
-#if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
-    protected:
-        using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-#endif
     };
 
     /*
@@ -44,14 +38,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     class Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>> {
     private:
         using inherited = IImplRepBase_;
-
-    public:
-        using _IterableRepSharedPtr           = typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IterableRepSharedPtr;
-        using _BijectionRepSharedPtr          = typename inherited::_IRepSharedPtr;
-        using _APPLY_ARGTYPE                  = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE             = typename inherited::_APPLYUNTIL_ARGTYPE;
-        using DomainEqualsCompareFunctionType = typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::DomainEqualsCompareFunctionType;
-        using RangeEqualsCompareFunctionType  = typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::RangeEqualsCompareFunctionType;
 
     public:
         Rep_ (Bijection_Base::InjectivityViolationPolicy injectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
@@ -84,12 +70,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
         {
             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-            return Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+            return Iterable<value_type>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
         }
-        virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> MakeIterator (IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
             Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-            return Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
+            return Iterator<value_type> (Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
         }
         virtual size_t GetLength () const override
         {
@@ -99,38 +85,37 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return fData_.IsEmpty ();
         }
-        virtual void Apply (_APPLY_ARGTYPE doToElement) const override
+        virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
-        virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<value_type> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            using RESULT_TYPE     = Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>;
             using SHARED_REP_TYPE = Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_>;
             auto iLink            = fData_.FindFirstThat (doToElement);
             if (iLink == nullptr) {
-                return RESULT_TYPE::GetEmptyIterator ();
+                return Iterator < value_type>::GetEmptyIterator ();
             }
             Rep_*           NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-            SHARED_REP_TYPE resultRep      = Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+            SHARED_REP_TYPE resultRep      = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
             resultRep->fIterator.SetCurrentLink (iLink);
             // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
-            return RESULT_TYPE (move (resultRep));
+            return Iterator<value_type>{move (resultRep)};
         }
 
         // Bijection<DOMAIN_TYPE, RANGE_TYPE::BijectionTraitsType>::_IRep overrides
     public:
         virtual _BijectionRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
-            return Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSmartPtr<Rep_> (fInjectivityViolationPolicy_, fDomainEqualsComparer_, fRangeEqualsComparer_);
+            return Iterable<value_type>::template MakeSmartPtr<Rep_> (fInjectivityViolationPolicy_, fDomainEqualsComparer_, fRangeEqualsComparer_);
         }
-        virtual _BijectionRepSharedPtr CloneAndPatchIterator (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
+        virtual _BijectionRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
         {
             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-            auto                                                      result = Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
+            auto                                                      result = Iterable<value_type>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
@@ -160,7 +145,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, optional<RANGE_TYPE>* item) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
+            for (typename DataStructures::LinkedList<value_type>::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
                 if (fDomainEqualsComparer_ (it.Current ().first, key)) {
                     if (item != nullptr) {
                         *item = it.Current ().second;
@@ -176,7 +161,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool InverseLookup (ArgByValueType<RANGE_TYPE> key, optional<DOMAIN_TYPE>* item) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
+            for (typename DataStructures::LinkedList<value_type>::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
                 if (fRangeEqualsComparer_ (it.Current ().second, key)) {
                     if (item != nullptr) {
                         *item = it.Current ().first;
@@ -217,11 +202,11 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
                 if (fDomainEqualsComparer_ (it.Current ().first, key)) {
-                    fData_.SetAt (it, pair<DOMAIN_TYPE, RANGE_TYPE> (key, newElt));
+                    fData_.SetAt (it, value_type{key, newElt});
                     return;
                 }
             }
-            fData_.Append (pair<DOMAIN_TYPE, RANGE_TYPE> (key, newElt));
+            fData_.Append (value_type{key, newElt});
         }
         virtual void RemoveDomainElement (ArgByValueType<DOMAIN_TYPE> d) override
         {
@@ -245,7 +230,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 }
             }
         }
-        virtual void Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i, Iterator<value_type>* nextI) override
+        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             if (nextI != nullptr) {
@@ -266,8 +251,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 #endif
     private:
-        using DataStructureImplType_ = DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>;
-        using IteratorRep_           = Private::IteratorImplHelper_<pair<DOMAIN_TYPE, RANGE_TYPE>, DataStructureImplType_>;
+        using DataStructureImplType_ = DataStructures::LinkedList<value_type>;
+        using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
         DataStructureImplType_ fData_;

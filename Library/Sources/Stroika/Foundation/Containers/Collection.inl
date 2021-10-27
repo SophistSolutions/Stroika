@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    inline Collection<T>::Collection (const initializer_list<T>& src)
+    inline Collection<T>::Collection (const initializer_list<value_type>& src)
         : Collection{}
     {
         AddAll (src);
@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Containers {
 #endif
     template <typename T>
     template <typename EQUALS_COMPARER>
-    bool Collection<T>::Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const
+    bool Collection<T>::Contains (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer) const
     {
         for (const auto i : *this) {
             if (equalsComparer (i, item)) {
@@ -111,21 +111,21 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    inline void Collection<T>::Add (ArgByValueType<T> item)
+    inline void Collection<T>::Add (ArgByValueType<value_type> item)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item);
         Ensure (not this->IsEmpty ());
     }
     template <typename T>
-    inline void Collection<T>::Update (const Iterator<T>& i, ArgByValueType<T> newValue)
+    inline void Collection<T>::Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Update (i, newValue);
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    inline bool Collection<T>::Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
+    inline bool Collection<T>::Remove (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer)
     {
-        for (Iterator<T> i = this->begin (); i != this->end (); ++i) {
+        for (Iterator<value_type> i = this->begin (); i != this->end (); ++i) {
             if (equalsComparer (*i, item)) {
                 _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i, nullptr);
                 return true;
@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Containers {
         return nRemoved;
     }
     template <typename T>
-    inline void Collection<T>::Remove (const Iterator<T>& i, Iterator<T>* nextI)
+    inline void Collection<T>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
     {
         Require (not i.Done ());
         auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
@@ -199,30 +199,30 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    inline void Collection<T>::erase (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
+    inline void Collection<T>::erase (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer)
     {
         Remove (item, equalsComparer);
     }
     template <typename T>
-    inline Iterator<T> Collection<T>::erase (const Iterator<T>& i)
+    inline auto Collection<T>::erase (const Iterator<value_type>& i) -> Iterator<value_type>
     {
         Iterator<T> nextI{nullptr};
         Remove (i, &nextI);
         return nextI;
     }
     template <typename T>
-    inline Collection<T> Collection<T>::Where (const function<bool (ArgByValueType<T>)>& doToElement) const
+    inline Collection<T> Collection<T>::Where (const function<bool (ArgByValueType<value_type>)>& doToElement) const
     {
         return Iterable<T>::Where (doToElement, Collection<T>{});
     }
     template <typename T>
-    inline Collection<T>& Collection<T>::operator+= (ArgByValueType<T> item)
+    inline auto Collection<T>::operator+= (ArgByValueType<value_type> item) -> Collection&
     {
         Add (item);
         return *this;
     }
     template <typename T>
-    inline Collection<T>& Collection<T>::operator+= (const Iterable<T>& items)
+    inline auto Collection<T>::operator+= (const Iterable<value_type>& items) -> Collection&
     {
         AddAll (items);
         return *this;

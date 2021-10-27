@@ -38,13 +38,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = IImplRepBase_;
 
     public:
-        using _IterableRepSharedPtr   = typename Iterable<T>::_IterableRepSharedPtr;
-        using _CollectionRepSharedPtr = typename Collection<T>::_IRepSharedPtr;
-        using _APPLY_ARGTYPE          = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE     = typename inherited::_APPLYUNTIL_ARGTYPE;
-        using InOrderComparerType     = typename SortedCollection<T>::InOrderComparerType;
-
-    public:
         Rep_ (const INORDER_COMPARER& inorderComparer)
             : fInorderComparer_{inorderComparer}
         {
@@ -83,26 +76,25 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return fData_.IsEmpty ();
         }
-        virtual void Apply (_APPLY_ARGTYPE doToElement) const override
+        virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
-        virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<value_type> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            using RESULT_TYPE     = Iterator<T>;
             using SHARED_REP_TYPE = Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_>;
             auto iLink            = fData_.FindFirstThat (doToElement);
             if (iLink == nullptr) {
-                return RESULT_TYPE::GetEmptyIterator ();
+                return Iterator<value_type>::GetEmptyIterator ();
             }
             Rep_*           NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
             SHARED_REP_TYPE resultRep      = Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
             resultRep->fIterator.SetCurrentLink (iLink);
             // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
-            return RESULT_TYPE (move (resultRep));
+            return Iterator<value_type>{move (resultRep)};
         }
 
         // Collection<T>::_IRep overrides
@@ -121,18 +113,18 @@ namespace Stroika::Foundation::Containers::Concrete {
             i->Refresh (); // reflect updated rep
             return result;
         }
-        virtual void Add (ArgByValueType<T> item) override
+        virtual void Add (ArgByValueType<value_type> item) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             AddWithoutLocks_ (item);
         }
-        virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
+        virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue) override
         {
             auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             // equals might examine a subset of the object and we still want to update the whole object, but
             // if its not already equal, the sort order could have changed so we must simulate with a remove/add
-            if (Common::EqualsComparerAdapter (fInorderComparer_) (mir.fIterator.Current (), newValue)) {
+            if (Common::EqualsComparerAdapter{fInorderComparer_}(mir.fIterator.Current (), newValue)) {
                 fData_.SetAt (mir.fIterator, newValue);
             }
             else {
@@ -140,7 +132,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 AddWithoutLocks_ (newValue);
             }
         }
-        virtual void Remove (const Iterator<T>& i, Iterator<T>* nextI) override
+        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             if (nextI != nullptr) {
@@ -172,19 +164,19 @@ namespace Stroika::Foundation::Containers::Concrete {
             return false;
             //return this->_Equals_Reference_Implementation (rhs);
         }
-        virtual bool Contains (ArgByValueType<T> item) const override
+        virtual bool Contains (ArgByValueType<value_type> item) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return fData_.Lookup (item, Common::EqualsComparerAdapter{fInorderComparer_}) != nullptr;
         }
-        virtual void Remove (ArgByValueType<T> item) override
+        virtual void Remove (ArgByValueType<value_type> item) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             fData_.Remove (item, Common::EqualsComparerAdapter{fInorderComparer_});
         }
 
     private:
-        nonvirtual void AddWithoutLocks_ (ArgByValueType<T> item)
+        nonvirtual void AddWithoutLocks_ (ArgByValueType<value_type> item)
         {
             using Traversal::kUnknownIteratorOwnerID;
             typename Rep_::DataStructureImplType_::ForwardIterator it{&fData_};

@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
+    inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const initializer_list<value_type>& src)
         : Bijection{}
     {
         AddAll (src);
@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> ()>*>
-    inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
+    inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const initializer_list<value_type>& src)
         : Bijection{forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer)}
     {
         AddAll (src);
@@ -290,7 +290,7 @@ namespace Stroika::Foundation::Containers {
     inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::ContainsRangeElement (ArgByValueType<RangeType> v) const
     {
         // REIMPLEMENT USING InverseLookup()!!! @todo
-        for (pair<DOMAIN_TYPE, RANGE_TYPE> t : *this) {
+        for (value_type t : *this) {
             if (GetRangeEqualsComparer () (t.second, v)) {
                 return true;
             }
@@ -344,7 +344,7 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveRangeElement (r);
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i, Iterator<value_type>* nextI)
+    inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
     {
         Require (not i.Done ());
         auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
@@ -363,7 +363,7 @@ namespace Stroika::Foundation::Containers {
     TARGET_CONTAINER Bijection<DOMAIN_TYPE, RANGE_TYPE>::Inverse () const
     {
         TARGET_CONTAINER r;
-        for (pair<DOMAIN_TYPE, RANGE_TYPE> i : *this) {
+        for (value_type i : *this) {
             r.Add (i.second, i.first);
         }
         return r;

@@ -35,6 +35,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Collection<T>;
 
     public:
+        using value_type = typename inherited::value_type;
+
+    public:
         /**
          */
         Collection_stdforward_list ();
@@ -44,6 +47,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_stdforward_list (Collection_stdforward_list&& src) noexcept      = default;
 
         nonvirtual Collection_stdforward_list& operator= (const Collection_stdforward_list& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr   = typename inherited::_IterableRepSharedPtr;
+        using _CollectionRepSharedPtr = typename inherited::_IRepSharedPtr;
 
     private:
         class Rep_;
