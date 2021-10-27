@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             using SHARED_REP_TYPE = Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_>;
             auto iLink            = fData_.FindFirstThat (doToElement);
             if (iLink == nullptr) {
-                return Iterator < value_type>::GetEmptyIterator ();
+                return Iterator<value_type>::GetEmptyIterator ();
             }
             Rep_*           NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
             SHARED_REP_TYPE resultRep      = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
