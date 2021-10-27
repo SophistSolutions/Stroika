@@ -186,9 +186,9 @@ namespace Stroika::Foundation::Containers::Concrete {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             if (nextI != nullptr) {
                 *nextI = i;
-                    ++(*nextI); // advance to next item if deleting current one
+                ++(*nextI); // advance to next item if deleting current one
             }
-            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.fData == &fData_);
             (void)fData_.erase (mir.fIterator.fStdIterator);
             if (nextI != nullptr) {

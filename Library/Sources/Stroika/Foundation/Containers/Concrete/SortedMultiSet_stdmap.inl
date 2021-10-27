@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 ++(*nextI);
             }
 
-            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.fData == &fData_);
             (void)fData_.erase (mir.fIterator.fStdIterator);
             if (nextI != nullptr) {

@@ -100,6 +100,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return Iterable<T>::template MakeSmartPtr<Rep_> ();
         }
+        virtual _SequenceRepSharedPtr CloneAndPatchIterator (Iterator<T>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
+        {
+            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+            auto                                                      result = Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            return result;
+        }
         virtual T GetAt (size_t i) const override
         {
             Require (not IsEmpty ());
@@ -122,13 +131,19 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return mir.fIterator.CurrentIndex ();
         }
-        virtual void Remove (const Iterator<T>& i) override
+        virtual void Remove (const Iterator<T>& i, Iterator<T>* nextI) override
         {
             Require (not i.Done ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.fData == &fData_);
-            (void)fData_.erase (mir.fIterator.fStdIterator);
+            auto newI = fData_.erase (mir.fIterator.fStdIterator);
+            if (nextI != nullptr) {
+                IteratorOwnerID suggestedOwner = nullptr; //tmphack
+                auto            resultRep      = Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &this->fData_);
+                resultRep->fIterator.SetCurrentLink (newI);
+                *nextI = Iterator<T>{move (resultRep)};
+            }
         }
         virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
         {

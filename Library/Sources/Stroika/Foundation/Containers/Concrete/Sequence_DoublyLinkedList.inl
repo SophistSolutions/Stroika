@@ -95,6 +95,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return Iterable<T>::template MakeSmartPtr<Rep_> ();
         }
+        virtual _SequenceRepSharedPtr CloneAndPatchIterator (Iterator<T>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
+        {
+            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+            auto                                                      result = Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            return result;
+        }
         virtual T GetAt (size_t i) const override
         {
             Require (not IsEmpty ());
@@ -117,10 +126,17 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return mir.fIterator.CurrentIndex ();
         }
-        virtual void Remove (const Iterator<T>& i) override
+        virtual void Remove (const Iterator<T>& i, Iterator<T>* nextI) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            if (nextI != nullptr) {
+                *nextI = i;
+                ++(*nextI);
+            }
             fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+            if (nextI != nullptr) {
+                nextI->Refresh (); // update to reflect changes made to rep
+            }
         }
         virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
         {
@@ -130,7 +146,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Insert (size_t at, const T* from, const T* to) override
         {
-            using Traversal::kUnknownIteratorOwnerID;
             Require (at == _kSentinalLastItemIndex or at <= GetLength ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             if (at == _kSentinalLastItemIndex) {
@@ -166,7 +181,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (size_t from, size_t to) override
         {
-            using Traversal::kUnknownIteratorOwnerID;
             // quickie poor impl
             // See Stroika v1 - much better - handling cases of remove near start or end of linked list
             size_t                                                    index          = from;

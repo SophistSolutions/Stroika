@@ -189,10 +189,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             if (nextI != nullptr) {
-                *nextI = i;
+                *nextI    = i;
                 auto iRep = Debug::UncheckedDynamicCast<const IteratorRep_*> (&nextI->ConstGetRep ());
-                    iRep->fIterator.PatchBeforeRemove (&Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
-
+                iRep->fIterator.PatchBeforeRemove (&Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
             }
             fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
             if (nextI != nullptr) {

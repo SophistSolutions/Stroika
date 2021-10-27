@@ -189,13 +189,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i, Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* nextI) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto newI = fData_.erase (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.fStdIterator);
+            auto                                                      newI = fData_.erase (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.fStdIterator);
             if (nextI != nullptr) {
-                IteratorOwnerID suggestedOwner = nullptr;//tmphack
-                auto resultRep      = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &this->fData_);
+                IteratorOwnerID suggestedOwner = nullptr; //tmphack
+                auto            resultRep      = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &this->fData_);
                 resultRep->fIterator.SetCurrentLink (newI);
                 // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
-                *nextI = Iterator < KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>{move (resultRep)};
+                *nextI = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>{move (resultRep)};
             }
         }
 #if qDebug

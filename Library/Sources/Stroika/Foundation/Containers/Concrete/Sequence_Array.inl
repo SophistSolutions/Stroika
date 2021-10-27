@@ -110,6 +110,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return Iterable<T>::template MakeSmartPtr<Rep_> ();
         }
+        virtual _SequenceRepSharedPtr CloneAndPatchIterator (Iterator<T>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
+        {
+            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+            auto                                                      result = Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            return result;
+        }
         virtual T GetAt (size_t i) const override
         {
             Require (not IsEmpty ());
@@ -132,10 +141,18 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return mir.fIterator.CurrentIndex ();
         }
-        virtual void Remove (const Iterator<T>& i) override
+        virtual void Remove (const Iterator<T>& i, Iterator<T>* nextI) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            if (nextI != nullptr) {
+                *nextI    = i;
+                auto iRep = Debug::UncheckedDynamicCast<const IteratorRep_*> (&nextI->ConstGetRep ());
+                iRep->fIterator.PatchBeforeRemove (&Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+            }
             fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+            if (nextI != nullptr) {
+                nextI->Refresh (); // update to reflect changes made to rep
+            }
         }
         virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
         {
