@@ -113,6 +113,12 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  @see inherited::value_type
+         */
+        using value_type = typename inherited::value_type;
+
+    public:
+        /**
          *  Just a short-hand for the 'TRAITS' part of KeyedCollection<T,KEY_TYPE,TRAITS>. This is often handy to use in
          *  building other templates.
          */
@@ -132,7 +138,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        using KeyExtractorType = function<KEY_TYPE (ArgByValueType<T>)>;
+        using KeyExtractorType = function<KEY_TYPE (ArgByValueType<value_type>)>;
 
     public:
         /**
@@ -145,18 +151,12 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  @see inherited::value_type
-         */
-        using value_type = typename inherited::value_type;
-
-    public:
-        /**
          *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add ()
          *
          *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, T>;
+        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
 
     public:
         /**
