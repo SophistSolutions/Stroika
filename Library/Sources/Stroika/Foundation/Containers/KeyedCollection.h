@@ -309,7 +309,7 @@ namespace Stroika::Foundation::Containers {
          *  \note Contains (T) is same as Contains (KeyExtractor(t)) - it only looks at the key, not the rest of the value
          */
         nonvirtual bool Contains (ArgByValueType<KeyType> item) const;
-        nonvirtual bool Contains (ArgByValueType<T> item) const;
+        nonvirtual bool Contains (ArgByValueType<value_type> item) const;
 
     public:
         /**
@@ -352,7 +352,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual bool Add (ArgByValueType<T> item);
+        nonvirtual bool Add (ArgByValueType<value_type> item);
 
     public:
         /**
@@ -377,9 +377,9 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void Remove (const Iterator<T>& i, const Iterator<T>* nextI = nullptr);
+        nonvirtual void Remove (const Iterator<value_type>& i, const Iterator<value_type>* nextI = nullptr);
         nonvirtual void Remove (ArgByValueType<KeyType> item);
-        nonvirtual void Remove (ArgByValueType<T> item);
+        nonvirtual void Remove (ArgByValueType<value_type> item);
 
     public:
         /**
@@ -402,7 +402,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         nonvirtual bool RemoveIf (ArgByValueType<KeyType> item);
-        nonvirtual bool RemoveIf (ArgByValueType<T> item);
+        nonvirtual bool RemoveIf (ArgByValueType<value_type> item);
 
     public:
         /**
@@ -422,7 +422,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  @see Iterable<T>::Where
          */
-        nonvirtual KeyedCollection Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
+        nonvirtual KeyedCollection Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const;
 
     public:
         struct EqualsComparer;
@@ -433,7 +433,7 @@ namespace Stroika::Foundation::Containers {
          * Simply intdirect to KeyedCollection<>::EqualsComparer
          */
         nonvirtual bool operator== (const KeyedCollection& rhs) const;
-        nonvirtual bool operator== (const Iterable<T>& rhs) const;
+        nonvirtual bool operator== (const Iterable<value_type>& rhs) const;
 #endif
 
     public:
@@ -444,8 +444,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual KeyedCollection& operator+= (ArgByValueType<T> item);
-        nonvirtual KeyedCollection& operator+= (const Iterable<T>& items);
+        nonvirtual KeyedCollection& operator+= (ArgByValueType<value_type> item);
+        nonvirtual KeyedCollection& operator+= (const Iterable<value_type>& items);
 
     public:
         /**
@@ -455,8 +455,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual KeyedCollection& operator-= (ArgByValueType<T> item);
-        nonvirtual KeyedCollection& operator-= (const Iterable<T>& items);
+        nonvirtual KeyedCollection& operator-= (ArgByValueType<value_type> item);
+        nonvirtual KeyedCollection& operator-= (const Iterable<value_type>& items);
 
     public:
         /**
@@ -472,8 +472,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void erase (ArgByValueType<T> item);
-        nonvirtual Iterator<T> erase (const Iterator<T>& i);
+        nonvirtual void erase (ArgByValueType<value_type> item);
+        nonvirtual Iterator<value_type> erase (const Iterator<value_type>& i);
 
     protected:
         /**
@@ -516,8 +516,8 @@ namespace Stroika::Foundation::Containers {
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const = 0;
         // return true if new item, and false if simply updated
-        virtual bool Add (ArgByValueType<T> item)  = 0;
-        virtual void Remove (const Iterator<T>& i) = 0;
+        virtual bool Add (ArgByValueType<value_type> item)  = 0;
+        virtual void Remove (const Iterator<value_type>& i) = 0;
         // returns true iff a change made, false if elt was not present
         virtual bool Remove (ArgByValueType<KEY_TYPE> key) = 0;
 #if qDebug
@@ -535,8 +535,8 @@ namespace Stroika::Foundation::Containers {
     struct KeyedCollection<T, KEY_TYPE, TRAITS>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer () = default;
         nonvirtual bool operator() (const KeyedCollection& lhs, const KeyedCollection& rhs) const;
-        nonvirtual bool operator() (const KeyedCollection& lhs, const Iterable<T>& rhs) const;
-        nonvirtual bool operator() (const Iterable<T>& lhs, const KeyedCollection& rhs) const;
+        nonvirtual bool operator() (const KeyedCollection& lhs, const Iterable<value_type>& rhs) const;
+        nonvirtual bool operator() (const Iterable<value_type>& lhs, const KeyedCollection& rhs) const;
     };
 
 }

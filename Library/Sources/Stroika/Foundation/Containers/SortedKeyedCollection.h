@@ -83,6 +83,12 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  @see inherited::value_type
+         */
+        using value_type = typename inherited::value_type;
+
+    public:
+        /**
         * 
         * &&& WRONG TODO UPDATE - CLONED FROM BASE CLASS &&& DOCS &&&
         * 

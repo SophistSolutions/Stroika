@@ -42,29 +42,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = KeyedCollection<T, KEY_TYPE, TRAITS>;
 
     public:
-        /**
-         */
-        using KeyExtractorType = typename inherited::KeyExtractorType;
-
-    public:
-        /**
-         */
+        using TraitsType              = typename inherited::TraitsType;
+        using KeyExtractorType        = typename inherited::KeyExtractorType;
         using KeyEqualityComparerType = typename inherited::KeyEqualityComparerType;
-
-    public:
-        /**
-         */
-        using KeyType = typename inherited::KeyType;
-
-    public:
-        /**
-         */
-        using value_type = typename inherited::value_type;
-
-    public:
-        /**
-         */
-        using TraitsType = typename inherited::TraitsType;
+        using KeyType                 = typename inherited::KeyType;
+        using value_type              = typename inherited::value_type;
 
     public:
         /**
@@ -115,6 +97,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         nonvirtual KeyedCollection_LinkedList& operator= (const KeyedCollection_LinkedList& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr        = typename inherited::_IterableRepSharedPtr;
+        using _KeyedCollectionRepSharedPtr = typename inherited::_IRepSharedPtr;
 
     private:
         class IImplRep_;

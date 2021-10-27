@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    inline Deque<T>::Deque (const initializer_list<T>& src)
+    inline Deque<T>::Deque (const initializer_list<value_type>& src)
         : Deque{}
     {
         this->AddAllToTail (src);
@@ -57,17 +57,17 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    inline void Deque<T>::AddHead (ArgByValueType<T> item)
+    inline void Deque<T>::AddHead (ArgByValueType<value_type> item)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().AddHead (item);
     }
     template <typename T>
-    inline T Deque<T>::RemoveTail ()
+    inline auto Deque<T>::RemoveTail () -> value_type
     {
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveTail ();
     }
     template <typename T>
-    inline T Deque<T>::Tail () const
+    inline auto Deque<T>::Tail () const -> value_type
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Tail ();
     }

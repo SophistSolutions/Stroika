@@ -29,12 +29,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = typename Deque<T>::_IRep;
 
     public:
-        using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
-        using _QueueRepSharedPtr    = typename Queue<T>::_IRepSharedPtr;
-        using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
-
-    public:
         Rep_ ()                 = default;
         Rep_ (const Rep_& from) = delete;
         Rep_ (Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
@@ -66,13 +60,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return fData_.IsEmpty ();
         }
-        virtual void Apply (_APPLY_ARGTYPE doToElement) const override
+        virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
-        virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             using RESULT_TYPE     = Iterator<T>;
@@ -94,19 +88,19 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return Iterable<T>::template MakeSmartPtr<Rep_> ();
         }
-        virtual void AddTail (ArgByValueType<T> item) override
+        virtual void AddTail (ArgByValueType<value_type> item) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             fData_.Append (item);
         }
-        virtual T RemoveHead () override
+        virtual value_type RemoveHead () override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             T                                                         item = fData_.GetFirst ();
             fData_.RemoveFirst ();
             return item;
         }
-        virtual optional<T> RemoveHeadIf () override
+        virtual optional<value_type> RemoveHeadIf () override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             if (fData_.IsEmpty ()) {
@@ -116,12 +110,12 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.RemoveFirst ();
             return item;
         }
-        virtual T Head () const override
+        virtual value_type Head () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return fData_.GetFirst ();
         }
-        virtual optional<T> HeadIf () const override
+        virtual optional<value_type> HeadIf () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             if (fData_.IsEmpty ()) {
@@ -177,7 +171,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (const Deque_DoublyLinkedList<T>& src)
+    inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (const Deque_DoublyLinkedList& src)
         : inherited{src}
     {
         AssertRepValidType_ ();

@@ -34,11 +34,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Deque<T>;
 
     public:
+        using value_type = typename inherited::value_type;
+
+    public:
         /**
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */
         Deque_DoublyLinkedList ();
-        Deque_DoublyLinkedList (const Deque_DoublyLinkedList<T>& src);
+        Deque_DoublyLinkedList (const Deque_DoublyLinkedList& src);
         template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Deque_DoublyLinkedList<T>*>>* = nullptr>
         explicit Deque_DoublyLinkedList (const CONTAINER_OF_T& src);
         template <typename COPY_FROM_ITERATOR_OF_T>
@@ -46,6 +49,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         nonvirtual Deque_DoublyLinkedList<T>& operator= (const Deque_DoublyLinkedList<T>& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
+        using _QueueRepSharedPtr    = typename Queue<T>::_IRepSharedPtr;
 
     private:
         class Rep_;

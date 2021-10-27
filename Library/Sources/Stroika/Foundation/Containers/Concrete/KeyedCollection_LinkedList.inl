@@ -36,12 +36,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_EQUALS_COMPARER fKeyComparer_;
 
     public:
-        using _IterableRepSharedPtr        = typename Iterable<T>::_IterableRepSharedPtr;
-        using _KeyedCollectionRepSharedPtr = typename inherited::_IRepSharedPtr;
-        using _APPLY_ARGTYPE               = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE          = typename inherited::_APPLYUNTIL_ARGTYPE;
-
-    public:
         Rep_ (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer)
             : fKeyExtractor_{keyExtractor}
             , fKeyComparer_{keyComparer}
@@ -79,26 +73,25 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return fData_.IsEmpty ();
         }
-        virtual void Apply (_APPLY_ARGTYPE doToElement) const override
+        virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
-        virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<value_type> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            using RESULT_TYPE     = Iterator<T>;
             using SHARED_REP_TYPE = Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_>;
             auto iLink            = fData_.FindFirstThat (doToElement);
             if (iLink == nullptr) {
-                return RESULT_TYPE::GetEmptyIterator ();
+                return Iterator<value_type>::GetEmptyIterator ();
             }
             Rep_*           NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
             SHARED_REP_TYPE resultRep      = Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
             resultRep->fIterator.SetCurrentLink (iLink);
             // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
-            return RESULT_TYPE (move (resultRep));
+            return Iterator<value_type>{move (resultRep)};
         }
 
         // KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep overrides
@@ -129,7 +122,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return false;
         }
-        virtual bool Add (ArgByValueType<T> item) override
+        virtual bool Add (ArgByValueType<value_type> item) override
         {
             KEY_TYPE key{fKeyExtractor_ (item)};
             if (auto i = this->FindFirstThat ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); }, nullptr)) {
@@ -142,7 +135,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return true;
             }
         }
-        virtual void Remove (const Iterator<T>& i) override
+        virtual void Remove (const Iterator<value_type>& i) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());

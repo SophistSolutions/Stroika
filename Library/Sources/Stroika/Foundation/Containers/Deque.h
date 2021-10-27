@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Containers {
          *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, T>;
+        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
 
     public:
         /**
@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Containers {
          */
         Deque ();
         Deque (const Deque& src) noexcept = default;
-        Deque (const initializer_list<T>& src);
+        Deque (const initializer_list<value_type>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Deque<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit Deque (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
@@ -123,18 +123,18 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \note mutates container
          */
-        nonvirtual void AddHead (ArgByValueType<T> item);
+        nonvirtual void AddHead (ArgByValueType<value_type> item);
 
     public:
         /**
          *  \note mutates container
          */
-        nonvirtual T RemoveTail ();
+        nonvirtual value_type RemoveTail ();
 
     public:
         /**
          */
-        nonvirtual T Tail () const;
+        nonvirtual value_type Tail () const;
 
     protected:
         /**
@@ -164,9 +164,9 @@ namespace Stroika::Foundation::Containers {
         using inherited = typename Queue<T>::_IRep;
 
     public:
-        virtual void AddHead (ArgByValueType<T> item) = 0;
-        virtual T    RemoveTail ()                    = 0;
-        virtual T    Tail () const                    = 0;
+        virtual void       AddHead (ArgByValueType<value_type> item) = 0;
+        virtual value_type RemoveTail ()                             = 0;
+        virtual value_type Tail () const                             = 0;
     };
 
 }

@@ -147,7 +147,7 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Contains (ArgByValueType<T> elt) const
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Contains (ArgByValueType<value_type> elt) const
     {
         _SafeReadRepAccessor<_IRep> r{this};
         return r._ConstGetRep ().Lookup (r._ConstGetRep ().GetKeyExtractor () (elt), nullptr);
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Containers {
         return r.has_value () ? *r : defaultValue;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Add (ArgByValueType<T> t)
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Add (ArgByValueType<value_type> t)
     {
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (t);
     }
@@ -249,13 +249,13 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (key);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (ArgByValueType<T> elt)
+    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (ArgByValueType<value_type> elt)
     {
         _SafeReadWriteRepAccessor<_IRep> r{this};
         r._GetWriteableRep ().Remove (r._ConstGetRep ().GetKeyExtractor () (elt));
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (const Iterator<T>& i, const Iterator<T>* nextI)
+    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (const Iterator<value_type>& i, const Iterator<value_type>* nextI)
     {
         if (nextI != nullptr) {
             // @todo fix with handle GetWritableRep clone stuff
@@ -270,7 +270,7 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (key);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveIf (ArgByValueType<T> elt)
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveIf (ArgByValueType<value_type> elt)
     {
         _SafeReadWriteRepAccessor<_IRep> r{this};
         return r._GetWriteableRep ().Remove (r._ConstGetRep ().GetKeyExtractor () (elt));
@@ -300,7 +300,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    auto KeyedCollection<T, KEY_TYPE, TRAITS>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const -> ArchetypeContainerType
+    auto KeyedCollection<T, KEY_TYPE, TRAITS>::Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const -> ArchetypeContainerType
     {
         return inherited::Where (includeIfTrue, ArchetypeContainerType{});
     }
@@ -311,31 +311,31 @@ namespace Stroika::Foundation::Containers {
         return EqualsComparer{}(*this, rhs);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::operator== (const Iterable<T>& rhs) const
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::operator== (const Iterable<value_type>& rhs) const
     {
         return EqualsComparer{}(*this, rhs);
     }
 #endif
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline KeyedCollection<T, KEY_TYPE, TRAITS>& KeyedCollection<T, KEY_TYPE, TRAITS>::operator+= (ArgByValueType<T> item)
+    inline KeyedCollection<T, KEY_TYPE, TRAITS>& KeyedCollection<T, KEY_TYPE, TRAITS>::operator+= (ArgByValueType<value_type> item)
     {
         Add (item);
         return *this;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline KeyedCollection<T, KEY_TYPE, TRAITS>& KeyedCollection<T, KEY_TYPE, TRAITS>::operator+= (const Iterable<T>& items)
+    inline KeyedCollection<T, KEY_TYPE, TRAITS>& KeyedCollection<T, KEY_TYPE, TRAITS>::operator+= (const Iterable<value_type>& items)
     {
         AddAll (items);
         return *this;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline KeyedCollection<T, KEY_TYPE, TRAITS>& KeyedCollection<T, KEY_TYPE, TRAITS>::operator-= (ArgByValueType<T> item)
+    inline KeyedCollection<T, KEY_TYPE, TRAITS>& KeyedCollection<T, KEY_TYPE, TRAITS>::operator-= (ArgByValueType<value_type> item)
     {
         Remove (item);
         return *this;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline KeyedCollection<T, KEY_TYPE, TRAITS>& KeyedCollection<T, KEY_TYPE, TRAITS>::operator-= (const Iterable<T>& items)
+    inline KeyedCollection<T, KEY_TYPE, TRAITS>& KeyedCollection<T, KEY_TYPE, TRAITS>::operator-= (const Iterable<value_type>& items)
     {
         RemoveAll (items);
         return *this;
@@ -346,12 +346,12 @@ namespace Stroika::Foundation::Containers {
         RemoveAll ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::erase (ArgByValueType<T> item)
+    inline void KeyedCollection<T, KEY_TYPE, TRAITS>::erase (ArgByValueType<value_type> item)
     {
         this->Remove (item);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline Iterator<T> KeyedCollection<T, KEY_TYPE, TRAITS>::erase (const Iterator<T>& i)
+    inline auto KeyedCollection<T, KEY_TYPE, TRAITS>::erase (const Iterator<value_type>& i) -> Iterator<value_type>
     {
         Iterator<T> nextI{nullptr};
         this->Remove (i, &nextI);
@@ -428,7 +428,7 @@ namespace Stroika::Foundation::Containers {
         return operator() (lhs, static_cast<const Iterable<T>&> (rhs)); // use common-code
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    bool KeyedCollection<T, KEY_TYPE, TRAITS>::EqualsComparer::operator() (const KeyedCollection& lhs, const Iterable<T>& rhs) const
+    bool KeyedCollection<T, KEY_TYPE, TRAITS>::EqualsComparer::operator() (const KeyedCollection& lhs, const Iterable<value_type>& rhs) const
     {
         _SafeReadRepAccessor<_IRep> lhsR{&lhs};
         _SafeReadRepAccessor<_IRep> rhsR{&rhs};
@@ -455,7 +455,7 @@ namespace Stroika::Foundation::Containers {
         return true;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::EqualsComparer::operator() (const Iterable<T>& lhs, const KeyedCollection& rhs) const
+    inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::EqualsComparer::operator() (const Iterable<value_type>& lhs, const KeyedCollection& rhs) const
     {
         return operator() (rhs, lhs); // use commutativity of ==
     }
