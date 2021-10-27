@@ -127,6 +127,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSmartPtr<Rep_> (fInjectivityViolationPolicy_, fDomainEqualsComparer_, fRangeEqualsComparer_);
         }
+        virtual _BijectionRepSharedPtr CloneAndPatchIterator (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
+        {
+            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+            auto                                                      result = Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            i->Refresh (); // reflect updated rep
+            return result;
+        }
         virtual bool Equals (const typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep& rhs) const override
         {
             return this->_Equals_Reference_Implementation (rhs);
@@ -235,11 +245,18 @@ namespace Stroika::Foundation::Containers::Concrete {
                 }
             }
         }
-        virtual void Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i) override
+        virtual void Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i, Iterator<value_type>* nextI) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            if (nextI != nullptr) {
+                *nextI = i;
+                ++(*nextI);
+            }
+            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             fData_.RemoveAt (mir.fIterator);
+            if (nextI != nullptr) {
+                nextI->Refresh (); // update to reflect changes made to rep
+            }
         }
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override

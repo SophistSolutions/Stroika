@@ -395,7 +395,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \note mutates container
          */
-        nonvirtual void Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i);
+        nonvirtual void Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i, Iterator<value_type>* nextI = nullptr);
 
     public:
         /**
@@ -473,6 +473,14 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         * \brief STL-ish alias for Remove ().
+         *
+         *  \note mutates container
+         */
+        nonvirtual Iterator<value_type> erase (const Iterator<value_type>& i);
+
+    public:
+        /**
          *
          *  \note mutates container
          */
@@ -486,6 +494,21 @@ namespace Stroika::Foundation::Containers {
          */
         template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS>
         nonvirtual Bijection& operator-= (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& items);
+
+    protected:
+        /**
+         *  \brief Utility to get WRITABLE underlying shared_ptr (replacement for what we normally do - _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ())
+         *         but where we also handle the cloning/patching of the associated iterator
+         * 
+         *  When you have a non-const operation (such as Remove) with an argument of an Iterator<>, then due to COW,
+         *  you may end up cloning the container rep, and yet the Iterator<> contains a pointer to the earlier rep (and so maybe unusable).
+         * 
+         *  Prior to Stroika 2.1b14, this was handled elegantly, and automatically, by the iterator patching mechanism. But that was deprecated (due to cost, and
+         *  rarity of use), in favor of this more restricted feature, where we just patch the iterators on an as-needed basis.
+         * 
+         *  \todo @todo - could be smarter about moves and avoid some copies here - I think, and this maybe performance sensitive enough to look into that... (esp for COMMON case where no COW needed)
+         */
+        nonvirtual tuple<typename inherited::_SharedByValueRepType::shared_ptr_type, Iterator<value_type>> _GetWriterRepAndPatchAssociatedIterator (const Iterator<value_type>& i);
 
     protected:
         /**
@@ -547,20 +570,21 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     public:
-        virtual _IRepSharedPtr                  CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-        virtual bool                            Equals (const _IRep& rhs) const                        = 0;
-        virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const                       = 0;
-        virtual RangeEqualsCompareFunctionType  GetRangeEqualsComparer () const                        = 0;
-        virtual Iterable<DomainType>            Preimage () const                                      = 0;
-        virtual Iterable<RangeType>             Image () const                                         = 0;
+        virtual _IRepSharedPtr                  CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                                                = 0;
+        virtual _IRepSharedPtr                  CloneAndPatchIterator (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
+        virtual bool                            Equals (const _IRep& rhs) const                                                                                       = 0;
+        virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const                                                                                      = 0;
+        virtual RangeEqualsCompareFunctionType  GetRangeEqualsComparer () const                                                                                       = 0;
+        virtual Iterable<DomainType>            Preimage () const                                                                                                     = 0;
+        virtual Iterable<RangeType>             Image () const                                                                                                        = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
-        virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, optional<RangeType>* item) const        = 0;
-        virtual bool InverseLookup (ArgByValueType<RANGE_TYPE> key, optional<DomainType>* item) const = 0;
-        virtual void Add (ArgByValueType<DOMAIN_TYPE> key, ArgByValueType<RANGE_TYPE> newElt)         = 0;
-        virtual void RemoveDomainElement (ArgByValueType<DOMAIN_TYPE> d)                              = 0;
-        virtual void RemoveRangeElement (ArgByValueType<RANGE_TYPE> r)                                = 0;
-        virtual void Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i)                        = 0;
+        virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, optional<RangeType>* item) const              = 0;
+        virtual bool InverseLookup (ArgByValueType<RANGE_TYPE> key, optional<DomainType>* item) const       = 0;
+        virtual void Add (ArgByValueType<DOMAIN_TYPE> key, ArgByValueType<RANGE_TYPE> newElt)               = 0;
+        virtual void RemoveDomainElement (ArgByValueType<DOMAIN_TYPE> d)                                    = 0;
+        virtual void RemoveRangeElement (ArgByValueType<RANGE_TYPE> r)                                      = 0;
+        virtual void Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i, Iterator<value_type>* nextI) = 0;
 
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;

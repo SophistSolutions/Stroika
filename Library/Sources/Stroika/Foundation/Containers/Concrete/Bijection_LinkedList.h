@@ -36,6 +36,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using InjectivityViolationPolicy      = typename inherited::InjectivityViolationPolicy;
         using DomainEqualsCompareFunctionType = typename inherited::DomainEqualsCompareFunctionType;
         using RangeEqualsCompareFunctionType  = typename inherited::RangeEqualsCompareFunctionType;
+        using value_type                      = typename inherited::value_type;
 
     public:
         /**

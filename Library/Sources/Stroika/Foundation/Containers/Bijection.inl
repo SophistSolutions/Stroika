@@ -344,9 +344,11 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveRangeElement (r);
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i)
+    inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i, Iterator<value_type>* nextI)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
+        Require (not i.Done ());
+        auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
+        Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->Remove (patchedIterator, nextI);
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::RemoveAll ()
@@ -378,6 +380,13 @@ namespace Stroika::Foundation::Containers {
         RemoveAll ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+    inline auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::erase (const Iterator<value_type>& i) -> Iterator<value_type>
+    {
+        Iterator<value_type> nextI{nullptr};
+        this->Remove (i, &nextI);
+        return nextI;
+    }
+    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>& Bijection<DOMAIN_TYPE, RANGE_TYPE>::operator+= (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& items)
     {
@@ -390,6 +399,18 @@ namespace Stroika::Foundation::Containers {
     {
         RemoveAll (items);
         return *this;
+    }
+    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+    auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::_GetWriterRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<typename inherited::_SharedByValueRepType::shared_ptr_type, Iterator<value_type>>
+    {
+        Require (not i.Done ());
+        using shared_ptr_type                = typename inherited::_SharedByValueRepType::shared_ptr_type;
+        Iterator<value_type> patchedIterator = i;
+        shared_ptr_type      writerRep       = this->_fRep.get_nu (
+            [&, this] (const shared_ptr_type& prevRepPtr) -> shared_ptr_type {
+                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator, this);
+            });
+        return make_tuple (writerRep, patchedIterator);
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::_AssertRepValidType () const
