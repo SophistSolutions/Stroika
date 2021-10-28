@@ -34,9 +34,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Sequence<T>;
 
     public:
+        using value_type = typename inherited::value_type;
+
+    public:
         Sequence_DoublyLinkedList ();
         Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList& src) = default;
-        Sequence_DoublyLinkedList (const initializer_list<T>& src);
+        Sequence_DoublyLinkedList (const initializer_list<value_type>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence_DoublyLinkedList<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Sequence_DoublyLinkedList (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_T>
@@ -46,6 +49,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         nonvirtual Sequence_DoublyLinkedList<T>& operator= (const Sequence_DoublyLinkedList<T>& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
+        using _SequenceRepSharedPtr = typename inherited::_IRepSharedPtr;
 
     private:
         class Rep_;

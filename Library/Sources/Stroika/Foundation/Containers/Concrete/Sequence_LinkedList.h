@@ -34,6 +34,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Sequence<T>;
 
     public:
+        using value_type = typename inherited::value_type;
+
+    public:
         /**
          */
         Sequence_LinkedList ();
@@ -47,6 +50,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         nonvirtual Sequence_LinkedList<T>& operator= (const Sequence_LinkedList<T>& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
+        using _SequenceRepSharedPtr = typename inherited::_IRepSharedPtr;
 
     private:
         class Rep_;

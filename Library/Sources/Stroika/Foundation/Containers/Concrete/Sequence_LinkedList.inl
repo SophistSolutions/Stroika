@@ -23,12 +23,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         using inherited = typename Sequence<T>::_IRep;
 
-    public:
-        using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
-        using _SequenceRepSharedPtr = typename inherited::_IRepSharedPtr;
-        using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
-
     protected:
         static constexpr size_t _kSentinalLastItemIndex = inherited::_kSentinalLastItemIndex;
 
@@ -49,12 +43,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
         {
             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-            return Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+            return Iterable<value_type>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
         }
-        virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
             Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-            return Iterator<T> (Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
+            return Iterator<value_type> (Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
         }
         virtual size_t GetLength () const override
         {
@@ -64,26 +58,25 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return fData_.IsEmpty ();
         }
-        virtual void Apply (_APPLY_ARGTYPE doToElement) const override
+        virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
-        virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<value_type> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            using RESULT_TYPE     = Iterator<T>;
             using SHARED_REP_TYPE = Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_>;
             auto iLink            = fData_.FindFirstThat (doToElement);
             if (iLink == nullptr) {
-                return RESULT_TYPE::GetEmptyIterator ();
+                return Iterator<value_type>::GetEmptyIterator ();
             }
             Rep_*           NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-            SHARED_REP_TYPE resultRep      = Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+            SHARED_REP_TYPE resultRep      = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
             resultRep->fIterator.SetCurrentLink (iLink);
             // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
-            return RESULT_TYPE (move (resultRep));
+            return Iterator<value_type>{move (resultRep)};
         }
 
         // Sequence<T>::_IRep overrides
@@ -101,7 +94,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             return result;
         }
-        virtual T GetAt (size_t i) const override
+        virtual value_type GetAt (size_t i) const override
         {
             Require (not IsEmpty ());
             Require (i == _kSentinalLastItemIndex or i < GetLength ());
@@ -111,19 +104,19 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return fData_.GetAt (i);
         }
-        virtual void SetAt (size_t i, ArgByValueType<T> item) override
+        virtual void SetAt (size_t i, ArgByValueType<value_type> item) override
         {
             Require (i < GetLength ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             fData_.SetAt (item, i);
         }
-        virtual size_t IndexOf (const Iterator<T>& i) const override
+        virtual size_t IndexOf (const Iterator<value_type>& i) const override
         {
             auto&                                                      mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return mir.fIterator.CurrentIndex ();
         }
-        virtual void Remove (const Iterator<T>& i, Iterator<T>* nextI) override
+        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             if (nextI != nullptr) {
@@ -135,7 +128,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 nextI->Refresh (); // update to reflect changes made to rep
             }
         }
-        virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
+        virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             fData_.SetAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator, newValue);
@@ -197,8 +190,8 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
 
     private:
-        using DataStructureImplType_ = DataStructures::LinkedList<T>;
-        using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
+        using DataStructureImplType_ = DataStructures::LinkedList<value_type>;
+        using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
         DataStructureImplType_ fData_;

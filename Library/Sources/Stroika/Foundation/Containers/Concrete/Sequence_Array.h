@@ -34,12 +34,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Sequence<T>;
 
     public:
+        using value_type = typename inherited::value_type;
+
+    public:
         /**
          */
         Sequence_Array ();
         Sequence_Array (const Sequence_Array& src) = default;
-        Sequence_Array (const initializer_list<T>& src);
-        Sequence_Array (const vector<T>& src);
+        Sequence_Array (const initializer_list<value_type>& src);
+        Sequence_Array (const vector<value_type>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence_Array<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Sequence_Array (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_T>
@@ -82,6 +85,10 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  STL-ish alias for SetCapacity ();
          */
         nonvirtual void reserve (size_t slotsAlloced);
+
+    protected:
+        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
+        using _SequenceRepSharedPtr = typename inherited::_IRepSharedPtr;
 
     private:
         class IImplRep_;

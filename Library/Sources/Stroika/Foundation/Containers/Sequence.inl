@@ -58,8 +58,8 @@ namespace Stroika::Foundation::Containers {
     template <typename X>
     struct Sequence<T>::TemporaryElementReference_<X, enable_if_t<is_class_v<X> or is_union_v<X>>> : X {
         static_assert (is_same_v<T, X>, "constructed so this is so - just use second template so we can do enable_if_t");
-        Sequence<T>* fV;
-        size_t       fIndex;
+        Sequence* fV;
+        size_t    fIndex;
         TemporaryElementReference_ (const TemporaryElementReference_&) = default;
         TemporaryElementReference_ (TemporaryElementReference_&&)      = default;
         TemporaryElementReference_ (Sequence<X>* s, size_t i)
@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    inline Sequence<T>::Sequence (const initializer_list<T>& src)
+    inline Sequence<T>::Sequence (const initializer_list<value_type>& src)
         : Sequence{}
     {
         AppendAll (src);
@@ -147,7 +147,7 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T>
-    inline auto Sequence<T>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const -> Sequence
+    inline auto Sequence<T>::Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const -> Sequence
     {
 #if 1
         Sequence<T> result;
@@ -177,21 +177,21 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    inline T Sequence<T>::GetAt (size_t i) const
+    inline auto Sequence<T>::GetAt (size_t i) const -> value_type
     {
         _SafeReadRepAccessor<_IRep> accessor{this};
         Require (i < accessor._ConstGetRep ().GetLength ());
         return accessor._ConstGetRep ().GetAt (i);
     }
     template <typename T>
-    inline void Sequence<T>::SetAt (size_t i, ArgByValueType<T> item)
+    inline void Sequence<T>::SetAt (size_t i, ArgByValueType<value_type> item)
     {
         _SafeReadWriteRepAccessor<_IRep> accessor{this};
         Require (i < accessor._ConstGetRep ().GetLength ());
         accessor._GetWriteableRep ().SetAt (i, item);
     }
     template <typename T>
-    inline T Sequence<T>::operator[] (size_t i) const
+    inline auto Sequence<T>::operator[] (size_t i) const -> value_type
     {
         _SafeReadRepAccessor<_IRep> accessor{this};
         Require (i < accessor._ConstGetRep ().GetLength ());
@@ -201,43 +201,43 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline auto Sequence<T>::operator[] (size_t i) -> TemporaryElementReference_<T>
     {
-        return TemporaryElementReference_<T>{this, i};
+        return TemporaryElementReference_<value_type>{this, i};
     }
 #endif
 #if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens
     template <typename T>
-    inline auto Sequence<T>::operator() (size_t i) -> TemporaryElementReference_<T>
+    inline auto Sequence<T>::operator() (size_t i) -> TemporaryElementReference_<value_type>
     {
-        return TemporaryElementReference_<T>{this, i};
+        return TemporaryElementReference_<value_type>{this, i};
     }
 #endif
     template <typename T>
     template <typename EQUALS_COMPARER>
-    inline optional<size_t> Sequence<T>::IndexOf (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const
+    inline optional<size_t> Sequence<T>::IndexOf (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer) const
     {
         return Private::IndexOf_<T, EQUALS_COMPARER> (*this, item, equalsComparer);
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    inline optional<size_t> Sequence<T>::IndexOf (const Sequence<T>& s, const EQUALS_COMPARER& equalsComparer) const
+    inline optional<size_t> Sequence<T>::IndexOf (const Sequence& s, const EQUALS_COMPARER& equalsComparer) const
     {
         return Private::IndexOf_<T, EQUALS_COMPARER> (*this, s, equalsComparer);
     }
     template <typename T>
     template <typename IGNORED>
-    inline size_t Sequence<T>::IndexOf (const Iterator<T>& i) const
+    inline size_t Sequence<T>::IndexOf (const Iterator<value_type>& i) const
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().IndexOf (i);
     }
     template <typename T>
-    inline void Sequence<T>::Insert (size_t i, ArgByValueType<T> item)
+    inline void Sequence<T>::Insert (size_t i, ArgByValueType<value_type> item)
     {
         _SafeReadWriteRepAccessor<_IRep> accessor{this};
         Require (i <= accessor._ConstGetRep ().GetLength ());
         return accessor._GetWriteableRep ().Insert (i, &item, &item + 1);
     }
     template <typename T>
-    inline void Sequence<T>::Insert (const Iterator<T>& i, ArgByValueType<T> item)
+    inline void Sequence<T>::Insert (const Iterator<value_type>& i, ArgByValueType<value_type> item)
     {
         _SafeReadWriteRepAccessor<_IRep> accessor{this};
         size_t                           idx = accessor._ConstGetRep ().IndexOf (i);
@@ -262,7 +262,7 @@ namespace Stroika::Foundation::Containers {
         InsertAll (i, s.begin (), s.end ());
     }
     template <typename T>
-    inline void Sequence<T>::Prepend (ArgByValueType<T> item)
+    inline void Sequence<T>::Prepend (ArgByValueType<value_type> item)
     {
         Insert (0, item);
     }
@@ -279,7 +279,7 @@ namespace Stroika::Foundation::Containers {
         InsertAll (0, start, end);
     }
     template <typename T>
-    inline void Sequence<T>::Append (ArgByValueType<T> item)
+    inline void Sequence<T>::Append (ArgByValueType<value_type> item)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Insert (_IRep::_kSentinalLastItemIndex, &item, &item + 1);
     }
@@ -300,7 +300,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    inline void Sequence<T>::Update (const Iterator<T>& i, ArgByValueType<T> newValue)
+    inline void Sequence<T>::Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Update (i, newValue);
     }
@@ -317,7 +317,7 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (start, end);
     }
     template <typename T>
-    inline void Sequence<T>::Remove (const Iterator<T>& i, Iterator<T>* nextI)
+    inline void Sequence<T>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
     {
         Require (not i.Done ());
         auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
@@ -337,50 +337,50 @@ namespace Stroika::Foundation::Containers {
         *into = CONTAINER_OF_ADDABLE (this->begin (), this->end ());
     }
     template <typename T>
-    inline optional<T> Sequence<T>::First () const
+    inline auto Sequence<T>::First () const -> optional<value_type>
     {
         return this->IsEmpty () ? optional<T>{} : GetAt (0);
     }
     template <typename T>
-    inline optional<T> Sequence<T>::First (const function<bool (ArgByValueType<T>)>& that) const
+    inline auto Sequence<T>::First (const function<bool (ArgByValueType<value_type>)>& that) const -> optional<value_type>
     {
         return inherited::First (that);
     }
     template <typename T>
-    inline T Sequence<T>::FirstValue (ArgByValueType<T> defaultValue) const
+    inline auto Sequence<T>::FirstValue (ArgByValueType<value_type> defaultValue) const -> value_type
     {
         return this->IsEmpty () ? defaultValue : GetAt (0);
     }
     template <typename T>
-    inline optional<T> Sequence<T>::Last () const
+    inline auto Sequence<T>::Last () const -> optional<value_type>
     {
         // IRep::GetAt() defined to allow special _IRep::_kSentinalLastItemIndex
         return this->IsEmpty () ? optional<T>{} : _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (_IRep::_kSentinalLastItemIndex);
     }
     template <typename T>
-    inline optional<T> Sequence<T>::Last (const function<bool (ArgByValueType<T>)>& that) const
+    inline auto Sequence<T>::Last (const function<bool (ArgByValueType<value_type>)>& that) const -> optional<value_type>
     {
         // @todo when we have reverse iterators - we could implement this more efficiently by walking the sequence backwards
         return inherited::Last (that);
     }
     template <typename T>
-    inline T Sequence<T>::LastValue (ArgByValueType<T> defaultValue) const
+    inline auto Sequence<T>::LastValue (ArgByValueType<value_type> defaultValue) const -> value_type
     {
         // IRep::GetAt() defined to allow special _IRep::_kSentinalLastItemIndex
         return this->IsEmpty () ? defaultValue : _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (_IRep::_kSentinalLastItemIndex);
     }
     template <typename T>
-    inline void Sequence<T>::push_back (ArgByValueType<T> item)
+    inline void Sequence<T>::push_back (ArgByValueType<value_type> item)
     {
         Append (item);
     }
     template <typename T>
-    inline T Sequence<T>::back () const
+    inline auto Sequence<T>::back () const -> value_type
     {
         return *Last ();
     }
     template <typename T>
-    inline T Sequence<T>::front () const
+    inline auto Sequence<T>::front () const -> value_type
     {
         return *First ();
     }
@@ -395,20 +395,20 @@ namespace Stroika::Foundation::Containers {
         this->Remove (i);
     }
     template <typename T>
-    inline Iterator<T> Sequence<T>::erase (const Iterator<T>& i)
+    inline auto Sequence<T>::erase (const Iterator<value_type>& i) -> Iterator<value_type>
     {
         Iterator<T> nextI{nullptr};
         this->Remove (i, &nextI);
         return nextI;
     }
     template <typename T>
-    inline Sequence<T>& Sequence<T>::operator+= (ArgByValueType<T> item)
+    inline auto Sequence<T>::operator+= (ArgByValueType<value_type> item) -> Sequence&
     {
         Append (item);
         return *this;
     }
     template <typename T>
-    inline Sequence<T>& Sequence<T>::operator+= (const Sequence<T>& items)
+    inline auto Sequence<T>::operator+= (const Sequence& items) -> Sequence&
     {
         AppendAll (items);
         return *this;

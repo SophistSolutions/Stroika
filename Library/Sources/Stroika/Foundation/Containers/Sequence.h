@@ -277,7 +277,7 @@ namespace Stroika::Foundation::Containers {
          */
         Sequence ();
         Sequence (const Sequence& src) noexcept = default;
-        Sequence (const initializer_list<T>& src);
+        Sequence (const initializer_list<value_type>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit Sequence (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
@@ -303,7 +303,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  @see Iterable<T>::Where
          */
-        nonvirtual Sequence Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
+        nonvirtual Sequence Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const;
 
     public:
         /**
@@ -358,13 +358,13 @@ namespace Stroika::Foundation::Containers {
          *  to compare with an alternative comparer.
          */
         template <typename T_EQUALS_COMPARER = equal_to<T>>
-        using EqualsComparer = typename Iterable<T>::template SequentialEqualsComparer<T_EQUALS_COMPARER>;
+        using EqualsComparer = typename Iterable<value_type>::template SequentialEqualsComparer<T_EQUALS_COMPARER>;
 
     public:
         /**
          */
         template <typename ELEMENT_COMPARER = Common::ThreeWayComparer<T, T>>
-        using ThreeWayComparer = typename Iterable<T>::template SequentialThreeWayComparer<ELEMENT_COMPARER>;
+        using ThreeWayComparer = typename Iterable<value_type>::template SequentialThreeWayComparer<ELEMENT_COMPARER>;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:
@@ -392,7 +392,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \req i < size ()
          */
-        nonvirtual T GetAt (size_t i) const;
+        nonvirtual value_type GetAt (size_t i) const;
 
     public:
         /**
@@ -400,7 +400,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void SetAt (size_t i, ArgByValueType<T> item);
+        nonvirtual void SetAt (size_t i, ArgByValueType<value_type> item);
 
     private:
         template <typename X, typename ENABLE = void>
@@ -413,7 +413,7 @@ namespace Stroika::Foundation::Containers {
          *  \note - when using the non-const operator[] overload with a type T which is a struct/class, this may be significantly less efficient than
          *          just directly calling 'GetAt'.
          */
-        nonvirtual T operator[] (size_t i) const;
+        nonvirtual value_type operator[] (size_t i) const;
 #if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
         nonvirtual TemporaryElementReference_<T> operator[] (size_t i);
 #endif
@@ -427,7 +427,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual TemporaryElementReference_<T> operator() (size_t i);
+        nonvirtual TemporaryElementReference_<value_type> operator() (size_t i);
 #endif
 
     public:
@@ -445,11 +445,11 @@ namespace Stroika::Foundation::Containers {
          *  For the IndexOf(Iterator<T>) - \req it is found/legal iterator 
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual optional<size_t> IndexOf (ArgByValueType<T> i, const EQUALS_COMPARER& equalsComparer = {}) const;
+        nonvirtual optional<size_t> IndexOf (ArgByValueType<value_type> i, const EQUALS_COMPARER& equalsComparer = {}) const;
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual optional<size_t> IndexOf (const Sequence<T>& s, const EQUALS_COMPARER& equalsComparer = {}) const;
+        nonvirtual optional<size_t> IndexOf (const Sequence& s, const EQUALS_COMPARER& equalsComparer = {}) const;
         template <typename IGNORED = void>
-        nonvirtual size_t IndexOf (const Iterator<T>& i) const;
+        nonvirtual size_t IndexOf (const Iterator<value_type>& i) const;
 
     public:
         /**
@@ -466,8 +466,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void Insert (size_t i, ArgByValueType<T> item);
-        nonvirtual void Insert (const Iterator<T>& i, ArgByValueType<T> item);
+        nonvirtual void Insert (size_t i, ArgByValueType<value_type> item);
+        nonvirtual void Insert (const Iterator<value_type>& i, ArgByValueType<value_type> item);
 
     public:
         /**
@@ -482,7 +482,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \note mutates container
          */
-        nonvirtual void Prepend (ArgByValueType<T> item);
+        nonvirtual void Prepend (ArgByValueType<value_type> item);
 
     public:
         /**
@@ -500,7 +500,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void Append (ArgByValueType<T> item);
+        nonvirtual void Append (ArgByValueType<value_type> item);
 
     public:
         /**
@@ -524,7 +524,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue);
+        nonvirtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue);
 
     public:
         /**
@@ -543,7 +543,7 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual void Remove (size_t i);
         nonvirtual void Remove (size_t start, size_t end);
-        nonvirtual void Remove (const Iterator<T>& i, Iterator<T>* nextI = nullptr);
+        nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
 
     public:
         /*
@@ -562,44 +562,44 @@ namespace Stroika::Foundation::Containers {
         /**
          *  @see Iterable<T>::First ()
          */
-        nonvirtual optional<T> First () const;
-        nonvirtual optional<T> First (const function<bool (ArgByValueType<T>)>& that) const;
+        nonvirtual optional<value_type> First () const;
+        nonvirtual optional<value_type> First (const function<bool (ArgByValueType<value_type>)>& that) const;
 
     public:
         /**
          *  @see Iterable<T>::FirstValue ()
          */
-        nonvirtual T FirstValue (ArgByValueType<T> defaultValue = {}) const;
+        nonvirtual value_type FirstValue (ArgByValueType<value_type> defaultValue = {}) const;
 
     public:
         /**
          *  @see Iterable<T>::Last ()
          */
-        nonvirtual optional<T> Last () const;
-        nonvirtual optional<T> Last (const function<bool (ArgByValueType<T>)>& that) const;
+        nonvirtual optional<value_type> Last () const;
+        nonvirtual optional<value_type> Last (const function<bool (ArgByValueType<value_type>)>& that) const;
 
     public:
         /**
          *  @see Iterable<T>::LastValue ()
          */
-        nonvirtual T LastValue (ArgByValueType<T> defaultValue = {}) const;
+        nonvirtual value_type LastValue (ArgByValueType<value_type> defaultValue = {}) const;
 
     public:
         /**
          *  \note mutates container
          */
-        nonvirtual void push_back (ArgByValueType<T> item);
+        nonvirtual void push_back (ArgByValueType<value_type> item);
 
     public:
         /**
          *  Read the last element (GetLast()). Requires not empty.
          */
-        nonvirtual T back () const;
+        nonvirtual value_type back () const;
 
     public:
         /**
          */
-        nonvirtual T front () const;
+        nonvirtual value_type front () const;
 
     public:
         /**
@@ -614,11 +614,11 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         nonvirtual void erase (size_t i);
-        nonvirtual Iterator<T> erase (const Iterator<T>& i);
+        nonvirtual Iterator<value_type> erase (const Iterator<value_type>& i);
 
     public:
-        nonvirtual Sequence<T>& operator+= (ArgByValueType<T> item);
-        nonvirtual Sequence<T>& operator+= (const Sequence<T>& items);
+        nonvirtual Sequence& operator+= (ArgByValueType<value_type> item);
+        nonvirtual Sequence& operator+= (const Sequence& items);
 
     protected:
         /**
@@ -674,20 +674,20 @@ namespace Stroika::Foundation::Containers {
         static constexpr size_t _kSentinalLastItemIndex = numeric_limits<size_t>::max ();
 
     protected:
-        using _IRepSharedPtr = typename Sequence<T>::_IRepSharedPtr;
+        using _IRepSharedPtr = typename Sequence<value_type>::_IRepSharedPtr;
 
     public:
-        virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                    = 0;
-        virtual _IRepSharedPtr CloneAndPatchIterator (Iterator<T>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
+        virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                             = 0;
+        virtual _IRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
         // 'i' argument to GetAt MAYBE kBadSequenceIndex - indictating last element
-        virtual T      GetAt (size_t i) const                                    = 0;
-        virtual void   SetAt (size_t i, ArgByValueType<T> item)                  = 0;
-        virtual size_t IndexOf (const Iterator<T>& i) const                      = 0;
-        virtual void   Remove (const Iterator<T>& i, Iterator<T>* nextI)         = 0;
-        virtual void   Update (const Iterator<T>& i, ArgByValueType<T> newValue) = 0;
+        virtual value_type GetAt (size_t i) const                                                      = 0;
+        virtual void       SetAt (size_t i, ArgByValueType<value_type> item)                           = 0;
+        virtual size_t     IndexOf (const Iterator<value_type>& i) const                               = 0;
+        virtual void       Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)         = 0;
+        virtual void       Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue) = 0;
         // 'at' argument to Insert MAYBE kBadSequenceIndex - indictating append
-        virtual void Insert (size_t at, const T* from, const T* to) = 0;
-        virtual void Remove (size_t from, size_t to)                = 0;
+        virtual void Insert (size_t at, const value_type* from, const value_type* to) = 0;
+        virtual void Remove (size_t from, size_t to)                                  = 0;
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
