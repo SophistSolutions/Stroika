@@ -108,6 +108,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return Iterable<T>::template MakeSmartPtr<Rep_> (this->fKeyExtractor_, this->fKeyComparer_);
         }
+        virtual _KeyedCollectionRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
+        {
+            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+            auto                                                      result = Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            i->Refresh (); // reflect updated rep
+            return result;
+        }
         virtual Iterable<KEY_TYPE> Keys () const override
         {
             return this->_Keys_Reference_Implementation ();
@@ -135,16 +145,22 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return true;
             }
         }
-        virtual void Remove (const Iterator<value_type>& i) override
+        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            fData_.RemoveAt (mir.fIterator);
+            if (nextI != nullptr) {
+                *nextI = i;
+                ++(*nextI);
+            }
+            fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+            if (nextI != nullptr) {
+                nextI->Refresh (); // update to reflect changes made to rep
+            }
         }
         virtual bool Remove (ArgByValueType<KEY_TYPE> key) override
         {
             if (auto i = this->FindFirstThat ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); }, nullptr)) {
-                Remove (i);
+                Remove (i, nullptr);
                 return true;
             }
             return false;

@@ -477,6 +477,21 @@ namespace Stroika::Foundation::Containers {
 
     protected:
         /**
+         *  \brief Utility to get WRITABLE underlying shared_ptr (replacement for what we normally do - _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ())
+         *         but where we also handle the cloning/patching of the associated iterator
+         * 
+         *  When you have a non-const operation (such as Remove) with an argument of an Iterator<>, then due to COW,
+         *  you may end up cloning the container rep, and yet the Iterator<> contains a pointer to the earlier rep (and so maybe unusable).
+         * 
+         *  Prior to Stroika 2.1b14, this was handled elegantly, and automatically, by the iterator patching mechanism. But that was deprecated (due to cost, and
+         *  rarity of use), in favor of this more restricted feature, where we just patch the iterators on an as-needed basis.
+         * 
+         *  \todo @todo - could be smarter about moves and avoid some copies here - I think, and this maybe performance sensitive enough to look into that... (esp for COMMON case where no COW needed)
+         */
+        nonvirtual tuple<typename inherited::_SharedByValueRepType::shared_ptr_type, Iterator<value_type>> _GetWriterRepAndPatchAssociatedIterator (const Iterator<value_type>& i);
+
+    protected:
+        /**
          */
         template <typename T2>
         using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
@@ -508,16 +523,17 @@ namespace Stroika::Foundation::Containers {
         using _IRepSharedPtr = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRepSharedPtr;
 
     public:
-        virtual KeyExtractorType        GetKeyExtractor () const                               = 0;
-        virtual KeyEqualityComparerType GetKeyEqualityComparer () const                        = 0;
-        virtual _IRepSharedPtr          CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-        virtual Iterable<KEY_TYPE>      Keys () const                                          = 0;
+        virtual KeyExtractorType        GetKeyExtractor () const                                                                           = 0;
+        virtual KeyEqualityComparerType GetKeyEqualityComparer () const                                                                    = 0;
+        virtual _IRepSharedPtr          CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                             = 0;
+        virtual _IRepSharedPtr          CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
+        virtual Iterable<KEY_TYPE>      Keys () const                                                                                      = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const = 0;
         // return true if new item, and false if simply updated
-        virtual bool Add (ArgByValueType<value_type> item)  = 0;
-        virtual void Remove (const Iterator<value_type>& i) = 0;
+        virtual bool Add (ArgByValueType<value_type> item)                               = 0;
+        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) = 0;
         // returns true iff a change made, false if elt was not present
         virtual bool Remove (ArgByValueType<KEY_TYPE> key) = 0;
 #if qDebug

@@ -71,10 +71,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
             return Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
         }
-        virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
             Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-            return Iterator<T> (Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
+            return Iterator<value_type>{Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_)};
         }
         virtual size_t GetLength () const override
         {
@@ -114,6 +114,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return Iterable<T>::template MakeSmartPtr<Rep_> (this->fKeyExtractor_, this->fKeyComparer_);
         }
+        virtual _KeyedCollectionRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
+        {
+            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+            auto                                                      result = Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            i->Refresh (); // reflect updated rep
+            return result;
+        }
         virtual Iterable<KEY_TYPE> Keys () const override
         {
             return this->_Keys_Reference_Implementation ();
@@ -151,11 +161,16 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return false;
             }
         }
-        virtual void Remove (const Iterator<value_type>& i) override
+        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            mir.fIterator.fStdIterator                                    = fData_.erase (mir.fIterator.fStdIterator);
+            auto&                                                     mir      = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            auto                                                      nextStdI = fData_.erase (mir.fIterator.fStdIterator);
+            if (nextI != nullptr) {
+                auto resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
+                resultRep->fIterator.SetCurrentLink (nextStdI);
+                *nextI = Iterator<value_type>{move (resultRep)};
+            }
         }
         virtual bool Remove (ArgByValueType<KEY_TYPE> key) override
         {

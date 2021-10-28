@@ -109,13 +109,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            auto                                                      nextStdI = fData_.erase_after (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.fStdIterator);
             if (nextI != nullptr) {
-                *nextI = i;
-                ++(*nextI);
-            }
-            (void)fData_.erase_after (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.fStdIterator);
-            if (nextI != nullptr) {
-                nextI->Refresh (); // update to reflect changes made to rep
+                auto resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
+                resultRep->fIterator.SetCurrentLink (nextStdI);
+                *nextI = Iterator<value_type>{move (resultRep)};
             }
 #if 0
             // HORRIBLE BUT ADEQUITE IMPL...FOR NOW...

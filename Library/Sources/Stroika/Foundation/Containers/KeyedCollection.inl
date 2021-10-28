@@ -257,12 +257,9 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (const Iterator<value_type>& i, const Iterator<value_type>* nextI)
     {
-        if (nextI != nullptr) {
-            // @todo fix with handle GetWritableRep clone stuff
-            *nextI = i;
-            ++(*nextI);
-        }
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
+        Require (not i.Done ());
+        auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
+        Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->Remove (patchedIterator, nextI);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveIf (ArgByValueType<KeyType> key)
@@ -356,6 +353,18 @@ namespace Stroika::Foundation::Containers {
         Iterator<T> nextI{nullptr};
         this->Remove (i, &nextI);
         return nextI;
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    auto KeyedCollection<T, KEY_TYPE, TRAITS>::_GetWriterRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<typename inherited::_SharedByValueRepType::shared_ptr_type, Iterator<value_type>>
+    {
+        Require (not i.Done ());
+        using shared_ptr_type                = typename inherited::_SharedByValueRepType::shared_ptr_type;
+        Iterator<value_type> patchedIterator = i;
+        shared_ptr_type      writerRep       = this->_fRep.get_nu (
+            [&, this] (const shared_ptr_type& prevRepPtr) -> shared_ptr_type {
+                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator, this);
+            });
+        return make_tuple (writerRep, patchedIterator);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::_AssertRepValidType () const

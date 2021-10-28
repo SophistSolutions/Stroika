@@ -57,18 +57,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_INORDER_COMPARER fKeyComparer_;
 
     public:
-        using KeyExtractorType          = typename SortedKeyedCollection<T, KEY_TYPE, TRAITS>::KeyExtractorType;
-        using KeyEqualityComparerType   = typename SortedKeyedCollection<T, KEY_TYPE, TRAITS>::KeyEqualityComparerType;
-        using KeyInOrderKeyComparerType = typename SortedKeyedCollection<T, KEY_TYPE, TRAITS>::KeyInOrderKeyComparerType;
-        using KeyType                   = typename SortedKeyedCollection<T, KEY_TYPE, TRAITS>::KeyType;
-        using value_type                = typename SortedKeyedCollection<T, KEY_TYPE, TRAITS>::value_type;
-
-        using _IterableRepSharedPtr        = typename inherited::_IterableRepSharedPtr;
-        using _KeyedCollectionRepSharedPtr = typename inherited::_IRepSharedPtr;
-        using _APPLY_ARGTYPE               = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE          = typename inherited::_APPLYUNTIL_ARGTYPE;
-
-    public:
         Rep_ (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& inorderComparer)
             : fKeyExtractor_{keyExtractor}
             , fKeyComparer_{inorderComparer}
@@ -107,13 +95,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return fData_.empty ();
         }
-        virtual void Apply (_APPLY_ARGTYPE doToElement) const override
+        virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
-        virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return this->_FindFirstThat (doToElement, suggestedOwner);
@@ -134,7 +122,17 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual _KeyedCollectionRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
-            return Iterable<T>::template MakeSmartPtr<Rep_> (this->fKeyExtractor_, this->fKeyComparer_);
+            return Iterable<value_type>::template MakeSmartPtr<Rep_> (this->fKeyExtractor_, this->fKeyComparer_);
+        }
+        virtual _KeyedCollectionRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
+        {
+            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+            auto                                                      result = Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            i->Refresh (); // reflect updated rep
+            return result;
         }
         virtual Iterable<KEY_TYPE> Keys () const override
         {
@@ -157,7 +155,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return true;
             }
         }
-        virtual bool Add (ArgByValueType<T> item) override
+        virtual bool Add (ArgByValueType<value_type> item) override
         {
             pair<typename DataStructureImplType_::iterator, bool> flagAndI = fData_.insert (item);
             if (flagAndI.second) {
@@ -173,17 +171,18 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return false;
             }
         }
-        virtual void Remove (const Iterator<T>& i) override
+        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Require (not i.Done ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.fData == &fData_);
-            auto nextI         = fData_.erase (mir.fIterator.fStdIterator);
-            using iteratorType = Iterator<T>;
-            auto resultRep     = iteratorType::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
-            resultRep->fIterator.SetCurrentLink (nextI);
-            //     return iteratorType{move (resultRep)};
+            auto nextIResult = fData_.erase (mir.fIterator.fStdIterator);
+            if (nextI != nullptr) {
+                auto resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
+                resultRep->fIterator.SetCurrentLink (nextIResult);
+                *nextI = Iterator<value_type>{move (resultRep)};
+            }
         }
         virtual bool Remove (ArgByValueType<KEY_TYPE> key) override
         {
@@ -216,15 +215,15 @@ namespace Stroika::Foundation::Containers::Concrete {
                 , fKeyComparer_{inorderComparer}
             {
             }
-            int operator() (const T& lhs, const KEY_TYPE& rhs) const
+            int operator() (const value_type& lhs, const KEY_TYPE& rhs) const
             {
                 return fKeyComparer_ (fKeyExtractor_ (lhs), rhs);
             };
-            int operator() (const KEY_TYPE& lhs, const T& rhs) const
+            int operator() (const KEY_TYPE& lhs, const value_type& rhs) const
             {
                 return fKeyComparer_ (lhs, fKeyExtractor_ (rhs));
             };
-            int operator() (const T& lhs, const T& rhs) const
+            int operator() (const value_type& lhs, const value_type& rhs) const
             {
                 return fKeyComparer_ (fKeyExtractor_ (lhs), fKeyExtractor_ (rhs));
             };

@@ -360,9 +360,6 @@ namespace Stroika::Foundation::Containers {
     public:
         virtual ~_IRep () = default;
 
-    protected:
-        //      using _IRepSharedPtr = typename Collection<T>::_IRepSharedPtr;
-
     public:
         virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                             = 0;
         virtual _IRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;

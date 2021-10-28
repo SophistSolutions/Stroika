@@ -30,7 +30,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = SortedKeyedCollection<T, KEY_TYPE, TRAITS>;
 
     public:
-        using TraitsType = typename inherited::TraitsType;
+        using TraitsType                = typename inherited::TraitsType;
+        using KeyExtractorType          = typename inherited::KeyExtractorType;
+        using KeyEqualityComparerType   = typename inherited::KeyEqualityComparerType;
+        using KeyInOrderKeyComparerType = typename inherited::KeyInOrderKeyComparerType;
+        using KeyType                   = typename inherited::KeyType;
+        using value_type                = typename inherited::value_type;
 
     public:
         template <typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
@@ -81,6 +86,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         nonvirtual SortedKeyedCollection_stdset& operator= (const SortedKeyedCollection_stdset& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr        = typename inherited::_IterableRepSharedPtr;
+        using _KeyedCollectionRepSharedPtr = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRepSharedPtr;
 
     private:
         class IImplRepBase_;
