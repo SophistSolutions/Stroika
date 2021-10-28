@@ -29,12 +29,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         using inherited = typename MultiSet<T, TRAITS>::_IRep;
 
-#if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
-    protected:
-        using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-#endif
-
     public:
         virtual size_t GetCapacity () const              = 0;
         virtual void   SetCapacity (size_t slotsAlloced) = 0;
@@ -51,14 +45,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     class MultiSet_Array<T, TRAITS>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<EQUALS_COMPARER>> {
     private:
         using inherited = IImplRepBase_;
-
-    public:
-        using _IterableRepSharedPtr       = typename Iterable<CountedValue<T>>::_IterableRepSharedPtr;
-        using _MultiSetRepSharedPtr       = typename inherited::_IRepSharedPtr;
-        using _APPLY_ARGTYPE              = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE         = typename inherited::_APPLYUNTIL_ARGTYPE;
-        using CounterType                 = typename inherited::CounterType;
-        using ElementEqualityComparerType = typename MultiSet<T, TRAITS>::ElementEqualityComparerType;
 
     public:
         Rep_ (const EQUALS_COMPARER& equalsComparer)
@@ -106,14 +92,14 @@ namespace Stroika::Foundation::Containers::Concrete {
             Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
             return Iterator<CountedValue<T>> (Iterator<CountedValue<T>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
         }
-        virtual void Apply (_APPLY_ARGTYPE doToElement) const override
+        virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
-        virtual Iterator<CountedValue<T>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<CountedValue<T>> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             using RESULT_TYPE     = Iterator<CountedValue<T>>;
@@ -259,7 +245,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using DataStructureImplType_ = DataStructures::Array<CountedValue<T>>;
-        using IteratorRep_           = typename Private::IteratorImplHelper_<CountedValue<T>, DataStructureImplType_>;
+        using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
         DataStructureImplType_ fData_;
@@ -329,7 +315,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<CountedValue<T>>& src)
+    MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<value_type>& src)
         : MultiSet_Array{}
     {
         this->AddAll (src);

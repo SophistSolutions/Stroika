@@ -35,6 +35,15 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
+         */
+        using TraitsType                  = typename inherited::TraitsType;
+        using CounterType                 = typename inherited::CounterType;
+        using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
+        using ElementInOrderComparerType  = typename inherited::ElementInOrderComparerType;
+        using value_type                  = typename inherited::value_type;
+
+    public:
+        /**
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */
         SortedMultiSet_stdmap ();
@@ -42,7 +51,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         explicit SortedMultiSet_stdmap (const INORDER_COMPARER& inorderComparer);
         SortedMultiSet_stdmap (const SortedMultiSet_stdmap& src) = default;
         SortedMultiSet_stdmap (const initializer_list<T>& src);
-        SortedMultiSet_stdmap (const initializer_list<CountedValue<T>>& src);
+        SortedMultiSet_stdmap (const initializer_list<value_type>& src);
         template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const SortedMultiSet_stdmap<T, TRAITS>*>>* = nullptr>
         SortedMultiSet_stdmap (const CONTAINER_OF_T& src);
         template <typename COPY_FROM_ITERATOR_OF_T>
@@ -52,6 +61,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         nonvirtual SortedMultiSet_stdmap& operator= (const SortedMultiSet_stdmap& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
+        using _MultiSetRepSharedPtr = typename MultiSet<T, TRAITS>::_IRepSharedPtr;
 
     private:
         class IImplRepBase_;

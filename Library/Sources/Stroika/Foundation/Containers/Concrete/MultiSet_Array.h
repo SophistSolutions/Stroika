@@ -34,6 +34,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = MultiSet<T, TRAITS>;
 
     public:
+        using CounterType                 = typename inherited::CounterType;
+        using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
+        using value_type                  = typename inherited::value_type;
+
+    public:
         /**
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */
@@ -44,7 +49,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         MultiSet_Array (MultiSet_Array&& src)      = default;
         MultiSet_Array (const MultiSet<T, TRAITS>& src);
         MultiSet_Array (const initializer_list<T>& src);
-        MultiSet_Array (const initializer_list<CountedValue<T>>& src);
+        MultiSet_Array (const initializer_list<value_type>& src);
         template <typename COPY_FROM_ITERATOR>
         MultiSet_Array (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
@@ -71,6 +76,10 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  STL-ish alias for SetCapacity ();
          */
         nonvirtual void reserve (size_t slotsAlloced);
+
+    protected:
+        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
+        using _MultiSetRepSharedPtr = typename inherited::_IRepSharedPtr;
 
     private:
         class IImplRepBase_;

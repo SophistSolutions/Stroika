@@ -69,12 +69,9 @@ namespace Stroika::Foundation::Containers {
     protected:
         class _IRep;
 
-    protected:
-#if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
-        using _IRepSharedPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
-#else
-        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
-#endif
+    public:
+        using TraitsType = typename inherited::TraitsType;
+        using value_type = typename inherited::value_type;
 
     public:
         /**
@@ -82,12 +79,12 @@ namespace Stroika::Foundation::Containers {
          */
         using ElementInOrderComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (T, T)>>;
 
-    public:
-        /**
-         *  Just a short-hand for the 'TRAITS' part of SortedMultiSet<T,TRAITS>. This is often handy to use in
-         *  building other templates.
-         */
-        using TraitsType = TRAITS;
+    protected:
+#if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
+        using _IRepSharedPtr = conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
+#else
+        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+#endif
 
     public:
         /**
@@ -106,9 +103,9 @@ namespace Stroika::Foundation::Containers {
         SortedMultiSet (const initializer_list<T>& src);
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<T>& src);
-        SortedMultiSet (const initializer_list<CountedValue<T>>& src);
+        SortedMultiSet (const initializer_list<value_type>& src);
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
-        SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<CountedValue<T>>& src);
+        SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedMultiSet<T, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit SortedMultiSet (CONTAINER_OF_ADDABLE&& src);
         template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
@@ -171,6 +168,7 @@ namespace Stroika::Foundation::Containers {
     public:
         virtual ElementInOrderComparerType GetElementInOrderComparer () const = 0;
     };
+
 }
 
 /*

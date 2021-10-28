@@ -38,14 +38,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = IImplRepBase_;
 
     public:
-        using _IterableRepSharedPtr       = typename Iterable<CountedValue<T>>::_IterableRepSharedPtr;
-        using _MultiSetRepSharedPtr       = typename inherited::_IRepSharedPtr;
-        using _APPLY_ARGTYPE              = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE         = typename inherited::_APPLYUNTIL_ARGTYPE;
-        using CounterType                 = typename inherited::CounterType;
-        using ElementEqualityComparerType = typename MultiSet<T, TRAITS>::ElementEqualityComparerType;
-
-    public:
         Rep_ (const EQUALS_COMPARER& equalsComparer)
             : fEqualsComparer_{equalsComparer}
         {
@@ -84,13 +76,13 @@ namespace Stroika::Foundation::Containers::Concrete {
             Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
             return Iterator<CountedValue<T>> (Iterator<CountedValue<T>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
         }
-        virtual void Apply (_APPLY_ARGTYPE doToElement) const override
+        virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
-        virtual Iterator<CountedValue<T>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<CountedValue<T>> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             using RESULT_TYPE     = Iterator<CountedValue<T>>;
@@ -237,8 +229,8 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
 
     private:
-        using DataStructureImplType_ = DataStructures::LinkedList<CountedValue<T>>;
-        using IteratorRep_           = typename Private::IteratorImplHelper_<CountedValue<T>, DataStructureImplType_>;
+        using DataStructureImplType_ = DataStructures::LinkedList<value_type>;
+        using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
         DataStructureImplType_ fData_;

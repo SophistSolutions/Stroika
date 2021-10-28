@@ -202,9 +202,9 @@ namespace Stroika::Foundation::Containers {
         MultiSet (const initializer_list<T>& src);
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
         MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src);
-        MultiSet (const initializer_list<CountedValue<T>>& src);
+        MultiSet (const initializer_list<value_type>& src);
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
-        MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<CountedValue<T>>& src);
+        MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<MultiSet<T, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit MultiSet (CONTAINER_OF_ADDABLE&& src);
         template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
@@ -239,7 +239,7 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual void Add (ArgByValueType<T> item);
         nonvirtual void Add (ArgByValueType<T> item, CounterType count);
-        nonvirtual void Add (const CountedValue<T>& item);
+        nonvirtual void Add (const value_type& item);
 
     public:
         /**
@@ -265,7 +265,7 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual void Remove (ArgByValueType<T> item);
         nonvirtual void Remove (ArgByValueType<T> item, CounterType count);
-        nonvirtual void Remove (const Iterator<CountedValue<T>>& i, Iterator<CountedValue<T>>* nextI = nullptr);
+        nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
 
     public:
         /**
@@ -280,7 +280,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount);
+        nonvirtual void UpdateCount (const Iterator<value_type>& i, CounterType newCount);
 
     public:
         /**
@@ -309,7 +309,7 @@ namespace Stroika::Foundation::Containers {
         /**
          * \brief STL-ish alias for Remove ().
          */
-        nonvirtual Iterator<CountedValue<T>> erase (const Iterator<CountedValue<T>>& i);
+        nonvirtual Iterator<value_type> erase (const Iterator<value_type>& i);
 
     public:
         /**
@@ -447,16 +447,16 @@ namespace Stroika::Foundation::Containers {
         _IRep () = default;
 
     public:
-        virtual ElementEqualityComparerType GetElementEqualsComparer () const                                                                       = 0;
-        virtual _IRepSharedPtr              CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                                  = 0;
-        virtual _IRepSharedPtr              CloneAndPatchIterator (Iterator<CountedValue<T>>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
-        virtual bool                        Equals (const _IRep& rhs) const                                                                         = 0;
-        virtual bool                        Contains (ArgByValueType<T> item) const                                                                 = 0;
-        virtual void                        Add (ArgByValueType<T> item, CounterType count)                                                         = 0;
-        virtual void                        Remove (ArgByValueType<T> item, CounterType count)                                                      = 0;
-        virtual void                        Remove (const Iterator<CountedValue<T>>& i, Iterator<CountedValue<T>>* nextI)                           = 0;
-        virtual void                        UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount)                                  = 0;
-        virtual CounterType                 OccurrencesOf (ArgByValueType<T> item) const                                                            = 0;
+        virtual ElementEqualityComparerType GetElementEqualsComparer () const                                                                  = 0;
+        virtual _IRepSharedPtr              CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                             = 0;
+        virtual _IRepSharedPtr              CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
+        virtual bool                        Equals (const _IRep& rhs) const                                                                    = 0;
+        virtual bool                        Contains (ArgByValueType<T> item) const                                                            = 0;
+        virtual void                        Add (ArgByValueType<T> item, CounterType count)                                                    = 0;
+        virtual void                        Remove (ArgByValueType<T> item, CounterType count)                                                 = 0;
+        virtual void                        Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                = 0;
+        virtual void                        UpdateCount (const Iterator<value_type>& i, CounterType newCount)                                  = 0;
+        virtual CounterType                 OccurrencesOf (ArgByValueType<T> item) const                                                       = 0;
         // Subtle point - shared rep argument to Elements() allows shared ref counting
         // without the cost of a clone or enable_shared_from_this
         virtual Iterable<T> Elements (const _IRepSharedPtr& rep) const = 0;

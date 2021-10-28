@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Containers::Factory {
         }
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
-    void Mapping_Factory<KEY_TYPE, VALUE_TYPE, void>::Register (Mapping<KEY_TYPE, VALUE_TYPE> (*factory) ())
+    inline void Mapping_Factory<KEY_TYPE, VALUE_TYPE, void>::Register (Mapping<KEY_TYPE, VALUE_TYPE> (*factory) ())
     {
         sFactory_ = factory;
     }

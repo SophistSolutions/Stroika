@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<CountedValue<T>>& src)
+    SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<value_type>& src)
         : SortedMultiSet{}
     {
         this->AddAll (src);
@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>*>
-    SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<CountedValue<T>>& src)
+    SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src)
         : SortedMultiSet{forward<INORDER_COMPARER> (inorderComparer)}
     {
         this->AddAll (src);

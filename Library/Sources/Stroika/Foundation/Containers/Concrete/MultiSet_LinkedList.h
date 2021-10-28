@@ -34,6 +34,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = MultiSet<T, TRAITS>;
 
     public:
+        using CounterType                 = typename inherited::CounterType;
+        using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
+        using value_type                  = typename inherited::value_type;
+
+    public:
         /**
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */
@@ -49,6 +54,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         nonvirtual MultiSet_LinkedList<T, TRAITS>& operator= (const MultiSet_LinkedList<T, TRAITS>& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
+        using _MultiSetRepSharedPtr = typename inherited::_IRepSharedPtr;
 
     private:
         class IImplRepBase_;

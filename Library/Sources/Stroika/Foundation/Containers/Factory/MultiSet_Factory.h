@@ -12,6 +12,8 @@
  *  \file
  *
  *  TODO:
+ *      @todo   MUST re-implement (clone MultiSet_stdmap<>) code to avoid deadly include empbrace so we
+ *              have the option to use this in the factory. - like we do for Mapping_Factory
  *      @todo   Extend this metaphor to have different kinds of factories, like mkMultiSet_Fastest,
  *              mkMultiSet_Smallest, mkMultiSetWithHash_Fastest etc...
  *              Possibly extend to policy objects, and have properties for this stuff?

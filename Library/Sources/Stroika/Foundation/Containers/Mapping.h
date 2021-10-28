@@ -123,6 +123,12 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  @see inherited::value_type
+         */
+        using value_type = typename inherited::value_type;
+
+    public:
+        /**
          *  like std::map<>::key_type
          */
         using key_type = KEY_TYPE;
@@ -132,12 +138,6 @@ namespace Stroika::Foundation::Containers {
          *  like std::map<>::mapped_type
          */
         using mapped_type = MAPPED_VALUE_TYPE;
-
-    public:
-        /**
-         *  @see inherited::value_type
-         */
-        using value_type = typename inherited::value_type;
 
     public:
         /**
@@ -367,7 +367,7 @@ namespace Stroika::Foundation::Containers {
          *        between Add and AddIf) and no such issue exists with Set<>::AddIf. But return true if they make a change.
          */
         nonvirtual bool Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
-        nonvirtual bool Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
+        nonvirtual bool Add (ArgByValueType<value_type> p, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
 
     public:
         /**
@@ -450,7 +450,7 @@ namespace Stroika::Foundation::Containers {
          *      \endcode
          */
         nonvirtual ArchetypeContainerType Where (const function<bool (ArgByValueType<key_type>)>& includeIfTrue) const;
-        nonvirtual ArchetypeContainerType Where (const function<bool (ArgByValueType<KeyValuePair<key_type, mapped_type>>)>& includeIfTrue) const;
+        nonvirtual ArchetypeContainerType Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const;
 
     public:
         /**
@@ -611,11 +611,11 @@ namespace Stroika::Foundation::Containers {
         using _IRepSharedPtr = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRepSharedPtr;
 
     public:
-        virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const                                                                                                     = 0;
-        virtual _IRepSharedPtr               CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                                                            = 0;
-        virtual _IRepSharedPtr               CloneAndPatchIterator (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
-        virtual Iterable<key_type>           Keys () const                                                                                                                     = 0;
-        virtual Iterable<mapped_type>        MappedValues () const                                                                                                             = 0;
+        virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const                                                                      = 0;
+        virtual _IRepSharedPtr               CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                             = 0;
+        virtual _IRepSharedPtr               CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
+        virtual Iterable<key_type>           Keys () const                                                                                      = 0;
+        virtual Iterable<mapped_type>        MappedValues () const                                                                              = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<mapped_type>* item) const = 0;
@@ -623,7 +623,7 @@ namespace Stroika::Foundation::Containers {
         virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode) = 0;
         virtual void Remove (ArgByValueType<KEY_TYPE> key)                                                                 = 0;
         // if nextI is non-null, its filled in with the next item in iteration order after i (has been removed)
-        virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i, Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>* nextI) = 0;
+        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) = 0;
 
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;

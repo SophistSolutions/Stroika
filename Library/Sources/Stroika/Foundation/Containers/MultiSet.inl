@@ -25,17 +25,17 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T, typename TRAITS>
     struct MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ {
-        ElementsIteratorHelperContext_ (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& tally, const Iterator<CountedValue<T>>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, optional<T> saved2Return = optional<T> ())
+        ElementsIteratorHelperContext_ (const typename Iterable<value_type>::_IterableRepSharedPtr& tally, const Iterator<value_type>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, optional<T> saved2Return = optional<T> ())
             : fMultiSet{tally}
             , fMultiSetIterator{delegateTo}
             , fCountMoreTimesToGoBeforeAdvance{countMoreTimesToGoBeforeAdvance}
             , fSaved2Return{saved2Return}
         {
         }
-        typename Iterable<CountedValue<T>>::_IterableRepSharedPtr fMultiSet;
-        Iterator<CountedValue<T>>                                 fMultiSetIterator;
-        size_t                                                    fCountMoreTimesToGoBeforeAdvance;
-        optional<T>                                               fSaved2Return;
+        typename Iterable<value_type>::_IterableRepSharedPtr fMultiSet;
+        Iterator<value_type>                                 fMultiSetIterator;
+        size_t                                               fCountMoreTimesToGoBeforeAdvance;
+        optional<T>                                          fSaved2Return;
     };
 
     template <typename T, typename TRAITS>
@@ -143,13 +143,13 @@ namespace Stroika::Foundation::Containers {
 
     template <typename T, typename TRAITS>
     struct MultiSet<T, TRAITS>::_IRep::UniqueElementsIteratorHelperContext_ {
-        UniqueElementsIteratorHelperContext_ (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& tally, const Iterator<CountedValue<T>>& delegateTo)
+        UniqueElementsIteratorHelperContext_ (const typename Iterable<value_type>::_IterableRepSharedPtr& tally, const Iterator<value_type>& delegateTo)
             : fMultiSet{tally}
             , fMultiSetIterator{delegateTo}
         {
         }
-        typename Iterable<CountedValue<T>>::_IterableRepSharedPtr fMultiSet;
-        Iterator<CountedValue<T>>                                 fMultiSetIterator;
+        typename Iterable<value_type>::_IterableRepSharedPtr fMultiSet;
+        Iterator<value_type>                                 fMultiSetIterator;
     };
 
     template <typename T, typename TRAITS>
@@ -326,7 +326,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    MultiSet<T, TRAITS>::MultiSet (const initializer_list<CountedValue<T>>& src)
+    MultiSet<T, TRAITS>::MultiSet (const initializer_list<value_type>& src)
         : MultiSet{}
     {
         AddAll (src);
@@ -334,7 +334,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
-    MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<CountedValue<T>>& src)
+    MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src)
         : MultiSet{forward<EQUALS_COMPARER> (equalsComparer)}
     {
         AddAll (src);
@@ -375,19 +375,18 @@ namespace Stroika::Foundation::Containers {
     auto MultiSet<T, TRAITS>::TotalOccurrences () const -> CounterType
     {
         CounterType sum = 0;
-        for (CountedValue<T> i : *this) {
+        for (value_type i : *this) {
             sum += i.fCount;
         }
         return sum;
     }
     template <typename T, typename TRAITS>
-    inline Iterator<CountedValue<T>> MultiSet<T, TRAITS>::erase (const Iterator<CountedValue<T>>& i)
+    inline auto MultiSet<T, TRAITS>::erase (const Iterator<value_type>& i) -> Iterator<value_type>
     {
-        Iterator<CountedValue<T>> result{nullptr};
+        Iterator<value_type> result{nullptr};
         this->Remove (i, &result);
         return result;
     }
-
     template <typename T, typename TRAITS>
     inline void MultiSet<T, TRAITS>::clear ()
     {
@@ -446,7 +445,7 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item, count);
     }
     template <typename T, typename TRAITS>
-    inline void MultiSet<T, TRAITS>::Add (const CountedValue<T>& item)
+    inline void MultiSet<T, TRAITS>::Add (const value_type& item)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item.fValue, item.fCount);
     }
@@ -478,14 +477,14 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (item, count);
     }
     template <typename T, typename TRAITS>
-    inline void MultiSet<T, TRAITS>::Remove (const Iterator<CountedValue<T>>& i, Iterator<CountedValue<T>>* nextI)
+    inline void MultiSet<T, TRAITS>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
     {
         Require (not i.Done ());
         auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
         Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->Remove (patchedIterator, nextI);
     }
     template <typename T, typename TRAITS>
-    inline void MultiSet<T, TRAITS>::UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount)
+    inline void MultiSet<T, TRAITS>::UpdateCount (const Iterator<value_type>& i, CounterType newCount)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().UpdateCount (i, newCount);
     }

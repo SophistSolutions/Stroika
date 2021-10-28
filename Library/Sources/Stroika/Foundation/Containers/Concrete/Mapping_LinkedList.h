@@ -33,6 +33,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
     public:
+        using KeyEqualsCompareFunctionType = typename inherited::KeyEqualsCompareFunctionType;
+        using value_type                   = typename inherited::value_type;
+
+    public:
         /**
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */
@@ -48,6 +52,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         nonvirtual Mapping_LinkedList& operator= (const Mapping_LinkedList& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
+        using _MappingRepSharedPtr  = typename inherited::_IRepSharedPtr;
 
     private:
         class IImplRepBase_;
