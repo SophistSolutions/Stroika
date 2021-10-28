@@ -34,17 +34,24 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Queue<T>;
 
     public:
+        using value_type = typename inherited::value_type;
+
+    public:
         /**
          */
         Queue_DoublyLinkedList ();
-        Queue_DoublyLinkedList (const Queue_DoublyLinkedList<T>& src);
+        Queue_DoublyLinkedList (const Queue_DoublyLinkedList& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue_DoublyLinkedList<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Queue_DoublyLinkedList (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_T>
         explicit Queue_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
     public:
-        nonvirtual Queue_DoublyLinkedList<T>& operator= (const Queue_DoublyLinkedList<T>& rhs) = default;
+        nonvirtual Queue_DoublyLinkedList& operator= (const Queue_DoublyLinkedList& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
+        using _QueueRepSharedPtr    = typename inherited::_IRepSharedPtr;
 
     private:
         class Rep_;

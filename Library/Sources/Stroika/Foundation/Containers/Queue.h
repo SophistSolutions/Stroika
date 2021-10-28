@@ -119,7 +119,7 @@ namespace Stroika::Foundation::Containers {
          *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, T>;
+        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
 
     public:
         /**
@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Containers {
          */
         Queue ();
         Queue (const Queue& src) noexcept = default;
-        Queue (const initializer_list<T>& src);
+        Queue (const initializer_list<value_type>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit Queue (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
@@ -162,32 +162,32 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void AddTail (ArgByValueType<T> item);
+        nonvirtual void AddTail (ArgByValueType<value_type> item);
 
     public:
         /**
          *  \req not empty ()
          *  @see HeadIf ()
          */
-        nonvirtual T Head () const;
+        nonvirtual value_type Head () const;
 
     public:
         /**
          */
-        nonvirtual optional<T> HeadIf () const;
+        nonvirtual optional<value_type> HeadIf () const;
 
     public:
         /**
          *  \req not empty ()
          *  \note mutates container
          */
-        nonvirtual T RemoveHead ();
+        nonvirtual value_type RemoveHead ();
 
     public:
         /**
          *  \note mutates container
          */
-        nonvirtual optional<T> RemoveHeadIf ();
+        nonvirtual optional<value_type> RemoveHeadIf ();
 
     public:
         /**
@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void Enqueue (ArgByValueType<T> item);
+        nonvirtual void Enqueue (ArgByValueType<value_type> item);
 
     public:
         /**
@@ -204,7 +204,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          *  \req not empty ()
          */
-        nonvirtual T Dequeue ();
+        nonvirtual value_type Dequeue ();
 
     public:
         /**
@@ -299,12 +299,12 @@ namespace Stroika::Foundation::Containers {
         using _IRepSharedPtr = typename Queue<T>::_IRepSharedPtr;
 
     public:
-        virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-        virtual void           AddTail (ArgByValueType<T> item)                       = 0;
-        virtual T              RemoveHead ()                                          = 0;
-        virtual optional<T>    RemoveHeadIf ()                                        = 0;
-        virtual T              Head () const                                          = 0;
-        virtual optional<T>    HeadIf () const                                        = 0;
+        virtual _IRepSharedPtr       CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+        virtual void                 AddTail (ArgByValueType<value_type> item)              = 0;
+        virtual value_type           RemoveHead ()                                          = 0;
+        virtual optional<value_type> RemoveHeadIf ()                                        = 0;
+        virtual value_type           Head () const                                          = 0;
+        virtual optional<value_type> HeadIf () const                                        = 0;
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

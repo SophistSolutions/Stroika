@@ -40,6 +40,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Queue<T>;
 
     public:
+        using value_type = typename inherited::value_type;
+
+    public:
         /**
          */
         Queue_Array ();
@@ -52,7 +55,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual Queue_Array<T>& operator= (const Queue_Array<T>& rhs) = default;
+        nonvirtual Queue_Array& operator= (const Queue_Array& rhs) = default;
 
     public:
         /**
@@ -82,6 +85,10 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  STL-ish alias for SetCapacity ();
          */
         nonvirtual void reserve (size_t slotsAlloced);
+
+    protected:
+        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
+        using _QueueRepSharedPtr    = typename inherited::_IRepSharedPtr;
 
     private:
         class Rep_;

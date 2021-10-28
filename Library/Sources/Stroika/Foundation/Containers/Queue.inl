@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    inline Queue<T>::Queue (const initializer_list<T>& src)
+    inline Queue<T>::Queue (const initializer_list<value_type>& src)
         : Queue{}
     {
         AddAllToTail (src);
@@ -70,38 +70,38 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T>
-    inline void Queue<T>::AddTail (ArgByValueType<T> item)
+    inline void Queue<T>::AddTail (ArgByValueType<value_type> item)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().AddTail (item);
     }
     template <typename T>
-    inline T Queue<T>::Head () const
+    inline auto Queue<T>::Head () const -> value_type
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Head ();
     }
     template <typename T>
-    inline optional<T> Queue<T>::HeadIf () const
+    inline auto Queue<T>::HeadIf () const -> optional<value_type>
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().HeadIf ();
     }
     template <typename T>
-    inline T Queue<T>::RemoveHead ()
+    inline auto Queue<T>::RemoveHead () -> value_type
     {
         Require (not this->empty ());
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveHead ();
     }
     template <typename T>
-    inline optional<T> Queue<T>::RemoveHeadIf ()
+    inline auto Queue<T>::RemoveHeadIf () -> optional<value_type>
     {
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveHeadIf ();
     }
     template <typename T>
-    inline void Queue<T>::Enqueue (ArgByValueType<T> item)
+    inline void Queue<T>::Enqueue (ArgByValueType<value_type> item)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().AddTail (item);
     }
     template <typename T>
-    inline T Queue<T>::Dequeue ()
+    inline auto Queue<T>::Dequeue () -> value_type
     {
         Require (not this->empty ());
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveHead ();
