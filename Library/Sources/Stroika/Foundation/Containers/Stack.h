@@ -142,18 +142,18 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \note mutates container
          */
-        nonvirtual void Push (ArgByValueType<T> item);
+        nonvirtual void Push (ArgByValueType<value_type> item);
 
     public:
         /**
          *  \note mutates container
          */
-        nonvirtual T Pop ();
+        nonvirtual value_type Pop ();
 
     public:
         /**
          */
-        nonvirtual T Top () const;
+        nonvirtual value_type Top () const;
 
     public:
         /**
@@ -236,9 +236,9 @@ namespace Stroika::Foundation::Containers {
 
     public:
         virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-        virtual void           Push (ArgByValueType<T> item)                          = 0;
-        virtual T              Pop ()                                                 = 0;
-        virtual T              Top () const                                           = 0;
+        virtual void           Push (ArgByValueType<value_type> item)                 = 0;
+        virtual value_type     Pop ()                                                 = 0;
+        virtual value_type     Top () const                                           = 0;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

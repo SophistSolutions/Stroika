@@ -71,6 +71,7 @@ namespace Stroika::Foundation::Containers {
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
      *
+     *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class Association : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> {

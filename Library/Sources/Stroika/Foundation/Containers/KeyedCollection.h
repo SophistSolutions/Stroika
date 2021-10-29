@@ -205,6 +205,8 @@ namespace Stroika::Foundation::Containers {
          *        default X(const X&) CTOR.
          * 
          *        And also careful not to apply to non-iterables.
+         *
+         *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */
         template <typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,

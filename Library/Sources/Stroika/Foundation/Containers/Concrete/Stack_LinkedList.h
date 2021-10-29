@@ -37,11 +37,20 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
+        using value_type = typename inherited::value_type;
+
+    public:
+        /**
+         */
         Stack_LinkedList ();
         Stack_LinkedList (const Stack_LinkedList& src) = default;
 
     public:
         nonvirtual Stack_LinkedList& operator= (const Stack_LinkedList& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
+        using _StackRepSharedPtr    = typename inherited::_IRepSharedPtr;
 
     private:
         class Rep_;

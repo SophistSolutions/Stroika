@@ -53,17 +53,17 @@ namespace Stroika::Foundation::Containers {
         //                AddAll (start, end);
     }
     template <typename T>
-    inline void Stack<T>::Push (ArgByValueType<T> item)
+    inline void Stack<T>::Push (ArgByValueType<value_type> item)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Push (item);
     }
     template <typename T>
-    inline T Stack<T>::Pop ()
+    inline auto Stack<T>::Pop () -> value_type
     {
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Pop ();
     }
     template <typename T>
-    inline T Stack<T>::Top () const
+    inline auto Stack<T>::Top () const -> value_type
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Top ();
     }

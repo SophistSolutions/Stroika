@@ -43,6 +43,8 @@ namespace Stroika::Foundation::Containers {
         using ArchetypeContainerType = DenseDataHyperRectangle<T, INDEXES...>;
 
     public:
+        /**
+         */
         DenseDataHyperRectangle (INDEXES... dimensions);
         DenseDataHyperRectangle (const DenseDataHyperRectangle<T, INDEXES...>& src);
 

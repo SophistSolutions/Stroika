@@ -106,6 +106,8 @@ namespace Stroika::Foundation::Containers {
          *        default X(const X&) CTOR.
          * 
          *        And also careful not to apply to non-iterables.
+         *
+         *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */
         SortedMapping ();
         template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> ()>* = nullptr>
