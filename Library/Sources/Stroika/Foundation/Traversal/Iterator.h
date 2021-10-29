@@ -155,16 +155,31 @@ namespace Stroika::Foundation::Traversal {
      *  they act like an iterator.
      *
      *  An Iterator<T> is a copyable object which can safely be used to capture (copy) the state of
-     *  iteration and continue iterating from that spot. If the underlying container is
-     *  modified, the iterator will be automatically updated to logically account for that update.
+     *  iteration and continue iterating from that spot.
+     * 
+     *  An Iterator<T> be be thought of as (const) referencing a container (or other information source)
+     *  
+     *  It is (since Stroika 2.1b14) illegal to use an iterator after its underlying container
+     *  has been modified (as in STL, but unlike most STLs, Stroika will automatically detect such
+     *  illegal use in debug builds).
      *
-     *  Iterators are robust in the presence of changes to their underlying container. Adding or
-     *  removing items from a container will not invalidate the iteration.
+     *  Itererators CAN be used to MODIFY a container, but only by passing that iterator as an
+     *  argument to a container method (such as Remove). Such APIs will optionally return an updated iterator,
+     *  so that you can continue with iteration (if desired).
+     * 
+     *  \note PRIOR to Stroika 2.1b14 it was true that
+     * 
+     *        "If the underlying container is modified, the iterator will be automatically
+     *        updated to logically account for that update. Iterators are robust in the presence
+     *        of changes to their underlying container. Adding or removing items from a container
+     *        will not invalidate the iteration."
      *
-     *  Different kinds of containers can make further guarantees about the behavior of iterators
-     *  in the presence of container modifications. For example a SequenceIterator will always
-     *  traverse any items added after the current traversal index, and will never traverse items
-     *  added with an index before the current traversal index.
+     *        "Different kinds of containers can make further guarantees about the behavior of iterators
+     *        in the presence of container modifications. For example a SequenceIterator will always
+     *        traverse any items added after the current traversal index, and will never traverse items
+     *        added with an index before the current traversal index.
+     *
+     *      But this is NO LONGER TRUE.
      *
      *  \par Example Usage
      *      \code
@@ -189,8 +204,8 @@ namespace Stroika::Foundation::Traversal {
      *
      *  Key Differences between Stroika Iterators and STL Iterators:
      *
-     *      1.      Stroika iterators continue to work correctly when the underlying
-     *              container is modified.
+     *      1.      Stroika iterators (in debug builds) will detect if they are used after
+     *              the underlying container has changed (some STL's may do this too?)
      *
      *      2.      Stroika iterators carry around their 'done' state all in one object.
      *              For compatability with existing C++ idiom, and some C++11 language features
@@ -210,20 +225,9 @@ namespace Stroika::Foundation::Traversal {
      *
      * Some Rules about Iterators:
      *
-     *      1.      What is Done() cannot be UnDone()
-     *              That is, once an iterator is done, it cannot be restarted.
-     *
-     *      2.      Iterators can be copied. They always refer to the same
+     *      1.      Iterators can be copied. They always refer to the same
      *              place they did before the copy, and the old iterator is unaffected
-     *              by iteration in the new (though it can be affected indirectly
-     *              thru mutations).
-     *
-     *      3.      Whether or not you encounter items added after an addition is
-     *              undefined (by Iterator<T> but often defined in specifically for
-     *              particular container subtypes).
-     *
-     *      4.      A consequence of the above, is that items added after you are done,
-     *              are not encountered.
+     *              by iteration in the new iterator.
      *
      *  Interesting Design Notes:
      *
