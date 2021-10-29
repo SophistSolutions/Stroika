@@ -446,7 +446,7 @@ namespace Stroika::Foundation::Containers {
         Remove (item);
     }
     template <typename T>
-    inline Iterator<T> Set<T>::erase (const Iterator<value_type>& i)
+    inline auto Set<T>::erase (const Iterator<value_type>& i) -> Iterator<value_type>
     {
         Iterator<T> nextI{nullptr};
         this->Remove (i, &nextI);

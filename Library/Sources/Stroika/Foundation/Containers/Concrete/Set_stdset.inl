@@ -142,7 +142,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Assert (mir.fIterator.fData == &fData_);
             auto nextIR = fData_.erase (mir.fIterator.fStdIterator);
             if (nextI != nullptr) {
-                auto resultRep     = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
+                auto resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
                 resultRep->fIterator.SetCurrentLink (nextIR);
                 *nextI = Iterator<value_type>{move (resultRep)};
             }
