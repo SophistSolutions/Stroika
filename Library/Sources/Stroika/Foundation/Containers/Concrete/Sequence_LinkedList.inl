@@ -92,6 +92,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            i->Refresh (); // reflect updated rep
             return result;
         }
         virtual value_type GetAt (size_t i) const override
