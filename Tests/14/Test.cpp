@@ -65,7 +65,7 @@ namespace {
             }
             {
 #if qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
-                DataHyperRectangle<int, size_t, size_t, size_t> x = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
+                DataHyperRectangle<int, size_t, size_t, size_t> x = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t, size_t>{};
 #else
                 DataHyperRectangleN<int, 3> x = Concrete::SparseDataHyperRectangle_stdmapN<int, 3>{};
 #endif
