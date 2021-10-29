@@ -30,6 +30,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = SparseDataHyperRectangle<T, INDEXES...>;
 
     public:
+        using value_type = inherited::value_type;
+
+    public:
         /**
          */
         SparseDataHyperRectangle_stdmap (Configuration::ArgByValueType<T> defaultItem = {});
@@ -37,6 +40,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         nonvirtual SparseDataHyperRectangle_stdmap<T, INDEXES...>& operator= (const SparseDataHyperRectangle_stdmap<T, INDEXES...>& rhs);
+
+    protected:
+        using _IterableRepSharedPtr           = typename inherited::_IterableRepSharedPtr;
+        using _DataHyperRectangleRepSharedPtr = typename inherited::_IRepSharedPtr;
 
     private:
         class Rep_;

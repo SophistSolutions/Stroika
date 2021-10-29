@@ -134,14 +134,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual bool Contains (ArgByValueType<T> item) const override
         {
-            value_type                                                 tmp (item);
+            value_type                                                 tmp{item};
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return Find_ (tmp) != kNotFound_;
         }
         virtual void Add (ArgByValueType<T> item, CounterType count) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            value_type                                                tmp (item, count);
+            value_type                                                tmp{item, count};
             size_t                                                    index = Find_ (tmp);
             if (index == kNotFound_) {
                 fData_.InsertAt (fData_.GetLength (), tmp);

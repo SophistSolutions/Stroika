@@ -33,6 +33,9 @@ namespace Stroika::Foundation::Containers {
     private:
         using inherited = DataHyperRectangle<T, INDEXES...>;
 
+    public:
+        using value_type = inherited::value_type;
+
     protected:
         using _IRepSharedPtr = typename inherited::_IRepSharedPtr;
 

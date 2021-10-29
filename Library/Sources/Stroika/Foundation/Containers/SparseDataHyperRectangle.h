@@ -37,8 +37,8 @@ namespace Stroika::Foundation::Containers {
     private:
         using inherited = DataHyperRectangle<T, INDEXES...>;
 
-    protected:
-        using _IRepSharedPtr = typename inherited::_IRepSharedPtr;
+    public:
+        using value_type = inherited::value_type;
 
     public:
         /**
@@ -51,6 +51,9 @@ namespace Stroika::Foundation::Containers {
          */
         SparseDataHyperRectangle (Configuration::ArgByValueType<T> defaultItem = {});
         SparseDataHyperRectangle (const SparseDataHyperRectangle<T, INDEXES...>& src);
+
+    protected:
+        using _IRepSharedPtr = typename inherited::_IRepSharedPtr;
 
     protected:
         explicit SparseDataHyperRectangle (const _IRepSharedPtr& src) noexcept;

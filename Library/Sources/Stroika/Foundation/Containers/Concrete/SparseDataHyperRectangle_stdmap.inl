@@ -32,12 +32,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = typename DataHyperRectangle<T, INDEXES...>::_IRep;
 
     public:
-        using _IterableRepSharedPtr           = typename Iterable<tuple<T, INDEXES...>>::_IterableRepSharedPtr;
-        using _DataHyperRectangleRepSharedPtr = typename inherited::_IRepSharedPtr;
-        using _APPLY_ARGTYPE                  = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE             = typename inherited::_APPLYUNTIL_ARGTYPE;
-
-    public:
         Rep_ (Configuration::ArgByValueType<T> defaultItem)
             : fDefaultValue_{defaultItem}
         {
@@ -71,14 +65,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return fData_.empty ();
         }
-        virtual void Apply (_APPLY_ARGTYPE doToElement) const override
+        virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             fData_.Apply (
                 [&] (const pair<tuple<INDEXES...>, T>& item) {
                     doToElement (tuple_cat (tuple<T>{item.second}, item.first));
                 });
         }
-        virtual Iterator<tuple<T, INDEXES...>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<tuple<T, INDEXES...>> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             using RESULT_TYPE     = Iterator<tuple<T, INDEXES...>>;
@@ -101,17 +95,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _DataHyperRectangleRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
-#if 0
-            if (fData_.HasActiveIterators ()) {
-                // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                auto r = Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                r->fData_.clear ();
-                return r;
-            }
-            else {
-                return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (fDefaultValue_);
-            }
-#endif
             return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (fDefaultValue_);
         }
         virtual T GetAt (INDEXES... indexes) const override

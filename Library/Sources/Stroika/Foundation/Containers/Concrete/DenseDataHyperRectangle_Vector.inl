@@ -30,12 +30,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = typename DenseDataHyperRectangle<T, INDEXES...>::_IRep;
 
     public:
-        using _IterableRepSharedPtr           = typename Iterable<tuple<T, INDEXES...>>::_IterableRepSharedPtr;
-        using _DataHyperRectangleRepSharedPtr = typename inherited::_IRepSharedPtr;
-        using _APPLY_ARGTYPE                  = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE             = typename inherited::_APPLYUNTIL_ARGTYPE;
-
-    public:
         Rep_ (INDEXES... dimensions)
             : fDimensions_ (forward<INDEXES> (dimensions)...)
         {
@@ -75,7 +69,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return fData_.empty ();
         }
-        virtual void Apply ([[maybe_unused]] _APPLY_ARGTYPE doToElement) const override
+        virtual void Apply ([[maybe_unused]] const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             AssertNotImplemented ();
 #if 0
@@ -84,7 +78,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.Apply (doToElement);
 #endif
         }
-        virtual Iterator<tuple<T, INDEXES...>> FindFirstThat ([[maybe_unused]] _APPLYUNTIL_ARGTYPE doToElement, [[maybe_unused]] IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<tuple<T, INDEXES...>> FindFirstThat ([[maybe_unused]] const function<bool (ArgByValueType<value_type> item)>& doToElement, [[maybe_unused]] IteratorOwnerID suggestedOwner) const override
         {
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
 #if 1
