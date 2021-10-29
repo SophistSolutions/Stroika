@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Containers {
          *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, T>;
+        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
 
     public:
         /**
@@ -183,9 +183,9 @@ namespace Stroika::Foundation::Containers {
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
         explicit Set (EQUALS_COMPARER&& equalsComparer);
         Set (const Set& src) noexcept = default;
-        Set (const initializer_list<T>& src);
+        Set (const initializer_list<value_type>& src);
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
-        Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src);
+        Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit Set (CONTAINER_OF_ADDABLE&& src);
         template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
@@ -222,18 +222,18 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual bool                                                         Contains (ArgByValueType<T> item) const;
-        nonvirtual [[deprecated ("Since Stroika 2.1b14 use ContainsAny")]] bool Contains (const Iterable<T>& items) const;
+        nonvirtual bool                                                         Contains (ArgByValueType<value_type> item) const;
+        nonvirtual [[deprecated ("Since Stroika 2.1b14 use ContainsAny")]] bool Contains (const Iterable<value_type>& items) const;
 
     public:
         /**
          */
-        nonvirtual bool ContainsAll (const Iterable<T>& items) const;
+        nonvirtual bool ContainsAll (const Iterable<value_type>& items) const;
 
     public:
         /**
          */
-        nonvirtual bool ContainsAny (const Iterable<T>& items) const;
+        nonvirtual bool ContainsAny (const Iterable<value_type>& items) const;
 
     public:
         /**
@@ -247,7 +247,7 @@ namespace Stroika::Foundation::Containers {
          *  Like Contains - but a Set<> can use a comparison that only examines a part of T,
          *  making it useful to be able to return the rest of T.
          */
-        nonvirtual optional<T> Lookup (ArgByValueType<T> item) const;
+        nonvirtual optional<value_type> Lookup (ArgByValueType<value_type> item) const;
 
     public:
         /**
@@ -262,7 +262,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void Add (ArgByValueType<T> item);
+        nonvirtual void Add (ArgByValueType<value_type> item);
 
     public:
         /**
@@ -279,7 +279,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual bool AddIf (ArgByValueType<T> item);
+        nonvirtual bool AddIf (ArgByValueType<value_type> item);
 
     public:
         /**
@@ -301,8 +301,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void Remove (ArgByValueType<T> item);
-        nonvirtual Iterator<T> Remove (const Iterator<T>& i);
+        nonvirtual void Remove (ArgByValueType<value_type> item);
+        nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
 
     public:
         /**
@@ -324,7 +324,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual bool RemoveIf (ArgByValueType<T> item);
+        nonvirtual bool RemoveIf (ArgByValueType<value_type> item);
 
     public:
         /**
@@ -350,7 +350,7 @@ namespace Stroika::Foundation::Containers {
          *          VerifyTestResult ((s.Where ([](int i) {return Math::IsPrime (i); }) == Set<int>{ 2, 3, 5 }));
          *      \endcode
          */
-        nonvirtual Set Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
+        nonvirtual Set Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const;
 
     public:
         struct EqualsComparer;
@@ -361,7 +361,7 @@ namespace Stroika::Foundation::Containers {
          * simply indirect to @Set<>::EqualsComparer (always defined because Set<> knows how to compare T items.
          */
         nonvirtual bool operator== (const Set& rhs) const;
-        nonvirtual bool operator== (const Iterable<T>& rhs) const;
+        nonvirtual bool operator== (const Iterable<value_type>& rhs) const;
 #endif
 
     public:
@@ -370,34 +370,34 @@ namespace Stroika::Foundation::Containers {
          *
          *  Returns true iff the two specified containers contain at least one element in common. 
          */
-        nonvirtual bool Intersects (const Iterable<T>& rhs) const;
-        static bool     Intersects (const Set& lhs, const Iterable<T>& rhs);
-        static bool     Intersects (const Iterable<T>& lhs, const Set& rhs);
+        nonvirtual bool Intersects (const Iterable<value_type>& rhs) const;
+        static bool     Intersects (const Set& lhs, const Iterable<value_type>& rhs);
+        static bool     Intersects (const Iterable<value_type>& lhs, const Set& rhs);
         static bool     Intersects (const Set& lhs, const Set& rhs);
 
     public:
         /**
          */
-        nonvirtual Set Intersection (const Iterable<T>& rhs) const;
-        static Set     Intersection (const Set& lhs, const Iterable<T>& rhs);
+        nonvirtual Set Intersection (const Iterable<value_type>& rhs) const;
+        static Set     Intersection (const Set& lhs, const Iterable<value_type>& rhs);
         static Set     Intersection (const Iterable<T>& lhs, const Set& rhs);
         static Set     Intersection (const Set& lhs, const Set& rhs);
 
     public:
         /**
          */
-        nonvirtual Set Union (const Iterable<T>& rhs) const;
-        nonvirtual Set Union (ArgByValueType<T> rhs) const;
-        static Set     Union (const Set& lhs, const Iterable<T>& rhs);
-        static Set     Union (const Iterable<T>& lhs, const Set& rhs);
+        nonvirtual Set Union (const Iterable<value_type>& rhs) const;
+        nonvirtual Set Union (ArgByValueType<value_type> rhs) const;
+        static Set     Union (const Set& lhs, const Iterable<value_type>& rhs);
+        static Set     Union (const Iterable<value_type>& lhs, const Set& rhs);
         static Set     Union (const Set& lhs, const Set& rhs);
 
     public:
         /**
          */
         nonvirtual Set Difference (const Set& rhs) const;
-        nonvirtual Set Difference (const Iterable<T>& rhs) const;
-        nonvirtual Set Difference (ArgByValueType<T> rhs) const;
+        nonvirtual Set Difference (const Iterable<value_type>& rhs) const;
+        nonvirtual Set Difference (ArgByValueType<value_type> rhs) const;
 
     public:
         /**
@@ -407,8 +407,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual Set& operator+= (ArgByValueType<T> item);
-        nonvirtual Set& operator+= (const Iterable<T>& items);
+        nonvirtual Set& operator+= (ArgByValueType<value_type> item);
+        nonvirtual Set& operator+= (const Iterable<value_type>& items);
 
     public:
         /**
@@ -418,8 +418,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual Set& operator-= (ArgByValueType<T> item);
-        nonvirtual Set& operator-= (const Iterable<T>& items);
+        nonvirtual Set& operator-= (ArgByValueType<value_type> item);
+        nonvirtual Set& operator-= (const Iterable<value_type>& items);
 
     public:
         /**
@@ -427,7 +427,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual Set& operator^= (const Iterable<T>& items);
+        nonvirtual Set& operator^= (const Iterable<value_type>& items);
 
     public:
         /**
@@ -443,7 +443,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void insert (ArgByValueType<T> item);
+        nonvirtual void insert (ArgByValueType<value_type> item);
 
     public:
         /**
@@ -451,8 +451,23 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void erase (ArgByValueType<T> item);
-        nonvirtual Iterator<T> erase (const Iterator<T>& i);
+        nonvirtual void erase (ArgByValueType<value_type> item);
+        nonvirtual Iterator<value_type> erase (const Iterator<value_type>& i);
+
+    protected:
+        /**
+         *  \brief Utility to get WRITABLE underlying shared_ptr (replacement for what we normally do - _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ())
+         *         but where we also handle the cloning/patching of the associated iterator
+         * 
+         *  When you have a non-const operation (such as Remove) with an argument of an Iterator<>, then due to COW,
+         *  you may end up cloning the container rep, and yet the Iterator<> contains a pointer to the earlier rep (and so maybe unusable).
+         * 
+         *  Prior to Stroika 2.1b14, this was handled elegantly, and automatically, by the iterator patching mechanism. But that was deprecated (due to cost, and
+         *  rarity of use), in favor of this more restricted feature, where we just patch the iterators on an as-needed basis.
+         * 
+         *  \todo @todo - could be smarter about moves and avoid some copies here - I think, and this maybe performance sensitive enough to look into that... (esp for COMMON case where no COW needed)
+         */
+        nonvirtual tuple<typename inherited::_SharedByValueRepType::shared_ptr_type, Iterator<value_type>> _GetWriterRepAndPatchAssociatedIterator (const Iterator<value_type>& i);
 
     protected:
         /**
@@ -493,14 +508,15 @@ namespace Stroika::Foundation::Containers {
         using _IRepSharedPtr = typename Set<T>::_IRepSharedPtr;
 
     public:
-        virtual ElementEqualityComparerType GetElementEqualsComparer () const                      = 0;
-        virtual _IRepSharedPtr              CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-        virtual bool                        Equals (const typename Iterable<T>::_IRep& rhs) const  = 0;
-        virtual bool                        Contains (ArgByValueType<T> item) const                = 0;
-        virtual optional<T>                 Lookup (ArgByValueType<T> item) const                  = 0;
-        virtual void                        Add (ArgByValueType<T> item)                           = 0;
-        virtual void                        Remove (ArgByValueType<T> item)                        = 0;
-        virtual Iterator<T>                 Remove (const Iterator<T>& i)                          = 0;
+        virtual ElementEqualityComparerType GetElementEqualsComparer () const                                                                  = 0;
+        virtual _IRepSharedPtr              CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                             = 0;
+        virtual _IRepSharedPtr              CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
+        virtual bool                        Equals (const typename Iterable<value_type>::_IRep& rhs) const                                     = 0;
+        virtual bool                        Contains (ArgByValueType<value_type> item) const                                                   = 0;
+        virtual optional<value_type>        Lookup (ArgByValueType<value_type> item) const                                                     = 0;
+        virtual void                        Add (ArgByValueType<value_type> item)                                                              = 0;
+        virtual void                        Remove (ArgByValueType<value_type> item)                                                           = 0;
+        virtual void                        Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                = 0;
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
@@ -516,7 +532,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \note - this doesn't require a Compare function argument because it indirects to 'Contains'
          */
-        nonvirtual bool _Equals_Reference_Implementation (const typename Iterable<T>::_IRep& rhs) const;
+        nonvirtual bool _Equals_Reference_Implementation (const typename Iterable<value_type>::_IRep& rhs) const;
     };
 
     /**
@@ -541,8 +557,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     struct Set<T>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
         nonvirtual bool operator() (const Set& lhs, const Set& rhs) const;
-        nonvirtual bool operator() (const Set& lhs, const Iterable<T>& rhs) const;
-        nonvirtual bool operator() (const Iterable<T>& lhs, const Set& rhs) const;
+        nonvirtual bool operator() (const Set& lhs, const Iterable<value_type>& rhs) const;
+        nonvirtual bool operator() (const Iterable<value_type>& lhs, const Set& rhs) const;
     };
 
     /**

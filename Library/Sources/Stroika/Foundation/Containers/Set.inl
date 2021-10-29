@@ -17,7 +17,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Set<T>::Set ()
-        : Set{equal_to<T>{}}
+        : Set{equal_to<value_type>{}}
     {
         _AssertRepValidType ();
     }
@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    inline Set<T>::Set (const initializer_list<T>& src)
+    inline Set<T>::Set (const initializer_list<value_type>& src)
         : Set{}
     {
         AddAll (src);
@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
-    inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src)
+    inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src)
         : Set{forward<EQUALS_COMPARER> (equalsComparer)}
     {
         AddAll (src);
@@ -105,12 +105,12 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetElementEqualsComparer ();
     }
     template <typename T>
-    inline bool Set<T>::Contains (ArgByValueType<T> item) const
+    inline bool Set<T>::Contains (ArgByValueType<value_type> item) const
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Contains (item);
     }
     template <typename T>
-    bool Set<T>::Contains (const Iterable<T>& items) const
+    bool Set<T>::Contains (const Iterable<value_type>& items) const
     {
         for (auto i : items) {
             if (not Contains (i)) {
@@ -120,7 +120,7 @@ namespace Stroika::Foundation::Containers {
         return true;
     }
     template <typename T>
-    bool Set<T>::ContainsAll (const Iterable<T>& items) const
+    bool Set<T>::ContainsAll (const Iterable<value_type>& items) const
     {
         for (auto i : items) {
             if (not Contains (i)) {
@@ -130,7 +130,7 @@ namespace Stroika::Foundation::Containers {
         return true;
     }
     template <typename T>
-    bool Set<T>::ContainsAny (const Iterable<T>& items) const
+    bool Set<T>::ContainsAny (const Iterable<value_type>& items) const
     {
         for (auto i : items) {
             if (Contains (i)) {
@@ -150,17 +150,17 @@ namespace Stroika::Foundation::Containers {
         return true;
     }
     template <typename T>
-    inline optional<T> Set<T>::Lookup (ArgByValueType<T> item) const
+    inline optional<T> Set<T>::Lookup (ArgByValueType<value_type> item) const
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (item);
     }
     template <typename T>
-    inline void Set<T>::Add (ArgByValueType<T> item)
+    inline void Set<T>::Add (ArgByValueType<value_type> item)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item);
     }
     template <typename T>
-    inline bool Set<T>::AddIf (ArgByValueType<T> item)
+    inline bool Set<T>::AddIf (ArgByValueType<value_type> item)
     {
         /*
          *  Note, this is an non-performance optimal implementation, but is not a race, because from the outside
@@ -194,17 +194,19 @@ namespace Stroika::Foundation::Containers {
         AddAll (std::begin (s), std::end (s));
     }
     template <typename T>
-    inline void Set<T>::Remove (ArgByValueType<T> item)
+    inline void Set<T>::Remove (ArgByValueType<value_type> item)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (item);
     }
     template <typename T>
-    inline Iterator<T> Set<T>::Remove (const Iterator<T>& i)
+    inline void Set<T>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
     {
-        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
+        Require (not i.Done ());
+        auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
+        Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->Remove (patchedIterator, nextI);
     }
     template <typename T>
-    inline bool Set<T>::RemoveIf (ArgByValueType<T> item)
+    inline bool Set<T>::RemoveIf (ArgByValueType<value_type> item)
     {
         /*
          *  Note, this is an non-performance optimal implementation, but is not a race, because from the outside
@@ -242,12 +244,12 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    inline Set<T> Set<T>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
+    inline Set<T> Set<T>::Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const
     {
         return Iterable<T>::Where (includeIfTrue, Set<T>{});
     }
     template <typename T>
-    bool Set<T>::Intersects (const Iterable<T>& rhs) const
+    bool Set<T>::Intersects (const Iterable<value_type>& rhs) const
     {
         for (T i : rhs) {
             if (Contains (i)) [[UNLIKELY_ATTR]] {
@@ -257,12 +259,12 @@ namespace Stroika::Foundation::Containers {
         return false;
     }
     template <typename T>
-    inline bool Set<T>::Intersects (const Set& lhs, const Iterable<T>& rhs)
+    inline bool Set<T>::Intersects (const Set& lhs, const Iterable<value_type>& rhs)
     {
         return lhs.Intersects (rhs);
     }
     template <typename T>
-    inline bool Set<T>::Intersects (const Iterable<T>& lhs, const Set& rhs)
+    inline bool Set<T>::Intersects (const Iterable<value_type>& lhs, const Set& rhs)
     {
         return rhs.Intersects (lhs);
     }
@@ -279,7 +281,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    Set<T> Set<T>::Intersection (const Iterable<T>& rhs) const
+    Set<T> Set<T>::Intersection (const Iterable<value_type>& rhs) const
     {
         using namespace Stroika::Foundation::Common;
         Set<T> result{this->GetElementEqualsComparer ()};
@@ -291,7 +293,7 @@ namespace Stroika::Foundation::Containers {
         return result;
     }
     template <typename T>
-    inline Set<T> Set<T>::Intersection (const Set& lhs, const Iterable<T>& rhs)
+    inline Set<T> Set<T>::Intersection (const Set& lhs, const Iterable<value_type>& rhs)
     {
         return lhs.Intersection (rhs);
     }
@@ -314,26 +316,26 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    inline Set<T> Set<T>::Union (const Iterable<T>& rhs) const
+    inline Set<T> Set<T>::Union (const Iterable<value_type>& rhs) const
     {
         Set r = *this;
         r.AddAll (rhs);
         return r;
     }
     template <typename T>
-    inline Set<T> Set<T>::Union (ArgByValueType<T> rhs) const
+    inline Set<T> Set<T>::Union (ArgByValueType<value_type> rhs) const
     {
         Set r = *this;
         r.Add (rhs);
         return r;
     }
     template <typename T>
-    Set<T> Set<T>::Union (const Set& lhs, const Iterable<T>& rhs)
+    Set<T> Set<T>::Union (const Set& lhs, const Iterable<value_type>& rhs)
     {
         return lhs.Union (rhs);
     }
     template <typename T>
-    Set<T> Set<T>::Union (const Iterable<T>& lhs, const Set& rhs)
+    Set<T> Set<T>::Union (const Iterable<value_type>& lhs, const Set& rhs)
     {
         // union operation is commutitive
         return rhs.Union (lhs);
@@ -368,7 +370,7 @@ namespace Stroika::Foundation::Containers {
         return result;
     }
     template <typename T>
-    Set<T> Set<T>::Difference (const Iterable<T>& rhs) const
+    Set<T> Set<T>::Difference (const Iterable<value_type>& rhs) const
     {
         /*
          * We could iterate (doubly nested loop) over both *this and rhs, and that would avoid constructing
@@ -388,7 +390,7 @@ namespace Stroika::Foundation::Containers {
         return result;
     }
     template <typename T>
-    Set<T> Set<T>::Difference (ArgByValueType<T> rhs) const
+    Set<T> Set<T>::Difference (ArgByValueType<value_type> rhs) const
     {
         /*
          *  Could implement as return Difference (Set{rhs});
@@ -399,31 +401,31 @@ namespace Stroika::Foundation::Containers {
         return result;
     }
     template <typename T>
-    inline Set<T>& Set<T>::operator+= (ArgByValueType<T> item)
+    inline Set<T>& Set<T>::operator+= (ArgByValueType<value_type> item)
     {
         Add (item);
         return *this;
     }
     template <typename T>
-    inline Set<T>& Set<T>::operator+= (const Iterable<T>& items)
+    inline Set<T>& Set<T>::operator+= (const Iterable<value_type>& items)
     {
         AddAll (items);
         return *this;
     }
     template <typename T>
-    inline Set<T>& Set<T>::operator-= (ArgByValueType<T> item)
+    inline Set<T>& Set<T>::operator-= (ArgByValueType<value_type> item)
     {
         Remove (item);
         return *this;
     }
     template <typename T>
-    inline Set<T>& Set<T>::operator-= (const Iterable<T>& items)
+    inline Set<T>& Set<T>::operator-= (const Iterable<value_type>& items)
     {
         RemoveAll (items);
         return *this;
     }
     template <typename T>
-    inline Set<T>& Set<T>::operator^= (const Iterable<T>& items)
+    inline Set<T>& Set<T>::operator^= (const Iterable<value_type>& items)
     {
         *this = Intersection (items);
         return *this;
@@ -434,19 +436,33 @@ namespace Stroika::Foundation::Containers {
         RemoveAll ();
     }
     template <typename T>
-    inline void Set<T>::insert (ArgByValueType<T> item)
+    inline void Set<T>::insert (ArgByValueType<value_type> item)
     {
         Add (item);
     }
     template <typename T>
-    inline void Set<T>::erase (ArgByValueType<T> item)
+    inline void Set<T>::erase (ArgByValueType<value_type> item)
     {
         Remove (item);
     }
     template <typename T>
-    inline Iterator<T> Set<T>::erase (const Iterator<T>& i)
+    inline Iterator<T> Set<T>::erase (const Iterator<value_type>& i)
     {
-        return Remove (i);
+        Iterator<T> nextI{nullptr};
+        this->Remove (i, &nextI);
+        return nextI;
+    }
+    template <typename T>
+    auto Set<T>::_GetWriterRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<typename inherited::_SharedByValueRepType::shared_ptr_type, Iterator<value_type>>
+    {
+        Require (not i.Done ());
+        using shared_ptr_type                = typename inherited::_SharedByValueRepType::shared_ptr_type;
+        Iterator<value_type> patchedIterator = i;
+        shared_ptr_type      writerRep       = this->_fRep.get_nu (
+            [&, this] (const shared_ptr_type& prevRepPtr) -> shared_ptr_type {
+                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator, this);
+            });
+        return make_tuple (writerRep, patchedIterator);
     }
     template <typename T>
     inline void Set<T>::_AssertRepValidType () const
@@ -462,7 +478,7 @@ namespace Stroika::Foundation::Containers {
         return EqualsComparer{}(*this, rhs);
     }
     template <typename T>
-    inline bool Set<T>::operator== (const Iterable<T>& rhs) const
+    inline bool Set<T>::operator== (const Iterable<value_type>& rhs) const
     {
         return EqualsComparer{}(*this, rhs);
     }
@@ -474,7 +490,7 @@ namespace Stroika::Foundation::Containers {
      ********************************************************************************
      */
     template <typename T>
-    bool Set<T>::_IRep::_Equals_Reference_Implementation (const typename Iterable<T>::_IRep& rhs) const
+    bool Set<T>::_IRep::_Equals_Reference_Implementation (const typename Iterable<value_type>::_IRep& rhs) const
     {
         if (this == &rhs) {
             return true;
@@ -504,12 +520,12 @@ namespace Stroika::Foundation::Containers {
         return result;
     }
     template <typename T>
-    inline bool Set<T>::EqualsComparer::operator() (const Set& lhs, const Iterable<T>& rhs) const
+    inline bool Set<T>::EqualsComparer::operator() (const Set& lhs, const Iterable<value_type>& rhs) const
     {
         return _SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<typename Iterable<T>::_IRep>{&rhs}._ConstGetRep ());
     }
     template <typename T>
-    inline bool Set<T>::EqualsComparer::operator() (const Iterable<T>& lhs, const Set& rhs) const
+    inline bool Set<T>::EqualsComparer::operator() (const Iterable<value_type>& lhs, const Set& rhs) const
     {
         return _SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<typename Iterable<T>::_IRep>{&lhs}._ConstGetRep ());
     }

@@ -36,7 +36,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        using ElementInOrderComparerType = typename inherited::ElementInOrderComparerType;
+        using ElementEqualityComparerType = typename Set<T>::ElementEqualityComparerType;
+        using ElementInOrderComparerType  = typename inherited::ElementInOrderComparerType;
+        using value_type                  = typename inherited::value_type;
 
     public:
         /**
@@ -47,8 +49,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <typename INORDER_COMPARER>
         explicit SortedSet_stdset (const INORDER_COMPARER& inorderComparer);
         SortedSet_stdset (const SortedSet_stdset& src) = default;
-        SortedSet_stdset (const initializer_list<T>& src);
-        SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, const initializer_list<T>& src);
+        SortedSet_stdset (const initializer_list<value_type>& src);
+        SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, const initializer_list<value_type>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         SortedSet_stdset (CONTAINER_OF_ADDABLE&& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
@@ -62,6 +64,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         nonvirtual SortedSet_stdset& operator= (const SortedSet_stdset& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
+        using _SetSharedPtrIRep     = typename Set<T>::_IRepSharedPtr;
 
     private:
         class IImplRepBase_;

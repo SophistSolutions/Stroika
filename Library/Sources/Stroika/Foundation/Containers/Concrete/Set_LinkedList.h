@@ -32,9 +32,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Set<T>;
 
     public:
-        /**
-         */
         using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
+        using value_type                  = typename inherited::value_type;
 
     public:
         /**
@@ -59,6 +58,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         nonvirtual Set_LinkedList& operator= (const Set_LinkedList& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
+        using _SetRepSharedPtr      = typename inherited::_IRepSharedPtr;
 
     private:
         class IImplRepBase_;

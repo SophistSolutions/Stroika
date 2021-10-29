@@ -36,13 +36,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = IImplRepBase_;
 
     public:
-        using _IterableRepSharedPtr       = typename Iterable<T>::_IterableRepSharedPtr;
-        using _SetRepSharedPtr            = typename inherited::_IRepSharedPtr;
-        using _APPLY_ARGTYPE              = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE         = typename inherited::_APPLYUNTIL_ARGTYPE;
-        using ElementEqualityComparerType = typename Set<T>::ElementEqualityComparerType;
-
-    public:
         Rep_ (const INORDER_COMPARER& inorderComparer)
             : fData_{inorderComparer}
         {
@@ -81,14 +74,14 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.Invariant ();
             return fData_.empty ();
         }
-        virtual void Apply (_APPLY_ARGTYPE doToElement) const override
+        virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
-        virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return this->_FindFirstThat (doToElement, suggestedOwner);
@@ -104,11 +97,20 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return Iterable<T>::template MakeSmartPtr<Rep_> (fData_.key_comp ());
         }
-        virtual bool Equals (const typename Iterable<T>::_IRep& rhs) const override
+        virtual _SetRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
+        {
+            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+            auto                                                      result = Iterable<value_type>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), obsoleteForIterableEnvelope);
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            return result;
+        }
+        virtual bool Equals (const typename Iterable<value_type>::_IRep& rhs) const override
         {
             return this->_Equals_Reference_Implementation (rhs);
         }
-        virtual bool Contains (ArgByValueType<T> item) const override
+        virtual bool Contains (ArgByValueType<value_type> item) const override
         {
             return fData_.Contains (item);
         }
@@ -118,13 +120,12 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto                                                       i = fData_.find (item);
             return (i == fData_.end ()) ? optional<T> () : optional<T> (*i);
         }
-        virtual void Add (ArgByValueType<T> item) override
+        virtual void Add (ArgByValueType<value_type> item) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             fData_.insert (item);
-            // @todo must patch!!!
         }
-        virtual void Remove (ArgByValueType<T> item) override
+        virtual void Remove (ArgByValueType<value_type> item) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             fData_.Invariant ();
@@ -133,17 +134,18 @@ namespace Stroika::Foundation::Containers::Concrete {
                 fData_.erase (i);
             }
         }
-        virtual Iterator<T> Remove (const Iterator<T>& i) override
+        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Require (not i.Done ());
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.fData == &fData_);
-            auto nextI         = fData_.erase (mir.fIterator.fStdIterator);
-            using iteratorType = Iterator<T>;
-            auto resultRep     = iteratorType::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
-            resultRep->fIterator.SetCurrentLink (nextI);
-            return iteratorType{move (resultRep)};
+            auto nextIR = fData_.erase (mir.fIterator.fStdIterator);
+            if (nextI != nullptr) {
+                auto resultRep     = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
+                resultRep->fIterator.SetCurrentLink (nextIR);
+                *nextI = Iterator<value_type>{move (resultRep)};
+            }
         }
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override

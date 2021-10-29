@@ -37,6 +37,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Set<T, typename TRAITS::SetTraitsType>;
 
     public:
+        using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
+        using value_type                  = typename inherited::value_type;
+
+    public:
         /**
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */

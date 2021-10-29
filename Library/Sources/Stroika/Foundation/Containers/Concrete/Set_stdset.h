@@ -32,9 +32,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Set<T>;
 
     public:
-        /**
-         */
         using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
+        using value_type                  = typename inherited::value_type;
 
     public:
         /**
@@ -44,7 +43,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <typename INORDER_COMPARER>
         explicit Set_stdset (const INORDER_COMPARER& inorderComparer);
         Set_stdset (const Set_stdset& src) = default;
-        Set_stdset (const initializer_list<T>& src);
+        Set_stdset (const initializer_list<value_type>& src);
         Set_stdset (const ElementEqualityComparerType& equalsComparer, const initializer_list<T>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_base_of_v<Set_stdset<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Set_stdset (CONTAINER_OF_ADDABLE&& src);
@@ -59,6 +58,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         nonvirtual Set_stdset& operator= (const Set_stdset& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
+        using _SetRepSharedPtr      = typename inherited::_IRepSharedPtr;
 
     private:
         class IImplRepBase_;
