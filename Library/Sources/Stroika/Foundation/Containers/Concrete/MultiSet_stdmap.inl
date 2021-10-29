@@ -74,12 +74,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
-            typename Iterator<value_type>::RepSmartPtr tmpRep;
-            {
-                Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-                tmpRep               = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
-            }
-            return Iterator<value_type>{move (tmpRep)};
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {

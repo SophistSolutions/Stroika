@@ -14,7 +14,7 @@ namespace Stroika::Foundation::Containers::Private {
      ********************************************************************************
      */
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
-    inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::IteratorImplHelper_ ([[maybe_unused]] IteratorOwnerID owner, DATASTRUCTURE_CONTAINER* data)
+    inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::IteratorImplHelper_ ([[maybe_unused]] IteratorOwnerID owner, const DATASTRUCTURE_CONTAINER* data)
         : fIterator{data}
     {
         RequireNotNull (data);

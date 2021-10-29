@@ -55,8 +55,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
 /// NYI
 #if 0
-            Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-            return Iterator<tuple<T, INDEXES...>> (Iterator<tuple<T, INDEXES...>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
 #endif
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
             return RESULT_TYPE::GetEmptyIterator ();
@@ -86,15 +85,12 @@ namespace Stroika::Foundation::Containers::Concrete {
             return RESULT_TYPE::GetEmptyIterator ();
 #else
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            using SHARED_REP_TYPE = Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_>;
-            auto iLink            = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (doToElement);
+            auto                                                       iLink = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (doToElement);
             if (iLink == fData_.end ()) {
                 return RESULT_TYPE::GetEmptyIterator ();
             }
-            Rep_*           NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-            SHARED_REP_TYPE resultRep      = Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_);
             resultRep->fIterator.SetCurrentLink (iLink);
-            // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
             return RESULT_TYPE (move (resultRep));
 #endif
         }

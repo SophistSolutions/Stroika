@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Containers::Private {
     public:
         IteratorImplHelper_ ()                           = delete;
         IteratorImplHelper_ (const IteratorImplHelper_&) = default;
-        explicit IteratorImplHelper_ (IteratorOwnerID owner, DATASTRUCTURE_CONTAINER* data);
+        explicit IteratorImplHelper_ (IteratorOwnerID owner, const DATASTRUCTURE_CONTAINER* data);
 
     public:
         virtual ~IteratorImplHelper_ () = default;

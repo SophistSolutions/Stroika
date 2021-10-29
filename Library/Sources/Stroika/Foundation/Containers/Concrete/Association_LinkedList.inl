@@ -37,9 +37,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         Rep_ ()                 = default;
         Rep_ (const Rep_& from) = delete;
-        Rep_ (Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
-            : inherited ()
-            , fData_ (from->fData_)
+        Rep_ (const Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
+            : fData_{from->fData_}
         {
             RequireNotNull (from);
         }
@@ -54,13 +53,11 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
         {
-            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-            return Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+            return Iterable<value_type>::template MakeSmartPtr<Rep_> (this, forIterableEnvelope);
         }
         virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
-            Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-            return Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
+            return Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_));
         }
         virtual size_t GetLength () const override
         {
@@ -79,16 +76,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            using RESULT_TYPE     = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
-            using SHARED_REP_TYPE = Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_>;
-            auto iLink            = fData_.FindFirstThat (doToElement);
+            using RESULT_TYPE = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
+            auto iLink        = fData_.FindFirstThat (doToElement);
             if (iLink == nullptr) {
                 return RESULT_TYPE::GetEmptyIterator ();
             }
-            Rep_*           NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-            SHARED_REP_TYPE resultRep      = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_);
             resultRep->fIterator.SetCurrentLink (iLink);
-            // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
             return RESULT_TYPE (move (resultRep));
         }
 

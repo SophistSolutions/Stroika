@@ -34,6 +34,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Association<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
     public:
+        using value_type = typename inherited::value_type;
+
+    public:
         /**
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */

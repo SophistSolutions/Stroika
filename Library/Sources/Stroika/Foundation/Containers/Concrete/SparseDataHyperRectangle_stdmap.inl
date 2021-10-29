@@ -54,8 +54,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual Iterator<tuple<T, INDEXES...>> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
-            Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-            return Iterator<tuple<T, INDEXES...>> (Iterator<tuple<T, INDEXES...>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
+            //return Iterator<tuple<T, INDEXES...>> (Iterator<tuple<T, INDEXES...>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_));
         }
         virtual size_t GetLength () const override
         {
@@ -75,19 +75,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<tuple<T, INDEXES...>> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            using RESULT_TYPE     = Iterator<tuple<T, INDEXES...>>;
-            using SHARED_REP_TYPE = Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_>;
-            auto iLink            = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (
+            using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
+            auto iLink        = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (
                 [&] (const pair<tuple<INDEXES...>, T>& item) {
                     return doToElement (tuple_cat (tuple<T>{item.second}, item.first));
                 });
             if (iLink == fData_.end ()) {
                 return RESULT_TYPE::GetEmptyIterator ();
             }
-            Rep_*           NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-            SHARED_REP_TYPE resultRep      = Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_);
             resultRep->fIterator.SetCurrentLink (iLink);
-            // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
             return RESULT_TYPE (move (resultRep));
         }
 
@@ -138,7 +135,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         public:
             MyIteratorImplHelper_ ()                             = delete;
             MyIteratorImplHelper_ (const MyIteratorImplHelper_&) = default;
-            explicit MyIteratorImplHelper_ (IteratorOwnerID /*owner*/, PATCHABLE_CONTAINER* data)
+            explicit MyIteratorImplHelper_ (IteratorOwnerID /*owner*/, const PATCHABLE_CONTAINER* data)
                 : fIterator{data}
             {
                 RequireNotNull (data);

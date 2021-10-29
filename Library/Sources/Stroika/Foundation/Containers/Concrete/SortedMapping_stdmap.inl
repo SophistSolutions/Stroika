@@ -77,8 +77,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
-            Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-            return Iterator<value_type> (Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
         }
         virtual size_t GetLength () const override
         {
@@ -184,7 +183,6 @@ namespace Stroika::Foundation::Containers::Concrete {
                 IteratorOwnerID suggestedOwner = nullptr; //tmphack
                 auto            resultRep      = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &this->fData_);
                 resultRep->fIterator.SetCurrentLink (newI);
-                // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
                 *nextI = Iterator<value_type>{move (resultRep)};
             }
         }
