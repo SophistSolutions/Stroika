@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = DenseDataHyperRectangle<T, INDEXES...>;
 
     public:
-        using value_type = inherited::value_type;
+        using value_type = typename inherited::value_type;
 
     public:
         DenseDataHyperRectangle_Vector (INDEXES... dimensions);

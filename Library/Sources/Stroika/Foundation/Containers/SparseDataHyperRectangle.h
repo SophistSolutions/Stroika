@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Containers {
         using inherited = DataHyperRectangle<T, INDEXES...>;
 
     public:
-        using value_type = inherited::value_type;
+        using value_type = typename inherited::value_type;
 
     public:
         /**

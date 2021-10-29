@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = SparseDataHyperRectangle<T, INDEXES...>;
 
     public:
-        using value_type = inherited::value_type;
+        using value_type = typename inherited::value_type;
 
     public:
         /**
