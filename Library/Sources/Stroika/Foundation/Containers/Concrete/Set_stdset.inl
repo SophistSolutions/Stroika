@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
-        virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<value_type> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return this->_FindFirstThat (doToElement, suggestedOwner);
@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return fData_.Contains (item);
         }
-        virtual optional<T> Lookup (ArgByValueType<T> item) const override
+        virtual optional<value_type> Lookup (ArgByValueType<T> item) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             auto                                                       i = fData_.find (item);
@@ -154,8 +154,8 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
 
     private:
-        using DataStructureImplType_ = DataStructures::STLContainerWrapper<set<T, INORDER_COMPARER>>;
-        using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
+        using DataStructureImplType_ = DataStructures::STLContainerWrapper<set<value_type, INORDER_COMPARER>>;
+        using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
         DataStructureImplType_ fData_;
