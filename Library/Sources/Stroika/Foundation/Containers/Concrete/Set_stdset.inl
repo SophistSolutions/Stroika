@@ -182,7 +182,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline Set_stdset<T>::Set_stdset (const initializer_list<T>& src)
+    inline Set_stdset<T>::Set_stdset (const initializer_list<value_type>& src)
         : Set_stdset{}
     {
         this->AddAll (src);
