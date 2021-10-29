@@ -79,6 +79,8 @@ namespace Stroika::Foundation::Containers {
          *      DataHyperRectangle2<int> x1 = DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
          *      DataHyperRectangle2<int> x1 = Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
          *      DataHyperRectangle2<int> x2 = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
+         *
+         *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */
         DataHyperRectangle (const DataHyperRectangle<T, INDEXES...>& src) noexcept;
         DataHyperRectangle (DataHyperRectangle<T, INDEXES...>&& src) noexcept;
