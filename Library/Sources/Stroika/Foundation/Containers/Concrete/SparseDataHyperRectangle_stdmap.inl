@@ -50,23 +50,28 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (this, forIterableEnvelope);
         }
         virtual Iterator<tuple<T, INDEXES...>> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
             //return Iterator<tuple<T, INDEXES...>> (Iterator<tuple<T, INDEXES...>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_));
         }
         virtual size_t GetLength () const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return fData_.size ();
         }
         virtual bool IsEmpty () const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return fData_.empty ();
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             fData_.Apply (
                 [&] (const pair<tuple<INDEXES...>, T>& item) {
                     doToElement (tuple_cat (tuple<T>{item.second}, item.first));
@@ -74,7 +79,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual Iterator<tuple<T, INDEXES...>> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
             auto iLink        = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (
                 [&] (const pair<tuple<INDEXES...>, T>& item) {
@@ -92,6 +97,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _DataHyperRectangleRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (fDefaultValue_);
         }
         virtual T GetAt (INDEXES... indexes) const override
@@ -105,7 +111,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             if (v == fDefaultValue_) {
                 auto i = fData_.find (tuple<INDEXES...> (indexes...));
                 if (i != fData_.end ()) {

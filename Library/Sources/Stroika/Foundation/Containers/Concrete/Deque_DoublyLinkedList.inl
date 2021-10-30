@@ -44,29 +44,34 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return Iterable<value_type>::template MakeSmartPtr<Rep_> (this, forIterableEnvelope);
         }
         virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
         }
         virtual size_t GetLength () const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return fData_.GetLength ();
         }
         virtual bool IsEmpty () const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return fData_.IsEmpty ();
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
         virtual Iterator<value_type> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             auto                                                       iLink = fData_.FindFirstThat (doToElement);
             if (iLink == nullptr) {
                 return nullptr;
@@ -84,19 +89,19 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void AddTail (ArgByValueType<value_type> item) override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             fData_.Append (item);
         }
         virtual value_type RemoveHead () override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            T                                                         item = fData_.GetFirst ();
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
+            T                                                    item = fData_.GetFirst ();
             fData_.RemoveFirst ();
             return item;
         }
         virtual optional<value_type> RemoveHeadIf () override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             if (fData_.IsEmpty ()) {
                 return optional<T> ();
             }
@@ -106,14 +111,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual value_type Head () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return fData_.GetFirst ();
         }
         virtual optional<value_type> HeadIf () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             if (fData_.IsEmpty ()) {
-                return optional<T> ();
+                return optional<T>{};
             }
             return fData_.GetFirst ();
         }
@@ -127,27 +132,27 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Deque<T>::_IRep overrides
     public:
-        virtual void AddHead (ArgByValueType<T> item) override
+        virtual void AddHead (ArgByValueType<value_type> item) override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             fData_.Append (item);
         }
-        virtual T RemoveTail () override
+        virtual value_type RemoveTail () override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            T                                                         item = fData_.GetFirst ();
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
+            value_type                                           item = fData_.GetFirst ();
             fData_.RemoveLast ();
             return item;
         }
-        virtual T Tail () const override
+        virtual value_type Tail () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return fData_.GetLast ();
         }
 
     private:
-        using DataStructureImplType_ = DataStructures::DoublyLinkedList<T>;
-        using IteratorRep_           = Private::IteratorImplHelper_<T, DataStructureImplType_>;
+        using DataStructureImplType_ = DataStructures::DoublyLinkedList<value_type>;
+        using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
         DataStructureImplType_ fData_;

@@ -42,29 +42,34 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return Iterable<value_type>::template MakeSmartPtr<Rep_> (this, forIterableEnvelope);
         }
         virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
         }
         virtual size_t GetLength () const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return fData_.GetLength ();
         }
         virtual bool IsEmpty () const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return fData_.IsEmpty ();
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
         virtual Iterator<value_type> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             auto                                                       iLink = fData_.FindFirstThat (doToElement);
             if (iLink == nullptr) {
                 return nullptr;
@@ -78,13 +83,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _SequenceRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
-            return Iterable<T>::template MakeSmartPtr<Rep_> ();
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            return Iterable<value_type>::template MakeSmartPtr<Rep_> ();
         }
         virtual _SequenceRepSharedPtr CloneAndPatchIterator (Iterator<T>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto                                                      result = Iterable<value_type>::template MakeSmartPtr<Rep_> (this, obsoleteForIterableEnvelope);
-            auto&                                                     mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            auto                                                       result = Iterable<value_type>::template MakeSmartPtr<Rep_> (this, obsoleteForIterableEnvelope);
+            auto&                                                      mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
@@ -93,7 +99,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Require (not IsEmpty ());
             Require (i == _kSentinalLastItemIndex or i < GetLength ());
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             if (i == _kSentinalLastItemIndex) {
                 i = GetLength () - 1;
             }
@@ -102,18 +108,18 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void SetAt (size_t i, ArgByValueType<value_type> item) override
         {
             Require (i < GetLength ());
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             fData_.SetAt (item, i);
         }
         virtual size_t IndexOf (const Iterator<value_type>& i) const override
         {
             auto&                                                      mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return mir.fIterator.CurrentIndex ();
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             if (nextI != nullptr) {
                 *nextI = i;
                 ++(*nextI);
@@ -125,13 +131,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue) override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             fData_.SetAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator, newValue);
         }
         virtual void Insert (size_t at, const T* from, const T* to) override
         {
             Require (at == _kSentinalLastItemIndex or at <= GetLength ());
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             if (at == _kSentinalLastItemIndex) {
                 at = fData_.GetLength ();
             }
@@ -162,11 +168,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (size_t from, size_t to) override
         {
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             // quickie poor impl
             // See Stroika v1 - much better - handling cases of remove near start or end of linked list
-            size_t                                                    index          = from;
-            size_t                                                    amountToRemove = (to - from);
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            size_t index          = from;
+            size_t amountToRemove = (to - from);
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
                 if (index-- == 0) {
                     while (amountToRemove-- != 0) {

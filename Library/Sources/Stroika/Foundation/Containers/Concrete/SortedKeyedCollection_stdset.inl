@@ -30,17 +30,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     class SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::IImplRepBase_ : public SortedKeyedCollection<T, KEY_TYPE, TRAITS>::_IRep {
     private:
         using inherited = typename SortedKeyedCollection<T, KEY_TYPE, TRAITS>::_IRep;
-
-#if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
-    protected:
-        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
-        using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
-#endif
-
-    protected:
-        using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
     };
 
     /*
@@ -79,29 +68,34 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return Iterable<value_type>::template MakeSmartPtr<Rep_> (this, forIterableEnvelope);
         }
         virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
         }
         virtual size_t GetLength () const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return fData_.size ();
         }
         virtual bool IsEmpty () const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return fData_.empty ();
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
         virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return this->_FindFirstThat (doToElement, suggestedOwner);
         }
 
@@ -109,35 +103,39 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual KeyExtractorType GetKeyExtractor () const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return fKeyExtractor_;
         }
         virtual KeyEqualityComparerType GetKeyEqualityComparer () const override
         {
-            auto keyComparer = fKeyComparer_;
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            auto                                                       keyComparer = fKeyComparer_;
             return KeyEqualityComparerType{[keyComparer] (const KEY_TYPE& lhs, const KEY_TYPE& rhs) {
                 return keyComparer (lhs, rhs) and keyComparer (rhs, lhs);
             }};
         }
         virtual _KeyedCollectionRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return Iterable<value_type>::template MakeSmartPtr<Rep_> (this->fKeyExtractor_, this->fKeyComparer_);
         }
         virtual _KeyedCollectionRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto                                                      result = Iterable<value_type>::template MakeSmartPtr<Rep_> (this, obsoleteForIterableEnvelope);
-            auto&                                                     mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            auto                                                       result = Iterable<value_type>::template MakeSmartPtr<Rep_> (this, obsoleteForIterableEnvelope);
+            auto&                                                      mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
         }
         virtual Iterable<KEY_TYPE> Keys () const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return this->_Keys_Reference_Implementation ();
         }
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             auto                                                       i = fData_.find (key);
             if (i == fData_.end ()) {
                 if (item != nullptr) {
@@ -154,6 +152,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual bool Add (ArgByValueType<value_type> item) override
         {
+            scoped_lock<Debug::AssertExternallySynchronizedLock>  writeLock{fData_};
             pair<typename DataStructureImplType_::iterator, bool> flagAndI = fData_.insert (item);
             if (flagAndI.second) {
                 return true;
@@ -171,8 +170,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Require (not i.Done ());
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
+            auto&                                                mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.fData == &fData_);
             auto nextIResult = fData_.erase (mir.fIterator.fStdIterator);
             if (nextI != nullptr) {
@@ -183,7 +182,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual bool Remove (ArgByValueType<KEY_TYPE> key) override
         {
-            auto i = fData_.find (key);
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
+            auto                                                 i = fData_.find (key);
             if (i != fData_.end ()) {
                 fData_.erase (i);
                 return true;
@@ -202,6 +202,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return KeyInOrderKeyComparerType{fKeyComparer_};
         }
 
@@ -229,8 +230,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             using is_transparent = int; // see https://en.cppreference.com/w/cpp/container/set/find - allows overloads to lookup by key
         };
 
-        using DataStructureImplType_ = DataStructures::STLContainerWrapper<set<T, SetInOrderComparer_>>;
-        using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
+        using DataStructureImplType_ = DataStructures::STLContainerWrapper<set<value_type, SetInOrderComparer_>>;
+        using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
         DataStructureImplType_ fData_;

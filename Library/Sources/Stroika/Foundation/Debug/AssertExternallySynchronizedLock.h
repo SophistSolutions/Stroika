@@ -91,12 +91,13 @@ namespace Stroika::Foundation::Debug {
      *          struct foo : private Debug::AssertExternallySynchronizedLock {
      *              inline  void    DoReadWriteStuffOnData ()
      *              {
-     *                  lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+     *                  lock_guard<AssertExternallySynchronizedLock> writeLock { *this };       // lock_guard or scopedLock
+     *                  scoped_lock<AssertExternallySynchronizedLock> writeLock { *this };
      *                  // now do what you usually do for to modify locked data...
      *              }
      *              inline  void    DoReadOnlyStuffOnData ()
      *              {
-     *                  shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+     *                  shared_lock<const AssertExternallySynchronizedLock> readLock { *this };
      *                  // now do what you usually do for DoReadOnlyStuffOnData - reading data only...
      *              }
      *          };

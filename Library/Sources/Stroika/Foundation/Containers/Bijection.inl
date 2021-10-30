@@ -227,7 +227,7 @@ namespace Stroika::Foundation::Containers {
         for (auto i : values) {
             tmp.push_back (*Lookup (i));
         }
-        return Iterable<RANGE_TYPE> (tmp); // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
+        return Iterable<RANGE_TYPE>{tmp}; // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::InverseMap (const Iterable<RangeType>& values) const -> Iterable<DomainType>
@@ -237,7 +237,7 @@ namespace Stroika::Foundation::Containers {
         for (auto i : values) {
             tmp.push_back (*InverseLookup (i));
         }
-        return Iterable<DOMAIN_TYPE> (move (tmp)); // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
+        return Iterable<DOMAIN_TYPE>{move (tmp)}; // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::Where (const function<bool (pair<DomainType, RangeType>)>& includeIfTrue) const -> Bijection

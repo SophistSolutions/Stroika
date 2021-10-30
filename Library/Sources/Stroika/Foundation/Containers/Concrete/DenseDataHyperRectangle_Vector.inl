@@ -49,10 +49,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (this, forIterableEnvelope);
         }
         virtual Iterator<tuple<T, INDEXES...>> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
 /// NYI
 #if 0
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
@@ -62,14 +64,17 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual size_t GetLength () const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return fData_.size ();
         }
         virtual bool IsEmpty () const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return fData_.empty ();
         }
         virtual void Apply ([[maybe_unused]] const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             AssertNotImplemented ();
 #if 0
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
@@ -79,6 +84,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual Iterator<tuple<T, INDEXES...>> FindFirstThat ([[maybe_unused]] const function<bool (ArgByValueType<value_type> item)>& doToElement, [[maybe_unused]] IteratorOwnerID suggestedOwner) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
 #if 1
             /// NYI
@@ -99,6 +105,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _DataHyperRectangleRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             // @todo - fix so using differnt CTOR - with no data to remove
             auto r = Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
             r->fData_.clear (); //wrong - must checkjust zero out elts
@@ -107,13 +114,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         DISABLE_COMPILER_MSC_WARNING_START (4100)
         virtual T GetAt (INDEXES... indexes) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             /// NYI
             return T{};
         }
         virtual void SetAt ([[maybe_unused]] INDEXES... indexes, [[maybe_unused]] Configuration::ArgByValueType<T> v) override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> critSec{fData_};
             /// NYI
             AssertNotImplemented ();
         }

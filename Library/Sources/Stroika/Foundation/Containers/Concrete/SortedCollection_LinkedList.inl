@@ -60,29 +60,34 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
         {
-            return Iterable<T>::template MakeSmartPtr<Rep_> (this, forIterableEnvelope);
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            return Iterable<value_type>::template MakeSmartPtr<Rep_> (this, forIterableEnvelope);
         }
         virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
         }
         virtual size_t GetLength () const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return fData_.GetLength ();
         }
         virtual bool IsEmpty () const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return fData_.IsEmpty ();
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
         virtual Iterator<value_type> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             auto                                                       iLink = fData_.FindFirstThat (doToElement);
             if (iLink == nullptr) {
                 return nullptr;
@@ -100,22 +105,22 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual _CollectionRepSharedPtr CloneAndPatchIterator (Iterator<T>* i, IteratorOwnerID obsoleteForIterableEnvelope) const override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto                                                      result = Iterable<value_type>::template MakeSmartPtr<Rep_> (this, obsoleteForIterableEnvelope);
-            auto&                                                     mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            auto                                                       result = Iterable<value_type>::template MakeSmartPtr<Rep_> (this, obsoleteForIterableEnvelope);
+            auto&                                                      mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
         }
         virtual void Add (ArgByValueType<value_type> item) override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             AddWithoutLocks_ (item);
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue) override
         {
-            auto&                                                     mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
+            auto&                                                mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             // equals might examine a subset of the object and we still want to update the whole object, but
             // if its not already equal, the sort order could have changed so we must simulate with a remove/add
             if (Common::EqualsComparerAdapter{fInorderComparer_}(mir.fIterator.Current (), newValue)) {
@@ -128,7 +133,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             if (nextI != nullptr) {
                 *nextI = i;
                 ++(*nextI);
@@ -150,29 +155,30 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual InOrderComparerType GetInOrderComparer () const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return InOrderComparerType{fInorderComparer_};
         }
         virtual bool Equals ([[maybe_unused]] const typename Collection<T>::_IRep& rhs) const override
         {
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             AssertNotImplemented ();
             return false;
             //return this->_Equals_Reference_Implementation (rhs);
         }
         virtual bool Contains (ArgByValueType<value_type> item) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return fData_.Lookup (item, Common::EqualsComparerAdapter{fInorderComparer_}) != nullptr;
         }
         virtual void Remove (ArgByValueType<value_type> item) override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             fData_.Remove (item, Common::EqualsComparerAdapter{fInorderComparer_});
         }
 
     private:
         nonvirtual void AddWithoutLocks_ (ArgByValueType<value_type> item)
         {
-            using Traversal::kUnknownIteratorOwnerID;
             typename Rep_::DataStructureImplType_::ForwardIterator it{&fData_};
             // skip the smaller items
             while (it.More (nullptr, true) and fInorderComparer_ (it.Current (), item))
@@ -182,8 +188,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 
     private:
-        using DataStructureImplType_ = DataStructures::LinkedList<T>;
-        using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
+        using DataStructureImplType_ = DataStructures::LinkedList<value_type>;
+        using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
         DataStructureImplType_ fData_;
