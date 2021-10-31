@@ -96,19 +96,17 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
-    inline void Collection<T>::AddAll (CONTAINER_OF_ADDABLE&& c)
+    inline void Collection<T>::AddAll (CONTAINER_OF_ADDABLE&& items)
     {
-        /*
-         * Because adding items to a Collection COULD result in those items appearing in a running iterator,
-         * for the corner case of s.AddAll(s) - we want to assure we don't infinite loop.
-         */
-        if (static_cast<const void*> (this) == static_cast<const void*> (addressof (c))) {
-            CONTAINER_OF_ADDABLE tmp = c;
-            AddAll (std::begin (tmp), std::end (tmp));
+        if constexpr (std::is_convertible_v<decay_t<CONTAINER_OF_ADDABLE>*, Collection<value_type>*>) {
+            // very rare corner case
+            if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) {
+                vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
+                AddAll (std::begin (copy), std::end (copy));
+                return;
+            }
         }
-        else {
-            AddAll (std::begin (c), std::end (c));
-        }
+        AddAll (std::begin (items), std::end (items));
     }
     template <typename T>
     inline void Collection<T>::Add (ArgByValueType<value_type> item)

@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_)};
         }
         virtual size_t GetLength () const override
         {
@@ -144,7 +144,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt, AddReplaceMode addReplaceMode) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             fData_.Invariant ();
             bool result{};
             switch (addReplaceMode) {
@@ -157,22 +157,24 @@ namespace Stroika::Foundation::Containers::Concrete {
                 default:
                     AssertNotReached ();
             }
+            fChangeCounts_.PerformedChange ();
             fData_.Invariant ();
             return result;
         }
         virtual void Remove (ArgByValueType<KEY_TYPE> key) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             fData_.Invariant ();
             auto i = fData_.find (key);
             if (i != fData_.end ()) {
                 fData_.erase (i);
+                fChangeCounts_.PerformedChange ();
             }
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Require (not i.Done ());
-            scoped_lock<Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             if (nextI != nullptr) {
                 *nextI = i;
                 ++(*nextI); // advance to next item if deleting current one
@@ -180,7 +182,9 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.fData == &fData_);
             (void)fData_.erase (mir.fIterator.fStdIterator);
+            fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
+                Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
                 nextI->Refresh (); // update to reflect changes made to rep
             }
         }
@@ -197,7 +201,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
-        DataStructureImplType_ fData_;
+        DataStructureImplType_                                          fData_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_)};
         }
         virtual size_t GetLength () const override
         {
@@ -173,8 +173,9 @@ namespace Stroika::Foundation::Containers::Concrete {
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             auto&                                                mir      = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             auto                                                 nextStdI = fData_.erase (mir.fIterator.fStdIterator);
+            fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
-                auto resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
+                auto resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_, &fChangeCounts_);
                 resultRep->fIterator.SetCurrentLink (nextStdI);
                 *nextI = Iterator<value_type>{move (resultRep)};
             }
@@ -226,7 +227,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
     private:
-        DataStructureImplType_ fData_;
+        DataStructureImplType_                                          fData_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

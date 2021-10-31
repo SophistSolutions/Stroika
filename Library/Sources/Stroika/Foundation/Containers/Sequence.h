@@ -526,7 +526,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue);
+        nonvirtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI = nullptr);
 
     public:
         /**
@@ -682,11 +682,11 @@ namespace Stroika::Foundation::Containers {
         virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                             = 0;
         virtual _IRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
         // 'i' argument to GetAt MAYBE kBadSequenceIndex - indictating last element
-        virtual value_type GetAt (size_t i) const                                                      = 0;
-        virtual void       SetAt (size_t i, ArgByValueType<value_type> item)                           = 0;
-        virtual size_t     IndexOf (const Iterator<value_type>& i) const                               = 0;
-        virtual void       Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)         = 0;
-        virtual void       Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue) = 0;
+        virtual value_type GetAt (size_t i) const                                                                                   = 0;
+        virtual void       SetAt (size_t i, ArgByValueType<value_type> item)                                                        = 0;
+        virtual size_t     IndexOf (const Iterator<value_type>& i) const                                                            = 0;
+        virtual void       Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                      = 0;
+        virtual void       Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) = 0;
         // 'at' argument to Insert MAYBE kBadSequenceIndex - indictating append
         virtual void Insert (size_t at, const value_type* from, const value_type* to) = 0;
         virtual void Remove (size_t from, size_t to)                                  = 0;

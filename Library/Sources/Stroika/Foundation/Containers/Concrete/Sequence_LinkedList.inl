@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_)};
         }
         virtual size_t GetLength () const override
         {
@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (iLink == nullptr) {
                 return nullptr;
             }
-            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_);
+            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_);
             resultRep->fIterator.SetCurrentLink (iLink);
             return Iterator<value_type>{move (resultRep)};
         }
@@ -110,6 +110,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Require (i < GetLength ());
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             fData_.SetAt (item, i);
+            fChangeCounts_.PerformedChange ();
         }
         virtual size_t IndexOf (const Iterator<value_type>& i) const override
         {
@@ -125,14 +126,23 @@ namespace Stroika::Foundation::Containers::Concrete {
                 ++(*nextI);
             }
             fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+            fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
+                Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
                 nextI->Refresh (); // update to reflect changes made to rep
             }
         }
-        virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue) override
+        virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             fData_.SetAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator, newValue);
+            fChangeCounts_.PerformedChange ();
+            if (nextI != nullptr) {
+                IteratorOwnerID suggestedOwner = nullptr; //tmphack
+                auto            resultRep      = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_);
+                resultRep->fIterator.SetCurrentLink (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetCurrentLink ());
+                *nextI = Iterator<value_type>{move (resultRep)};
+            }
         }
         virtual void Insert (size_t at, const T* from, const T* to) override
         {
@@ -165,6 +175,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 }
                 //Assert (not it.Done ());      // cuz that would mean we never added
             }
+            fChangeCounts_.PerformedChange ();
         }
         virtual void Remove (size_t from, size_t to) override
         {
@@ -181,6 +192,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                     break;
                 }
             }
+            fChangeCounts_.PerformedChange ();
         }
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override
@@ -195,7 +207,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
-        DataStructureImplType_ fData_;
+        DataStructureImplType_                                          fData_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

@@ -300,6 +300,15 @@ namespace Stroika::Foundation::Traversal {
 
                 startI = findStartI (); // refresh iterator cuz container changed
 
+                // hack cuz endI invalidated - REALLY must rewrite this algorithm given new rules for iterator patching / invalidation!!!
+                {
+                    endI = prevOfIterator (fSubRanges_.FindFirstThat (startI, [rEnd] (const RangeType& r) -> bool { return rEnd < r.GetLowerBound (); }));
+                    if (endI == fSubRanges_.end ()) {
+                        endI = prevOfIterator (fSubRanges_.end ());
+                    }
+                    Assert (endI != fSubRanges_.end ());
+                }
+
                 // then merge out uneeded items in between
                 // @todo/CLEANUP/REVIEW - not sure we always have startI <= endI...
                 if (extendedRange and startI != fSubRanges_.end ()) {

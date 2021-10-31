@@ -292,7 +292,7 @@ namespace Stroika::Foundation::Containers {
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
-        nonvirtual void AddAll (CONTAINER_OF_ADDABLE&& s);
+        nonvirtual void AddAll (CONTAINER_OF_ADDABLE&& items);
 
     public:
         /**

@@ -253,7 +253,7 @@ namespace Stroika::Foundation::Containers {
         template <typename COPY_FROM_ITERATOR>
         nonvirtual void AddAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>* = nullptr>
-        nonvirtual void AddAll (CONTAINER_OF_ADDABLE&& src);
+        nonvirtual void AddAll (CONTAINER_OF_ADDABLE&& items);
 
     public:
         /**
@@ -282,7 +282,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void UpdateCount (const Iterator<value_type>& i, CounterType newCount);
+        nonvirtual void UpdateCount (const Iterator<value_type>& i, CounterType newCount, Iterator<value_type>* nextI = nullptr);
 
     public:
         /**
@@ -379,7 +379,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         nonvirtual MultiSet& operator+= (ArgByValueType<T> item);
-        nonvirtual MultiSet& operator+= (const MultiSet& t);
+        nonvirtual MultiSet& operator+= (const MultiSet& items);
 
     protected:
         /**
@@ -457,7 +457,7 @@ namespace Stroika::Foundation::Containers {
         virtual void                        Add (ArgByValueType<T> item, CounterType count)                                                    = 0;
         virtual void                        Remove (ArgByValueType<T> item, CounterType count)                                                 = 0;
         virtual void                        Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                = 0;
-        virtual void                        UpdateCount (const Iterator<value_type>& i, CounterType newCount)                                  = 0;
+        virtual void                        UpdateCount (const Iterator<value_type>& i, CounterType newCount, Iterator<value_type>* nextI)     = 0;
         virtual CounterType                 OccurrencesOf (ArgByValueType<T> item) const                                                       = 0;
         // Subtle point - shared rep argument to Elements() allows shared ref counting
         // without the cost of a clone or enable_shared_from_this

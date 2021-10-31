@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_)};
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             else {
                 i->second += count;
             }
-            // MUST PATCH
+            fChangeCounts_.PerformedChange ();
         }
         virtual void Remove (ArgByValueType<T> item, CounterType count) override
         {
@@ -150,6 +150,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 if (i->second == 0) {
                     fData_.erase (i);
                 }
+                fChangeCounts_.PerformedChange ();
             }
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
@@ -160,21 +161,34 @@ namespace Stroika::Foundation::Containers::Concrete {
                 ++(*nextI);
             }
             (void)fData_.erase (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.fStdIterator);
+            fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
+                Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
                 nextI->Refresh (); // update to reflect changes made to rep
             }
         }
-        virtual void UpdateCount (const Iterator<value_type>& i, CounterType newCount) override
+        virtual void UpdateCount (const Iterator<value_type>& i, CounterType newCount, Iterator<value_type>* nextI) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             auto&                                                mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             if (newCount == 0) {
-                mir.fIterator.fStdIterator = fData_.erase (mir.fIterator.fStdIterator);
+                if (nextI != nullptr) {
+                    *nextI = i;
+                    ++(*nextI);
+                }
+                (void)fData_.erase (mir.fIterator.fStdIterator);
             }
             else {
                 mir.fIterator.fStdIterator->second = newCount;
+                if (nextI != nullptr) {
+                    *nextI = i;
+                }
             }
-            // TODO - PATCH
+            fChangeCounts_.PerformedChange ();
+            if (nextI != nullptr) {
+                Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
+                nextI->Refresh (); // update to reflect changes made to rep
+            }
         }
         virtual CounterType OccurrencesOf (ArgByValueType<T> item) const override
         {
@@ -208,7 +222,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_, typename DataStructureImplType_::ForwardIterator, pair<T, CounterType>>;
 
     private:
-        DataStructureImplType_ fData_;
+        DataStructureImplType_                                          fData_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

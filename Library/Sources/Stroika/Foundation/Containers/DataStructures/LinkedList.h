@@ -266,7 +266,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual const Link* GetCurrentLink () const;
 
     public:
-        nonvirtual void SetCurrentLink (Link* l);
+        nonvirtual void SetCurrentLink (const Link* l);
 
     public:
         nonvirtual bool Equals (const typename LinkedList<T>::ForwardIterator& rhs) const;

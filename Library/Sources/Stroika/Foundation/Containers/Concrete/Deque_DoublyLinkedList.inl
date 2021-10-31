@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_)};
         }
         virtual size_t GetLength () const override
         {
@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (iLink == nullptr) {
                 return nullptr;
             }
-            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_);
+            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_);
             resultRep->fIterator.SetCurrentLink (iLink);
             return Iterator<value_type>{move (resultRep)};
         }
@@ -91,12 +91,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             fData_.Append (item);
+            fChangeCounts_.PerformedChange ();
         }
         virtual value_type RemoveHead () override
         {
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             T                                                    item = fData_.GetFirst ();
             fData_.RemoveFirst ();
+            fChangeCounts_.PerformedChange ();
             return item;
         }
         virtual optional<value_type> RemoveHeadIf () override
@@ -107,6 +109,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             T item = fData_.GetFirst ();
             fData_.RemoveFirst ();
+            fChangeCounts_.PerformedChange ();
             return item;
         }
         virtual value_type Head () const override
@@ -136,12 +139,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             fData_.Append (item);
+            fChangeCounts_.PerformedChange ();
         }
         virtual value_type RemoveTail () override
         {
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             value_type                                           item = fData_.GetFirst ();
             fData_.RemoveLast ();
+            fChangeCounts_.PerformedChange ();
             return item;
         }
         virtual value_type Tail () const override
@@ -155,7 +160,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
-        DataStructureImplType_ fData_;
+        DataStructureImplType_                                          fData_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

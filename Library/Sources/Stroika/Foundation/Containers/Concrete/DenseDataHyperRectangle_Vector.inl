@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
 /// NYI
 #if 0
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_)};
 #endif
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
             return RESULT_TYPE::GetEmptyIterator ();
@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (iLink == fData_.end ()) {
                 return RESULT_TYPE::GetEmptyIterator ();
             }
-            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_);
+            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_);
             resultRep->fIterator.SetCurrentLink (iLink);
             return RESULT_TYPE (move (resultRep));
 #endif
@@ -120,7 +120,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void SetAt ([[maybe_unused]] INDEXES... indexes, [[maybe_unused]] Configuration::ArgByValueType<T> v) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
+            fChangeCounts_.PerformedChange ();
             /// NYI
             AssertNotImplemented ();
         }
@@ -131,8 +132,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
     private:
-        tuple<INDEXES...>      fDimensions_;
-        DataStructureImplType_ fData_;
+        tuple<INDEXES...>                                               fDimensions_;
+        DataStructureImplType_                                          fData_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

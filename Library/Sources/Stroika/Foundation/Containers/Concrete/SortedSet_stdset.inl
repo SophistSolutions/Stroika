@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_)};
         }
         virtual size_t GetLength () const override
         {
@@ -133,7 +133,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             fData_.insert (item);
-            // must patch!!!
+            fChangeCounts_.PerformedChange ();
         }
         virtual void Remove (ArgByValueType<value_type> item) override
         {
@@ -142,6 +142,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto i = fData_.find (item);
             if (i != fData_.end ()) {
                 fData_.erase (i);
+                fChangeCounts_.PerformedChange ();
             }
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
@@ -151,8 +152,9 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto&                                                mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.fData == &fData_);
             auto nextIResult = fData_.erase (mir.fIterator.fStdIterator);
+            fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
-                auto resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_);
+                auto resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (i.GetOwner (), &fData_, &fChangeCounts_);
                 resultRep->fIterator.SetCurrentLink (nextIResult);
                 *nextI = Iterator<value_type>{move (resultRep)};
             }
@@ -178,7 +180,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
-        DataStructureImplType_ fData_;
+        DataStructureImplType_                                          fData_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

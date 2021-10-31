@@ -530,7 +530,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return _fCurrent;
     }
     template <typename T>
-    inline void LinkedList<T>::ForwardIterator::SetCurrentLink (Link* l)
+    inline void LinkedList<T>::ForwardIterator::SetCurrentLink (const Link* l)
     {
         // MUUST COME FROM THIS LIST
         // CAN be nullptr

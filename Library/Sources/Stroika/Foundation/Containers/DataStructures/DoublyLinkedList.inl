@@ -653,7 +653,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return n;
     }
     template <typename T>
-    inline void DoublyLinkedList<T>::ForwardIterator::SetCurrentLink (Link* l)
+    inline void DoublyLinkedList<T>::ForwardIterator::SetCurrentLink (const Link* l)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*_fData};
         // MUUST COME FROM THIS LIST

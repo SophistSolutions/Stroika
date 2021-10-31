@@ -14,8 +14,17 @@ namespace Stroika::Foundation::Containers::Private {
      ********************************************************************************
      */
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
-    inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::IteratorImplHelper_ ([[maybe_unused]] IteratorOwnerID owner, const DATASTRUCTURE_CONTAINER* data)
-        : fIterator{data}
+    inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::IteratorImplHelper_ ([[maybe_unused]] IteratorOwnerID owner, const DATASTRUCTURE_CONTAINER* data, [[maybe_unused]] const ContainerDebugChangeCounts_* changeCounter)
+        : fIterator
+    {
+        data
+    }
+#if qDebug
+    , fChangeCounter{changeCounter}, fLastCapturedChangeCount
+    {
+        changeCounter == nullptr ? 0 : changeCounter->fChangeCount.load ()
+    }
+#endif
     {
         RequireNotNull (data);
         fIterator.More (static_cast<DataStructureImplValueType_*> (nullptr), true); //tmphack cuz current backend iterators require a first more() - fix that!
@@ -23,6 +32,7 @@ namespace Stroika::Foundation::Containers::Private {
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
     typename Iterator<T>::RepSmartPtr IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::Clone () const
     {
+        ValidateChangeCount ();
         return Iterator<T>::template MakeSmartPtr<IteratorImplHelper_> (*this);
     }
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
@@ -38,6 +48,7 @@ namespace Stroika::Foundation::Containers::Private {
         // NOTE: the reason this is Debug::AssertExternallySynchronizedLock, is because we only modify data on the newly cloned (breakreferences)
         // iterator, and that must be in the thread (so externally synchronized) of the modifier
         //    shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.GetPatchableContainerHelper ());
+        ValidateChangeCount ();
         More_SFINAE_ (result, advance);
     }
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
@@ -69,6 +80,8 @@ namespace Stroika::Foundation::Containers::Private {
         RequireMember (rhs, ActualIterImplType_);
         const ActualIterImplType_* rrhs = dynamic_cast<const ActualIterImplType_*> (rhs);
         AssertNotNull (rrhs);
+        //  ValidateChangeCount ();
+        //  rhs->ValidateChangeCount ();
         //        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec1 (*fIterator.GetPatchableContainerHelper ());
         //      shared_lock<const Debug::AssertExternallySynchronizedLock> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
         return fIterator.Equals (rrhs->fIterator);

@@ -286,7 +286,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual size_t CurrentIndex () const;
 
     public:
-        nonvirtual void SetCurrentLink (Link* l);
+        nonvirtual const Link* GetCurrentLink () const
+        {
+            return _fCurrent;
+        }
+
+    public:
+        nonvirtual void SetCurrentLink (const Link* l);
 
     public:
         nonvirtual bool Equals (const typename DoublyLinkedList<T>::ForwardIterator& rhs) const;
@@ -298,7 +304,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant () const;
 
     protected:
-        // public: /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN ``<> - until those cleaned up a bit
         const DoublyLinkedList<T>* _fData{nullptr};
         const Link*                _fCurrent{nullptr};
         bool                       _fSuppressMore{false}; // Indicates if More should do anything, or if were already Mored...

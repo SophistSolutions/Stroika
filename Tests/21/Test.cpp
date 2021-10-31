@@ -339,7 +339,7 @@ namespace {
                 s.Append (i);
             }
             for (auto i = s.begin (); i != s.end (); ++i) {
-                s.Update (i, 5);
+                s.Update (i, 5, &i);
             }
             for (auto i : s) {
                 VerifyTestResult (EQUALS_COMPARER{}(i, 5));
@@ -347,7 +347,7 @@ namespace {
             s.SetAt (16, 16);
             for (auto i = s.begin (); i != s.end (); ++i) {
                 if (EQUALS_COMPARER{}(*i, 16)) {
-                    s.Update (i, 17);
+                    s.Update (i, 17, &i);
                 }
             }
             VerifyTestResult (EQUALS_COMPARER{}(s[16], 17));

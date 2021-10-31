@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<tuple<T, INDEXES...>> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_)};
             //return Iterator<tuple<T, INDEXES...>> (Iterator<tuple<T, INDEXES...>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_));
         }
         virtual size_t GetLength () const override
@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (iLink == fData_.end ()) {
                 return RESULT_TYPE::GetEmptyIterator ();
             }
-            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_);
+            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_);
             resultRep->fIterator.SetCurrentLink (iLink);
             return RESULT_TYPE (move (resultRep));
         }
@@ -127,9 +127,11 @@ namespace Stroika::Foundation::Containers::Concrete {
                 fData_.insert_or_assign (tuple<INDEXES...> (indexes...), v);
 #endif
             }
+            fChangeCounts_.PerformedChange ();
         }
 
     private:
+        // @todo see why we cannot just use Private::IterorImplHelper version of this!!!
         template <typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR = typename PATCHABLE_CONTAINER::ForwardIterator>
         class MyIteratorImplHelper_ : public Iterator<tuple<T, INDEXES...>>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIteratorImplHelper_<PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>> {
         private:
@@ -141,7 +143,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         public:
             MyIteratorImplHelper_ ()                             = delete;
             MyIteratorImplHelper_ (const MyIteratorImplHelper_&) = default;
-            explicit MyIteratorImplHelper_ (IteratorOwnerID /*owner*/, const PATCHABLE_CONTAINER* data)
+            explicit MyIteratorImplHelper_ (IteratorOwnerID /*owner*/, const PATCHABLE_CONTAINER* data, [[maybe_unused]] const Private::ContainerDebugChangeCounts_* changeCounter = nullptr)
                 : fIterator{data}
             {
                 RequireNotNull (data);
@@ -215,8 +217,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = MyIteratorImplHelper_<DataStructureImplType_>;
 
     private:
-        T                      fDefaultValue_;
-        DataStructureImplType_ fData_;
+        T                                                               fDefaultValue_;
+        DataStructureImplType_                                          fData_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

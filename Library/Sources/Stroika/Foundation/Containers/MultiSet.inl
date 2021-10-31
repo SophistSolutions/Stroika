@@ -459,10 +459,20 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
-    void MultiSet<T, TRAITS>::AddAll (CONTAINER_OF_ADDABLE&& src)
+    void MultiSet<T, TRAITS>::AddAll (CONTAINER_OF_ADDABLE&& items)
     {
         // see https://stroika.atlassian.net/browse/STK-645
-        for (auto&& i : src) {
+        if constexpr (std::is_convertible_v<decay_t<CONTAINER_OF_ADDABLE>*, const MultiSet<T, TRAITS>*>) {
+            if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) {
+                // very rare corner case
+                vector<typename decay_t<CONTAINER_OF_ADDABLE>::value_type> copy{begin (items), end (items)}; // because you can not iterate over a container while modifying it
+                for (auto&& i : copy) {
+                    Add (i);
+                }
+                return;
+            }
+        }
+        for (auto&& i : items) {
             Add (i);
         }
     }
@@ -484,9 +494,11 @@ namespace Stroika::Foundation::Containers {
         Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->Remove (patchedIterator, nextI);
     }
     template <typename T, typename TRAITS>
-    inline void MultiSet<T, TRAITS>::UpdateCount (const Iterator<value_type>& i, CounterType newCount)
+    inline void MultiSet<T, TRAITS>::UpdateCount (const Iterator<value_type>& i, CounterType newCount, Iterator<value_type>* nextI)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().UpdateCount (i, newCount);
+        Require (not i.Done ());
+        auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
+        Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->UpdateCount (patchedIterator, newCount, nextI);
     }
     template <typename T, typename TRAITS>
     inline void MultiSet<T, TRAITS>::SetCount (ArgByValueType<T> i, CounterType newCount)
@@ -511,11 +523,9 @@ namespace Stroika::Foundation::Containers {
         return *this;
     }
     template <typename T, typename TRAITS>
-    MultiSet<T, TRAITS>& MultiSet<T, TRAITS>::operator+= (const MultiSet<T, TRAITS>& t)
+    MultiSet<T, TRAITS>& MultiSet<T, TRAITS>::operator+= (const MultiSet<T, TRAITS>& items)
     {
-        for (auto i = t.begin (); i != t.end (); ++i) {
-            Add (i->fValue, i->fCount);
-        }
+        AddAll (items);
         return *this;
     }
     template <typename T, typename TRAITS>

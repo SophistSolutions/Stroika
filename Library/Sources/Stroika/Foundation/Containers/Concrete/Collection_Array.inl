@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_)};
         }
         virtual size_t GetLength () const override
         {
@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (i == fData_.GetLength ()) {
                 return nullptr;
             }
-            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_);
+            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_);
             resultRep->fIterator.SetIndex (i);
             return Iterator<value_type>{move (resultRep)};
         }
@@ -101,11 +101,13 @@ namespace Stroika::Foundation::Containers::Concrete {
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             // Appending is fastest
             fData_.InsertAt (fData_.GetLength (), item);
+            fChangeCounts_.PerformedChange ();
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             fData_.SetAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator, newValue);
+            fChangeCounts_.PerformedChange ();
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
@@ -116,7 +118,9 @@ namespace Stroika::Foundation::Containers::Concrete {
                 iRep->fIterator.PatchBeforeRemove (&Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
             }
             fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+            fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
+                Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
                 nextI->Refresh (); // update to reflect changes made to rep
             }
         }
@@ -130,12 +134,11 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using DataStructureImplType_ = DataStructures::Array<value_type>;
+        using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
-        using IteratorRep_ = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
-
-    private:
-        DataStructureImplType_ fData_;
+        DataStructureImplType_                                          fData_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

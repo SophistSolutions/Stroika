@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_)};
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_)};
         }
         virtual size_t GetLength () const override
         {
@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (iLink == nullptr) {
                 return nullptr;
             }
-            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_);
+            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_);
             resultRep->fIterator.SetCurrentLink (iLink);
             return Iterator<value_type>{move (resultRep)};
         }
@@ -156,6 +156,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                     switch (addReplaceMode) {
                         case AddReplaceMode::eAddReplaces:
                             fData_.SetAt (it, value_type{key, newElt});
+                            fChangeCounts_.PerformedChange ();
                             break;
                         case AddReplaceMode::eAddIfMissing:
                             break;
@@ -166,6 +167,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 }
             }
             fData_.Append (value_type{key, newElt});
+            fChangeCounts_.PerformedChange ();
             return true;
         }
         virtual void Remove (ArgByValueType<KEY_TYPE> key) override
@@ -174,6 +176,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                 if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                     fData_.RemoveAt (it);
+                    fChangeCounts_.PerformedChange ();
                     return;
                 }
             }
@@ -186,7 +189,9 @@ namespace Stroika::Foundation::Containers::Concrete {
                 ++(*nextI); // advance to next item if deleting current one
             }
             fData_.RemoveAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator);
+            fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
+                Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
                 nextI->Refresh (); // update to reflect changes made to rep
             }
         }
@@ -203,7 +208,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
-        DataStructureImplType_ fData_;
+        DataStructureImplType_                                          fData_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

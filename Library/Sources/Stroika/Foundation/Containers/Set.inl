@@ -186,12 +186,17 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
-    inline void Set<T>::AddAll (CONTAINER_OF_ADDABLE&& s)
+    inline void Set<T>::AddAll (CONTAINER_OF_ADDABLE&& items)
     {
-        // Note - unlike Collection<T> - we don't need to check for this != &s because if we
-        // attempt to add items that already exist, it would do nothing, and not lead to
-        // an infinite loop
-        AddAll (std::begin (s), std::end (s));
+        if constexpr (std::is_convertible_v<decay_t<CONTAINER_OF_ADDABLE>*, const Iterable<value_type>*>) {
+            // very rare corner case
+            if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) {
+                vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
+                AddAll (std::begin (copy), std::end (copy));
+                return;
+            }
+        }
+        AddAll (std::begin (items), std::end (items));
     }
     template <typename T>
     inline void Set<T>::Remove (ArgByValueType<value_type> item)

@@ -30,6 +30,22 @@ namespace Stroika::Foundation::Containers::Private {
 
     using Traversal::IteratorOwnerID;
 
+    struct ContainerDebugChangeCounts_ {
+
+        using ChangeCountType = unsigned int;
+
+#if qDebug
+        atomic<ChangeCountType> fChangeCount{0};
+#endif
+
+        void PerformedChange ()
+        {
+#if qDebug
+            fChangeCount++;
+#endif
+        }
+    };
+
     /**
      *  \brief helper to wrap a low level 'DataStructure Container Iterator' into a 'Stroika' Iterator::IRep iterator.
      * 
@@ -51,7 +67,7 @@ namespace Stroika::Foundation::Containers::Private {
     public:
         IteratorImplHelper_ ()                           = delete;
         IteratorImplHelper_ (const IteratorImplHelper_&) = default;
-        explicit IteratorImplHelper_ (IteratorOwnerID owner, const DATASTRUCTURE_CONTAINER* data);
+        explicit IteratorImplHelper_ (IteratorOwnerID owner, const DATASTRUCTURE_CONTAINER* data, const ContainerDebugChangeCounts_* changeCounter = nullptr);
 
     public:
         virtual ~IteratorImplHelper_ () = default;
@@ -62,6 +78,27 @@ namespace Stroika::Foundation::Containers::Private {
         virtual IteratorOwnerID GetOwner () const override;
         virtual void            More (optional<T>* result, bool advance) override;
         virtual bool            Equals (const typename Iterator<T>::IRep* rhs) const override;
+
+    public:
+        /**
+         * rarely used but in special cases when returning new dervied/pathed iterator*
+         */
+        void UpdateChangeCount ()
+        {
+#if qDebug
+            if (fChangeCounter != nullptr) {
+                fLastCapturedChangeCount = fChangeCounter->fChangeCount;
+            }
+#endif
+        }
+        void ValidateChangeCount () const
+        {
+#if qDebug
+            if (fChangeCounter != nullptr) {
+                Require (fChangeCounter->fChangeCount == fLastCapturedChangeCount); // if this fails, it almost certainly means you are using a stale iterator
+            }
+#endif
+        }
 
     private:
         /*
@@ -75,6 +112,10 @@ namespace Stroika::Foundation::Containers::Private {
 
     public:
         mutable DATASTRUCTURE_CONTAINER_ITERATOR fIterator;
+#if qDebug
+        const ContainerDebugChangeCounts_*           fChangeCounter;
+        ContainerDebugChangeCounts_::ChangeCountType fLastCapturedChangeCount;
+#endif
     };
 
 }

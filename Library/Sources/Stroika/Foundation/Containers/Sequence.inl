@@ -300,9 +300,11 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    inline void Sequence<T>::Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue)
+    inline void Sequence<T>::Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Update (i, newValue);
+        Require (not i.Done ());
+        auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
+        Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->Update (patchedIterator, newValue, nextI);
     }
     template <typename T>
     inline void Sequence<T>::Remove (size_t i)

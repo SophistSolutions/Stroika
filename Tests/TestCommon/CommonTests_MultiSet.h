@@ -88,7 +88,7 @@ namespace CommonTests {
                         IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s);
 
                         for (auto it = s.begin (); it != s.end (); ++it) {
-                            s.UpdateCount (it, 1);
+                            s.UpdateCount (it, 1, &it);
                         }
                         applyToContainer (s);
 
@@ -165,7 +165,7 @@ namespace CommonTests {
                         for (auto it3 = s.begin (); it3 != s.end ();) {
                             if (s.GetLength () != 0) {
                                 applyToContainer (s);
-                                s.UpdateCount (it3, 3);
+                                s.UpdateCount (it3, 3, &it3);
                                 applyToContainer (s);
                                 it3 = s.erase (it3);
                                 applyToContainer (s);

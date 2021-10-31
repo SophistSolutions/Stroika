@@ -243,11 +243,13 @@ namespace Stroika::Foundation::Containers {
     template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>*>
     inline unsigned int Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (CONTAINER_OF_KEYVALUE&& items, AddReplaceMode addReplaceMode)
     {
-        /*
-         *  Note - unlike other containers - we don't need to check for this != &s because if we
-         *  attempt to add items that already exist, it would do nothing to our iteration
-         *  and therefore not lead to an infinite loop.
-         */
+        if constexpr (std::is_convertible_v<decay_t<CONTAINER_OF_KEYVALUE>*, Iterable<value_type>*>) {
+            // very rare corner case
+            if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) {
+                vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
+                return AddAll (std::begin (copy), std::end (copy), addReplaceMode);
+            }
+        }
         return AddAll (std::begin (items), std::end (items), addReplaceMode);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
