@@ -84,6 +84,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual _CollectionRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
+            RequireNotNull (i);
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             auto                                                       result = Iterable<T>::template MakeSmartPtr<Rep_> (*this);
             auto&                                                      mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
