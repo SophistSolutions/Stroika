@@ -195,6 +195,17 @@ namespace Stroika::Foundation::Containers::Concrete {
                 nextI->Refresh (); // update to reflect changes made to rep
             }
         }
+        virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) override
+        {
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
+            // avoid for performance sake and do safe const_cast instead fData_.SetAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator, value_type {key, newValue});
+            typename DataStructureImplType_::Link* mutableLink = const_cast<typename DataStructureImplType_::Link*> (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetCurrentLink ());
+            mutableLink->fItem.fValue                          = newValue;
+            if (nextI != nullptr) {
+                *nextI = i;
+                Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
+            }
+        }
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override
         {

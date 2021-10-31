@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (key);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
+    inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
     {
         Require (not i.Done ());
         auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
@@ -292,6 +292,13 @@ namespace Stroika::Foundation::Containers {
         for (auto i = start; i != end; ++i) {
             Remove (i->first);
         }
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI)
+    {
+        Require (not i.Done ());
+        auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
+        Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->Update (patchedIterator, newValue, nextI);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename CONTAINER_OF_KEY_TYPE>

@@ -412,6 +412,16 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  Update the value associated with the iterator 'i', without changing iteration order in any way (cuz the key not changed).
+         *  Note - if iterating, because this modifies the underlying container, the caller should pass 'i' in as a reference parameter to 'nextI'
+         *  to have it updated to safely continue iterating.
+         *
+         *  \note mutates container
+         */
+        nonvirtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI = nullptr);
+
+    public:
+        /**
          *  Remove all items from this container UNLESS they are in the argument set to RetainAll().
          *
          *  This restricts the 'Keys' list of Mapping to the argument data, but preserving
@@ -625,7 +635,8 @@ namespace Stroika::Foundation::Containers {
         virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode) = 0;
         virtual void Remove (ArgByValueType<KEY_TYPE> key)                                                                 = 0;
         // if nextI is non-null, its filled in with the next item in iteration order after i (has been removed)
-        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) = 0;
+        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                       = 0;
+        virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) = 0;
 
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;

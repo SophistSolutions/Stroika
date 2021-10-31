@@ -188,7 +188,15 @@ namespace Stroika::Foundation::Containers::Concrete {
                 nextI->Refresh (); // update to reflect changes made to rep
             }
         }
-
+        virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) override
+        {
+            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
+            fData_.PeekAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.CurrentIndex ())->fValue = newValue;
+            if (nextI != nullptr) {
+                *nextI = i;
+                Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
+            }
+        }
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override
         {

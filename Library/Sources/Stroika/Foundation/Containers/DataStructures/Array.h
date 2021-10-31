@@ -126,7 +126,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual Array<T>& operator= (const Array<T>& rhs);
 
     public:
-        nonvirtual T    GetAt (size_t i) const;
+        nonvirtual T GetAt (size_t i) const;
+        nonvirtual T*   PeekAt (size_t i);
         nonvirtual void SetAt (size_t i, ArgByValueType<T> item);
         nonvirtual T& operator[] (size_t i);
         nonvirtual T  operator[] (size_t i) const;

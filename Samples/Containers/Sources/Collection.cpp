@@ -197,7 +197,7 @@ namespace {
             Assert (i != fruits.end ());
             Assert (fruits.size () == 4);
         }
-        for (Iterator<String> i = fruits.begin (); i != fruits.end (); ) {
+        for (Iterator<String> i = fruits.begin (); i != fruits.end ();) {
             if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*i, L"apple")) {
                 fruits.Remove (i, &i);
                 // with STL containers, it would be illegal to reference i again, as in i++.

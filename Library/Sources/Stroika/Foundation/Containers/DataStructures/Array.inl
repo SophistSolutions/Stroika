@@ -376,6 +376,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return _fItems[i];
     }
     template <typename T>
+    inline T* Array<T>::PeekAt (size_t i)
+    {
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        Require (i >= 0);
+        Require (i < _fLength);
+        return &_fItems[i];
+    }
+    template <typename T>
     inline void Array<T>::SetAt (size_t i, ArgByValueType<T> item)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
