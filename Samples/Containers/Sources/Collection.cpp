@@ -197,12 +197,15 @@ namespace {
             Assert (i != fruits.end ());
             Assert (fruits.size () == 4);
         }
-        for (Iterator<String> i = fruits.begin (); i != fruits.end (); ++i) {
+        for (Iterator<String> i = fruits.begin (); i != fruits.end (); ) {
             if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*i, L"apple")) {
-                fruits.Remove (i);
+                fruits.Remove (i, &i);
                 // with STL containers, it would be illegal to reference i again, as in i++.
                 // However, with Stroika iterators, they are smart about doing the right thing,
                 // when they point to a deleted item, and this code will work as expected.
+            }
+            else {
+                i++;
             }
         }
         Assert (fruits.size () == 2);
