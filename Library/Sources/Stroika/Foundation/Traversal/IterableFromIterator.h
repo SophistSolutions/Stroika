@@ -101,11 +101,11 @@ namespace Stroika::Foundation::Traversal {
             _Rep (const CONTEXT_FOR_EACH_ITERATOR& contextForEachIterator);
 
         public:
-            virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const override;
+            virtual Iterator<T> MakeIterator () const override;
             virtual size_t      GetLength () const override;
             virtual bool        IsEmpty () const override;
             virtual void        Apply (_APPLY_ARGTYPE doToElement) const override;
-            virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+            virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const override;
         };
     };
     template <typename T, typename NEW_ITERATOR_REP_TYPE>
@@ -123,11 +123,11 @@ namespace Stroika::Foundation::Traversal {
             mutable Private_::IteratorTracker<T> fIteratorTracker_;
 #endif
         public:
-            virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const override;
+            virtual Iterator<T> MakeIterator () const override;
             virtual size_t      GetLength () const override;
             virtual bool        IsEmpty () const override;
             virtual void        Apply (_APPLY_ARGTYPE doToElement) const override;
-            virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+            virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const override;
         };
     };
     template <typename T>
@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Traversal {
             virtual size_t      GetLength () const override;
             virtual bool        IsEmpty () const override;
             virtual void        Apply (_APPLY_ARGTYPE doToElement) const override;
-            virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+            virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const override;
         };
     };
 

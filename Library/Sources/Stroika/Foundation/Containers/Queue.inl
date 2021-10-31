@@ -59,16 +59,6 @@ namespace Stroika::Foundation::Containers {
         AddAllToTail (start, end);
         _AssertRepValidType ();
     }
-#if qDebug
-    template <typename T>
-    Queue<T>::~Queue ()
-    {
-        if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-            // SharingState can be NULL because of MOVE semantics
-            _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
-        }
-    }
-#endif
     template <typename T>
     inline void Queue<T>::AddTail (ArgByValueType<value_type> item)
     {
@@ -129,7 +119,7 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         if (not tmp._ConstGetRep ().IsEmpty ()) {
-            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty (this));
+            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty ());
         }
     }
     template <typename T>

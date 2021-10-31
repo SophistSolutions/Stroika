@@ -202,11 +202,6 @@ namespace Stroika::Foundation::Containers {
         explicit Bijection (const _IRepSharedPtr& src) noexcept;
         explicit Bijection (_IRepSharedPtr&& src) noexcept;
 
-#if qDebug
-    public:
-        ~Bijection ();
-#endif
-
     public:
         /**
          */
@@ -536,8 +531,6 @@ namespace Stroika::Foundation::Containers {
 #endif
     };
 
-    using Traversal::IteratorOwnerID;
-
     /**
      *  \brief  Implementation detail for Bijection<T> implementors.
      *
@@ -572,13 +565,13 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     public:
-        virtual _IRepSharedPtr                  CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                             = 0;
-        virtual _IRepSharedPtr                  CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
-        virtual bool                            Equals (const _IRep& rhs) const                                                                    = 0;
-        virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const                                                                   = 0;
-        virtual RangeEqualsCompareFunctionType  GetRangeEqualsComparer () const                                                                    = 0;
-        virtual Iterable<DomainType>            Preimage () const                                                                                  = 0;
-        virtual Iterable<RangeType>             Image () const                                                                                     = 0;
+        virtual _IRepSharedPtr                  CloneEmpty () const                                   = 0;
+        virtual _IRepSharedPtr                  CloneAndPatchIterator (Iterator<value_type>* i) const = 0;
+        virtual bool                            Equals (const _IRep& rhs) const                       = 0;
+        virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const                      = 0;
+        virtual RangeEqualsCompareFunctionType  GetRangeEqualsComparer () const                       = 0;
+        virtual Iterable<DomainType>            Preimage () const                                     = 0;
+        virtual Iterable<RangeType>             Image () const                                        = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, optional<RangeType>* item) const        = 0;
@@ -587,10 +580,6 @@ namespace Stroika::Foundation::Containers {
         virtual void RemoveDomainElement (ArgByValueType<DOMAIN_TYPE> d)                              = 0;
         virtual void RemoveRangeElement (ArgByValueType<RANGE_TYPE> r)                                = 0;
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)              = 0;
-
-#if qDebug
-        virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
-#endif
 
         /*
          *  Reference Implementations (often not used except for ensure's, but can be used for

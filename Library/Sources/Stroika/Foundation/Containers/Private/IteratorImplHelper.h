@@ -28,12 +28,24 @@
 
 namespace Stroika::Foundation::Containers::Private {
 
-    using Traversal::IteratorOwnerID;
-
     struct ContainerDebugChangeCounts_ {
 
         using ChangeCountType = unsigned int;
 
+        // weird explicit def need here and cannot do = default? --LGP 2021-10-31
+        ContainerDebugChangeCounts_ ()
+        {
+        }
+        // weird explicit def need here and cannot do = default? --LGP 2021-10-31
+        ContainerDebugChangeCounts_ (const ContainerDebugChangeCounts_& src)
+#if qDebug
+            : fChangeCount
+        {
+            src.fChangeCount.load ()
+        }
+#endif
+        {
+        }
 #if qDebug
         atomic<ChangeCountType> fChangeCount{0};
 #endif
@@ -67,17 +79,16 @@ namespace Stroika::Foundation::Containers::Private {
     public:
         IteratorImplHelper_ ()                           = delete;
         IteratorImplHelper_ (const IteratorImplHelper_&) = default;
-        explicit IteratorImplHelper_ (IteratorOwnerID owner, const DATASTRUCTURE_CONTAINER* data, const ContainerDebugChangeCounts_* changeCounter = nullptr);
+        explicit IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, const ContainerDebugChangeCounts_* changeCounter = nullptr);
 
     public:
         virtual ~IteratorImplHelper_ () = default;
 
         // Iterator<T>::IRep
     public:
-        virtual RepSmartPtr     Clone () const override;
-        virtual IteratorOwnerID GetOwner () const override;
-        virtual void            More (optional<T>* result, bool advance) override;
-        virtual bool            Equals (const typename Iterator<T>::IRep* rhs) const override;
+        virtual RepSmartPtr Clone () const override;
+        virtual void        More (optional<T>* result, bool advance) override;
+        virtual bool        Equals (const typename Iterator<T>::IRep* rhs) const override;
 
     public:
         /**

@@ -111,16 +111,6 @@ namespace Stroika::Foundation::Containers {
     {
         _AssertRepValidType ();
     }
-#if qDebug
-    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    Bijection<DOMAIN_TYPE, RANGE_TYPE>::~Bijection ()
-    {
-        if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-            // SharingState can be NULL because of MOVE semantics
-            _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
-        }
-    }
-#endif
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::GetDomainEqualsComparer () const -> DomainEqualsCompareFunctionType
     {
@@ -244,7 +234,7 @@ namespace Stroika::Foundation::Containers {
     {
         // @todo - fix very primitive implementation
         _SafeReadRepAccessor<_IRep> lhs{this};
-        //Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty (this));
+        //Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty ());
         Bijection result;
         for (auto&& i : *this) {
             if (includeIfTrue (i)) {
@@ -258,7 +248,7 @@ namespace Stroika::Foundation::Containers {
     {
         // @todo - fix very primitive implementation
         _SafeReadRepAccessor<_IRep> lhs{this};
-        //Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty (this));
+        //Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty ());
         Bijection result;
         for (auto&& i : *this) {
             if (domainValues.Contains (i.first, this->GetDomainEqualsComparer ())) {
@@ -272,7 +262,7 @@ namespace Stroika::Foundation::Containers {
     {
         // @todo - fix very primitive implementation
         _SafeReadRepAccessor<_IRep> lhs{this};
-        //Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty (this));
+        //Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty ());
         Bijection result;
         for (auto&& i : *this) {
             if (rangeValues.Contains (i.second, this->GetRangeEqualsComparer ())) {
@@ -355,7 +345,7 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         if (not tmp._ConstGetRep ().IsEmpty ()) {
-            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty (this));
+            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty ());
         }
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
@@ -408,7 +398,7 @@ namespace Stroika::Foundation::Containers {
         Iterator<value_type> patchedIterator = i;
         shared_ptr_type      writerRep       = this->_fRep.get_nu (
             [&, this] (const shared_ptr_type& prevRepPtr) -> shared_ptr_type {
-                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator, this);
+                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator);
             });
         return make_tuple (writerRep, patchedIterator);
     }
@@ -444,7 +434,7 @@ namespace Stroika::Foundation::Containers {
                     : fBijection_{b}
                 {
                 }
-                virtual Iterator<DOMAIN_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
+                virtual Iterator<DOMAIN_TYPE> MakeIterator () const override
                 {
                     // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same container)
                     auto sharedContext = make_shared<MyBijection_> (fBijection_);
@@ -462,9 +452,8 @@ namespace Stroika::Foundation::Containers {
                     };
                     return Traversal::CreateGeneratorIterator<DOMAIN_TYPE> (getNext);
                 }
-                virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
+                virtual _IterableRepSharedPtr Clone () const override
                 {
-                    // For now - ignore forIterableEnvelope
                     return Iterable<DOMAIN_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
                 }
             };
@@ -493,7 +482,7 @@ namespace Stroika::Foundation::Containers {
                     : fBijection_{b}
                 {
                 }
-                virtual Iterator<RANGE_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
+                virtual Iterator<RANGE_TYPE> MakeIterator () const override
                 {
                     // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same container)
                     auto sharedContext = make_shared<MyBijection_> (fBijection_);
@@ -511,9 +500,8 @@ namespace Stroika::Foundation::Containers {
                     };
                     return Traversal::CreateGeneratorIterator<RANGE_TYPE> (getNext);
                 }
-                virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
+                virtual _IterableRepSharedPtr Clone () const override
                 {
-                    // For now - ignore forIterableEnvelope
                     return Iterable<RANGE_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
                 }
             };
@@ -542,7 +530,7 @@ namespace Stroika::Foundation::Containers {
         }
         // Since both sides are the same size, we can iterate over one, and make sure the key/values in the first
         // are present, and with the same Bijection in the second.
-        for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
+        for (auto i = this->MakeIterator (); not i.Done (); ++i) {
             optional<RangeType> tmp;
             if (not rhs.Lookup (i->first, &tmp) or not GetRangeEqualsComparer () (*tmp, i->second)) {
                 return false;

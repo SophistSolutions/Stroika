@@ -148,11 +148,6 @@ namespace Stroika::Foundation::Containers {
         explicit Queue (const _IRepSharedPtr& rep) noexcept;
         explicit Queue (_IRepSharedPtr&& rep) noexcept;
 
-#if qDebug
-    public:
-        ~Queue ();
-#endif
-
     public:
         /**
          */
@@ -278,8 +273,6 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void _AssertRepValidType () const noexcept;
     };
 
-    using Traversal::IteratorOwnerID;
-
     /**
      *  \brief  Implementation detail for Queue<T> implementors.
      *
@@ -301,15 +294,12 @@ namespace Stroika::Foundation::Containers {
         using _IRepSharedPtr = typename Queue<T>::_IRepSharedPtr;
 
     public:
-        virtual _IRepSharedPtr       CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-        virtual void                 AddTail (ArgByValueType<value_type> item)              = 0;
-        virtual value_type           RemoveHead ()                                          = 0;
-        virtual optional<value_type> RemoveHeadIf ()                                        = 0;
-        virtual value_type           Head () const                                          = 0;
-        virtual optional<value_type> HeadIf () const                                        = 0;
-#if qDebug
-        virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
-#endif
+        virtual _IRepSharedPtr       CloneEmpty () const                       = 0;
+        virtual void                 AddTail (ArgByValueType<value_type> item) = 0;
+        virtual value_type           RemoveHead ()                             = 0;
+        virtual optional<value_type> RemoveHeadIf ()                           = 0;
+        virtual value_type           Head () const                             = 0;
+        virtual optional<value_type> HeadIf () const                           = 0;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

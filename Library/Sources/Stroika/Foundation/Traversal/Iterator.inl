@@ -99,13 +99,6 @@ namespace Stroika::Foundation::Traversal {
         *this = GetEmptyIterator ();
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline IteratorOwnerID Iterator<T, ITERATOR_TRAITS>::GetOwner () const
-    {
-        // We could cache this value, but its only used breaking references and in assertions, so its
-        // not clearly worth while
-        return fIterator_ == nullptr ? kUnknownIteratorOwnerID : fIterator_->GetOwner ();
-    }
-    template <typename T, typename ITERATOR_TRAITS>
     inline T Iterator<T, ITERATOR_TRAITS>::operator* () const
     {
         Require (not Done ());
@@ -156,7 +149,6 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS>
     inline bool Iterator<T, ITERATOR_TRAITS>::operator== (const Iterator& rhs) const
     {
-        Require (GetOwner () == rhs.GetOwner () or GetOwner () == kUnknownIteratorOwnerID or rhs.GetOwner () == kUnknownIteratorOwnerID);
         /*
          *  Equals is checked by first checking handling the case of special 'done' iterators. If two
          *  iterators differ on Done () - they cannot be equal. And if they are both done (this is special -

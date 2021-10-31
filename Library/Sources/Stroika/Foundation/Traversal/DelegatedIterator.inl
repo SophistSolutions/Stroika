@@ -25,11 +25,6 @@ namespace Stroika::Foundation::Traversal {
         return RepSmartPtr (Iterator<T>::template MakeSmartPtr<Rep> (*this));
     }
     template <typename T, typename EXTRA_DATA>
-    IteratorOwnerID DelegatedIterator<T, EXTRA_DATA>::Rep::GetOwner () const
-    {
-        return fDelegateTo.GetOwner ();
-    }
-    template <typename T, typename EXTRA_DATA>
     void DelegatedIterator<T, EXTRA_DATA>::Rep::More (optional<T>* result, bool advance)
     {
         fDelegateTo.GetRep ().More (result, advance);

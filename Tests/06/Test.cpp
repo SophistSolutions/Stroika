@@ -21,8 +21,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Containers::DataStructures;
 
-using Traversal::kUnknownIteratorOwnerID;
-
 namespace {
     static void Test1 ()
     {

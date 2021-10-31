@@ -34,10 +34,9 @@ namespace Stroika::Foundation::Traversal {
             Iterator<T> fDelegateTo;
             EXTRA_DATA  fExtraData;
             Rep (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
-            virtual RepSmartPtr     Clone () const override;
-            virtual IteratorOwnerID GetOwner () const override;
-            virtual void            More (optional<T>* result, bool advance) override;
-            virtual bool            Equals (const IRep* rhs) const override;
+            virtual RepSmartPtr Clone () const override;
+            virtual void        More (optional<T>* result, bool advance) override;
+            virtual bool        Equals (const IRep* rhs) const override;
         };
         DelegatedIterator (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
     };
@@ -49,10 +48,9 @@ namespace Stroika::Foundation::Traversal {
             using IRep        = typename Iterator<T>::IRep;
             Iterator<T> fDelegateTo;
             Rep (const Iterator<T>& delegateTo);
-            virtual RepSmartPtr     Clone () const override;
-            virtual IteratorOwnerID GetOwner () const override;
-            virtual void            More (optional<T>* result, bool advance) override;
-            virtual bool            Equals (const IRep* rhs) const override;
+            virtual RepSmartPtr Clone () const override;
+            virtual void        More (optional<T>* result, bool advance) override;
+            virtual bool        Equals (const IRep* rhs) const override;
         };
     };
 

@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         if (not tmp._ConstGetRep ().IsEmpty ()) {
-            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty (this));
+            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty ());
         }
     }
     template <typename T>

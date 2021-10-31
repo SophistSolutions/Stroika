@@ -18,8 +18,6 @@
 
 namespace Stroika::Foundation::Containers::Concrete {
 
-    using Traversal::IteratorOwnerID;
-
     template <typename T>
     class Queue_DoublyLinkedList<T>::Rep_ : public Queue<T>::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
     private:
@@ -27,27 +25,22 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         Rep_ ()                 = default;
-        Rep_ (const Rep_& from) = delete;
-        Rep_ (const Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
-            : fData_{from->fData_}
-        {
-            RequireNotNull (from);
-        }
+        Rep_ (const Rep_& from) = default;
 
     public:
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
         // Iterable<T>::_IRep overrides
     public:
-        virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
+        virtual _IterableRepSharedPtr Clone () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            return Iterable<value_type>::template MakeSmartPtr<Rep_> (this, forIterableEnvelope);
+            return Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
         }
-        virtual Iterator<value_type> MakeIterator (IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<value_type> MakeIterator () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_)};
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual size_t GetLength () const override
         {
@@ -66,21 +59,21 @@ namespace Stroika::Foundation::Containers::Concrete {
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
-        virtual Iterator<value_type> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<value_type> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             auto                                                       iLink = fData_.FindFirstThat (doToElement);
             if (iLink == nullptr) {
                 return nullptr;
             }
-            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_);
+            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_);
             resultRep->fIterator.SetCurrentLink (iLink);
             return Iterator<value_type>{move (resultRep)};
         }
 
         // Queue<T>::_IRep overrides
     public:
-        virtual _QueueRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
+        virtual _QueueRepSharedPtr CloneEmpty () const override
         {
             return Iterable<value_type>::template MakeSmartPtr<Rep_> ();
         }
@@ -122,13 +115,6 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return fData_.GetFirst ();
         }
-#if qDebug
-        virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override
-        {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            //      fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
-        }
-#endif
 
     private:
         using DataStructureImplType_ = DataStructures::DoublyLinkedList<value_type>;

@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    Iterator<T> IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const
+    Iterator<T> IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::MakeIterator () const
     {
 #if qDebug
         return fIteratorTracker_.MakeDelegatedIterator (Iterator<T>{Iterator<T>::template MakeSmartPtr<NEW_ITERATOR_REP_TYPE> (_fContextForEachIterator)});
@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Traversal {
     size_t IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::GetLength () const
     {
         size_t n = 0;
-        for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
+        for (auto i = this->MakeIterator (); not i.Done (); ++i) {
             n++;
         }
         return n;
@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
     bool IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::IsEmpty () const
     {
-        for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
+        for (auto i = this->MakeIterator (); not i.Done (); ++i) {
             return false;
         }
         return true;
@@ -69,9 +69,9 @@ namespace Stroika::Foundation::Traversal {
         this->_Apply (doToElement);
     }
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    Iterator<T> IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+    Iterator<T> IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const
     {
-        return this->_FindFirstThat (doToElement, suggestedOwner);
+        return this->_FindFirstThat (doToElement);
     }
 #define qNotSureWhyWeNeedExtraTemplateDefsIsItMSFTBugOrMyMisunderstanding 1
 #if qNotSureWhyWeNeedExtraTemplateDefsIsItMSFTBugOrMyMisunderstanding
@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Traversal {
     size_t IterableFromIterator<T, void, void>::_Rep::GetLength () const
     {
         size_t n = 0;
-        for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
+        for (auto i = this->MakeIterator (); not i.Done (); ++i) {
             n++;
         }
         return n;
@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     bool IterableFromIterator<T, void, void>::_Rep::IsEmpty () const
     {
-        for (auto i = this->MakeIterator (this); not i.Done ();) {
+        for (auto i = this->MakeIterator (); not i.Done ();) {
             return false;
         }
         return true;
@@ -98,9 +98,9 @@ namespace Stroika::Foundation::Traversal {
         this->_Apply (doToElement);
     }
     template <typename T>
-    Iterator<T> IterableFromIterator<T, void, void>::_Rep::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+    Iterator<T> IterableFromIterator<T, void, void>::_Rep::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const
     {
-        return this->_FindFirstThat (doToElement, suggestedOwner);
+        return this->_FindFirstThat (doToElement);
     }
 #endif
 
@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Traversal {
                     : fOriginalIterator (originalIterator)
                 {
                 }
-                virtual Iterator<T> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
+                virtual Iterator<T> MakeIterator () const override
                 {
 #if qDebug
                     return fIteratorTracker_.MakeDelegatedIterator (fOriginalIterator);
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Traversal {
                     return fOriginalIterator;
 #endif
                 }
-                virtual _IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
+                virtual _IterableRepSharedPtr Clone () const override
                 {
                     return Iterable<T>::template MakeSmartPtr<Rep> (*this);
                 }

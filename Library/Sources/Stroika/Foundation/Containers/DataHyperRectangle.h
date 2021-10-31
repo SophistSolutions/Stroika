@@ -156,8 +156,6 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void _AssertRepValidType () const;
     };
 
-    using Traversal::IteratorOwnerID;
-
     /**
      *  \brief  Implementation detail for DataHyperRectangle<T, INDEXES...> implementors.
      *
@@ -185,7 +183,7 @@ namespace Stroika::Foundation::Containers {
         using _IRepSharedPtr = typename DataHyperRectangle<T, INDEXES...>::_IRepSharedPtr;
 
     public:
-        virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const         = 0;
+        virtual _IRepSharedPtr CloneEmpty () const                                            = 0;
         virtual T              GetAt (INDEXES... indexes) const                               = 0;
         virtual void           SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) = 0;
     };

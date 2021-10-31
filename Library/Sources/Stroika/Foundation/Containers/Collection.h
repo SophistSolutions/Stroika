@@ -177,10 +177,6 @@ namespace Stroika::Foundation::Containers {
         explicit Collection (const _IRepSharedPtr& src) noexcept;
         explicit Collection (_IRepSharedPtr&& src) noexcept;
 
-#if qDebug
-    public:
-        ~Collection ();
-#endif
     public:
         nonvirtual Collection& operator= (const Collection& rhs) = default;
 
@@ -343,8 +339,6 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void _AssertRepValidType () const;
     };
 
-    using Traversal::IteratorOwnerID;
-
     /**
      *  \brief  Implementation detail for Collection<T> implementors.
      *
@@ -363,14 +357,11 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     public:
-        virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                             = 0;
-        virtual _IRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
-        virtual void           Add (ArgByValueType<value_type> item)                                                              = 0;
-        virtual void           Update (const Iterator<value_type>& i, ArgByValueType<T> newValue)                                 = 0;
-        virtual void           Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                = 0;
-#if qDebug
-        virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
-#endif
+        virtual _IRepSharedPtr CloneEmpty () const                                                 = 0;
+        virtual _IRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const               = 0;
+        virtual void           Add (ArgByValueType<value_type> item)                               = 0;
+        virtual void           Update (const Iterator<value_type>& i, ArgByValueType<T> newValue)  = 0;
+        virtual void           Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) = 0;
     };
 
     /**

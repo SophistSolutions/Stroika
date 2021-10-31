@@ -20,8 +20,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Characters::Concrete;
 
-using Traversal::IteratorOwnerID;
-
 namespace {
     class String_BufferedArray_Rep_ : public Concrete::Private::BufferedStringRep::_Rep, public Memory::UseBlockAllocationIfAppropriate<String_BufferedArray_Rep_> {
     private:
@@ -32,10 +30,8 @@ namespace {
             : inherited (start, end)
         {
         }
-        virtual _IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
+        virtual _IterableRepSharedPtr Clone () const override
         {
-            // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
-            // ignore suggested IteratorOwnerID
             return Traversal::Iterable<Character>::MakeSmartPtr<String_BufferedArray_Rep_> (_fStart, _fEnd);
         }
     };
@@ -52,7 +48,7 @@ public:
         // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
         Require (*end == '\0' and start + ::wcslen (start) <= end);
     }
-    virtual _IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
+    virtual _IterableRepSharedPtr Clone () const override
     {
         /*
          * Subtle point. If we are making a clone, its cuz caller wants to change the buffer, and they cannot cuz its readonly, so

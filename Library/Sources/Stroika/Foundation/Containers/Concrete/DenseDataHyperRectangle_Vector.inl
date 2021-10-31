@@ -17,8 +17,6 @@
 
 namespace Stroika::Foundation::Containers::Concrete {
 
-    using Traversal::IteratorOwnerID;
-
     /*
      ********************************************************************************
      *********** DenseDataHyperRectangle_Vector<T, INDEXES...>::Rep_ ****************
@@ -35,29 +33,24 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             //  AssertNotImplemented ();
         }
-        Rep_ (const Rep_& from) = delete;
-        Rep_ (const Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
-            : fData_{from->fData_}
-        {
-            RequireNotNull (from);
-        }
+        Rep_ (const Rep_& from) = default;
 
     public:
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
         // Iterable<tuple<T, INDEXES...>>::_IRep overrides
     public:
-        virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
+        virtual _IterableRepSharedPtr Clone () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (this, forIterableEnvelope);
+            return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (*this);
         }
-        virtual Iterator<tuple<T, INDEXES...>> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<tuple<T, INDEXES...>> MakeIterator () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
 /// NYI
 #if 0
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_)};
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
 #endif
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
             return RESULT_TYPE::GetEmptyIterator ();
@@ -82,7 +75,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.Apply (doToElement);
 #endif
         }
-        virtual Iterator<tuple<T, INDEXES...>> FindFirstThat ([[maybe_unused]] const function<bool (ArgByValueType<value_type> item)>& doToElement, [[maybe_unused]] IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<tuple<T, INDEXES...>> FindFirstThat ([[maybe_unused]] const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
@@ -95,7 +88,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (iLink == fData_.end ()) {
                 return RESULT_TYPE::GetEmptyIterator ();
             }
-            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_);
+            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<T>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_);
             resultRep->fIterator.SetCurrentLink (iLink);
             return RESULT_TYPE (move (resultRep));
 #endif
@@ -103,12 +96,11 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // DataHyperRectangle<T, INDEXES...>::_IRep overrides
     public:
-        virtual _DataHyperRectangleRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+        virtual _DataHyperRectangleRepSharedPtr CloneEmpty () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             // @todo - fix so using differnt CTOR - with no data to remove
-            auto r = Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-            r->fData_.clear (); //wrong - must checkjust zero out elts
+            auto r = Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (*this);
             return r;
         }
         DISABLE_COMPILER_MSC_WARNING_START (4100)

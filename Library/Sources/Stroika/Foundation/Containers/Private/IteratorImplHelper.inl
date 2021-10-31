@@ -14,13 +14,14 @@ namespace Stroika::Foundation::Containers::Private {
      ********************************************************************************
      */
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
-    inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::IteratorImplHelper_ ([[maybe_unused]] IteratorOwnerID owner, const DATASTRUCTURE_CONTAINER* data, [[maybe_unused]] const ContainerDebugChangeCounts_* changeCounter)
+    inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, [[maybe_unused]] const ContainerDebugChangeCounts_* changeCounter)
         : fIterator
     {
         data
     }
 #if qDebug
-    , fChangeCounter{changeCounter}, fLastCapturedChangeCount
+    , fChangeCounter{changeCounter},
+        fLastCapturedChangeCount
     {
         changeCounter == nullptr ? 0 : changeCounter->fChangeCount.load ()
     }
@@ -34,12 +35,6 @@ namespace Stroika::Foundation::Containers::Private {
     {
         ValidateChangeCount ();
         return Iterator<T>::template MakeSmartPtr<IteratorImplHelper_> (*this);
-    }
-    template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
-    IteratorOwnerID IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::GetOwner () const
-    {
-        return nullptr;
-        //        return fIterator.GetOwner ();
     }
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
     void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::More (optional<T>* result, bool advance)

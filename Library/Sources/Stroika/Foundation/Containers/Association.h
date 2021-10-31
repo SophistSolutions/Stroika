@@ -156,11 +156,6 @@ namespace Stroika::Foundation::Containers {
         explicit Association (const _AssociationRepSharedPtr& rep) noexcept;
         explicit Association (_AssociationRepSharedPtr&& rep) noexcept;
 
-#if qDebug
-    public:
-        ~Association ();
-#endif
-
     public:
         /**
          */
@@ -467,8 +462,6 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void _AssertRepValidType () const;
     };
 
-    using Traversal::IteratorOwnerID;
-
     /**
      *  \brief  Implementation detail for Association<T> implementors.
      *
@@ -507,18 +500,15 @@ namespace Stroika::Foundation::Containers {
 #endif
 
     public:
-        virtual _AssociationRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-        virtual Iterable<key_type>       Keys () const                                          = 0;
-        virtual Iterable<mapped_type>    MappedValues () const                                  = 0;
+        virtual _AssociationRepSharedPtr CloneEmpty () const   = 0;
+        virtual Iterable<key_type>       Keys () const         = 0;
+        virtual Iterable<mapped_type>    MappedValues () const = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<mapped_type>* item) const = 0;
         virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt)   = 0;
         virtual void Remove (ArgByValueType<KEY_TYPE> key)                                    = 0;
         virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i)    = 0;
-#if qDebug
-        virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
-#endif
 
     protected:
         nonvirtual Iterable<key_type> _Keys_Reference_Implementation () const;

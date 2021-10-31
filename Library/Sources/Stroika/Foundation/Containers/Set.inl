@@ -89,16 +89,6 @@ namespace Stroika::Foundation::Containers {
         AddAll (start, end);
         _AssertRepValidType ();
     }
-#if qDebug
-    template <typename T>
-    Set<T>::~Set ()
-    {
-        if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-            // SharingState can be NULL because of MOVE semantics
-            _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
-        }
-    }
-#endif
     template <typename T>
     inline auto Set<T>::GetElementEqualsComparer () const -> ElementEqualityComparerType
     {
@@ -245,7 +235,7 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         if (not tmp._ConstGetRep ().IsEmpty ()) {
-            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty (this));
+            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty ());
         }
     }
     template <typename T>
@@ -465,7 +455,7 @@ namespace Stroika::Foundation::Containers {
         Iterator<value_type> patchedIterator = i;
         shared_ptr_type      writerRep       = this->_fRep.get_nu (
             [&, this] (const shared_ptr_type& prevRepPtr) -> shared_ptr_type {
-                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator, this);
+                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator);
             });
         return make_tuple (writerRep, patchedIterator);
     }
@@ -504,7 +494,7 @@ namespace Stroika::Foundation::Containers {
             return false;
         }
         // Note - no need to iterate over rhs because we checked sizes the same
-        for (auto i = rhs.MakeIterator (&rhs); not i.Done (); ++i) {
+        for (auto i = rhs.MakeIterator (); not i.Done (); ++i) {
             if (not Contains (*i)) {
                 return false;
             }

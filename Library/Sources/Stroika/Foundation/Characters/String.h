@@ -1385,11 +1385,11 @@ namespace Stroika::Foundation::Characters {
 
         // Overrides for Iterable<Character>
     public:
-        virtual Traversal::Iterator<Character> MakeIterator (Traversal::IteratorOwnerID suggestedOwner) const override;
+        virtual Traversal::Iterator<Character> MakeIterator () const override;
         virtual size_t                         GetLength () const override;
         virtual bool                           IsEmpty () const override;
         virtual void                           Apply (_APPLY_ARGTYPE doToElement) const override;
-        virtual Traversal::Iterator<Character> FindFirstThat (_APPLYUNTIL_ARGTYPE, Traversal::IteratorOwnerID suggestedOwner) const override;
+        virtual Traversal::Iterator<Character> FindFirstThat (_APPLYUNTIL_ARGTYPE) const override;
 
     public:
         nonvirtual Character GetAt (size_t index) const;

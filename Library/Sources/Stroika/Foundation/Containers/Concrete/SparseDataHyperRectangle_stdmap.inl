@@ -19,8 +19,6 @@
 
 namespace Stroika::Foundation::Containers::Concrete {
 
-    using Traversal::IteratorOwnerID;
-
     /*
      ********************************************************************************
      *********** SparseDataHyperRectangle_stdmap<T, INDEXES...>::Rep_ ***************
@@ -36,28 +34,22 @@ namespace Stroika::Foundation::Containers::Concrete {
             : fDefaultValue_{defaultItem}
         {
         }
-        Rep_ (const Rep_& from) = delete;
-        Rep_ (const Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
-            : fData_{from->fData_}
-        {
-            RequireNotNull (from);
-        }
+        Rep_ (const Rep_& from) = default;
 
     public:
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
         // Iterable<tuple<T, INDEXES...>>::_IRep overrides
     public:
-        virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
+        virtual _IterableRepSharedPtr Clone () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (this, forIterableEnvelope);
+            return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (*this);
         }
-        virtual Iterator<tuple<T, INDEXES...>> MakeIterator (IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<tuple<T, INDEXES...>> MakeIterator () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_)};
-            //return Iterator<tuple<T, INDEXES...>> (Iterator<tuple<T, INDEXES...>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_));
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual size_t GetLength () const override
         {
@@ -77,7 +69,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                     doToElement (tuple_cat (tuple<T>{item.second}, item.first));
                 });
         }
-        virtual Iterator<tuple<T, INDEXES...>> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement, IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<tuple<T, INDEXES...>> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
@@ -88,17 +80,17 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (iLink == fData_.end ()) {
                 return RESULT_TYPE::GetEmptyIterator ();
             }
-            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_, &fChangeCounts_);
+            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<T>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_);
             resultRep->fIterator.SetCurrentLink (iLink);
-            return RESULT_TYPE (move (resultRep));
+            return RESULT_TYPE{move (resultRep)};
         }
 
         // DataHyperRectangle<T, INDEXES...>::_IRep overrides
     public:
-        virtual _DataHyperRectangleRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
+        virtual _DataHyperRectangleRepSharedPtr CloneEmpty () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (fDefaultValue_);
+            return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (fDefaultValue_); // keep default, but lose data
         }
         virtual T GetAt (INDEXES... indexes) const override
         {
@@ -143,7 +135,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         public:
             MyIteratorImplHelper_ ()                             = delete;
             MyIteratorImplHelper_ (const MyIteratorImplHelper_&) = default;
-            explicit MyIteratorImplHelper_ (IteratorOwnerID /*owner*/, const PATCHABLE_CONTAINER* data, [[maybe_unused]] const Private::ContainerDebugChangeCounts_* changeCounter = nullptr)
+            explicit MyIteratorImplHelper_ (const PATCHABLE_CONTAINER* data, [[maybe_unused]] const Private::ContainerDebugChangeCounts_* changeCounter = nullptr)
                 : fIterator{data}
             {
                 RequireNotNull (data);
@@ -158,11 +150,6 @@ namespace Stroika::Foundation::Containers::Concrete {
             virtual RepSmartPtr Clone () const override
             {
                 return Iterator<tuple<T, INDEXES...>>::template MakeSmartPtr<MyIteratorImplHelper_> (*this);
-            }
-            virtual IteratorOwnerID GetOwner () const override
-            {
-                return nullptr;
-                //return fIterator.GetOwner ();
             }
             virtual void More (optional<tuple<T, INDEXES...>>* result, bool advance) override
             {

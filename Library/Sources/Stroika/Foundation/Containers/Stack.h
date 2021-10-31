@@ -215,8 +215,6 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void _AssertRepValidType () const;
     };
 
-    using Traversal::IteratorOwnerID;
-
     /**
      *  \brief  Implementation detail for Stack<T> implementors.
      *
@@ -235,10 +233,10 @@ namespace Stroika::Foundation::Containers {
         using _IRepSharedPtr = typename Stack<T>::_IRepSharedPtr;
 
     public:
-        virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-        virtual void           Push (ArgByValueType<value_type> item)                 = 0;
-        virtual value_type     Pop ()                                                 = 0;
-        virtual value_type     Top () const                                           = 0;
+        virtual _IRepSharedPtr CloneEmpty () const                    = 0;
+        virtual void           Push (ArgByValueType<value_type> item) = 0;
+        virtual value_type     Pop ()                                 = 0;
+        virtual value_type     Top () const                           = 0;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

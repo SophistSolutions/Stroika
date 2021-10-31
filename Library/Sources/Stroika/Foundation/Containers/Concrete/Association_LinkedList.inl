@@ -16,8 +16,6 @@
 
 namespace Stroika::Foundation::Containers::Concrete {
 
-    using Traversal::IteratorOwnerID;
-
     /*
     ********************************************************************************
     *********** Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_***********
@@ -36,12 +34,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         Rep_ ()                 = default;
-        Rep_ (const Rep_& from) = delete;
-        Rep_ (const Rep_* from, [[maybe_unused]] IteratorOwnerID forIterableEnvelope)
-            : fData_{from->fData_}
-        {
-            RequireNotNull (from);
-        }
+        Rep_ (const Rep_& from) = default;
 
     public:
         nonvirtual Rep_& operator= (const Rep_&) = delete;
@@ -51,13 +44,13 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Iterable<T>::_IRep overrides
     public:
-        virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
+        virtual _IterableRepSharedPtr Clone () const override
         {
-            return Iterable<value_type>::template MakeSmartPtr<Rep_> (this, forIterableEnvelope);
+            return Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
         }
-        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> MakeIterator (IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> MakeIterator () const override
         {
-            return Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_));
+            return Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<IteratorRep_> (&fData_));
         }
         virtual size_t GetLength () const override
         {
@@ -73,7 +66,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
-        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             using RESULT_TYPE = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
@@ -81,14 +74,14 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (iLink == nullptr) {
                 return RESULT_TYPE::GetEmptyIterator ();
             }
-            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &fData_);
+            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<IteratorRep_> (&fData_);
             resultRep->fIterator.SetCurrentLink (iLink);
             return RESULT_TYPE (move (resultRep));
         }
 
         // Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides
     public:
-        virtual _AssociationRepSharedPtr CloneEmpty ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
+        virtual _AssociationRepSharedPtr CloneEmpty () const override
         {
             return Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<Rep_> ();
         }
@@ -118,7 +111,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
         {
-            using Traversal::kUnknownIteratorOwnerID;
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                 if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
@@ -130,7 +122,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (ArgByValueType<KEY_TYPE> key) override
         {
-            using Traversal::kUnknownIteratorOwnerID;
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                 if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
@@ -147,13 +138,6 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto& mir = dynamic_cast<const IteratorRep_&> (ir);
             fData_.RemoveAt (mir.fIterator);
         }
-#if qDebug
-        virtual void AssertNoIteratorsReferenceOwner ([[maybe_unused]] IteratorOwnerID oBeingDeleted) const override
-        {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            // fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
-        }
-#endif
 
     public:
         using KeyEqualsCompareFunctionType = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::KeyEqualsCompareFunctionType;

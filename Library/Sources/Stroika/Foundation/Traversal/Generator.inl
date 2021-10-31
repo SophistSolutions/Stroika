@@ -47,13 +47,6 @@ namespace Stroika::Foundation::Traversal {
             {
                 return Iterator<T>::template MakeSmartPtr<GenItWrapper_> (*this);
             }
-            virtual IteratorOwnerID GetOwner () const override
-            {
-                /*
-                 *  This return value allows any two DiscreteRange iterators (of the same type) to be compared.
-                 */
-                return typeid (*this).name ();
-            }
         };
     }
 
@@ -80,9 +73,8 @@ namespace Stroika::Foundation::Traversal {
                     : inherited{context}
                 {
                 }
-                virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
+                virtual _IterableRepSharedPtr Clone () const override
                 {
-                    // For now - generators have no owner, so we ignore forIterableEnvelope
                     return Iterable<T>::template MakeSmartPtr<MyIterableRep_> (*this);
                 }
             };

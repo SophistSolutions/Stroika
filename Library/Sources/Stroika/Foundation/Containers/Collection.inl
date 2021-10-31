@@ -64,16 +64,6 @@ namespace Stroika::Foundation::Containers {
         AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
-#if qDebug
-    template <typename T>
-    Collection<T>::~Collection ()
-    {
-        if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-            // SharingState can be NULL because of MOVE semantics
-            _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
-        }
-    }
-#endif
     template <typename T>
     template <typename EQUALS_COMPARER>
     bool Collection<T>::Contains (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer) const
@@ -136,7 +126,7 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         if (not tmp._ConstGetRep ().IsEmpty ()) {
-            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty (this));
+            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty ());
         }
     }
     template <typename T>
@@ -233,7 +223,7 @@ namespace Stroika::Foundation::Containers {
         Iterator<value_type> patchedIterator = i;
         shared_ptr_type      writerRep       = this->_fRep.get_nu (
             [&, this] (const shared_ptr_type& prevRepPtr) -> shared_ptr_type {
-                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator, this);
+                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator);
             });
         return make_tuple (writerRep, patchedIterator);
     }

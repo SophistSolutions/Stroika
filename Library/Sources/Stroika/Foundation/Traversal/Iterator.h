@@ -93,26 +93,6 @@
 namespace Stroika::Foundation::Traversal {
 
     /**
-     *  An IteratorOwnerID may be any pointer value, or kUnknownIteratorOwnerID.
-     *
-     *  Though the type is a pointer, its not mean to ever be cast or dereferenced -
-     *  just compared (usually for equality, but also < maybe used for things like tree structure).
-     *
-     *  The motivation for having an iterator owner is to enforce (at least in debug code) the rule that
-     *  you can only compare iterators that are derived from the same container. This is also
-     *  a requirement of STL (I believe) but I'm not sure ever explicitly stated. Anyhow, even if
-     *  I'm wrong about that, its a good idea ;-).
-     *
-     *  @see kUnknownIteratorOwnerID
-     */
-    using IteratorOwnerID = const void*;
-
-    /**
-     *  This is like the SQL-null - meaning no known owner - not that there is no owner.
-     */
-    constexpr IteratorOwnerID kUnknownIteratorOwnerID = nullptr;
-
-    /**
      */
     struct IteratorBase {
     public:
@@ -440,27 +420,6 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual explicit operator bool () const;
 
-    public:
-        /**
-         *  Iterators iterate over something (if not in reality, at least conceptually). This ID is
-         *  used for an iterator to report what its owner is (instance not class), if any.
-         *  Any iterator may report nullptr, meaning that it has no logical owner.
-         *
-         *  @see IteratorOwnerID
-         *
-         *  Once an iterator is created, its owner can never change. Mulitple iterators can share the same owner.
-         *  When an iterator is copied, the copy has the same owner as the source the iterator was copied from.
-         *
-         *  Iterator owners must not be destroyed before the iterators iterating over them
-         *  (this would be a user bug, one which will often be detected by DEBUG stroika builds, but perhaps not,
-         *  and may generate grave disorder in non-DEBUG builds).
-         *
-         *  Iterator owners have no semantics - other than the above, and requirements on @see Equals();
-         *  However, some classes (like Bag<T>, Sequence<T>, Collection<T> etc) may layer on additional
-         *  semantics for these Iterator owners.
-         */
-        nonvirtual IteratorOwnerID GetOwner () const;
-
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
@@ -686,10 +645,6 @@ namespace Stroika::Foundation::Traversal {
          * and/or More() to get values and move forward through the iteration.
          */
         virtual RepSmartPtr Clone () const = 0;
-        /**
-         *  @see Iterator<T>::GetOwner
-         */
-        virtual IteratorOwnerID GetOwner () const = 0;
         /**
          *  More () takes two required arguments - one an optional result, and the other a flag about whether or
          *  not to advance.

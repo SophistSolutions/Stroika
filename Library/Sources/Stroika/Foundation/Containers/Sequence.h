@@ -289,11 +289,6 @@ namespace Stroika::Foundation::Containers {
         explicit Sequence (const _IRepSharedPtr& rep) noexcept;
         explicit Sequence (_IRepSharedPtr&& rep) noexcept;
 
-#if qDebug
-    public:
-        ~Sequence ();
-#endif
-
     public:
         /**
          */
@@ -653,8 +648,6 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void _AssertRepValidType () const;
     };
 
-    using Traversal::IteratorOwnerID;
-
     /**
      *  \brief  Implementation detail for Sequence<T> implementors.
      *
@@ -679,8 +672,8 @@ namespace Stroika::Foundation::Containers {
         using _IRepSharedPtr = typename Sequence<value_type>::_IRepSharedPtr;
 
     public:
-        virtual _IRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                             = 0;
-        virtual _IRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
+        virtual _IRepSharedPtr CloneEmpty () const                                   = 0;
+        virtual _IRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const = 0;
         // 'i' argument to GetAt MAYBE kBadSequenceIndex - indictating last element
         virtual value_type GetAt (size_t i) const                                                                                   = 0;
         virtual void       SetAt (size_t i, ArgByValueType<value_type> item)                                                        = 0;
@@ -690,9 +683,7 @@ namespace Stroika::Foundation::Containers {
         // 'at' argument to Insert MAYBE kBadSequenceIndex - indictating append
         virtual void Insert (size_t at, const value_type* from, const value_type* to) = 0;
         virtual void Remove (size_t from, size_t to)                                  = 0;
-#if qDebug
-        virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
-#endif
+
     private:
         friend Sequence<T>;
     };

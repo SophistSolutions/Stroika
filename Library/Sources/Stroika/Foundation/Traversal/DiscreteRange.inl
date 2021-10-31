@@ -49,13 +49,6 @@ namespace Stroika::Foundation::Traversal {
                 *result = fCur;
             }
         }
-        virtual IteratorOwnerID GetOwner () const override
-        {
-            /*
-             *  This return value allows any two DiscreteRange iterators (of the same type) to be compared.
-             */
-            return typeid (*this).name ();
-        }
         virtual bool Equals ([[maybe_unused]] const typename Iterator<T>::IRep* rhs) const override
         {
             RequireNotNull (rhs);
@@ -97,14 +90,12 @@ namespace Stroika::Foundation::Traversal {
                 , fForcedEnd{false}
             {
             }
-            virtual _IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const
+            virtual _IterableRepSharedPtr Clone () const
             {
-                // DiscreteRange doesn't track specific 'envelope' owner
                 return Iterable<T>::template MakeSmartPtr<MyRep_> (*this);
             }
-            virtual Iterator<T> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const
+            virtual Iterator<T> MakeIterator () const
             {
-                // DiscreteRange doesn't track specific 'envelope' owner
                 if (fForcedEnd) {
                     return Iterator<T>{Iterator<T>::template MakeSmartPtr<DiscreteRange::MyIteratorRep_> ()};
                 }
@@ -136,9 +127,9 @@ namespace Stroika::Foundation::Traversal {
             {
                 this->_Apply (doToElement);
             }
-            virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+            virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const
             {
-                return this->_FindFirstThat (doToElement, suggestedOwner);
+                return this->_FindFirstThat (doToElement);
             }
         };
         MyIterable_ ()

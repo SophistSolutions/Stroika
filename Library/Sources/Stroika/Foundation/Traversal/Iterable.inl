@@ -48,16 +48,16 @@ namespace Stroika::Foundation::Traversal {
     inline void Iterable<T>::_IRep::_Apply (const function<void (ArgByValueType<T> item)>& doToElement) const
     {
         RequireNotNull (doToElement);
-        for (Iterator<T> i = MakeIterator (this); i != Iterable<T>::end (); ++i) {
-            (doToElement) (*i);
+        for (Iterator<T> i = MakeIterator (); i != Iterable<T>::end (); ++i) {
+            doToElement (*i);
         }
     }
     template <typename T>
-    inline Iterator<T> Iterable<T>::_IRep::_FindFirstThat (const function<bool (ArgByValueType<T> item)>& doToElement, IteratorOwnerID suggestedOwner) const
+    inline Iterator<T> Iterable<T>::_IRep::_FindFirstThat (const function<bool (ArgByValueType<T> item)>& doToElement) const
     {
         RequireNotNull (doToElement);
-        for (Iterator<T> i = MakeIterator (suggestedOwner); i != Iterable<T>::end (); ++i) {
-            if ((doToElement) (*i)) {
+        for (Iterator<T> i = MakeIterator (); i != Iterable<T>::end (); ++i) {
+            if (doToElement (*i)) {
                 return i;
             }
         }
@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Traversal {
     inline Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope)
         : lock_guard<const Debug::AssertExternallySynchronizedLock>{*iterableEnvelope}
         , fIterableEnvelope_{iterableEnvelope}
-        , fRepReference_{static_cast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.get (iterableEnvelope))}
+        , fRepReference_{static_cast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.get ())} // @TODO MAKE THIS CALL CLEARER IT COULD CLONE
     {
         RequireNotNull (iterableEnvelope);
     }
@@ -234,9 +234,9 @@ namespace Stroika::Foundation::Traversal {
         return not empty ();
     }
     template <typename T>
-    inline typename Iterable<T>::_IterableRepSharedPtr Iterable<T>::Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope)
+    inline typename Iterable<T>::_IterableRepSharedPtr Iterable<T>::Clone_ (const _IRep& rep)
     {
-        return rep.Clone (forIterableEnvelope);
+        return rep.Clone ();
     }
     template <typename T>
     template <typename CONTAINER_OF_T>
@@ -262,7 +262,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     inline Iterator<T> Iterable<T>::MakeIterator () const
     {
-        return _SafeReadRepAccessor<>{this}._ConstGetRep ().MakeIterator (this);
+        return _SafeReadRepAccessor<>{this}._ConstGetRep ().MakeIterator ();
     }
     template <typename T>
     inline size_t Iterable<T>::GetLength () const
@@ -966,14 +966,14 @@ namespace Stroika::Foundation::Traversal {
     inline Iterator<T> Iterable<T>::FindFirstThat (const function<bool (ArgByValueType<T> item)>& doToElement) const
     {
         RequireNotNull (doToElement);
-        return _SafeReadRepAccessor<>{this}._ConstGetRep ().FindFirstThat (doToElement, this);
+        return _SafeReadRepAccessor<>{this}._ConstGetRep ().FindFirstThat (doToElement);
     }
     template <typename T>
     inline Iterator<T> Iterable<T>::FindFirstThat (const Iterator<T>& startAt, const function<bool (ArgByValueType<T> item)>& doToElement) const
     {
         RequireNotNull (doToElement);
         for (Iterator<T> i = startAt; i != Iterable<T>::end (); ++i) {
-            if ((doToElement) (*i)) {
+            if (doToElement (*i)) {
                 return i;
             }
         }

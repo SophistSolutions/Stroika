@@ -16,8 +16,6 @@
 
 namespace Stroika::Foundation::Containers {
 
-    using Traversal::IteratorOwnerID;
-
     /*
      ********************************************************************************
      ********* MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ ***********
@@ -86,10 +84,6 @@ namespace Stroika::Foundation::Containers {
             {
                 return Iterator<T>::template MakeSmartPtr<Rep> (*this);
             }
-            virtual IteratorOwnerID GetOwner () const override
-            {
-                return fContext.fMultiSetIterator.GetOwner ();
-            }
             virtual bool Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
             {
                 AssertNotImplemented ();
@@ -120,7 +114,7 @@ namespace Stroika::Foundation::Containers {
             virtual size_t GetLength () const override
             {
                 size_t n = 0;
-                for (Iterator<CountedValue<T>> i = this->_fContextForEachIterator.fMultiSet->MakeIterator (this); not i.Done (); ++i) {
+                for (Iterator<CountedValue<T>> i = this->_fContextForEachIterator.fMultiSet->MakeIterator (); not i.Done (); ++i) {
                     n += i->fCount;
                 }
                 return n;
@@ -129,14 +123,14 @@ namespace Stroika::Foundation::Containers {
             {
                 return this->_fContextForEachIterator.fMultiSet->IsEmpty ();
             }
-            virtual typename Iterable<T>::_IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
+            virtual typename Iterable<T>::_IterableRepSharedPtr Clone () const override
             {
                 return Iterable<T>::template MakeSmartPtr<MyIterableRep_> (*this);
             }
         };
         _ElementsIterableHelper (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& iterateOverMultiSet)
             // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
-            : Iterable<T> (Iterable<T>::template MakeSmartPtr<MyIterableRep_> (ElementsIteratorHelperContext_ (iterateOverMultiSet, iterateOverMultiSet->MakeIterator (iterateOverMultiSet.get ()))))
+            : Iterable<T> (Iterable<T>::template MakeSmartPtr<MyIterableRep_> (ElementsIteratorHelperContext_ (iterateOverMultiSet, iterateOverMultiSet->MakeIterator ())))
         {
         }
     };
@@ -180,10 +174,6 @@ namespace Stroika::Foundation::Containers {
             {
                 return Iterator<T>::template MakeSmartPtr<Rep> (*this);
             }
-            virtual IteratorOwnerID GetOwner () const override
-            {
-                return fContext.fMultiSetIterator.GetOwner ();
-            }
             virtual bool Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
             {
                 AssertNotImplemented ();
@@ -218,13 +208,13 @@ namespace Stroika::Foundation::Containers {
             {
                 return this->_fContextForEachIterator.fMultiSet->IsEmpty ();
             }
-            virtual typename Iterable<T>::_IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
+            virtual typename Iterable<T>::_IterableRepSharedPtr Clone () const override
             {
                 return Iterable<T>::template MakeSmartPtr<MyIterableRep_> (*this);
             }
         };
         _UniqueElementsHelper (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& tally)
-            : Iterable<T>{Iterable<T>::template MakeSmartPtr<MyIterableRep_> (UniqueElementsIteratorHelperContext_{tally, tally->MakeIterator (tally.get ())})}
+            : Iterable<T>{Iterable<T>::template MakeSmartPtr<MyIterableRep_> (UniqueElementsIteratorHelperContext_{tally, tally->MakeIterator ()})}
         {
         }
     };
@@ -243,7 +233,7 @@ namespace Stroika::Foundation::Containers {
         if (this->GetLength () != rhs.GetLength ()) {
             return false;
         }
-        for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
+        for (auto i = this->MakeIterator (); not i.Done (); ++i) {
             if (i->fCount != rhs.OccurrencesOf (i->fValue)) {
                 return false;
             }
@@ -356,16 +346,6 @@ namespace Stroika::Foundation::Containers {
         AddAll (start, end);
         _AssertRepValidType ();
     }
-#if qDebug
-    template <typename T, typename TRAITS>
-    MultiSet<T, TRAITS>::~MultiSet ()
-    {
-        if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-            // SharingState can be NULL because of MOVE semantics
-            _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
-        }
-    }
-#endif
     template <typename T, typename TRAITS>
     void MultiSet<T, TRAITS>::RemoveAll (ArgByValueType<T> item)
     {
@@ -431,7 +411,7 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         if (not tmp._ConstGetRep ().IsEmpty ()) {
-            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty (this));
+            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty ());
         }
     }
     template <typename T, typename TRAITS>
@@ -536,7 +516,7 @@ namespace Stroika::Foundation::Containers {
         Iterator<value_type> patchedIterator = i;
         shared_ptr_type      writerRep       = this->_fRep.get_nu (
             [&, this] (const shared_ptr_type& prevRepPtr) -> shared_ptr_type {
-                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator, this);
+                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator);
             });
         return make_tuple (writerRep, patchedIterator);
     }

@@ -201,11 +201,6 @@ namespace Stroika::Foundation::Containers {
         explicit Set (const _IRepSharedPtr& rep) noexcept;
         explicit Set (_IRepSharedPtr&& rep) noexcept;
 
-#if qDebug
-    public:
-        ~Set ();
-#endif
-
     public:
         /**
          */
@@ -487,8 +482,6 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void _AssertRepValidType () const;
     };
 
-    using Traversal::IteratorOwnerID;
-
     /**
      *  \brief  Implementation detail for Set<T> implementors.
      *
@@ -510,18 +503,15 @@ namespace Stroika::Foundation::Containers {
         using _IRepSharedPtr = typename Set<T>::_IRepSharedPtr;
 
     public:
-        virtual ElementEqualityComparerType GetElementEqualsComparer () const                                                                  = 0;
-        virtual _IRepSharedPtr              CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                             = 0;
-        virtual _IRepSharedPtr              CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
-        virtual bool                        Equals (const typename Iterable<value_type>::_IRep& rhs) const                                     = 0;
-        virtual bool                        Contains (ArgByValueType<value_type> item) const                                                   = 0;
-        virtual optional<value_type>        Lookup (ArgByValueType<value_type> item) const                                                     = 0;
-        virtual void                        Add (ArgByValueType<value_type> item)                                                              = 0;
-        virtual void                        Remove (ArgByValueType<value_type> item)                                                           = 0;
-        virtual void                        Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                = 0;
-#if qDebug
-        virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
-#endif
+        virtual ElementEqualityComparerType GetElementEqualsComparer () const                                   = 0;
+        virtual _IRepSharedPtr              CloneEmpty () const                                                 = 0;
+        virtual _IRepSharedPtr              CloneAndPatchIterator (Iterator<value_type>* i) const               = 0;
+        virtual bool                        Equals (const typename Iterable<value_type>::_IRep& rhs) const      = 0;
+        virtual bool                        Contains (ArgByValueType<value_type> item) const                    = 0;
+        virtual optional<value_type>        Lookup (ArgByValueType<value_type> item) const                      = 0;
+        virtual void                        Add (ArgByValueType<value_type> item)                               = 0;
+        virtual void                        Remove (ArgByValueType<value_type> item)                            = 0;
+        virtual void                        Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) = 0;
 
         /*
          *  Reference Implementations (often not used except for ensure's, but can be used for

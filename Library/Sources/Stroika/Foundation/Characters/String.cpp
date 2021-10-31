@@ -36,7 +36,6 @@ using namespace Stroika::Foundation::Characters;
 using Memory::SmallStackBuffer;
 using Memory::SmallStackBufferCommon;
 using Traversal::Iterator;
-using Traversal::IteratorOwnerID;
 
 namespace {
     // note - we use UseBlockAllocationIfAppropriate iff kIterableUsesStroikaSharedPtr because SharedPtr separately allocates
@@ -58,11 +57,9 @@ namespace {
             : inherited (start, end, reserveExtraCharacters)
         {
         }
-        virtual _IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
+        virtual _IterableRepSharedPtr Clone () const override
         {
             AssertNotReached (); // Since Strings now immutable, this should never be called
-            // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
-            // ignore suggested IteratorOwnerID
             return String::MakeSmartPtr<String_BufferedArray_Rep_> (_fStart, _fEnd);
         }
     };
@@ -88,7 +85,7 @@ namespace   {
             {
                 Assert (reinterpret_cast<const wchar_t*> (fSaved_._ConstGetRep ().Peek ()) <= _fStart and _fStart <= _fEnd);
             }
-            virtual  _IterableRepSharedPtr   Clone (IteratorOwnerID forIterableEnvelope) const override
+            virtual  _IterableRepSharedPtr   Clone () const override
             {
                 AssertNotReached ();    // Since Strings now immutable, this should never be called
                 return String_Substring_::MakeSmartPtr<MyRep_> (*this);
@@ -127,7 +124,7 @@ const wregex& Characters::Private_::RegularExpression_GetCompiled (const Regular
  ****************************** String::_IRep ***********************************
  ********************************************************************************
  */
-Traversal::Iterator<Character> String::_IRep::MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const
+Traversal::Iterator<Character> String::_IRep::MakeIterator () const
 {
     struct MyIterRep_ final : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
         _SharedPtrIRep fStr; // effectively RO, since if anyone modifies, our copy will remain unchanged
@@ -141,11 +138,6 @@ Traversal::Iterator<Character> String::_IRep::MakeIterator ([[maybe_unused]] Ite
         virtual Iterator<Character>::RepSmartPtr Clone () const override
         {
             return Iterator<Character>::MakeSmartPtr<MyIterRep_> (fStr, fCurIdx);
-        }
-        virtual IteratorOwnerID GetOwner () const override
-        {
-            // Simple to enforce Iterator<> compare semantics, but nothing else needed
-            return fStr.get ();
         }
         virtual void More (optional<Character>* result, bool advance) override
         {
@@ -176,8 +168,6 @@ Traversal::Iterator<Character> String::_IRep::MakeIterator ([[maybe_unused]] Ite
 #else
     _SharedPtrIRep sharedContainerRep = const_cast<String::_IRep*> (this)->shared_from_this ();
 #endif
-    // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
-    // ignore suggested IteratorOwnerID - which explains the arg to Clone () below
     return Iterator<Character>{Iterator<Character>::MakeSmartPtr<MyIterRep_> (sharedContainerRep)};
 }
 
@@ -198,9 +188,9 @@ void String::_IRep::Apply (_APPLY_ARGTYPE doToElement) const
     _Apply (doToElement);
 }
 
-Traversal::Iterator<Character> String::_IRep::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+Traversal::Iterator<Character> String::_IRep::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const
 {
-    return _FindFirstThat (doToElement, suggestedOwner);
+    return _FindFirstThat (doToElement);
 }
 
 /*

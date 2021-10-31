@@ -1176,20 +1176,20 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual Memory::SharedByValue_State _GetSharingState () const;
 
     private:
-        static _IterableRepSharedPtr Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope);
+        static _IterableRepSharedPtr Clone_ (const _IRep& rep);
 
     private:
 #if (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_20) || qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
         struct Rep_Cloner_ {
-            auto operator() (const _IRep& t, IteratorOwnerID forIterableEnvelope) const -> PtrImplementationTemplate<_IRep>
+            auto operator() (const _IRep& t) const -> PtrImplementationTemplate<_IRep>
             {
-                return Iterable<T>::Clone_ (t, forIterableEnvelope);
+                return Iterable<T>::Clone_ (t);
             }
         };
 #else
         using Rep_Cloner_ = decltype (
-            [] (const _IRep& t, IteratorOwnerID forIterableEnvelope) -> PtrImplementationTemplate<_IRep> {
-                return Iterable<T>::Clone_ (t, forIterableEnvelope);
+            [] (const _IRep& t) -> PtrImplementationTemplate<_IRep> {
+                return Iterable<T>::Clone_ (t);
             });
 #endif
 
@@ -1334,26 +1334,14 @@ namespace Stroika::Foundation::Traversal {
         using _APPLYUNTIL_ARGTYPE = const function<bool (ArgByValueType<T> item)>&;
 
     public:
-        virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const = 0;
+        virtual _IterableRepSharedPtr Clone () const = 0;
         /*
-         *  NB - the suggestedOwnerID argument to MakeIterator() may be used, or ignored by particular subtypes
-         *  of iterator/iterable. There is no gaurantee about the resulting GetOwner() result from the
-         *  iterator returned.
-         *
-         *  \em Design Note
-         *      It might have been better design to make the argument to Iterable<T>::Rep::MakeIterator ()
-         *      be owner instead of suggestedOwner, and then require that it get tracked. But that would
-         *      have imposed a memory (and copying) overhead on each iterator, and the current
-         *      use cases for iterators don't warrant that.
-         *
-         *      I think its good enough that particular subtypes - where tracking an owner makes sense and
-         *      is useful, we be done. And when not useful, it can be optimized away.
          */
-        virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const                                                  = 0;
-        virtual size_t      GetLength () const                                                                                   = 0;
-        virtual bool        IsEmpty () const                                                                                     = 0;
-        virtual void        Apply (const function<void (ArgByValueType<T> item)>& doToElement) const                             = 0;
-        virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<T> item)>&, IteratorOwnerID suggestedOwner) const = 0;
+        virtual Iterator<T> MakeIterator () const                                                    = 0;
+        virtual size_t      GetLength () const                                                       = 0;
+        virtual bool        IsEmpty () const                                                         = 0;
+        virtual void        Apply (const function<void (ArgByValueType<T> item)>& doToElement) const = 0;
+        virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<T> item)>&) const     = 0;
 
     protected:
         /*
@@ -1362,7 +1350,7 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual bool _IsEmpty () const;
         nonvirtual void _Apply (const function<void (ArgByValueType<T> item)>& doToElement) const;
-        nonvirtual Iterator<T> _FindFirstThat (const function<bool (ArgByValueType<T> item)>& doToElement, IteratorOwnerID suggestedOwner) const;
+        nonvirtual Iterator<T> _FindFirstThat (const function<bool (ArgByValueType<T> item)>& doToElement) const;
     };
 
     /**

@@ -202,11 +202,6 @@ namespace Stroika::Foundation::Containers {
         explicit Mapping (const _IRepSharedPtr& rep) noexcept;
         explicit Mapping (_IRepSharedPtr&& rep) noexcept;
 
-#if qDebug
-    public:
-        ~Mapping ();
-#endif
-
     public:
         /**
          */
@@ -587,8 +582,6 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void _AssertRepValidType () const;
     };
 
-    using Traversal::IteratorOwnerID;
-
     /**
      *  \brief  Implementation detail for Mapping<T> implementors.
      *
@@ -606,13 +599,6 @@ namespace Stroika::Foundation::Containers {
     private:
         using inherited = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep;
 
-#if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
-    protected:
-        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
-        using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
-#endif
-
     protected:
         _IRep () = default;
 
@@ -623,11 +609,11 @@ namespace Stroika::Foundation::Containers {
         using _IRepSharedPtr = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRepSharedPtr;
 
     public:
-        virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const                                                                      = 0;
-        virtual _IRepSharedPtr               CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                             = 0;
-        virtual _IRepSharedPtr               CloneAndPatchIterator (Iterator<value_type>* i, IteratorOwnerID obsoleteForIterableEnvelope) const = 0;
-        virtual Iterable<key_type>           Keys () const                                                                                      = 0;
-        virtual Iterable<mapped_type>        MappedValues () const                                                                              = 0;
+        virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const                         = 0;
+        virtual _IRepSharedPtr               CloneEmpty () const                                   = 0;
+        virtual _IRepSharedPtr               CloneAndPatchIterator (Iterator<value_type>* i) const = 0;
+        virtual Iterable<key_type>           Keys () const                                         = 0;
+        virtual Iterable<mapped_type>        MappedValues () const                                 = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<mapped_type>* item) const = 0;
@@ -637,10 +623,6 @@ namespace Stroika::Foundation::Containers {
         // if nextI is non-null, its filled in with the next item in iteration order after i (has been removed)
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                       = 0;
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) = 0;
-
-#if qDebug
-        virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
-#endif
 
     protected:
         nonvirtual Iterable<key_type> _Keys_Reference_Implementation () const;

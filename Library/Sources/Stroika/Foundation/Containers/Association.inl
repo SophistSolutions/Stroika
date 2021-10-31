@@ -71,16 +71,6 @@ namespace Stroika::Foundation::Containers {
     {
         _AssertRepValidType ();
     }
-#if qDebug
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    Association<KEY_TYPE, MAPPED_VALUE_TYPE>::~Association ()
-    {
-        if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-            // SharingState can be NULL because of MOVE semantics
-            _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
-        }
-    }
-#endif
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Iterable<KEY_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Keys () const
     {
@@ -204,7 +194,7 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         if (not tmp._ConstGetRep ().IsEmpty ()) {
-            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty (this));
+            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty ());
         }
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -229,7 +219,7 @@ namespace Stroika::Foundation::Containers {
     {
         // @see https://stroika.atlassian.net/browse/STK-539
 #if 0
-        Association<KEY_TYPE, MAPPED_VALUE_TYPE>   result = Association<KEY_TYPE, MAPPED_VALUE_TYPE>{ _SafeReadRepAccessor<_IRep> { this }._ConstGetRep ().CloneEmpty (this) };
+        Association<KEY_TYPE, MAPPED_VALUE_TYPE>   result = Association<KEY_TYPE, MAPPED_VALUE_TYPE>{ _SafeReadRepAccessor<_IRep> { this }._ConstGetRep ().CloneEmpty () };
         for (auto key2Keep : items) {
             if (auto l = this->Lookup (key2Keep)) {
                 result.Add (key2Keep, *l);
@@ -366,7 +356,7 @@ namespace Stroika::Foundation::Containers {
                     , fAssociation_ (map)
                 {
                 }
-                virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
+                virtual Iterator<KEY_TYPE> MakeIterator () const override
                 {
                     auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fAssociation_.MakeIterator ());
                     auto getNext   = [myContext] () -> optional<KEY_TYPE> {
@@ -381,9 +371,8 @@ namespace Stroika::Foundation::Containers {
                     };
                     return Traversal::CreateGeneratorIterator<KEY_TYPE> (getNext);
                 }
-                virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
+                virtual _IterableRepSharedPtr Clone () const override
                 {
-                    // For now - ignore forIterableEnvelope
                     return Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
                 }
             };
@@ -413,7 +402,7 @@ namespace Stroika::Foundation::Containers {
                     , fAssociation_ (map)
                 {
                 }
-                virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
+                virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator () const override
                 {
                     auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fAssociation_.MakeIterator ());
                     auto getNext   = [myContext] () -> optional<MAPPED_VALUE_TYPE> {
@@ -428,7 +417,7 @@ namespace Stroika::Foundation::Containers {
                     };
                     return Traversal::CreateGeneratorIterator<MAPPED_VALUE_TYPE> (getNext);
                 }
-                virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
+                virtual _IterableRepSharedPtr Clone () const override
                 {
                     // For now - ignore forIterableEnvelope
                     return Iterable<MAPPED_VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
@@ -480,7 +469,7 @@ namespace Stroika::Foundation::Containers {
          *  They need not be in the same order to compare equals. Still - they often are, and if they are, this algorithm is faster.
          *  If they miss, we need to fall back to a slower strategy.
          */
-        auto li                = lhsR._ConstGetRep ().MakeIterator (this);
+        auto li                = lhsR._ConstGetRep ().MakeIterator ();
         auto ri                = rhs.MakeIterator ();
         auto keyEqualsComparer = lhs.GetKeyEqualsComparer (); // arbitrarily select left side key equals comparer
         while (not li.Done ()) {

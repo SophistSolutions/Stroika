@@ -236,13 +236,6 @@ public:
         return RepSmartPtr (MakeSmartPtr<Rep_> (fDirName_, fHandle_ == INVALID_HANDLE_VALUE ? optional<String>{} : String::FromSDKString (fFindFileData_.cFileName), fIteratorReturnType_));
 #endif
     }
-    virtual IteratorOwnerID GetOwner () const override
-    {
-        /*
-         *  This return value allows any two DiscreteRange iterators (of the same type) to be compared.
-         */
-        return typeid (*this).name ();
-    }
 
 private:
     static filesystem::path mkReportPrefix_ (const filesystem::path& dirName, IteratorReturnType iteratorReturns)
