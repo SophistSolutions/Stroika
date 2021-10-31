@@ -210,34 +210,34 @@ namespace {
             L"nfs3"sv,
             L"vboxsf"sv,
         };
-        for (const auto& i : *volumes) {
+        for (auto vi = volumes->begin (); vi != volumes->end(); ++vi) {
             // @todo - NOTE - this is NOT a reliable way to tell, but hopefully good enough for starters
-            MountedFilesystemInfoType vi = i.fValue;
-            if (vi.fFileSystemType) {
-                String fstype = *vi.fFileSystemType;
+            MountedFilesystemInfoType val2Update = vi->fValue;
+            if (val2Update.fFileSystemType) {
+                String fstype = *val2Update.fFileSystemType;
                 bool   changed{false};
                 if (kRealDiskFS.Contains (fstype)) {
-                    vi.fDeviceKind = BlockDeviceKind::eLocalDisk;
+                    val2Update.fDeviceKind = BlockDeviceKind::eLocalDisk;
                     changed        = true;
                 }
                 else if (kNetworkFS_.Contains (fstype)) {
-                    vi.fDeviceKind = BlockDeviceKind::eNetworkDrive;
+                    val2Update.fDeviceKind = BlockDeviceKind::eNetworkDrive;
                     changed        = true;
                 }
                 else if (fstype == L"tmpfs") {
-                    vi.fDeviceKind = BlockDeviceKind::eTemporaryFiles;
+                    val2Update.fDeviceKind = BlockDeviceKind::eTemporaryFiles;
                     changed        = true;
                 }
                 else if (fstype == L"iso9660") {
-                    vi.fDeviceKind = BlockDeviceKind::eReadOnlyEjectable;
+                    val2Update.fDeviceKind = BlockDeviceKind::eReadOnlyEjectable;
                     changed        = true;
                 }
                 else if (kSysFSList_.Contains (fstype)) {
-                    vi.fDeviceKind = BlockDeviceKind::eSystemInformation;
+                    val2Update.fDeviceKind = BlockDeviceKind::eSystemInformation;
                     changed        = true;
                 }
                 if (changed) {
-                    volumes->Add (i.fKey, vi);
+                    volumes->Update (vi,  val2Update, &vi);
                 }
             }
         }
@@ -338,8 +338,8 @@ namespace {
             try {
                 Mapping<dev_t, PerfStats_> diskStats            = ReadProcFS_diskstats_ ();
                 DurationSecondsType        timeSinceLastMeasure = Time::GetTickCount () - _GetCaptureContextTime ().value_or (0);
-                for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : *volumes) {
-                    MountedFilesystemInfoType vi = i.fValue;
+                for (Iterator<KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType>> i = volumes->begin (); i != volumes->end (); ++i) {
+                    MountedFilesystemInfoType vi = i->fValue;
                     if (vi.fDeviceOrVolumeName.has_value ()) {
                         if (_fContext.load ()->fDiskPerfStats_) {
                             String devNameLessSlashes = *vi.fDeviceOrVolumeName;
@@ -391,7 +391,7 @@ namespace {
                             }
                         }
                     }
-                    volumes->Add (i.fKey, vi);
+                    volumes->Update (i, vi, &i);
                 }
                 _fContext.rwget ().rwref ()->fDiskPerfStats_ = diskStats;
             }
