@@ -44,13 +44,13 @@ namespace Stroika::Foundation::DataExchange::Variant {
     }
     inline Writer::_IRep& Writer::_GetRep ()
     {
-        EnsureNotNull (fRep_.get ());
-        return *fRep_;
+        EnsureNotNull (fRep_.rwget ());
+        return *fRep_.rwget ();
     }
     inline const Writer::_IRep& Writer::_GetRep () const
     {
         EnsureNotNull (fRep_.cget ());
-        return *fRep_;
+        return *fRep_.cget ();
     }
     inline Memory::BLOB Writer::Write (const VariantValue& v)
     {

@@ -177,15 +177,23 @@ namespace Stroika::Foundation::Memory {
          */
         [[deprecated ("Since Stroika 2.1b14 - use cget()")]] nonvirtual const element_type* get () const noexcept;
         template <typename... COPY_ARGS>
-        nonvirtual element_type* get (COPY_ARGS&&... copyArgs);
+        [[deprecated ("Since Stroika 2.1b14 - use rwget() - but note COPIER not COPYARGS arguments")]] nonvirtual element_type* get (COPY_ARGS&&... copyArgs);
 
     public:
         /**
          */
         /* REPLACEMENT FOR non-const get() but taking COPIER arg instead of COPY_ARGS*/
-        nonvirtual shared_ptr_type rwget ();
+        nonvirtual shared_ptr_type rwgetp ();
         template <typename COPIER>
-        nonvirtual shared_ptr_type rwget (COPIER&& copier);
+        nonvirtual shared_ptr_type rwgetp (COPIER&& copier);
+
+    public:
+        /**
+         */
+        /* REPLACEMENT FOR non-const get() but taking COPIER arg instead of COPY_ARGS*/
+        nonvirtual element_type* rwget ();
+        template <typename COPIER>
+        nonvirtual element_type* rwget (COPIER&& copier);
 
     public:
         /**

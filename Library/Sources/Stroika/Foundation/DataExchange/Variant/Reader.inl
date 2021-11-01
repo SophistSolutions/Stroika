@@ -44,13 +44,13 @@ namespace Stroika::Foundation::DataExchange::Variant {
     }
     inline Reader::_IRep& Reader::_GetRep ()
     {
-        EnsureNotNull (fRep_.get ());
-        return *fRep_;
+        EnsureNotNull (fRep_.rwget ());
+        return *fRep_.rwget ();
     }
     inline const Reader::_IRep& Reader::_GetRep () const
     {
         EnsureNotNull (fRep_.cget ());
-        return *fRep_;
+        return *fRep_.cget ();
     }
 
 }

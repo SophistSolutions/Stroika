@@ -151,7 +151,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     template <typename T>
     inline void Matrix<T>::SetAt (size_t r, size_t c, T v)
     {
-        fRep_.get ()->SetAt (r, c, v);
+        fRep_.rwget ()->SetAt (r, c, v);
     }
     template <typename T>
     inline const typename Matrix<T>::ReadOnlyTemporaryRowReference_ Matrix<T>::operator[] (size_t row) const

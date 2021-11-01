@@ -416,11 +416,12 @@ namespace Stroika::Foundation::Containers {
     auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_GetWriterRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<typename inherited::_SharedByValueRepType::shared_ptr_type, Iterator<value_type>>
     {
         Require (not i.Done ());
+        using element_type                   = typename inherited::_SharedByValueRepType::element_type;
         using shared_ptr_type                = typename inherited::_SharedByValueRepType::shared_ptr_type;
         Iterator<value_type> patchedIterator = i;
-        shared_ptr_type      writerRep       = this->_fRep.rwget (
-            [&] (const shared_ptr_type& prevRepPtr) -> shared_ptr_type {
-                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator);
+        shared_ptr_type      writerRep       = this->_fRep.rwgetp (
+            [&] (const element_type& prevRepPtr) -> shared_ptr_type {
+                return Debug::UncheckedDynamicCast<const _IRep*> (&prevRepPtr)->CloneAndPatchIterator (&patchedIterator);
             });
         return make_tuple (writerRep, patchedIterator);
     }

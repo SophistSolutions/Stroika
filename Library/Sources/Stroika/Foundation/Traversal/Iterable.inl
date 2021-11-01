@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Traversal {
     inline Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope)
         : lock_guard<const Debug::AssertExternallySynchronizedLock>{*iterableEnvelope}
         , fIterableEnvelope_{iterableEnvelope}
-        , fRepReference_{static_cast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.get ())} // @TODO MAKE THIS CALL CLEARER IT COULD CLONE
+        , fRepReference_{static_cast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.rwget ())}
     {
         RequireNotNull (iterableEnvelope);
     }

@@ -170,15 +170,14 @@ namespace Stroika::Foundation::Memory {
     {
         return fSharedImpl_.get ();
     }
-
     template <typename T, typename TRAITS>
-    inline auto SharedByValue<T, TRAITS>::rwget () -> shared_ptr_type
+    inline auto SharedByValue<T, TRAITS>::rwgetp () -> shared_ptr_type
     {
-        return rwget (fCopier_);
+        return rwgetp (fCopier_);
     }
     template <typename T, typename TRAITS>
     template <typename COPIER>
-    inline auto SharedByValue<T, TRAITS>::rwget (COPIER&& copier) -> shared_ptr_type
+    inline auto SharedByValue<T, TRAITS>::rwgetp (COPIER&& copier) -> shared_ptr_type
     {
         /*
          *  Increment refCount before assureNReferences/breakreferencs so we can save
@@ -196,6 +195,29 @@ namespace Stroika::Foundation::Memory {
         return nullptr;
     }
     template <typename T, typename TRAITS>
+    inline auto SharedByValue<T, TRAITS>::rwget () -> element_type*
+    {
+        return rwget (fCopier_);
+    }
+    template <typename T, typename TRAITS>
+    template <typename COPIER>
+    inline auto SharedByValue<T, TRAITS>::rwget (COPIER&& copier) -> element_type*
+    {
+        /*
+         *  Increment refCount before assureNReferences/breakreferencs so we can save
+         *  the original shared_ptr and return it in case its needed (e.g. to update iterators).
+         * 
+         *  Save this way so no race (after Assure1Reference() other remaining ptr could go away.
+         */
+        shared_ptr_type origPtr = fSharedImpl_;
+        if (origPtr != nullptr) [[LIKELY_ATTR]] {
+            AssureNOrFewerReferences (2, forward<COPIER> (copier));
+            Ensure ((fSharedImpl_ != origPtr and fSharedImpl_.use_count () == 1) or (fSharedImpl_ == origPtr and fSharedImpl_.use_count () == 2));
+            return fSharedImpl_.get ();
+        }
+        return nullptr;
+    }
+    template <typename T, typename TRAITS>
     inline const typename SharedByValue<T, TRAITS>::element_type* SharedByValue<T, TRAITS>::operator-> () const
     {
         return fSharedImpl_.get ();
@@ -203,7 +225,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename TRAITS>
     inline typename SharedByValue<T, TRAITS>::element_type* SharedByValue<T, TRAITS>::operator-> ()
     {
-        return get ();
+        return rwget ();
     }
     template <typename T, typename TRAITS>
     inline const typename SharedByValue<T, TRAITS>::element_type& SharedByValue<T, TRAITS>::operator* () const
@@ -283,7 +305,7 @@ namespace Stroika::Foundation::Memory {
     template <typename COPIER>
     inline void SharedByValue<T, TRAITS>::AssureNOrFewerReferences (unsigned int n, COPIER&& copier)
     {
-        if (fSharedImpl_.use_count () > n) [[UNLIKELY_ATTR]] {
+        if (static_cast<unsigned int> (fSharedImpl_.use_count ()) > n) [[UNLIKELY_ATTR]] {
             BreakReferences_nu_ (forward<COPIER> (copier));
         }
     }
@@ -336,7 +358,7 @@ namespace Stroika::Foundation::Memory {
         //Require (!SHARED_IMLP::unique ());    This is not NECESSARILY so. Another thread could have just released this pointer, in which case
         // the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
         // value and it should go away.
-        *this = SharedByValue<T, TRAITS>{forward<COPIER> (copier) (ptr2Clone), fCopier_};
+        *this = SharedByValue<T, TRAITS>{forward<COPIER> (copier) (*ptr2Clone), fCopier_};
 
 #if qDebug
         // technically not 100% guaranteed if two threads did this at the same time, but so rare interesting if ever triggered.
