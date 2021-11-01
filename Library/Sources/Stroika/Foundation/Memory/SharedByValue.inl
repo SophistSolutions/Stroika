@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Memory {
     inline SHARED_IMLP SharedByValue_CopyByDefault<T, SHARED_IMLP>::operator() (const T& t) const
     {
         if constexpr (is_same_v<SHARED_IMLP, shared_ptr<T>>) {
-            return make_shared<T> (t);  // more efficient
+            return make_shared<T> (t); // more efficient
         }
         return SHARED_IMLP{new T (t)};
     }
@@ -174,13 +174,13 @@ namespace Stroika::Foundation::Memory {
         return fSharedImpl_.get ();
     }
     template <typename T, typename TRAITS>
-    inline auto SharedByValue<T, TRAITS>::rwgetp () -> shared_ptr_type
+    inline auto SharedByValue<T, TRAITS>::rwget_ptr () -> shared_ptr_type
     {
-        return rwgetp (fCopier_);
+        return rwget_ptr (fCopier_);
     }
     template <typename T, typename TRAITS>
     template <typename COPIER>
-    inline auto SharedByValue<T, TRAITS>::rwgetp (COPIER&& copier) -> shared_ptr_type
+    inline auto SharedByValue<T, TRAITS>::rwget_ptr (COPIER&& copier) -> shared_ptr_type
     {
         /*
          *  Increment refCount before assureNReferences/breakreferencs so we can save
@@ -190,7 +190,7 @@ namespace Stroika::Foundation::Memory {
          */
         shared_ptr_type origPtr = fSharedImpl_;
         if (origPtr != nullptr) [[LIKELY_ATTR]] {
-            AssureNOrFewerReferences (2, forward<COPIER> (copier));
+            AssureNOrFewerReferences (forward<COPIER> (copier), 2);
             shared_ptr_type result = fSharedImpl_;
             Ensure ((result != origPtr and result.use_count () == 2) or (result == origPtr and result.use_count () == 3));
             return result;
@@ -214,7 +214,7 @@ namespace Stroika::Foundation::Memory {
          */
         shared_ptr_type origPtr = fSharedImpl_;
         if (origPtr != nullptr) [[LIKELY_ATTR]] {
-            AssureNOrFewerReferences (2, forward<COPIER> (copier));
+            AssureNOrFewerReferences (forward<COPIER> (copier), 2);
             Ensure ((fSharedImpl_ != origPtr and fSharedImpl_.use_count () == 1) or (fSharedImpl_ == origPtr and fSharedImpl_.use_count () == 2));
             return fSharedImpl_.get ();
         }
@@ -244,7 +244,7 @@ namespace Stroika::Foundation::Memory {
          * For non-const dereferencing, we must clone ourselves (if there are
          * extra referneces).
          */
-        Assure1Reference ();
+        AssureNOrFewerReferences ();
         element_type* ptr = get ();
         EnsureNotNull (ptr);
         return *ptr;
@@ -262,7 +262,7 @@ namespace Stroika::Foundation::Memory {
     }
 #endif
     template <typename T, typename TRAITS>
-    inline typename SharedByValue<T, TRAITS>::element_copier_type SharedByValue<T, TRAITS>::GetCopier () const
+    inline typename SharedByValue<T, TRAITS>::element_copier_type SharedByValue<T, TRAITS>::GetDefaultCopier () const
     {
         return fCopier_;
     }
@@ -301,51 +301,28 @@ namespace Stroika::Foundation::Memory {
     inline void SharedByValue<T, TRAITS>::Assure1Reference (COPY_ARGS&&... copyArgs)
     {
         if (fSharedImpl_.use_count () > 1) {
-            BreakReferences_ (forward<COPY_ARGS> (copyArgs)...);
+           // BreakReferences_old_ (forward<COPY_ARGS> (copyArgs)...);
+            BreakReferences_ ([] (const T& e) { return fCopier_ (e, forward<COPY_ARGS> (copyArgs)...); });
         }
     }
     template <typename T, typename TRAITS>
     template <typename COPIER>
-    inline void SharedByValue<T, TRAITS>::AssureNOrFewerReferences (unsigned int n, COPIER&& copier)
+    inline void SharedByValue<T, TRAITS>::AssureNOrFewerReferences (COPIER&& copier, unsigned int n)
     {
         if (static_cast<unsigned int> (fSharedImpl_.use_count ()) > n) [[UNLIKELY_ATTR]] {
-            BreakReferences_nu_ (forward<COPIER> (copier));
+            BreakReferences_ (forward<COPIER> (copier));
         }
     }
     template <typename T, typename TRAITS>
-    template <typename... COPY_ARGS>
-    void SharedByValue<T, TRAITS>::BreakReferences_ (COPY_ARGS&&... copyArgs)
+    inline void SharedByValue<T, TRAITS>::AssureNOrFewerReferences (unsigned int n)
     {
-        shared_ptr_type ptr2Clone{shared_impl_copier_type::Load (fSharedImpl_)}; // other thread could change this (if other thread accesses same envelope)
-        // but this copy prevents the bare ptr from possibly becoming invalidated
-        element_type* ptr = ptr2Clone.get ();
-        RequireNotNull (ptr);
-        /*
-         *      For a valid pointer that is reference counted and multiply shared,
-         *  make a copy of that pointer via our fCloner function, and assign
-         *  that cloned reference to this.
-         *
-         *      Note that by doing so, we remove any references to the current
-         *  item, and end up with our having the sole reference to the new copy of fPtr.
-         *
-         *      Since we will be cloning the given pointer, we assume(assert) that
-         *  it is non-nullptr.
-         */
-        //Require (!SHARED_IMLP::unique ());    This is not NECESSARILY so. Another thread could have just released this pointer, in which case
-        // the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
-        // value and it should go away.
-        *this = SharedByValue<T, TRAITS>{fCopier_ (*ptr, forward<COPY_ARGS> (copyArgs)...), fCopier_};
-
-#if qDebug
-        // technically not 100% guaranteed if two threads did this at the same time, but so rare interesting if ever triggered.
-        // probably a bug, but not necessarily
-        WeakAssert (unique ());
-#endif
+        AssureNOrFewerReferences (fCopier_, n);
     }
     template <typename T, typename TRAITS>
     template <typename COPIER>
-    void SharedByValue<T, TRAITS>::BreakReferences_nu_ (COPIER&& copier)
+    void SharedByValue<T, TRAITS>::BreakReferences_ (COPIER&& copier)
     {
+        RequireNotNull (fSharedImpl_);
         shared_ptr_type ptr2Clone{shared_impl_copier_type::Load (fSharedImpl_)}; // other thread could change this (if other thread accesses same envelope)
         /*
          *      For a valid pointer that is reference counted and multiply shared,

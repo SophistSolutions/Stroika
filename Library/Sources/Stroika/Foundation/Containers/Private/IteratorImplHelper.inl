@@ -8,17 +8,12 @@
 
 namespace Stroika::Foundation::Containers::Private {
 
-
-
-
-
-
     /*
      ********************************************************************************
      ********************************* ContainerDebugChangeCounts_ ******************
      ********************************************************************************
      */
-    inline  ContainerDebugChangeCounts_::ContainerDebugChangeCounts_ ()
+    inline ContainerDebugChangeCounts_::ContainerDebugChangeCounts_ ()
     {
     }
     inline ContainerDebugChangeCounts_::ContainerDebugChangeCounts_ ([[maybe_unused]] const ContainerDebugChangeCounts_& src)
@@ -111,24 +106,23 @@ namespace Stroika::Foundation::Containers::Private {
     }
 
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
-        inline void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::UpdateChangeCount ()
-        {
+    inline void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::UpdateChangeCount ()
+    {
 #if qDebug
-            if (fChangeCounter != nullptr) {
-                fLastCapturedChangeCount = fChangeCounter->fChangeCount;
-            }
-#endif
+        if (fChangeCounter != nullptr) {
+            fLastCapturedChangeCount = fChangeCounter->fChangeCount;
         }
+#endif
+    }
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
-    inline    void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::ValidateChangeCount () const
-        {
+    inline void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::ValidateChangeCount () const
+    {
 #if qDebug
-            if (fChangeCounter != nullptr) {
-                Require (fChangeCounter->fChangeCount == fLastCapturedChangeCount); // if this fails, it almost certainly means you are using a stale iterator
-            }
-#endif
+        if (fChangeCounter != nullptr) {
+            Require (fChangeCounter->fChangeCount == fLastCapturedChangeCount); // if this fails, it almost certainly means you are using a stale iterator
         }
-
+#endif
+    }
 
 }
 

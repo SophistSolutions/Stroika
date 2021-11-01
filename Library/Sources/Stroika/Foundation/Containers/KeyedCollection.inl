@@ -351,7 +351,7 @@ namespace Stroika::Foundation::Containers {
         using element_type                   = typename inherited::_SharedByValueRepType::element_type;
         using shared_ptr_type                = typename inherited::_SharedByValueRepType::shared_ptr_type;
         Iterator<value_type> patchedIterator = i;
-        shared_ptr_type      writerRep       = this->_fRep.rwgetp (
+        shared_ptr_type      writerRep       = this->_fRep.rwget_ptr (
             [&] (const element_type& prevRepPtr) -> shared_ptr_type {
                 return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator);
             });
