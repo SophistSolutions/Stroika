@@ -170,27 +170,7 @@ namespace Stroika::Foundation::Memory {
     {
         return fSharedImpl_.get ();
     }
-    template <typename T, typename TRAITS>
-    template <typename... COPY_ARGS>
-    auto SharedByValue<T, TRAITS>::GetAndMaybeCopySavingOriginal (shared_ptr_type* oldValue, COPY_ARGS&&... copyArgs) -> shared_ptr_type
-    {
-        RequireNotNull (oldValue);
-        /*
-         *  Increment refCount before assureNReferences/breakreferencs so we can save
-         *  the original shared_ptr and return it in case its needed (e.g. to update iterators).
-         * 
-         *  Save this way so no race (after Assure1Reference() other remaining ptr could go away.
-         */
-        shared_ptr_type origPtr = fSharedImpl_;
-        *oldValue               = origPtr;
-        if (origPtr != nullptr) [[LIKELY_ATTR]] {
-            Assure2OrFewerReferences (forward<COPY_ARGS> (copyArgs)...);
-            shared_ptr_type result = fSharedImpl_;
-            Ensure ((result != origPtr and result.use_count () == 2) or (result == origPtr and result.use_count () == 3));
-            return result;
-        }
-        return nullptr;
-    }
+
     template <typename T, typename TRAITS>
     inline auto SharedByValue<T, TRAITS>::rwget () -> shared_ptr_type
     {
@@ -208,7 +188,7 @@ namespace Stroika::Foundation::Memory {
          */
         shared_ptr_type origPtr = fSharedImpl_;
         if (origPtr != nullptr) [[LIKELY_ATTR]] {
-            AssureNOrFewerReferences_nu (2, forward<COPIER> (copier));
+            AssureNOrFewerReferences (2, forward<COPIER> (copier));
             shared_ptr_type result = fSharedImpl_;
             Ensure ((result != origPtr and result.use_count () == 2) or (result == origPtr and result.use_count () == 3));
             return result;
@@ -300,16 +280,8 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T, typename TRAITS>
-    template <typename... COPY_ARGS>
-    inline void SharedByValue<T, TRAITS>::Assure2OrFewerReferences (COPY_ARGS&&... copyArgs)
-    {
-        if (fSharedImpl_.use_count () > 2) {
-            BreakReferences_ (forward<COPY_ARGS> (copyArgs)...);
-        }
-    }
-    template <typename T, typename TRAITS>
     template <typename COPIER>
-    inline void SharedByValue<T, TRAITS>::AssureNOrFewerReferences_nu (unsigned int n, COPIER&& copier)
+    inline void SharedByValue<T, TRAITS>::AssureNOrFewerReferences (unsigned int n, COPIER&& copier)
     {
         if (fSharedImpl_.use_count () > n) [[UNLIKELY_ATTR]] {
             BreakReferences_nu_ (forward<COPIER> (copier));

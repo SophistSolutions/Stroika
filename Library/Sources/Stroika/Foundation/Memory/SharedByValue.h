@@ -181,17 +181,8 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         *  Somewhat like get(), but though this MAY BreakReferences if needed.
-         *  but this will ALSO return a copy of the original smartPtr in oldValue (if breakreferences was called).
-         *  @see get
          */
-        template <typename... COPY_ARGS>
-        nonvirtual shared_ptr_type GetAndMaybeCopySavingOriginal (shared_ptr_type* oldValue, COPY_ARGS&&... copyArgs);
-
-    public:
-        /**
-         */
-        /* REPLACEMENT FOR get()  and GetAndMaybeCopySavingOriginal but taking COPIER arg instead of COPY_ARGS*/
+        /* REPLACEMENT FOR non-const get() but taking COPIER arg instead of COPY_ARGS*/
         nonvirtual shared_ptr_type rwget ();
         template <typename COPIER>
         nonvirtual shared_ptr_type rwget (COPIER&& copier);
@@ -279,8 +270,6 @@ namespace Stroika::Foundation::Memory {
         /**
          * Assure there is a single reference to this object, and if there are more, break references.
          * This method should be applied before destructive operations are applied to the shared object.
-         * 
-         * @see Assure2OrFewerReferences
          */
         template <typename... COPY_ARGS>
         nonvirtual void Assure1Reference (COPY_ARGS&&... copyArgs);
@@ -294,10 +283,8 @@ namespace Stroika::Foundation::Memory {
          * 
          * @see Assure1Reference
          */
-        template <typename... COPY_ARGS>
-        nonvirtual void Assure2OrFewerReferences (COPY_ARGS&&... copyArgs);
         template <typename COPIER>
-        nonvirtual void AssureNOrFewerReferences_nu (unsigned int n, COPIER&& copier);
+        nonvirtual void AssureNOrFewerReferences (unsigned int n, COPIER&& copier);
 
     private:
         template <typename... COPY_ARGS>
