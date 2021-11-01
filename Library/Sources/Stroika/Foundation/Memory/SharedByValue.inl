@@ -23,6 +23,9 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename SHARED_IMLP>
     inline SHARED_IMLP SharedByValue_CopyByDefault<T, SHARED_IMLP>::operator() (const T& t) const
     {
+        if constexpr (is_same_v<SHARED_IMLP, shared_ptr<T>>) {
+            return make_shared<T> (t);  // more efficient
+        }
         return SHARED_IMLP{new T (t)};
     }
 

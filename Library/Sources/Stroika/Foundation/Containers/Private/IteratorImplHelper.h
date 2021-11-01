@@ -28,7 +28,6 @@
 
 namespace Stroika::Foundation::Containers::Private {
 
-
     /**
      */
     struct ContainerDebugChangeCounts_ {
@@ -90,7 +89,7 @@ namespace Stroika::Foundation::Containers::Private {
     public:
         /**
          */
-       nonvirtual void ValidateChangeCount () const;
+        nonvirtual void ValidateChangeCount () const;
 
     private:
         /*
