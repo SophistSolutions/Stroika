@@ -397,7 +397,7 @@ namespace Stroika::Foundation::Containers {
         using shared_ptr_type                = typename inherited::_SharedByValueRepType::shared_ptr_type;
         Iterator<value_type> patchedIterator = i;
         shared_ptr_type      writerRep       = this->_fRep.get_nu (
-            [&, this] (const shared_ptr_type& prevRepPtr) -> shared_ptr_type {
+            [&] (const shared_ptr_type& prevRepPtr) -> shared_ptr_type {
                 return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator);
             });
         return make_tuple (writerRep, patchedIterator);
