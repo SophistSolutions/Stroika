@@ -301,7 +301,7 @@ namespace Stroika::Foundation::Memory {
     inline void SharedByValue<T, TRAITS>::Assure1Reference (COPY_ARGS&&... copyArgs)
     {
         if (fSharedImpl_.use_count () > 1) {
-           // BreakReferences_old_ (forward<COPY_ARGS> (copyArgs)...);
+            // BreakReferences_old_ (forward<COPY_ARGS> (copyArgs)...);
             BreakReferences_ ([] (const T& e) { return fCopier_ (e, forward<COPY_ARGS> (copyArgs)...); });
         }
     }
