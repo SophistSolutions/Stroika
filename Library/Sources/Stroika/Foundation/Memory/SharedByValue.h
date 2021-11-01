@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Memory {
          * 
          *  @see GetAndMaybeCopySavingOriginal
          */
-        nonvirtual const element_type* get () const noexcept;
+        [[deprecated ("Since Stroika 2.1b14 - use cget()")]] nonvirtual const element_type* get () const noexcept;
         template <typename... COPY_ARGS>
         nonvirtual element_type* get (COPY_ARGS&&... copyArgs);
 
@@ -192,16 +192,17 @@ namespace Stroika::Foundation::Memory {
         /**
          */
         /* REPLACEMENT FOR get()  and GetAndMaybeCopySavingOriginal but taking COPIER arg instead of COPY_ARGS*/
-        nonvirtual shared_ptr_type get_nu ();
+        nonvirtual shared_ptr_type rwget ();
         template <typename COPIER>
-        nonvirtual shared_ptr_type get_nu (COPIER&& copier);
+        nonvirtual shared_ptr_type rwget (COPIER&& copier);
 
     public:
         /**
-         *  cget is equivalent to get () on a const pointer. The reason to have/use this method
-         *  is just to avoid accidentally getting a reference to the non-const overload of get ().
+         *  cget returns returns the real underlying const ptr we store.
          *
          *  \em Note: cget () will never invoke BreakReferences/Clone.
+         * 
+         *  To get a non-const pointer, @see rwget ()
          */
         nonvirtual const element_type* cget () const noexcept;
 

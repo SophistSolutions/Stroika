@@ -411,7 +411,7 @@ namespace Stroika::Foundation::Containers {
         Require (not i.Done ());
         using shared_ptr_type                = typename inherited::_SharedByValueRepType::shared_ptr_type;
         Iterator<value_type> patchedIterator = i;
-        shared_ptr_type      writerRep       = this->_fRep.get_nu (
+        shared_ptr_type      writerRep       = this->_fRep.rwget (
             [&] (const shared_ptr_type& prevRepPtr) -> shared_ptr_type {
                 return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator);
             });

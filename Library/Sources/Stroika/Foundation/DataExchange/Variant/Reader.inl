@@ -49,7 +49,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
     }
     inline const Reader::_IRep& Reader::_GetRep () const
     {
-        EnsureNotNull (fRep_.get ());
+        EnsureNotNull (fRep_.cget ());
         return *fRep_;
     }
 

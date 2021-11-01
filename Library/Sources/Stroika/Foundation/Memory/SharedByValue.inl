@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename TRAITS>
     inline const typename SharedByValue<T, TRAITS>::element_type* SharedByValue<T, TRAITS>::cget () const noexcept
     {
-        return get ();
+        return fSharedImpl_.get ();
     }
     template <typename T, typename TRAITS>
     template <typename... COPY_ARGS>
@@ -192,13 +192,13 @@ namespace Stroika::Foundation::Memory {
         return nullptr;
     }
     template <typename T, typename TRAITS>
-    inline auto SharedByValue<T, TRAITS>::get_nu () -> shared_ptr_type
+    inline auto SharedByValue<T, TRAITS>::rwget () -> shared_ptr_type
     {
-        return get_nu (fCopier_);
+        return rwget (fCopier_);
     }
     template <typename T, typename TRAITS>
     template <typename COPIER>
-    inline auto SharedByValue<T, TRAITS>::get_nu (COPIER&& copier) -> shared_ptr_type
+    inline auto SharedByValue<T, TRAITS>::rwget (COPIER&& copier) -> shared_ptr_type
     {
         /*
          *  Increment refCount before assureNReferences/breakreferencs so we can save
@@ -228,7 +228,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename TRAITS>
     inline const typename SharedByValue<T, TRAITS>::element_type& SharedByValue<T, TRAITS>::operator* () const
     {
-        const element_type* ptr = get ();
+        const element_type* ptr = cget ();
         EnsureNotNull (ptr);
         return *ptr;
     }

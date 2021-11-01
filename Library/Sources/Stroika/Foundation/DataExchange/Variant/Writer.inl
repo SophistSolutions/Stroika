@@ -49,7 +49,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
     }
     inline const Writer::_IRep& Writer::_GetRep () const
     {
-        EnsureNotNull (fRep_.get ());
+        EnsureNotNull (fRep_.cget ());
         return *fRep_;
     }
     inline Memory::BLOB Writer::Write (const VariantValue& v)
