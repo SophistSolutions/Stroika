@@ -19,15 +19,6 @@
  *      @todo   Get rid of SharedByValue_CopySharedPtrDefaultSynchronization, and related stuff (deprecated unused one
  *              in 2.1d6). Instead just directly to copy/load/store (using operators) - simplify code.
  *
- *      @todo   FLESH OUT HIGHLY EXPERIEMNTAL AND INCOMPLETE SHARED_IMPL_COPIER (HOPEFULLY WILL BE PART OF
- *              ENVELOPE THREAD SAFETY FIX). AND DOCUMENT!!!!
- *
- *      @todo   DOCUMENT (and debug if needed) the new experiemental variadic template
- *              COPY code.
- *
- *      @todo   Consider if BOTH overloads for get() should take COPY forward args - even if not needed?
- *              Especially reasonable todo now that we have cget () - which always takes zero arguments.
- *
  */
 
 namespace Stroika::Foundation::Memory {
