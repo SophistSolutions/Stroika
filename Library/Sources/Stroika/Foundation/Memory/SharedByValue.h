@@ -177,21 +177,6 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         * get () returns the real underlying ptr we store. It can be nullptr. This should
-         * rarely be used - use operator-> in preference. This is only for dealing with cases where
-         * the ptr could legitimately be null.
-         *
-         *  Note that the COPY_ARGS in the non-const overload of get () MUST match the parameters passed
-         *  to the element_copier_type::Copy () function specified in the SharedByValue traits object.
-         *
-         *  This defaults to no parameters.
-         */
-        [[deprecated ("Since Stroika 2.1b14 - use cget()")]] nonvirtual const element_type* get () const noexcept;
-        template <typename... COPY_ARGS>
-        [[deprecated ("Since Stroika 2.1b14 - use rwget() - but note COPIER not COPYARGS arguments")]] nonvirtual element_type* get (COPY_ARGS&&... copyArgs);
-
-    public:
-        /**
          */
         nonvirtual shared_ptr_type rwget_ptr ();
         template <typename COPIER>
@@ -202,7 +187,7 @@ namespace Stroika::Foundation::Memory {
          * rwget () returns the real underlying (modifyable) ptr we store. It can be nullptr.
          *
          * The no-arg overload uses the builtin copier (overwhelmingly most common), but occasionally its helpful
-         * to specify an alternate copier (see CONTAINER::_GetWriterRepAndPatchAssociatedIterator for example).
+         * to specify an alternate copier (see CONTAINER::_GetWritableRepAndPatchAssociatedIterator for example).
          */
         nonvirtual element_type* rwget ();
         template <typename COPIER>
@@ -226,6 +211,8 @@ namespace Stroika::Foundation::Memory {
          *              that takes no arguments (otherwise there are no arguments to pass to the clone/copy function).
          *
          *              You can always safely use the copy overload.
+         * 
+         *  \note This can be confusing, because at the point of call, its unclear if this may invoke BreakReferences or not
          */
         nonvirtual const element_type* operator-> () const;
         nonvirtual element_type* operator-> ();
@@ -238,6 +225,8 @@ namespace Stroika::Foundation::Memory {
          *              that takes no arguments (otherwise there are no arguments to pass to the clone/copy function).
          *
          *              You can always safely use the copy overload.
+         * 
+         *  \note This can be confusing, because at the point of call, its unclear if this may invoke BreakReferences or not
          */
         nonvirtual const element_type& operator* () const;
         nonvirtual element_type& operator* ();
@@ -258,9 +247,6 @@ namespace Stroika::Foundation::Memory {
         /**
          */
         nonvirtual element_copier_type GetDefaultCopier () const;
-
-    public:
-        [[deprecated ("Since Stroika 2.1b14 - use GetDefaultCopier")]]  element_copier_type GetCopier () const { GetDefaultCopier (); }
 
     public:
         /**
@@ -292,14 +278,6 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         * Assure there is a single reference to this object, and if there are more, break references.
-         * This method should be applied before destructive operations are applied to the shared object.
-         */
-        template <typename... COPY_ARGS>
-        [[deprecated ("Since Stroika 2.1b14 - use AssureNOrFewerReferences() - and NOTE difference in ARGS")]] nonvirtual void Assure1Reference (COPY_ARGS&&... copyArgs);
-
-    public:
-        /**
          * Assure there are at most N (typically one or 2) references to this object, and if there are more, break references.
          * This method should be applied before destructive operations are applied to the shared object.
          * 
@@ -310,6 +288,14 @@ namespace Stroika::Foundation::Memory {
         template <typename COPIER>
         nonvirtual void AssureNOrFewerReferences (COPIER&& copier, unsigned int n = 1u);
         nonvirtual void AssureNOrFewerReferences (unsigned int n = 1u);
+
+    public:
+        [[deprecated ("Since Stroika 2.1b14 - use cget()")]] nonvirtual const element_type* get () const noexcept;
+        template <typename... COPY_ARGS>
+        [[deprecated ("Since Stroika 2.1b14 - use rwget() - but note COPIER not COPYARGS arguments")]] nonvirtual element_type* get (COPY_ARGS&&... copyArgs);
+        [[deprecated ("Since Stroika 2.1b14 - use GetDefaultCopier")]] element_copier_type                                      GetCopier () const { GetDefaultCopier (); }
+        template <typename... COPY_ARGS>
+        [[deprecated ("Since Stroika 2.1b14 - use AssureNOrFewerReferences() - and NOTE difference in ARGS")]] nonvirtual void Assure1Reference (COPY_ARGS&&... copyArgs);
 
     private:
         template <typename COPIER>

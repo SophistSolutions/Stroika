@@ -248,8 +248,8 @@ namespace Stroika::Foundation::Containers {
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (const Iterator<value_type>& i, const Iterator<value_type>* nextI)
     {
         Require (not i.Done ());
-        auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
-        Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->Remove (patchedIterator, nextI);
+        auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
+        writerRep->Remove (patchedIterator, nextI);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveIf (ArgByValueType<KeyType> key)
@@ -345,17 +345,17 @@ namespace Stroika::Foundation::Containers {
         return nextI;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    auto KeyedCollection<T, KEY_TYPE, TRAITS>::_GetWriterRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<typename inherited::_SharedByValueRepType::shared_ptr_type, Iterator<value_type>>
+    auto KeyedCollection<T, KEY_TYPE, TRAITS>::_GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<_IRep*, Iterator<value_type>>
     {
         Require (not i.Done ());
         using element_type                   = typename inherited::_SharedByValueRepType::element_type;
-        using shared_ptr_type                = typename inherited::_SharedByValueRepType::shared_ptr_type;
         Iterator<value_type> patchedIterator = i;
-        shared_ptr_type      writerRep       = this->_fRep.rwget_ptr (
-            [&] (const element_type& prevRepPtr) -> shared_ptr_type {
-                return Debug::UncheckedDynamicCast<_IRep*> (prevRepPtr.get ())->CloneAndPatchIterator (&patchedIterator);
+        element_type*        writableRep     = this->_fRep.rwget (
+            [&] (const element_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {
+                return Debug::UncheckedDynamicCast<const _IRep&> (prevRepPtr).CloneAndPatchIterator (&patchedIterator);
             });
-        return make_tuple (writerRep, patchedIterator);
+        AssertNotNull (writableRep);
+        return make_tuple (Debug::UncheckedDynamicCast<_IRep*> (writableRep), patchedIterator);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::_AssertRepValidType () const

@@ -337,8 +337,8 @@ namespace Stroika::Foundation::Containers {
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
     {
         Require (not i.Done ());
-        auto [writerRep, patchedIterator] = _GetWriterRepAndPatchAssociatedIterator (i);
-        Debug::UncheckedDynamicCast<_IRep*> (writerRep.get ())->Remove (patchedIterator, nextI);
+        auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
+        writerRep->Remove (patchedIterator, nextI);
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::RemoveAll ()
@@ -391,17 +391,17 @@ namespace Stroika::Foundation::Containers {
         return *this;
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::_GetWriterRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<typename inherited::_SharedByValueRepType::shared_ptr_type, Iterator<value_type>>
+    auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::_GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<_IRep*, Iterator<value_type>>
     {
         Require (not i.Done ());
         using element_type                   = typename inherited::_SharedByValueRepType::element_type;
-        using shared_ptr_type                = typename inherited::_SharedByValueRepType::shared_ptr_type;
         Iterator<value_type> patchedIterator = i;
-        shared_ptr_type      writerRep       = this->_fRep.rwget_ptr (
-            [&] (const element_type& prevRepPtr) -> shared_ptr_type {
-                return Debug::UncheckedDynamicCast<_IRep*> (&prevRepPtr)->CloneAndPatchIterator (&patchedIterator);
+        element_type*        writableRep     = this->_fRep.rwget (
+            [&] (const element_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {
+                return Debug::UncheckedDynamicCast<const _IRep&> (prevRepPtr).CloneAndPatchIterator (&patchedIterator);
             });
-        return make_tuple (writerRep, patchedIterator);
+        AssertNotNull (writableRep);
+        return make_tuple (Debug::UncheckedDynamicCast<_IRep*> (writableRep), patchedIterator);
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::_AssertRepValidType () const
