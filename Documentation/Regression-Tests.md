@@ -22,21 +22,21 @@ These can all be run at the same time (each in a separate bash shell window). Mo
 do work remotely on other machines (MACHINE=ARG), and then copy back results to this machine where I can
 checkin from one spot.
 
-- \$TEST_TARGET=MacOS_XCode12
+- \$TEST_TARGET=MacOS_XCode13
 
   (takes about 2 HRs)
 
   ```bash
-  MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode12 PARALELLMAKEFLAG=-j5 \
+  MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode13 PARALELLMAKEFLAG=-j5 \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
-- \$TEST_TARGET=MacOS_XCode12_m1
+- \$TEST_TARGET=MacOS_XCode13_m1
 
   (takes about 1 HR)
 
   ```bash
-  MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode12_m1 PARALELLMAKEFLAG=-j5 \
+  MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode13_m1 PARALELLMAKEFLAG=-j5 \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
