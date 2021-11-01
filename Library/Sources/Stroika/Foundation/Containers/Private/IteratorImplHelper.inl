@@ -8,6 +8,34 @@
 
 namespace Stroika::Foundation::Containers::Private {
 
+
+
+
+
+
+    /*
+     ********************************************************************************
+     ********************************* ContainerDebugChangeCounts_ ******************
+     ********************************************************************************
+     */
+    inline  ContainerDebugChangeCounts_::ContainerDebugChangeCounts_ ()
+    {
+    }
+    inline ContainerDebugChangeCounts_::ContainerDebugChangeCounts_ ([[maybe_unused]] const ContainerDebugChangeCounts_& src)
+#if qDebug
+        // clang-format off
+        : fChangeCount{src.fChangeCount.load ()}
+    // clang-format on
+#endif
+    {
+    }
+    inline void ContainerDebugChangeCounts_::PerformedChange ()
+    {
+#if qDebug
+        fChangeCount++;
+#endif
+    }
+
     /*
      ********************************************************************************
      *IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR,DATASTRUCTURE_CONTAINER_VALUE> *
@@ -81,6 +109,26 @@ namespace Stroika::Foundation::Containers::Private {
         //      shared_lock<const Debug::AssertExternallySynchronizedLock> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
         return fIterator.Equals (rrhs->fIterator);
     }
+
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
+        inline void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::UpdateChangeCount ()
+        {
+#if qDebug
+            if (fChangeCounter != nullptr) {
+                fLastCapturedChangeCount = fChangeCounter->fChangeCount;
+            }
+#endif
+        }
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
+    inline    void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::ValidateChangeCount () const
+        {
+#if qDebug
+            if (fChangeCounter != nullptr) {
+                Require (fChangeCounter->fChangeCount == fLastCapturedChangeCount); // if this fails, it almost certainly means you are using a stale iterator
+            }
+#endif
+        }
+
 
 }
 

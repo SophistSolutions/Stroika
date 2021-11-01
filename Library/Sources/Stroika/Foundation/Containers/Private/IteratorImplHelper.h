@@ -28,33 +28,25 @@
 
 namespace Stroika::Foundation::Containers::Private {
 
+
+    /**
+     */
     struct ContainerDebugChangeCounts_ {
 
         using ChangeCountType = unsigned int;
 
         // weird explicit def need here and cannot do = default? --LGP 2021-10-31
-        ContainerDebugChangeCounts_ ()
-        {
-        }
+        ContainerDebugChangeCounts_ ();
         // weird explicit def need here and cannot do = default? --LGP 2021-10-31
-        ContainerDebugChangeCounts_ ([[maybe_unused]] const ContainerDebugChangeCounts_& src)
-#if qDebug
-            // clang-format off
-            : fChangeCount{src.fChangeCount.load ()}
-        // clang-format on
-#endif
-        {
-        }
+        ContainerDebugChangeCounts_ (const ContainerDebugChangeCounts_& src);
+
 #if qDebug
         atomic<ChangeCountType> fChangeCount{0};
 #endif
 
-        void PerformedChange ()
-        {
-#if qDebug
-            fChangeCount++;
-#endif
-        }
+        /**
+         */
+        nonvirtual void PerformedChange ();
     };
 
     /**
@@ -93,22 +85,12 @@ namespace Stroika::Foundation::Containers::Private {
         /**
          * rarely used but in special cases when returning new dervied/pathed iterator*
          */
-        void UpdateChangeCount ()
-        {
-#if qDebug
-            if (fChangeCounter != nullptr) {
-                fLastCapturedChangeCount = fChangeCounter->fChangeCount;
-            }
-#endif
-        }
-        void ValidateChangeCount () const
-        {
-#if qDebug
-            if (fChangeCounter != nullptr) {
-                Require (fChangeCounter->fChangeCount == fLastCapturedChangeCount); // if this fails, it almost certainly means you are using a stale iterator
-            }
-#endif
-        }
+        nonvirtual void UpdateChangeCount ();
+
+    public:
+        /**
+         */
+       nonvirtual void ValidateChangeCount () const;
 
     private:
         /*
