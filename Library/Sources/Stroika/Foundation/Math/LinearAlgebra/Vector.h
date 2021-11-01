@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         /**
          * construct a new vector by applying the argument function to each element and collecting the results.
          */
-        nonvirtual Vector<T> Transform (function<T (T)> f) const;
+        nonvirtual Vector<T> Transform (const function<T (T)>& f) const;
 
     public:
         /**

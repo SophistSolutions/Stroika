@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         : fRep_{make_shared<IRep_> ()}
     {
         for (size_t i = 0; i < dimension; ++i) {
-            fRep_.get ()->fData.Append (fillValue);
+            fRep_.rwget ()->fData.Append (fillValue);
         }
     }
     template <typename T>
@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         : fRep_{make_shared<IRep_> ()}
     {
         for (size_t i = 0; i < dimension; ++i) {
-            fRep_.get ()->fData.Append (filler ());
+            fRep_.rwget ()->fData.Append (filler ());
         }
     }
     template <typename T>
@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         return fRep_.cget ()->fData.size ();
     }
     template <typename T>
-    Vector<T> Vector<T>::Transform (function<T (T)> f) const
+    Vector<T> Vector<T>::Transform (const function<T (T)>& f) const
     {
         vector<T> tmp;
         size_t    dimension = GetDimension ();
@@ -114,11 +114,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     template <typename T>
     void Vector<T>::SetAt (size_t i, Configuration::ArgByValueType<T> v)
     {
-#if 1
-        fRep_.get ()->fData.SetAt (i, v);
-#else
-        fRep_.get ()->fData[i] = v;
-#endif
+        fRep_.rwget ()->fData.SetAt (i, v);
     }
 #endif
     template <typename T>
