@@ -167,12 +167,6 @@ namespace Stroika::Foundation::Containers {
     private:
         using inherited = _IRep;
 
-#if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
-    protected:
-        using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-#endif
-
     protected:
         _IRep () = default;
 

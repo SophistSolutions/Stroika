@@ -64,12 +64,12 @@ namespace Stroika::Foundation::Traversal {
         return true;
     }
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    void IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::Apply (_APPLY_ARGTYPE doToElement) const
+    void IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const
     {
         this->_Apply (doToElement);
     }
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    Iterator<T> IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const
+    Iterator<T> IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const
     {
         return this->_FindFirstThat (doToElement);
     }
@@ -93,12 +93,12 @@ namespace Stroika::Foundation::Traversal {
         return true;
     }
     template <typename T>
-    void IterableFromIterator<T, void, void>::_Rep::Apply (_APPLY_ARGTYPE doToElement) const
+    void IterableFromIterator<T, void, void>::_Rep::Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const
     {
         this->_Apply (doToElement);
     }
     template <typename T>
-    Iterator<T> IterableFromIterator<T, void, void>::_Rep::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const
+    Iterator<T> IterableFromIterator<T, void, void>::_Rep::FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const
     {
         return this->_FindFirstThat (doToElement);
     }

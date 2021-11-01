@@ -37,9 +37,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Association<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
     public:
-        /**
-        */
-        //using KeyWellOrderCompareFunctionType = typename TraitsType::KeyWellOrderCompareFunctionType;
+        using value_type = typename inherited::value_type;
 
     public:
         /**
@@ -56,6 +54,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
         */
         nonvirtual Association_stdmultimap& operator= (const Association_stdmultimap& rhs) = default;
+
+    protected:
+        using _IterableRepSharedPtr    = typename inherited::_IterableRepSharedPtr;
+        using _AssociationRepSharedPtr = typename inherited::_AssociationRepSharedPtr;
 
     private:
         class IImplRep_;

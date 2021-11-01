@@ -1329,9 +1329,8 @@ namespace Stroika::Foundation::Traversal {
         using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
 
     public:
-        // @todo MAKE THESE DEPRECATED
-        using _APPLY_ARGTYPE      = const function<void (ArgByValueType<T> item)>&;
-        using _APPLYUNTIL_ARGTYPE = const function<bool (ArgByValueType<T> item)>&;
+        using _APPLY_ARGTYPE [[deprecated ("Since Stroika 2.1b14, use const function<void (ArgByValueType<T> item)>")]]      = const function<void (ArgByValueType<T> item)>&;
+        using _APPLYUNTIL_ARGTYPE [[deprecated ("Since Stroika 2.1b14, use const function<bool (ArgByValueType<T> item)>")]] = const function<bool (ArgByValueType<T> item)>&;
 
     public:
         virtual _IterableRepSharedPtr Clone () const = 0;

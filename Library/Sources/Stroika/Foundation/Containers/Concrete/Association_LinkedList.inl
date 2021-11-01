@@ -27,12 +27,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
 
     public:
-        using _IterableRepSharedPtr    = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IterableRepSharedPtr;
-        using _AssociationRepSharedPtr = typename inherited::_AssociationRepSharedPtr;
-        using _APPLY_ARGTYPE           = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE      = typename inherited::_APPLYUNTIL_ARGTYPE;
-
-    public:
         Rep_ ()                 = default;
         Rep_ (const Rep_& from) = default;
 
@@ -60,13 +54,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             return fData_.IsEmpty ();
         }
-        virtual void Apply (_APPLY_ARGTYPE doToElement) const override
+        virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
-        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const override
+        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             using RESULT_TYPE = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;

@@ -548,13 +548,6 @@ namespace Stroika::Foundation::Containers {
     private:
         using inherited = typename Iterable<value_type>::_IRep;
 
-#if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
-    protected:
-        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
-        using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
-#endif
-
     protected:
         using _IRepSharedPtr = typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRepSharedPtr;
 

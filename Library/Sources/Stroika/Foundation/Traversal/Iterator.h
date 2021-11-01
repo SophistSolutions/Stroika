@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Traversal {
      *  An Iterator<T> be be thought of as (const) referencing a container (or other information source)
      *  
      *  It is (since Stroika 2.1b14) illegal to use an iterator after its underlying container
-     *  has been modified (as in STL, but unlike most STLs, Stroika will automatically detect such
+     *  has been modified (rule as in STL, but unlike most STLs, Stroika will automatically detect such
      *  illegal use in debug builds).
      *
      *  Itererators CAN be used to MODIFY a container, but only by passing that iterator as an

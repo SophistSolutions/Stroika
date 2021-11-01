@@ -210,7 +210,7 @@ namespace {
             L"nfs3"sv,
             L"vboxsf"sv,
         };
-        for (auto vi = volumes->begin (); vi != volumes->end(); ++vi) {
+        for (auto vi = volumes->begin (); vi != volumes->end (); ++vi) {
             // @todo - NOTE - this is NOT a reliable way to tell, but hopefully good enough for starters
             MountedFilesystemInfoType val2Update = vi->fValue;
             if (val2Update.fFileSystemType) {
@@ -218,26 +218,26 @@ namespace {
                 bool   changed{false};
                 if (kRealDiskFS.Contains (fstype)) {
                     val2Update.fDeviceKind = BlockDeviceKind::eLocalDisk;
-                    changed        = true;
+                    changed                = true;
                 }
                 else if (kNetworkFS_.Contains (fstype)) {
                     val2Update.fDeviceKind = BlockDeviceKind::eNetworkDrive;
-                    changed        = true;
+                    changed                = true;
                 }
                 else if (fstype == L"tmpfs") {
                     val2Update.fDeviceKind = BlockDeviceKind::eTemporaryFiles;
-                    changed        = true;
+                    changed                = true;
                 }
                 else if (fstype == L"iso9660") {
                     val2Update.fDeviceKind = BlockDeviceKind::eReadOnlyEjectable;
-                    changed        = true;
+                    changed                = true;
                 }
                 else if (kSysFSList_.Contains (fstype)) {
                     val2Update.fDeviceKind = BlockDeviceKind::eSystemInformation;
-                    changed        = true;
+                    changed                = true;
                 }
                 if (changed) {
-                    volumes->Update (vi,  val2Update, &vi);
+                    volumes->Update (vi, val2Update, &vi);
                 }
             }
         }

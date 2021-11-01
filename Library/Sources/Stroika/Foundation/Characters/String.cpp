@@ -183,12 +183,12 @@ bool String::_IRep::IsEmpty () const
     return _fEnd == _fStart;
 }
 
-void String::_IRep::Apply (_APPLY_ARGTYPE doToElement) const
+void String::_IRep::Apply (const function<void (Configuration::ArgByValueType<value_type> item)>& doToElement) const
 {
     _Apply (doToElement);
 }
 
-Traversal::Iterator<Character> String::_IRep::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const
+Traversal::Iterator<Character> String::_IRep::FindFirstThat (const function<bool (Configuration::ArgByValueType<value_type> item)>& doToElement) const
 {
     return _FindFirstThat (doToElement);
 }

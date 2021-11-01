@@ -479,12 +479,6 @@ namespace Stroika::Foundation::Containers {
     private:
         using inherited = _IRep;
 
-#if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
-    protected:
-        using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-#endif
-
     protected:
         _IRep () = default;
 
@@ -493,11 +487,6 @@ namespace Stroika::Foundation::Containers {
 
     protected:
         using _AssociationRepSharedPtr = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_AssociationRepSharedPtr;
-
-#if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
-    protected:
-        using _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
-#endif
 
     public:
         virtual _AssociationRepSharedPtr CloneEmpty () const   = 0;

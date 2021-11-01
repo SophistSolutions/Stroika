@@ -83,13 +83,12 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename NEW_ITERATOR_REP_TYPE = void, typename CONTEXT_FOR_EACH_ITERATOR = void>
     class IterableFromIterator : public Iterable<T> {
     public:
+        using value_type = typename Iterable<T>::value_type;
+
+    public:
         class _Rep : public Iterable<T>::_IRep {
         private:
             using inherited = typename Iterable<T>::_IRep;
-
-        public:
-            using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
-            using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
         protected:
             CONTEXT_FOR_EACH_ITERATOR _fContextForEachIterator;
@@ -104,20 +103,20 @@ namespace Stroika::Foundation::Traversal {
             virtual Iterator<T> MakeIterator () const override;
             virtual size_t      GetLength () const override;
             virtual bool        IsEmpty () const override;
-            virtual void        Apply (_APPLY_ARGTYPE doToElement) const override;
-            virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const override;
+            virtual void        Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override;
+            virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override;
         };
     };
     template <typename T, typename NEW_ITERATOR_REP_TYPE>
     class IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, void> : public Iterable<T> {
     public:
+        using value_type = typename Iterable<T>::value_type;
+
+    public:
         class _Rep : public Iterable<T>::_IRep {
         private:
             using inherited = typename Iterable<T>::_IRep;
 
-        public:
-            using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
-            using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 #if qDebug
         private:
             mutable Private_::IteratorTracker<T> fIteratorTracker_;
@@ -126,26 +125,25 @@ namespace Stroika::Foundation::Traversal {
             virtual Iterator<T> MakeIterator () const override;
             virtual size_t      GetLength () const override;
             virtual bool        IsEmpty () const override;
-            virtual void        Apply (_APPLY_ARGTYPE doToElement) const override;
-            virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const override;
+            virtual void        Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override;
+            virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override;
         };
     };
     template <typename T>
     class IterableFromIterator<T, void, void> : public Iterable<T> {
+    public:
+        using value_type = typename Iterable<T>::value_type;
+
     public:
         class _Rep : public Iterable<T>::_IRep {
         private:
             using inherited = typename Iterable<T>::_IRep;
 
         public:
-            using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
-            using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-
-        public:
             virtual size_t      GetLength () const override;
             virtual bool        IsEmpty () const override;
-            virtual void        Apply (_APPLY_ARGTYPE doToElement) const override;
-            virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const override;
+            virtual void        Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override;
+            virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override;
         };
     };
 

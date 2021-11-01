@@ -50,6 +50,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         nonvirtual Association_LinkedList& operator= (const Association_LinkedList& rhs) = default;
 
+    protected:
+        using _IterableRepSharedPtr    = typename inherited::_IterableRepSharedPtr;
+        using _AssociationRepSharedPtr = typename inherited::_AssociationRepSharedPtr;
+
     private:
         class Rep_;
 

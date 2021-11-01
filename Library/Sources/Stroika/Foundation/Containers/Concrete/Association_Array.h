@@ -76,6 +76,10 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         nonvirtual void reserve (size_t slotsAlloced);
 
+    protected:
+        using _IterableRepSharedPtr    = typename inherited::_IterableRepSharedPtr;
+        using _AssociationRepSharedPtr = typename inherited::_AssociationRepSharedPtr;
+
     private:
         class Rep_;
 

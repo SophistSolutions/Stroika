@@ -160,7 +160,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (ArgByValueType<KEY_TYPE> key) override
         {
-            // @todo require not oustsanding iterators
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             fData_.Invariant ();
             auto i = fData_.find (key);

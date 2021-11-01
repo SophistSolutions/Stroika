@@ -27,10 +27,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     class SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRep_ : public SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
     private:
         using inherited = typename SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
-
-    protected:
-        using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
     };
 
     /*
@@ -39,12 +35,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     class SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRep_, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
     private:
         using inherited = IImplRep_;
-
-    public:
-        using _IterableRepSharedPtr    = typename inherited::_IterableRepSharedPtr;
-        using _AssociationRepSharedPtr = typename inherited::_AssociationRepSharedPtr;
-        using _APPLY_ARGTYPE           = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE      = typename inherited::_APPLYUNTIL_ARGTYPE;
 
     public:
         Rep_ ()                 = default;
@@ -77,14 +67,14 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.Invariant ();
             return fData_.empty ();
         }
-        virtual void Apply (_APPLY_ARGTYPE doToElement) const override
+        virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
-        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const override
+        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             return this->_FindFirstThat (doToElement);

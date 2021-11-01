@@ -73,8 +73,6 @@ namespace Stroika::Foundation::Traversal {
         struct MyRep_ : Iterable<T>::_IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
             using inherited             = typename Iterable<T>::_IRep;
             using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
-            using _APPLY_ARGTYPE        = typename Iterable<T>::_IRep::_APPLY_ARGTYPE;
-            using _APPLYUNTIL_ARGTYPE   = typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE;
             T    fStart;
             T    fEnd;
             bool fForcedEnd;
@@ -123,11 +121,11 @@ namespace Stroika::Foundation::Traversal {
                     //return fStart == fEnd;
                 }
             }
-            virtual void Apply (_APPLY_ARGTYPE doToElement) const
+            virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const
             {
                 this->_Apply (doToElement);
             }
-            virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement) const
+            virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const
             {
                 return this->_FindFirstThat (doToElement);
             }
