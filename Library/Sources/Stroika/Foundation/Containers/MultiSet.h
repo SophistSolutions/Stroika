@@ -275,6 +275,8 @@ namespace Stroika::Foundation::Containers {
         /**
          * if newCount == 0, equivalent to Remove(i). Require not i.Done () - so it must point to a given item.
          *
+         *  On return, nextI, if non-null, will point to the next element after the argument 'i' (useful for iteration).
+         * 
          *  \note mutates container
          */
         nonvirtual void UpdateCount (const Iterator<value_type>& i, CounterType newCount, Iterator<value_type>* nextI = nullptr);
