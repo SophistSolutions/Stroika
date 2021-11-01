@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     {
         for (size_t r = 0; r < dimensions.fRows; ++r) {
             for (size_t c = 0; c < dimensions.fColumns; ++c) {
-                fRep_.get ()->push_back (fillValue);
+                fRep_.rwget ()->push_back (fillValue);
             }
         }
     }
@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     {
         for (size_t r = 0; r < dimensions.fRows; ++r) {
             for (size_t c = 0; c < dimensions.fColumns; ++c) {
-                fRep_.get ()->push_back (filler ());
+                fRep_.rwget ()->push_back (filler ());
             }
         }
     }
