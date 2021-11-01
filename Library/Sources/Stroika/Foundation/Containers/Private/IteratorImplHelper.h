@@ -37,12 +37,11 @@ namespace Stroika::Foundation::Containers::Private {
         {
         }
         // weird explicit def need here and cannot do = default? --LGP 2021-10-31
-        ContainerDebugChangeCounts_ (const ContainerDebugChangeCounts_& src)
+        ContainerDebugChangeCounts_ ([[maybe_unused]] const ContainerDebugChangeCounts_& src)
 #if qDebug
-            : fChangeCount
-        {
-            src.fChangeCount.load ()
-        }
+            // clang-format off
+            : fChangeCount{src.fChangeCount.load ()}
+        // clang-format on
 #endif
         {
         }
