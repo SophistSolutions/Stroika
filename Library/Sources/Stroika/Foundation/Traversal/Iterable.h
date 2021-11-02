@@ -95,6 +95,8 @@ namespace Stroika::Foundation::Traversal {
      *  \note - as of Stroika 2.1b10, this changed from defaulting to 1, to defaulting to 0, since it appears
      *          NOT to improve performance (maybe reduces it very slightly); and I believe it costs a bit of memory
      *          (for weak_ptr). -- LGP 2021-02-15
+     * 
+     *  \note DEPRECATED in Stroika 2.1b15 - remove it when we remove deprecations at the end of beta.
      */
 #ifndef qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
 #define qStroika_Foundation_Traveral_IterableUsesSharedFromThis_ 0
