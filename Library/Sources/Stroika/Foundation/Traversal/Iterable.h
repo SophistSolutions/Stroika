@@ -1302,7 +1302,7 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual REP_SUB_TYPE& _GetWriteableRep ();
 
     public:
-        nonvirtual void _UpdateRep (const typename _SharedByValueRepType::shared_ptr_type& sp);
+        [[deprecated ("Since Stroika 2.1b14, just directly assign to _fRep")]] nonvirtual void _UpdateRep (const typename _SharedByValueRepType::shared_ptr_type& sp);
 
     private:
         Iterable<T>*  fIterableEnvelope_;

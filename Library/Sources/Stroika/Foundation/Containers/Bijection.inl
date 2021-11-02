@@ -232,10 +232,9 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::Where (const function<bool (pair<DomainType, RangeType>)>& includeIfTrue) const -> Bijection
     {
-        // @todo - fix very primitive implementation
+        // @todo - fix very primitive implementation - could use Generator instead?, generator avoids copy of data, and just copies includeIfTrue filter function
         _SafeReadRepAccessor<_IRep> lhs{this};
-        //Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty ());
-        Bijection result;
+        Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty ());
         for (auto&& i : *this) {
             if (includeIfTrue (i)) {
                 result.Add (i);
@@ -246,10 +245,9 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::WhereDomainIntersects (const Iterable<DomainType>& domainValues) const -> Bijection
     {
-        // @todo - fix very primitive implementation
+        // @todo - fix very primitive implementation - could use Generator instead?, generator avoids copy of data, and just copies includeIfTrue filter function
         _SafeReadRepAccessor<_IRep> lhs{this};
-        //Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty ());
-        Bijection result;
+        Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty ());
         for (auto&& i : *this) {
             if (domainValues.Contains (i.first, this->GetDomainEqualsComparer ())) {
                 result.Add (i);
@@ -260,10 +258,9 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::WhereRangeIntersects (const Iterable<RangeType>& rangeValues) const -> Bijection
     {
-        // @todo - fix very primitive implementation
+        // @todo - fix very primitive implementation - could use Generator instead?, generator avoids copy of data, and just copies includeIfTrue filter function
         _SafeReadRepAccessor<_IRep> lhs{this};
-        //Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty ());
-        Bijection result;
+        Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty ());
         for (auto&& i : *this) {
             if (rangeValues.Contains (i.second, this->GetRangeEqualsComparer ())) {
                 result.Add (i);
@@ -343,17 +340,10 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::RemoveAll ()
     {
-#if 1
         _SafeReadRepAccessor<_IRep> tmp{this}; // important to use READ not WRITE accessor, because write accessor would have already cloned the data
         if (not tmp._ConstGetRep ().IsEmpty ()) {
             this->_fRep = tmp._ConstGetRep ().CloneEmpty ();
         }
-#else
-        _SafeReadWriteRepAccessor<_IRep> tmp{this};
-        if (not tmp._ConstGetRep ().IsEmpty ()) {
-            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty ());
-        }
-#endif
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <typename TARGET_CONTAINER>

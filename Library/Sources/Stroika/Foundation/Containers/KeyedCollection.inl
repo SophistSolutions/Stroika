@@ -265,9 +265,9 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveAll ()
     {
-        _SafeReadWriteRepAccessor<_IRep> tmp{this};
+        _SafeReadRepAccessor<_IRep> tmp{this}; // important to use READ not WRITE accessor, because write accessor would have already cloned the data
         if (not tmp._ConstGetRep ().IsEmpty ()) {
-            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty ());
+            this->_fRep = tmp._ConstGetRep ().CloneEmpty ();
         }
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>

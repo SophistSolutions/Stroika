@@ -233,17 +233,10 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Set<T>::RemoveAll ()
     {
-#if 1
-        _SafeReadRepAccessor<_IRep> tmp{this};      // important to use READ not WRITE accessor, because write accessor would have already cloned the data
+        _SafeReadRepAccessor<_IRep> tmp{this}; // important to use READ not WRITE accessor, because write accessor would have already cloned the data
         if (not tmp._ConstGetRep ().IsEmpty ()) {
             this->_fRep = tmp._ConstGetRep ().CloneEmpty ();
         }
-#else
-        _SafeReadWriteRepAccessor<_IRep> tmp{this};
-        if (not tmp._ConstGetRep ().IsEmpty ()) {
-            tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty ());
-        }
-#endif
     }
     template <typename T>
     inline Set<T> Set<T>::Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const
