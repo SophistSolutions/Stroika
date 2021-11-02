@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Containers {
     {
         if constexpr (std::is_convertible_v<decay_t<CONTAINER_OF_ADDABLE>*, Collection<value_type>*>) {
             // very rare corner case
-            if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) {
+            if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[UNLIKELY_ATTR]] {
                 vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
                 AddAll (std::begin (copy), std::end (copy));
                 return;
@@ -130,11 +130,11 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename EQUALS_COMPARER>
-    void Collection<T>::RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, const EQUALS_COMPARER& equalsComparer)
+    template <typename EQUALS_COMPARER>
+    void Collection<T>::RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, const EQUALS_COMPARER& equalsComparer)
     {
-        for (auto i = start; i != end; ++i) {
-            Remove (*i, equalsComparer);
+        for (auto i = start; i != end;) {
+            Remove (*i, equalsComparer, &i);
         }
     }
     template <typename T>

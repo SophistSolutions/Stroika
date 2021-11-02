@@ -180,7 +180,7 @@ namespace Stroika::Foundation::Containers {
     {
         if constexpr (std::is_convertible_v<decay_t<CONTAINER_OF_ADDABLE>*, const Iterable<value_type>*>) {
             // very rare corner case
-            if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) {
+            if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[UNLIKELY_ATTR]] {
                 vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
                 AddAll (std::begin (copy), std::end (copy));
                 return;

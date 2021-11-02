@@ -250,9 +250,11 @@ namespace Stroika::Foundation::Containers {
         /**
          * It is legal to remove something that is not there. This function removes the first instance of item
          * (or each item for the 'items' overload), meaning that another instance of item could still be in the
-         * Collection<T> after the remove. Thus function just reduces the MultiSet() by one (or zero if item wasn't found).
+         * Collection<T> after the remove.
          *
          *  The no-argument verison Produces an empty collection.
+         * 
+         *  The overload with Iteartor<T> arguments (start/end) must be iterators from this container.
          *
          * The overload RemoveAll(PREDICATE) applies the function p(T) -> bool and deletes all entries that return true for the predicate.
          * Returns the number of items removed in this way.
@@ -260,8 +262,8 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         nonvirtual void RemoveAll ();
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, const EQUALS_COMPARER& equalsComparer = {});
+        template <typename EQUALS_COMPARER = equal_to<T>>
+        nonvirtual void RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, const EQUALS_COMPARER& equalsComparer = {});
         template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
         nonvirtual void RemoveAll (const CONTAINER_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer = {});
         template <typename PREDICATE>
