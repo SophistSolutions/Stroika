@@ -31,23 +31,6 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
-     ****** SharedByValue_CopySharedPtrExternallySynchronized<T,SHARED_IMLP> ********
-     ********************************************************************************
-     */
-    template <typename T, typename SHARED_IMLP>
-    inline SHARED_IMLP SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>::Load (const SHARED_IMLP& copyFrom)
-    {
-        return copyFrom;
-    }
-    template <typename T, typename SHARED_IMLP>
-    inline void SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>::Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o)
-    {
-        RequireNotNull (storeTo);
-        *storeTo = o;
-    }
-
-    /*
-     ********************************************************************************
      *************************** SharedByValue<T, TRAITS> ***************************
      ********************************************************************************
      */
@@ -66,7 +49,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename TRAITS>
     inline SharedByValue<T, TRAITS>::SharedByValue (const SharedByValue& from) noexcept
         : fCopier_{from.fCopier_}
-        , fSharedImpl_{shared_impl_copier_type::Load (from.fSharedImpl_)}
+        , fSharedImpl_{from.fSharedImpl_}
     {
     }
     template <typename T, typename TRAITS>
@@ -78,7 +61,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename TRAITS>
     inline SharedByValue<T, TRAITS>::SharedByValue (const shared_ptr_type& from, const element_copier_type& copier) noexcept
         : fCopier_{copier}
-        , fSharedImpl_{shared_impl_copier_type::Load (from)}
+        , fSharedImpl_{from}
     {
     }
     template <typename T, typename TRAITS>
@@ -104,9 +87,9 @@ namespace Stroika::Foundation::Memory {
     {
         // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
         // and we can avoid the (common) and costly memory barrier
-        if (fSharedImpl_.get () != rhs.fSharedImpl_.get ()) [[LIKELY_ATTR]] {
-            fCopier_ = rhs.fCopier_;
-            shared_impl_copier_type::Store (&fSharedImpl_, shared_impl_copier_type::Load (rhs.fSharedImpl_));
+        if (fSharedImpl_ != rhs.fSharedImpl_) [[LIKELY_ATTR]] {
+            fCopier_     = rhs.fCopier_;
+            fSharedImpl_ = rhs.fSharedImpl_;
         }
         return *this;
     }
@@ -115,11 +98,9 @@ namespace Stroika::Foundation::Memory {
     {
         // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
         // and we can avoid the (common) and costly memory barrier
-        if (fSharedImpl_.get () != rhs.fSharedImpl_.get ()) [[LIKELY_ATTR]] {
-            fCopier_ = rhs.fCopier_;
-            // ASSUME if doing a move() then this doesn't need to be a multithread safe copy (from the source), since
-            // if its a temporary, you cannot have mulitple peopel referring to me
-            shared_impl_copier_type::Store (&fSharedImpl_, rhs.fSharedImpl_);
+        if (fSharedImpl_ != rhs.fSharedImpl_) [[LIKELY_ATTR]] {
+            fCopier_     = move (rhs.fCopier_);
+            fSharedImpl_ = move (rhs.fSharedImpl_);
         }
         return *this;
     }
@@ -128,8 +109,8 @@ namespace Stroika::Foundation::Memory {
     {
         // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
         // and we can avoid the (common) and costly memory barrier
-        if (fSharedImpl_.get () != from.get ()) [[LIKELY_ATTR]] {
-            shared_impl_copier_type::Store (&fSharedImpl_, shared_impl_copier_type::Load (from));
+        if (fSharedImpl_ != from) [[LIKELY_ATTR]] {
+            fSharedImpl_ = from;
         }
         return *this;
     }
@@ -138,10 +119,8 @@ namespace Stroika::Foundation::Memory {
     {
         // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
         // and we can avoid the (common) and costly memory barrier
-        if (fSharedImpl_.get () != from.get ()) [[LIKELY_ATTR]] {
-            // ASSUME if doing a move() then this doesn't need to be a multithread safe copy (from the source), since
-            // if its a temporary, you cannot have mulitple peopel referring to me
-            shared_impl_copier_type::Store (&fSharedImpl_, from);
+        if (fSharedImpl_ != from) [[LIKELY_ATTR]] {
+            fSharedImpl_ = move (from);
         }
         return *this;
     }
@@ -188,11 +167,13 @@ namespace Stroika::Foundation::Memory {
          * 
          *  Save this way so no race (after Assure1Reference() other remaining ptr could go away.
          */
-        shared_ptr_type origPtr = fSharedImpl_;
-        if (origPtr != nullptr) [[LIKELY_ATTR]] {
-            AssureNOrFewerReferences (forward<COPIER> (copier), 2);
+        //shared_ptr_type origPtr = fSharedImpl_;
+        if (fSharedImpl_ != nullptr) [[LIKELY_ATTR]] {
+            //AssureNOrFewerReferences (forward<COPIER> (copier), 2);
+            AssureNOrFewerReferences (forward<COPIER> (copier));
             shared_ptr_type result = fSharedImpl_;
-            Ensure ((result != origPtr and result.use_count () == 2) or (result == origPtr and result.use_count () == 3));
+            //Ensure ((result != origPtr and result.use_count () == 2) or (result == origPtr and result.use_count () == 3));
+            Ensure (result.use_count () == 1);
             return result;
         }
         return nullptr;
@@ -212,10 +193,12 @@ namespace Stroika::Foundation::Memory {
          * 
          *  Save this way so no race (after Assure1Reference() other remaining ptr could go away.
          */
-        shared_ptr_type origPtr = fSharedImpl_;
-        if (origPtr != nullptr) [[LIKELY_ATTR]] {
-            AssureNOrFewerReferences (forward<COPIER> (copier), 2);
-            Ensure ((fSharedImpl_ != origPtr and fSharedImpl_.use_count () == 1) or (fSharedImpl_ == origPtr and fSharedImpl_.use_count () == 2));
+        //shared_ptr_type origPtr = fSharedImpl_;
+        if (fSharedImpl_ != nullptr) [[LIKELY_ATTR]] {
+            //AssureNOrFewerReferences (forward<COPIER> (copier), 2);
+            AssureNOrFewerReferences (forward<COPIER> (copier));
+            //Ensure ((fSharedImpl_ != origPtr and fSharedImpl_.use_count () == 1) or (fSharedImpl_ == origPtr and fSharedImpl_.use_count () == 2));
+            Ensure (fSharedImpl_.use_count () == 1);
             return fSharedImpl_.get ();
         }
         return nullptr;
@@ -308,8 +291,10 @@ namespace Stroika::Foundation::Memory {
     template <typename COPIER>
     inline void SharedByValue<T, TRAITS>::AssureNOrFewerReferences (COPIER&& copier, unsigned int n)
     {
+        Require (n != 0);
         if (static_cast<unsigned int> (fSharedImpl_.use_count ()) > n) [[UNLIKELY_ATTR]] {
             BreakReferences_ (forward<COPIER> (copier));
+            Assert (this->use_count () == 1);
         }
     }
     template <typename T, typename TRAITS>
@@ -322,7 +307,6 @@ namespace Stroika::Foundation::Memory {
     void SharedByValue<T, TRAITS>::BreakReferences_ (COPIER&& copier)
     {
         RequireNotNull (fSharedImpl_);
-        shared_ptr_type ptr2Clone{shared_impl_copier_type::Load (fSharedImpl_)}; // other thread could change this (if other thread accesses same envelope)
         /*
          *      For a valid pointer that is reference counted and multiply shared,
          *  make a copy of that pointer via our fCloner function, and assign
@@ -334,20 +318,15 @@ namespace Stroika::Foundation::Memory {
          *      Since we will be cloning the given pointer, we assume(assert) that
          *  it is non-nullptr.
          */
-        //Require (!SHARED_IMLP::unique ());    This is not NECESSARILY so. Another thread could have just released this pointer, in which case
-        // the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
-        // value and it should go away.
-        *this = SharedByValue<T, TRAITS>{forward<COPIER> (copier) (*ptr2Clone), fCopier_};
+        WeakAssert (not unique ()); // This is not NECESSARILY so. Another thread could have just released this pointer, in which case
+                                    // the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
+                                    // value and it should go away.
 
-#if qDebug
-        // technically not 100% guaranteed if two threads did this at the same time, but so rare interesting if ever triggered.
-        // probably a bug, but not necessarily
-        WeakAssert (unique ());
+        fSharedImpl_ = forward<COPIER> (copier) (*fSharedImpl_); // make a new shared_ptr (clone) and assign-overwriting.
 
-        // NO - this requires overwriting THIS object, so must be externally syncrhonized. ASSERT EXTERNALLY SYNCRHONIZED HERE
+        // this assignment requires overwriting THIS object, so must be externally syncrhonized. ASSERT EXTERNALLY SYNCRHONIZED HERE
         // so treat this as real assertion erorr -- LGP 2021-10-15
         Ensure (unique ());
-#endif
     }
 
 }

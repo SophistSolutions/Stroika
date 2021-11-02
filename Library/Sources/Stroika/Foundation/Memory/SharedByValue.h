@@ -15,10 +15,6 @@
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- *  TODO:
- *      @todo   Get rid of SharedByValue_CopySharedPtrDefaultSynchronization, and related stuff (deprecated unused one
- *              in 2.1d6). Instead just directly to copy/load/store (using operators) - simplify code.
- *
  */
 
 namespace Stroika::Foundation::Memory {
@@ -43,34 +39,16 @@ namespace Stroika::Foundation::Memory {
     };
 
     /**
-     *  \brief  SharedByValue_CopySharedPtrDefault is the default template parameter for copying SharedByValue
-     *
-     *  THIS IS HIGHLY EXPERIMENTAL AS OF v2.0a22 (2014-03-23) but intended to provide a useful basis for threadsafe
-     *  copy-by-value (COW) envelope thread safety.
-     */
-    template <typename T, typename SHARED_IMLP>
-    struct SharedByValue_CopySharedPtrExternallySynchronized {
-        static SHARED_IMLP Load (const SHARED_IMLP& copyFrom);
-        static void        Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o);
-    };
-
-    /**
-     */
-    template <typename T, typename SHARED_IMLP>
-    using SharedByValue_CopySharedPtrDefaultSynchronization = SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>;
-
-    /**
      *  \brief  SharedByValue_Traits is a utilitity struct to provide parameterized support
      *          for SharedByValue<>
      *
      *  This class should allow SHARED_IMLP to be std::shared_ptr (or another sharedptr implementation).
      */
-    template <typename T, typename SHARED_IMLP = shared_ptr<T>, typename COPIER = SharedByValue_CopyByDefault<T, SHARED_IMLP>, typename SHARED_IMPL_COPIER = SharedByValue_CopySharedPtrDefaultSynchronization<T, SHARED_IMLP>>
+    template <typename T, typename SHARED_IMLP = shared_ptr<T>, typename COPIER = SharedByValue_CopyByDefault<T, SHARED_IMLP>>
     struct SharedByValue_Traits {
-        using element_type            = T;
-        using element_copier_type     = COPIER;
-        using shared_impl_copier_type = SHARED_IMPL_COPIER;
-        using shared_ptr_type         = SHARED_IMLP;
+        using element_type        = T;
+        using element_copier_type = COPIER;
+        using shared_ptr_type     = SHARED_IMLP;
     };
 
     /**
@@ -129,10 +107,9 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename TRAITS = SharedByValue_Traits<T>>
     class SharedByValue {
     public:
-        using element_type            = typename TRAITS::element_type;
-        using element_copier_type     = typename TRAITS::element_copier_type;
-        using shared_ptr_type         = typename TRAITS::shared_ptr_type;
-        using shared_impl_copier_type = typename TRAITS::shared_impl_copier_type;
+        using element_type        = typename TRAITS::element_type;
+        using element_copier_type = typename TRAITS::element_copier_type;
+        using shared_ptr_type     = typename TRAITS::shared_ptr_type;
 
     public:
         static_assert (is_same_v<T, typename TRAITS::element_type>);
