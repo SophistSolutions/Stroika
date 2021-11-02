@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Traversal {
 #endif
 
     /**
-     *  Stroika's Memory::SharedPtr<> appears to be a bit faster than the std::shated_ptr. Iterable
+     *  Stroika's Memory::SharedPtr<> appears to be a bit faster than the std::shared_ptr. Iterable
      *  at one time, and on some systems.
      *
      *      This defaults to @see Memory::kSharedPtr_IsFasterThan_shared_ptr
