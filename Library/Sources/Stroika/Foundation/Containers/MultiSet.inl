@@ -445,7 +445,7 @@ namespace Stroika::Foundation::Containers {
         if constexpr (std::is_convertible_v<decay_t<CONTAINER_OF_ADDABLE>*, const MultiSet<T, TRAITS>*>) {
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) {
                 // very rare corner case
-                vector<typename decay_t<CONTAINER_OF_ADDABLE>::value_type> copy{begin (items), end (items)}; // because you can not iterate over a container while modifying it
+                vector<typename decay_t<CONTAINER_OF_ADDABLE>::value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
                 for (auto&& i : copy) {
                     Add (i);
                 }
