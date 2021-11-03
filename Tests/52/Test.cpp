@@ -1183,7 +1183,7 @@ namespace {
         }
         void Test_UTF82WString_codecvt_utf8 (const char* s, const char* e)
         {
-            mbstate_t mb{};
+            mbstate_t                 mb{};
             SmallStackBuffer<wchar_t> outBuf (e - s);
             const char*               from_next;
             wchar_t*                  to_next;
@@ -1289,7 +1289,7 @@ namespace {
             1.05,
             &failedTests);
 #endif
-        
+
         Tester (
             L"Simple Struct With Strings Filling And Copying",
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
