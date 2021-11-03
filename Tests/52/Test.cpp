@@ -530,6 +530,64 @@ namespace {
         }
     }
 }
+
+namespace {
+
+    namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_make_shared_ {
+        int             COUNTER             = 1;
+        shared_ptr<int> s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
+        void            Test_stdsharedptr_use_ (function<void (int*)> doInsideLock)
+        {
+            shared_ptr<int> tmp = s_stdSharedPtr2Copy;
+            doInsideLock (tmp.get ());
+        }
+        void Test_stdsharedptr_alloc_ ()
+        {
+            s_stdSharedPtr2Copy = make_shared<int> (1);
+        }
+        SharedPtr<int> s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
+        void           Test_MemorySharedPtr_use_ (function<void (int*)> doInsideLock)
+        {
+            SharedPtr<int> tmp = s_MemorySharedPtr2Copy;
+            doInsideLock (tmp.get ());
+        }
+        void Test_MemorySharedPtr_alloc_ ()
+        {
+            s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
+        }
+        void Test_ACCUM (int* i)
+        {
+            COUNTER += *i;
+        }
+    }
+
+    void Test_stdsharedptrBaseline_make_shared ()
+    {
+        using namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_make_shared_;
+        COUNTER = 0;
+        for (int i = 0; i < 1000; ++i) {
+            Test_stdsharedptr_use_ (Test_ACCUM);
+        }
+        VerifyTestResult (COUNTER == 1000); // so nothing optimized away
+        // less important but still important
+        for (int i = 0; i < 100; ++i) {
+            Test_stdsharedptr_alloc_ ();
+        }
+    }
+    void Test_MemorySharedPtr_make_shared ()
+    {
+        using namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_make_shared_;
+        COUNTER = 0;
+        for (int i = 0; i < 1000; ++i) {
+            Test_MemorySharedPtr_use_ (Test_ACCUM);
+        }
+        VerifyTestResult (COUNTER == 1000); // so nothing optimized away
+        // less important but still important
+        for (int i = 0; i < 100; ++i) {
+            Test_MemorySharedPtr_alloc_ ();
+        }
+    }
+}
 #endif
 
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -574,63 +632,6 @@ namespace {
         }
         VerifyTestResult (sRunningCnt_ == 1000); // so nothing optimized away
     }
-}
-#endif
-
-#if 0
-namespace {
-
-    namespace Test_shared_ptrVS_atomic_shared_ptr_PRIVATE_ {
-        shared_ptr<int> s_SharedPtrCase = shared_ptr<int> (new int (1));
-        void    Test_SharedPtrCopy(function<void(int*)> doInsideLock)
-        {
-            // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
-            // or just using a mutex
-            //
-            // I don't care about the (much rarer) write case where we really need to modify
-            shared_ptr<int> tmp = s_SharedPtrCase;
-            doInsideLock (tmp.get ());
-        }
-
-        atomic<shared_ptr<int>> s_AtomicSharedPtrCase (shared_ptr<int> (new int (1)));
-        void    Test_AtomicSharedPtrCopy(function<void(int*)> doInsideLock)
-        {
-            //Assert (s_AtomicSharedPtrCase.load ().use_count () == 2);
-            // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
-            // or just using a mutex
-            //
-            // I don't care about the (much rarer) write case where we really need to modify
-            atomic<shared_ptr<int>> tmp = s_AtomicSharedPtrCase.load ();
-            doInsideLock (tmp.load ().get ());
-        }
-
-        int CNT = 0;
-        void    COUNTEST_ (int* i)
-        {
-            CNT += *i;
-        }
-
-    }
-
-    void    Test_shared_ptrVS_atomic_shared_ptr_REGULAR_SHAREDPTR_CASE()
-    {
-        using namespace Test_shared_ptrVS_atomic_shared_ptr_PRIVATE_;
-        CNT = 0;
-        for (int i = 0; i < 1000; ++i) {
-            Test_SharedPtrCopy (COUNTEST_);
-        }
-        VerifyTestResult (CNT == 1000);   // so nothing optimized away
-    }
-    void    Test_shared_ptrVS_atomic_shared_ptr_ATOMIC_SHAREDPTR_CASE()
-    {
-        using namespace Test_shared_ptrVS_atomic_shared_ptr_PRIVATE_;
-        CNT = 0;
-        for (int i = 0; i < 1000; ++i) {
-            Test_AtomicSharedPtrCopy (COUNTEST_);
-        }
-        VerifyTestResult (CNT == 1000);   // so nothing optimized away
-    }
-
 }
 #endif
 
@@ -773,7 +774,6 @@ namespace {
 
 namespace {
     namespace Test_BLOB_Versus_Vector_Byte_DETAILS {
-        //static  array<byte,4*1024>    kArr_4k_ = { 0x1, 0x2, 0x3, };
         static constexpr byte kCArr_4k_[4 * 1024] = {
             byte{0x1},
             byte{0x2},
@@ -790,7 +790,6 @@ namespace {
         {
             BLOBISH_IMPL bn;
             for (int i = 0; i < 100; ++i) {
-                //BLOBISH_IMPL  bl = kArr_4k_;
                 BLOBISH_IMPL bl = BLOBISH_IMPL (begin (kCArr_4k_), end (kCArr_4k_));
                 BLOBISH_IMPL b2 = bl;
                 BLOBISH_IMPL b3 = bl;
@@ -1185,20 +1184,10 @@ namespace {
         void Test_UTF82WString_codecvt_utf8 (const char* s, const char* e)
         {
             mbstate_t mb{};
-#if 1
             SmallStackBuffer<wchar_t> outBuf (e - s);
             const char*               from_next;
             wchar_t*                  to_next;
             kConverter_.in (mb, s, e, from_next, outBuf.begin (), outBuf.end (), to_next);
-//wstring tmp { outBuf.begin (), outBuf.begin () + (to_next - outBuf.begin ()) };
-#else
-            //SmallStackBuffer<wchar_t> outBuf (e-s);
-            std::wstring tmp ((e - s), '\0');
-            const char*  from_next;
-            wchar_t*     to_next;
-            kConverter_.in (mb, s, e, from_next, &tmp[0], &tmp[tmp.size ()], to_next);
-            tmp.resize (to_next - &tmp[0]);
-#endif
         }
         constexpr char kS1_[] = "asdbf asdkfja sdflkja ls;dkfja s;ldkfj aslkd;fj alksdfj alskdfj aslk;df;j as;lkdfj aslk;dfj asl;dkfj asdf";
         constexpr char kS2_[] = "\x7a\xc3\x9f\xe6\xb0\xb4\xf0\x9d\x84\x8b";
@@ -1292,17 +1281,15 @@ namespace {
             27000,
             1.05,
             &failedTests);
-#endif
-#if 0
         Tester (
-            L"atomic sharedptr versus sharedptr",
-            Test_shared_ptrVS_atomic_shared_ptr_REGULAR_SHAREDPTR_CASE, L"shared_ptr",
-            Test_shared_ptrVS_atomic_shared_ptr_ATOMIC_SHAREDPTR_CASE, L"atomic<shared_ptr<>>",
-            15000,
-            .8,
-            &failedTests
-        );
+            L"std::shared_ptr (make_shared) versus Memory::SharedPtr",
+            Test_stdsharedptrBaseline_make_shared, L"shared_ptr",
+            Test_MemorySharedPtr_make_shared, L"SharedPtr",
+            27000,
+            1.05,
+            &failedTests);
 #endif
+        
         Tester (
             L"Simple Struct With Strings Filling And Copying",
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",

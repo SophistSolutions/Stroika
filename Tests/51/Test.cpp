@@ -62,18 +62,6 @@ namespace {
             VerifyTestResult (rc.Contains (e)); // any set contains the empty set
         }
         {
-#if 0
-            ////// MAYBE GET RID OF THIS???
-            Range<int> r1 (3, 5);
-            Range<int> r2 (5, 6);
-            VerifyTestResult (not r1.Overlaps (r2));
-            VerifyTestResult (not r2.Overlaps (r1));
-            Range<int> r3  = r1;
-            VerifyTestResult (r1.Overlaps (r3));
-            VerifyTestResult (r3.Overlaps (r1));
-#endif
-        }
-        {
             using namespace RangeTraits;
             using RT         = Explicit<int, DefaultOpenness<int>, ExplicitBounds<int, -3, 100>>;
             Range<int, RT> x = Range<int, RT>::FullRange ();
@@ -346,12 +334,12 @@ namespace {
         {
             const uint32_t kRefCheck_[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
             auto           isPrimeCheck = [] (uint32_t n) -> bool { return Math::IsPrime (n); };
-            for (auto i : FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100).Elements ()).Filter<uint32_t> (isPrimeCheck)) {
+            for (auto i : FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t>{1, 100}.Elements ()).Filter<uint32_t> (isPrimeCheck)) {
                 VerifyTestResult (Math::IsPrime (i));
             }
-            Sequence<uint32_t> s = Sequence<uint32_t> (FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100).Elements ()).Filter<uint32_t> (isPrimeCheck));
+            Sequence<uint32_t> s = Sequence<uint32_t> (FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t>{1, 100}.Elements ()).Filter<uint32_t> (isPrimeCheck));
             VerifyTestResult (s == Sequence<uint32_t> (begin (kRefCheck_), end (kRefCheck_)));
-            VerifyTestResult (Memory::NEltsOf (kRefCheck_) == FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100).Elements ()).Filter<uint32_t> (isPrimeCheck).GetLength ());
+            VerifyTestResult (Memory::NEltsOf (kRefCheck_) == FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t>{1, 100}.Elements ()).Filter<uint32_t> (isPrimeCheck).GetLength ());
         }
     }
 }
@@ -362,7 +350,7 @@ namespace {
         Debug::TraceContextBumper ctx{L"{}::Test8_DiscreteRangeTestFromDocs_"};
         // From Docs in DiscreteRange<> class
         vector<int> v = DiscreteRange<int>{1, 10}.Elements ().As<vector<int>> ();
-        VerifyTestResult (v == vector<int> ({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
+        VerifyTestResult ((v == vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
         for (auto i : DiscreteRange<int>{1, 10}.Elements ()) {
             VerifyTestResult (1 <= i and i <= 10); // rough verification
         }
@@ -380,7 +368,7 @@ namespace {
             auto          getNext   = [myContext] () -> optional<int> {
                 (*myContext)++;
                 if (*myContext > 10) {
-                    return optional<int> ();
+                    return optional<int>{};
                 }
                 return *myContext;
             };
@@ -451,7 +439,7 @@ namespace {
         {
             DisjointRange<float> dr{Range<float> (2.1f, 5.0f)};
             VerifyTestResult (not dr.empty ());
-            VerifyTestResult (dr.GetBounds () == Range<float> (2.1f, 5.0f));
+            VerifyTestResult ((dr.GetBounds () == Range<float>{2.1f, 5.0f}));
             VerifyTestResult (dr.SubRanges ().size () == 1);
             VerifyTestResult (dr.Contains (3));
             VerifyTestResult (not dr.Contains (2));
@@ -479,7 +467,7 @@ namespace {
             using RT  = DiscreteRange<int>;
             using DRT = DisjointDiscreteRange<RT::value_type, RT>;
             DRT dr{RT{1, 2}, RT{4, 5}};
-            VerifyTestResult (dr.GetBounds () == RT (1, 5));
+            VerifyTestResult ((dr.GetBounds () == RT{1, 5}));
             VerifyTestResult (dr.SubRanges ().size () == 2);
             VerifyTestResult (dr.Contains (2));
             VerifyTestResult (not dr.Contains (3));
@@ -489,7 +477,7 @@ namespace {
             using RT  = DiscreteRange<int>;
             using DRT = DisjointDiscreteRange<RT::value_type, RT>;
             DRT dr{RT{4, 5}, RT{1, 2}};
-            VerifyTestResult (dr.GetBounds () == RT (1, 5));
+            VerifyTestResult ((dr.GetBounds () == RT{1, 5}));
             VerifyTestResult (dr.SubRanges ().size () == 2);
             VerifyTestResult (dr.Contains (2));
             VerifyTestResult (not dr.Contains (3));
@@ -727,19 +715,6 @@ namespace {
             VerifyTestResult (not IsPartition (Sequence<RT>{RT{1, 2}, RT{3, 4}}));
             VerifyTestResult (IsPartition (Sequence<RT>{RT{1, 2}, RT{2, 4}}));
         }
-#if 0
-        VerifyTestResult (Range<int> (3, 4).Format ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
-        VerifyTestResult (Range<int> (3, 4).Format () == L"[3 ... 4)");
-        {
-            using   namespace   Time;
-            VerifyTestResult (Range<DateTime> (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5))).Format () == L"[4/4/03 ... 4/5/03]");
-        }
-        {
-            Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
-            using   namespace   Time;
-            VerifyTestResult (Range<DateTime> (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5))).Format () == L"[4/4/1903 ... 4/5/1903]");
-        }
-#endif
     }
 }
 
