@@ -388,12 +388,12 @@ namespace Stroika::Foundation::Memory {
      * 
      *  \note   As of 2021-02-14 - Stroika v2.1b10 and Visual Studio.Net 2019 (16.8.5) - SharedPtr<> remains about 18% faster than shared_ptr<>
      *          and UNIX / g++ still too close to call - so stick with shared_ptr<>
+     * 
+     *  \note   As of 2021-11-03, Stroika v2.1b14, I switched this to always false. I was testing with shared_ptr<T> (new T ()), as opposed
+     *          to make_shared<T> (), and that is obviously unfairly biased. Using make_shared, the stl::shared_ptr is clearly faster,
+     *          even on VS2k.
      */
-#if defined(_MSC_VER)
-    constexpr bool kSharedPtr_IsFasterThan_shared_ptr = true;
-#else
     constexpr bool kSharedPtr_IsFasterThan_shared_ptr = false;
-#endif
 }
 
 namespace Stroika::Foundation::Execution {

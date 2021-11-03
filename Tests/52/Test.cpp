@@ -1286,7 +1286,7 @@ namespace {
             Test_stdsharedptrBaseline_make_shared, L"shared_ptr",
             Test_MemorySharedPtr_make_shared, L"SharedPtr",
             27000,
-            1.05,
+            1.15,
             &failedTests);
 #endif
 
