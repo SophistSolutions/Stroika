@@ -26,7 +26,10 @@ namespace {
     void SimplestSequenceTest_ ()
     {
         /*
-         *  A sequence is just a collection, where each item has a well-defined (index) order. Think of it as a SortedMapping<int,T> where the int is the index.
+         *  A sequence is just a collection, where each item has a well-defined (index) order. 
+         *  Think of it as a SortedMapping<int,T> where the int is the index. Or maybe a bit
+         *  like vector<T>, except that the 'vector' might be implemented with a different data structure, and have
+         *  very different performance characteristics.
          */
         Sequence<int> s;
         s.Append (3);
@@ -35,6 +38,8 @@ namespace {
             Assert (i == 3 or i == 4);
         }
         Assert (s.size () == 2);
+        Assert (s[0] == 3);
+        Assert (s[1] == 4);
     }
 }
 
