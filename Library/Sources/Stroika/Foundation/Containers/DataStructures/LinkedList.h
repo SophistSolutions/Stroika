@@ -247,7 +247,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     class LinkedList<T>::ForwardIterator {
     public:
-        ForwardIterator (const ForwardIterator& from);
+        ForwardIterator (const ForwardIterator& from) = default;
         ForwardIterator (const LinkedList* data);
 
     public:
@@ -258,8 +258,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool More (T* current, bool advance);
         nonvirtual void More (optional<T>* result, bool advance);
         nonvirtual bool More (nullptr_t, bool advance);
-        nonvirtual T    Current () const;
+        nonvirtual ForwardIterator& operator++ () noexcept;
 
+    public:
+        nonvirtual T Current () const;
+
+    public:
         nonvirtual size_t CurrentIndex () const;
 
     public:
@@ -279,11 +283,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     protected:
         const LinkedList<T>* _fData;
+        const typename LinkedList<T>::Link* _fCurrent;
 
     protected:
-        const typename LinkedList<T>::Link* _fCurrent;
-        bool                                _fSuppressMore; // Indicates if More should do anything, or if were already Mored...
-
 #if qDebug
         virtual void Invariant_ () const;
 #endif

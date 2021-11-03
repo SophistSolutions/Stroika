@@ -121,10 +121,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Contains (ArgByValueType<T> item) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            value_type                                                 c = item;
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (&c, true);) {
-                if (fEqualsComparer_ (c.fValue, item)) {
-                    Assert (c.fCount != 0);
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+                if (fEqualsComparer_ (it.Current ().fValue, item)) {
+                    Assert (it.Current ().fCount != 0);
                     return true;
                 }
             }
@@ -133,9 +132,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Add (ArgByValueType<T> item, CounterType count) override
         {
             if (count != 0) {
-                value_type                                           current{item};
                 scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
-                for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (&current, true);) {
+                for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+                    auto current = it.Current ();
                     if (fEqualsComparer_ (current.fValue, item)) {
                         current.fCount += count;
                         fData_.SetAt (it, current);
@@ -150,9 +149,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (ArgByValueType<T> item, CounterType count) override
         {
             if (count != 0) {
-                value_type                                           current (item);
                 scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
-                for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (&current, true);) {
+                for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+                    auto current = it.Current ();
                     if (fEqualsComparer_ (current.fValue, item)) {
                         if (current.fCount > count) {
                             current.fCount -= count;
@@ -214,12 +213,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual CounterType OccurrencesOf (ArgByValueType<T> item) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            value_type                                                 c = item;
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (&c, true);) {
-                if (fEqualsComparer_ (c.fValue, item)) {
-                    Ensure (c.fCount != 0);
-                    return c.fCount;
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+                auto current = it.Current ();
+                if (fEqualsComparer_ (current.fValue, item)) {
+                    Ensure (current.fCount != 0);
+                    return current.fCount;
                 }
             }
             return 0;

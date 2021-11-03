@@ -51,7 +51,6 @@ namespace Stroika::Foundation::Containers::Private {
 #endif
     {
         RequireNotNull (data);
-        fIterator.More (static_cast<DataStructureImplValueType_*> (nullptr), true); //tmphack cuz current backend iterators require a first more() - fix that!
     }
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
     typename Iterator<T>::RepSmartPtr IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::Clone () const

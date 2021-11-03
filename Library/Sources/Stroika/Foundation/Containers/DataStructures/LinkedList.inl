@@ -415,24 +415,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline LinkedList<T>::ForwardIterator::ForwardIterator (const LinkedList<T>* data)
         : _fData{data}
         , _fCurrent{data->_fHead}
-        , _fSuppressMore{true}
     {
         RequireNotNull (data);
-    }
-    template <typename T>
-    inline LinkedList<T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
-        : _fData{from._fData}
-        , _fCurrent{from._fCurrent}
-        , _fSuppressMore{from._fSuppressMore}
-    {
     }
     template <typename T>
     inline typename LinkedList<T>::ForwardIterator& LinkedList<T>::ForwardIterator::operator= (const ForwardIterator& rhs)
     {
         Invariant ();
-        _fData         = rhs._fData;
-        _fCurrent      = rhs._fCurrent;
-        _fSuppressMore = rhs._fSuppressMore;
+        _fData    = rhs._fData;
+        _fCurrent = rhs._fCurrent;
         Invariant ();
         return *this;
     }
@@ -458,10 +449,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
              * We could already be done since after the last Done() call, we could
              * have done a removeall.
              */
-            if (not _fSuppressMore and _fCurrent != nullptr) {
+            if (_fCurrent != nullptr) {
                 _fCurrent = _fCurrent->fNext;
             }
-            _fSuppressMore = false;
         }
         Invariant ();
         if (current != nullptr and not Done ()) {
@@ -476,20 +466,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         RequireNotNull (result);
         Invariant ();
         if (advance) {
-            if (_fSuppressMore) {
-                _fSuppressMore = false;
-            }
-            else {
-                /*
+            /*
                  * We could already be done since after the last Done() call, we could
                  * have done a removeall.
                  */
-                if (_fCurrent != nullptr) {
-                    _fCurrent = _fCurrent->fNext;
-                }
+            if (_fCurrent != nullptr) {
+                _fCurrent = _fCurrent->fNext;
             }
         }
-        Assert (not _fSuppressMore);
         Invariant ();
         if (this->Done ()) {
             *result = nullopt;
@@ -503,6 +487,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline bool LinkedList<T>::ForwardIterator::More (nullptr_t, bool advance)
     {
         return More (static_cast<T*> (nullptr), advance);
+    }
+    template <typename T>
+    inline auto LinkedList<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
+    {
+        More (nullptr, true);
+        return *this;
     }
     template <typename T>
     inline T LinkedList<T>::ForwardIterator::Current () const
@@ -534,13 +524,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         // MUUST COME FROM THIS LIST
         // CAN be nullptr
-        _fCurrent      = l;
-        _fSuppressMore = false;
+        _fCurrent = l;
     }
     template <typename T>
     inline bool LinkedList<T>::ForwardIterator::Equals (const typename LinkedList<T>::ForwardIterator& rhs) const
     {
-        return _fCurrent == rhs._fCurrent and _fSuppressMore == rhs._fSuppressMore;
+        return _fCurrent == rhs._fCurrent;
     }
     template <typename T>
     inline void LinkedList<T>::ForwardIterator::PatchBeforeRemove (const ForwardIterator* adjustmentAt)

@@ -142,7 +142,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, optional<RANGE_TYPE>* item) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            for (typename DataStructures::LinkedList<value_type>::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
+            for (typename DataStructures::LinkedList<value_type>::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 if (fDomainEqualsComparer_ (it.Current ().first, key)) {
                     if (item != nullptr) {
                         *item = it.Current ().second;
@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool InverseLookup (ArgByValueType<RANGE_TYPE> key, optional<DOMAIN_TYPE>* item) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            for (typename DataStructures::LinkedList<value_type>::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
+            for (typename DataStructures::LinkedList<value_type>::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 if (fRangeEqualsComparer_ (it.Current ().second, key)) {
                     if (item != nullptr) {
                         *item = it.Current ().first;
@@ -196,7 +196,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 default:
                     AssertNotReached ();
             }
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 if (fDomainEqualsComparer_ (it.Current ().first, key)) {
                     fData_.SetAt (it, value_type{key, newElt});
                     return;
@@ -208,7 +208,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void RemoveDomainElement (ArgByValueType<DOMAIN_TYPE> d) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 if (fDomainEqualsComparer_ (it.Current ().first, d)) {
                     fData_.RemoveAt (it);
                     fChangeCounts_.PerformedChange ();
@@ -219,7 +219,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void RemoveRangeElement (ArgByValueType<RANGE_TYPE> r) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 if (fRangeEqualsComparer_ (it.Current ().second, r)) {
                     fData_.RemoveAt (it);
                     fChangeCounts_.PerformedChange ();

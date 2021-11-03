@@ -535,16 +535,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename T>
     inline DoublyLinkedList<T>::ForwardIterator::ForwardIterator (const DoublyLinkedList<T>* data)
-        : _fData (data)
-        , _fCurrent (data->_fHead)
-        , _fSuppressMore (true)
-    {
-    }
-    template <typename T>
-    inline DoublyLinkedList<T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
-        : _fData (from._fData)
-        , _fCurrent (from._fCurrent)
-        , _fSuppressMore (from._fSuppressMore)
+        : _fData{data}
+        , _fCurrent{data->_fHead}
     {
     }
     template <typename T>
@@ -552,9 +544,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*_fData};
         Invariant ();
-        _fData         = rhs._fData;
-        _fCurrent      = rhs._fCurrent;
-        _fSuppressMore = rhs._fSuppressMore;
+        _fData    = rhs._fData;
+        _fCurrent = rhs._fCurrent;
         Invariant ();
         return *this;
     }
@@ -580,20 +571,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         if (advance) {
             /*
-                * We could already be done since after the last Done() call, we could
-                * have done a removeall.
-                */
-            if (not _fSuppressMore and _fCurrent != nullptr) {
+             * We could already be done since after the last Done() call, we could
+             * have done a removeall.
+             */
+            if (_fCurrent != nullptr) {
                 _fCurrent = _fCurrent->fNext;
             }
-            _fSuppressMore = false;
         }
         Invariant ();
         if (current != nullptr and not Done ()) {
             AssertNotNull (_fCurrent); // because Done() test
             *current = _fCurrent->fItem;
         }
-        return (not Done ());
+        return not Done ();
     }
     template <typename T>
     inline void DoublyLinkedList<T>::ForwardIterator::More (optional<T>* result, bool advance)
@@ -602,20 +592,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         RequireNotNull (result);
         Invariant ();
         if (advance) {
-            if (_fSuppressMore) {
-                _fSuppressMore = false;
-            }
-            else {
-                /*
+            /*
                  * We could already be done since after the last Done() call, we could
                  * have done a removeall.
                  */
-                if (_fCurrent != nullptr) {
-                    _fCurrent = _fCurrent->fNext;
-                }
+            if (_fCurrent != nullptr) {
+                _fCurrent = _fCurrent->fNext;
             }
         }
-        Assert (not _fSuppressMore);
         Invariant ();
         if (this->Done ()) {
             *result = nullopt;
@@ -632,10 +616,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return More (static_cast<T*> (nullptr), advance);
     }
     template <typename T>
+    inline auto DoublyLinkedList<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
+    {
+        More (nullptr, true);
+        return *this;
+    }
+    template <typename T>
     inline T DoublyLinkedList<T>::ForwardIterator::Current () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
-        Require (not(Done ()));
+        Require (not Done ());
         Invariant ();
         AssertNotNull (_fCurrent);
         return _fCurrent->fItem;
@@ -644,7 +634,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     size_t DoublyLinkedList<T>::ForwardIterator::CurrentIndex () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
-        Require (not(Done ()));
+        Require (not Done ());
         Invariant ();
         size_t n = 0;
         for (const Link* l = _fData->_fHead; l != this->_fCurrent; l = l->fNext, ++n) {
@@ -656,16 +646,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void DoublyLinkedList<T>::ForwardIterator::SetCurrentLink (const Link* l)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*_fData};
-        // MUUST COME FROM THIS LIST
+        // MUST COME FROM THIS LIST
         // CAN be nullptr
-        _fCurrent      = l;
-        _fSuppressMore = false;
+        _fCurrent = l;
     }
     template <typename T>
     inline bool DoublyLinkedList<T>::ForwardIterator::Equals (const typename DoublyLinkedList<T>::ForwardIterator& rhs) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
-        return _fCurrent == rhs._fCurrent and _fSuppressMore == rhs._fSuppressMore;
+        return _fCurrent == rhs._fCurrent;
     }
     template <typename T>
     inline void DoublyLinkedList<T>::ForwardIterator::PatchBeforeRemove (const ForwardIterator* adjustmentAt)

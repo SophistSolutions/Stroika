@@ -140,6 +140,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool More (VALUE_TYPE* current, bool advance);
         template <typename VALUE_TYPE>
         nonvirtual void More (optional<VALUE_TYPE>* current, bool advance);
+        nonvirtual ForwardIterator& operator++ () noexcept;
 
     public:
         /**
@@ -166,9 +167,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         STLContainerWrapper<STL_CONTAINER_OF_T>*                   fData;
         typename STLContainerWrapper<STL_CONTAINER_OF_T>::iterator fStdIterator;
-
-    protected:
-        bool fSuppressMore{true};
     };
 
 }

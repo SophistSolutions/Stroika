@@ -149,11 +149,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (VALUE_TYPE* current, bool advance)
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*fData};
-        if (advance and fSuppressMore) {
-            advance       = false;
-            fSuppressMore = false;
-        }
-        bool done = Done ();
+        bool                                                done = Done ();
         if (advance) {
             if (not done) {
                 fStdIterator++;
@@ -171,10 +167,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         RequireNotNull (result);
         shared_lock<const AssertExternallySynchronizedLock> critSec{*fData};
-        if (advance and fSuppressMore) {
-            advance       = false;
-            fSuppressMore = false;
-        }
         if (advance) {
             if (not Done ()) {
                 fStdIterator++;
@@ -186,6 +178,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         else {
             *result = *fStdIterator;
         }
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
+    {
+        More (nullptr, true);
+        return *this;
     }
     template <typename STL_CONTAINER_OF_T>
     inline size_t STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::CurrentIndex () const
@@ -205,7 +203,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fStdIterator = l;
         //fStdIterator = fData->erase (l, l);
         //fStdIterator = STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness (*fData, l);  --not sure why didnt compile...
-        fSuppressMore = false;
     }
     template <typename STL_CONTAINER_OF_T>
     inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Equals (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const

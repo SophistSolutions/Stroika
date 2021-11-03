@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             else {
                 size_t index = at;
-                for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
+                for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                     if (--index == 0) {
                         for (const T* p = from; p != to; ++p) {
                             fData_.AddBefore (it, *p);
@@ -179,7 +179,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             // See Stroika v1 - much better - handling cases of remove near start or end of linked list
             size_t index          = from;
             size_t amountToRemove = (to - from);
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 if (index-- == 0) {
                     while (amountToRemove-- != 0) {
                         it = fData_.RemoveAt (it);

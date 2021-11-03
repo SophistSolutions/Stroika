@@ -87,7 +87,7 @@ namespace Stroika ::Foundation::Containers ::Concrete {
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<MAPPED_VALUE_TYPE>* item) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+            for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
                 if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                     if (item != nullptr) {
                         *item = it.Current ().fValue;
@@ -103,7 +103,7 @@ namespace Stroika ::Foundation::Containers ::Concrete {
         virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+            for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
                 if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                     fData_[it.CurrentIndex ()].fValue = newElt;
                     return;
@@ -114,7 +114,7 @@ namespace Stroika ::Foundation::Containers ::Concrete {
         virtual void Remove (ArgByValueType<KEY_TYPE> key) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+            for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
                 if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                     fData_.RemoveAt (it.CurrentIndex ());
                     return;
@@ -134,8 +134,7 @@ namespace Stroika ::Foundation::Containers ::Concrete {
         using KeyEqualsCompareFunctionType = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::KeyEqualsCompareFunctionType;
 
     private:
-        using NonPatchingDataStructureImplType_ = DataStructures::Array<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
-        using DataStructureImplType_            = DataStructures::Array<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
+        using DataStructureImplType_ = DataStructures::Array<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
 
     private:
         using IteratorRep_ = typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>, DataStructureImplType_>;

@@ -265,7 +265,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     class DoublyLinkedList<T>::ForwardIterator {
     public:
-        ForwardIterator (const ForwardIterator& from);
+        ForwardIterator (const ForwardIterator& from) = default;
         ForwardIterator (const DoublyLinkedList<T>* data);
 
     public:
@@ -280,6 +280,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void More (optional<T>* result, bool advance);
         nonvirtual bool More (nullptr_t, bool advance);
         nonvirtual T    Current () const;
+        nonvirtual ForwardIterator& operator++ () noexcept;
 
     public:
         // Warning - intrinsically slow
@@ -306,7 +307,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     protected:
         const DoublyLinkedList<T>* _fData{nullptr};
         const Link*                _fCurrent{nullptr};
-        bool                       _fSuppressMore{false}; // Indicates if More should do anything, or if were already Mored...
 
 #if qDebug
     protected:

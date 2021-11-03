@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Add (ArgByValueType<value_type> item) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 if (fEqualsComparer_ (it.Current (), item)) {
                     return;
                 }
@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (ArgByValueType<value_type> item) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it.More (nullptr, true);) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 if (fEqualsComparer_ (it.Current (), item)) {
                     fData_.RemoveAt (it);
                     fChangeCounts_.PerformedChange ();

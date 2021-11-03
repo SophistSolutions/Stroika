@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<MAPPED_VALUE_TYPE>* item) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            for (typename DataStructures::LinkedList<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+            for (typename DataStructures::LinkedList<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::ForwardIterator it (&fData_); not it.Done (); ++it) {
                 if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                     if (item != nullptr) {
                         *item = it.Current ().fValue;
@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+            for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
                 if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                     fData_.SetAt (it, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE> (key, newElt));
                     return;
@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (ArgByValueType<KEY_TYPE> key) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+            for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
                 if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                     fData_.RemoveAt (it);
                     return;

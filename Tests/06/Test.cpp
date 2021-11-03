@@ -60,7 +60,7 @@ namespace {
             size_t i = 1;
             size_t cur;
             for (DataStructures::LinkedList<size_t>::ForwardIterator it (&someLL); it.More (&cur, true); i++) {
-                if (i == 100) {
+                if (i == 100 - 1) {
                     someLL.AddAfter (it, 1);
                     break;
                 }

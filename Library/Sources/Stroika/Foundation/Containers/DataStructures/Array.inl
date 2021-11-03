@@ -490,10 +490,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline Array<T>::_ArrayIteratorBase::_ArrayIteratorBase (const Array<T>* data)
         : _fData{data}
-        //   , _fStart (&data->_fItems[0])
-        //     , _fEnd (&data->_fItems[data->GetLength ()])
-        //, _fCurrent ()                           don't initialize - done in subclasses...
-        , _fSuppressMore{true} // first time thru - cuz of how used in for loops...
     {
         RequireNotNull (data);
 #if qDebug
@@ -508,10 +504,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline Array<T>::_ArrayIteratorBase::~_ArrayIteratorBase ()
     {
         // hack so crash and debug easier
-        _fData = reinterpret_cast<Array<T>*> (-1);
-        //  _fStart   = reinterpret_cast<T*> (-1);
-        //  _fEnd     = reinterpret_cast<T*> (-1);
-        //_fCurrent = reinterpret_cast<T*> (-1);
+        _fData       = reinterpret_cast<Array<T>*> (-1);
         _fCurrentIdx = numeric_limits<size_t>::max ();
     }
 #endif
@@ -519,15 +512,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     nonvirtual bool Array<T>::_ArrayIteratorBase::Equals (const typename Array<T>::_ArrayIteratorBase& rhs) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
-        return _fCurrentIdx == rhs._fCurrentIdx and _fSuppressMore == rhs._fSuppressMore;
+        return _fCurrentIdx == rhs._fCurrentIdx;
     }
     template <typename T>
-    inline bool Array<T>::_ArrayIteratorBase::More (T* current, bool advance)
+    inline bool Array<T>::_ArrayIteratorBase::More (T* current, [[maybe_unused]] bool advance)
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
-        if (advance) [[LIKELY_ATTR]] {
-            this->_fSuppressMore = false;
-        }
         Invariant ();
         if (not Done ()) [[LIKELY_ATTR]] {
             if (current != nullptr) [[LIKELY_ATTR]] {
@@ -578,8 +568,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
         Require (i <= _dataLength ());
         // _fCurrent      = _dataStart () + i;
-        _fCurrentIdx   = i;
-        _fSuppressMore = false;
+        _fCurrentIdx = i;
     }
     template <typename T>
     inline void Array<T>::_ArrayIteratorBase::PatchBeforeAdd (const _ArrayIteratorBase& adjustmentAt)
@@ -678,7 +667,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
         this->Invariant ();
         if (advance) [[LIKELY_ATTR]] {
-            if (not this->_fSuppressMore and not this->Done ()) [[LIKELY_ATTR]] {
+            if (not this->Done ()) [[LIKELY_ATTR]] {
                 Assert (this->_fCurrentIdx < this->_dataLength ());
                 this->_fCurrentIdx++;
             }
@@ -691,14 +680,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
         this->Invariant ();
         if (advance) [[LIKELY_ATTR]] {
-            if (this->_fSuppressMore) [[UNLIKELY_ATTR]] {
-                this->_fSuppressMore = false;
-            }
-            else {
-                if (not this->Done ()) {
-                    Assert (this->_fCurrentIdx < this->_dataLength ());
-                    this->_fCurrentIdx++;
-                }
+            if (not this->Done ()) {
+                Assert (this->_fCurrentIdx < this->_dataLength ());
+                this->_fCurrentIdx++;
             }
         }
         this->Invariant ();
@@ -713,6 +697,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline bool Array<T>::ForwardIterator::More (nullptr_t, bool advance)
     {
         return More (static_cast<T*> (nullptr), advance);
+    }
+    template <typename T>
+    inline auto Array<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
+    {
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
+        Require (not this->Done ());
+        this->Invariant ();
+        Assert (this->_fCurrentIdx < this->_dataLength ());
+        this->_fCurrentIdx++;
+        this->Invariant ();
+        return *this;
     }
 
     /*
@@ -739,7 +734,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
         this->Invariant ();
         if (advance) [[LIKELY_ATTR]] {
-            if (not this->_fSuppressMore and not this->Done ()) [[LIKELY_ATTR]] {
+            if (not this->Done ()) [[LIKELY_ATTR]] {
                 if (this->_fCurrent == this->_fStart) {
                     this->_fCurrent = this->_fEnd; // magic to indicate done
                     Ensure (this->Done ());
@@ -758,19 +753,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
         this->Invariant ();
         if (advance) {
-            if (this->_fSuppressMore) {
-                this->_fSuppressMore = false;
-            }
-            else {
-                if (not this->Done ()) {
-                    if (this->_fCurrent == this->_fStart) {
-                        this->_fCurrent = this->_fEnd; // magic to indicate done
-                        Ensure (this->Done ());
-                    }
-                    else {
-                        this->_fCurrent--;
-                        Ensure (not this->Done ());
-                    }
+            if (not this->Done ()) {
+                if (this->_fCurrent == this->_fStart) {
+                    this->_fCurrent = this->_fEnd; // magic to indicate done
+                    Ensure (this->Done ());
+                }
+                else {
+                    this->_fCurrent--;
+                    Ensure (not this->Done ());
                 }
             }
         }

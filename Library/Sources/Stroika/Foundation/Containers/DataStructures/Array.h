@@ -222,6 +222,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         _ArrayIteratorBase (const Array<T>* data);
+        _ArrayIteratorBase (const _ArrayIteratorBase& src) = default;
 
 #if qDebug
         ~_ArrayIteratorBase ();
@@ -259,7 +260,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     protected:
         const Array<T>* _fData{nullptr};
         size_t          _fCurrentIdx{0};
-        bool            _fSuppressMore{false}; // Indicates if More should do anything, or if were already Mored...
 
     protected:
         const T* _dataStart () const { return _fData->_fItems; }
@@ -282,11 +282,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         ForwardIterator (const Array<T>* data);
+        ForwardIterator (const ForwardIterator& src) = default;
 
     public:
         nonvirtual bool More (T* current, bool advance);
         nonvirtual void More (optional<T>* result, bool advance);
         nonvirtual bool More (nullptr_t, bool advance);
+        nonvirtual ForwardIterator& operator++ () noexcept;
     };
 
     /**
