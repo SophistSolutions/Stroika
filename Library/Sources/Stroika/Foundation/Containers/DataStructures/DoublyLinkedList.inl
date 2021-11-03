@@ -618,7 +618,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline auto DoublyLinkedList<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
     {
-        More (nullptr, true);
+        Require (not Done ());
+        Invariant ();
+        Assert (_fCurrent != nullptr);
+        _fCurrent = _fCurrent->fNext;
+        Invariant ();
         return *this;
     }
     template <typename T>

@@ -231,7 +231,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     class LinkedList<T>::Link : public Memory::UseBlockAllocationIfAppropriate<Link> {
     public:
+        Link () = delete;
         Link (T item, Link* next);
+        Link (const Link&) = delete;
 
     public:
         T     fItem;
@@ -282,7 +284,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant () const;
 
     protected:
-        const LinkedList<T>* _fData;
+        const LinkedList<T>*                _fData;
         const typename LinkedList<T>::Link* _fCurrent;
 
     protected:

@@ -116,8 +116,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         using value_type = T;
 
     public:
-        Array ();
-        Array (const Array<T>& from);
+        Array () = default;
+        Array (const Array& from);
 
     public:
         ~Array ();
@@ -200,10 +200,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     protected:
-    public:                      /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN ``<> - until those cleaned up a bit
-        size_t _fLength;         // #items advertised/constructed
-        size_t _fSlotsAllocated; // #items allocated (though not necessarily initialized)
-        T*     _fItems;
+        //   public:                      /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN ``<> - until those cleaned up a bit
+        size_t _fLength{0};         // #items advertised/constructed
+        size_t _fSlotsAllocated{0}; // #items allocated (though not necessarily initialized)
+        T*     _fItems{nullptr};
     };
 
     /**

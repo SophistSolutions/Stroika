@@ -28,17 +28,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
     }
     template <typename T>
-    inline Array<T>::Array ()
-        : _fLength{0}
-        , _fSlotsAllocated{0}
-        , _fItems{nullptr}
-    {
-    }
-    template <typename T>
-    Array<T>::Array (const Array<T>& from)
-        : _fLength{0}
-        , _fSlotsAllocated{0}
-        , _fItems{nullptr}
+    Array<T>::Array (const Array& from)
     {
         from.Invariant ();
         SetCapacity (from.GetLength ());
@@ -97,7 +87,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (index >= 0);
         Require (index < _fLength);
         Invariant ();
-
         if (index < _fLength - 1) {
             /*
              * Slide items down.
@@ -359,13 +348,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         RequireNotNull (pi);
         RequireNotNull (movedFrom);
-        [[maybe_unused]] size_t currentIdx = pi->CurrentIndex ();
-        Require (currentIdx <= this->GetLength ());
+        Require (pi->CurrentIndex () <= this->GetLength ());
         Require (pi->_fData == movedFrom);
         pi->_fData = this;
-        //   pi->_fStart   = &_fItems[0];
-        //   pi->_fEnd     = &this->_fItems[this->GetLength ()];
-        //pi->_fCurrent = pi->_dataStart () + currentIdx;
     }
     template <typename T>
     inline T Array<T>::GetAt (size_t i) const
@@ -509,7 +494,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 #endif
     template <typename T>
-    nonvirtual bool Array<T>::_ArrayIteratorBase::Equals (const typename Array<T>::_ArrayIteratorBase& rhs) const
+    inline bool Array<T>::_ArrayIteratorBase::Equals (const typename Array<T>::_ArrayIteratorBase& rhs) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
         return _fCurrentIdx == rhs._fCurrentIdx;
@@ -550,7 +535,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline size_t Array<T>::_ArrayIteratorBase::_CurrentIndex () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
-        //return _fCurrent - _dataStart ();
         return _fCurrentIdx;
     }
     template <typename T>
@@ -559,15 +543,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
         Invariant ();
         return (*_fData)[_fCurrentIdx];
-        //        EnsureNotNull (_fCurrent);
-        //      return *_fCurrent;
     }
     template <typename T>
     inline void Array<T>::_ArrayIteratorBase::SetIndex (size_t i)
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
         Require (i <= _dataLength ());
-        // _fCurrent      = _dataStart () + i;
         _fCurrentIdx = i;
     }
     template <typename T>
