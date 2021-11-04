@@ -395,22 +395,28 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T>
-    inline void* BlockAllocator<T>::Allocate ([[maybe_unused]] size_t n)
+    template <class U>
+    constexpr BlockAllocator<T>::BlockAllocator (const BlockAllocator<U>&) noexcept
+    {
+    }
+    template <typename T>
+    [[nodiscard]] inline T* BlockAllocator<T>::allocate ([[maybe_unused]] size_t n)
     {
         using Private_::BlockAllocationPool_;
-        Require (n == sizeof (T));
+        Require (n == 1);
 #if qAllowBlockAllocation
-        void* result = BlockAllocationPool_<AdjustSizeForPool_ ()>::Allocate (sizeof (T));
+        T* result = reinterpret_cast<T*> (BlockAllocationPool_<AdjustSizeForPool_ ()>::Allocate (sizeof (T)));
 #else
-        void* result = ::operator new (sizeof (T));
+        T* result = ::operator new (sizeof (T));
 #endif
         EnsureNotNull (result);
         Ensure (reinterpret_cast<ptrdiff_t> (result) % alignof (T) == 0); // see https://stroika.atlassian.net/browse/STK-511 - assure aligned
         return result;
     }
     template <typename T>
-    inline void BlockAllocator<T>::Deallocate (void* p) noexcept
+    inline void BlockAllocator<T>::deallocate (T* p, [[maybe_unused]] size_t n) noexcept
     {
+        Require (n == 1);
         using Private_::BlockAllocationPool_;
 #if qAllowBlockAllocation
         if (p != nullptr) {
@@ -433,6 +439,14 @@ namespace Stroika::Foundation::Memory {
     {
         return Math::RoundUpTo (sizeof (T), sizeof (void*));
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename T>
+    inline bool BlockAllocator<T>::operator== (const BlockAllocator& rhs) const
+    {
+        return true;
+    }
+#endif
+
 }
 
 #endif /*_Stroika_Foundation_Memory_BlockAllocator_inl_*/

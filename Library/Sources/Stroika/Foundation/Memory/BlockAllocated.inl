@@ -20,22 +20,24 @@ namespace Stroika::Foundation::Memory {
     template <typename T>
     inline void* BlockAllocationUseHelper<T>::operator new (size_t n)
     {
-        return BlockAllocator<T>::Allocate (n);
+        Require (n == sizeof (T));
+        return BlockAllocator<T>{}.allocate (1);
     }
     template <typename T>
     inline void* BlockAllocationUseHelper<T>::operator new (size_t n, int, const char*, int)
     {
-        return BlockAllocator<T>::Allocate (n);
+        Require (n == sizeof (T));
+        return BlockAllocator<T>{}.allocate (1);
     }
     template <typename T>
     inline void BlockAllocationUseHelper<T>::operator delete (void* p)
     {
-        BlockAllocator<T>::Deallocate (p);
+        BlockAllocator<T>{}.deallocate (reinterpret_cast<T*> (p), 1);
     }
     template <typename T>
     inline void BlockAllocationUseHelper<T>::operator delete (void* p, int, const char*, int)
     {
-        BlockAllocator<T>::Deallocate (p);
+        BlockAllocator<T>{}.deallocate (reinterpret_cast<T*> (p), 1);
     }
 
     /*
@@ -74,7 +76,7 @@ namespace Stroika::Foundation::Memory {
     inline T* ManuallyBlockAllocated<T>::New (ARGS&&... args)
     {
 #if qAllowBlockAllocation
-        return new (BlockAllocator<T>::Allocate (sizeof (T))) T (forward<ARGS> (args)...);
+        return new (BlockAllocator<T>{}.allocate (1)) T (forward<ARGS> (args)...);
 #else
         return new T (forward<ARGS> (args)...);
 #endif
@@ -85,7 +87,7 @@ namespace Stroika::Foundation::Memory {
 #if qAllowBlockAllocation
         if (p != nullptr) {
             (p)->~T ();
-            BlockAllocator<T>::Deallocate (p);
+            BlockAllocator<T>{}.deallocate (p, 1);
         }
 #else
         delete p;

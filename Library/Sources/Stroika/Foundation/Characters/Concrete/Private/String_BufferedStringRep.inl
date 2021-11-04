@@ -54,15 +54,15 @@ namespace Stroika::Foundation::Characters::Concrete {
 #if qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                         case kNElts1_:
                             static_assert (sizeof (BufferedStringRepBlock_<kNElts1_>) == sizeof (wchar_t) * kNElts1_, "sizes should match");
-                            newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts1_>)));
+                            newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.allocate (1));
                             break;
                         case kNElts2_:
                             static_assert (sizeof (BufferedStringRepBlock_<kNElts2_>) == sizeof (wchar_t) * kNElts2_, "sizes should match");
-                            newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts2_>)));
+                            newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.allocate (1));
                             break;
                         case kNElts3_:
                             static_assert (sizeof (BufferedStringRepBlock_<kNElts3_>) == sizeof (wchar_t) * kNElts3_, "sizes should match");
-                            newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts3_>)));
+                            newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.allocate (1));
                             break;
 #endif
                         default:
@@ -73,13 +73,13 @@ namespace Stroika::Foundation::Characters::Concrete {
                 switch (fCapacity_) {
 #if qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                     case kNElts1_:
-                        Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>::Deallocate (_PeekStart ());
+                        Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts1_>*> (_PeekStart ()), 1);
                         break;
                     case kNElts2_:
-                        Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>::Deallocate (_PeekStart ());
+                        Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts2_>*> (_PeekStart ()), 1);
                         break;
                     case kNElts3_:
-                        Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>::Deallocate (_PeekStart ());
+                        Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts3_>*> (_PeekStart ()), 1);
                         break;
 #endif
                     default:
@@ -131,15 +131,15 @@ namespace Stroika::Foundation::Characters::Concrete {
 #if qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                 case kNElts1_: {
                     static_assert (sizeof (BufferedStringRepBlock_<kNElts1_>) == sizeof (wchar_t) * kNElts1_, "sizes should match");
-                    newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts1_>)));
+                    newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.allocate (1));
                 } break;
                 case kNElts2_: {
                     static_assert (sizeof (BufferedStringRepBlock_<kNElts2_>) == sizeof (wchar_t) * kNElts2_, "sizes should match");
-                    newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts2_>)));
+                    newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.allocate (1));
                 } break;
                 case kNElts3_: {
                     static_assert (sizeof (BufferedStringRepBlock_<kNElts3_>) == sizeof (wchar_t) * kNElts3_, "sizes should match");
-                    newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts3_>)));
+                    newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.allocate (1));
                 } break;
 #endif
                 default: {
@@ -162,13 +162,13 @@ namespace Stroika::Foundation::Characters::Concrete {
             switch (fCapacity_) {
 #if qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                 case kNElts1_: {
-                    Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>::Deallocate (_PeekStart ());
+                    Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts1_>*> (_PeekStart ()), 1);
                 } break;
                 case kNElts2_: {
-                    Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>::Deallocate (_PeekStart ());
+                    Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts2_>*> (_PeekStart ()), 1);
                 } break;
                 case kNElts3_: {
-                    Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>::Deallocate (_PeekStart ());
+                    Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts3_>*> (_PeekStart ()), 1);
                 } break;
 #endif
                 default: {

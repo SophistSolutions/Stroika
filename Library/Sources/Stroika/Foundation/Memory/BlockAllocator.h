@@ -83,27 +83,45 @@ namespace Stroika::Foundation::Memory {
      *
      *      Making them cancelation points led to too many subtle bugs were very rarely we would have 'terminate' called due to a memory allocation
      *      from a no-except method.
+     * 
+     *  \note
+     *      As of this release (v2.1b14) - we don't support use of BlockAllocator for arrays. We've never needed it
+     *      or used it and it seems more likely a bug than a feature. And its easily worked around by wrapping
+     *      your array in a struct. And it would have a slight performance overhead/cost. MAYBE revisit
+     *      in the future.
      *
      *  But also see:
+     *      @see https://en.cppreference.com/w/cpp/named_req/Allocator
      *      @see ManuallyBlockAllocated
      *      @see UseBlockAllocationIfAppropriate
      */
     template <typename T>
     class BlockAllocator {
     public:
+        using value_type = T;
+
+    public:
         /**
-         *  \req (n == sizeof (T))
+         */
+        constexpr BlockAllocator () = default;
+        template <class U>
+        constexpr BlockAllocator (const BlockAllocator<U>&) noexcept;
+
+    public:
+        /**
+         *  \req (n == 1)
          *
          *  \note - though this can throw due to memory exhaustion, it will not throw Thread::InterupptionException - it is not a cancelation point.
          */
-        static void* Allocate (size_t n);
+        nonvirtual [[nodiscard]] T* allocate (std::size_t n);
 
     public:
         /**
          *  \req (p allocated by BlockAllocator<T>::Allocate ());
+         *  \req (n == 1)
          *  p can be nullptr
          */
-        static void Deallocate (void* p) noexcept;
+        nonvirtual void deallocate (T* p, std::size_t n) noexcept;
 
     public:
         /**
@@ -120,10 +138,41 @@ namespace Stroika::Foundation::Memory {
           */
         static void Compact ();
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const BlockAllocator& rhs) const;
+#endif
+
+    public:
+        [[deprecated ("Since v2.1b14 - use BlockAllocator<T>{}.allocate (1)")]] static void* Allocate (size_t n)
+        {
+            Require (n == sizeof (T));
+            return BlockAllocator<T>{}.allocate (1);
+        }
+        [[deprecated ("Since v2.1b14 - use BlockAllocator<T>{}.deallocate (p, 1)")]] static void Deallocate (void* p) noexcept
+        {
+            return BlockAllocator<T>{}.deallocate (reinterpret_cast<T*> (p), 1);
+        }
+
     private:
         // ensure return value is >= sizeof (T), and has legit alignment for T
         static constexpr size_t AdjustSizeForPool_ ();
     };
+
+#if __cpp_impl_three_way_comparison < 201907
+    template <class T, class U>
+    bool operator== (const BlockAllocator<T>&, const BlockAllocator<U>&)
+    {
+        return true;
+    }
+    template <class T, class U>
+    bool operator!= (const BlockAllocator<T>&, const BlockAllocator<U>&)
+    {
+        return false;
+    }
+#endif
 
 }
 
