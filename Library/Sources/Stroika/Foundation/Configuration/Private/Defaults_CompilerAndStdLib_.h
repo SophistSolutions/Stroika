@@ -1498,6 +1498,25 @@ In file included from ../Characters/String.h:18,
 #endif
 
 /*
+      Compiling Library/Sources/Stroika/Foundation/Characters/FloatConversion.cpp ...
+FloatConversion.cpp: In function ‘Stroika::Foundation::Characters::String {anonymous}::Float2String_OptimizedForCLocaleAndNoStreamFlags_(FLOAT_TYPE, int, bool)’:
+FloatConversion.cpp:117:73: error: ‘chars_format’ has not been declared
+  117 |         ptrdiff_t resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, precision).ptr - buf.begin ();
+      |                                                                         ^~~~~~~~~~~~
+make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default.mk:22: /mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug-unix/Library/Foundation/Characters/FloatConversion.o] Error 1
+*/
+#ifndef qCompilerAndStdLib_to_chars_FP_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11
+#define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 10)
+#else
+#define qCompilerAndStdLib_to_chars_FP_Buggy 0
+#endif
+
+#endif
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
 WinSock.cpp
