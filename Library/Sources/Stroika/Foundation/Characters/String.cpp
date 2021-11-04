@@ -38,23 +38,20 @@ using Memory::SmallStackBufferCommon;
 using Traversal::Iterator;
 
 namespace {
-    // note - we use UseBlockAllocationIfAppropriate iff kIterableUsesStroikaSharedPtr because SharedPtr separately allocates
-    // counter and counted object. So we benefit from blockallocation on T. But if using shared_ptr, this uses make_shared that already combines the counter and
-    // the shared object...
     class String_BufferedArray_Rep_ final
         : public Concrete::Private::BufferedStringRep::_Rep,
-          public conditional_t<Traversal::kIterableUsesStroikaSharedPtr, Memory::UseBlockAllocationIfAppropriate<String_BufferedArray_Rep_>, Configuration::Empty> {
+          public Memory::UseBlockAllocationIfAppropriate<String_BufferedArray_Rep_> {
 
     private:
         using inherited = Concrete::Private::BufferedStringRep::_Rep;
 
     public:
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
-            : inherited (start, end)
+            : inherited{start, end}
         {
         }
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end, size_t reserveExtraCharacters)
-            : inherited (start, end, reserveExtraCharacters)
+            : inherited{start, end, reserveExtraCharacters}
         {
         }
         virtual _IterableRepSharedPtr Clone () const override
@@ -405,7 +402,8 @@ String::_SharedPtrIRep String::mk_ (const wchar_t* start1, const wchar_t* end1, 
     RequireNotNull (end2);
     Require (start2 <= end2);
     size_t len1 = end1 - start1;
-    auto   sRep = MakeSmartPtr<String_BufferedArray_Rep_> (start1, end1, (end2 - start2));
+    static_assert (Memory::UsesBlockAllocation<String_BufferedArray_Rep_> ());
+    auto sRep = MakeSmartPtr<String_BufferedArray_Rep_> (start1, end1, end2 - start2);
     if (start2 != end2) [[LIKELY_ATTR]] {
         sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
     }

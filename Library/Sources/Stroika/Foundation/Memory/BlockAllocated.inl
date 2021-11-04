@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T>
-    inline void* BlockAllocationUseHelper<T>::operator new ([[maybe_unused]]size_t n)
+    inline void* BlockAllocationUseHelper<T>::operator new ([[maybe_unused]] size_t n)
     {
         Require (n == sizeof (T));
         return BlockAllocator<T>{}.allocate (1);
