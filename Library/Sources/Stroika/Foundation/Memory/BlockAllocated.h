@@ -66,6 +66,9 @@ namespace Stroika::Foundation::Memory {
      *                ...
      *              };
      *      \endcode
+     * 
+     *  \note See also
+     *      @see UsesBlockAllocation<T> ()
      */
     template <typename T>
     struct BlockAllocationUseHelper {
@@ -74,6 +77,11 @@ namespace Stroika::Foundation::Memory {
         static void  operator delete (void* p);
         static void  operator delete (void* p, int, const char*, int);
     };
+
+    /**
+     */
+    template <typename T>
+    constexpr bool UsesBlockAllocation ();
 
     /**
      *  Use this to (roughly) undo the effect of BlockAllocationUseHelper<> or UseBlockAllocationIfAppropriate<> for a subclass.

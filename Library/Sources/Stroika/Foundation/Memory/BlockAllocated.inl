@@ -18,13 +18,13 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T>
-    inline void* BlockAllocationUseHelper<T>::operator new (size_t n)
+    inline void* BlockAllocationUseHelper<T>::operator new ([[maybe_unused]]size_t n)
     {
         Require (n == sizeof (T));
         return BlockAllocator<T>{}.allocate (1);
     }
     template <typename T>
-    inline void* BlockAllocationUseHelper<T>::operator new (size_t n, int, const char*, int)
+    inline void* BlockAllocationUseHelper<T>::operator new ([[maybe_unused]] size_t n, int, const char*, int)
     {
         Require (n == sizeof (T));
         return BlockAllocator<T>{}.allocate (1);
@@ -38,6 +38,17 @@ namespace Stroika::Foundation::Memory {
     inline void BlockAllocationUseHelper<T>::operator delete (void* p, int, const char*, int)
     {
         BlockAllocator<T>{}.deallocate (reinterpret_cast<T*> (p), 1);
+    }
+
+    /*
+     ********************************************************************************
+     *************************** UsesBlockAllocation<T> *****************************
+     ********************************************************************************
+     */
+    template <typename T>
+    constexpr bool UsesBlockAllocation ()
+    {
+        return is_base_of_v<BlockAllocationUseHelper<T>, T>;
     }
 
     /*

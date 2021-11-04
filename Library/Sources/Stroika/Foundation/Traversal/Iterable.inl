@@ -29,6 +29,11 @@ namespace Stroika::Foundation::Traversal {
         if constexpr (kIterableUsesStroikaSharedPtr) {
             return Memory::MakeSharedPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
         }
+        else if constexpr (Memory::UsesBlockAllocation<SHARED_T> ()) {
+            // almost as good, but still does two allocs, above does one shared alloc of the block allocated controlblock+SHARED_T
+            //return shared_ptr<SHARED_T> (new SHARED_T (forward<ARGS_TYPE> (args)...));
+            return allocate_shared<SHARED_T> (Memory::BlockAllocator<SHARED_T>{}, forward<ARGS_TYPE> (args)...);
+        }
         else {
             return make_shared<SHARED_T> (forward<ARGS_TYPE> (args)...);
         }
