@@ -9,6 +9,7 @@
 #include <cstddef>
 
 #include "../Configuration/Common.h"
+#include "../Debug/Assertions.h"
 
 /**
  *  \file
