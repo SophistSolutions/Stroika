@@ -8,6 +8,9 @@
 #include <iomanip>
 #include <limits>
 #include <sstream>
+#if __cpp_lib_format
+#include <format>
+#endif
 
 #include "../Characters/StringBuilder.h"
 #include "../Characters/ToString.h"
@@ -106,9 +109,14 @@ namespace {
         Require (not isnan (f));
         Require (not isinf (f));
         size_t                 sz = precision + 100; // I think precision is enough
-        SmallStackBuffer<char> buf (SmallStackBuffer<char>::eUninitialized, sz);
-        char                   format[100]; // intentionally uninitialized, cuz filled in with mkFmtWithPrecisionArg_
-        int                    resultStrLen = ::snprintf (buf, buf.size (), mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), is_same_v<FLOAT_TYPE, long double> ? 'L' : '\0'), (int)precision, f);
+        SmallStackBuffer<char> buf{SmallStackBuffer<char>::eUninitialized, sz};
+#if __cpp_lib_format && 0
+        // I read this was supposed to be faster, but empirically on windows seems much slower -- LGP 2021-11-04
+        ptrdiff_t resultStrLen = format_to_n (buf.begin (), sz, is_same_v<FLOAT_TYPE, long double> ? "{:.{}Lg}"sv : "{:.{}g}"sv, f, precision).size;
+#else
+        char format[100]; // intentionally uninitialized, cuz filled in with mkFmtWithPrecisionArg_
+        int  resultStrLen = ::snprintf (buf, buf.size (), mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), is_same_v<FLOAT_TYPE, long double> ? 'L' : '\0'), (int)precision, f);
+#endif
         Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
         String tmp = String::FromASCII (buf.begin (), buf.begin () + resultStrLen);
         if (trimTrailingZeros) {
