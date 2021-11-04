@@ -18,8 +18,8 @@ namespace {
     {
         // TODO: Need a more efficient implementation - but this should do for starters...
         Assert (lhsStart <= lhsEnd);
-        size_t         lLen                    = (lhsEnd - lhsStart);
-        size_t         rLen                    = (rhsEnd - rhsStart);
+        size_t         lLen                    = lhsEnd - lhsStart;
+        size_t         rLen                    = rhsEnd - rhsStart;
         size_t         length                  = min (lLen, rLen);
         constexpr bool kUseMemCmpAsSpeedTweek_ = true; // In Visual studio.net 2k17 (15.8.4) this made a big difference (but on a small time so unclear) in one benchmark
         if constexpr (kUseMemCmpAsSpeedTweek_) {
@@ -37,15 +37,14 @@ namespace {
         }
         return Common::CompareResultNormalizer (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
     }
-
     inline Common::strong_ordering Compare_CI_ (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd)
     {
         // TODO: Need a more efficient implementation - but this should do for starters...
         Assert (lhsStart <= lhsEnd);
         // Not sure wcscasecmp even helps because of convert to c-str
         //return ::wcscasecmp (l.c_str (), r.c_str ());;
-        size_t lLen   = (lhsEnd - lhsStart);
-        size_t rLen   = (rhsEnd - rhsStart);
+        size_t lLen   = lhsEnd - lhsStart;
+        size_t rLen   = rhsEnd - rhsStart;
         size_t length = min (lLen, rLen);
         for (size_t i = 0; i < length; i++) {
             Character lc = lhsStart[i].ToLowerCase ();
