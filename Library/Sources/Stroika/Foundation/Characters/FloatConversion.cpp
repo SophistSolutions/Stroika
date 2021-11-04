@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <limits>
 #include <sstream>
+#include <charconv>
 #if __cpp_lib_format
 #include <format>
 #endif
@@ -110,7 +111,11 @@ namespace {
         Require (not isinf (f));
         size_t                 sz = precision + 100; // I think precision is enough
         SmallStackBuffer<char> buf{SmallStackBuffer<char>::eUninitialized, sz};
-#if __cpp_lib_format && 0
+
+#if 1
+        // empirically, on MSVC, this is much faster (appears 3x apx faster) -- LGP 2021-11-04
+       ptrdiff_t resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, precision).ptr - buf.begin ();
+#elif __cpp_lib_format && 0
         // I read this was supposed to be faster, but empirically on windows seems much slower -- LGP 2021-11-04
         ptrdiff_t resultStrLen = format_to_n (buf.begin (), sz, is_same_v<FLOAT_TYPE, long double> ? "{:.{}Lg}"sv : "{:.{}g}"sv, f, precision).size;
 #else
