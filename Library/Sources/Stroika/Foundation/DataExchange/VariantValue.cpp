@@ -11,6 +11,7 @@
 #include "../Characters/ToString.h"
 #include "../Cryptography/Encoding/Algorithm/Base64.h"
 #include "../DataExchange/BadFormatException.h"
+#include "../Debug/Cast.h"
 #include "../Math/Common.h"
 
 #include "VariantValue.h"
@@ -235,11 +236,11 @@ bool VariantValue::empty () const
             return false; // cannot be empty
         }
         case Type::eBLOB: {
-            auto v = dynamic_cast<const TIRep_<Memory::BLOB>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<Memory::BLOB>*> (fVal_.get ());
             return v->fVal.empty ();
         }
         case Type::eFloat: {
-            auto v = dynamic_cast<const TIRep_<FloatType_>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<FloatType_>*> (fVal_.get ());
             AssertNotNull (v);
             return isnan (v->fVal);
         }
@@ -250,17 +251,17 @@ bool VariantValue::empty () const
             return false; // cannot be empty (a change since Stroika v2.1d11 - used to be v->fVal.empty ())
         }
         case Type::eString: {
-            auto v = dynamic_cast<const TIRep_<String>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<String>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal.empty ();
         }
         case Type::eMap: {
-            auto v = dynamic_cast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal.empty ();
         }
         case Type::eArray: {
-            auto v = dynamic_cast<const TIRep_<Sequence<VariantValue>>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<Sequence<VariantValue>>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal.empty ();
         }
@@ -283,7 +284,7 @@ bool VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case Type::eBoolean: {
-            auto v = dynamic_cast<const TIRep_<bool>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<bool>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal;
         }
@@ -363,7 +364,7 @@ Memory::BLOB VariantValue::AsBLOB_ () const
     }
     switch (fVal_->GetType ()) {
         case Type::eBLOB: {
-            auto v = dynamic_cast<const TIRep_<Memory::BLOB>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<Memory::BLOB>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal;
         }
@@ -380,27 +381,27 @@ VariantValue::IntegerType_ VariantValue::AsInteger_ () const
     }
     switch (fVal_->GetType ()) {
         case Type::eBoolean: {
-            auto v = dynamic_cast<const TIRep_<bool>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<bool>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal;
         }
         case Type::eFloat: {
-            auto v = dynamic_cast<const TIRep_<FloatType_>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<FloatType_>*> (fVal_.get ());
             AssertNotNull (v);
             return Math::Round<VariantValue::IntegerType_> (v->fVal);
         }
         case Type::eInteger: {
-            auto v = dynamic_cast<const TIRep_<IntegerType_>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<IntegerType_>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal;
         }
         case Type::eUnsignedInteger: {
-            auto v = dynamic_cast<const TIRep_<UnsignedIntegerType_>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<UnsignedIntegerType_>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal;
         }
         case Type::eString: {
-            auto v = dynamic_cast<const TIRep_<String>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<String>*> (fVal_.get ());
             AssertNotNull (v);
             return Characters::String2Int<IntegerType_> (v->fVal);
         }
@@ -420,22 +421,22 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
     }
     switch (fVal_->GetType ()) {
         case Type::eFloat: {
-            auto v = dynamic_cast<const TIRep_<FloatType_>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<FloatType_>*> (fVal_.get ());
             AssertNotNull (v);
             return Math::Round<VariantValue::UnsignedIntegerType_> (v->fVal);
         }
         case Type::eInteger: {
-            auto v = dynamic_cast<const TIRep_<IntegerType_>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<IntegerType_>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal;
         }
         case Type::eUnsignedInteger: {
-            auto v = dynamic_cast<const TIRep_<UnsignedIntegerType_>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<UnsignedIntegerType_>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal;
         }
         case Type::eString: {
-            auto v = dynamic_cast<const TIRep_<String>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<String>*> (fVal_.get ());
             AssertNotNull (v);
             // not sure this is right for high order bit set for unsigned long long?
             // --LGP 2013-08-25
@@ -457,22 +458,22 @@ VariantValue::FloatType_ VariantValue::AsFloatType_ () const
     }
     switch (fVal_->GetType ()) {
         case Type::eInteger: {
-            auto v = dynamic_cast<const TIRep_<IntegerType_>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<IntegerType_>*> (fVal_.get ());
             AssertNotNull (v);
             return static_cast<FloatType_> (v->fVal);
         }
         case Type::eUnsignedInteger: {
-            auto v = dynamic_cast<const TIRep_<UnsignedIntegerType_>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<UnsignedIntegerType_>*> (fVal_.get ());
             AssertNotNull (v);
             return static_cast<FloatType_> (v->fVal);
         }
         case Type::eFloat: {
-            auto v = dynamic_cast<const TIRep_<FloatType_>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<FloatType_>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal;
         }
         case Type::eString: {
-            auto v = dynamic_cast<const TIRep_<String>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<String>*> (fVal_.get ());
             AssertNotNull (v);
             // NB. this may return NAN if string not a well-formed number (including empty string case)
             return Characters::String2Float<FloatType_> (v->fVal);
@@ -494,17 +495,17 @@ Date VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case Type::eDate: {
-            auto v = dynamic_cast<const TIRep_<Date>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<Date>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal;
         }
         case Type::eDateTime: {
-            auto v = dynamic_cast<const TIRep_<DateTime>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<DateTime>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal.GetDate ();
         }
         case Type::eString: {
-            auto v = dynamic_cast<const TIRep_<String>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<String>*> (fVal_.get ());
             AssertNotNull (v);
             return Date::Parse (v->fVal, Date::kISO8601Format);
         }
@@ -525,17 +526,17 @@ DateTime VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case Type::eDate: {
-            auto v = dynamic_cast<const TIRep_<Date>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<Date>*> (fVal_.get ());
             AssertNotNull (v);
             return DateTime (v->fVal);
         }
         case Type::eDateTime: {
-            auto v = dynamic_cast<const TIRep_<DateTime>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<DateTime>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal;
         }
         case Type::eString: {
-            auto v = dynamic_cast<const TIRep_<String>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<String>*> (fVal_.get ());
             AssertNotNull (v);
             return DateTime::Parse (v->fVal, DateTime::kISO8601Format);
         }
@@ -559,29 +560,29 @@ String VariantValue::AsString_ () const
             return String{};
         }
         case Type::eBoolean: {
-            auto v = dynamic_cast<const TIRep_<bool>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<bool>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal ? L"true"sv : L"false"sv;
         }
         case Type::eBLOB: {
-            auto v = dynamic_cast<const TIRep_<Memory::BLOB>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<Memory::BLOB>*> (fVal_.get ());
             AssertNotNull (v);
             return String::FromASCII (Cryptography::Encoding::Algorithm::EncodeBase64 (v->fVal));
         }
         case Type::eInteger: {
-            auto v = dynamic_cast<const TIRep_<IntegerType_>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<IntegerType_>*> (fVal_.get ());
             AssertNotNull (v);
             Assert (typeid (v->fVal) == typeid (long long));
             return Characters::Format (L"%lld", v->fVal);
         }
         case Type::eUnsignedInteger: {
-            auto v = dynamic_cast<const TIRep_<UnsignedIntegerType_>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<UnsignedIntegerType_>*> (fVal_.get ());
             AssertNotNull (v);
             Assert (typeid (v->fVal) == typeid (unsigned long long));
             return Characters::Format (L"%llu", v->fVal);
         }
         case Type::eFloat: {
-            auto v = dynamic_cast<const TIRep_<FloatType_>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<FloatType_>*> (fVal_.get ());
             AssertNotNull (v);
             using namespace Characters;
             /*
@@ -610,22 +611,22 @@ String VariantValue::AsString_ () const
             return Float2String (v->fVal, kFmtOptions_);
         }
         case Type::eDate: {
-            auto v = dynamic_cast<const TIRep_<Date>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<Date>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal.Format (Date::kISO8601Format);
         }
         case Type::eDateTime: {
-            auto v = dynamic_cast<const TIRep_<DateTime>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<DateTime>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal.Format (DateTime::kISO8601Format);
         }
         case Type::eString: {
-            auto v = dynamic_cast<const TIRep_<String>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<String>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal;
         }
         case Type::eArray: {
-            auto v = dynamic_cast<const TIRep_<Sequence<VariantValue>>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<Sequence<VariantValue>>*> (fVal_.get ());
             AssertNotNull (v);
             wstringstream tmp;
             tmp << L"[";
@@ -639,7 +640,7 @@ String VariantValue::AsString_ () const
             return tmp.str ();
         }
         case Type::eMap: {
-            auto v = dynamic_cast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
             AssertNotNull (v);
             wstringstream tmp;
             tmp << L"{";
@@ -668,7 +669,7 @@ map<wstring, VariantValue> VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case Type::eMap: {
-            auto v = dynamic_cast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
             AssertNotNull (v);
             map<wstring, VariantValue> tmp;
             for (auto i : v->fVal) {
@@ -694,7 +695,7 @@ Mapping<String, VariantValue> VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case Type::eMap: {
-            auto v = dynamic_cast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal;
         }
@@ -721,7 +722,7 @@ Sequence<VariantValue> VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case Type::eArray: {
-            auto v = dynamic_cast<const TIRep_<Sequence<VariantValue>>*> (fVal_.get ());
+            auto v = Debug::UncheckedDynamicCast<const TIRep_<Sequence<VariantValue>>*> (fVal_.get ());
             AssertNotNull (v);
             return v->fVal;
         }

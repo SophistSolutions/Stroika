@@ -5,6 +5,7 @@
 #define _Stroika_Foundation_Traversal_Generator_inl_
 
 #include "../Debug/Assertions.h"
+#include "../Debug/Cast.h"
 #include "IterableFromIterator.h"
 
 namespace Stroika::Foundation::Traversal {
@@ -37,8 +38,7 @@ namespace Stroika::Foundation::Traversal {
             virtual bool Equals (const typename Iterator<T>::IRep* rhs) const override
             {
                 RequireNotNull (rhs);
-                AssertMember (rhs, GenItWrapper_);
-                const GenItWrapper_& rrhs = *dynamic_cast<const GenItWrapper_*> (rhs);
+                const GenItWrapper_& rrhs = *Debug::UncheckedDynamicCast<const GenItWrapper_*> (rhs);
                 // No way to tell equality (so must rethink definition in Iterator<T>::Equals()!!! @todo
                 WeakAssert (not fCur_.has_value () or not rrhs.fCur_.has_value ());
                 return fCur_.has_value () == rrhs.fCur_.has_value ();

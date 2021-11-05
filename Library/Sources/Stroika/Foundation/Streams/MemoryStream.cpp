@@ -5,6 +5,7 @@
 
 #include <algorithm>
 
+#include "../Debug/Cast.h"
 #include "../Execution/Common.h"
 #include "../Execution/Throw.h"
 #include "../Memory/BlockAllocated.h"
@@ -29,8 +30,7 @@ template <>
 template <>
 Memory::BLOB MemoryStream<byte>::Ptr::As () const
 {
-    AssertMember (&_GetRepConstRef (), Rep_);
-    const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
+    const Rep_& rep = *Debug::UncheckedDynamicCast<const Rep_*> (&_GetRepConstRef ());
     return rep.AsVector ();
 }
 
@@ -38,8 +38,7 @@ template <>
 template <>
 Memory::BLOB MemoryStream<uint8_t>::Ptr::As () const
 {
-    AssertMember (&_GetRepConstRef (), Rep_);
-    const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
+    const Rep_& rep = *Debug::UncheckedDynamicCast<const Rep_*> (&_GetRepConstRef ());
     return rep.AsVector ();
 }
 
@@ -47,8 +46,7 @@ template <>
 template <>
 string MemoryStream<byte>::Ptr::As () const
 {
-    AssertMember (&_GetRepConstRef (), Rep_);
-    const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
+    const Rep_& rep = *Debug::UncheckedDynamicCast<const Rep_*> (&_GetRepConstRef ());
     return rep.AsString ();
 }
 

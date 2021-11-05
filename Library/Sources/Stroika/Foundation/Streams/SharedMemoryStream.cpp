@@ -5,6 +5,7 @@
 
 #include <algorithm>
 
+#include "../Debug/Cast.h"
 #include "../Execution/Common.h"
 #include "../Execution/Throw.h"
 #include "../Memory/BlockAllocated.h"
@@ -30,7 +31,7 @@ template <>
 Memory::BLOB SharedMemoryStream<byte>::Ptr::As () const
 {
     AssertMember (&_GetRepConstRef (), Rep_);
-    const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
+    const Rep_& rep = *Debug::UncheckedDynamicCast<const Rep_*> (&_GetRepConstRef ());
     return rep.AsVector ();
 }
 
@@ -39,7 +40,7 @@ template <>
 string SharedMemoryStream<byte>::Ptr::As () const
 {
     AssertMember (&_GetRepConstRef (), Rep_);
-    const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
+    const Rep_& rep = *Debug::UncheckedDynamicCast<const Rep_*> (&_GetRepConstRef ());
     return rep.AsString ();
 }
 
@@ -48,7 +49,7 @@ template <>
 Characters::String SharedMemoryStream<Characters::Character>::Ptr::As () const
 {
     AssertMember (&_GetRepConstRef (), Rep_);
-    const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
+    const Rep_& rep = *Debug::UncheckedDynamicCast<const Rep_*> (&_GetRepConstRef ());
     auto        tmp = rep.AsVector ();
     return String (Containers::Start (tmp), Containers::End (tmp));
 }

@@ -11,6 +11,7 @@
  */
 
 #include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Debug/Cast.h"
 
 namespace Stroika::Foundation ::Streams {
 
@@ -203,7 +204,7 @@ namespace Stroika::Foundation ::Streams {
     void BufferedOutputStream<ELEMENT_TYPE>::Ptr::Abort ()
     {
         auto  rep = this->_GetSharedRep ();
-        Rep_* r   = dynamic_cast<Rep_*> (rep.get ());
+        Rep_* r   = Debug::UncheckedDynamicCast<Rep_*> (rep.get ());
         AssertNotNull (r);
         r->Abort ();
     }

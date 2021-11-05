@@ -10,6 +10,8 @@
  ********************************************************************************
  */
 
+#include "../Debug/Cast.h"
+
 namespace Stroika::Foundation::Streams {
 
     /*
@@ -50,18 +52,14 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline auto InputOutputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef () const -> const _IRep&
     {
-        // reinterpret_cast faster than dynamic_cast - check equivilent
         Ensure (dynamic_cast<const _IRep*> (&InputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef ()) == dynamic_cast<const _IRep*> (&OutputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef ()));
-        EnsureMember (&InputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef (), _IRep);
-        return *reinterpret_cast<const _IRep*> (&InputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef ()); // faster than dynamic_cast, and if not equivalent, add caching later here
+        return *Debug::UncheckedDynamicCast<const _IRep*> (&InputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef ());
     }
     template <typename ELEMENT_TYPE>
     inline auto InputOutputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef () const -> _IRep&
     {
-        // reinterpret_cast faster than dynamic_cast - check equivalent
         Ensure (&typename InputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef () == &OutputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef ());
-        EnsureMember (&InputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef (), _IRep);
-        return *reinterpret_cast<_IRep*> (&InputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef ()); // faster than dynamic_cast, and if not equivalent, add caching later here
+        return *Debug::UncheckedDynamicCast<_IRep*> (&InputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef ());
     }
     template <typename ELEMENT_TYPE>
     inline bool InputOutputStream<ELEMENT_TYPE>::Ptr::IsSeekable () const

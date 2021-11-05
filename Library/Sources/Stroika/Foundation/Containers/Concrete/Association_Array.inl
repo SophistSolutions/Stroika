@@ -9,6 +9,7 @@
 ***************************** Implementation Details ***************************
 ********************************************************************************
 */
+#include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
 #include "../DataStructures/Array.h"
@@ -126,7 +127,7 @@ namespace Stroika ::Foundation::Containers ::Concrete {
             lock_guard<const Debug::AssertExternallySynchronizedLock>                 critSec{fData_};
             const typename Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::IRep& ir = i.GetRep ();
             AssertMember (&ir, IteratorRep_);
-            auto& mir = dynamic_cast<const IteratorRep_&> (ir);
+            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (ir);
             fData_.RemoveAt (mir.fIterator);
         }
 

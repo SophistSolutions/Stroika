@@ -16,7 +16,7 @@
 namespace Stroika::Foundation::Debug {
 
     /**
-     *  \brief return the same value as dynamic_cast<T> would have, except instead of checking and throwing
+     *  \brief return the same value as dynamic_cast<T> would have, except instead of checking and throwing or returning null,
      *         only check in DEBUG builds, and there ASSERT != null.
      *
      *  Use where you would want to check Assert (dynamic_cast<const T*> (&ir) != nullptr) and then do static_cast<> instead;)

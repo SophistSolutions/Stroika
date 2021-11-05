@@ -15,6 +15,7 @@
 #include "../Containers/Common.h"
 #include "../Containers/Set.h"
 #include "../Cryptography/Digest/Algorithm/SuperFastHash.h"
+#include "../Debug/Cast.h"
 #include "../Execution/Exceptions.h"
 #include "../Execution/Throw.h"
 #include "../Math/Common.h"
@@ -154,7 +155,7 @@ Traversal::Iterator<Character> String::_IRep::MakeIterator () const
         {
             RequireNotNull (rhs);
             RequireMember (rhs, MyIterRep_);
-            const MyIterRep_* rrhs = dynamic_cast<const MyIterRep_*> (rhs);
+            const MyIterRep_* rrhs = Debug::UncheckedDynamicCast<const MyIterRep_*> (rhs);
             AssertNotNull (rrhs);
             Require (fStr == rrhs->fStr); // from same string object
             return fCurIdx == rrhs->fCurIdx;

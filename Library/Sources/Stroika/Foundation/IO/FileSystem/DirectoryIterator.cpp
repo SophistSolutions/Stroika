@@ -12,6 +12,7 @@
 #include "../../Characters/CString/Utilities.h"
 #include "../../Characters/ToString.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Debug/Cast.h"
 #include "../../Debug/Trace.h"
 #include "../../Execution/Exceptions.h"
 #if qPlatform_Windows
@@ -187,7 +188,7 @@ public:
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         RequireNotNull (rhs);
         RequireMember (rhs, Rep_);
-        const Rep_& rrhs = *dynamic_cast<const Rep_*> (rhs);
+        const Rep_& rrhs = *Debug::UncheckedDynamicCast<const Rep_*> (rhs);
 #if qPlatform_POSIX
         return fDirName_ == rrhs.fDirName_ and fIteratorReturnType_ == rrhs.fIteratorReturnType_ and ((fCur_ == rrhs.fCur_ and fCur_ == nullptr) or (rrhs.fCur_ != nullptr and fCur_->d_ino == rrhs.fCur_->d_ino));
 #elif qPlatform_Windows

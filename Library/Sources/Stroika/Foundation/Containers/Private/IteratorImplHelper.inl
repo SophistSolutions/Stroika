@@ -5,6 +5,7 @@
 #define _Stroika_Foundation_Containers_Private_IteratorImplHelper_inl_ 1
 
 #include "../../Debug/Assertions.h"
+#include "../../Debug/Cast.h"
 
 namespace Stroika::Foundation::Containers::Private {
 
@@ -95,7 +96,7 @@ namespace Stroika::Foundation::Containers::Private {
         RequireNotNull (rhs);
         using ActualIterImplType_ = IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>;
         RequireMember (rhs, ActualIterImplType_);
-        const ActualIterImplType_* rrhs = dynamic_cast<const ActualIterImplType_*> (rhs);
+        const ActualIterImplType_* rrhs = Debug::UncheckedDynamicCast<const ActualIterImplType_*> (rhs);
         AssertNotNull (rrhs);
         //  ValidateChangeCount ();
         //  rhs->ValidateChangeCount ();
