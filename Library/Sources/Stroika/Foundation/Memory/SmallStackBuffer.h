@@ -233,6 +233,11 @@ namespace Stroika::Foundation::Memory {
     public:
         nonvirtual void push_back (Configuration::ArgByValueType<T> e);
 
+    public:
+        /**
+         */
+        nonvirtual void clear ();
+
     private:
         nonvirtual void reserve_ (size_t nElements);
 

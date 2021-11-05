@@ -321,6 +321,11 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T, size_t BUF_SIZE>
+    inline void SmallStackBuffer<T, BUF_SIZE>::clear ()
+    {
+        resize (0);
+    }
+    template <typename T, size_t BUF_SIZE>
     inline SmallStackBuffer<T, BUF_SIZE>::operator T* ()
     {
         AssertNotNull (fLiveData_);
