@@ -35,27 +35,27 @@ namespace Stroika::Foundation::Characters {
     {
     }
     inline Float2StringOptions::Float2StringOptions (const locale& l)
-        : fUseLocale_ (l)
+        : fUseLocale_{l}
     {
     }
     constexpr Float2StringOptions::Float2StringOptions (ios_base::fmtflags fmtFlags)
-        : fFmtFlags_ (fmtFlags)
+        : fFmtFlags_{fmtFlags}
     {
     }
     constexpr Float2StringOptions::Float2StringOptions (Precision precision)
-        : fPrecision_ (precision.fPrecision)
+        : fPrecision_{precision.fPrecision}
     {
     }
     constexpr Float2StringOptions::Float2StringOptions (FloatFormatType scientificNotation)
-        : fFloatFormat_ (scientificNotation)
+        : fFloatFormat_{scientificNotation}
     {
     }
     constexpr Float2StringOptions::Float2StringOptions (TrimTrailingZerosType trimTrailingZeros)
-        : fTrimTrailingZeros_ (trimTrailingZeros == TrimTrailingZerosType::eTrim)
+        : fTrimTrailingZeros_{trimTrailingZeros == TrimTrailingZerosType::eTrim}
     {
     }
     inline Float2StringOptions::Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2)
-        : Float2StringOptions (b1)
+        : Float2StringOptions{b1}
     {
         Memory::CopyToIf (&fPrecision_, b2.fPrecision_);
         Memory::CopyToIf (&fFmtFlags_, b2.fFmtFlags_);
