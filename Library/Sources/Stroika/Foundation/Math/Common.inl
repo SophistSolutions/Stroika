@@ -148,7 +148,9 @@ namespace Stroika::Foundation::Math {
             if (l < -10 or l > 10) {
                 // no constexpr pow() - https://stackoverflow.com/questions/17347935/constexpr-math-functions
                 static const TC kScale_ = pow (static_cast<TC> (10), -(numeric_limits<TC>::digits10 - static_cast<TC> (1)));
-                return fabs (l) * kScale_;
+                // UNCLEAR - MAYBE due to bug on vs2k, fabs<double> (1.797693134862316e+308) produces INF so avoid -- LGP 2021-11-05
+                //return fabs (l) * kScale_;
+                return l >= 0 ? (l * kScale_) : (-l * kScale_);
             }
             return 10000 * numeric_limits<TC>::epsilon ();
         }
