@@ -543,8 +543,9 @@ optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) c
     size_t length = accessor._ConstGetRep ()._GetLength ();
     switch (co) {
         case CompareOptions::eCaseInsensitive: {
+            Character lcc = c.ToLowerCase ();
             for (size_t i = startAt; i < length; i++) {
-                if (accessor._ConstGetRep ().GetAt (i).ToLowerCase () == c.ToLowerCase ()) {
+                if (accessor._ConstGetRep ().GetAt (i).ToLowerCase () == lcc) {
                     return i;
                 }
             }
@@ -1255,6 +1256,22 @@ void String::AsNarrowSDKString (string* into) const
 template <>
 void String::AsASCII (string* into) const
 {
+    if (not AsASCIIQuietly (into)) {
+        Execution::Throw (Execution::RuntimeErrorException{L"Error converting non-ascii text to string"sv});
+    }
+}
+
+template <>
+void String::AsASCII (Memory::SmallStackBuffer<char>* into) const
+{
+    if (not AsASCIIQuietly (into)) {
+        Execution::Throw (Execution::RuntimeErrorException{L"Error converting non-ascii text to string"sv});
+    }
+}
+
+template <>
+bool String::AsASCIIQuietly (string* into) const
+{
     RequireNotNull (into);
     into->clear ();
     _SafeReadRepAccessor accessor{this};
@@ -1262,10 +1279,28 @@ void String::AsASCII (string* into) const
     into->reserve (len);
     for (size_t i = 0; i < len; ++i) {
         if (not accessor._ConstGetRep ().GetAt (i).IsASCII ()) {
-            Execution::Throw (Execution::RuntimeErrorException{L"Error converting non-ascii text to string"sv});
+            return false;
         }
         into->push_back (static_cast<char> (accessor._ConstGetRep ().GetAt (i).GetCharacterCode ()));
     }
+    return true;
+}
+
+template <>
+bool String::AsASCIIQuietly (Memory::SmallStackBuffer<char>* into) const
+{
+    RequireNotNull (into);
+    into->clear ();
+    _SafeReadRepAccessor accessor{this};
+    size_t               len = accessor._ConstGetRep ().GetLength ();
+    into->reserve (len);
+    for (size_t i = 0; i < len; ++i) {
+        if (not accessor._ConstGetRep ().GetAt (i).IsASCII ()) {
+            return false;
+        }
+        into->push_back (static_cast<char> (accessor._ConstGetRep ().GetAt (i).GetCharacterCode ()));
+    }
+    return true;
 }
 
 void String::erase (size_t from)

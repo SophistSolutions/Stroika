@@ -1146,11 +1146,28 @@ namespace Stroika::Foundation::Characters {
          * The source string MUST be valid ascii characters - throw RuntimeErrorException<>
          *
          *  \note - this is a (compatible) change of behavior: before Stroika v2.1d23, this would assert out on invalid ASCII.
+         * 
+         *  Supported Types:
+         *      o   Memory::SmallStackBuffer<char>
+         *      o   string
          */
         template <typename T = string>
         nonvirtual T AsASCII () const;
         template <typename T = string>
         nonvirtual void AsASCII (T* into) const;
+
+    public:
+        /**
+         * Convert String losslessly into a standard C++ type.
+         * Only specifically specialized variants are supported (right now just <string> supported).
+         * If this source contains any invalid ASCII characters, this returns false, and otherwise true (with set into).
+         * 
+         *  Supported Types:
+         *      o   Memory::SmallStackBuffer<char>
+         *      o   string
+         */
+        template <typename T = string>
+        nonvirtual bool AsASCIIQuietly (T* into) const;
 
     public:
         /**
@@ -1325,6 +1342,10 @@ namespace Stroika::Foundation::Characters {
     void String::AsASCII (string* into) const;
     template <>
     string String::AsASCII () const;
+    template <>
+    bool String::AsASCIIQuietly (string* into) const;
+    template <>
+    bool String::AsASCIIQuietly (Memory::SmallStackBuffer<char>* into) const;
 
     template <>
     pair<const Character*, const Character*> String::GetData () const;
