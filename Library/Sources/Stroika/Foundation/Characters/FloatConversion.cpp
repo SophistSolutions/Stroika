@@ -261,7 +261,7 @@ String Characters::Float2String (long double f, const Float2StringOptions& optio
  */
 namespace {
     template <typename RETURN_TYPE, typename FUNCTION>
-    inline RETURN_TYPE String2Float_ (const String& s, FUNCTION F)
+    inline RETURN_TYPE String2Float_LegacyStr2DHelper_ (const String& s, FUNCTION F)
     {
         wchar_t*       e   = nullptr;
         const wchar_t* cst = s.c_str ();
@@ -277,31 +277,8 @@ namespace {
         }
         return d;
     }
-}
-
-namespace Stroika::Foundation::Characters {
-    template <>
-    float String2Float (const String& s)
-    {
-        return String2Float_<float> (s, wcstof);
-    }
-
-    template <>
-    double String2Float (const String& s)
-    {
-        return String2Float_<double> (s, wcstod);
-    }
-
-    template <>
-    long double String2Float (const String& s)
-    {
-        return String2Float_<long double> (s, wcstold);
-    }
-}
-
-namespace {
     template <typename RETURN_TYPE, typename FUNCTION>
-    inline RETURN_TYPE String2Float_ (const String& s, String* remainder, FUNCTION F)
+    inline RETURN_TYPE String2Float_LegacyStr2DHelper_ (const String& s, String* remainder, FUNCTION F)
     {
         RequireNotNull (remainder);
         wchar_t*       e   = nullptr;
@@ -310,24 +287,117 @@ namespace {
         *remainder         = e;
         return d;
     }
+
+    template <typename RETURN_TYPE>
+    RETURN_TYPE String2Float_LegacyStr2D_ (const String& s);
+    template <>
+    inline float String2Float_LegacyStr2D_ (const String& s)
+    {
+        return String2Float_LegacyStr2DHelper_<float> (s, wcstof);
+    }
+    template <>
+    inline double String2Float_LegacyStr2D_ (const String& s)
+    {
+        return String2Float_LegacyStr2DHelper_<double> (s, wcstod);
+    }
+    template <>
+    inline long double String2Float_LegacyStr2D_ (const String& s)
+    {
+        return String2Float_LegacyStr2DHelper_<long double> (s, wcstold);
+    }
+
+    /**
+     * Empirical test, 2021-11-05 on x64, windows, new laptop, vs2k19, showed about 30% speedup from this new logic.
+     * And putting in assertions to assure same results.
+    */
+    template <typename RETURN_TYPE>
+    RETURN_TYPE String2Float_NewLogic_ (const String& s)
+    {
+        Memory::SmallStackBuffer<char> asciiS;
+        if (s.AsASCIIQuietly (&asciiS)) {
+            RETURN_TYPE r; // intentionally uninitialized
+            auto        b = asciiS.begin ();
+            auto        e = asciiS.end ();
+            if (b != e and *b == '+') {
+                b++; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
+            }
+            auto [ptr, ec] = from_chars (b, e, r);
+            if (ec == errc::result_out_of_range) {
+                return *b == '-' ? -numeric_limits<RETURN_TYPE>::infinity () : numeric_limits<RETURN_TYPE>::infinity ();
+            }
+            // if error or trailing crap - return nan
+            return (ec == std::errc () and ptr == e) ? r : Math::nan<RETURN_TYPE> ();
+        }
+        else {
+            return String2Float_LegacyStr2D_<RETURN_TYPE> (s);
+        }
+    }
+
+}
+
+namespace Stroika::Foundation::Characters {
+    template <>
+    float String2Float (const String& s)
+    {
+#if qCompilerAndStdLib_to_chars_FP_Buggy
+        return String2Float_LegacyStr2D_<float> (s);
+#else
+        auto result = String2Float_NewLogic_<float> (s);
+#if qDebug
+        static_assert (Math::nan<float> () != Math::nan<float> ());
+        Ensure ((result == String2Float_LegacyStr2D_<float> (s)) or isnan (result));
+#endif
+        return result;
+#endif
+    }
+
+    template <>
+    double String2Float (const String& s)
+    {
+#if qCompilerAndStdLib_to_chars_FP_Buggy
+        return String2Float_LegacyStr2D_<double> (s);
+#else
+        auto result = String2Float_NewLogic_<double> (s);
+#if qDebug
+        static_assert (Math::nan<double> () != Math::nan<double> ());
+        Ensure ((result == String2Float_LegacyStr2D_<double> (s)) or isnan (result));
+#endif
+        return result;
+#endif
+    }
+
+    template <>
+    long double String2Float (const String& s)
+    {
+#if qCompilerAndStdLib_to_chars_FP_Buggy
+        return String2Float_LegacyStr2D_<long double> (s);
+#else
+        auto result = String2Float_NewLogic_<long double> (s);
+#if qDebug
+        static_assert (Math::nan<long double> () != Math::nan<long double> ());
+        Ensure ((result == String2Float_LegacyStr2D_<long double> (s)) or isnan (result));
+#endif
+        return result;
+#endif
+    }
 }
 
 namespace Stroika::Foundation::Characters {
     template <>
     float String2Float (const String& s, String* remainder)
     {
-        return String2Float_<float> (s, remainder, wcstof);
+        return String2Float_LegacyStr2DHelper_<float> (s, remainder, wcstof);
     }
 
     template <>
     double String2Float (const String& s, String* remainder)
     {
-        return String2Float_<double> (s, remainder, wcstod);
+        return String2Float_LegacyStr2DHelper_<double> (s, remainder, wcstod);
     }
 
     template <>
     long double String2Float (const String& s, String* remainder)
     {
-        return String2Float_<long double> (s, remainder, wcstold);
+        return String2Float_LegacyStr2DHelper_<long double> (s, remainder, wcstold);
     }
 }
