@@ -16,7 +16,6 @@ namespace Stroika::Foundation::Traversal {
         struct GenItWrapper_ : Iterator<T>::IRep {
             function<optional<T> ()> fFun_;
             optional<T>              fCur_;
-            bool                     fSuppressMore_{false}; // needed cuz we need to be able to answer 'isdone' before advance begins
             GenItWrapper_ () = delete;
             GenItWrapper_ (const function<optional<T> ()>& f)
                 : fFun_{f}

@@ -646,7 +646,7 @@ namespace Stroika::Foundation::Traversal {
          */
         virtual RepSmartPtr Clone () const = 0;
         /**
-         *  More () takes two required arguments - one an optional result, and the other a flag about whether or
+         *  More () takes two required arguments - one an optional<T> result, and the other a flag about whether or
          *  not to advance.
          *
          *  If advance is true, it moves the iterator to the next legal position.
@@ -656,6 +656,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  This function returns the current value in result if the iterator is positioned at a valid position,
          *  and sets result to an empty value if at the end - its 'at end'.
+         *
+         *  \req result != nullptr
          *
          *  \em Design Note
          *      We chose to use a pointer parameter instead of a return value to avoid extra
