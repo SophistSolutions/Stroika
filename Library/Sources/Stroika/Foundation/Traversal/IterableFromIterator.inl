@@ -95,6 +95,8 @@ namespace Stroika::Foundation::Traversal {
     {
         struct MyIterable_ : public Iterable<T> {
             struct Rep : public IterableFromIterator<T>::_Rep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
+                using inherited = typename IterableFromIterator<T>::_Rep;
+                using _IteratorTracker = typename inherited::_IteratorTracker;
                 using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
                 Iterator<T> fOriginalIterator;
 #if qDebug
