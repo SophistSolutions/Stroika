@@ -20,6 +20,6 @@ using namespace Stroika::Foundation::Traversal;
  ********************************************************************************
  */
 DirectoryIterable::DirectoryIterable (const filesystem::path& directoryName, IteratorReturnType iteratorReturns)
-    : Iterable<filesystem::path> (MakeIterableFromIterator (DirectoryIterator (directoryName, iteratorReturns)))
+    : Iterable<filesystem::path>{MakeIterableFromIterator (DirectoryIterator (directoryName, iteratorReturns))}
 {
 }

@@ -198,7 +198,7 @@ public:
     virtual RepSmartPtr Clone () const override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx (L"Entering DirectoryIterator::Rep_::Clone");
+        Debug::TraceContextBumper ctx{L"Entering DirectoryIterator::Rep_::Clone"};
 #endif
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
 #if qPlatform_POSIX
@@ -261,6 +261,6 @@ private:
  ********************************************************************************
  */
 DirectoryIterator::DirectoryIterator (const filesystem::path& directoryName, IteratorReturnType iteratorReturns)
-    : Iterator<filesystem::path> (MakeSmartPtr<Rep_> (FromPath (directoryName), iteratorReturns))
+    : Iterator<filesystem::path>{MakeSmartPtr<Rep_> (FromPath (directoryName), iteratorReturns)}
 {
 }
