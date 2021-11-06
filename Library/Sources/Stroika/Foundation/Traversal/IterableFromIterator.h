@@ -50,28 +50,28 @@ namespace Stroika::Foundation::Traversal {
      *
      *  \par Example Usage
      *      \code
-     *      template    <typename T>
-     *      struct   MyIterable_ : public Iterable<T> {
-     *          struct   Rep : public IterableFromIterator<T>::_Rep {
-     *              Iterator<T>   fOriginalIterator;
-     *              Rep (const Iterator<T>& originalIterator)
-     *                  : fOriginalIterator (originalIterator)
+     *          template    <typename T>
+     *          struct   MyIterable_ : public Iterable<T> {
+     *              struct   Rep : public IterableFromIterator<T>::_Rep {
+     *                  Iterator<T>   fOriginalIterator;
+     *                  Rep (const Iterator<T>& originalIterator)
+     *                      : fOriginalIterator{originalIterator}
+     *                  {
+     *                  }
+     *                  virtual Iterator<T>     MakeIterator () const override
+     *                  {
+     *                      return fOriginalIterator;
+     *                  }
+     *                  virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
+     *                  {
+     *                      return Iterable<T>::template MakeSmartPtr<Rep> (*this);
+     *                  }
+     *              };
+     *              MyIterable_ (const Iterator<T>& originalIterator)
+     *                  : Iterable<T>{Iterable<T>::template MakeSmartPtr<Rep> (originalIterator)}
      *              {
-     *              }
-     *              virtual Iterator<T>     MakeIterator () const override
-     *              {
-     *                  return fOriginalIterator;
-     *              }
-     *              virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
-     *              {
-     *                  return Iterable<T>::template MakeSmartPtr<Rep> (*this);
      *              }
      *          };
-     *          MyIterable_ (const Iterator<T>& originalIterator)
-     *              : Iterable<T> (Iterable<T>::template MakeSmartPtr<Rep> (originalIterator))
-     *          {
-     *          }
-     *      };
      *      \endcode
      *
      *      Note _Rep is an abstract class, and you MUST provide your own Clone () method, and often will

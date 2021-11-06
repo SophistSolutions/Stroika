@@ -120,7 +120,7 @@ namespace Stroika::Foundation::Traversal {
                 mutable Private_::IteratorTracker<T> fIteratorTracker_{};
 #endif
                 Rep (const Iterator<T>& originalIterator)
-                    : fOriginalIterator (originalIterator)
+                    : fOriginalIterator{originalIterator}
                 {
                 }
                 virtual Iterator<T> MakeIterator () const override
@@ -137,11 +137,11 @@ namespace Stroika::Foundation::Traversal {
                 }
             };
             MyIterable_ (const Iterator<T>& originalIterator)
-                : Iterable<T> (Iterable<T>::template MakeSmartPtr<Rep> (originalIterator))
+                : Iterable<T>{Iterable<T>::template MakeSmartPtr<Rep> (originalIterator)}
             {
             }
         };
-        return MyIterable_ (iterator);
+        return MyIterable_{iterator};
     }
 
 }
