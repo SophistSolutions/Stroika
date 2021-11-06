@@ -10,17 +10,20 @@
 namespace Stroika::Foundation::Traversal {
 
 #if qDebug
-    namespace Private_ {
-        template <typename T>
-        IteratorTracker<T>::~IteratorTracker ()
-        {
-            Assert (*fCountRunning == 0);
-        }
-        template <typename T>
-        Iterator<T> IteratorTracker<T>::MakeDelegatedIterator (const Iterator<T>& sourceIterator)
-        {
-            return DelegatedIterator<T, shared_ptr<unsigned int>> (sourceIterator, fCountRunning);
-        }
+    /*
+     ********************************************************************************
+     * IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::_IteratorTracker *
+     ********************************************************************************
+     */
+    template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
+    inline IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::_IteratorTracker::~_IteratorTracker ()
+    {
+        Assert (*fCountRunning == 0);
+    }
+    template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
+    inline Iterator<T> IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::_IteratorTracker::MakeDelegatedIterator (const Iterator<T>& sourceIterator)
+    {
+        return DelegatedIterator<T, shared_ptr<unsigned int>> (sourceIterator, fCountRunning);
     }
 #endif
 
@@ -30,18 +33,29 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    inline IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::_Rep (const CONTEXT_FOR_EACH_ITERATOR& contextForEachIterator)
+    template <typename K1, enable_if_t<not is_same_v<K1, void>>*>
+    inline IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::_Rep (const _ContextObjectType& contextForEachIterator)
         : _fContextForEachIterator{contextForEachIterator}
+    {
+    }
+    template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
+    template <typename K1, enable_if_t<is_same_v<K1, void>>*>
+    inline IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::_Rep ()
     {
     }
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
     Iterator<T> IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::MakeIterator () const
     {
+        if constexpr (is_same_v<NEW_ITERATOR_REP_TYPE, void>) {
+            return nullptr;
+        }
+        else {
 #if qDebug
-        return fIteratorTracker_.MakeDelegatedIterator (Iterator<T>{Iterator<T>::template MakeSmartPtr<NEW_ITERATOR_REP_TYPE> (_fContextForEachIterator)});
+            return fIteratorTracker_.MakeDelegatedIterator (Iterator<T>{Iterator<T>::template MakeSmartPtr<NEW_ITERATOR_REP_TYPE> (_fContextForEachIterator)});
 #else
-        return Iterator<T>{Iterator<T>::template MakeSmartPtr<NEW_ITERATOR_REP_TYPE> (_fContextForEachIterator)};
+            return Iterator<T>{Iterator<T>::template MakeSmartPtr<NEW_ITERATOR_REP_TYPE> (_fContextForEachIterator)};
 #endif
+        }
     }
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
     size_t IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::GetLength () const
@@ -70,36 +84,6 @@ namespace Stroika::Foundation::Traversal {
     {
         return this->_FindFirstThat (doToElement);
     }
-#define qNotSureWhyWeNeedExtraTemplateDefsIsItMSFTBugOrMyMisunderstanding 1
-#if qNotSureWhyWeNeedExtraTemplateDefsIsItMSFTBugOrMyMisunderstanding
-    template <typename T>
-    size_t IterableFromIterator<T, void, void>::_Rep::GetLength () const
-    {
-        size_t n = 0;
-        for (auto i = this->MakeIterator (); not i.Done (); ++i) {
-            n++;
-        }
-        return n;
-    }
-    template <typename T>
-    bool IterableFromIterator<T, void, void>::_Rep::IsEmpty () const
-    {
-        for (auto i = this->MakeIterator (); not i.Done ();) {
-            return false;
-        }
-        return true;
-    }
-    template <typename T>
-    void IterableFromIterator<T, void, void>::_Rep::Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const
-    {
-        this->_Apply (doToElement);
-    }
-    template <typename T>
-    Iterator<T> IterableFromIterator<T, void, void>::_Rep::FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const
-    {
-        return this->_FindFirstThat (doToElement);
-    }
-#endif
 
     /*
      ********************************************************************************
@@ -114,7 +98,7 @@ namespace Stroika::Foundation::Traversal {
                 using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
                 Iterator<T> fOriginalIterator;
 #if qDebug
-                mutable Private_::IteratorTracker<T> fIteratorTracker_{};
+                mutable _IteratorTracker fIteratorTracker_{};
 #endif
                 Rep (const Iterator<T>& originalIterator)
                     : fOriginalIterator{originalIterator}

@@ -22,17 +22,6 @@
 
 namespace Stroika::Foundation::Traversal {
 
-#if qDebug
-    namespace Private_ {
-        template <typename T>
-        struct IteratorTracker {
-            shared_ptr<unsigned int> fCountRunning = make_shared<unsigned int> (0);
-            ~IteratorTracker ();
-            Iterator<T> MakeDelegatedIterator (const Iterator<T>& sourceIterator);
-        };
-    }
-#endif
-
     /**
      *  Helper class to make it a little easier to wrap an Iterable<> around an Iterator class.
      *
@@ -91,55 +80,33 @@ namespace Stroika::Foundation::Traversal {
             using inherited = typename Iterable<T>::_IRep;
 
         protected:
-            CONTEXT_FOR_EACH_ITERATOR _fContextForEachIterator;
-#if qDebug
-        private:
-            mutable Private_::IteratorTracker<T> fIteratorTracker_;
-#endif
+            using _ContextObjectType = conditional_t<is_same_v<CONTEXT_FOR_EACH_ITERATOR, void>, Configuration::Empty, CONTEXT_FOR_EACH_ITERATOR>;
+
         protected:
-            _Rep (const CONTEXT_FOR_EACH_ITERATOR& contextForEachIterator);
-
-        public:
-            virtual Iterator<T> MakeIterator () const override;
-            virtual size_t      GetLength () const override;
-            virtual bool        IsEmpty () const override;
-            virtual void        Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override;
-            virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override;
-        };
-    };
-    template <typename T, typename NEW_ITERATOR_REP_TYPE>
-    class IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, void> : public Iterable<T> {
-    public:
-        using value_type = typename Iterable<T>::value_type;
-
-    public:
-        class _Rep : public Iterable<T>::_IRep {
-        private:
-            using inherited = typename Iterable<T>::_IRep;
+            _ContextObjectType _fContextForEachIterator;
 
 #if qDebug
+        protected:
+            struct _IteratorTracker {
+                shared_ptr<unsigned int> fCountRunning = make_shared<unsigned int> (0);
+                ~_IteratorTracker ();
+                Iterator<T> MakeDelegatedIterator (const Iterator<T>& sourceIterator);
+            };
+
         private:
-            mutable Private_::IteratorTracker<T> fIteratorTracker_;
+            mutable _IteratorTracker fIteratorTracker_;
 #endif
+
+        public:
+            template <typename K1 = CONTEXT_FOR_EACH_ITERATOR, enable_if_t<is_same_v<K1, void>>* = nullptr>
+            _Rep ();
+
+        protected:
+            template <typename K1 = CONTEXT_FOR_EACH_ITERATOR, enable_if_t<not is_same_v<K1, void>>* = nullptr>
+            _Rep (const _ContextObjectType& contextForEachIterator);
+
         public:
             virtual Iterator<T> MakeIterator () const override;
-            virtual size_t      GetLength () const override;
-            virtual bool        IsEmpty () const override;
-            virtual void        Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override;
-            virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override;
-        };
-    };
-    template <typename T>
-    class IterableFromIterator<T, void, void> : public Iterable<T> {
-    public:
-        using value_type = typename Iterable<T>::value_type;
-
-    public:
-        class _Rep : public Iterable<T>::_IRep {
-        private:
-            using inherited = typename Iterable<T>::_IRep;
-
-        public:
             virtual size_t      GetLength () const override;
             virtual bool        IsEmpty () const override;
             virtual void        Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override;
