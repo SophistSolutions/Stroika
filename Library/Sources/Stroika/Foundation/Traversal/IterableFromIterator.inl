@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
     inline IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::_Rep (const CONTEXT_FOR_EACH_ITERATOR& contextForEachIterator)
-        : _fContextForEachIterator {contextForEachIterator}
+        : _fContextForEachIterator{contextForEachIterator}
     {
     }
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
