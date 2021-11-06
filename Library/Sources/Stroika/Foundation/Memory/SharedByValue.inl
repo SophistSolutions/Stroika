@@ -326,7 +326,7 @@ namespace Stroika::Foundation::Memory {
         // Actually, this gets triggered alot when used in heavily multithreaded applications, like
         // Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_, so comment out the weak assert - just too noisy
         // and really not a problem -- LGP 2021-11-06
-        //WeakAssert (not unique ()); 
+        //WeakAssert (not unique ());
 
         fSharedImpl_ = forward<COPIER> (copier) (*fSharedImpl_); // make a new shared_ptr (clone) and assign-overwriting.
 
