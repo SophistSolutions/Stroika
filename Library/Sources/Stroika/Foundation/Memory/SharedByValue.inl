@@ -319,12 +319,12 @@ namespace Stroika::Foundation::Memory {
          *  it is non-nullptr.
          */
         //WeakAssert (not unique ()); // This is not NECESSARILY so. Another thread could have just released this pointer, in which case
-                                      // the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
-                                      // value and it should go away.
-                                      //
-                                      // Actually, this gets triggered alot when used in heavily multithreaded applications, like
-                                      // Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_, so comment out the weak assert - just too noisy
-                                      // and really not a problem -- LGP 2021-11-06
+        // the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
+        // value and it should go away.
+        //
+        // Actually, this gets triggered alot when used in heavily multithreaded applications, like
+        // Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_, so comment out the weak assert - just too noisy
+        // and really not a problem -- LGP 2021-11-06
 
         fSharedImpl_ = forward<COPIER> (copier) (*fSharedImpl_); // make a new shared_ptr (clone) and assign-overwriting.
 
