@@ -62,10 +62,10 @@ namespace {
     {
         using value_type = typename ITERABLE_TYPE::value_type;
         return Thread::New ([iterable, lock, repeatCount] () {
-            Debug::TraceContextBumper traceCtx ("{}IterateOverThread::MAIN...");
+            Debug::TraceContextBumper traceCtx{"{}IterateOverThread::MAIN..."};
             for (unsigned int i = 0; i < repeatCount; ++i) {
                 //DbgTrace ("Iterate thread loop %d", i);
-                lock_guard<decltype (*lock)> critSec (*lock);
+                lock_guard<decltype (*lock)> critSec{*lock};
                 for (value_type e : iterable->load ()) {
                     [[maybe_unused]] value_type e2 = e; // do something
                 }
@@ -79,15 +79,15 @@ namespace {
     Thread::Ptr mkOverwriteThread_ (ITERABLE_TYPE* oneToKeepOverwriting, ITERABLE_TYPE2 elt1, ITERABLE_TYPE2 elt2, LOCK_TYPE* lock, unsigned int repeatCount)
     {
         return Thread::New ([oneToKeepOverwriting, lock, repeatCount, elt1, elt2] () {
-            Debug::TraceContextBumper traceCtx ("{}OverwriteThread::MAIN...");
+            Debug::TraceContextBumper traceCtx{"{}OverwriteThread::MAIN..."};
             for (unsigned int i = 0; i < repeatCount; ++i) {
                 for (int ii = 0; ii <= 100; ++ii) {
                     if (Math::IsOdd (ii)) {
-                        lock_guard<decltype (*lock)> critSec (*lock);
+                        lock_guard<decltype (*lock)> critSec{*lock};
                         (*oneToKeepOverwriting) = elt1;
                     }
                     else {
-                        lock_guard<decltype (*lock)> critSec (*lock);
+                        lock_guard<decltype (*lock)> critSec{*lock};
                         (*oneToKeepOverwriting) = elt2;
                     }
                 }
@@ -101,7 +101,7 @@ namespace {
         template <typename ITERABLE_TYPE>
         void DoItOnce_ (ITERABLE_TYPE elt1, ITERABLE_TYPE elt2, unsigned int repeatCount)
         {
-            Debug::TraceContextBumper traceCtx ("{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()");
+            Debug::TraceContextBumper traceCtx{"{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()"};
             no_lock_                  lock;
             //mutex lock;
             Synchronized<ITERABLE_TYPE> oneToKeepOverwriting{elt1};
@@ -112,27 +112,27 @@ namespace {
         }
         void DoIt ()
         {
-            Debug::TraceContextBumper traceCtx ("AssignAndIterateAtSameTimeTest_1_::DoIt ()");
+            Debug::TraceContextBumper traceCtx{"AssignAndIterateAtSameTimeTest_1_::DoIt ()"};
             static const unsigned int kRepeatCount_ = kVerySlow_ ? 100u : 500u;
             //const unsigned int kRepeatCount_ = 1;
             static const initializer_list<int>            kOrigValueInit_       = {1, 3, 4, 5, 6, 33, 12, 13};
             static const initializer_list<int>            kUpdateValueInit_     = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
             static const initializer_list<pair<int, int>> kOrigPairValueInit_   = {pair<int, int> (1, 3), pair<int, int> (4, 5), pair<int, int> (6, 33), pair<int, int> (12, 13)};
             static const initializer_list<pair<int, int>> kUPairpdateValueInit_ = {pair<int, int> (4, 5), pair<int, int> (6, 33), pair<int, int> (12, 34), pair<int, int> (596, 13), pair<int, int> (1, 3), pair<int, int> (99, 35), pair<int, int> (4, 5)};
-            DoItOnce_<String> (String (L"123456789"), String (L"abcdedfghijkqlmopqrstuvwxyz"), kRepeatCount_);
-            DoItOnce_<Bijection<int, int>> (Bijection<int, int> (kOrigPairValueInit_), Bijection<int, int> (kUPairpdateValueInit_), kRepeatCount_);
-            DoItOnce_<Collection<int>> (Collection<int> (kOrigValueInit_), Collection<int> (kUpdateValueInit_), kRepeatCount_);
+            DoItOnce_<String> (L"123456789"_k, L"abcdedfghijkqlmopqrstuvwxyz", kRepeatCount_);
+            DoItOnce_<Bijection<int, int>> (Bijection<int, int> (kOrigPairValueInit_), Bijection<int, int>{kUPairpdateValueInit_}, kRepeatCount_);
+            DoItOnce_<Collection<int>> (Collection<int>{kOrigValueInit_}, Collection<int>{kUpdateValueInit_}, kRepeatCount_);
             // Queue/Deque NYI here cuz of assign from initializer
             //DoItOnce_<Deque<int>> (Deque<int> (kOrigValueInit_), Deque<int> (kUpdateValueInit_), kRepeatCount_);
             //DoItOnce_<Queue<int>> (Queue<int> (kOrigValueInit_), Queue<int> (kUpdateValueInit_), kRepeatCount_);
-            DoItOnce_<MultiSet<int>> (MultiSet<int> (kOrigValueInit_), MultiSet<int> (kUpdateValueInit_), kRepeatCount_);
-            DoItOnce_<Mapping<int, int>> (Mapping<int, int> (kOrigPairValueInit_), Mapping<int, int> (kUPairpdateValueInit_), kRepeatCount_);
-            DoItOnce_<Sequence<int>> (Sequence<int> (kOrigValueInit_), Sequence<int> (kUpdateValueInit_), kRepeatCount_);
-            DoItOnce_<Set<int>> (Set<int> (kOrigValueInit_), Set<int> (kUpdateValueInit_), kRepeatCount_);
-            DoItOnce_<SortedCollection<int>> (SortedCollection<int> (kOrigValueInit_), SortedCollection<int> (kUpdateValueInit_), kRepeatCount_);
-            DoItOnce_<SortedMapping<int, int>> (SortedMapping<int, int> (kOrigPairValueInit_), SortedMapping<int, int> (kUPairpdateValueInit_), kRepeatCount_);
-            DoItOnce_<SortedMultiSet<int>> (SortedMultiSet<int> (kOrigValueInit_), SortedMultiSet<int> (kUpdateValueInit_), kRepeatCount_);
-            DoItOnce_<SortedSet<int>> (SortedSet<int> (kOrigValueInit_), SortedSet<int> (kUpdateValueInit_), kRepeatCount_);
+            DoItOnce_<MultiSet<int>> (MultiSet<int>{kOrigValueInit_}, MultiSet<int>{kUpdateValueInit_}, kRepeatCount_);
+            DoItOnce_<Mapping<int, int>> (Mapping<int, int>{kOrigPairValueInit_}, Mapping<int, int>{kUPairpdateValueInit_}, kRepeatCount_);
+            DoItOnce_<Sequence<int>> (Sequence<int>{kOrigValueInit_}, Sequence<int>{kUpdateValueInit_}, kRepeatCount_);
+            DoItOnce_<Set<int>> (Set<int> (kOrigValueInit_), Set<int>{kUpdateValueInit_}, kRepeatCount_);
+            DoItOnce_<SortedCollection<int>> (SortedCollection<int>{kOrigValueInit_}, SortedCollection<int>{kUpdateValueInit_}, kRepeatCount_);
+            DoItOnce_<SortedMapping<int, int>> (SortedMapping<int, int>{kOrigPairValueInit_}, SortedMapping<int, int>{kUPairpdateValueInit_}, kRepeatCount_);
+            DoItOnce_<SortedMultiSet<int>> (SortedMultiSet<int>{kOrigValueInit_}, SortedMultiSet<int>{kUpdateValueInit_}, kRepeatCount_);
+            DoItOnce_<SortedSet<int>> (SortedSet<int>{kOrigValueInit_}, SortedSet<int>{kUpdateValueInit_}, kRepeatCount_);
 
             // Stack NYI cuz not enough of stack implemented (op=)
             //DoItOnce_<Stack<int>> (Stack<int> (kOrigValueInit_), Stack<int> (kUpdateValueInit_), kRepeatCount_);
@@ -147,7 +147,7 @@ namespace {
         {
             Synchronized<ITERABLE_TYPE> oneToKeepOverwriting{elt1};
             auto                        mutateFunction = [&oneToKeepOverwriting, repeatCount, &baseMutateFunction] () {
-                Debug::TraceContextBumper traceCtx ("{}::MutateFunction ()");
+                Debug::TraceContextBumper traceCtx{"{}::MutateFunction ()"};
                 DbgTrace ("(type %s)", typeid (ITERABLE_TYPE).name ());
                 for (unsigned int i = 0; i < repeatCount; ++i) {
                     baseMutateFunction (&oneToKeepOverwriting);
@@ -162,7 +162,7 @@ namespace {
         {
             // This test (used to) demonstrate the need for qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
             // but been fixed
-            Debug::TraceContextBumper traceCtx ("IterateWhileMutatingContainer_Test_2_::DoIt ()");
+            Debug::TraceContextBumper traceCtx{"IterateWhileMutatingContainer_Test_2_::DoIt ()"};
 
             const unsigned int kRepeatCount_ = kVerySlow_ ? 20 : 250;
 
@@ -184,11 +184,11 @@ namespace {
                     for (int ii = 0; ii <= 100; ++ii) {
                         //DbgTrace ("doing update loop %d", ii);
                         if (Math::IsOdd (ii)) {
-                            lock_guard<decltype (lock)> critSec (lock);
+                            lock_guard<decltype (lock)> critSec{lock};
                             (*oneToKeepOverwriting) = Set<int>{kUpdateValueInit_};
                         }
                         else {
-                            lock_guard<decltype (lock)> critSec (lock);
+                            lock_guard<decltype (lock)> critSec{lock};
                             (*oneToKeepOverwriting) = Set<int>{kUpdateValueInit_};
                         }
                     }
@@ -196,16 +196,16 @@ namespace {
 
             DoItOnce_<Sequence<int>> (
                 &lock,
-                Sequence<int> (kOrigValueInit_),
+                Sequence<int>{kOrigValueInit_},
                 kRepeatCount_,
                 [&lock] (Synchronized<Sequence<int>>* oneToKeepOverwriting) {
                     for (int ii = 0; ii <= 100; ++ii) {
                         if (Math::IsOdd (ii)) {
-                            lock_guard<decltype (lock)> critSec (lock);
+                            lock_guard<decltype (lock)> critSec{lock};
                             (*oneToKeepOverwriting) = Sequence<int>{kUpdateValueInit_};
                         }
                         else {
-                            lock_guard<decltype (lock)> critSec (lock);
+                            lock_guard<decltype (lock)> critSec{lock};
                             (*oneToKeepOverwriting) = Sequence<int>{kUpdateValueInit_};
                         }
                     }
@@ -213,17 +213,17 @@ namespace {
 
             DoItOnce_<String> (
                 &lock,
-                String (L"123456789"),
+                L"123456789",
                 kRepeatCount_,
                 [&lock] (Synchronized<String>* oneToKeepOverwriting) {
                     for (int ii = 0; ii <= 100; ++ii) {
                         if (Math::IsOdd (ii)) {
-                            lock_guard<decltype (lock)> critSec (lock);
-                            (*oneToKeepOverwriting) = String{L"abc123"};
+                            lock_guard<decltype (lock)> critSec{lock};
+                            (*oneToKeepOverwriting) = L"abc123"_k;
                         }
                         else {
-                            lock_guard<decltype (lock)> critSec (lock);
-                            (*oneToKeepOverwriting) = String{L"123abc"};
+                            lock_guard<decltype (lock)> critSec{lock};
+                            (*oneToKeepOverwriting) = L"123abc"_k;
                         }
                     }
                 });
@@ -235,7 +235,7 @@ namespace {
     namespace Test3_SynchronizedOptional_ {
         void DoIt_ ()
         {
-            Debug::TraceContextBumper traceCtx ("{}::Test3_SynchronizedOptional_::DoIt ()");
+            Debug::TraceContextBumper traceCtx{"{}::Test3_SynchronizedOptional_::DoIt ()"};
             using namespace Memory;
             try {
                 Synchronized<optional<int>> sharedValue{0};
@@ -286,7 +286,7 @@ namespace {
     namespace Test4_CvtOp_BehaviorNeededforSyncronize_ {
         void DoIt ()
         {
-            Debug::TraceContextBumper traceCtx ("{}::Test4_CvtOp_BehaviorNeededforSyncronize_::DoIt ()");
+            Debug::TraceContextBumper traceCtx{"{}::Test4_CvtOp_BehaviorNeededforSyncronize_::DoIt ()"};
 #if 0
             struct  Base {
                 mutable bool    fCalledOp_ = false;
@@ -311,13 +311,13 @@ namespace {
     namespace Test5_SetSpecificSyncMethods {
         void DoIt ()
         {
-            Debug::TraceContextBumper           traceCtx ("{}::Test5_SetSpecificSyncMethods::DoIt ()");
+            Debug::TraceContextBumper           traceCtx{"{}::Test5_SetSpecificSyncMethods::DoIt ()"};
             Set<int>                            sensorsToActuallyRead{2, 3};
             static const Synchronized<Set<int>> kACUSensors_{Set<int>{1, 2}};
             Set<int>                            acufpgaSensors1 = kACUSensors_ ^ sensorsToActuallyRead;
             Set<int>                            acufpgaSensors2 = sensorsToActuallyRead ^ kACUSensors_;
-            VerifyTestResult (acufpgaSensors1 == Set<int> ({2}));
-            VerifyTestResult (acufpgaSensors2 == Set<int> ({2}));
+            VerifyTestResult ((acufpgaSensors1 == Set<int>{2}));
+            VerifyTestResult ((acufpgaSensors2 == Set<int>{2}));
         }
     }
 }
@@ -326,7 +326,7 @@ namespace {
     namespace Test6_OverloadsWithSyncMethods_ {
         void DoIt ()
         {
-            Debug::TraceContextBumper traceCtx ("{}::Test6_OverloadsWithSyncMethods_::DoIt ()");
+            Debug::TraceContextBumper traceCtx{"{}::Test6_OverloadsWithSyncMethods_::DoIt ()"};
             String                    xx;
             Synchronized<String>      yy;
             if (xx != yy) {
@@ -416,7 +416,7 @@ namespace {
                 struct intish_object1 {
                     int fVal;
                     intish_object1 (int i)
-                        : fVal (i)
+                        : fVal{i}
                     {
                     }
                     bool operator== (const intish_object1& rhs) const { return rhs.fVal == fVal; }
@@ -456,7 +456,7 @@ namespace {
         }
         void DoIt ()
         {
-            Debug::TraceContextBumper traceCtx ("{}::Test7_Synchronized_::DoIt ()");
+            Debug::TraceContextBumper traceCtx{"{}::Test7_Synchronized_::DoIt ()"};
             Private_::TestBasics_ ();
             Private_::DoThreadTest_ ();
             Private_::TestSynchronizedNotCopyable_ ();
@@ -482,7 +482,7 @@ namespace {
         }
         void DoIt ()
         {
-            Debug::TraceContextBumper traceCtx ("{}::Test8_AssertExternallySynchronized_::DoIt ()");
+            Debug::TraceContextBumper traceCtx{"{}::Test8_AssertExternallySynchronized_::DoIt ()"};
             Private_::TestBasics_ ();
         }
     }
@@ -527,7 +527,7 @@ namespace {
         }
         void DoIt ()
         {
-            Debug::TraceContextBumper traceCtx ("{}::Test9_MutlipleThreadsReadingUnsynchronizedContainer_::DoIt ()");
+            Debug::TraceContextBumper traceCtx{"{}::Test9_MutlipleThreadsReadingUnsynchronizedContainer_::DoIt ()"};
             Private_::TestBasics_ ();
         }
     }
@@ -550,7 +550,7 @@ namespace {
                             }
                         }
                     },
-                    String{L"adderThread"});
+                    L"adderThread"_k);
                 Thread::Ptr removerThread = Thread::New (
                     [&syncObj, &remF] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
@@ -559,7 +559,7 @@ namespace {
                             }
                         }
                     },
-                    String{L"removerThread"});
+                    L"removerThread"_k);
                 Thread::Ptr examineThread = Thread::New (
                     [&syncObj, &examineF] () {
                         constexpr size_t kMultiplierCuzThisTooFast_{10};
@@ -567,7 +567,7 @@ namespace {
                             examineF (&syncObj.cget ().cref ());
                         }
                     },
-                    String{L"examineThread"});
+                    L"examineThread"_k);
                 Thread::Ptr walkerThread = Thread::New (
                     [&syncObj, &iterF] () {
                         constexpr size_t kMultiplierCuzThisTooFast_{7};
@@ -680,7 +680,7 @@ namespace {
                             }
                         }
                     },
-                    String{L"walkerThread"});
+                    L"walkerThread"_k);
                 Thread::Start ({adderThread, removerThread, examineThread, walkerThread});
                 Thread::WaitForDone ({adderThread, removerThread, examineThread, walkerThread});
             }
@@ -694,10 +694,10 @@ namespace {
             //  If you see hang here - see
             //      https://stroika.atlassian.net/browse/STK-700
             //
-            Debug::TraceContextBumper traceCtx ("{}::Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_::DoIt ()");
+            Debug::TraceContextBumper traceCtx{"{}::Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_::DoIt ()"};
             int64_t                   cnt{};
             {
-                Debug::TraceContextBumper ctx1 ("...TestBasics_<Sequence<int>>");
+                Debug::TraceContextBumper ctx1{"...TestBasics_<Sequence<int>>"};
                 Private_::TestBasics_<Sequence<int>> (
                     [] (Sequence<int>* c, int i) { c->Append (i); },
                     [] (Sequence<int>* c, [[maybe_unused]] int i) { size_t n = c->GetLength (); if (n != 0) c->Remove (n / 2); },
@@ -705,7 +705,7 @@ namespace {
                     [&cnt] (int v) { cnt += v; });
             }
             {
-                Debug::TraceContextBumper ctx1 ("...TestBasics_<Set<int>>");
+                Debug::TraceContextBumper ctx1{"...TestBasics_<Set<int>>"};
                 Private_::TestBasics_<Set<int>> (
                     [] (Set<int>* c, int i) { c->Add (i); },
                     [] (Set<int>* c, int i) { c->Remove (i); },
@@ -713,7 +713,7 @@ namespace {
                     [&cnt] (int v) { cnt += v; });
             }
             {
-                Debug::TraceContextBumper ctx1 ("...TestBasics_<Mapping<int, Time::DateTime>>");
+                Debug::TraceContextBumper ctx1{"...TestBasics_<Mapping<int, Time::DateTime>>"};
                 Private_::TestBasics_<Mapping<int, Time::DateTime>> (
                     [] (Mapping<int, Time::DateTime>* c, int i) { c->Add (i, Time::DateTime::Now ()); },
                     [] (Mapping<int, Time::DateTime>* c, int i) { c->Remove (i); },
@@ -731,7 +731,7 @@ namespace {
                                                                                       : 1000;
             void                SyncLRUCacheT1_ ()
             {
-                Debug::TraceContextBumper traceCtx ("{}SyncLRUCacheT1_...");
+                Debug::TraceContextBumper traceCtx{"{}SyncLRUCacheT1_..."};
                 using namespace Cache;
                 SynchronizedLRUCache cache (pair<string, string>{}, 3, 10, hash<string>{});
                 Thread::Ptr          writerThread = Thread::New (
@@ -749,7 +749,7 @@ namespace {
                             VerifyTestResult (od == "4");
                         }
                     },
-                    String{L"writerThread"});
+                    L"writerThread"_k);
                 Thread::Ptr copierThread = Thread::New (
                     [&cache] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
@@ -770,13 +770,13 @@ namespace {
                             VerifyTestResult (not od.has_value () or od == "4"); // ""
                         }
                     },
-                    String{L"copierThread"});
+                    L"copierThread"_k);
                 Thread::Start ({writerThread, copierThread});
                 Thread::WaitForDone ({writerThread, copierThread});
             }
             void SyncCallerStalenessCacheT1_ ()
             {
-                Debug::TraceContextBumper traceCtx ("{}SyncCallerStalenessCacheT1_...");
+                Debug::TraceContextBumper traceCtx{"{}SyncCallerStalenessCacheT1_..."};
                 using namespace Cache;
                 SynchronizedCallerStalenessCache<int, int> cache;
                 auto                                       mapValue = [&cache] (int value, optional<Time::DurationSecondsType> allowedStaleness = {}) -> int {
@@ -790,21 +790,21 @@ namespace {
                             VerifyTestResult (mapValue (static_cast<int> (i)) == static_cast<int> (i));
                         }
                     },
-                    String{L"writerThread"});
+                    L"writerThread"_k);
                 Thread::Ptr copierThread = Thread::New (
                     [&mapValue] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                             VerifyTestResult (mapValue (static_cast<int> (i)) == static_cast<int> (i));
                         }
                     },
-                    String{L"copierThread"});
+                    L"copierThread"_k);
                 Thread::Start ({writerThread, copierThread});
                 Thread::WaitForDone ({writerThread, copierThread});
             }
         }
         void DoIt ()
         {
-            Debug::TraceContextBumper traceCtx ("{}Test11_SynchronizedCaches_...");
+            Debug::TraceContextBumper traceCtx{"{}Test11_SynchronizedCaches_..."};
             static const bool         kRunningValgrind_           = Debug::IsRunningUnderValgrind ();
             bool                      hasBug632AndRunningHelgrind = kRunningValgrind_; // not easy to check
             if (hasBug632AndRunningHelgrind) {
