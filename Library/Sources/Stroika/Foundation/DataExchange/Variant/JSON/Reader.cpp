@@ -82,8 +82,8 @@ namespace {
                 Execution::Throw (BadFormatException{L"JSON: Unexpected EOF reading string (looking for close quote)"sv});
             }
             c = NextChar_ (in);
-            if (c == '\"') {
-                return VariantValue (result.str ());
+            if (c == '\"') [[UNLIKELY_ATTR]] {
+                return VariantValue{result.str ()};
             }
             else if (c == '\\') {
                 // quoted character read...
@@ -157,12 +157,12 @@ namespace {
             }
         }
         if (containsDot) {
-            return VariantValue (Characters::String2Float<long double> (tmp.str ()));
+            return VariantValue{Characters::String2Float<long double> (tmp.str ())};
         }
         else {
             // if no - use unsigned since has wider range (if no -)
             String t = tmp.str ();
-            return t.LTrim ().StartsWith (kDash_) ? VariantValue (Characters::String2Int<long long int> (t)) : VariantValue (Characters::String2Int<unsigned long long int> (t));
+            return t.LTrim ().StartsWith (kDash_) ? VariantValue{Characters::String2Int<long long int> (t)} : VariantValue{Characters::String2Int<unsigned long long int> (t)};
         }
     }
 
@@ -190,7 +190,7 @@ namespace {
             if (nextChar == '}') {
                 if (lf == eName or lf == eComma) {
                     // skip char
-                    return VariantValue (result);
+                    return VariantValue{result};
                 }
                 else {
                     in.Seek (Streams::Whence::eFromCurrent, -1);
@@ -256,7 +256,7 @@ namespace {
                     // allow ending ',' - harmless - could  be more aggressive - but if so - careful of zero-sized array special case
                 }
                 NextChar_ (in); // skip char
-                return VariantValue (result);
+                return VariantValue{result};
             }
             else if (in.Peek () == ',') {
                 if (lookingForElt) [[UNLIKELY_ATTR]] {
