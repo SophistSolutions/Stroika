@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Traversal {
             using _ContextObjectType = conditional_t<is_same_v<CONTEXT_FOR_EACH_ITERATOR, void>, Configuration::Empty, CONTEXT_FOR_EACH_ITERATOR>;
 
         protected:
-            [[NO_UNIQUE_ADDRESS_ATTR]]_ContextObjectType _fContextForEachIterator;
+            [[NO_UNIQUE_ADDRESS_ATTR]] _ContextObjectType _fContextForEachIterator;
 
 #if qDebug
         protected:
