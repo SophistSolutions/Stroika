@@ -47,6 +47,11 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     template <typename T>
+    inline T String2Int (const wchar_t* start, const wchar_t* end)
+    {
+        return Private_::String2IntOrUInt_<T> (String{start, end});
+    }
+    template <typename T>
     inline T String2Int (const String& s)
     {
         return Private_::String2IntOrUInt_<T> (s);

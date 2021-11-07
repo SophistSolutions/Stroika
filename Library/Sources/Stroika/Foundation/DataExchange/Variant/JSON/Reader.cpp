@@ -142,9 +142,9 @@ namespace {
         // This accumulation is NOT as restrictive as it could be - but should accept all valid numbers
         StringBuilder tmp;
         for (wchar_t c = initialChar; c != '\0'; c = in.Read ().value_or ('\0').As<wchar_t> ()) {
-            if (iswdigit (c) or c == '.' or c == 'e' or c == 'E' or c == '+' or c == '-') {
+            if (iswdigit (c) or c == '.' or c == 'e' or c == 'E' or c == '+' or c == '-') [[LIKELY_ATTR]] {
                 tmp += c;
-                if (c == '.') {
+                if (c == '.') [[UNLIKELY_ATTR]] {
                     containsDot = true;
                 }
             }
@@ -156,13 +156,15 @@ namespace {
                 break;
             }
         }
+        Assert (not tmp.empty ());
         if (containsDot) {
-            return VariantValue{Characters::String2Float<long double> (tmp.str ())};
+            return VariantValue{Characters::String2Float<long double> (tmp.begin (), tmp.end ())};
         }
         else {
             // if no - use unsigned since has wider range (if no -)
-            String t = tmp.str ();
-            return t.LTrim ().StartsWith (kDash_) ? VariantValue{Characters::String2Int<long long int> (t)} : VariantValue{Characters::String2Int<unsigned long long int> (t)};
+            return (initialChar == kDash_)
+                       ? VariantValue{Characters::String2Int<long long int> (tmp.begin (), tmp.end ())}
+                       : VariantValue{Characters::String2Int<unsigned long long int> (tmp.begin (), tmp.end ())};
         }
     }
 

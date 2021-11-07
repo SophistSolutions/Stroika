@@ -203,6 +203,8 @@ namespace Stroika::Foundation::Characters {
      *
      */
     template <typename T = double>
+    T String2Float (const wchar_t* start, const wchar_t* end);
+    template <typename T = double>
     T String2Float (const String& s);
     template <typename T = double>
     T String2Float (const String& s, String* remainder);

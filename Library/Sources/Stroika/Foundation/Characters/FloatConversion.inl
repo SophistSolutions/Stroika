@@ -89,6 +89,12 @@ namespace Stroika::Foundation::Characters {
         return fFmtFlags_;
     }
 
+    template <typename T = double>
+    inline T String2Float (const wchar_t* start, const wchar_t* end)
+    {
+        return String2Float (String{start, end});
+    }
+
 }
 
 #endif /*_Stroika_Foundation_Characters_FloatConversion_inl_*/

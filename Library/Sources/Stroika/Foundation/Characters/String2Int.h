@@ -48,6 +48,8 @@ namespace Stroika::Foundation::Characters {
      *      \endcode
      */
     template <typename T = int>
+    T String2Int (const wchar_t* start, const wchar_t* end);
+    template <typename T = int>
     T String2Int (const String& s);
 
     /**
