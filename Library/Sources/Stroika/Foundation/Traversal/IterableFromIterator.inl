@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Traversal {
 #if qDebug
                 using _IteratorTracker = typename inherited::_IteratorTracker;
 #endif
-                using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
+                using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
                 Iterator<T> fOriginalIterator;
 #if qDebug
                 mutable _IteratorTracker fIteratorTracker_{};
