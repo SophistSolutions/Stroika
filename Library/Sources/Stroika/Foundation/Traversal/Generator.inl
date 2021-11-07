@@ -10,9 +10,11 @@
 
 namespace Stroika::Foundation::Traversal {
 
-    namespace Private_ {
-
-        template <typename T>
+    /**
+     */
+    template <typename T>
+    Iterator<T> CreateGeneratorIterator (const function<optional<T> ()>& getNext)
+    {
         struct GenItWrapper_ : Iterator<T>::IRep {
             function<optional<T> ()> fFun_;
             optional<T>              fCur_;
@@ -25,7 +27,6 @@ namespace Stroika::Foundation::Traversal {
             virtual void More (optional<T>* result, bool advance) override
             {
                 RequireNotNull (result);
-                *result = nullopt;
                 if (advance) {
                     // Iterator<T, ITERATOR_TRAITS>::IRep::More() docs say legal to call More(advance) even if at end
                     if (fCur_.has_value ()) {
@@ -47,43 +48,15 @@ namespace Stroika::Foundation::Traversal {
                 return Iterator<T>::template MakeSmartPtr<GenItWrapper_> (*this);
             }
         };
+        return Iterator<T>{Iterator<T>::template MakeSmartPtr<GenItWrapper_> (getNext)};
     }
 
     /**
      */
     template <typename T>
-    Iterator<T> CreateGeneratorIterator (const function<optional<T> ()>& getNext)
+    inline Iterable<T> CreateGenerator (const function<optional<T> ()>& getNext)
     {
-        return Iterator<T> (Iterator<T>::template MakeSmartPtr<Private_::GenItWrapper_<T>> (getNext));
-    }
-
-    /**
-     */
-    template <typename T>
-    Iterable<T> CreateGenerator (const function<optional<T> ()>& getNext)
-    {
-        struct MyIterable_ : Iterable<T> {
-            using MyContextData_ = function<optional<T> ()>;
-            using MyIteratorRep_ = typename Private_::GenItWrapper_<T>;
-            struct MyIterableRep_ : IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-                using inherited             = typename IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep;
-                using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
-                MyIterableRep_ (const MyContextData_& context)
-                    : inherited{context}
-                {
-                }
-                virtual _IterableRepSharedPtr Clone () const override
-                {
-                    return Iterable<T>::template MakeSmartPtr<MyIterableRep_> (*this);
-                }
-            };
-            MyIterable_ (const function<optional<T> ()>& getNext)
-                // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
-                : Iterable<T> (Iterable<T>::template MakeSmartPtr<MyIterableRep_> (getNext))
-            {
-            }
-        };
-        return MyIterable_{getNext};
+        return MakeIterableFromIterator (CreateGeneratorIterator (getNext));
     }
 
 }
