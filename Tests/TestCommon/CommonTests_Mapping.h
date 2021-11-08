@@ -115,8 +115,8 @@ namespace CommonTests {
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
                     Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test_3_Iteration"};
-                    using key_type                          = typename DEFAULT_TESTING_SCHEMA::key_type;
-                    using mapped_type                          = typename DEFAULT_TESTING_SCHEMA::mapped_type;
+                    using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
+                    using mapped_type           = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
