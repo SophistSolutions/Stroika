@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Containers::Private {
         optional<DataStructureImplValueType_> tmp;
         fIterator.More (&tmp, advance);
         if (tmp.has_value ()) {
-            *result = *tmp;
+            *result = move (*tmp);
         }
         else {
             *result = nullopt;
