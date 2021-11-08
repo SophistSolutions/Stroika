@@ -199,9 +199,6 @@ namespace {
                     Execution::Throw (BadFormatException{L"JSON: Unexpected '}' reading object"sv});
                 }
             }
-            else if (iswspace (nextChar)) {
-                // skip char
-            }
             else if (nextChar == ',') {
                 if (lf == eComma) [[LIKELY_ATTR]] {
                     // skip char
@@ -221,6 +218,9 @@ namespace {
                     in.Seek (Streams::Whence::eFromCurrent, -1);
                     Execution::Throw (BadFormatException{L"JSON: Unexpected ':' reading object"sv});
                 }
+            }
+            else if (iswspace (nextChar)) {
+                // skip char
             }
             else {
                 in.Seek (Streams::Whence::eFromCurrent, -1);
