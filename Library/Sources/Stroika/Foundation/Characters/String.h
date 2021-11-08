@@ -1168,6 +1168,8 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename T = string>
         nonvirtual bool AsASCIIQuietly (T* into) const;
+        template <typename T = string>
+        static bool AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, T* into);
 
     public:
         /**
@@ -1342,6 +1344,10 @@ namespace Stroika::Foundation::Characters {
     void String::AsASCII (string* into) const;
     template <>
     string String::AsASCII () const;
+    template <>
+    bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, string* into);
+    template <>
+    bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, Memory::SmallStackBuffer<char>* into);
     template <>
     bool String::AsASCIIQuietly (string* into) const;
     template <>

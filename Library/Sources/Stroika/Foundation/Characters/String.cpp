@@ -1271,35 +1271,31 @@ void String::AsASCII (Memory::SmallStackBuffer<char>* into) const
 }
 
 template <>
-bool String::AsASCIIQuietly (string* into) const
+bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, string* into)
 {
     RequireNotNull (into);
     into->clear ();
-    _SafeReadRepAccessor accessor{this};
-    size_t               len = accessor._ConstGetRep ().GetLength ();
-    into->reserve (len);
-    for (size_t i = 0; i < len; ++i) {
-        if (not accessor._ConstGetRep ().GetAt (i).IsASCII ()) {
+    into->reserve (fromEnd - fromStart);
+    for (const wchar_t* wi = fromStart; wi != fromEnd; ++wi) {
+        if (not Character{*wi}.IsASCII ()) [[UNLIKELY_ATTR]] {
             return false;
         }
-        into->push_back (static_cast<char> (accessor._ConstGetRep ().GetAt (i).GetCharacterCode ()));
+        into->push_back (static_cast<char> (*wi));
     }
     return true;
 }
 
 template <>
-bool String::AsASCIIQuietly (Memory::SmallStackBuffer<char>* into) const
+bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, Memory::SmallStackBuffer<char>* into)
 {
     RequireNotNull (into);
     into->clear ();
-    _SafeReadRepAccessor accessor{this};
-    size_t               len = accessor._ConstGetRep ().GetLength ();
-    into->reserve (len);
-    for (size_t i = 0; i < len; ++i) {
-        if (not accessor._ConstGetRep ().GetAt (i).IsASCII ()) {
+    into->reserve (fromEnd - fromStart);
+    for (const wchar_t* wi = fromStart; wi != fromEnd; ++wi) {
+        if (not Character{*wi}.IsASCII ()) [[UNLIKELY_ATTR]] {
             return false;
         }
-        into->push_back (static_cast<char> (accessor._ConstGetRep ().GetAt (i).GetCharacterCode ()));
+        into->push_back (static_cast<char> (*wi));
     }
     return true;
 }
