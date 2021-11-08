@@ -89,7 +89,12 @@ namespace Stroika::Foundation::Characters {
         return fFmtFlags_;
     }
 
-    template <typename T = double>
+    /*
+     ********************************************************************************
+     ********************************* String2Float *********************************
+     ********************************************************************************
+     */
+    template <typename T>
     inline T String2Float (const wchar_t* start, const wchar_t* end)
     {
         return String2Float (String{start, end});
