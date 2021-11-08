@@ -159,13 +159,13 @@ namespace Stroika::Foundation::Math {
     inline bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon, enable_if_t<is_floating_point_v<TC>>*)
     {
         Require (epsilon >= 0);
-        TC diff = (l - r);
-        if (isnan (diff)) {
+        TC diff = l - r;
+        if (isnan (diff)) [[UNLIKELY_ATTR]] {
             // nan-nan, or inf-inf
             // maybe other cases shouldnt be considered nearly equals?
             return std::fpclassify (l) == std::fpclassify (r);
         }
-        if (isinf (diff)) {
+        if (isinf (diff)) [[UNLIKELY_ATTR]] {
             static const TC kEpsilon_ = Private_::mkCompareEpsilon_ (numeric_limits<TC>::max (), numeric_limits<TC>::max ());
             /* 
              *  Need to use a temporary of type TC, because T1 or T2 maybe a type of a special temporary value which cannot be assigned to (like Sequence<>::TemporaryItem....
