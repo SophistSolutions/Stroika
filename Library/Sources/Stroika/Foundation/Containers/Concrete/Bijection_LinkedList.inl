@@ -202,7 +202,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                     return;
                 }
             }
-            fData_.Append (value_type{key, newElt});
+            fData_.Prepend (value_type{key, newElt}); // order meaningless for bijection, and prepend cheaper on linked list
             fChangeCounts_.PerformedChange ();
         }
         virtual void RemoveDomainElement (ArgByValueType<DOMAIN_TYPE> d) override

@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                     return false;
                 }
             }
-            fData_.Append (value_type{key, newElt});
+            fData_.Prepend (value_type{key, newElt}); // cheaper to prepend, and order doesn't matter
             fChangeCounts_.PerformedChange ();
             return true;
         }

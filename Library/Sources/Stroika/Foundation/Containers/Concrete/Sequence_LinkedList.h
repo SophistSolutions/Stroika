@@ -23,7 +23,11 @@
 namespace Stroika::Foundation::Containers::Concrete {
 
     /**
-     *  \brief   Sequence_LinkedList<T> is an Array-based concrete implementation of the Sequence<T> container pattern.
+     *  \brief   Sequence_LinkedList<T> is a LinkedList-based concrete implementation of the Sequence<T> container pattern.
+     * 
+     *  \note Performance notes
+     *      o   it is SLOW to append to a Sequence_LinkedList - use Sequence_DoublyLinkedList (or array or stdvector) for better append performance.
+     *      o   it is SLOW to array index a Sequence_LinkedList.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *

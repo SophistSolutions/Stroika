@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Add (ArgByValueType<value_type> item) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
-            fData_.Prepend (item);
+            fData_.Prepend (item); // order meaningless for collection, and prepend cheaper on linked list
             fChangeCounts_.PerformedChange ();
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue) override

@@ -25,6 +25,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   Sequence_Array<T> is an Array-based concrete implementation of the Sequence<T> container pattern.
      *
+     *  \note Performance notes
+     *      o   Append/Prepend should perform well (typically constant time, but occasionally O(N))
+     *      o   it is FAST to array index a Sequence_Array.
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      */

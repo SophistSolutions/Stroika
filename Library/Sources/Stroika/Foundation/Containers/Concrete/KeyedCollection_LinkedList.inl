@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return false;
             }
             else {
-                fData_.Prepend (item);
+                fData_.Prepend (item); // order meaningless for collection, and prepend cheaper on linked list
                 fChangeCounts_.PerformedChange ();
                 return true;
             }

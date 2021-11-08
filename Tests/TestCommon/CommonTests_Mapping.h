@@ -115,7 +115,8 @@ namespace CommonTests {
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
                     Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test_3_Iteration"};
-                    using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
+                    using key_type                          = typename DEFAULT_TESTING_SCHEMA::key_type;
+                    using mapped_type                          = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
@@ -139,23 +140,23 @@ namespace CommonTests {
                     m.Add (1, 2);
                     m.Add (2, 3);
                     m.Add (3, 4);
-                    unsigned int cnt = 0;
-                    for ([[maybe_unused]] auto i : m) {
-#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
-                        &i;
-#endif
-                        cnt++;
-                        if (cnt == 1) {
-                            VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
+                    vector<key_type> ss;
+                    for (auto i : m) {
+                        if (m.GetKeyEqualsComparer () (i.fKey, key_type{1})) {
+                            VerifyTestResult (testingSchema.fValueEqualsComparer (i.fValue, 2));
                         }
-                        if (cnt == 2) {
-                            VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{2}));
+                        else if (m.GetKeyEqualsComparer () (i.fKey, key_type{2})) {
+                            VerifyTestResult (testingSchema.fValueEqualsComparer (i.fValue, 3));
                         }
-                        if (cnt == 3) {
-                            VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{3}));
+                        else if (m.GetKeyEqualsComparer () (i.fKey, key_type{3})) {
+                            VerifyTestResult (testingSchema.fValueEqualsComparer (i.fValue, 4));
                         }
+                        else {
+                            VerifyTestResult (false);
+                        }
+                        ss.push_back (i.fKey);
                     }
-                    VerifyTestResult (cnt == 3);
+                    VerifyTestResult (ss.size () == 3);
                     m.RemoveAll ();
                     VerifyTestResult (m.size () == 0);
                 }
@@ -302,23 +303,20 @@ namespace CommonTests {
                     m.Add (1, 2);
                     m.Add (2, 3);
                     m.Add (3, 4);
-                    unsigned int cnt = 0;
                     for (auto i : m) {
-                        cnt++;
-                        if (cnt == 1) {
-                            VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
+                        if (m.GetKeyEqualsComparer () (i.fKey, key_type{1})) {
                             VerifyTestResult (testingSchema.fValueEqualsComparer (i.fValue, 2));
                         }
-                        if (cnt == 2) {
-                            VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{2}));
+                        else if (m.GetKeyEqualsComparer () (i.fKey, key_type{2})) {
                             VerifyTestResult (testingSchema.fValueEqualsComparer (i.fValue, 3));
                         }
-                        if (cnt == 3) {
-                            VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{3}));
+                        else if (m.GetKeyEqualsComparer () (i.fKey, key_type{3})) {
                             VerifyTestResult (testingSchema.fValueEqualsComparer (i.fValue, 4));
                         }
+                        else {
+                            VerifyTestResult (false);
+                        }
                     }
-                    VerifyTestResult (cnt == 3);
                     m.RemoveAll ();
                     VerifyTestResult (m.size () == 0);
                 }
