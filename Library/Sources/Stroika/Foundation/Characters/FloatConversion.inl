@@ -95,9 +95,37 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     template <typename T>
-    inline T String2Float (const wchar_t* start, const wchar_t* end)
+    T String2Float (const wchar_t* start, const wchar_t* end)
     {
+        Require (start != nullptr and end != nullptr and start != end);
+#if qCompilerAndStdLib_to_chars_FP_Buggy
         return String2Float (String{start, end});
+#else
+        /*
+         *  Most of the time we can do this very efficiently, because there are just ascii characters.
+         *  Else, fallback on older algorithm that understands full unicode character set.
+         */
+        Memory::SmallStackBuffer<char> asciiS;
+        if (String::AsASCIIQuietly (start, end, &asciiS)) {
+            T    r; // intentionally uninitialized
+            auto b = asciiS.begin ();
+            auto e = asciiS.end ();
+            if (b != e and *b == '+') {
+                b++; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
+            }
+            auto [ptr, ec] = from_chars (b, e, r);
+            if (ec == errc::result_out_of_range) [[UNLIKELY_ATTR]] {
+                return *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
+            }
+            // if error or trailing crap - return nan
+            auto result = (ec == std::errc () and ptr == e) ? r : Math::nan<T> ();
+            Ensure (result == String2Float (String{start, end})); // test backward compat with old algorithm --LGP 2021-11-08
+            return result;
+        }
+        else {
+            return String2Float (String{start, end});
+        }
+#endif
     }
 
 }

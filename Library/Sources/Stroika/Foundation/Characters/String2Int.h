@@ -40,12 +40,19 @@ namespace Stroika::Foundation::Characters {
      *  @see strtoll(), or @see wcstoll (). This is a simple wrapper on strtoll() / wcstoll ().
      *  strtoll() is more flexible. This is merely meant to be an often convenient wrapper.
      *  Use strtoll etc directly to see if the string parsed properly.
+     * 
+     *  \req
+     *      No leading or trailing whitespace in string argument (unlike strcoll/wstrcoll). (new requirement since Stroika 2.1b14)
      *
      *  \par Example Usage
      *      \code
      *          uint32_t    n1      =   String2Int<uint32_t> (L"33");
      *          int         n2      =   String2Int (L"33");
      *      \endcode
+     * 
+     *  TODO:
+     *      @todo MAYBE replace this with String2IntQuietly () - just always mapping to a default (and maybe make that default a parameter).
+     *            and otherwise THROW on invalid.
      */
     template <typename T = int>
     T String2Int (const wchar_t* start, const wchar_t* end);
