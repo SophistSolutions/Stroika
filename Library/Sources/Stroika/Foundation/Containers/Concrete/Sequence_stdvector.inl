@@ -159,11 +159,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (size_t from, size_t to) override
         {
-            // quickie poor impl (patch once, not multiple times...)
+            Require ((from <= to) and (to <= this->GetLength ()));
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
-            for (size_t i = from; i < to; ++i) {
-                fData_.erase (fData_.begin () + from);
-            }
+            fData_.erase (fData_.begin () + from, fData_.begin () + to);
             fChangeCounts_.PerformedChange ();
         }
 
