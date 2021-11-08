@@ -113,22 +113,6 @@ namespace Stroika::Foundation::Containers::Concrete {
                 resultRep->fIterator.SetCurrentLink (nextStdI);
                 *nextI = Iterator<value_type>{move (resultRep)};
             }
-#if 0
-            // HORRIBLE BUT ADEQUITE IMPL...FOR NOW...
-            {
-                auto ei = fData_.before_begin ();
-                for (auto ii = fData_.begin (); ii != fData_.end (); ++ii) {
-                    if (ii == mir.fIterator.fStdIterator) {
-                        Memory::SmallStackBuffer<typename DataStructureImplType_::ForwardIterator*> items2Patch (0);
-                        fData_.TwoPhaseIteratorPatcherPass1 (ii, &items2Patch);
-                        auto newI = fData_.erase_after (ei);
-                        fData_.TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
-                        return;
-                    }
-                    ei = ii;
-                }
-            }
-#endif
         }
 
     private:
