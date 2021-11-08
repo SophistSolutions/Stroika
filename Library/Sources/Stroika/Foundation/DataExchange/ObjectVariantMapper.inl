@@ -14,6 +14,7 @@
 #include "../Characters/String_Constant.h"
 #include "../Characters/ToString.h"
 #include "../Containers/Adapters/Adder.h"
+#include "../Containers/Concrete/Mapping_stdmap.h"
 #include "../Debug/Assertions.h"
 #include "../Debug/Sanitizer.h"
 #include "../Execution/Throw.h"
@@ -825,11 +826,11 @@ namespace Stroika::Foundation::DataExchange {
             RequireNotNull (fromObjOfTypeT);
             FromObjectMapperType<KEY_TYPE>   keyMapper{mapper.FromObjectMapper<KEY_TYPE> ()};
             FromObjectMapperType<VALUE_TYPE> valueMapper{mapper.FromObjectMapper<VALUE_TYPE> ()};
-            Mapping<String, VariantValue>    m;
+            map<String, VariantValue>        m; // use std::map instead of Mapping<> as slight speed tweak to avoid virtual call adding
             for (const Common::KeyValuePair<KEY_TYPE, VALUE_TYPE>&& i : *fromObjOfTypeT) {
-                m.Add (mapper.FromObject<KEY_TYPE> (keyMapper, i.fKey).template As<String> (), mapper.FromObject<VALUE_TYPE> (valueMapper, i.fValue));
+                m.insert ({mapper.FromObject<KEY_TYPE> (keyMapper, i.fKey).template As<String> (), mapper.FromObject<VALUE_TYPE> (valueMapper, i.fValue)});
             }
-            return VariantValue{m};
+            return VariantValue{Containers::Concrete::Mapping_stdmap<String, VariantValue>{move (m)}};
         };
         ToObjectMapperType<ACTUAL_CONTAINTER_TYPE> toObjectMapper = [] (const ObjectVariantMapper& mapper, const VariantValue& d, ACTUAL_CONTAINTER_TYPE* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
@@ -951,7 +952,7 @@ namespace Stroika::Foundation::DataExchange {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjecttMapper"};
 #endif
-            Mapping<String, VariantValue> m;
+            map<String, VariantValue> m; //slight performance tweak, build STL container and then convert
             for (const auto&& i : fields) {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset);
@@ -959,10 +960,10 @@ namespace Stroika::Foundation::DataExchange {
                 FromGenericObjectMapperType toGenericVariantMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fFromObjecttMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fFromObjecttMapper;
                 VariantValue                vv                     = toGenericVariantMapper (mapper, reinterpret_cast<const std::byte*> (fromObjOfTypeT) + i.fFieldMetaInfo.fOffset);
                 if (i.fNullFields == ObjectVariantMapper::StructFieldInfo::eIncludeNullFields or vv.GetType () != VariantValue::eNull) {
-                    m.Add (i.fSerializedFieldName, vv);
+                    m.insert ({i.fSerializedFieldName, vv});
                 }
             }
-            return VariantValue{m};
+            return VariantValue{Containers::Concrete::Mapping_stdmap<String, VariantValue>{move (m)}};
         };
         ToObjectMapperType<CLASS> toObjectMapper = [fields, preflightBeforeToObject] (const ObjectVariantMapper& mapper, const VariantValue& d, CLASS* intoObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS -> void {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
