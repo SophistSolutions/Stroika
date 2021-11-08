@@ -280,6 +280,9 @@ namespace Stroika::Foundation::Containers {
     {
         using namespace Stroika::Foundation::Common;
         Set<T> result{this->GetElementEqualsComparer ()};
+        /*
+         * note: TRIED using Apply() - and didn't seem to help performance --LGP 2021-11-08
+         */
         for (T i : rhs) {
             if (Contains (i)) {
                 result.Add (i);
@@ -325,12 +328,12 @@ namespace Stroika::Foundation::Containers {
         return r;
     }
     template <typename T>
-    Set<T> Set<T>::Union (const Set& lhs, const Iterable<value_type>& rhs)
+    inline Set<T> Set<T>::Union (const Set& lhs, const Iterable<value_type>& rhs)
     {
         return lhs.Union (rhs);
     }
     template <typename T>
-    Set<T> Set<T>::Union (const Iterable<value_type>& lhs, const Set& rhs)
+    inline Set<T> Set<T>::Union (const Iterable<value_type>& lhs, const Set& rhs)
     {
         // union operation is commutitive
         return rhs.Union (lhs);
@@ -356,6 +359,8 @@ namespace Stroika::Foundation::Containers {
         /*
          *  whether its better to incrementally create the result set, or better to incrementally remove
          * from the result set (performance wise) (probably) depends on how close *this and rhs are to one another.
+         * 
+         * note: TRIED using Apply() - and didn't seem to help performance --LGP 2021-11-08
          */
         for (T i : *this) {
             if (not rhs.Contains (i)) {
@@ -377,6 +382,8 @@ namespace Stroika::Foundation::Containers {
          * that would be faster (because of COW), and maybe in general faster.
          *
          *  OR return Difference (Set{this->GetElementEqualsComparer (), rhs});
+         * 
+         * note: TRIED using Apply() - and didn't seem to help performance --LGP 2021-11-08
          */
         Set<T> result = *this;
         for (auto i : rhs) {
@@ -488,17 +495,27 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     bool Set<T>::_IRep::_Equals_Reference_Implementation (const typename Iterable<value_type>::_IRep& rhs) const
     {
+        // for some reps, this is fast (vector, std::map), but others its quite slow, and not that great a test.
+        // so for now, just iterate to see
+        constexpr bool kCanUseGetLengthAsOptimizationCheck_ = false;
         if (this == &rhs) {
             return true;
         }
-        if (this->GetLength () != rhs.GetLength ()) {
-            return false;
+        if (kCanUseGetLengthAsOptimizationCheck_) {
+            if (this->GetLength () != rhs.GetLength ()) {
+                return false;
+            }
         }
         // Note - no need to iterate over rhs because we checked sizes the same
+        [[maybe_unused]] size_t rhsSize{};
         for (auto i = rhs.MakeIterator (); not i.Done (); ++i) {
             if (not Contains (*i)) {
                 return false;
             }
+            ++rhsSize;
+        }
+        if (not kCanUseGetLengthAsOptimizationCheck_) {
+            return rhsSize == this->GetLength ();
         }
         return true;
     }
