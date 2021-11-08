@@ -3,6 +3,8 @@
  */
 #include "../../StroikaPreComp.h"
 
+#include <map>
+
 #include "../Mapping.h"
 
 #ifndef _Stroika_Foundation_Containers_Concrete_Mapping_stdmap_h_
@@ -45,6 +47,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */
         Mapping_stdmap ();
+        Mapping_stdmap (std::map<KEY_TYPE, MAPPED_VALUE_TYPE>&& src);
         template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> ()>* = nullptr>
         explicit Mapping_stdmap (const KEY_INORDER_COMPARER& inorderComparer);
         Mapping_stdmap (const Mapping_stdmap& src) = default;

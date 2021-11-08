@@ -47,6 +47,11 @@ namespace Stroika::Foundation::Containers::Concrete {
             : fData_{inorderComparer}
         {
         }
+        Rep_ (map<KEY_TYPE, MAPPED_VALUE_TYPE>&& src)
+            : fData_{move (src)}
+        {
+        }
+
         Rep_ (const Rep_& from) = default;
 
     public:
@@ -211,6 +216,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap ()
         : Mapping_stdmap{less<KEY_TYPE>{}}
+    {
+        AssertRepValidType_ ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap (map<KEY_TYPE, MAPPED_VALUE_TYPE>&& src)
+        : inherited (inherited::template MakeSmartPtr<Rep_<typename map<KEY_TYPE, MAPPED_VALUE_TYPE>::key_compare>> (move (src)))
     {
         AssertRepValidType_ ();
     }
