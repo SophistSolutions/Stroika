@@ -22,7 +22,8 @@ template <>
 template <>
 void OutputStream<Characters::Character>::Ptr::Write (const Characters::String& s) const
 {
-    Write (s.c_str ());
+    auto [start, end] = s.GetData<wchar_t> ();
+    Write (start, end);
 }
 
 template <>
