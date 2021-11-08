@@ -57,7 +57,15 @@ namespace {
     {
         // if test not needed, but speed tweak (especially since incorporates options.fJSONPrettyPrint check
         if (options.fSpacesPerIndent != 0) {
-            out.Write (options.fIndentSpace.Repeat (indentLevel));
+            constexpr bool kSpeedTweak_ = true;
+            if constexpr (kSpeedTweak_) {
+                for (int i = 0; i < indentLevel; ++i) {
+                    out.Write (options.fIndentSpace);
+                }
+            }
+            else {
+                out.Write (options.fIndentSpace.Repeat (indentLevel));
+            }
         }
     }
 }
