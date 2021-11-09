@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         ~LinkedList ();
 
     public:
-        nonvirtual LinkedList<T>& operator= (const LinkedList<T>& list);
+        nonvirtual LinkedList& operator= (const LinkedList& list);
 
     public:
         class ForwardIterator;
@@ -79,52 +79,49 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /*
          *  Take iteartor 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
          *  iteartor from 'this' - which points at the same logical position. This requires that this container
-         *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
+         *  was just 'copied' from 'movedFrom' - and is used to produce an eqivalent iterator (since iterators are tied to
          *  the container they were iterating over).
          */
-        nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const LinkedList* movedFrom);
+        nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const LinkedList* movedFrom) const;
 
     public:
         /**
-         *  \note Performance:
-         *      Always: O(1)
+         *  \note Complexity:
+         *      Always: constant
          */
         nonvirtual bool IsEmpty () const;
 
     public:
         /**
-         *  \note Performance:
+         *  \note Complexity:
          *      Always: O(N)
          */
         nonvirtual size_t GetLength () const;
 
     public:
         /**
-         *  Performance:
-         *      Worst Case: O(1)
-         *      Average Case: O(1)
+         *  Complexity:
+         *      Always: constant
          */
         nonvirtual T GetFirst () const;
 
     public:
         /**
-         *  Performance:
-         *      Worst Case: O(1)
-         *      Average Case: O(1)
+         *  Complexity:
+         *      Always: constant
          */
         nonvirtual void Prepend (ArgByValueType<T> item);
 
     public:
         /**
-         *  Performance:
-         *      Worst Case: O(1)
-         *      Average Case: O(1)
+         *  Complexity:
+         *      Always: constant
          */
         nonvirtual void RemoveFirst ();
 
     public:
         /**
-         *  Performance:
+         *  Complexity:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          *
@@ -149,8 +146,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Performance:
-         *      Worst Case: O(1)
+         *  Complexity:
+         *      Always: constant
          * 
          *  Returns iterator pointing at next item.
          */
@@ -158,15 +155,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Performance:
-         *      Worst Case: O(1)
+         *  Complexity:
+         *      Always: constant
          */
         nonvirtual void SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);
 
     public:
         /**
-         *  Performance:
-         *      Worst Case: O(1)
+         *  Complexity:
+         *      Always: constant
          *
          *  NB: Can be called if done
          */
@@ -174,8 +171,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Performance:
-         *      Worst Case: O(1)
+         *  Complexity:
+         *      Always: constant
          */
         nonvirtual void AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
 
@@ -191,9 +188,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Performance:
-         *      Worst Case: O(N)
-         *      Average Case: O(N)
+         *  Complexity:
+         *      Always: O(N)
          *
          *      Not alot of point in having these, as they are terribly slow,
          *  but the could be convienient.
@@ -202,9 +198,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /*
-         *  Performance:
-         *      Worst Case: O(N)
-         *      Average Case: O(N)
+         *  Complexity:
+         *      Always: O(N)
          *
          *      Not alot of point in having these, as they are terribly slow,
          *  but the could be convienient.
@@ -213,9 +208,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /*
-         *  Performance:
-         *      Worst Case: O(N)
-         *      Average Case: O(N)
+         *  Complexity:
+         *      Always: O(N)
          *
          *      Not alot of point in having these, as they are terribly slow,
          *  but the could be convienient.

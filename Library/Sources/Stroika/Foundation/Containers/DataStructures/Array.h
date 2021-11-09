@@ -126,8 +126,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Performance:
-         *      Always: O(1)
+         *  \note Complexity:
+         *      Always: constant
          */
         nonvirtual T GetAt (size_t i) const;
 
@@ -136,44 +136,44 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Not a great API, since cannot check it very well. However, its more efficient when storing a larger object and you need
          *  to update just part of it.
          *
-         *  \note Performance:
-         *      Always: O(1)
+         *  \note Complexity:
+         *      Always: constant
          */
         nonvirtual T* PeekAt (size_t i);
 
     public:
         /**
-         *  \note Performance:
-         *      Always: O(1)
+         *  \note Complexity:
+         *      Always: constant
          */
         nonvirtual void SetAt (size_t i, ArgByValueType<T> item);
 
     public:
         /**
-         *  \note Performance:
-         *      Always: O(1)
+         *  \note Complexity:
+         *      Always: constant
          */
         nonvirtual T& operator[] (size_t i);
         nonvirtual T  operator[] (size_t i) const;
 
     public:
         /**
-         *  \note Performance:
-         *      Always: O(1)
+         *  \note Complexity:
+         *      Always: constant
          */
         nonvirtual size_t GetLength () const;
 
     public:
         /**
-         *  \note Performance:
+         *  \note Complexity:
          *      Worst Case: O(N)
-         *      Typical Case: ?? for small changes often O(1), but if enuf change of size O(N) growing. Less shrinking.
+         *      Typical Case: ?? for small changes often constant, but if enuf change of size O(N) growing. Less shrinking.
          */
         nonvirtual void SetLength (size_t newLength, ArgByValueType<T> fillValue);
 
     public:
         /**
-         *  \note Performance:
+         *  \note Complexity:
          *      Worst Case: O(N)
          *      Typical: depends on i, and Capacity - if need to change capacity O(N), and if near start of array O(N), and if near end of the array (append) can be cheap
          */

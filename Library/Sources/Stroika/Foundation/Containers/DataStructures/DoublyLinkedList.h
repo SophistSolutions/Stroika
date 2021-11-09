@@ -62,11 +62,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         DoublyLinkedList ();
-        DoublyLinkedList (const DoublyLinkedList<T>& from);
+        DoublyLinkedList (const DoublyLinkedList& from);
         ~DoublyLinkedList ();
 
     public:
-        nonvirtual DoublyLinkedList<T>& operator= (const DoublyLinkedList<T>& list);
+        nonvirtual DoublyLinkedList& operator= (const DoublyLinkedList& list);
 
     public:
         class Link;
@@ -76,14 +76,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Performance:
+         *  \note Complexity:
          *      Always: O(N)
          */
         nonvirtual size_t GetLength () const;
 
     public:
         /**
-         *  \note Performance:
+         *  \note Complexity:
          *      Always: O(0)
          *
          *  \req not IsEmpty ()
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Performance:
+         *  \note Complexity:
          *      Always: O(0)
          *
          *
@@ -102,21 +102,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Performance:
+         *  \note Complexity:
          *      Always: O(0)
          */
         nonvirtual void Prepend (ArgByValueType<T> item);
 
     public:
         /**
-         *  \note Performance:
+         *  \note Complexity:
          *      Always: O(0)
          */
         nonvirtual void Append (ArgByValueType<T> item);
 
     public:
         /**
-         *  \note Performance:
+         *  \note Complexity:
          *      Always: O(0)
          *
          *  \req not IsEmpty ()
@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Performance:
+         *  \note Complexity:
          *      Always: O(0)
          *
          *  \req not IsEmpty ()
@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /*
-         *  \note Performance:
+         *  \note Complexity:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          *
@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Performance:
+         *  \note Complexity:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          *
@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Performance:
+         *  \note Complexity:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          */
@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Performance:
+         *  \note Complexity:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          */
@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Performance:
+         *  \note Complexity:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          */
@@ -200,12 +200,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
          *  the container they were iterating over).
          */
-        nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const DoublyLinkedList<T>* movedFrom);
+        nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const DoublyLinkedList<T>* movedFrom) const;
 
     public:
         /**
-         *  \note Performance:
-         *      Always: O(1)
+         *  \note Complexity:
+         *      Always: constant
          * 
          *  returns the next link
          */
@@ -213,15 +213,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Performance:
-         *      Always: O(1)
+         *  \note Complexity:
+         *      Always: constant
          */
         nonvirtual void SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);
 
     public:
         /**
-         *  \note Performance:
-         *      Always: O(1)
+         *  \note Complexity:
+         *      Always: constant
          *
          *  NB: Can be called if done
          */
@@ -229,8 +229,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note Performance:
-         *      Always: O(1)
+         *  \note Complexity:
+         *      Always: constant
          */
         nonvirtual void AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
 

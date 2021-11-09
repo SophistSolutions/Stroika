@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
          *  the container they were iterating over).
          */
-        nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper<STL_CONTAINER_OF_T>* movedFrom);
+        nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper<STL_CONTAINER_OF_T>* movedFrom) const;
 
     public:
         nonvirtual bool Contains (ArgByValueType<value_type> item) const;
@@ -99,13 +99,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant () const;
 
     public:
-        static typename STL_CONTAINER_OF_T::iterator remove_constness (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it);
-
-    private:
-        template <typename CHECK_ = STL_CONTAINER_OF_T>
-        static typename STL_CONTAINER_OF_T::iterator remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, enable_if_t<Private_::has_erase<CHECK_>::value>* = 0);
-        template <typename CHECK_ = STL_CONTAINER_OF_T>
-        static typename STL_CONTAINER_OF_T::iterator remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, enable_if_t<!Private_::has_erase<CHECK_>::value>* = 0);
+        nonvirtual typename STL_CONTAINER_OF_T::iterator remove_constness (typename STL_CONTAINER_OF_T::const_iterator it);
     };
 
     /**
@@ -151,7 +145,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual size_t CurrentIndex () const;
 
     public:
-        nonvirtual void SetCurrentLink (typename STLContainerWrapper<STL_CONTAINER_OF_T>::iterator l);
+        nonvirtual void SetCurrentLink (typename STLContainerWrapper<STL_CONTAINER_OF_T>::const_iterator l);
 
     public:
         nonvirtual bool Equals (const ForwardIterator& rhs) const;
@@ -160,15 +154,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void PatchBeforeRemove (const ForwardIterator* adjustmentAt);
 
     public:
-        // moved from patching code
-        nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper* movedFrom);
-
-    public:
         /**
          *          @see https://stroika.atlassian.net/browse/STK-538
          */
-        STLContainerWrapper<STL_CONTAINER_OF_T>*                   fData;
-        typename STLContainerWrapper<STL_CONTAINER_OF_T>::iterator fStdIterator;
+        const STLContainerWrapper<STL_CONTAINER_OF_T>*                   fData;
+        typename STLContainerWrapper<STL_CONTAINER_OF_T>::const_iterator fStdIterator;
     };
 
 }

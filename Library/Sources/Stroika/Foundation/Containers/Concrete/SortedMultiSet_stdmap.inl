@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 (void)fData_.erase (mir.fIterator.fStdIterator);
             }
             else {
-                mir.fIterator.fStdIterator->second = newCount;
+                fData_.remove_constness (mir.fIterator.fStdIterator)->second = newCount;
                 if (nextI != nullptr) {
                     *nextI = i;
                 }
