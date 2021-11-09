@@ -666,7 +666,7 @@ namespace Stroika::Foundation::Characters {
         nonvirtual String SafeSubString (SZ1 from, SZ2 to) const;
 
     private:
-        static String SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to);
+        nonvirtual String SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to) const;
 
     public:
         /**

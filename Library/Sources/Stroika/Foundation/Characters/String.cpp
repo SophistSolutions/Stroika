@@ -606,9 +606,8 @@ optional<size_t> String::Find (const String& subString, size_t startAt, CompareO
 
 optional<pair<size_t, size_t>> String::Find (const RegularExpression& regEx, size_t startAt) const
 {
-    const String threadSafeCopy{*this};
-    Require (startAt <= threadSafeCopy.GetLength ());
-    wstring tmp = threadSafeCopy.As<wstring> ();
+    Require (startAt <= GetLength ());
+    wstring tmp = As<wstring> ();
     Require (startAt < tmp.size ());
     tmp = tmp.substr (startAt);
     wsmatch res;
@@ -622,8 +621,7 @@ optional<pair<size_t, size_t>> String::Find (const RegularExpression& regEx, siz
 vector<size_t> String::FindEach (const String& string2SearchFor, CompareOptions co) const
 {
     vector<size_t> result;
-    const String   threadSafeCopy{*this};
-    for (optional<size_t> i = threadSafeCopy.Find (string2SearchFor, 0, co); i; i = threadSafeCopy.Find (string2SearchFor, *i, co)) {
+    for (optional<size_t> i = Find (string2SearchFor, 0, co); i; i = Find (string2SearchFor, *i, co)) {
         result.push_back (*i);
         *i += string2SearchFor.length (); // this cannot point past end of this string because we FOUND string2SearchFor
     }
@@ -717,19 +715,18 @@ optional<size_t> String::RFind (Character c) const
 
 optional<size_t> String::RFind (const String& subString) const
 {
-    const String threadSafeCopy{*this};
     //@todo: FIX HORRIBLE PERFORMANCE!!!
     /*
      * Do quickie implementation, and don't worry about efficiency...
      */
     size_t subStrLen = subString.GetLength ();
     if (subStrLen == 0) {
-        return ((threadSafeCopy.GetLength () == 0) ? optional<size_t>{} : threadSafeCopy.GetLength () - 1);
+        return ((GetLength () == 0) ? optional<size_t>{} : GetLength () - 1);
     }
 
-    size_t limit = threadSafeCopy.GetLength () - subStrLen + 1;
+    size_t limit = GetLength () - subStrLen + 1;
     for (size_t i = limit; i > 0; --i) {
-        if (threadSafeCopy.SubString (i - 1, i - 1 + subStrLen) == subString) {
+        if (SubString (i - 1, i - 1 + subStrLen) == subString) {
             return i - 1;
         }
     }
@@ -738,8 +735,12 @@ optional<size_t> String::RFind (const String& subString) const
 
 String String::Replace (size_t from, size_t to, const String& replacement) const
 {
-    // @todo rewrite using StriingBuilder (performance)
-    return SubString (0, from) + replacement + SubString (to);
+    auto [thisStart, thisEnd] = this->GetData<wchar_t> ();
+    StringBuilder sb{thisStart, thisStart + from};
+    sb.Append (replacement);
+    sb.Append (thisStart + from, thisEnd);
+    Ensure (sb.str () == SubString (0, from) + replacement + SubString (to));
+    return sb.str ();
 }
 
 bool String::StartsWith (const Character& c, CompareOptions co) const
@@ -915,10 +916,11 @@ Containers::Sequence<String> String::Tokenize (const Containers::Set<Character>&
         trim);
 }
 
-String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to)
+String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to) const
 {
     Require (from <= to);
     Require (to <= thisLen);
+    Require (thisLen == this->GetLength ());
     const wchar_t* start = reinterpret_cast<const wchar_t*> (thisAccessor._ConstGetRep ()._Peek ()) + from;
     size_t         len   = to - from;
     const wchar_t* end   = start + len;
@@ -929,18 +931,8 @@ String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t this
     }
     if (len == thisLen) {
         Assert (from == 0); // because we require from/to subrange of thisLen, so if equal, must be full range
-#if 0
-        // @todo SEE TODO in String.h
-        // @todo - FIX - MUST RETURN thisAccessor AS STRING
-#endif
+        return *this;
     }
-#if 0
-    // If we are using kOptimizedForStringsLenLessOrEqualTo - so the string data gets stored in the rep anyhow, thats probably
-    // faster than adding a ref to the original string object? Not too sure of this optimization
-    if (len <= String_BufferedArray_Rep_::kOptimizedForStringsLenLessOrEqualTo) {
-        return mk_ (start, end);
-    }
-#endif
     return mk_ (start, end);
 }
 
@@ -966,7 +958,6 @@ String String::Repeat (unsigned int count) const
 String String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
 {
     RequireNotNull (shouldBeTrimmmed);
-    // @todo - NOT ENVELOPE THREADSAFE (BUT MOSTLY OK)
     _SafeReadRepAccessor accessor{this};
     size_t               length = accessor._ConstGetRep ()._GetLength ();
     for (size_t i = 0; i < length; ++i) {
