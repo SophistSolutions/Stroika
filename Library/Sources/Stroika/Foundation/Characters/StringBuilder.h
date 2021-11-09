@@ -54,6 +54,7 @@ namespace Stroika::Foundation::Characters {
         StringBuilder ()                     = default;
         StringBuilder (const StringBuilder&) = default;
         StringBuilder (const String& initialValue);
+        StringBuilder (const wchar_t* start, const wchar_t* end);
 
     public:
         nonvirtual StringBuilder& operator= (const StringBuilder& rhs) = default;

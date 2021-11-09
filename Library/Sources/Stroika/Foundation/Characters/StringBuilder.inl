@@ -25,6 +25,10 @@ namespace Stroika::Foundation::Characters {
     {
         operator+= (initialValue);
     }
+    inline StringBuilder::StringBuilder (const wchar_t* start, const wchar_t* end)
+    {
+        Append (start, end);
+    }
     inline StringBuilder& StringBuilder::operator= (const String& rhs)
     {
         clear ();
