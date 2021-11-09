@@ -25,6 +25,7 @@ $DOCKER run \
     --storage-opt "size=100GB" \
     --memory 8G \
     --cpus 8\
+    --network "Default Switch" \
     --name $CONTAINER_NAME \
     $CONTAINER_IMAGE
 
