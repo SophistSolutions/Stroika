@@ -36,17 +36,14 @@ FROM ${BASE_IMAGE}
 # VS versions
 #       https://docs.microsoft.com/en-us/visualstudio/releases/2019/history
 #
-ARG VS_Latest=https://aka.ms/vs/16/release/vs_buildtools.exe
+ARG VS_Latest=https://aka.ms/vs/17/release/vs_BuildTools.exe
 ARG VS_16_11_5=https://download.visualstudio.microsoft.com/download/pr/5a50b8ac-2c22-47f1-ba60-70d4257a78fa/4e0f5197da02b62b9fa48f05b55f2e206265785a6f0bab7235ef88fbdbe49e5e/vs_BuildTools.exe
-
-#ARG VS_17_Preview=https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=BuildTools&ch=pre&rel=17
-ARG VS_17_Preview=https://aka.ms/vs/17/pre/vs_buildtools.exe
 
 
 ## LOSE  --nocache modify cuz doesnt seem to work and not sure what it does
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_17_Preview" `
+RUN Invoke-WebRequest "$env:VS_Latest" `
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 SHELL ["cmd", "/S", "/C"]
 ## Component.VC.14.20 ... components added for the sake of building old boost versions... (1.77.0 and earlier) - TRIED - DIDNT WORK
