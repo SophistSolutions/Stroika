@@ -735,10 +735,13 @@ optional<size_t> String::RFind (const String& subString) const
 
 String String::Replace (size_t from, size_t to, const String& replacement) const
 {
-    auto [thisStart, thisEnd] = this->GetData<wchar_t> ();
+    [[maybe_unused]] auto [thisStart, thisEnd] = this->GetData<wchar_t> ();
+    Require (from <= to);
+    Require (to <= this->GetLength ());
+    Assert (to + thisStart < thisEnd);
     StringBuilder sb{thisStart, thisStart + from};
     sb.Append (replacement);
-    sb.Append (thisStart + from, thisEnd);
+    sb.Append (thisStart + from, thisStart + to);
     Ensure (sb.str () == SubString (0, from) + replacement + SubString (to));
     return sb.str ();
 }
