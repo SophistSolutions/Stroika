@@ -30,10 +30,6 @@
  *      @todo   Add special subclass of ForwardIterator that tracks PREVPTR - and use to cleanup stuff
  *              that uses forward_list code...
  *
- *      @todo   VERY INCOMPLETE Patch support. Unclear if/how I can do patch support generically - perhaps using
- *              some methods only called by array impls, and some only by returing iteratore on erase impls, etc,
- *              or perhaps with template specialization.
- *
  */
 
 namespace Stroika::Foundation::Containers::DataStructures {
@@ -46,8 +42,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  Use this to wrap an underlying stl container (like std::vector or stl:list, etc) to adapt
      *  it for Stroika containers.
      *
-     *  This code is NOT threadsafe. It assumes a wrapper layer provides thread safety, but it
-     *  DOES provide 'deletion'/update safety.
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
      */
     template <typename STL_CONTAINER_OF_T>
     class STLContainerWrapper : public STL_CONTAINER_OF_T, public Debug::AssertExternallySynchronizedLock {
@@ -55,7 +51,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         using inherited = STL_CONTAINER_OF_T;
 
     public:
-        using value_type = typename STL_CONTAINER_OF_T::value_type;
+        using value_type     = typename STL_CONTAINER_OF_T::value_type;
+        using iterator       = typename STL_CONTAINER_OF_T::iterator;
+        using const_iterator = typename STL_CONTAINER_OF_T::const_iterator;
 
     public:
         /**
@@ -74,7 +72,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
          *  the container they were iterating over).
          */
-        nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper<STL_CONTAINER_OF_T>* movedFrom) const;
+        nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper* movedFrom) const;
 
     public:
         nonvirtual bool Contains (ArgByValueType<value_type> item) const;
@@ -87,9 +85,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         template <typename FUNCTION>
-        nonvirtual typename STL_CONTAINER_OF_T::iterator FindFirstThat (FUNCTION doToElement);
+        nonvirtual iterator FindFirstThat (FUNCTION doToElement);
         template <typename FUNCTION>
-        nonvirtual typename STL_CONTAINER_OF_T::const_iterator FindFirstThat (FUNCTION doToElement) const;
+        nonvirtual const_iterator FindFirstThat (FUNCTION doToElement) const;
 
     public:
         template <typename PREDICATE>
@@ -99,7 +97,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant () const;
 
     public:
-        nonvirtual typename STL_CONTAINER_OF_T::iterator remove_constness (typename STL_CONTAINER_OF_T::const_iterator it);
+        nonvirtual iterator remove_constness (const_iterator it);
     };
 
     /**
@@ -119,13 +117,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename STL_CONTAINER_OF_T>
     class STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator {
     public:
-        using value_type = typename STLContainerWrapper<STL_CONTAINER_OF_T>::value_type;
-
-    public:
         /**
-         *          @see https://stroika.atlassian.net/browse/STK-538
          */
-        explicit ForwardIterator (const STLContainerWrapper<STL_CONTAINER_OF_T>* data);
+        explicit ForwardIterator (const STLContainerWrapper* data);
         explicit ForwardIterator (const ForwardIterator& from) = default;
 
     public:
@@ -136,6 +130,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool More (VALUE_TYPE* current, bool advance);
         template <typename VALUE_TYPE>
         nonvirtual void More (optional<VALUE_TYPE>* current, bool advance);
+
+    public:
         nonvirtual ForwardIterator& operator++ () noexcept;
 
     public:
@@ -145,7 +141,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual size_t CurrentIndex () const;
 
     public:
-        nonvirtual void SetCurrentLink (typename STLContainerWrapper<STL_CONTAINER_OF_T>::const_iterator l);
+        nonvirtual const_iterator GetCurrentSTLIterator () const;
+
+    public:
+        nonvirtual void SetCurrentSTLIterator (const_iterator l);
 
     public:
         nonvirtual bool Equals (const ForwardIterator& rhs) const;
@@ -154,11 +153,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void PatchBeforeRemove (const ForwardIterator* adjustmentAt);
 
     public:
-        /**
-         *          @see https://stroika.atlassian.net/browse/STK-538
-         */
-        const STLContainerWrapper<STL_CONTAINER_OF_T>*                   fData;
-        typename STLContainerWrapper<STL_CONTAINER_OF_T>::const_iterator fStdIterator;
+        nonvirtual const STLContainerWrapper* GetReferredToData () const;
+
+    private:
+        const STLContainerWrapper* fData_;
+        const_iterator             fStdIterator_;
+
+    private:
+        friend class STLContainerWrapper;
     };
 
 }

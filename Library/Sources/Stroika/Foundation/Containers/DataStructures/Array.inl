@@ -635,7 +635,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename T>
-    inline Array<T>::ForwardIterator::ForwardIterator (const Array<T>* data)
+    inline Array<T>::ForwardIterator::ForwardIterator (const Array* data)
         : inherited{data}
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};

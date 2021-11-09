@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename T>
-    inline LinkedList<T>::Link::Link (T item, Link* next)
+    inline LinkedList<T>::Link::Link (ArgByValueType<T> item, Link* next)
         : fItem{item}
         , fNext{next}
     {
@@ -336,7 +336,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedLock> readLock{*this};
         for (const Link* i = _fHead; i != nullptr; i = i->fNext) {
-            (doToElement) (i->fItem);
+            doToElement (i->fItem);
         }
     }
     template <typename T>
@@ -345,7 +345,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedLock> readLock{*this};
         for (Link* i = _fHead; i != nullptr; i = i->fNext) {
-            if ((doToElement) (i->fItem)) {
+            if (doToElement (i->fItem)) {
                 return i;
             }
         }
@@ -359,7 +359,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         for (Link* i = _fHead; i != nullptr;) {
             Link* deleteMe = i;
             i              = i->fNext;
-            delete (deleteMe);
+            delete deleteMe;
         }
         _fHead = nullptr;
         Invariant ();

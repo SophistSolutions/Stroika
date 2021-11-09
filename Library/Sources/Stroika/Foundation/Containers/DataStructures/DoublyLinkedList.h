@@ -48,12 +48,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     /*
      *      DoublyLinkedList<T> is a generic link (non-intrusive) list implementation.
-     *  It keeps a length count so access to its length is rapid. We provide
-     *  no public means to access the links themselves.
+     *  We provide no public means to access the links themselves.
      *
-     *      Since this class provides no patching support, it is not generally
-     *  used - more likely you want to use DoublyLinkedList<T>. Use this if you
-     *  will manage all patching, or know that none is necessary.
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T>
     class DoublyLinkedList : public Debug::AssertExternallySynchronizedLock {
@@ -237,12 +234,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         nonvirtual void Invariant () const;
 
-    protected:
+    private:
         Link* _fHead{};
         Link* _fTail{};
 
 #if qDebug
-    protected:
+    private:
         virtual void Invariant_ () const;
 #endif
 
@@ -276,10 +273,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     class DoublyLinkedList<T>::ForwardIterator {
     public:
         ForwardIterator (const ForwardIterator& from) = default;
-        ForwardIterator (const DoublyLinkedList<T>* data);
-
-    public:
-        using Link = typename DoublyLinkedList<T>::Link;
+        ForwardIterator (const DoublyLinkedList* data);
 
     public:
         nonvirtual ForwardIterator& operator= (const ForwardIterator& list);
@@ -314,17 +308,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         nonvirtual void Invariant () const;
 
-    protected:
-        const DoublyLinkedList<T>* _fData{nullptr};
-        const Link*                _fCurrent{nullptr};
+    private:
+        const DoublyLinkedList* _fData{nullptr};
+        const Link*             _fCurrent{nullptr};
 
 #if qDebug
-    protected:
+    private:
         virtual void Invariant_ () const;
 #endif
 
     private:
-        friend class DoublyLinkedList<T>;
+        friend class DoublyLinkedList;
     };
 
 }

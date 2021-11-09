@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return RESULT_TYPE::GetEmptyIterator ();
             }
             Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<T>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_);
-            resultRep->fIterator.SetCurrentLink (iLink);
+            resultRep->fIterator.SetCurrentSTLIterator (iLink);
             return RESULT_TYPE{move (resultRep)};
         }
 

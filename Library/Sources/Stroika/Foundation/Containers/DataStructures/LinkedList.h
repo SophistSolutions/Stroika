@@ -49,12 +49,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     /*
      *      LinkedList<T,TRAITS> is a generic link (non-intrusive) list implementation.
-     *  It keeps a length count so access to its length is rapid. We provide
+     *   We provide
      *  no public means to access the links themselves.
      *
-     *      Since this class provides no patching support, it is not generally
-     *  used - more likely you want to use PatchingDataStructures::LinkedList<T>. Use this if you
-     *  will manage all patching, or know that none is necessary.
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T>
     class LinkedList : public Debug::AssertExternallySynchronizedLock {
@@ -223,7 +221,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Link* _fHead{nullptr};
 
 #if qDebug
-    protected:
+    private:
         virtual void Invariant_ () const;
 #endif
 
@@ -235,7 +233,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     class LinkedList<T>::Link : public Memory::UseBlockAllocationIfAppropriate<Link> {
     public:
         Link () = delete;
-        Link (T item, Link* next);
+        Link (ArgByValueType<T> item, Link* next);
         Link (const Link&) = delete;
 
     public:
@@ -286,11 +284,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         nonvirtual void Invariant () const;
 
-    protected:
+    private:
         const LinkedList<T>*                _fData;
         const typename LinkedList<T>::Link* _fCurrent;
 
-    protected:
+    private:
 #if qDebug
         virtual void Invariant_ () const;
 #endif

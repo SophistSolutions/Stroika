@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         nonvirtual void Compact ();
 
-    protected:
+    public:
         class _ArrayIteratorBase;
 
     public:
@@ -247,11 +247,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant () const;
 
 #if qDebug
-    protected:
+    private:
         nonvirtual void _Invariant () const;
 #endif
 
-    protected:
+    private:
         size_t _fLength{0};         // #items advertised/constructed
         size_t _fSlotsAllocated{0}; // #items allocated (though not necessarily initialized)
         T*     _fItems{nullptr};
@@ -285,7 +285,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool   More (T* current, bool advance);
         nonvirtual bool   Done () const;
 
-    protected:
+    private:
         nonvirtual size_t _CurrentIndex () const; // no invariant called
 
     public:
@@ -304,15 +304,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant () const;
 
 #if qDebug
-    protected:
+    private:
         virtual void _Invariant () const;
 #endif
 
-    protected:
+    private:
         const Array<T>* _fData{nullptr};
         size_t          _fCurrentIdx{0};
 
-    protected:
+    private:
         const T* _dataStart () const { return _fData->_fItems; }
         const T* _dataEnd () const { return _dataStart () + _fData->_fLength; }
         size_t   _dataLength () const { return _fData->_fLength; }
@@ -329,10 +329,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     class Array<T>::ForwardIterator : public Array<T>::_ArrayIteratorBase {
     private:
-        using inherited = typename Array<T>::_ArrayIteratorBase;
+        using inherited = typename Array::_ArrayIteratorBase;
 
     public:
-        ForwardIterator (const Array<T>* data);
+        ForwardIterator (const Array* data);
         ForwardIterator (const ForwardIterator& src) = default;
 
     public:
@@ -352,7 +352,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     class Array<T>::BackwardIterator : public Array<T>::_ArrayIteratorBase {
     private:
-        using inherited = typename Array<T>::_ArrayIteratorBase;
+        using inherited = typename Array::_ArrayIteratorBase;
 
     public:
         BackwardIterator (const Array<T>* data);

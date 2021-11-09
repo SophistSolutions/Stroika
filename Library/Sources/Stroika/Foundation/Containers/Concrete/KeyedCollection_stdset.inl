@@ -166,11 +166,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
             auto&                                                mir      = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            auto                                                 nextStdI = fData_.erase (mir.fIterator.fStdIterator);
+            auto                                                 nextStdI = fData_.erase (mir.fIterator.GetCurrentSTLIterator ());
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 auto resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_);
-                resultRep->fIterator.SetCurrentLink (nextStdI);
+                resultRep->fIterator.SetCurrentSTLIterator (nextStdI);
                 *nextI = Iterator<value_type>{move (resultRep)};
             }
         }

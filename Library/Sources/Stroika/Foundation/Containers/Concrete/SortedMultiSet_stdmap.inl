@@ -154,8 +154,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
 
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            Assert (mir.fIterator.fData == &fData_);
-            (void)fData_.erase (mir.fIterator.fStdIterator);
+            Assert (mir.fIterator.GetReferredToData () == &fData_);
+            (void)fData_.erase (mir.fIterator.GetCurrentSTLIterator ());
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
@@ -171,10 +171,10 @@ namespace Stroika::Foundation::Containers::Concrete {
                     *nextI = i;
                     ++(*nextI);
                 }
-                (void)fData_.erase (mir.fIterator.fStdIterator);
+                (void)fData_.erase (mir.fIterator.GetCurrentSTLIterator ());
             }
             else {
-                fData_.remove_constness (mir.fIterator.fStdIterator)->second = newCount;
+                fData_.remove_constness (mir.fIterator.GetCurrentSTLIterator ())->second = newCount;
                 if (nextI != nullptr) {
                     *nextI = i;
                 }

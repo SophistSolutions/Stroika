@@ -534,7 +534,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename T>
-    inline DoublyLinkedList<T>::ForwardIterator::ForwardIterator (const DoublyLinkedList<T>* data)
+    inline DoublyLinkedList<T>::ForwardIterator::ForwardIterator (const DoublyLinkedList* data)
         : _fData{data}
         , _fCurrent{data->_fHead}
     {
@@ -593,9 +593,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
         if (advance) {
             /*
-                 * We could already be done since after the last Done() call, we could
-                 * have done a removeall.
-                 */
+             * We could already be done since after the last Done() call, we could
+             * have done a removeall.
+             */
             if (_fCurrent != nullptr) {
                 _fCurrent = _fCurrent->fNext;
             }
