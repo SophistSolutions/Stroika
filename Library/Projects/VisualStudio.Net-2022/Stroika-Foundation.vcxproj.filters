@@ -115,9 +115,6 @@
     <Filter Include="Sources\Characters\Concrete">
       <UniqueIdentifier>{406fdc1a-940e-48e2-8a3f-b6219b190485}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Containers\Private\PatchingDataStructures">
-      <UniqueIdentifier>{596f19b2-ffd9-4849-95c3-2690b52e1603}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Common">
       <UniqueIdentifier>{390cc25d-660b-4ffd-9038-965fc642e03f}</UniqueIdentifier>
     </Filter>
@@ -1161,18 +1158,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.h">
       <Filter>Sources\Characters\Concrete</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\Array.h">
-      <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\DoublyLinkedList.h">
-      <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\LinkedList.h">
-      <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\STLContainerWrapper.h">
-      <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Compare.h">
       <Filter>Sources\Common</Filter>
     </ClInclude>
@@ -1313,9 +1298,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.h">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\PatchableContainerHelper.h">
-      <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.h">
       <Filter>Sources\IO\Network</Filter>
@@ -2451,18 +2433,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.inl">
       <Filter>Sources\Characters\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\Array.inl">
-      <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\DoublyLinkedList.inl">
-      <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\LinkedList.inl">
-      <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\STLContainerWrapper.inl">
-      <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\Compare.inl">
       <Filter>Sources\Common</Filter>
     </None>
@@ -2606,9 +2576,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\TODO.md">
       <Filter>Sources\Debug</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\PatchableContainerHelper.inl">
-      <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.inl">
       <Filter>Sources\IO\Network</Filter>

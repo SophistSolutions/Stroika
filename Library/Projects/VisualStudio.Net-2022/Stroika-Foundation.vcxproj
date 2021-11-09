@@ -413,11 +413,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IteratorImplHelper.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\Array.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\DoublyLinkedList.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\LinkedList.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\PatchableContainerHelper.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\STLContainerWrapper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Queue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Sequence.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Set.h" />
@@ -849,11 +844,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IteratorImplHelper.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\Array.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\DoublyLinkedList.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\LinkedList.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\PatchableContainerHelper.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\STLContainerWrapper.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Queue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Sequence.inl" />
