@@ -28,8 +28,6 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ : public SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
-    private:
-        using inherited = typename SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
     };
 
     /*

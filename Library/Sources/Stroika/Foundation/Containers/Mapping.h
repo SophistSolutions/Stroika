@@ -19,15 +19,11 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *      @todo   Add an "Update (iterator<T> i, Value)" method, similar to other containers
- *              like Sequence. Note - intentionally don't allow updating the key???
- *
  *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
  *              concepts and that it USES that for the appropriate overloaded constructors.
  *
  *      @todo   Support more backends
  *              Especially HashTable, RedBlackTree, and stlhashmap
- *              And of course change default here
  *
  *      @todo   Not sure where this note goes - but eventually add "Database-Based" implementation of mapping
  *              and/or extenral file. Maybe also map to DynamoDB, MongoDB, etc... (but not here under Mapping,
@@ -531,9 +527,15 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         * \brief like Add (key, newValue) - BUT newValue is COMBINED with the 'f' argument.
+         * 
+         *  The accumulator function combines the previous value associated with the new value given (using initialValue if key was not already present in the map).
          */
         nonvirtual void Accumulate (
-            ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue, const function<mapped_type (ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f = [] (ArgByValueType<mapped_type> l, ArgByValueType<mapped_type> r) -> mapped_type { return l + r; }, mapped_type initialValue = {});
+            ArgByValueType<key_type>                                                                key,
+            ArgByValueType<mapped_type>                                                             newValue,
+            const function<mapped_type (ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f            = [] (ArgByValueType<mapped_type> l, ArgByValueType<mapped_type> r) -> mapped_type { return l + r; },
+            mapped_type                                                                             initialValue = {});
 
     public:
         /**
@@ -638,8 +640,8 @@ namespace Stroika::Foundation::Containers {
     template <typename VALUE_EQUALS_COMPARER>
     struct Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer = {});
-        nonvirtual bool       operator() (const Mapping& lhs, const Mapping& rhs) const;
-        VALUE_EQUALS_COMPARER fValueEqualsComparer;
+        nonvirtual bool                                  operator() (const Mapping& lhs, const Mapping& rhs) const;
+        [[NO_UNIQUE_ADDRESS_ATTR]] VALUE_EQUALS_COMPARER fValueEqualsComparer;
     };
 
 #if __cpp_impl_three_way_comparison < 201907
