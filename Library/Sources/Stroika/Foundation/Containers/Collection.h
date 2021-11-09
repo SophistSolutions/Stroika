@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  The no-argument verison Produces an empty collection.
          * 
-         *  The overload with Iteartor<T> arguments (start/end) must be iterators from this container.
+         *  The overload with Iterator<T> arguments (start/end) must be iterators from this container.
          *
          * The overload RemoveAll(PREDICATE) applies the function p(T) -> bool and deletes all entries that return true for the predicate.
          * Returns the number of items removed in this way.

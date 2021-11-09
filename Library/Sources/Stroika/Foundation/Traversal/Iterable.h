@@ -548,13 +548,13 @@ namespace Stroika::Foundation::Traversal {
          *  equivalent to:
          *
          *      for (Iterator<T> i = begin (); i != end (); ++i) {
-         *          if ((doToElement) (*i)) {
+         *          if (doToElement (*i)) {
          *              return it;
          *          }
          *      }
          *      return end();
          *
-         *  This function returns an iteartor pointing to the element that triggered the abrupt loop
+         *  This function returns an iterator pointing to the element that triggered the abrupt loop
          *  end (for example the element you were searching for?). It returns the special iterator
          *  end() to indicate no doToElement() functions returned true.
          *
