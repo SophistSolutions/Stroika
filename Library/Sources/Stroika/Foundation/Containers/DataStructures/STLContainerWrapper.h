@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /*
          *  Take iteartor 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
-         *  iteartor from 'this' - which points at the same logical position. This requires that this container
+         *  iterator from 'this' - which points at the same logical position. This requires that this container
          *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
          *  the container they were iterating over).
          */

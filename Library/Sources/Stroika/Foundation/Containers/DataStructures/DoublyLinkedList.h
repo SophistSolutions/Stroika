@@ -35,7 +35,7 @@
  *              part got lost.
  *
  *  Long-Term TODO:
- *      @todo   Could add iteartor subclass (or use traits to control) which tracks index internally, as with Stroika v1
+ *      @todo   Could add iterator subclass (or use traits to control) which tracks index internally, as with Stroika v1
  *              but this will do for and maybe best (depending on frequency of calls to CurrentIndex ()
  *
  * Notes:
@@ -192,8 +192,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /*
-         *  Take iteartor 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
-         *  iteartor from 'this' - which points at the same logical position. This requires that this container
+         *  Take iterator 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
+         *  iterator from 'this' - which points at the same logical position. This requires that this container
          *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
          *  the container they were iterating over).
          */
