@@ -70,6 +70,8 @@
  *
  *
  *  TODO:
+ *      @todo   Lose protected stuff (mostly).
+ *
  *      @todo   Improve perofrmance/cleanup memory allocation. ALREADY got rid of  realloc().
  *              but celanup safety/use uninitalized_copy and stl destroy functions.
  *
@@ -77,9 +79,6 @@
  *              different impls...
  *
  *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
- *
- *      @todo   For each class (Array/Array_Patchikng, and all iterators, add explicit
- *              declares about COPY CTORs etc. NOT safe (generally) to use default (esp for patching iterators)
  *
  *      @todo   Alot of implementation uses 'last' paradim. Switch to modern C++ / STL begin/end style.
  *
@@ -123,27 +122,78 @@ namespace Stroika::Foundation::Containers::DataStructures {
         ~Array ();
 
     public:
-        nonvirtual Array<T>& operator= (const Array<T>& rhs);
+        nonvirtual Array& operator= (const Array& rhs);
 
     public:
+        /**
+         *  \note Performance:
+         *      Always: O(1)
+         */
         nonvirtual T GetAt (size_t i) const;
-        nonvirtual T*   PeekAt (size_t i);
+
+    public:
+        /**
+         *  Not a great API, since cannot check it very well. However, its more efficient when storing a larger object and you need
+         *  to update just part of it.
+         *
+         *  \note Performance:
+         *      Always: O(1)
+         */
+        nonvirtual T* PeekAt (size_t i);
+
+    public:
+        /**
+         *  \note Performance:
+         *      Always: O(1)
+         */
         nonvirtual void SetAt (size_t i, ArgByValueType<T> item);
+
+    public:
+        /**
+         *  \note Performance:
+         *      Always: O(1)
+         */
         nonvirtual T& operator[] (size_t i);
         nonvirtual T  operator[] (size_t i) const;
 
+    public:
+        /**
+         *  \note Performance:
+         *      Always: O(1)
+         */
         nonvirtual size_t GetLength () const;
-        nonvirtual void   SetLength (size_t newLength, ArgByValueType<T> fillValue);
 
+    public:
+        /**
+         *  \note Performance:
+         *      Worst Case: O(N)
+         *      Typical Case: ?? for small changes often O(1), but if enuf change of size O(N) growing. Less shrinking.
+         */
+        nonvirtual void SetLength (size_t newLength, ArgByValueType<T> fillValue);
+
+    public:
+        /**
+         *  \note Performance:
+         *      Worst Case: O(N)
+         *      Typical: depends on i, and Capacity - if need to change capacity O(N), and if near start of array O(N), and if near end of the array (append) can be cheap
+         */
         nonvirtual void InsertAt (size_t index, ArgByValueType<T> item);
+
+    public:
         nonvirtual void RemoveAt (size_t index);
+
+    public:
         nonvirtual void RemoveAll ();
 
+    public:
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const;
 
+    public:
         template <typename FUNCTION>
         nonvirtual void Apply (FUNCTION doToElement) const;
+
+    public:
         template <typename FUNCTION>
         nonvirtual size_t FindFirstThat (FUNCTION doToElement) const;
 
@@ -153,7 +203,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * of arrays so that they don't waste time in Realloc's.
          */
         nonvirtual size_t GetCapacity () const;
-        nonvirtual void   SetCapacity (size_t slotsAlloced);
+
+    public:
+        nonvirtual void SetCapacity (size_t slotsAlloced);
 
     public:
         nonvirtual void Compact ();
@@ -183,7 +235,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void SetAt (const BackwardIterator& i, ArgByValueType<T> newValue);
 
     public:
-        //  NB: Can be called if done
+        //  NB: Can be called if i done
         nonvirtual void AddBefore (const ForwardIterator& i, ArgByValueType<T> item);
         nonvirtual void AddBefore (const BackwardIterator& i, ArgByValueType<T> item);
 
@@ -200,7 +252,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     protected:
-        //   public:                      /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN ``<> - until those cleaned up a bit
         size_t _fLength{0};         // #items advertised/constructed
         size_t _fSlotsAllocated{0}; // #items allocated (though not necessarily initialized)
         T*     _fItems{nullptr};

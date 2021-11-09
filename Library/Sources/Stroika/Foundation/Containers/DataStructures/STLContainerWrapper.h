@@ -84,6 +84,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         template <typename FUNCTION>
         nonvirtual void Apply (FUNCTION doToElement) const;
+
+    public:
         template <typename FUNCTION>
         nonvirtual typename STL_CONTAINER_OF_T::iterator FindFirstThat (FUNCTION doToElement);
         template <typename FUNCTION>

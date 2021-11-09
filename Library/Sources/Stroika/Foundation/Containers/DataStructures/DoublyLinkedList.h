@@ -23,10 +23,7 @@
  *
  *
  * TODO:
- *      @todo   Major changes to actually support double-links - on 2017-06-06 (old stroika had this not sure how
- *              I messed up in translation to new stroika).
- *
- *              Anyhow - must review the patching and other logic and test a bit. This should be consdiered almost totally untested!
+ *      @todo   Lose protected stuff, and if practical, make Link private
  *
  *      @todo   DataStructures::DoublyLinkedList::ForwardIterator has the 'suporesMode' in the
  *              datastrcutre code and we have it here in the patching code. Note SURE what is better
@@ -78,11 +75,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool IsEmpty () const;
 
     public:
+        /**
+         *  \note Performance:
+         *      Always: O(N)
+         */
         nonvirtual size_t GetLength () const;
 
     public:
         /**
-         *  Efficient.
+         *  \note Performance:
+         *      Always: O(0)
          *
          *  \req not IsEmpty ()
          */
@@ -90,7 +92,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Efficient:      ?? depedns on if I store last link?
+         *  \note Performance:
+         *      Always: O(0)
+         *
          *
          *  \req not IsEmpty ()
          */
@@ -98,19 +102,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-        *  Efficient.
-        */
+         *  \note Performance:
+         *      Always: O(0)
+         */
         nonvirtual void Prepend (ArgByValueType<T> item);
 
     public:
         /**
-        *  Efficient.
-        */
+         *  \note Performance:
+         *      Always: O(0)
+         */
         nonvirtual void Append (ArgByValueType<T> item);
 
     public:
         /**
-         *  Efficient.
+         *  \note Performance:
+         *      Always: O(0)
          *
          *  \req not IsEmpty ()
          */
@@ -118,7 +125,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Efficient.
+         *  \note Performance:
+         *      Always: O(0)
          *
          *  \req not IsEmpty ()
          */
@@ -126,7 +134,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /*
-         *  Performance:
+         *  \note Performance:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          *
@@ -149,7 +157,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Performance:
+         *  \note Performance:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          *
@@ -160,7 +168,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Performance:
+         *  \note Performance:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          */
@@ -168,7 +176,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Performance:
+         *  \note Performance:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          */
@@ -176,7 +184,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Performance:
+         *  \note Performance:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          */
@@ -196,8 +204,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Performance:
-         *      Worst Case: O(1)
+         *  \note Performance:
+         *      Always: O(1)
          * 
          *  returns the next link
          */
@@ -205,15 +213,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Performance:
-         *      Worst Case: O(1)
+         *  \note Performance:
+         *      Always: O(1)
          */
         nonvirtual void SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);
 
     public:
         /**
-         *  Performance:
-         *      Worst Case: O(1)
+         *  \note Performance:
+         *      Always: O(1)
          *
          *  NB: Can be called if done
          */
@@ -221,8 +229,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Performance:
-         *      Worst Case: O(1)
+         *  \note Performance:
+         *      Always: O(1)
          */
         nonvirtual void AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
 
@@ -248,12 +256,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     class DoublyLinkedList<T>::Link : public Memory::UseBlockAllocationIfAppropriate<Link> {
     public:
+        Link ()            = delete;
+        Link (const Link&) = delete;
         Link (ArgByValueType<T> item, Link* prev, Link* next);
 
     public:
         T     fItem;
-        Link* fPrev;
-        Link* fNext;
+        Link* fPrev{nullptr};
+        Link* fNext{nullptr};
     };
 
     /**

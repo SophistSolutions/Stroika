@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
-    LinkedList<T>::LinkedList (const LinkedList<T>& from)
+    LinkedList<T>::LinkedList (const LinkedList& from)
     {
         /*
          *      Copy the link list by keeping a point to the new current and new
@@ -48,11 +48,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  case is handled outside, before the loop.
          */
         if (from._fHead != nullptr) {
-            _fHead       = new Link (from._fHead->fItem, nullptr);
+            _fHead       = new Link{from._fHead->fItem, nullptr};
             Link* newCur = _fHead;
             for (const Link* cur = from._fHead->fNext; cur != nullptr; cur = cur->fNext) {
                 Link* newPrev  = newCur;
-                newCur         = new Link (cur->fItem, nullptr);
+                newCur         = new Link{cur->fItem, nullptr};
                 newPrev->fNext = newCur;
             }
         }
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
     }
     template <typename T>
-    inline void LinkedList<T>::MoveIteratorHereAfterClone (ForwardIterator* pi, const LinkedList<T>* movedFrom)
+    inline void LinkedList<T>::MoveIteratorHereAfterClone (ForwardIterator* pi, const LinkedList* movedFrom)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW

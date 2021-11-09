@@ -25,11 +25,11 @@
  *
  * TODO:
  *
+ *      @todo   Lose protected stuff, and if practical, make Link private
+ *
  *      @todo   In ForwardIterator object - maintain cached prev - so as we navigate - we can often
  *              avoid the back nav. Maybe make this a configurable class option? Anyhow - mostly include
  *              and use as cahce. ALready there mostly - but commented out (fPrev)
- *
- *      @todo   Review and simplify patching code
  *
  *      @todo   Include Performance numbers for each operation (done for many).
  *
@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         LinkedList ();
-        LinkedList (const LinkedList<T>& from);
+        LinkedList (const LinkedList& from);
         ~LinkedList ();
 
     public:
@@ -82,12 +82,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
          *  the container they were iterating over).
          */
-        nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const LinkedList<T>* movedFrom);
+        nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const LinkedList* movedFrom);
 
     public:
+        /**
+         *  \note Performance:
+         *      Always: O(1)
+         */
         nonvirtual bool IsEmpty () const;
 
     public:
+        /**
+         *  \note Performance:
+         *      Always: O(N)
+         */
         nonvirtual size_t GetLength () const;
 
     public:
@@ -134,6 +142,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         template <typename FUNCTION>
         nonvirtual void Apply (FUNCTION doToElement) const;
+
+    public:
         template <typename FUNCTION>
         nonvirtual Link* FindFirstThat (FUNCTION doToElement) const;
 
@@ -215,8 +225,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         nonvirtual void Invariant () const;
 
-    public: //////WORKRARBOUND - NEED MUTATOR TO ACCESS THIS SO OUR PROTECTED STUFF NOT NEEDED BY PATCHING CODE
-        //protected:
+    private:
         Link* _fHead{nullptr};
 
 #if qDebug
@@ -237,7 +246,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         T     fItem;
-        Link* fNext;
+        Link* fNext{nullptr};
     };
 
     /*

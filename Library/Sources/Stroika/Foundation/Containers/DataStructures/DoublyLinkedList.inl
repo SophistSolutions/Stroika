@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Invariant ();
-        _fHead = new Link (item, nullptr, _fHead);
+        _fHead = new Link{item, nullptr, _fHead};
         if (_fHead->fNext != nullptr) [[LIKELY_ATTR]] {
             // backlink second item to first
             _fHead->fNext->fPrev = _fHead;
@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Invariant ();
-        _fTail = new Link (item, _fTail, nullptr);
+        _fTail = new Link{item, _fTail, nullptr};
         if (_fTail->fPrev != nullptr) [[LIKELY_ATTR]] {
             // forward link second to last item to its prev
             _fTail->fPrev->fNext = _fTail;
