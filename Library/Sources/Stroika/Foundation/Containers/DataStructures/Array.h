@@ -37,12 +37,6 @@
  *
  *  Notes:
  *
- *  Warning:
- *      This implementation prohibits use of internal pointers within T
- *  since we sometimes copy the contents of the array without excplicitly using
- *  the X(X&) and T::operator= functions.
- *
- *
  *  C++/StandardC arrays and segmented architectures:
  *
  *      Our iterators use address arithmatic since that is faster than
@@ -68,9 +62,9 @@
  *  below.
  *
  *
- *
  *  TODO:
- *      @todo   Lose protected stuff (mostly).
+ *      @todo   See if there is some way to get the performance of realloc for the cases where we could have
+ *              realloced without moving.
  *
  *      @todo   Improve perofrmance/cleanup memory allocation. ALREADY got rid of  realloc().
  *              but celanup safety/use uninitalized_copy and stl destroy functions.
@@ -79,16 +73,6 @@
  *              different impls...
  *
  *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
- *
- *      @todo   Alot of implementation uses 'last' paradim. Switch to modern C++ / STL begin/end style.
- *
- *      @todo   ADD DATA MEMBERS TO ARRAYITERATORBASE WHCI ALLOW MANIP OF NEEDED STUFF IN ARRAY
- *              SO NOT COPIED!!! - like fLength, fPtr etc. THEN - we can do stuff safely
- *              WRT type safety / protected!!!
- *
- *              RETHINK. Above may not be a problem. Real issue is array stores base and length
- *              and iterators use start/end. Maybe THATs what we really need to change in the
- *              array class (probably).
  *
  *      @todo   Add RVALUE-REF (MOVE) stuff.
  *
@@ -211,7 +195,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Compact ();
 
     public:
-        class _ArrayIteratorBase;
+        class IteratorBase;
 
     public:
         class ForwardIterator;
@@ -219,12 +203,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /*
-         *  Take iteartor 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
-         *  iteartor from 'this' - which points at the same logical position. This requires that this container
+         *  Take iterator 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
+         *  iterator from 'this' - which points at the same logical position. This requires that this container
          *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
          *  the container they were iterating over).
          */
-        nonvirtual void MoveIteratorHereAfterClone (_ArrayIteratorBase* pi, const Array* movedFrom);
+        nonvirtual void MoveIteratorHereAfterClone (IteratorBase* pi, const Array* movedFrom) const;
 
     public:
         nonvirtual void RemoveAt (const ForwardIterator& i);
@@ -248,17 +232,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
 #if qDebug
     private:
-        nonvirtual void _Invariant () const;
+        nonvirtual void Invariant_ () const;
 #endif
 
     private:
-        size_t _fLength{0};         // #items advertised/constructed
-        size_t _fSlotsAllocated{0}; // #items allocated (though not necessarily initialized)
-        T*     _fItems{nullptr};
+        size_t fLength_{0};         // #items advertised/constructed
+        size_t fSlotsAllocated_{0}; // #items allocated (though not necessarily initialized)
+        T*     fItems_{nullptr};
     };
 
     /**
-     *      _ArrayIteratorBase<T> is an un-advertised implementation
+     *      IteratorBase<T> is an un-advertised implementation
      *  detail designed to help in source-code sharing among various
      *  iterator implementations.
      * 
@@ -267,58 +251,56 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *      cursored pointer requires patching considerations on 'realloc'.
      */
     template <typename T>
-    class Array<T>::_ArrayIteratorBase {
+    class Array<T>::IteratorBase {
     private:
-        _ArrayIteratorBase () = delete;
+        IteratorBase () = delete;
 
     public:
-        _ArrayIteratorBase (const Array<T>* data);
-        _ArrayIteratorBase (const _ArrayIteratorBase& src) = default;
+        IteratorBase (const Array* data);
+        IteratorBase (const IteratorBase& src) = default;
 
 #if qDebug
-        ~_ArrayIteratorBase ();
+        ~IteratorBase ();
 #endif
 
     public:
-        nonvirtual T      Current () const;      //  Error to call if Done (), otherwise OK
-        nonvirtual size_t CurrentIndex () const; //  NB: This can be called if we are done - if so, it returns GetLength() + 1.
-        nonvirtual bool   More (T* current, bool advance);
-        nonvirtual bool   Done () const;
+        nonvirtual T Current () const; //  Error to call if Done (), otherwise OK
 
-    private:
-        nonvirtual size_t _CurrentIndex () const; // no invariant called
+    public:
+        nonvirtual size_t CurrentIndex () const; //  NB: This can be called if we are done - if so, it returns GetLength() + 1.
+
+    public:
+        nonvirtual bool More (T* current, bool advance);
+
+    public:
+        nonvirtual bool Done () const;
 
     public:
         nonvirtual void SetIndex (size_t i);
 
     public:
-        nonvirtual bool Equals (const typename Array<T>::_ArrayIteratorBase& rhs) const;
+        nonvirtual bool Equals (const IteratorBase& rhs) const;
 
     public:
-        nonvirtual void PatchBeforeAdd (const _ArrayIteratorBase& adjustmentAt);
+        nonvirtual void PatchBeforeAdd (const IteratorBase& adjustmentAt);
 
     public:
-        nonvirtual void PatchBeforeRemove (const _ArrayIteratorBase* adjustmentAt);
+        nonvirtual void PatchBeforeRemove (const IteratorBase* adjustmentAt);
 
     public:
         nonvirtual void Invariant () const;
 
 #if qDebug
     private:
-        virtual void _Invariant () const;
+        nonvirtual void Invariant_ () const;
 #endif
 
     private:
-        const Array<T>* _fData{nullptr};
-        size_t          _fCurrentIdx{0};
+        const Array* fData_{nullptr};
+        size_t       fCurrentIdx_{0};
 
     private:
-        const T* _dataStart () const { return _fData->_fItems; }
-        const T* _dataEnd () const { return _dataStart () + _fData->_fLength; }
-        size_t   _dataLength () const { return _fData->_fLength; }
-
-    private:
-        friend class Array<T>;
+        friend class Array;
     };
 
     /**
@@ -327,9 +309,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  since it is not safe. Use ForwardIterator_Patch for those cases.
      */
     template <typename T>
-    class Array<T>::ForwardIterator : public Array<T>::_ArrayIteratorBase {
+    class Array<T>::ForwardIterator : public Array<T>::IteratorBase {
     private:
-        using inherited = typename Array::_ArrayIteratorBase;
+        using inherited = IteratorBase;
 
     public:
         ForwardIterator (const Array* data);
@@ -339,6 +321,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool More (T* current, bool advance);
         nonvirtual void More (optional<T>* result, bool advance);
         nonvirtual bool More (nullptr_t, bool advance);
+
+    public:
         nonvirtual ForwardIterator& operator++ () noexcept;
     };
 
@@ -350,9 +334,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *      // NOTE - I THINK NYI (fully) and not used
      */
     template <typename T>
-    class Array<T>::BackwardIterator : public Array<T>::_ArrayIteratorBase {
+    class Array<T>::BackwardIterator : public Array<T>::IteratorBase {
     private:
-        using inherited = typename Array::_ArrayIteratorBase;
+        using inherited = IteratorBase;
 
     public:
         BackwardIterator (const Array<T>* data);
