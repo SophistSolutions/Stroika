@@ -24,21 +24,11 @@
  *
  *
  * TODO:
- *
- *      @todo   Lose protected stuff, and if practical, make Link private
- *
  *      @todo   In ForwardIterator object - maintain cached prev - so as we navigate - we can often
  *              avoid the back nav. Maybe make this a configurable class option? Anyhow - mostly include
  *              and use as cahce. ALready there mostly - but commented out (fPrev)
  *
  *      @todo   Include Performance numbers for each operation (done for many).
- *
- * Notes:
- *
- *      Slightly unusual behaviour for LinkedListMutator_Patch<T>::AddBefore () -
- *  allow it to be called when we are Done() - otherwise there is NO
- *  WAY TO APPEND TO A LINK LIST!!!
- *
  *
  *
  */
@@ -218,7 +208,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant () const;
 
     private:
-        Link* _fHead{nullptr};
+        Link* fHead_{nullptr};
 
 #if qDebug
     private:
@@ -276,7 +266,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void SetCurrentLink (const Link* l);
 
     public:
-        nonvirtual bool Equals (const typename LinkedList<T>::ForwardIterator& rhs) const;
+        nonvirtual bool Equals (const ForwardIterator& rhs) const;
 
     public:
         nonvirtual void PatchBeforeRemove (const ForwardIterator* adjustmentAt);
@@ -285,16 +275,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant () const;
 
     private:
-        const LinkedList<T>*                _fData;
-        const typename LinkedList<T>::Link* _fCurrent;
+        const LinkedList* fData_;
+        const Link*       fCurrent_;
 
-    private:
 #if qDebug
+    private:
         virtual void Invariant_ () const;
 #endif
 
     private:
-        friend class LinkedList<T>;
+        friend class LinkedList;
     };
 
 }
