@@ -74,7 +74,11 @@ namespace Stroika::Foundation::Containers::Concrete {
          * This optional API allows pre-reserving space as an optimization.
          */
         nonvirtual size_t GetCapacity () const;
-        nonvirtual void   SetCapacity (size_t slotsAlloced);
+
+    public:
+        /**
+         */
+        nonvirtual void SetCapacity (size_t slotsAlloced);
 
     public:
         /**

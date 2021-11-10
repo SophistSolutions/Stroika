@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Containers::Factory {
      */
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     template <typename T>
-    atomic<Sequence<T> (*) ()> Sequence_Factory<T>::sFactory_ (nullptr);
+    atomic<Sequence<T> (*) ()> Sequence_Factory<T>::sFactory_{nullptr};
 #endif
     template <typename T>
     inline Sequence<T> Sequence_Factory<T>::operator() () const
@@ -49,6 +49,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T>
     inline Sequence<T> Sequence_Factory<T>::Default_ ()
     {
+        // As of performance testing 2021-11-10 (very primitive) - Sequence_Array<> appears faster than Sequence_stdvector<> on Windows at least
         return Concrete::Sequence_Array<T>{};
     }
 

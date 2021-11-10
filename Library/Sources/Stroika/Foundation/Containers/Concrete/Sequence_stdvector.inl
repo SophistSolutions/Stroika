@@ -91,8 +91,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             RequireNotNull (i);
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
             auto                                                       result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
-            auto&                                                      mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
-            result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            result->fData_.MoveIteratorHereAfterClone (&Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ()).fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
         }
@@ -116,8 +115,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual size_t IndexOf (const Iterator<value_type>& i) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            auto&                                                      mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            return mir.fIterator.CurrentIndex ();
+            return Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.CurrentIndex ();
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
@@ -221,14 +219,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
         _SafeReadWriteRepAccessor                                  accessor{this};
         shared_lock<const Debug::AssertExternallySynchronizedLock> lg (accessor._ConstGetRep ().fData_);
-        if (accessor._ConstGetRep ().fData_.capacity () != accessor._ConstGetRep ().fData_.size ()) {
-            Memory::SmallStackBuffer<size_t> patchOffsets;
-            accessor._GetWriteableRep ().fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (&patchOffsets);
-            accessor._GetWriteableRep ().fData_.reserve (accessor._ConstGetRep ().fData_.size ());
-            if (patchOffsets.GetSize () != 0) {
-                accessor._GetWriteableRep ().fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (patchOffsets);
-            }
-        }
+        accessor._GetWriteableRep ().fData_.shrink_to_fit ();
+        accessor._GetWriteableRep ().fChangeCounts_.PerformedChange ();
     }
     template <typename T>
     inline size_t Sequence_stdvector<T>::GetCapacity () const
@@ -239,18 +231,20 @@ namespace Stroika::Foundation::Containers::Concrete {
         return accessor._ConstGetRep ().fData_.capacity ();
     }
     template <typename T>
-    inline void Sequence_stdvector<T>::SetCapacity (size_t slotsAlloced)
+    void Sequence_stdvector<T>::SetCapacity (size_t slotsAlloced)
     {
+        Require (slotsAlloced >= this->GetLength ());
         using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
-        _SafeReadWriteRepAccessor                                  accessor{this};
-        shared_lock<const Debug::AssertExternallySynchronizedLock> lg (accessor._ConstGetRep ().fData_);
-        if (accessor._ConstGetRep ().fData_.capacity () != slotsAlloced) {
-            Memory::SmallStackBuffer<size_t> patchOffsets;
-            accessor._GetWriteableRep ().fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (&patchOffsets);
+        _SafeReadWriteRepAccessor                                 accessor{this};
+        lock_guard<const Debug::AssertExternallySynchronizedLock> writeLock{accessor._ConstGetRep ().fData_};
+        if (accessor._ConstGetRep ().fData_.capacity () < slotsAlloced) {
             accessor._GetWriteableRep ().fData_.reserve (slotsAlloced);
-            if (patchOffsets.GetSize () != 0) {
-                accessor._GetWriteableRep ().fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass2 (patchOffsets);
-            }
+            accessor._GetWriteableRep ().fChangeCounts_.PerformedChange ();
+        }
+        else if (accessor._ConstGetRep ().fData_.capacity () > slotsAlloced) {
+            accessor._GetWriteableRep ().fData_.shrink_to_fit ();
+            accessor._GetWriteableRep ().fData_.reserve (slotsAlloced);
+            accessor._GetWriteableRep ().fChangeCounts_.PerformedChange ();
         }
     }
     template <typename T>
