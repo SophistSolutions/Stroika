@@ -6,6 +6,7 @@
 #include <algorithm>
 
 #include "../../Foundation/Characters/CodePage.h"
+#include "../../Foundation/Containers/Support/ReserveTweaks.h"
 
 #include "BiDiLayoutEngine.h"
 
@@ -1017,7 +1018,7 @@ TextLayoutBlock_VirtualSubset::TextLayoutBlock_VirtualSubset (const TextLayoutBl
             s.fRealStart = offsetSoFar;
             offsetSoFar += runEltLen;
             s.fRealEnd = offsetSoFar;
-            Containers::ReserveSpeedTweekAdd1 (fScriptRuns);
+            Containers::Support::ReserveTweaks::Reserve4Add1 (fScriptRuns);
             fScriptRuns.push_back (s);
         }
     }

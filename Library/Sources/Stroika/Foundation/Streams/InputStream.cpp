@@ -6,7 +6,7 @@
 #include "../Characters/Character.h"
 #include "../Characters/String.h"
 #include "../Characters/StringBuilder.h"
-#include "../Containers/Common.h"
+#include "../Containers/Support/ReserveTweaks.h"
 #include "../Debug/Trace.h"
 
 #include "InputStream.h"

@@ -12,8 +12,8 @@
 
 #include "../Characters/CString/Utilities.h"
 #include "../Configuration/Empty.h"
-#include "../Containers/Common.h"
 #include "../Containers/Set.h"
+#include "../Containers/Support/ReserveTweaks.h"
 #include "../Cryptography/Digest/Algorithm/SuperFastHash.h"
 #include "../Debug/Cast.h"
 #include "../Execution/Exceptions.h"

@@ -8,6 +8,7 @@
 #include "../../Characters/RegularExpression.h"
 #include "../../Characters/String2Int.h"
 #include "../../Characters/ToString.h"
+#include "../../Containers/Support/ReserveTweaks.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Throw.h"
 

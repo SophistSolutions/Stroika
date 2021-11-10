@@ -849,7 +849,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* text
         }
     }
     if (refName.length () > 0) {
-#if !qWideCharacter
+#if !qWideCharacters
 #if qPlatform_MacOS
         const CodePage kInternalCodePageToMapTo = kCodePage_MAC;
 #else

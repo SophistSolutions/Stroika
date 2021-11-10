@@ -9,7 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../../Containers/Common.h"
+#include "../../../Containers/Support/ReserveTweaks.h"
 #include "../../../Debug/Assertions.h"
 #include "../../../Memory/BlockAllocated.h"
 

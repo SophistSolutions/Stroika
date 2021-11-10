@@ -11,6 +11,7 @@
  */
 #include <mutex>
 
+#include "../Containers/Support/ReserveTweaks.h"
 #include "../Execution/WaitableEvent.h"
 
 namespace Stroika::Foundation::Streams {

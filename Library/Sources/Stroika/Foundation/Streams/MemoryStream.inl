@@ -10,6 +10,7 @@
  ********************************************************************************
  */
 
+#include "../Containers/Support/ReserveTweaks.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
 
 namespace Stroika::Foundation::Streams {

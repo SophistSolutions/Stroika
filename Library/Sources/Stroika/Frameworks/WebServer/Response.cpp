@@ -12,6 +12,7 @@
 #include "../../Foundation/Characters/StringBuilder.h"
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/Containers/Common.h"
+#include "../../Foundation/Containers/Support/ReserveTweaks.h"
 #include "../../Foundation/DataExchange/BadFormatException.h"
 #include "../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "../../Foundation/Debug/Assertions.h"
@@ -384,7 +385,7 @@ void Response::write (const byte* s, const byte* e)
         }
         else {
             // Because for autocompute - illegal to call flush and then write
-            Containers::ReserveSpeedTweekAddN (fBodyBytes_, (e - s), kResponseBufferReallocChunkSizeReserve_);
+            Containers::Support::ReserveTweaks::Reserve4AddN (fBodyBytes_, (e - s), kResponseBufferReallocChunkSizeReserve_);
             fBodyBytes_.insert (fBodyBytes_.end (), s, e);
         }
     }
