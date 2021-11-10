@@ -309,7 +309,7 @@ String Query::ComputeQueryString () const
 {
     string result;
     for (auto i = fMap_.begin (); i != fMap_.end (); ++i) {
-        Containers::ReserveSpeedTweekAdd1 (result);
+        Containers::Support::ReserveTweaks::Reserve4Add1 (result);
         if (not result.empty ()) {
             result += "&";
         }
@@ -361,7 +361,7 @@ string UniformResourceIdentification::EncodeURLQueryStringField (const String& s
     size_t sLength = utf8Query.length ();
     result.reserve (sLength);
     for (size_t i = 0; i < sLength; ++i) {
-        Containers::ReserveSpeedTweekAdd1 (result);
+        Containers::Support::ReserveTweaks::Reserve4Add1 (result);
         switch (utf8Query[i]) {
             case ' ':
                 result += "+";
@@ -458,11 +458,11 @@ string UniformResourceIdentification::PCTEncode (const string& s, const PCTEncod
             }
         }
         if (encode) {
-            Containers::ReserveSpeedTweekAddN (result, 3);
+            Containers::Support::ReserveTweaks::Reserve4AddN (result, 3);
             result += CString::Format ("%%%.2x", c);
         }
         else {
-            Containers::ReserveSpeedTweekAdd1 (result);
+            Containers::Support::ReserveTweaks::Reserve4Add1 (result);
             result += c;
         }
     }

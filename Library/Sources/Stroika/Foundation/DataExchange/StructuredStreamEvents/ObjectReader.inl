@@ -129,7 +129,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpotentially-evaluated-expression\"");
         }
 #endif
-        Containers::ReserveSpeedTweekAdd1 (fStack_);
+        Containers::Support::ReserveTweaks::Reserve4Add1 (fStack_);
         fStack_.push_back (elt);
         elt->Activated (*this);
     }

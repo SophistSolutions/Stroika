@@ -26,7 +26,7 @@ string XML::QuoteForXMLAttribute (const string& s)
     string r;
     r.reserve (s.size () * 6 / 5); // wild guess about good estimate
     for (auto i = s.begin (); i != s.end (); ++i) {
-        Containers::ReserveSpeedTweekAdd1 (r);
+        Containers::Support::ReserveTweaks::Reserve4Add1 (r);
         switch (*i) {
             case '&':
                 r += "&amp;";
@@ -116,7 +116,7 @@ string XML::QuoteForXML (const string& s)
     string r;
     r.reserve (s.size () * 6 / 5); // wild guess about good estimate
     for (auto i = s.begin (); i != s.end (); ++i) {
-        Containers::ReserveSpeedTweekAdd1 (r);
+        Containers::Support::ReserveTweaks::Reserve4Add1 (r);
         switch (*i) {
             case '&':
                 r += "&amp;";
@@ -154,7 +154,7 @@ string XML::QuoteForXML (const wstring& s)
     string r;
     r.reserve (s.size () * 7 / 5); // wild guess about good estimate
     for (auto i = s.begin (); i != s.end (); ++i) {
-        Containers::ReserveSpeedTweekAdd1 (r);
+        Containers::Support::ReserveTweaks::Reserve4Add1 (r);
         switch (*i) {
             case '&':
                 r += "&amp;";

@@ -51,6 +51,11 @@ namespace Stroika::Foundation::Characters {
      */
     class StringBuilder : private Debug::AssertExternallySynchronizedLock {
     public:
+        /**
+         */
+        using value_type = Character;
+
+    public:
         StringBuilder ()                     = default;
         StringBuilder (const StringBuilder&) = default;
         StringBuilder (const String& initialValue);

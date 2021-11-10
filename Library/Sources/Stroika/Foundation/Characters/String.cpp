@@ -232,7 +232,7 @@ namespace {
     {
         StringBuilder r;
         for (const auto&& i : src) {
-            Containers::ReserveSpeedTweekAdd1 (r);
+            Containers::Support::ReserveTweaks::Reserve4Add1 (r); // could be optimized further moving outside loop, but we don't generically quickly know size
             r.push_back (i.As<wchar_t> ());
         }
         return r.str ();
@@ -240,7 +240,7 @@ namespace {
     inline String mkWS_ (const Character& src)
     {
         wchar_t c = src.As<wchar_t> ();
-        return String (&c, &c + 1);
+        return String{&c, &c + 1};
     }
 }
 

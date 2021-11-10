@@ -146,6 +146,13 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - Standard LIFO (Last in first out) Stack. See Sedgewick, 30-31. Iteration proceeds from the top to the bottom of the stack. Top is the FIRST IN (also first out).
   - Supported backends: LinkedList
 
+## Other Modules
+  - [Adapters/](Adapters/ReadMe.md)
+  - [Concrete/](Concrete/ReadMe.md)
+  - [LockFreeDataStructures/](LockFreeDataStructures/ReadMe.md)
+  - [Factory/](Factory/ReadMe.md)
+  - [Support/](Support/ReadMe.md)
+  - [STL/](STL/ReadMe.md)
 
 ## Implementation notes
 ---

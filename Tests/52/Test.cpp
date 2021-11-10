@@ -22,7 +22,9 @@
 #include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/Configuration/StroikaVersion.h"
 #include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Concrete/Sequence_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_DoublyLinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/Sequence_stdvector.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
@@ -718,7 +720,7 @@ namespace {
     template <typename CONTAINER, typename ELEMENTTYPE = typename CONTAINER::value_type>
     void Test_SequenceVectorAdditionsAndCopies_ ()
     {
-        ELEMENTTYPE addEachTime = ELEMENTTYPE ();
+        ELEMENTTYPE addEachTime = ELEMENTTYPE{};
         CONTAINER   c;
         for (int i = 0; i < 500; ++i) {
             c.push_back (addEachTime);
@@ -1404,6 +1406,20 @@ namespace {
             Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<int>>, L"Sequence_DoublyLinkedList<int>",
             120000,
             6.0,
+            &failedTests);
+        Tester (
+            L"Sequence_Array<int> basics",
+            Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
+            Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_Array<int>>, L"Sequence_Array<int>",
+            120000,
+            0.8,
+            &failedTests);
+        Tester (
+            L"Sequence_stdvector<int> basics",
+            Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
+            Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_stdvector<int>>, L"Sequence_stdvector<int>",
+            120000,
+            0.9,
             &failedTests);
         Tester (
             L"Sequence_DoublyLinkedList<string> basics",

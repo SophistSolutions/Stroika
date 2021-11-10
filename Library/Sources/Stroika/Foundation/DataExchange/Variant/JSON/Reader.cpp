@@ -275,7 +275,7 @@ namespace {
             else {
                 // not looking at whitespace, in midst of array, and array not terminated, so better be looking at a value
                 if (lookingForElt) [[LIKELY_ATTR]] {
-                    Containers::ReserveSpeedTweekAdd1 (result);
+                    Containers::Support::ReserveTweaks::Reserve4Add1 (result);
                     result.push_back (Reader_value_ (in));
                     lookingForElt = false;
                 }

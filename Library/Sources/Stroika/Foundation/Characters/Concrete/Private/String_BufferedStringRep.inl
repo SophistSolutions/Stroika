@@ -106,8 +106,8 @@ namespace Stroika::Foundation::Characters::Concrete {
             }
 #endif
             constexpr size_t kChunkSize_ = 32;
-            Ensure (initialCapacity <= Containers::ReserveSpeedTweekAdjustCapacity (initialCapacity, kChunkSize_));
-            return Containers::ReserveSpeedTweekAdjustCapacity (initialCapacity, kChunkSize_);
+            Ensure (initialCapacity <= Containers::Support::ReserveTweaks::GetScaledUpCapacity (initialCapacity, sizeof (Character), kChunkSize_));
+            return Containers::Support::ReserveTweaks::GetScaledUpCapacity (initialCapacity, sizeof (Character), kChunkSize_);
         }
         inline void BufferedStringRep::_Rep::ReserveAtLeast_ (size_t newCapacity)
         {

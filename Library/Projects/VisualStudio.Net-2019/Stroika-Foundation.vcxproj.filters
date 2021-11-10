@@ -217,6 +217,9 @@
     <Filter Include="Sources\Database\SQL\ORM">
       <UniqueIdentifier>{02077998-1185-4a8b-9d59-2bea3217bddd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Containers\Support">
+      <UniqueIdentifier>{7516152a-6017-4972-a590-3734ecc0a5b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -2139,6 +2142,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Cast.h">
       <Filter>Sources\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Support\ReserveTweaks.h">
+      <Filter>Sources\Containers\Support</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3491,6 +3497,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Cast.inl">
       <Filter>Sources\Debug</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Support\ReserveTweaks.inl">
+      <Filter>Sources\Containers\Support</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Support\ReadMe.md">
+      <Filter>Sources\Containers\Support</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

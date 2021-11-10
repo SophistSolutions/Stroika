@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Streams {
                     size_t       curReadOffset  = fReadCursor_ - fData_.begin ();
                     size_t       curWriteOffset = fWriteCursor_ - fData_.begin ();
                     const size_t kChunkSize_    = 128; // WAG: @todo tune number...
-                    Containers::ReserveSpeedTweekAddN (fData_, roomRequired - roomLeft, kChunkSize_);
+                    Containers::Support::ReserveTweaks::Reserve4AddN (fData_, roomRequired - roomLeft, kChunkSize_);
                     fData_.resize (curWriteOffset + roomRequired);
                     fReadCursor_  = fData_.begin () + curReadOffset;
                     fWriteCursor_ = fData_.begin () + curWriteOffset;
