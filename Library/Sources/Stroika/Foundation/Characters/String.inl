@@ -406,10 +406,7 @@ namespace Stroika::Foundation::Characters {
         if (from != to) {
             _SafeReadRepAccessor                     thisAccessor{this};
             pair<const Character*, const Character*> lhsD = thisAccessor._ConstGetRep ().GetData ();
-            *this                                         = String (
-                mk_ (
-                    reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
-                    from, to));
+            *this                                         = String{mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second), from, to)};
         }
     }
     inline void String::Append (Character c)
