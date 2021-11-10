@@ -8,19 +8,10 @@
 
 #include <cstddef>
 
-#include "../Configuration/Enumeration.h"
-
 // while we support deprecated APIS
 #include "Support/ReserveTweaks.h"
 
 namespace Stroika::Foundation::Containers {
-
-// https://stroika.atlassian.net/browse/STK-535
-// APPEARS FIXED AS OF 2021-11-10 - Stroika 2.1b14
-#ifndef qIterationOnCopiedContainer_ThreadSafety_Buggy
-#define qIterationOnCopiedContainer_ThreadSafety_Buggy 0
-//#define qIterationOnCopiedContainer_ThreadSafety_Buggy 1
-#endif
 
     /**
      *  \brief For a contiguous container (such as a vector or basic_string) - find the pointer to the start of the container
