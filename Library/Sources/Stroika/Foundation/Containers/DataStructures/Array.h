@@ -164,20 +164,39 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void InsertAt (size_t index, ArgByValueType<T> item);
 
     public:
+        /**
+         *  \note Complexity:
+         *      Worst Case: O(N)
+         *      Typical: depends on index but typically O(N) (can be less if removing from end of Array)
+         */
         nonvirtual void RemoveAt (size_t index);
 
     public:
         nonvirtual void RemoveAll ();
 
     public:
+        /**
+         *  \note Complexity:
+         *      Worst Case: O(N)
+         *      Typical: O(N), but can be less if systematically finding entries near start of array
+         */
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const;
 
     public:
+        /**
+         *  \note Complexity:
+         *      Always: O(N)
+         */
         template <typename FUNCTION>
         nonvirtual void Apply (FUNCTION doToElement) const;
 
     public:
+        /**
+         *  \note Complexity:
+         *      Worst Case: O(N)
+         *      Typical: O(N), but can be less if systematically finding entries near start of array
+         */
         template <typename FUNCTION>
         nonvirtual size_t FindFirstThat (FUNCTION doToElement) const;
 

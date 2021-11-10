@@ -69,6 +69,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         class Link;
 
     public:
+        /**
+         *  \note Complexity:
+         *      Always: constant
+         */
         nonvirtual bool IsEmpty () const;
 
     public:
@@ -81,7 +85,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          *  \note Complexity:
-         *      Always: O(0)
+         *      Always: constant
          *
          *  \req not IsEmpty ()
          */
@@ -90,7 +94,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          *  \note Complexity:
-         *      Always: O(0)
+         *      Always: constant
          *
          *
          *  \req not IsEmpty ()
@@ -100,21 +104,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          *  \note Complexity:
-         *      Always: O(0)
+         *      Always: constant
          */
         nonvirtual void Prepend (ArgByValueType<T> item);
 
     public:
         /**
          *  \note Complexity:
-         *      Always: O(0)
+         *      Always: constant
          */
         nonvirtual void Append (ArgByValueType<T> item);
 
     public:
         /**
          *  \note Complexity:
-         *      Always: O(0)
+         *      Always: constant
          *
          *  \req not IsEmpty ()
          */
@@ -123,7 +127,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          *  \note Complexity:
-         *      Always: O(0)
+         *      Always: constant
          *
          *  \req not IsEmpty ()
          */
