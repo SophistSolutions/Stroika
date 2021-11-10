@@ -763,7 +763,7 @@ bool String::StartsWith (const String& subString, CompareOptions co) const
         return false;
     }
 #if qDebug
-    bool referenceResult = ThreeWayComparer{co}(SubString (0, subString.GetLength ()), subString) == 0; // this check isnt threadsafe - redo
+    bool referenceResult = ThreeWayComparer{co}(SubString (0, subString.GetLength ()), subString) == 0;
 #endif
     const Character*                         subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
     pair<const Character*, const Character*> thisData    = accessor._ConstGetRep ().GetData ();
@@ -792,7 +792,7 @@ bool String::EndsWith (const String& subString, CompareOptions co) const
         return false;
     }
 #if qDebug
-    bool referenceResult = String::EqualsComparer{co}(SubString (thisStrLen - subStrLen, thisStrLen), subString); // this check isnt threadsafe - redo
+    bool referenceResult = String::EqualsComparer{co}(SubString (thisStrLen - subStrLen, thisStrLen), subString);
 #endif
     const Character*                         subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
     pair<const Character*, const Character*> thisData    = accessor._ConstGetRep ().GetData ();
@@ -980,8 +980,6 @@ String String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
 
 String String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
 {
-    // @todo - NOT THREADAFE - BUGGY - MUST USE ACCESSOR TO RECONSTRUCT WHAT WE STRING WE RETURN!!! - EVEN FOR SUBSTR
-    // @todo - NOT ENVELOPE THREADSAFE (BUT MOSTLY OK)
     RequireNotNull (shouldBeTrimmmed);
     _SafeReadRepAccessor accessor{this};
     ptrdiff_t            length         = accessor._ConstGetRep ()._GetLength ();
@@ -1026,14 +1024,14 @@ String String::StripAll (bool (*removeCharIf) (Character)) const
     size_t n = result.GetLength ();
     for (size_t i = 0; i < n; ++i) {
         Character c = result[i];
-        if ((removeCharIf) (c)) {
+        if (removeCharIf (c)) {
             // on first removal, clone part of string done so far, and start appending
             String tmp = result.SubString (0, i);
             // Now keep iterating IN THIS LOOP appending characters and return at the end of this loop
             i++;
             for (; i < n; ++i) {
                 c = result[i];
-                if (not(removeCharIf) (c)) {
+                if (not removeCharIf (c)) {
                     tmp += c;
                 }
             }

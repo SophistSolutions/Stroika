@@ -426,6 +426,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Stack.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Support\ReserveTweaks.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Algorithm.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\CRC32.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Jenkins.h" />
@@ -859,6 +860,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Support\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Support\ReserveTweaks.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\CRC32.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Jenkins.inl" />
