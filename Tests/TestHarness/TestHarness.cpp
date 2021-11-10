@@ -66,7 +66,7 @@ void TestHarness::Setup ()
 #endif
     Debug::RegisterDefaultFatalErrorHandlers (FatalErrorHandler_);
     using namespace Execution;
-    SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler (FatalSignalHandler_, SignalHandler::Type::eDirect));
+    SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{FatalSignalHandler_, SignalHandler::Type::eDirect});
 }
 
 int TestHarness::PrintPassOrFail (void (*regressionTest) ())
