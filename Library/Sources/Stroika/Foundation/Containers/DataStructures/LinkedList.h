@@ -124,11 +124,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  \note Complexity:
+         *      Always: O(N)
          */
         template <typename FUNCTION>
         nonvirtual void Apply (FUNCTION doToElement) const;
 
     public:
+        /**
+         *  \note Complexity:
+         *      Worst Case: O(N)
+         *      Typical: O(N), but can be less if systematically finding entries near start of container
+         */
         template <typename FUNCTION>
         nonvirtual Link* FindFirstThat (FUNCTION doToElement) const;
 
