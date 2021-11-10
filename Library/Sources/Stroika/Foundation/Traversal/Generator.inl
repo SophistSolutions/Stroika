@@ -6,6 +6,7 @@
 
 #include "../Debug/Assertions.h"
 #include "../Debug/Cast.h"
+#include "../Memory/BlockAllocated.h"
 #include "IterableFromIterator.h"
 
 namespace Stroika::Foundation::Traversal {
@@ -15,7 +16,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     Iterator<T> CreateGeneratorIterator (const function<optional<T> ()>& getNext)
     {
-        struct GenItWrapper_ : Iterator<T>::IRep {
+        struct GenItWrapper_ : Iterator<T>::IRep, public Memory::UseBlockAllocationIfAppropriate<GenItWrapper_> {
             function<optional<T> ()> fFun_;
             optional<T>              fCur_;
             GenItWrapper_ () = delete;
