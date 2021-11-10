@@ -640,7 +640,7 @@ vector<pair<size_t, size_t>> String::FindEach (const RegularExpression& regEx) c
     for (size_t mi = 0; mi < nMatches; ++mi) {
         size_t matchLen = res.length (mi); // avoid populating with lots of empty matches - special case of empty search
         if (matchLen != 0) {
-            result.push_back (pair<size_t, size_t> (res.position (mi), matchLen));
+            result.push_back (pair<size_t, size_t>{res.position (mi), matchLen});
         }
     }
     return result;
@@ -658,7 +658,7 @@ vector<RegularExpressionMatch> String::FindEachMatch (const RegularExpression& r
         for (size_t j = 1; j < n; ++j) {
             s.Append (match.str (j));
         }
-        result.push_back (RegularExpressionMatch (match.str (0), s));
+        result.push_back (RegularExpressionMatch{match.str (0), s});
     }
     return result;
 }
