@@ -23,7 +23,7 @@
  *
  *
  * TODO:
- *      @todo   Lose protected stuff, and if practical, make Link private
+ *      @todo   make Link private
  *
  *      @todo   DataStructures::DoublyLinkedList::ForwardIterator has the 'suporesMode' in the
  *              datastrcutre code and we have it here in the patching code. Note SURE what is better
@@ -235,8 +235,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant () const;
 
     private:
-        Link* _fHead{};
-        Link* _fTail{};
+        Link* fHead_{};
+        Link* fTail_{};
 
 #if qDebug
     private:
@@ -291,10 +291,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual size_t CurrentIndex () const;
 
     public:
-        nonvirtual const Link* GetCurrentLink () const
-        {
-            return _fCurrent;
-        }
+        nonvirtual const Link* GetCurrentLink () const;
 
     public:
         nonvirtual void SetCurrentLink (const Link* l);
@@ -309,12 +306,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant () const;
 
     private:
-        const DoublyLinkedList* _fData{nullptr};
-        const Link*             _fCurrent{nullptr};
+        const DoublyLinkedList* fData_{nullptr};
+        const Link*             fCurrent_{nullptr};
 
 #if qDebug
     private:
-        virtual void Invariant_ () const;
+        nonvirtual void Invariant_ () const;
 #endif
 
     private:
