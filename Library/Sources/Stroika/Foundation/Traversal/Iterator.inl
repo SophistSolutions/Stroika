@@ -41,6 +41,7 @@ namespace Stroika::Foundation::Traversal {
         : fRep_{src.fRep_ == nullptr ? nullptr : Clone_ (*src.fRep_)}
         , fCurrentValue_{src.fCurrentValue_}
     {
+        this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::Iterator (RepSmartPtr&& rep)
@@ -48,6 +49,7 @@ namespace Stroika::Foundation::Traversal {
     {
         RequireNotNull (fRep_);
         fRep_->More (&fCurrentValue_, false);
+        this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
     constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (nullptr_t)
@@ -66,6 +68,7 @@ namespace Stroika::Foundation::Traversal {
         if (&rhs != this) [[LIKELY_ATTR]] {
             fRep_          = rhs.fRep_ == nullptr ? nullptr : Clone_ (*rhs.fRep_);
             fCurrentValue_ = rhs.fCurrentValue_;
+            this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
         }
         return *this;
     }
@@ -86,6 +89,7 @@ namespace Stroika::Foundation::Traversal {
     {
         auto mutableThis = const_cast<Iterator*> (this);
         fRep_->More (&mutableThis->fCurrentValue_, false);
+        this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline void Iterator<T, ITERATOR_TRAITS>::Invariant () const
@@ -141,8 +145,8 @@ namespace Stroika::Foundation::Traversal {
     {
         Require (not Done ());
         RequireNotNull (fRep_);
-        this->Invariant ();
         fRep_->More (&fCurrentValue_, true);
+        this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
         return *this;
     }
     template <typename T, typename ITERATOR_TRAITS>
@@ -151,8 +155,8 @@ namespace Stroika::Foundation::Traversal {
         RequireNotNull (fRep_);
         Require (not Done ());
         Iterator<T> tmp = *this;
-        this->Invariant ();
         fRep_->More (&fCurrentValue_, true);
+        this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
         return tmp;
     }
     template <typename T, typename ITERATOR_TRAITS>
