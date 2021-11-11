@@ -31,16 +31,21 @@ namespace Stroika::Foundation::Containers::Private {
     /**
      */
     struct ContainerDebugChangeCounts_ {
-
         using ChangeCountType = unsigned int;
+#if qDebug
+        static ChangeCountType mkInitial_ ();
+#endif
 
-        // weird explicit def need here and cannot do = default? --LGP 2021-10-31
         ContainerDebugChangeCounts_ ();
-        // weird explicit def need here and cannot do = default? --LGP 2021-10-31
         ContainerDebugChangeCounts_ (const ContainerDebugChangeCounts_& src);
+        ~ContainerDebugChangeCounts_ ();
 
 #if qDebug
-        atomic<ChangeCountType> fChangeCount{0};
+        // NOTE - might want to use weakly_shared_ptr (weakref) as safer 'debugging' check than this, but only
+        // for debug checking, so not strictly needed (and might cost too much). CONSIDER going forward just
+        // for DEBUG mode -- LGP 2021-11-11
+        bool                    fDeleted{false};
+        atomic<ChangeCountType> fChangeCount{0}; // overwritten with random# in CTOR
 #endif
 
         /**

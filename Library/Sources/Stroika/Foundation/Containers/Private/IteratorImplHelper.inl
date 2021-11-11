@@ -4,6 +4,8 @@
 #ifndef _Stroika_Foundation_Containers_Private_IteratorImplHelper_inl_
 #define _Stroika_Foundation_Containers_Private_IteratorImplHelper_inl_ 1
 
+#include <random>
+
 #include "../../Debug/Assertions.h"
 #include "../../Debug/Cast.h"
 
@@ -11,19 +13,41 @@ namespace Stroika::Foundation::Containers::Private {
 
     /*
      ********************************************************************************
-     ********************************* ContainerDebugChangeCounts_ ******************
+     *************************** ContainerDebugChangeCounts_ ************************
      ********************************************************************************
      */
+#if qDebug
+    inline ContainerDebugChangeCounts_::ChangeCountType ContainerDebugChangeCounts_::mkInitial_ ()
+    {
+        // use random number so when we assign new object we are more likely to detect bad iterators (dangling)
+        random_device                             rd;
+        mt19937                                   gen{rd ()};
+        uniform_int_distribution<ChangeCountType> distrib{1, 1000};
+        return distrib (gen);
+    }
+#endif
     inline ContainerDebugChangeCounts_::ContainerDebugChangeCounts_ ()
+#if qDebug
+        // clang-format off
+        : fChangeCount{mkInitial_ ()}
+    // clang-format on
+#endif
     {
     }
     inline ContainerDebugChangeCounts_::ContainerDebugChangeCounts_ ([[maybe_unused]] const ContainerDebugChangeCounts_& src)
 #if qDebug
         // clang-format off
-        : fChangeCount{src.fChangeCount.load ()}
+        : fDeleted{src.fDeleted}
+        , fChangeCount{src.fChangeCount.load ()}
     // clang-format on
 #endif
     {
+    }
+    inline ContainerDebugChangeCounts_::~ContainerDebugChangeCounts_ ()
+    {
+#if qDebug
+        fDeleted = true;
+#endif
     }
     inline void ContainerDebugChangeCounts_::PerformedChange ()
     {
@@ -39,17 +63,13 @@ namespace Stroika::Foundation::Containers::Private {
      */
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
     inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, [[maybe_unused]] const ContainerDebugChangeCounts_* changeCounter)
-        : fIterator
-    {
-        data
-    }
+        // clang-format off
+        : fIterator{data}
 #if qDebug
-    , fChangeCounter{changeCounter},
-        fLastCapturedChangeCount
-    {
-        changeCounter == nullptr ? 0 : changeCounter->fChangeCount.load ()
-    }
+        , fChangeCounter{changeCounter}
+        , fLastCapturedChangeCount { (changeCounter == nullptr) ? 0 : changeCounter->fChangeCount.load () }
 #endif
+    // clang-format on
     {
         RequireNotNull (data);
     }
@@ -119,6 +139,7 @@ namespace Stroika::Foundation::Containers::Private {
     {
 #if qDebug
         if (fChangeCounter != nullptr) {
+            Require (not fChangeCounter->fDeleted);                             // if this is triggered, it means the container changed so drastically that its rep was deleted
             Require (fChangeCounter->fChangeCount == fLastCapturedChangeCount); // if this fails, it almost certainly means you are using a stale iterator
         }
 #endif
