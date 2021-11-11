@@ -123,8 +123,8 @@ namespace Stroika::Foundation::Memory {
      *  @see Stroika::Foundation::Memory::AutomaticallyBlockAllocated
      *  @see Stroika::Foundation::Memory::ManuallyBlockAllocated
      */
-    template <typename T>
-    using UseBlockAllocationIfAppropriate = conditional_t<qAllowBlockAllocation, BlockAllocationUseHelper<T>, Configuration::Empty>;
+    template <typename T, bool andTrueCheck = true>
+    using UseBlockAllocationIfAppropriate = conditional_t<qAllowBlockAllocation and andTrueCheck, BlockAllocationUseHelper<T>, Configuration::Empty>;
 
     /**
      *   \brief ManuallyBlockAllocated<T> is a simple wrapper on BlockAllocator<T>. If qAllowBlockAllocation defined, this will use block allocation for a given type - at a given call.

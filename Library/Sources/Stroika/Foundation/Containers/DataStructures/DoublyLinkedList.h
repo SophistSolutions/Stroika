@@ -258,9 +258,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     /**
      *  Just an implementation detail. Don't use directly except in helper classes.
+     *  dont use block allocation for link sizes too large
      */
     template <typename T>
-    class DoublyLinkedList<T>::Link : public Memory::UseBlockAllocationIfAppropriate<Link> {
+    class DoublyLinkedList<T>::Link : public Memory::UseBlockAllocationIfAppropriate<Link, sizeof (T) <= 1024> {
     public:
         Link ()            = delete;
         Link (const Link&) = delete;

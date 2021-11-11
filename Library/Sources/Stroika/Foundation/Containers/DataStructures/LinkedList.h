@@ -226,8 +226,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         friend class ForwardIterator;
     };
 
+    /**
+     *  dont use block allocation for link sizes too large
+     */
     template <typename T>
-    class LinkedList<T>::Link : public Memory::UseBlockAllocationIfAppropriate<Link> {
+    class LinkedList<T>::Link : public Memory::UseBlockAllocationIfAppropriate<Link, sizeof (T) <= 1024> {
     public:
         Link () = delete;
         Link (ArgByValueType<T> item, Link* next);
