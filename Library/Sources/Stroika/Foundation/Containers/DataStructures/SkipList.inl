@@ -86,13 +86,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY, typename VALUE, typename TRAITS>
     inline size_t SkipList<KEY, VALUE, TRAITS>::GetLength () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fLength;
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     typename SkipList<KEY, VALUE, TRAITS>::Node* SkipList<KEY, VALUE, TRAITS>::FindNode (const KeyType& key) const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         Assert (fHead.size () > 0);
 
         vector<Node*> const* startV = &fHead;
@@ -127,8 +127,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY, typename VALUE, typename TRAITS>
     bool SkipList<KEY, VALUE, TRAITS>::Find (const KeyType& key, ValueType* val) const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        Node*                                               n = FindNode (key);
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+        Node*                                                n = FindNode (key);
         if (n != nullptr) {
             if (val != nullptr) {
                 *val = n->fEntry.GetValue ();
@@ -140,8 +140,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY, typename VALUE, typename TRAITS>
     void SkipList<KEY, VALUE, TRAITS>::Add (const KeyType& key, const ValueType& val)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        vector<Node*>                                      links;
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        vector<Node*>                                       links;
 
         Node* n = FindNearest (key, links);
         if ((n != nullptr) and (TRAITS::kPolicy & ADT::eDuplicateAddThrowException)) {
@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY, typename VALUE, typename TRAITS>
     void SkipList<KEY, VALUE, TRAITS>::AddNode (Node* node, const vector<Node*>& links)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         RequireNotNull (node);
         size_t newLinkHeight = DetermineLinkHeight ();
         node->fNext.resize (newLinkHeight);
@@ -188,9 +188,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY, typename VALUE, typename TRAITS>
     void SkipList<KEY, VALUE, TRAITS>::Remove (const KeyType& key)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        vector<Node*>                                      links;
-        Node*                                              n = FindNearest (key, links);
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        vector<Node*>                                       links;
+        Node*                                               n = FindNearest (key, links);
         if (n != nullptr) {
             RemoveNode (n, links);
         }

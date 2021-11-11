@@ -29,7 +29,7 @@
 #include "../../../Foundation/Containers/Set.h"
 #include "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
-#include "../../../Foundation/Debug/AssertExternallySynchronizedLock.h"
+#include "../../../Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "../../../Foundation/Debug/Assertions.h"
 #include "../../../Foundation/Execution/Exceptions.h"
 #include "../../../Foundation/Execution/ProcessRunner.h"
@@ -898,8 +898,8 @@ namespace {
         }
         nonvirtual Info _InternalCapture ()
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-            Debug::TraceContextBumper                          ctx{"Instruments::Filesystem _InternalCapture"};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            Debug::TraceContextBumper                           ctx{"Instruments::Filesystem _InternalCapture"};
 #if qPlatform_Linux or qPlatform_Windows
             Info result = inherited::_InternalCapture ();
 #else

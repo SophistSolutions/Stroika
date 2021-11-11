@@ -46,7 +46,7 @@ namespace {
             }
             virtual void Close () override
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
                 if (fSD_ != kINVALID_NATIVE_HANDLE_ and fAutomaticTCPDisconnectOnClose_) {
                     Shutdown (Socket::ShutdownTarget::eWrites);
                     Time::DurationSecondsType timeOutAt = Time::GetTickCount () + *fAutomaticTCPDisconnectOnClose_;
@@ -76,8 +76,8 @@ namespace {
             }
             nonvirtual void Connect_Sync_ (const SocketAddress& sockAddr) const
             {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                sockaddr_storage                                    useSockAddr = sockAddr.As<sockaddr_storage> ();
+                shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+                sockaddr_storage                                     useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
                 Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); });
 #elif qPlatform_Windows
@@ -88,8 +88,8 @@ namespace {
             }
             nonvirtual void Connect_AsyncWTimeout_ (const SocketAddress& sockAddr, const Time::Duration& timeout) const
             {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                sockaddr_storage                                    useSockAddr = sockAddr.As<sockaddr_storage> ();
+                shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+                sockaddr_storage                                     useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
                 // http://developerweb.net/viewtopic.php?id=3196.
                 // and see https://stackoverflow.com/questions/4181784/how-to-set-socket-timeout-in-c-when-making-multiple-connections/4182564#4182564 for why not using SO_RCVTIMEO/SO_SNDTIMEO
@@ -186,7 +186,7 @@ namespace {
             }
             virtual size_t Read (byte* intoStart, byte* intoEnd) const override
             {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
 
                 Assert (fCurrentPendingReadsCount++ == 0);
 #if qDebug
@@ -205,7 +205,7 @@ namespace {
             }
             virtual optional<size_t> ReadNonBlocking (byte* intoStart, byte* intoEnd) const override
             {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
                 Assert (fCurrentPendingReadsCount++ == 0);
 #if qDebug
                 [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { Assert (--fCurrentPendingReadsCount == 0); });
@@ -248,7 +248,7 @@ namespace {
             }
             virtual void Write (const byte* start, const byte* end) const override
             {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::Write", L"end-start=%lld", static_cast<long long> (end - start))};
 #endif
@@ -296,9 +296,9 @@ namespace {
             }
             virtual optional<IO::Network::SocketAddress> GetPeerAddress () const override
             {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                struct sockaddr_storage                             radr;
-                socklen_t                                           len = sizeof (radr);
+                shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+                struct sockaddr_storage                              radr;
+                socklen_t                                            len = sizeof (radr);
                 if (::getpeername (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
                     IO::Network::SocketAddress sa{radr};
                     return sa;
@@ -307,18 +307,18 @@ namespace {
             }
             virtual optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const override
             {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
                 return fAutomaticTCPDisconnectOnClose_;
             }
             virtual void SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& waitFor) override
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
                 fAutomaticTCPDisconnectOnClose_ = waitFor;
             }
             virtual KeepAliveOptions GetKeepAlives () const override
             {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                KeepAliveOptions                                    result;
+                shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+                KeepAliveOptions                                     result;
                 result.fEnabled = !!getsockopt<int> (SOL_SOCKET, SO_KEEPALIVE);
 #if qPlatform_Linux
                 // Only available if linux >= 2.4
@@ -333,7 +333,7 @@ namespace {
             }
             virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions) override
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
                 setsockopt<int> (SOL_SOCKET, SO_KEEPALIVE, keepAliveOptions.fEnabled);
 #if qPlatform_Linux
                 // Only available if linux >= 2.4

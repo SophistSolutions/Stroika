@@ -8,7 +8,7 @@
 #include "Sanitizer.h"
 #include "Trace.h"
 
-#include "AssertExternallySynchronizedLock.h"
+#include "AssertExternallySynchronizedMutex.h"
 
 using namespace Stroika;
 using namespace Stroika::Foundation;
@@ -17,10 +17,10 @@ using namespace Stroika::Foundation::Debug;
 #if qDebug
 /*
  ********************************************************************************
- ****************** Debug::AssertExternallySynchronizedLock *********************
+ ****************** Debug::AssertExternallySynchronizedMutex *********************
  ********************************************************************************
  */
-void AssertExternallySynchronizedLock::lock_ () const noexcept
+void AssertExternallySynchronizedMutex::lock_ () const noexcept
 {
     try {
         SharedContext* sharedContext = _fSharedContext.get ();
@@ -49,7 +49,7 @@ void AssertExternallySynchronizedLock::lock_ () const noexcept
     }
 }
 
-void AssertExternallySynchronizedLock::unlock_ () const noexcept
+void AssertExternallySynchronizedMutex::unlock_ () const noexcept
 {
     SharedContext* sharedContext = _fSharedContext.get ();
     Require (sharedContext->fCurLockThread_ == this_thread::get_id ());
@@ -57,7 +57,7 @@ void AssertExternallySynchronizedLock::unlock_ () const noexcept
     --sharedContext->fLocks_;
 }
 
-void AssertExternallySynchronizedLock::lock_shared_ () const noexcept
+void AssertExternallySynchronizedMutex::lock_shared_ () const noexcept
 {
     try {
         SharedContext* sharedContext = _fSharedContext.get ();
@@ -81,7 +81,7 @@ void AssertExternallySynchronizedLock::lock_shared_ () const noexcept
     }
 }
 
-void AssertExternallySynchronizedLock::unlock_shared_ () const noexcept
+void AssertExternallySynchronizedMutex::unlock_shared_ () const noexcept
 {
     try {
         SharedContext* sharedContext = _fSharedContext.get ();
@@ -92,10 +92,10 @@ void AssertExternallySynchronizedLock::unlock_shared_ () const noexcept
     }
 }
 
-mutex& AssertExternallySynchronizedLock::GetSharedLockMutexThreads_ ()
+mutex& AssertExternallySynchronizedMutex::GetSharedLockMutexThreads_ ()
 {
     static mutex sMutex_; // must be out-of-line so we can have just one mutex object. Could use static member, but then trouble using
-                          // AssertExternallySynchronizedLock before main
+                          // AssertExternallySynchronizedMutex before main
     return sMutex_;
 }
 #endif

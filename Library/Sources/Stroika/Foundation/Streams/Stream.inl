@@ -31,59 +31,59 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline auto Stream<ELEMENT_TYPE>::Ptr::_GetSharedRep () const -> _SharedIRep
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fRep_;
     }
     template <typename ELEMENT_TYPE>
     inline auto Stream<ELEMENT_TYPE>::Ptr::_GetRepConstRef () const -> const _IRep&
     {
         RequireNotNull (fRep_);
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return *fRep_.get ();
     }
     template <typename ELEMENT_TYPE>
     inline auto Stream<ELEMENT_TYPE>::Ptr::_GetRepRWRef () const -> _IRep&
     {
         RequireNotNull (fRep_);
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return *fRep_.get ();
     }
     template <typename ELEMENT_TYPE>
     inline bool Stream<ELEMENT_TYPE>::Ptr::IsSeekable () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fSeekable_;
     }
     template <typename ELEMENT_TYPE>
     inline SeekableFlag Stream<ELEMENT_TYPE>::Ptr::GetSeekability () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fSeekable_ ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable;
     }
     template <typename ELEMENT_TYPE>
     inline void Stream<ELEMENT_TYPE>::Ptr::reset () noexcept
     {
-        lock_guard<AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<AssertExternallySynchronizedMutex> critSec{*this};
         fRep_.reset ();
     }
     template <typename ELEMENT_TYPE>
     inline bool Stream<ELEMENT_TYPE>::Ptr::operator== (nullptr_t) const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fRep_.get () == nullptr;
     }
 #if __cpp_impl_three_way_comparison < 201907
     template <typename ELEMENT_TYPE>
     inline bool Stream<ELEMENT_TYPE>::Ptr::operator!= (nullptr_t) const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fRep_.get () != nullptr;
     }
 #endif
     template <typename ELEMENT_TYPE>
     inline Stream<ELEMENT_TYPE>::Ptr::operator bool () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fRep_.get () != nullptr;
     }
 

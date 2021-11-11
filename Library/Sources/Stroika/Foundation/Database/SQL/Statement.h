@@ -13,7 +13,7 @@
 #include "../../Containers/Mapping.h"
 #include "../../Containers/Sequence.h"
 #include "../../DataExchange/VariantValue.h"
-#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Debug/AssertExternallySynchronizedMutex.h"
 
 #include "Connection.h"
 
@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Database::SQL {
      *
      *  \todo   CONSIDER redo Row as iterator; or maybe GetResults () method that returns iterable of Rows? and lazy pulls them?
      */
-    class Statement : protected Debug::AssertExternallySynchronizedLock {
+    class Statement : protected Debug::AssertExternallySynchronizedMutex {
     public:
         class IRep;
 
@@ -264,7 +264,7 @@ namespace Stroika::Foundation::Database::SQL {
      *          But though each Statement can only be accessed from a single thread at a time, the underlying database may be
      *          threadsafe (even if accessed across processes).
      */
-    class Statement::IRep : protected Debug::AssertExternallySynchronizedLock {
+    class Statement::IRep : protected Debug::AssertExternallySynchronizedMutex {
     public:
         /**
          */

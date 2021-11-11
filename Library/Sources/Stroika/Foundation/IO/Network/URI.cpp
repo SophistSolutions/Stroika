@@ -131,8 +131,8 @@ URI URI::Parse (const String& rawURL)
 template <>
 String URI::As () const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    StringBuilder                                       result;
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+    StringBuilder                                        result;
     if (fScheme_) {
         // From https://tools.ietf.org/html/rfc3986#appendix-A
         //      scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
@@ -167,14 +167,14 @@ String URI::As () const
 template <>
 string URI::As () const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
     // @todo - Could be more efficient doing String algorithm directly
     return As<String> ().AsASCII ();
 }
 
 URI::operator bool () const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
     if (fScheme_) {
         return true;
     }
@@ -196,7 +196,7 @@ URI::operator bool () const
 template <>
 String URI::GetAuthorityRelativeResource () const
 {
-    shared_lock<const AssertExternallySynchronizedLock>              critSec{*this};
+    shared_lock<const AssertExternallySynchronizedMutex>             critSec{*this};
     static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
     Characters::StringBuilder                                        result = UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
     if (fQuery_) {
@@ -208,17 +208,17 @@ String URI::GetAuthorityRelativeResource () const
 
 String URI::GetAuthorityRelativeResourceDir () const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    static const RegularExpression                      kSelectDir_ = L"(.*\\/)[^\\/]*"_RegEx;
-    optional<String>                                    baseDir;
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+    static const RegularExpression                       kSelectDir_ = L"(.*\\/)[^\\/]*"_RegEx;
+    optional<String>                                     baseDir;
     (void)fPath_.Match (kSelectDir_, &baseDir);
     return baseDir.value_or (String{});
 }
 
 URI URI::Normalize () const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    optional<SchemeType>                                scheme = fScheme_;
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+    optional<SchemeType>                                 scheme = fScheme_;
     if (scheme) {
         scheme = scheme->Normalize ();
     }
@@ -234,8 +234,8 @@ URI URI::Normalize () const
 String URI::ToString () const
 {
     // dont use As<String> () because this can throw if bad string - and no need to pct-encode here
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    StringBuilder                                       result;
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+    StringBuilder                                        result;
     if (fScheme_) {
         result += *fScheme_ + L":";
     }
@@ -266,7 +266,7 @@ void URI::CheckValidPathForAuthority_ (const optional<Authority>& authority, con
 
 URI URI::Combine (const URI& uri) const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
 
     /*
      *  This is not stricly according to Hoyle, but it avoids a common inconvenience with the Scheme check below. And avoids having to write alot of

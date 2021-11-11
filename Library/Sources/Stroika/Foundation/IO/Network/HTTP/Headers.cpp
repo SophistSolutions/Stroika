@@ -31,44 +31,44 @@ namespace {
 Headers::Headers ()
     : accessControlAllowOrigin{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<String> {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::accessControlAllowOrigin);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::accessControlAllowOrigin);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->As<Mapping<String, String>> ().Lookup (HeaderName::kAccessControlAllowOrigin);
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& accessControlAllowOrigin) {
-              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::accessControlAllowOrigin);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Headers*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::accessControlAllowOrigin);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               thisObj->SetExtras_ (HeaderName::kAccessControlAllowOrigin, accessControlAllowOrigin);
           }}
     , allow{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Containers::Set<String>> {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::allow);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::allow);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               if (auto hdr = thisObj->As<Mapping<String, String>> ().Lookup (HeaderName::kAllow)) {
                   return Containers::Set<String>{hdr->Tokenize ({','})};
               }
               return nullopt;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& allowed) {
-              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::allow);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Headers*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::allow);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               thisObj->SetExtras_ (HeaderName::kAllow, allowed ? String::Join (*allowed) : optional<String>{});
           }}
     , cacheControl{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<CacheControl> {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::cacheControl);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::cacheControl);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fCacheControl_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& cacheControl) {
-              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::cacheControl);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Headers*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::cacheControl);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               thisObj->fCacheControl_ = cacheControl;
           }}
     , connection{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<ConnectionValue> {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::connection);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::connection);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               if (auto connectionHdr = thisObj->As<Mapping<String, String>> ().Lookup (HeaderName::kConnection)) {
                   if (kHeaderNameEqualsComparer (*connectionHdr, kKeepAlive_)) {
                       return eKeepAlive;
@@ -80,9 +80,9 @@ Headers::Headers ()
               return nullopt;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& connectionValue) {
-              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::connection);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              optional<String>                                   v;
+              Headers*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::connection);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
+              optional<String>                                    v;
               if (connectionValue) {
                   switch (*connectionValue) {
                       case ConnectionValue::eKeepAlive:
@@ -97,85 +97,85 @@ Headers::Headers ()
           }}
     , contentLength{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<uint64_t> {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fContentLength_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto contentLength) {
-              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Headers*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               thisObj->fContentLength_ = contentLength;
           }}
     , contentType{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Headers*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentType);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentType);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fContentType_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& contentType) {
-              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentType);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Headers*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentType);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               thisObj->fContentType_ = contentType;
           }}
     , date{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::date);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::date);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fDate_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& d) {
-              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::date);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Headers*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::date);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               thisObj->fDate_ = d ? d->AsUTC () : d;
           }}
     , cookie{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::cookie);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::cookie);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return Memory::NullCoalesce (thisObj->fCookieList_);
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& cookies) {
-              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::cookie);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Headers*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::cookie);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               thisObj->fCookieList_ = cookies.cookieDetails ().empty () ? optional<CookieList>{} : cookies;
           }}
     , ETag{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::ETag);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::ETag);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fETag_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& etag) {
-              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::ETag);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Headers*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::ETag);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               thisObj->fETag_ = etag;
           }}
     , host{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::host);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::host);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fHost_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& host) {
-              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::host);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Headers*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::host);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               thisObj->fHost_ = host;
           }}
     , ifNoneMatch{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::ifNoneMatch);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::ifNoneMatch);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fIfNoneMatch_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& ifNoneMatch) {
-              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::ifNoneMatch);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Headers*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::ifNoneMatch);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               thisObj->fIfNoneMatch_ = ifNoneMatch;
           }}
     , keepAlive{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<HTTP::KeepAlive> {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::keepAlive);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::keepAlive);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               if (auto hdrValue = thisObj->As<Mapping<String, String>> ().Lookup (HeaderName::kKeepAlive)) {
                   return HTTP::KeepAlive::Parse (*hdrValue);
               }
@@ -191,8 +191,8 @@ Headers::Headers ()
           }}
     , location{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<URI> {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::location);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::location);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               if (auto hdr = thisObj->As<Mapping<String, String>> ().Lookup (HeaderName::kLocation)) {
                   return URI::Parse (*hdr);
               }
@@ -204,8 +204,8 @@ Headers::Headers ()
           }}
     , origin{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<URI> {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::origin);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::origin);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               if (auto hdr = thisObj->As<Mapping<String, String>> ().Lookup (HeaderName::kOrigin)) {
                   return URI::Parse (*hdr);
               }
@@ -217,35 +217,35 @@ Headers::Headers ()
           }}
     , server{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<String> {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::server);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::server);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->As<Mapping<String, String>> ().Lookup (HeaderName::kServer);
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const optional<String>& server) {
-              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::server);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Headers*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::server);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               thisObj->SetExtras_ (HeaderName::kServer, server);
           }}
     , setCookie{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::setCookie);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::setCookie);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return Memory::NullCoalesce (thisObj->fSetCookieList_);
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& cookies) {
-              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::setCookie);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Headers*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::setCookie);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               thisObj->fSetCookieList_ = cookies.cookieDetails ().empty () ? optional<CookieList>{} : cookies;
           }}
     , transferEncoding{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::transferEncoding);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::transferEncoding);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fTransferEncoding_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newTransferEncodings) {
-              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::transferEncoding);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Headers*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::transferEncoding);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               if (newTransferEncodings && newTransferEncodings->length () == 1 && newTransferEncodings->Contains (TransferEncoding::eIdentity)) {
                   thisObj->fTransferEncoding_ = nullopt;
               }
@@ -255,13 +255,13 @@ Headers::Headers ()
           }}
     , vary{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Containers::Set<String>> {
-              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::vary);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Headers*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::vary);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fVary_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const optional<Containers::Set<String>>& vary) {
-              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::vary);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Headers*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::vary);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               thisObj->fVary_ = vary;
           }}
 {
@@ -270,7 +270,7 @@ Headers::Headers ()
 Headers::Headers (const Headers& src)
     : Headers{}
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{src};
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{src};
     // NOTE properties and fields refer to the same thing. COULD copy properties, but cheaper to just 'initialize' the fields
     // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficent way to avoid duplicative code
     fExtraHeaders_     = src.fExtraHeaders_;
@@ -291,7 +291,7 @@ Headers::Headers (const Headers& src)
 Headers::Headers (Headers&& src)
     : Headers{}
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{src};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{src};
     // NOTE properties and fields refer to the same thing. COULD copy properties, but cheaper to just 'initialize' the fields
     // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficent way to avoid duplicative code
     fExtraHeaders_     = move (src.fExtraHeaders_);
@@ -319,8 +319,8 @@ Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
 
 Headers& Headers::operator= (const Headers& rhs)
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec1{rhs};
-    lock_guard<const AssertExternallySynchronizedLock>  critSec2{*this};
+    shared_lock<const AssertExternallySynchronizedMutex> critSec1{rhs};
+    lock_guard<const AssertExternallySynchronizedMutex>  critSec2{*this};
     if (this != &rhs) {
         fExtraHeaders_     = move (rhs.fExtraHeaders_);
         fCacheControl_     = move (rhs.fCacheControl_);
@@ -340,8 +340,8 @@ Headers& Headers::operator= (const Headers& rhs)
 
 Headers& Headers::operator= (Headers&& rhs)
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec1{rhs};
-    lock_guard<const AssertExternallySynchronizedLock> critSec2{*this};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec1{rhs};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec2{*this};
     if (this != &rhs) {
         fExtraHeaders_     = move (rhs.fExtraHeaders_);
         fCacheControl_     = move (rhs.fCacheControl_);
@@ -361,7 +361,7 @@ Headers& Headers::operator= (Headers&& rhs)
 
 optional<String> Headers::LookupOne (const String& name) const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
     if (kHeaderNameEqualsComparer (name, HeaderName::kCacheControl)) {
         return fCacheControl_ ? fCacheControl_->As<String> () : optional<String>{};
     }
@@ -415,7 +415,7 @@ optional<String> Headers::LookupOne (const String& name) const
 
 Collection<String> Headers::LookupAll (const String& name) const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
     if (kHeaderNameEqualsComparer (name, HeaderName::kCacheControl) or kHeaderNameEqualsComparer (name, HeaderName::kContentLength) or kHeaderNameEqualsComparer (name, HeaderName::kContentType) or kHeaderNameEqualsComparer (name, HeaderName::kCookie) or kHeaderNameEqualsComparer (name, HeaderName::kETag) or kHeaderNameEqualsComparer (name, HeaderName::kHost) or kHeaderNameEqualsComparer (name, HeaderName::kIfNoneMatch) or kHeaderNameEqualsComparer (name, HeaderName::kTransferEncoding) or kHeaderNameEqualsComparer (name, HeaderName::kVary)) {
         auto o = this->LookupOne (name);
         return o ? Collection<String>{*o} : Collection<String>{};
@@ -439,8 +439,8 @@ Collection<String> Headers::LookupAll (const String& name) const
 
 size_t Headers::Remove (const String& headerName)
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    size_t                                             nRemoveals{};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+    size_t                                              nRemoveals{};
     if (UpdateBuiltin_ (AddOrSet::eRemove, headerName, nullopt, &nRemoveals)) {
         return nRemoveals; // could be zero if its builtin, but this doesn't change anything
     }
@@ -450,8 +450,8 @@ size_t Headers::Remove (const String& headerName)
 
 size_t Headers::Remove (const String& headerName, const String& value)
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    size_t                                             nRemoveals{};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+    size_t                                              nRemoveals{};
     if (UpdateBuiltin_ (AddOrSet::eRemove, headerName, value, &nRemoveals)) {
         return nRemoveals;
     }
@@ -461,7 +461,7 @@ size_t Headers::Remove (const String& headerName, const String& value)
 
 void Headers::Add (const String& headerName, const String& value)
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
     if (UpdateBuiltin_ (AddOrSet::eAdd, headerName, value)) {
         return;
     }
@@ -509,7 +509,7 @@ void Headers::AddAll (const Headers& headers)
 
 bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const optional<String>& value, size_t* nRemoveals)
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
 #if qDebug
     if (value == nullopt) {
         Require (flag == AddOrSet::eRemove or flag == AddOrSet::eSet);
@@ -640,7 +640,7 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
 
 void Headers::SetExtras_ (const String& headerName, const optional<String>& value)
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
     fExtraHeaders_.Remove ([=] (const auto& i) { return kHeaderNameEqualsComparer (i.fKey, headerName); });
     if (value) {
         fExtraHeaders_.Add (KeyValuePair<String, String>{headerName, *value});
@@ -664,8 +664,8 @@ Mapping<String, String> Headers::As () const
 template <>
 Collection<KeyValuePair<String, String>> Headers::As () const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    Collection<KeyValuePair<String, String>>            results = fExtraHeaders_;
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+    Collection<KeyValuePair<String, String>>             results = fExtraHeaders_;
     if (fCacheControl_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kCacheControl, fCacheControl_->As<String> ()});
     }

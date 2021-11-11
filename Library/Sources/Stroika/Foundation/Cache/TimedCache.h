@@ -13,7 +13,7 @@
 #include "../Common/Compare.h"
 #include "../Configuration/Common.h"
 #include "../Configuration/TypeHints.h"
-#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Debug/Assertions.h"
 #include "../Time/Duration.h"
 #include "../Time/Realtime.h"
@@ -241,7 +241,7 @@ namespace Stroika::Foundation::Cache {
      *  @see LRUCache
      */
     template <typename KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
-    class TimedCache : private Debug::AssertExternallySynchronizedLock, private TRAITS::StatsType {
+    class TimedCache : private Debug::AssertExternallySynchronizedMutex, private TRAITS::StatsType {
     public:
         using TraitsType = TRAITS;
 

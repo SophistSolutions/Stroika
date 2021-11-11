@@ -4,7 +4,7 @@ This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Debug s
 
 ## Modules
 
-- [AssertExternallySynchronizedLock.h](AssertExternallySynchronizedLock.h)
+- [AssertExternallySynchronizedMutex.h](AssertExternallySynchronizedMutex.h)
 - [Assertions.h](Assertions.h) - **very important**, **Assert()**, **Ensure()**, etc
 - [BackTrace.h](BackTrace.h)
 - [CompileTimeFlagChecker.h](CompileTimeFlagChecker.h)

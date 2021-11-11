@@ -53,35 +53,35 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _IterableRepSharedPtr Clone () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
         }
         virtual Iterator<value_type> MakeIterator () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual size_t GetLength () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return fData_.GetLength ();
         }
         virtual bool IsEmpty () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return fData_.GetLength () == 0;
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
         virtual Iterator<value_type> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            size_t                                                     i = fData_.FindFirstThat (doToElement);
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            size_t                                                      i = fData_.FindFirstThat (doToElement);
             if (i == fData_.GetLength ()) {
                 return nullptr;
             }
@@ -94,37 +94,37 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return KeyEqualsCompareFunctionType{fKeyEqualsComparer_};
         }
         virtual _MappingRepSharedPtr CloneEmpty () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return Iterable<value_type>::template MakeSmartPtr<Rep_> (fKeyEqualsComparer_); // keep comparer, but lose data
         }
         virtual _MappingRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            auto                                                       result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
-            auto&                                                      mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            auto                                                        result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
+            auto&                                                       mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
         }
         virtual Iterable<KEY_TYPE> Keys () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return this->_Keys_Reference_Implementation ();
         }
         virtual Iterable<MAPPED_VALUE_TYPE> MappedValues () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return this->_Values_Reference_Implementation ();
         }
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<MAPPED_VALUE_TYPE>* item) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
                 if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                     if (item != nullptr) {
@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt, AddReplaceMode addReplaceMode) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
                 if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                     switch (addReplaceMode) {
@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (ArgByValueType<KEY_TYPE> key) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
                 if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                     fData_.RemoveAt (it.CurrentIndex ());
@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             if (nextI != nullptr) {
                 *nextI    = i;
                 auto iRep = Debug::UncheckedDynamicCast<const IteratorRep_*> (&nextI->ConstGetRep ());
@@ -185,7 +185,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             fData_.PeekAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.CurrentIndex ())->fValue = newValue;
             if (nextI != nullptr) {
                 *nextI = i;
@@ -240,24 +240,24 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline void Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Compact ()
     {
         using _SafeReadWriteRepAccessor = typename Iterable<value_type>::template _SafeReadWriteRepAccessor<Rep_>;
-        _SafeReadWriteRepAccessor                                  accessor{this};
-        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{accessor._ConstGetRep ().fData_};
+        _SafeReadWriteRepAccessor                                   accessor{this};
+        shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{accessor._ConstGetRep ().fData_};
         accessor._GetWriteableRep ().fData_.Compact ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline size_t Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::GetCapacity () const
     {
         using _SafeReadRepAccessor = typename Iterable<value_type>::template _SafeReadRepAccessor<Rep_>;
-        _SafeReadRepAccessor                                       accessor{this};
-        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{accessor._ConstGetRep ().fData_};
+        _SafeReadRepAccessor                                        accessor{this};
+        shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{accessor._ConstGetRep ().fData_};
         return accessor._ConstGetRep ().fData_.GetCapacity ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::SetCapacity (size_t slotsAlloced)
     {
         using _SafeReadWriteRepAccessor = typename Iterable<value_type>::template _SafeReadWriteRepAccessor<Rep_>;
-        _SafeReadWriteRepAccessor                                  accessor{this};
-        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{accessor._ConstGetRep ().fData_};
+        _SafeReadWriteRepAccessor                                   accessor{this};
+        shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{accessor._ConstGetRep ().fData_};
         accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>

@@ -23,7 +23,7 @@
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/Containers/MultiSet.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
-#include "../../../Foundation/Debug/AssertExternallySynchronizedLock.h"
+#include "../../../Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "../../../Foundation/Debug/Assertions.h"
 #include "../../../Foundation/Debug/Trace.h"
 #include "../../../Foundation/Execution/Exceptions.h"
@@ -1675,7 +1675,7 @@ namespace {
         }
         ProcessMapType _InternalCapture ()
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"Instruments::ProcessDetails _InternalCapture"};
 #endif

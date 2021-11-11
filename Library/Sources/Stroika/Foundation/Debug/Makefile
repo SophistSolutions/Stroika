@@ -21,7 +21,7 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Assertions${OBJ_SUFFIX}\
-	$(ObjDir)AssertExternallySynchronizedLock${OBJ_SUFFIX}\
+	$(ObjDir)AssertExternallySynchronizedMutex${OBJ_SUFFIX}\
 	$(ObjDir)BackTrace${OBJ_SUFFIX}\
 	$(ObjDir)Debugger${OBJ_SUFFIX}\
 	$(ObjDir)Demangle${OBJ_SUFFIX}\

@@ -19,75 +19,75 @@ namespace Stroika::Frameworks::WebServer {
      */
     inline optional<IO::Network::SocketAddress> Message::GetPeerAddress () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fPeerAddress_;
     }
     inline const Request* Message::PeekRequest () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // inadequate testing - but best we can do with this API
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this}; // inadequate testing - but best we can do with this API
         return &fRequest_;
     }
     inline Request* Message::PeekRequest ()
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this}; // inadequate testing - but best we can do with this API
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this}; // inadequate testing - but best we can do with this API
         return &fRequest_;
     }
     inline const Request& Message::GetRequestReference () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // inadequate testing - but best we can do with this API
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this}; // inadequate testing - but best we can do with this API
         return fRequest_;
     }
     inline Request& Message::GetRequestReference ()
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this}; // inadequate testing - but best we can do with this API
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this}; // inadequate testing - but best we can do with this API
         return fRequest_;
     }
     inline const Response* Message::PeekResponse () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // inadequate testing - but best we can do with this API
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this}; // inadequate testing - but best we can do with this API
         return &fResponse_;
     }
     inline Response* Message::PeekResponse ()
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this}; // inadequate testing - but best we can do with this API
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this}; // inadequate testing - but best we can do with this API
         return &fResponse_;
     }
     inline URI Message::GetRequestURL () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fRequest_.url ();
     }
     inline String Message::GetRequestHTTPMethod () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fRequest_.httpMethod ();
     }
     inline Memory::BLOB Message::GetRequestBody ()
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         return fRequest_.GetBody ();
     }
     inline void Message::SetResponseContentType (const InternetMediaType& contentType)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         fResponse_.contentType = contentType;
     }
     template <typename... ARGS_TYPE>
     inline void Message::write (ARGS_TYPE&&... args)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         fResponse_.write (forward<ARGS_TYPE> (args)...);
     }
     template <typename... ARGS_TYPE>
     inline void Message::printf (ARGS_TYPE&&... args)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         fResponse_.write (forward<ARGS_TYPE> (args)...);
     }
     template <typename... ARGS_TYPE>
     inline void Message::writeln (ARGS_TYPE&&... args)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         fResponse_.write (forward<ARGS_TYPE> (args)...);
     }
 

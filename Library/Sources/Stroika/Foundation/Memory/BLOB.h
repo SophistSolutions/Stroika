@@ -16,7 +16,7 @@
 
 #include "../Configuration/Common.h"
 #include "../Configuration/Concepts.h"
-#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Memory/Common.h"
 #include "../Memory/SharedPtr.h"
 #include "../Streams/InputStream.h" // maybe bad - leads to circularity problems but hard to pre-declare InputStream
@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Memory {
      *          And the use of SmallStackBuffer<64> means that allocation of BLOBs of size <= 64 should requite no calls to the
      *          global ::operator new/malloc/free/delete
      */
-    class BLOB : private Debug::AssertExternallySynchronizedLock {
+    class BLOB : private Debug::AssertExternallySynchronizedMutex {
     public:
         /**
          *  \par Example Usage

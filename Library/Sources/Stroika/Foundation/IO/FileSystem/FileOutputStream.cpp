@@ -15,7 +15,7 @@
 
 #include "../../Characters/Format.h"
 #include "../../Characters/ToString.h"
-#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Debug/AssertExternallySynchronizedMutex.h"
 #include "../../Execution/Activity.h"
 #include "../../Execution/Common.h"
 #include "../../Execution/Exceptions.h"
@@ -49,7 +49,7 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
  ************************* FileSystem::FileOutputStream *************************
  ********************************************************************************
  */
-class FileOutputStream::Rep_ : public Streams::OutputStream<byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
+class FileOutputStream::Rep_ : public Streams::OutputStream<byte>::_IRep, private Debug::AssertExternallySynchronizedMutex {
 public:
     Rep_ ()            = delete;
     Rep_ (const Rep_&) = delete;
@@ -120,10 +120,10 @@ public:
         Require (end != nullptr or start == end);
 
         if (start != end) {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-            auto                                               activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
-            DeclareActivity                                    currentActivity{&activity};
-            const byte*                                        i = start;
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            auto                                                activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
+            DeclareActivity                                     currentActivity{&activity};
+            const byte*                                         i = start;
             while (i < end) {
 #if qPlatform_Windows
                 int n = ThrowPOSIXErrNoIfNegative (_write (fFD_, i, Math::PinToMaxForType<unsigned int> (end - i)));
@@ -139,9 +139,9 @@ public:
     {
         // normally nothing todo - write 'writes thru' (except if fFlushFlag)
         if (fFlushFlag == FlushFlag::eToDisk) {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-            auto                                               activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); });
-            DeclareActivity                                    currentActivity{&activity};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            auto                                                activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); });
+            DeclareActivity                                     currentActivity{&activity};
 #if qPlatform_POSIX
             ThrowPOSIXErrNoIfNegative (::fsync (fFD_));
 #elif qPlatform_Windows
@@ -153,7 +153,7 @@ public:
     }
     virtual Streams::SeekOffsetType GetWriteOffset () const override
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
 #if qPlatform_Linux
         return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
 #elif qPlatform_Windows
@@ -166,7 +166,7 @@ public:
     {
         Require (fSeekable_);
         using namespace Streams;
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0) [[UNLIKELY_ATTR]] {

@@ -383,7 +383,7 @@ namespace Stroika::Foundation::Common {
      *      \endcode
      *
      *      \note when using Properties, its often helpful to combine (for threadsafety checking) with 
-     *            Debug::AssertExternallySynchronizedLock and SetAssertExternallySynchronizedLockContext ()
+     *            Debug::AssertExternallySynchronizedMutex and SetAssertExternallySynchronizedMutexContext ()
      * 
      *      \see See the example usage (above outlined) in Frameworks/WebServer/Request.h, Message.h, Response.h, and Foundation/IO/Network/HTTP/Headers
      *

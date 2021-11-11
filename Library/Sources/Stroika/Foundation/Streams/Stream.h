@@ -10,7 +10,7 @@
 
 #include "../Configuration/Common.h"
 #include "../Configuration/Enumeration.h"
-#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Memory/Common.h"
 
 /**
@@ -150,7 +150,7 @@ namespace Stroika::Foundation::Streams {
      *      o   Support operator==(nullptr_t) only
      */
     template <typename ELEMENT_TYPE>
-    class Stream<ELEMENT_TYPE>::Ptr : protected Debug::AssertExternallySynchronizedLock {
+    class Stream<ELEMENT_TYPE>::Ptr : protected Debug::AssertExternallySynchronizedMutex {
     public:
         /**
          *  defaults to nullptr

@@ -55,26 +55,26 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual size_t GetLength () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{fData_};
             fData_.Invariant ();
             return fData_.size ();
         }
         virtual bool IsEmpty () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{fData_};
             fData_.Invariant ();
             return fData_.empty ();
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{fData_};
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
         virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{fData_};
             return this->_FindFirstThat (doToElement);
         }
 
@@ -94,8 +94,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<MAPPED_VALUE_TYPE>* item) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto                                                       i = fData_.find (key);
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{fData_};
+            auto                                                        i = fData_.find (key);
             if (i == fData_.end ()) {
                 if (item != nullptr) {
                     *item = nullopt;
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{fData_};
             fData_.Invariant ();
             auto i = fData_.find (key);
             if (i == fData_.end ()) {
@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (ArgByValueType<KEY_TYPE> key) override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{fData_};
             fData_.Invariant ();
             auto i = fData_.find (key);
             if (i != fData_.end ()) {
@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i) override
         {
-            lock_guard<const Debug::AssertExternallySynchronizedLock>                 critSec{fData_};
+            lock_guard<const Debug::AssertExternallySynchronizedMutex>                critSec{fData_};
             const typename Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::IRep& ir = i.GetRep ();
             AssertMember (&ir, IteratorRep_);
             auto& mir = dynamic_cast<const IteratorRep_&> (ir);

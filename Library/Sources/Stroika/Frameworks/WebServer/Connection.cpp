@@ -148,33 +148,33 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
 Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain, const Headers& defaultResponseHeaders, const optional<Headers>& defaultGETResponseHeaders, const optional<bool> autoComputeETagResponse)
     : socket{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> ConnectionOrientedStreamSocket::Ptr {
-              const Connection*                                   thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::socket);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Connection*                                    thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::socket);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fSocket_;
           }}
     , request{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Request& {
-        const Connection*                                   thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::request);
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        const Connection*                                    thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::request);
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
         return thisObj->fMessage_->request ();
     }}
     , response{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Response& {
-        const Connection*                                   thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::response);
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        const Connection*                                    thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::response);
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
         return thisObj->fMessage_->response ();
     }}
     , rwResponse{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Response& {
-        const Connection*                                  thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::rwResponse);
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        const Connection*                                   thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::rwResponse);
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
         return thisObj->fMessage_->rwResponse ();
     }}
     , remainingConnectionLimits{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<HTTP::KeepAlive> {
-                                    const Connection*                                   thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
-                                    shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+                                    const Connection*                                    thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
+                                    shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
                                     return thisObj->fRemaining_;
                                 },
                                 [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& remainingConnectionLimits) {
-                                    Connection*                                        thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
-                                    lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+                                    Connection*                                         thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
+                                    lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
                                     thisObj->fRemaining_ = remainingConnectionLimits;
                                 }}
     , fInterceptorChain_{interceptorChain}
@@ -206,7 +206,7 @@ Connection::~Connection ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"Destroying connection for socket %s, message=%s", Characters::ToString (fSocket_).c_str (), Characters::ToString (fMessage_).c_str ());
 #endif
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
     WriteLogConnectionMsg_ (L"DestroyingConnection");
 #endif
@@ -233,14 +233,14 @@ Connection::~Connection ()
 
 Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
     try {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection::ReadAndProcessMessage", L"this->socket=%s", Characters::ToString (fSocket_).c_str ())};
 #endif
         fMessage_ = make_unique<MyMessage_> (fSocket_, fSocketStream_, fDefaultResponseHeaders_, fAutoComputeETagResponse_);
 #if qDebug
-        fMessage_->SetAssertExternallySynchronizedLockContext (_fSharedContext);
+        fMessage_->SetAssertExternallySynchronizedMutexContext (_fSharedContext);
 #endif
 
         // First read the HTTP request line, and the headers (and abort this attempt if not ready)
@@ -392,8 +392,8 @@ void Connection::WriteLogConnectionMsg_ (const String& msg) const
 
 String Connection::ToString (bool abbreviatedOutput) const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    StringBuilder                                       sb;
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+    StringBuilder                                        sb;
     sb += L"{";
     sb += L"Socket: " + Characters::ToString (fSocket_) + L", ";
     if (not abbreviatedOutput) {

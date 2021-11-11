@@ -9,7 +9,7 @@
 #include "../../Common/Compare.h"
 #include "../../Configuration/Common.h"
 #include "../../Configuration/TypeHints.h"
-#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Debug/AssertExternallySynchronizedMutex.h"
 #include "../../Memory/BlockAllocated.h"
 
 #include "../Common.h"
@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T>
-    class DoublyLinkedList : public Debug::AssertExternallySynchronizedLock {
+    class DoublyLinkedList : public Debug::AssertExternallySynchronizedMutex {
     public:
         using value_type = T;
 

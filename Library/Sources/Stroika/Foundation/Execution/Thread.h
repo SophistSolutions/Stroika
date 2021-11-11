@@ -11,7 +11,7 @@
 #include <thread>
 
 #include "../Configuration/Common.h"
-#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Time/Realtime.h"
 #include "../Traversal/Iterable.h"
 
@@ -331,7 +331,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a>
          */
-        class Ptr : private Debug::AssertExternallySynchronizedLock {
+        class Ptr : private Debug::AssertExternallySynchronizedMutex {
         private:
             class Rep_;
 

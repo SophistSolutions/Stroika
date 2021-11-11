@@ -40,17 +40,17 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline bool URI::IsRelativeReference () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fScheme_.has_value ();
     }
     inline optional<URI::SchemeType> URI::GetScheme () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fScheme_;
     }
     inline void URI::SetScheme (const optional<SchemeType>& scheme)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         if (scheme) {
             scheme->Validate ();
         }
@@ -58,25 +58,25 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline void URI::SetScheme (const SchemeType& scheme)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         scheme.Validate ();
         fScheme_ = scheme;
     }
     inline optional<URI::Authority> URI::GetAuthority () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fAuthority_;
     }
     inline void URI::SetAuthority (const optional<Authority>& authority)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         CheckValidPathForAuthority_ (authority, fPath_);
         fAuthority_ = authority;
     }
     inline PortType URI::GetPortValue () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        optional<PortType>                                  op = fAuthority_ ? fAuthority_->GetPort () : optional<PortType>{};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+        optional<PortType>                                   op = fAuthority_ ? fAuthority_->GetPort () : optional<PortType>{};
         if (op) {
             return *op;
         }
@@ -88,12 +88,12 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline String URI::GetPath () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fPath_;
     }
     inline void URI::SetPath (const String& path)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         CheckValidPathForAuthority_ (fAuthority_, path);
         fPath_ = path;
     }
@@ -104,19 +104,19 @@ namespace Stroika::Foundation::IO::Network {
     template <>
     inline string URI::GetAuthorityRelativeResource () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return GetAuthorityRelativeResource<String> ().AsASCII ();
     }
     template <>
     inline URI URI::GetAuthorityRelativeResource () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return URI{nullopt, nullopt, GetPath (), GetQuery<String> ()};
     }
     template <>
     inline optional<String> URI::GetAbsPath () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         if (fPath_.empty ()) {
             return L"/"sv;
         }
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::IO::Network {
     template <>
     inline String URI::GetAbsPath () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         if (auto op = GetAbsPath<optional<String>> ()) {
             return *op;
         }
@@ -137,13 +137,13 @@ namespace Stroika::Foundation::IO::Network {
     template <>
     inline auto URI::GetQuery () const -> optional<String>
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fQuery_;
     }
     template <>
     inline auto URI::GetQuery () const -> optional<Query>
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         if (fQuery_) {
             return Query{*fQuery_};
         }
@@ -151,22 +151,22 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline void URI::SetQuery (const optional<String>& query)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         fQuery_ = query;
     }
     inline void URI::SetQuery (const optional<Query>& query)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         fQuery_ = query ? query->ComputeQueryString () : optional<String>{};
     }
     inline optional<String> URI::GetFragment () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fFragment_;
     }
     inline void URI::SetFragment (const optional<String>& fragment)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         fFragment_ = fragment;
     }
 #if __cpp_impl_three_way_comparison >= 201907

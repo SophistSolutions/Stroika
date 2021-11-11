@@ -114,7 +114,7 @@ namespace Stroika::Foundation::DataExchange {
      *              cases automatically, like vector<wstring> CTOR. And/or fix KeyValuePair<> ctor so
      *              maps 'convertible' key and convertabile 'value' types.
      *
-     *      @todo   Use Debug::AssertExternallySynchronizedLock<> to assure not used from multiple threads.
+     *      @todo   Use Debug::AssertExternallySynchronizedMutex<> to assure not used from multiple threads.
      *
      *      @todo   Re-review the signed/unsigned compare etc code. I think its all correct, but its tricky enough to
      *              warrent a careful review

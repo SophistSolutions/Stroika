@@ -9,7 +9,7 @@
 #include "../../../Common/GUID.h"
 #include "../../../Common/Property.h"
 #include "../../../DataExchange/ObjectVariantMapper.h"
-#include "../../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../../Debug/AssertExternallySynchronizedMutex.h"
 
 #include "../Connection.h"
 #include "../Statement.h"
@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
      *          threadsafe (even if accessed across processes).
      */
     template <typename T, typename TRAITS = TableConnectionTraits<T>>
-    class TableConnection : private Debug::AssertExternallySynchronizedLock {
+    class TableConnection : private Debug::AssertExternallySynchronizedMutex {
     public:
         TableConnection () = delete;
         TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema, const ObjectVariantMapper& objectVariantMapper);

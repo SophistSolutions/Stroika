@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Streams_ExternallyOwnedMemoryInputStream_inl_
 #define _Stroika_Foundation_Streams_ExternallyOwnedMemoryInputStream_inl_ 1
 
-#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Traversal/Iterator.h"
 
 /*
@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
+    class ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedMutex {
     public:
         Rep_ ()            = delete;
         Rep_ (const Rep_&) = delete;
@@ -57,8 +57,8 @@ namespace Stroika::Foundation::Streams {
             RequireNotNull (intoEnd);
             Require (intoStart < intoEnd);
             Require (IsOpenRead ());
-            size_t                                             nRequested = intoEnd - intoStart;
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            size_t                                              nRequested = intoEnd - intoStart;
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             Assert ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
             size_t nAvail  = fEnd_ - fCursor_;
             size_t nCopied = min (nAvail, nRequested);
@@ -72,19 +72,19 @@ namespace Stroika::Foundation::Streams {
         }
         virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             Require (IsOpenRead ());
             return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fEnd_ - fCursor_);
         }
         virtual SeekOffsetType GetReadOffset () const override
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             Require (IsOpenRead ());
             return fCursor_ - fStart_;
         }
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             Require (IsOpenRead ());
             switch (whence) {
                 case Whence::eFromStart: {

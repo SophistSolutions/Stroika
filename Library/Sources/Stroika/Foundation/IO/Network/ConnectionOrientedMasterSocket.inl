@@ -30,17 +30,17 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline void ConnectionOrientedMasterSocket::Ptr::Listen (unsigned int backlog) const
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         _ref ().Listen (backlog);
     }
     inline ConnectionOrientedStreamSocket::Ptr ConnectionOrientedMasterSocket::Ptr::Accept () const
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         return _ref ().Accept ();
     }
     inline shared_ptr<ConnectionOrientedMasterSocket::_IRep> ConnectionOrientedMasterSocket::Ptr::_GetSharedRep () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return dynamic_pointer_cast<ConnectionOrientedMasterSocket::_IRep> (inherited::_GetSharedRep ());
     }
     inline ConnectionOrientedMasterSocket::_IRep& ConnectionOrientedMasterSocket::Ptr::_ref () const

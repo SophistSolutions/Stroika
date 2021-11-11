@@ -42,12 +42,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _IterableRepSharedPtr Clone () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (*this);
         }
         virtual Iterator<tuple<T, INDEXES...>> MakeIterator () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
 /// NYI
 #if 0
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
@@ -57,17 +57,17 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual size_t GetLength () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return fData_.size ();
         }
         virtual bool IsEmpty () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return fData_.empty ();
         }
         virtual void Apply ([[maybe_unused]] const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             AssertNotImplemented ();
 #if 0
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
@@ -77,14 +77,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual Iterator<tuple<T, INDEXES...>> FindFirstThat ([[maybe_unused]] const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
 #if 1
             /// NYI
             return RESULT_TYPE::GetEmptyIterator ();
 #else
-            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            auto                                                       iLink = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (doToElement);
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{fData_};
+            auto                                                        iLink = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (doToElement);
             if (iLink == fData_.end ()) {
                 return RESULT_TYPE::GetEmptyIterator ();
             }
@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _DataHyperRectangleRepSharedPtr CloneEmpty () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             // @todo - fix so using differnt CTOR - with no data to remove
             auto r = Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (*this);
             return r;
@@ -106,13 +106,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         DISABLE_COMPILER_MSC_WARNING_START (4100)
         virtual T GetAt (INDEXES... indexes) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             /// NYI
             return T{};
         }
         virtual void SetAt ([[maybe_unused]] INDEXES... indexes, [[maybe_unused]] Configuration::ArgByValueType<T> v) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             fChangeCounts_.PerformedChange ();
             /// NYI
             AssertNotImplemented ();

@@ -7,7 +7,7 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Configuration/Common.h"
-#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Debug/AssertExternallySynchronizedMutex.h"
 #include "../../Memory/BlockAllocated.h"
 
 #include "../Common.h"
@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY,
               typename VALUE,
               typename TRAITS>
-    class SkipList : public Debug::AssertExternallySynchronizedLock {
+    class SkipList : public Debug::AssertExternallySynchronizedMutex {
     public:
         using KeyType   = KEY;
         using ValueType = VALUE;

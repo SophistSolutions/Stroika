@@ -10,7 +10,7 @@
  ********************************************************************************
  */
 
-#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Debug/AssertExternallySynchronizedMutex.h"
 #include "../../Debug/Sanitizer.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Throw.h"
@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Streams::iostream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE, typename TRAITS>
-    class InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
+    class InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedMutex {
     private:
         using IStreamType = typename TRAITS::IStreamType;
 
@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Streams::iostream {
             RequireNotNull (intoEnd);
             Require (intoStart < intoEnd);
 
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             Require (IsOpenRead ());
             if (fOriginalStream_.eof ()) {
                 return 0;
@@ -102,13 +102,13 @@ namespace Stroika::Foundation::Streams::iostream {
         virtual SeekOffsetType GetReadOffset () const override
         {
             // instead of tellg () - avoids issue with EOF where fail bit set???
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             Require (IsOpenRead ());
             return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
         }
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             Require (IsOpenRead ());
             switch (whence) {
                 case Whence::eFromStart:

@@ -90,9 +90,9 @@ LibraryContext LibraryContext::sDefault;
 LibraryContext::LibraryContext ()
     : pAvailableCipherAlgorithms{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
-              const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableCipherAlgorithms);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              Set<String>                                         cipherNames;
+              const LibraryContext*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableCipherAlgorithms);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
+              Set<String>                                          cipherNames;
 #if OPENSSL_VERSION_MAJOR >= 3
               ::EVP_CIPHER_do_all_provided (
                   nullptr,
@@ -116,9 +116,9 @@ LibraryContext::LibraryContext ()
               return results;
           }}
     , pStandardCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
-        const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pStandardCipherAlgorithms);
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
-        Set<CipherAlgorithm>                                results;
+        const LibraryContext*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pStandardCipherAlgorithms);
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
+        Set<CipherAlgorithm>                                 results;
 
         results += CipherAlgorithms::kAES_128_CBC;
         results += CipherAlgorithms::kAES_128_ECB;
@@ -158,8 +158,8 @@ LibraryContext::LibraryContext ()
         return results;
     }}
     , pAvailableDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
-        const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableDigestAlgorithms);
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        const LibraryContext*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableDigestAlgorithms);
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
 
         Set<String> digestNames;
 #if OPENSSL_VERSION_MAJOR >= 3
@@ -186,9 +186,9 @@ LibraryContext::LibraryContext ()
         return results;
     }}
     , pStandardDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
-        const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pStandardDigestAlgorithms);
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
-        Set<DigestAlgorithm>                                results;
+        const LibraryContext*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pStandardDigestAlgorithms);
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
+        Set<DigestAlgorithm>                                 results;
         results += DigestAlgorithms::kMD5;
         results += DigestAlgorithms::kSHA1;
         results += DigestAlgorithms::kSHA1_224;
@@ -207,7 +207,7 @@ LibraryContext::LibraryContext ()
 
 LibraryContext ::~LibraryContext ()
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
 #if OPENSSL_VERSION_MAJOR >= 3
     for (auto i : fLoadedProviders_) {
         Verify (::OSSL_PROVIDER_unload (i.fValue.first) == 1);
@@ -217,8 +217,8 @@ LibraryContext ::~LibraryContext ()
 
 void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
 {
-    Debug::TraceContextBumper                          ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OpenSSL::LibraryContext::LoadProvider", L"%s", providerName.c_str ())};
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OpenSSL::LibraryContext::LoadProvider", L"%s", providerName.c_str ())};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
 #if OPENSSL_VERSION_MAJOR >= 3
     if (auto l = fLoadedProviders_.Lookup (providerName)) {
         l->second++;
@@ -238,8 +238,8 @@ void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
 
 void LibraryContext ::UnLoadProvider ([[maybe_unused]] const String& providerName)
 {
-    Debug::TraceContextBumper                          ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OpenSSL::LibraryContext::UnLoadProvider", L"%s", providerName.c_str ())};
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OpenSSL::LibraryContext::UnLoadProvider", L"%s", providerName.c_str ())};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
 #if OPENSSL_VERSION_MAJOR >= 3
     Require (fLoadedProviders_.ContainsKey (providerName));
     auto l = fLoadedProviders_.Lookup (providerName);

@@ -14,7 +14,7 @@
 #include "../Configuration/Common.h"
 #include "../Configuration/Empty.h"
 #include "../Containers/Adapters/Adder.h"
-#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Execution/NullMutex.h"
 #include "BlockAllocated.h"
 #include "Common.h"

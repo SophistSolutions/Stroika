@@ -29,13 +29,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename STL_CONTAINER_OF_T>
     inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::Contains (ArgByValueType<value_type> item) const
     {
-        shared_lock<const AssertExternallySynchronizedLock> readLock{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         return this->find (item) != this->end ();
     }
     template <typename STL_CONTAINER_OF_T>
     void STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper* movedFrom) const
     {
-        shared_lock<const AssertExternallySynchronizedLock> readLock{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
         // only way
         //
@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename FUNCTION>
     void STLContainerWrapper<STL_CONTAINER_OF_T>::Apply (FUNCTION doToElement) const
     {
-        shared_lock<const AssertExternallySynchronizedLock> readLock{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         for (auto i = this->begin (); i != this->end (); ++i) {
             (doToElement) (*i);
         }
@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename FUNCTION>
     auto STLContainerWrapper<STL_CONTAINER_OF_T>::FindFirstThat (FUNCTION doToElement) const -> const_iterator
     {
-        shared_lock<const AssertExternallySynchronizedLock> readLock{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         for (auto i = this->begin (); i != this->end (); ++i) {
             if ((doToElement) (*i)) {
                 return i;
@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename FUNCTION>
     auto STLContainerWrapper<STL_CONTAINER_OF_T>::FindFirstThat (FUNCTION doToElement) -> iterator
     {
-        lock_guard<const AssertExternallySynchronizedLock> writeLock{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         for (auto i = this->begin (); i != this->end (); ++i) {
             if (doToElement (*i)) {
                 return i;
@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename PREDICATE>
     inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::FindIf (PREDICATE pred) const
     {
-        shared_lock<const AssertExternallySynchronizedLock> readLock{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         return find_if (this->begin (), this->end (), pred) != this->end ();
     }
     template <typename STL_CONTAINER_OF_T>
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Done () const
     {
 #if qStroika_Foundation_Containers_DataStructures_STLContainerWrapper_IncludeSlowDebugChecks_
-        shared_lock<const AssertExternallySynchronizedLock> readLock{*fData_};
+        shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
 #endif
         AssertNotNull (fData_);
         return fStdIterator_ == fData_->end ();
@@ -140,8 +140,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename VALUE_TYPE>
     inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (VALUE_TYPE* current, bool advance)
     {
-        shared_lock<const AssertExternallySynchronizedLock> readLock{*fData_};
-        bool                                                done = Done ();
+        shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
+        bool                                                 done = Done ();
         if (advance) {
             if (not done) {
                 fStdIterator_++;
@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (optional<VALUE_TYPE>* result, bool advance)
     {
         RequireNotNull (result);
-        shared_lock<const AssertExternallySynchronizedLock> readLock{*fData_};
+        shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
         if (advance) {
             if (not Done ()) {
                 fStdIterator_++;
@@ -180,26 +180,26 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename STL_CONTAINER_OF_T>
     inline size_t STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::CurrentIndex () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> readLock{*fData_};
+        shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
         AssertNotNull (fData_);
         return fStdIterator_ - fData_->begin ();
     }
     template <typename STL_CONTAINER_OF_T>
     inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::GetCurrentSTLIterator () const -> const_iterator
     {
-        shared_lock<const AssertExternallySynchronizedLock> readLock{*fData_};
+        shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
         return fStdIterator_;
     }
     template <typename STL_CONTAINER_OF_T>
     inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::SetCurrentSTLIterator (const_iterator l)
     {
-        lock_guard<const AssertExternallySynchronizedLock> writeLock{*fData_};
+        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*fData_};
         fStdIterator_ = l;
     }
     template <typename STL_CONTAINER_OF_T>
     inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Equals (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const
     {
-        shared_lock<const AssertExternallySynchronizedLock> readLock{*fData_};
+        shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
         return fStdIterator_ == rhs.fStdIterator_;
     }
     template <typename STL_CONTAINER_OF_T>

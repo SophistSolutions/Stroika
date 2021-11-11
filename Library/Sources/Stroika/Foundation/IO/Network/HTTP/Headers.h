@@ -13,7 +13,7 @@
 #include "../../../Containers/Mapping.h"
 #include "../../../Containers/Set.h"
 #include "../../../DataExchange/InternetMediaType.h"
-#include "../../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../../Debug/AssertExternallySynchronizedMutex.h"
 
 #include "../URI.h"
 
@@ -84,7 +84,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      * SB roughly equiv to Association<String,String> but thats not supported in Stroika yet.
      * But for now mainly looking like Mapping<String,String> - since works in HF, and ..
      */
-    class Headers : private Debug::AssertExternallySynchronizedLock {
+    class Headers : private Debug::AssertExternallySynchronizedMutex {
     public:
         /**
          *  ExtendableProperty allow the value of some headers to be overridden by some containing object.
@@ -105,7 +105,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Allow users of the Headers object to have it share a 'assure externally synchronized' context.
          */
-        using Debug::AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext;
+        using Debug::AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext;
 #endif
 
     public:

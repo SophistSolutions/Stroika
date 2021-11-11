@@ -32,7 +32,7 @@ namespace {
 // http://stackoverflow.com/questions/4400678/http-header-should-use-what-character-encoding
 // but for now this seems and adequate hack
 
-class MessageStartTextInputStreamBinaryAdapter::Rep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedLock {
+class MessageStartTextInputStreamBinaryAdapter::Rep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedMutex {
 public:
     Rep_ (const InputStream<byte>::Ptr& src)
         : fSource_{src}
@@ -103,8 +103,8 @@ public:
 public:
     nonvirtual Characters::String ToString (ToStringFormat format) const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        StringBuilder                                       sb;
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+        StringBuilder                                        sb;
         sb += L"{";
         sb += L"Offset: " + Characters::Format (L"%d", fOffset_) + L", ";
         sb += L"HighWaterMark: " + Characters::Format (L"%d", fBufferFilledUpValidBytes_) + L", ";
@@ -145,7 +145,7 @@ protected:
     virtual void CloseRead () override
     {
         Require (IsOpenRead ());
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         fSource_.Close ();
         Assert (fSource_ == nullptr);
     }
@@ -163,7 +163,7 @@ protected:
             return 0;
         }
         AssertNotNull (intoStart);
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         Assert (fBufferFilledUpValidBytes_ >= fOffset_); // limitation/feature of current implemetnation
         if (fBufferFilledUpValidBytes_ == fOffset_) {
             size_t roomLeftInBuf = fAllDataReadBuf_.GetSize () - fBufferFilledUpValidBytes_;
@@ -206,7 +206,7 @@ protected:
     {
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         Require (IsOpenRead ());
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         // See if data already in fAllDataReadBuf_. If yes, then data available. If no, ReadNonBlocking () from upstream, and return that result.
         if (fOffset_ < fBufferFilledUpValidBytes_) {
             return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fBufferFilledUpValidBytes_ - fOffset_);
@@ -218,13 +218,13 @@ protected:
     }
     virtual SeekOffsetType GetReadOffset () const override
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         Require (IsOpenRead ());
         return fOffset_;
     }
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         Require (IsOpenRead ());
         switch (whence) {
             case Whence::eFromStart: {

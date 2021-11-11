@@ -16,7 +16,7 @@
 #include "../../../Foundation/Containers/Set.h"
 #include "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
-#include "../../../Foundation/Debug/AssertExternallySynchronizedLock.h"
+#include "../../../Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "../../../Foundation/Debug/Assertions.h"
 #include "../../../Foundation/Debug/Trace.h"
 #if qPlatform_Windows
@@ -523,7 +523,7 @@ namespace {
         }
         Instruments::Network::Info _InternalCapture ()
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"Instruments::Network::capture_"};
 #endif

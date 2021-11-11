@@ -6,7 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Memory/SmallStackBuffer.h"
 
 #include "String.h"
@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Characters {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#ExternallySynchronized">ExternallySynchronized</a>
      */
-    class StringBuilder : private Debug::AssertExternallySynchronizedLock {
+    class StringBuilder : private Debug::AssertExternallySynchronizedMutex {
     public:
         /**
          */

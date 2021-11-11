@@ -175,7 +175,7 @@ namespace {
             : InputStream<byte>::Ptr (make_shared<REP> (b))
         {
         }
-        struct REP : InputStream<byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
+        struct REP : InputStream<byte>::_IRep, private Debug::AssertExternallySynchronizedMutex {
             bool fIsOpenForRead_{true};
             REP (const BLOB& b)
                 : fCur (b.begin ())
@@ -201,10 +201,10 @@ namespace {
                 RequireNotNull (intoStart);
                 RequireNotNull (intoEnd);
                 Require (intoStart < intoEnd);
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                size_t                                             bytesToRead = intoEnd - intoStart;
-                size_t                                             bytesLeft   = fEnd - fCur;
-                bytesToRead                                                    = min (bytesLeft, bytesToRead);
+                lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+                size_t                                              bytesToRead = intoEnd - intoStart;
+                size_t                                              bytesLeft   = fEnd - fCur;
+                bytesToRead                                                     = min (bytesLeft, bytesToRead);
                 if (bytesToRead != 0) {
                     // see http://stackoverflow.com/questions/16362925/can-i-pass-a-null-pointer-to-memcmp -- illegal to pass nullptr to memcmp() even if size 0 (aka for memcpy)
                     (void)::memcpy (intoStart, fCur, bytesToRead);
@@ -215,18 +215,18 @@ namespace {
             virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
             {
                 Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
                 return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fEnd - fCur);
             }
             virtual SeekOffsetType GetReadOffset () const override
             {
                 Require (IsOpenRead ());
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
                 return fCur - fStart;
             }
             virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
                 Require (IsOpenRead ());
                 switch (whence) {
                     case Whence::eFromStart: {
@@ -273,16 +273,16 @@ namespace {
 template <>
 Streams::InputStream<byte>::Ptr BLOB::As () const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
     return BLOBBINSTREAM_{*this};
 }
 
 Characters::String BLOB::AsHex (size_t maxBytesToShow) const
 {
     // @todo Could be more efficient
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    StringBuilder                                       sb;
-    size_t                                              cnt{};
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+    StringBuilder                                        sb;
+    size_t                                               cnt{};
     for (byte b : *this) {
         if (cnt++ > maxBytesToShow) {
             break;
@@ -295,8 +295,8 @@ Characters::String BLOB::AsHex (size_t maxBytesToShow) const
 BLOB BLOB::Repeat (unsigned int count) const
 {
     // @todo - re-implement using powers of 2 - so fewer concats (maybe - prealloc / reserve so only one - using vector)
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    BLOB                                                tmp = *this;
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+    BLOB                                                 tmp = *this;
     for (unsigned int i = 1; i < count; ++i) {
         tmp = tmp + *this;
     }
@@ -307,13 +307,13 @@ BLOB BLOB::Slice (size_t startAt, size_t endAt) const
 {
     Require (startAt <= endAt);
     Require (endAt < size ());
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
     return BLOB (begin () + startAt, begin () + endAt);
 }
 
 String BLOB::ToString (size_t maxBytesToShow) const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
     if (size () > maxBytesToShow) {
         String hexStr    = AsHex (maxBytesToShow + 1); // so we can replace/elispis with LimitLength ()
         size_t maxStrLen = maxBytesToShow < numeric_limits<size_t>::max () / 2 ? maxBytesToShow * 2 : maxBytesToShow;

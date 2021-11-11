@@ -472,7 +472,7 @@ namespace {
                 struct A {
                     int x;
                 };
-                struct APrime : Debug::AssertExternallySynchronizedLock {
+                struct APrime : Debug::AssertExternallySynchronizedMutex {
                     int x;
                 };
 #if !qDebug

@@ -31,8 +31,8 @@ namespace {
             }
             virtual void Listen (unsigned int backlog) override
             {
-                Debug::TraceContextBumper                          ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Listen", L"backlog=%s", Characters::ToString ((int)backlog).c_str ())};
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Listen", L"backlog=%s", Characters::ToString ((int)backlog).c_str ())};
+                lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
 #if qPlatform_POSIX
                 Handle_ErrNoResultInterruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); });
 #elif qPlatform_Windows
@@ -43,9 +43,9 @@ namespace {
             }
             virtual ConnectionOrientedStreamSocket::Ptr Accept () override
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                sockaddr_storage                                   peer{};
-                socklen_t                                          sz = sizeof (peer);
+                lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+                sockaddr_storage                                    peer{};
+                socklen_t                                           sz = sizeof (peer);
 #if qPlatform_POSIX
                 return ConnectionOrientedStreamSocket::Attach (Handle_ErrNoResultInterruption ([&] () -> int { return ::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz); }));
 #elif qPlatform_Windows

@@ -15,7 +15,7 @@
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  *
  * TODO:
- *      @todo   Add Debug::AssertExternallySynchronizedLock usage.
+ *      @todo   Add Debug::AssertExternallySynchronizedMutex usage.
  *
  *      @todo   Add StatsType support (like other caches).
  *

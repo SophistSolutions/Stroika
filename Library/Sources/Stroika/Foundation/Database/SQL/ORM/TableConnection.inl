@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS>
     optional<T> TableConnection<T, TRAITS>::GetByID (const typename TRAITS::IDType& id)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         fGetByID_Statement_.Reset ();
@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS>
     Sequence<T> TableConnection<T, TRAITS>::GetAll ()
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         if constexpr (TRAITS::kTraceLogEachRequest) {
@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS>
     void TableConnection<T, TRAITS>::AddNew (const T& v)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         fAddNew_Statement_.Reset ();
@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS>
     void TableConnection<T, TRAITS>::Update (const T& v)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         fUpdate_Statement_.Reset ();

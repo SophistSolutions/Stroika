@@ -64,8 +64,8 @@ auto Statement::GetAllRemainingRows () -> Sequence<Row>
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
 #endif
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-    Sequence<Row>                                             result;
+    lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+    Sequence<Row>                                              result;
     while (auto o = GetNextRow ()) {
         result += *o;
     }
@@ -77,9 +77,9 @@ Sequence<VariantValue> Statement::GetAllRemainingRows (size_t restrictToColumn)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
 #endif
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-    Sequence<VariantValue>                                    result;
-    ColumnDescription                                         col0 = GetColumns ()[restrictToColumn];
+    lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+    Sequence<VariantValue>                                     result;
+    ColumnDescription                                          col0 = GetColumns ()[restrictToColumn];
     while (auto o = GetNextRow ()) {
         result += *o->Lookup (col0.fName);
     }
@@ -91,10 +91,10 @@ Sequence<tuple<VariantValue, VariantValue>> Statement::GetAllRemainingRows (size
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
 #endif
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-    Sequence<tuple<VariantValue, VariantValue>>               result;
-    ColumnDescription                                         col0 = GetColumns ()[restrictToColumn1];
-    ColumnDescription                                         col1 = GetColumns ()[restrictToColumn2];
+    lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+    Sequence<tuple<VariantValue, VariantValue>>                result;
+    ColumnDescription                                          col0 = GetColumns ()[restrictToColumn1];
+    ColumnDescription                                          col1 = GetColumns ()[restrictToColumn2];
     while (auto o = GetNextRow ()) {
         result += make_tuple (*o->Lookup (col0.fName), *o->Lookup (col1.fName));
     }
@@ -106,11 +106,11 @@ Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRemai
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
 #endif
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-    Sequence<tuple<VariantValue, VariantValue, VariantValue>> result;
-    ColumnDescription                                         col0 = GetColumns ()[restrictToColumn1];
-    ColumnDescription                                         col1 = GetColumns ()[restrictToColumn2];
-    ColumnDescription                                         col2 = GetColumns ()[restrictToColumn3];
+    lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+    Sequence<tuple<VariantValue, VariantValue, VariantValue>>  result;
+    ColumnDescription                                          col0 = GetColumns ()[restrictToColumn1];
+    ColumnDescription                                          col1 = GetColumns ()[restrictToColumn2];
+    ColumnDescription                                          col2 = GetColumns ()[restrictToColumn3];
     while (auto o = GetNextRow ()) {
         result += make_tuple (*o->Lookup (col0.fName), *o->Lookup (col1.fName), *o->Lookup (col2.fName));
     }
@@ -119,8 +119,8 @@ Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRemai
 
 void Statement::Bind (const Traversal::Iterable<ParameterDescription>& parameters)
 {
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-    int                                                       idx = 0;
+    lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+    int                                                        idx = 0;
     for (auto i : parameters) {
         if (i.fName) {
             Bind (*i.fName, i.fValue);
@@ -134,7 +134,7 @@ void Statement::Bind (const Traversal::Iterable<ParameterDescription>& parameter
 
 void Statement::Bind (const Traversal::Iterable<Common::KeyValuePair<String, VariantValue>>& parameters)
 {
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+    lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
     for (auto i : parameters) {
         Bind (i.fKey, i.fValue);
     }
@@ -145,7 +145,7 @@ void Statement::Execute ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::Execute"};
 #endif
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+    lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
     Reset ();
     (void)_fRep->GetNextRow ();
 }
@@ -155,7 +155,7 @@ void Statement::Execute (const Traversal::Iterable<ParameterDescription>& parame
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::Execute"};
 #endif
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+    lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
     Reset ();
     Bind (parameters);
     (void)_fRep->GetNextRow ();
@@ -166,7 +166,7 @@ void Statement::Execute (const Traversal::Iterable<Common::KeyValuePair<String, 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SQL::Statement::Execute", L"parameters=%s", Characters::ToString (parameters).c_str ())};
 #endif
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+    lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
     Reset ();
     Bind (parameters);
     (void)_fRep->GetNextRow ();
@@ -174,8 +174,8 @@ void Statement::Execute (const Traversal::Iterable<Common::KeyValuePair<String, 
 
 String Statement::ToString () const
 {
-    shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-    StringBuilder                                              sb;
+    shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+    StringBuilder                                               sb;
     sb += L"{";
     sb += L"Parameter-Bindings: " + Characters::ToString (GetParameters ()) + L", ";
     sb += L"Column-Descriptions: " + Characters::ToString (GetColumns ()) + L", ";

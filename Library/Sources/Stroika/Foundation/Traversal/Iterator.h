@@ -24,7 +24,7 @@
  *  \file
  *
  *  TODO
- *      @todo   https://stroika.atlassian.net/browse/STK-446 - AssertExternallySynchronizedLock
+ *      @todo   https://stroika.atlassian.net/browse/STK-446 - AssertExternallySynchronizedMutex
  *
  *      @todo   Consider if we want to make the promise currently defined below in Equals()
  *              about iterating two originally equal iterators. The trouble is - this doesn

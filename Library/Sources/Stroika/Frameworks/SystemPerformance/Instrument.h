@@ -17,7 +17,7 @@
 #include "../../Foundation/Containers/Set.h"
 #include "../../Foundation/DataExchange/Atom.h"
 #include "../../Foundation/DataExchange/ObjectVariantMapper.h"
-#include "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
+#include "../../Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "../../Foundation/Execution/Function.h"
 
 #include "Measurement.h"
@@ -69,7 +69,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *          (but note that the shared state is internally synchronized); but you still must externally synchronize 
      *          access to all instrument non-const methods.
      */
-    class Instrument : private Debug::AssertExternallySynchronizedLock {
+    class Instrument : private Debug::AssertExternallySynchronizedMutex {
     public:
         /**
          *  This is a base type for capture contexts. Actual contexts will contain more information

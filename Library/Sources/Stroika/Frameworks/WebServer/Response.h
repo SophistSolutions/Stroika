@@ -279,17 +279,17 @@ namespace Stroika::Frameworks::WebServer {
     public:
         [[deprecated ("Since Stroika 2.1b10")]] void clear ()
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             fBodyBytes_.clear ();
         }
         [[deprecated ("Since Stroika 2.1b10")]] bool empty () const
         {
-            shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+            shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
             return fBodyBytes_.empty ();
         }
         [[deprecated ("Since Stroika 2.1b10")]] const vector<byte>& GetBytes () const
         {
-            shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+            shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
             return fBodyBytes_;
         }
         [[deprecated ("Since Stroika v2.1b10 use this->state property")]] inline State GetState () const
@@ -314,12 +314,12 @@ namespace Stroika::Frameworks::WebServer {
         }
         [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] Characters::CodePage GetCodePage () const
         {
-            shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+            shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
             return fCodePage_;
         }
         [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] void SetCodePage (Characters::CodePage newCodePage)
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             Require (fState_ == State::ePreparingHeaders);
             Require (fBodyBytes_.empty ());
             bool diff  = fCodePage_ != newCodePage;

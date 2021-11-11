@@ -8,7 +8,7 @@
 
 #include "../../Configuration/Common.h"
 #include "../../Configuration/Concepts.h"
-#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Debug/AssertExternallySynchronizedMutex.h"
 #include "../../Memory/SmallStackBuffer.h"
 
 #include "../Common.h"
@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *
      */
     template <typename STL_CONTAINER_OF_T>
-    class STLContainerWrapper : public STL_CONTAINER_OF_T, public Debug::AssertExternallySynchronizedLock {
+    class STLContainerWrapper : public STL_CONTAINER_OF_T, public Debug::AssertExternallySynchronizedMutex {
     private:
         using inherited = STL_CONTAINER_OF_T;
 

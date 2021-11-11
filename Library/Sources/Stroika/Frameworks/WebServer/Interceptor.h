@@ -6,7 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
+#include "../../Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 #include "Message.h"
 
@@ -32,7 +32,7 @@ namespace Stroika::Frameworks::WebServer {
      *              But note that HandleMessage() is a const method, so it can safely be called from any number of threads
      *              simultaneously.
      */
-    class Interceptor : private Debug::AssertExternallySynchronizedLock {
+    class Interceptor : private Debug::AssertExternallySynchronizedMutex {
     protected:
         class _IRep;
 

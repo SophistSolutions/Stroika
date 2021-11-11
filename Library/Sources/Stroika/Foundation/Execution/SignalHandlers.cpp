@@ -528,9 +528,9 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SignalHandlerRegistry
      *              __x=<unknown type in /media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/gcc-4.9-debug-no-TPC/Test35, CU 0x0, DIE 0x54234>) at /usr/include/c++/4.9/bits/stl_multiset.h:498
      *          #10 0x0000000000412303 in std::__debug::multiset<std::thread::id, std::less<std::thread::id>, std::allocator<std::thread::id> >::insert(std::thread::id&&) (this=0x7f4eb7ffd380,
      *              __x=<unknown type in /media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/gcc-4.9-debug-no-TPC/Test35, CU 0x0, DIE 0x507d4>) at /usr/include/c++/4.9/debug/multiset.h:257
-     *          #11 0x0000000000410f61 in Stroika::Foundation::Debug::AssertExternallySynchronizedLock::lock_shared (this=0x7f4eb7ffd370)
-     *              at /media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Execution/../Containers/../Memory/../Debug/AssertExternallySynchronizedLock.inl:92
-     *          #12 0x00000000004157d8 in std::shared_lock<Stroika::Foundation::Debug::AssertExternallySynchronizedLock const>::shared_lock (this=0x7f4eb7ffd270, m=...)
+     *          #11 0x0000000000410f61 in Stroika::Foundation::Debug::AssertExternallySynchronizedMutex::lock_shared (this=0x7f4eb7ffd370)
+     *              at /media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Execution/../Containers/../Memory/../Debug/AssertExternallySynchronizedMutex.inl:92
+     *          #12 0x00000000004157d8 in std::shared_lock<Stroika::Foundation::Debug::AssertExternallySynchronizedMutex const>::shared_lock (this=0x7f4eb7ffd270, m=...)
      *              at /media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Configuration/Private/Defaults_CompilerAndStdLib_.h:2123
      *          #13 0x000000000048ce64 in Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Execution::SignalHandler>::_SafeReadRepAccessor<Stroika::Foundation::Containers::Set<Stroika::Foundation::Execution::SignalHandler, Stroika::Foundation::Containers::DefaultTraits::Set<Stroika::Foundation::Execution::SignalHandler, Stroika::Foundation::Common::DefaultEqualsComparer<Stroika::Foundation::Execution::SignalHandler, Stroika::Foundation::Common::ComparerWithEquals<Stroika::Foundation::Execution::SignalHandler> > > >::_IRep>::_SafeReadRepAccessor (this=0x7f4eb7ffd270, it=0x7f4eb7ffd370)
      *              at /media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Execution/../Characters/Concrete/../../Containers/../Traversal/Iterable.inl:88
@@ -597,11 +597,11 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SignalHandlerRegistry
      *   ANALYSIS OF ABOVE:
      *       At frame 22 (#22 <signal handler called>) - we have AT LEAST the malloc lock held (we could have more in principle)
      *       We receive a signal
-     *       Deeper down, at frame 11 (#11 0x0000000000410f61) we acquire an unrelated lock, and AssertExternallySynchronizedLock
+     *       Deeper down, at frame 11 (#11 0x0000000000410f61) we acquire an unrelated lock, and AssertExternallySynchronizedMutex
      *       which does more memory allocations.
      *       deadlocking at frame 0 (#0  __lll_lock_wait_private)
      *
-     *       BUT - worse than deadlocking this thread (thats bad enuf) - we acquired a lock on AssertExternallySynchronizedLock
+     *       BUT - worse than deadlocking this thread (thats bad enuf) - we acquired a lock on AssertExternallySynchronizedMutex
      *       which we will never give up, and kill any other thread doing much of anything.
      *
      *   SUMMARY:

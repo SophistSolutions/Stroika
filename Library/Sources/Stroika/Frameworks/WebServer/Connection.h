@@ -66,10 +66,8 @@ namespace Stroika::Frameworks::WebServer {
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
-     *  TODO:
-     *      @todo   enforce thread policy with Debug::AssertExternallySynrhoized
      */
-    class Connection : Debug::AssertExternallySynchronizedLock {
+    class Connection : Debug::AssertExternallySynchronizedMutex {
     public:
         /**
          */

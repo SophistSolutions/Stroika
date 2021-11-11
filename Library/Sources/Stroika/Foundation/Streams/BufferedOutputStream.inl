@@ -10,7 +10,7 @@
  ********************************************************************************
  */
 
-#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Debug/Cast.h"
 
 namespace Stroika::Foundation ::Streams {
@@ -21,7 +21,7 @@ namespace Stroika::Foundation ::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class BufferedOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
+    class BufferedOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedMutex {
         static constexpr size_t kMinBufSize_{1 * 1024};
         static constexpr size_t kDefaultBufSize_{16 * 1024};
 
@@ -42,12 +42,12 @@ namespace Stroika::Foundation ::Streams {
     public:
         nonvirtual size_t GetBufferSize () const
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             return fBuffer_.capacity ();
         }
         nonvirtual void SetBufferSize (size_t bufSize)
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             bufSize = max (bufSize, kMinBufSize_);
             if (bufSize < fBuffer_.size ()) {
                 Flush_ ();
@@ -59,7 +59,7 @@ namespace Stroika::Foundation ::Streams {
         // Throws away all data about to be written (buffered). Once this is called, its illegal to call Flush or another write
         nonvirtual void Abort ()
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             fAborted_ = true; // for debug sake track this
             fBuffer_.clear ();
         }
@@ -92,7 +92,7 @@ namespace Stroika::Foundation ::Streams {
         }
         virtual void Flush () override
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             Require (IsOpenWrite ());
             Flush_ ();
         }
@@ -103,7 +103,7 @@ namespace Stroika::Foundation ::Streams {
             Require (start < end); // for OutputStream<byte> - this function requires non-empty write
             Require (not fAborted_);
             Require (IsOpenWrite ());
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             /*
              * Minimize the number of writes at the possible cost of extra copying.
              *

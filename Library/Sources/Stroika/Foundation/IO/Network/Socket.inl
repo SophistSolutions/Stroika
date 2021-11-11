@@ -43,7 +43,7 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline shared_ptr<Socket::_IRep> Socket::Ptr::_GetSharedRep () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fRep_;
     }
     inline Socket::_IRep& Socket::Ptr::_ref () const
@@ -58,17 +58,17 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline Socket::PlatformNativeHandle Socket::Ptr::GetNativeSocket () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return _cref ().GetNativeSocket ();
     }
     inline optional<IO::Network::SocketAddress> Socket::Ptr::GetLocalAddress () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return _cref ().GetLocalAddress ();
     }
     inline SocketAddress::FamilyType Socket::Ptr::GetAddressFamily () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return _cref ().GetAddressFamily ();
     }
     inline void Socket::Ptr::Shutdown (ShutdownTarget shutdownTarget)
@@ -80,7 +80,7 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline void Socket::Ptr::Close () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         // not important to null-out, but may as well...
         if (fRep_ != nullptr) {
             fRep_->Close ();
@@ -89,30 +89,30 @@ namespace Stroika::Foundation::IO::Network {
     template <typename RESULT_TYPE>
     inline RESULT_TYPE Socket::Ptr::getsockopt (int level, int optname) const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        RESULT_TYPE                                         r{};
-        socklen_t                                           roptlen = sizeof (r);
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+        RESULT_TYPE                                          r{};
+        socklen_t                                            roptlen = sizeof (r);
         _cref ().getsockopt (level, optname, &r, &roptlen);
         return r;
     }
     template <typename ARG_TYPE>
     inline void Socket::Ptr::setsockopt (int level, int optname, ARG_TYPE arg) const
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        socklen_t                                          optvallen = sizeof (arg);
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        socklen_t                                           optvallen = sizeof (arg);
         _ref ().setsockopt (level, optname, &arg, optvallen);
     }
 #if __cpp_impl_three_way_comparison >= 201907
     inline bool Socket::Ptr::operator== (const Ptr& rhs) const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec1{*this}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
-        shared_lock<const AssertExternallySynchronizedLock> critSec2{rhs};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
+        shared_lock<const AssertExternallySynchronizedMutex> critSec2{rhs};
         return _GetSharedRep () == rhs._GetSharedRep ();
     }
     inline strong_ordering Socket::Ptr::operator<=> (const Ptr& rhs) const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec1{*this}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
-        shared_lock<const AssertExternallySynchronizedLock> critSec2{rhs};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
+        shared_lock<const AssertExternallySynchronizedMutex> critSec2{rhs};
         return Common::ThreeWayCompare (_GetSharedRep (), rhs._GetSharedRep ());
     }
 #endif

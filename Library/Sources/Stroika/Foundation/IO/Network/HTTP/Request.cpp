@@ -49,16 +49,16 @@ Request::Request (Request&& src)
 Request::Request ()
     : httpVersion{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> String {
-              const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpVersion);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Request*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpVersion);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fHTTPVersion_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& versionOrVersionLabel) {
-              Request*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpVersion);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              static const String                                kLabeled_10_{L"HTTP/1.0"sv};
-              static const String                                kLabeled_11_{L"HTTP/1.1"sv};
-              auto                                               versionStringComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
+              Request*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpVersion);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
+              static const String                                 kLabeled_10_{L"HTTP/1.0"sv};
+              static const String                                 kLabeled_11_{L"HTTP/1.1"sv};
+              auto                                                versionStringComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
               if (versionOrVersionLabel == kLabeled_11_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointOne or versionStringComparer (versionOrVersionLabel, kLabeled_11_)) {
                   thisObj->fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointOne;
               }
@@ -74,62 +74,62 @@ Request::Request ()
           }}
     , httpMethod{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpMethod);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Request*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpMethod);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fMethod_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& method) {
-              Request*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpMethod);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Request*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpMethod);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               thisObj->fMethod_ = method;
           }}
     , url{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::url);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Request*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::url);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fURL_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& url) {
-              Request*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::url);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Request*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::url);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               thisObj->fURL_ = url;
           }}
     , headers{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const IO::Network::HTTP::Headers& {
-              const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::headers);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Request*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::headers);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fHeaders_;
           }}
     , rwHeaders{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> IO::Network::HTTP::Headers& {
-                    const Request*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::rwHeaders);
-                    lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj}; // not shared_lock cuz rw
+                    const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::rwHeaders);
+                    lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj}; // not shared_lock cuz rw
                     return const_cast<IO::Network::HTTP::Headers&> (thisObj->fHeaders_);
                 },
                 [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newHeaders) {
-                    Request*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::rwHeaders);
-                    lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+                    Request*                                            thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::rwHeaders);
+                    lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
                     thisObj->fHeaders_ = newHeaders;
                 }}
     , contentType{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::contentType);
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        const Request*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::contentType);
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
         return thisObj->fHeaders_.contentType ();
     }}
 {
 }
 
 #if qDebug
-void Request::SetAssertExternallySynchronizedLockContext (const shared_ptr<SharedContext>& sharedContext)
+void Request::SetAssertExternallySynchronizedMutexContext (const shared_ptr<SharedContext>& sharedContext)
 {
-    AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext (sharedContext);
-    fHeaders_.SetAssertExternallySynchronizedLockContext (sharedContext);
+    AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext (sharedContext);
+    fHeaders_.SetAssertExternallySynchronizedMutexContext (sharedContext);
 }
 #endif
 
 String Request::ToString () const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    StringBuilder                                       sb;
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+    StringBuilder                                        sb;
     sb += L"{";
     sb += L"HTTPVersion: " + fHTTPVersion_ + L", ";
     sb += L"Method: " + fMethod_ + L", ";

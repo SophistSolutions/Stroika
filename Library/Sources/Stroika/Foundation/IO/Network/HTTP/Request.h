@@ -12,7 +12,7 @@
 #include "../../../Common/Property.h"
 #include "../../../Configuration/Common.h"
 #include "../../../DataExchange/InternetMediaType.h"
-#include "../../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../../Debug/AssertExternallySynchronizedMutex.h"
 #include "../../../IO/Network/HTTP/Headers.h"
 #include "../../../IO/Network/URI.h"
 
@@ -31,7 +31,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    class Request : protected Debug::AssertExternallySynchronizedLock {
+    class Request : protected Debug::AssertExternallySynchronizedMutex {
     public:
         /**
          */
@@ -47,9 +47,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Allow users of the Headers object to have it share a 'assure externally synchronized' context.
          * 
-         *  \see AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext
+         *  \see AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext
          */
-        nonvirtual void SetAssertExternallySynchronizedLockContext (const shared_ptr<SharedContext>& sharedContext);
+        nonvirtual void SetAssertExternallySynchronizedMutexContext (const shared_ptr<SharedContext>& sharedContext);
 #endif
 
     public:
@@ -76,7 +76,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  Allow readonly access to the HTTP headers embedded in the request object.
          * 
          * \note - this returns an INTERNAL POINTER to the Request, so be SURE to remember this with respect to
-         *         thread safety, and lifetime (thread safety checked/enforced in debug builds with SetAssertExternallySynchronizedLockContext);
+         *         thread safety, and lifetime (thread safety checked/enforced in debug builds with SetAssertExternallySynchronizedMutexContext);
          */
         Common::ReadOnlyProperty<const Headers&> headers;
 
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  the headers, and it returns a live non-const reference to the Headers object.
          * 
          * \note - this returns an INTERNAL POINTER to the Request, so be SURE to remember this with respect to
-         *         thread safety, and lifetime (thread safety checked/enforced in debug builds with SetAssertExternallySynchronizedLockContext);
+         *         thread safety, and lifetime (thread safety checked/enforced in debug builds with SetAssertExternallySynchronizedMutexContext);
          */
         Common::Property<Headers&> rwHeaders;
 

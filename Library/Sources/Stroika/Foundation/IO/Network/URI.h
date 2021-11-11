@@ -16,7 +16,7 @@
 #include "../../Common/Compare.h"
 #include "../../Configuration/Common.h"
 #include "../../Containers/Mapping.h"
-#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Debug/AssertExternallySynchronizedMutex.h"
 #include "InternetAddress.h"
 #include "UniformResourceIdentification.h"
 
@@ -87,7 +87,7 @@ namespace Stroika::Foundation::IO::Network {
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
-    class URI : private Debug::AssertExternallySynchronizedLock {
+    class URI : private Debug::AssertExternallySynchronizedMutex {
     public:
         using Authority = UniformResourceIdentification::Authority;
 

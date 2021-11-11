@@ -11,7 +11,7 @@
 
 #include "../../Characters/CString/Utilities.h"
 #include "../../Characters/ToString.h"
-#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Debug/AssertExternallySynchronizedMutex.h"
 #include "../../Debug/Cast.h"
 #include "../../Debug/Trace.h"
 #include "../../Execution/Exceptions.h"
@@ -39,7 +39,7 @@ using Execution::ThrowPOSIXErrNo;
 // from https://www.gnu.org/software/libc/manual/html_node/Reading_002fClosing-Directory.html -
 // To distinguish between an end-of-directory condition or an error, you must set errno to zero before calling readdir.
 
-class DirectoryIterator::Rep_ : public Iterator<filesystem::path>::IRep, private Debug::AssertExternallySynchronizedLock {
+class DirectoryIterator::Rep_ : public Iterator<filesystem::path>::IRep, private Debug::AssertExternallySynchronizedMutex {
 private:
     IteratorReturnType fIteratorReturnType_;
     String             fDirName_;
@@ -142,7 +142,7 @@ public:
     }
     virtual void More (optional<filesystem::path>* result, bool advance) override
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         RequireNotNull (result);
         *result = nullopt;
 #if qPlatform_POSIX
@@ -185,7 +185,7 @@ public:
     }
     virtual bool Equals (const Iterator<filesystem::path>::IRep* rhs) const override
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         RequireNotNull (rhs);
         RequireMember (rhs, Rep_);
         const Rep_& rrhs = *Debug::UncheckedDynamicCast<const Rep_*> (rhs);
@@ -200,7 +200,7 @@ public:
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Entering DirectoryIterator::Rep_::Clone"};
 #endif
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
 #if qPlatform_POSIX
         AssertNotNull (fDirIt_);
         /*

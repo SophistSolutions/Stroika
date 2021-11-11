@@ -120,7 +120,7 @@ namespace Stroika::Foundation::Streams {
         using inherited = typename Stream<ELEMENT_TYPE>::Ptr;
 
     protected:
-        using AssertExternallySynchronizedLock = typename inherited::AssertExternallySynchronizedLock;
+        using AssertExternallySynchronizedMutex = typename inherited::AssertExternallySynchronizedMutex;
 
     public:
         /**

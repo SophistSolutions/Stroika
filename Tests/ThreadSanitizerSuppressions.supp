@@ -13,8 +13,8 @@ race:pipe
 #       #0 Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_(int) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1810_x86_64/Library/Sources/Stroika/Foundation/Execution/SignalHandlers.cpp:497 (Test38+0xa545b6)
 #       #1 __gnu_debug::_Safe_sequence_base::_M_detach(__gnu_debug::_Safe_iterator_base*) <null> (Test38+0xe63a3b)
 #       #2 __gnu_debug::_Safe_iterator<std::_Rb_tree_const_iterator<std::thread::id>, std::__debug::multiset<std::thread::id, std::less<std::thread::id>, std::allocator<std::thread::id> > >::~_Safe_iterator() /usr/include/c++/8/debug/safe_iterator.h:86 (Test38+0xa36d80)
-#       #3 Stroika::Foundation::Debug::AssertExternallySynchronizedLock::unlock_shared_() const /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1810_x86_64/Library/Sources/Stroika/Foundation/Debug/AssertExternallySynchronizedLock.cpp:82 (Test38+0xa35c99)
-#       #4 Stroika::Foundation::Debug::AssertExternallySynchronizedLock::unlock_shared() const ../Characters/../Containers/../Traversal/../Debug/AssertExternallySynchronizedLock.inl:88 (Test38+0x8554a0)
+#       #3 Stroika::Foundation::Debug::AssertExternallySynchronizedMutex::unlock_shared_() const /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1810_x86_64/Library/Sources/Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.cpp:82 (Test38+0xa35c99)
+#       #4 Stroika::Foundation::Debug::AssertExternallySynchronizedMutex::unlock_shared() const ../Characters/../Containers/../Traversal/../Debug/AssertExternallySynchronizedMutex.inl:88 (Test38+0x8554a0)
 # not 100% clear this is right thing, but FirstPassSignalHandler_ does indirect call sem_post which could spoil though I wrote code to unspoil iterators
 # may not look that way to tsan -- LGP 2018-02-13
 #
@@ -30,14 +30,14 @@ signal:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHan
 
 
 #https://stroika.atlassian.net/browse/STK-647 - possible deadlock/bug detected by tsan (debug iterators and FirstPassSignalHandler_
-#since hard to reproduce hard to write/test supressions - want to match on BOTH FirstPassSignalHandler_ AND AssertExternallySynchronizedLock (in one stacktrace)
+#since hard to reproduce hard to write/test supressions - want to match on BOTH FirstPassSignalHandler_ AND AssertExternallySynchronizedMutex (in one stacktrace)
 #NB: This is ONLY needed on DEBUG builds
 
 # tried this suppression and got the error again. TRY NEW SUPPRESSION STRING
-#deadlock:FirstPassSignalHandler_*AssertExternallySynchronizedLock
+#deadlock:FirstPassSignalHandler_*AssertExternallySynchronizedMutex
 
 # Ideally, we would match on having ONE of these in one stack, and the other in the other stack, but could come in either order
-deadlock:Stroika::Foundation::Debug::AssertExternallySynchronizedLock::AssertExternallySynchronizedLock
+deadlock:Stroika::Foundation::Debug::AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex
 deadlock:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_
 
 # https://stroika.atlassian.net/browse/STK-736 (sqlite)

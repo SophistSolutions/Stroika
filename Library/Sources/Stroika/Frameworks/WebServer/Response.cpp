@@ -74,13 +74,13 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     : inherited{initialHeaders}
     , autoComputeETag{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeETag);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Response*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeETag);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fETagDigester_.has_value ();
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const bool newAutoComputeETag) {
-              Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeETag);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Response*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeETag);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               Require (thisObj->state () == State::ePreparingHeaders);
               Assert (thisObj->fBodyBytes_.empty ());
               if (newAutoComputeETag) {
@@ -92,25 +92,25 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
           }}
     , autoComputeContentLength{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeContentLength);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Response*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeContentLength);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fAutoComputeContentLength_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const bool newAutoComputeValue) {
-              Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeContentLength);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Response*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeContentLength);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               Require (thisObj->state () == State::ePreparingHeaders);
               thisObj->fAutoComputeContentLength_ = newAutoComputeValue;
           }}
     , codePage{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Response*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fCodePage_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newCodePage) {
-              Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Response*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
+              lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               Require (thisObj->headersCanBeSet ());
               Require (thisObj->fBodyBytes_.empty ());
               bool diff           = thisObj->fCodePage_ != newCodePage;
@@ -123,28 +123,28 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
           }}
     , state{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::state);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              const Response*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::state);
+              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
               return thisObj->fState_;
           }}
     , headersCanBeSet{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headersCanBeSet);
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        const Response*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headersCanBeSet);
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
         return thisObj->fState_ == State::ePreparingHeaders;
     }}
     , responseStatusSent{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseStatusSent);
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        const Response*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseStatusSent);
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
         return thisObj->fState_ != State::ePreparingHeaders and thisObj->fState_ != State::ePreparingBodyBeforeHeadersSent;
     }}
     , responseCompleted{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseCompleted);
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        const Response*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseCompleted);
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
         return thisObj->fState_ == State::eCompleted;
     }}
     , responseAborted{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseAborted);
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        const Response*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseAborted);
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
         return thisObj->fAborted_;
     }}
     , fSocket_{s}
@@ -190,7 +190,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         });
     this->rwHeaders ().transferEncoding.rwPropertyChangedHandlers ().push_front (
         [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             // react to a change in the transferCoding setting by updating our flags (cache) - and updating the contentLength header properly
             Require (this->headersCanBeSet ());
             // @todo fix - not 100% right cuz another property could cut off? Maybe always call all? - or need better control over ordering
@@ -210,7 +210,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     this->rwHeaders ().contentLength.rwPropertyChangedHandlers ().push_front (
         [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
             Require (this->headersCanBeSet ());
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             // if someone explicitly sets the content-Length, then stop auto-computing contentLength
             this->autoComputeContentLength = false;
             return PropertyChangedEventResultType::eContinueProcessing;
@@ -231,7 +231,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
             &propertyChangedEvent;
 #endif
             Require (this->headersCanBeSet ());
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             // if someone explicitly sets the etag, then stop auto-computing it
             this->autoComputeETag = false;
             return PropertyChangedEventResultType::eContinueProcessing;
@@ -263,7 +263,7 @@ void Response::Flush ()
     Debug::TraceContextBumper ctx{L"Response::Flush"};
     DbgTrace (L"fState_ = %s", Characters::ToString (fState_).c_str ());
 #endif
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
 
     if (fState_ == State::ePreparingHeaders or fState_ == State::ePreparingBodyBeforeHeadersSent) {
         {
@@ -309,7 +309,7 @@ void Response::Flush ()
 
 bool Response::End ()
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
     if (fState_ != State::eCompleted) {
         try {
             if (InChunkedMode_ ()) {
@@ -334,7 +334,7 @@ bool Response::End ()
 
 void Response::Abort ()
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
     if (fState_ != State::eCompleted) {
         fState_   = State::eCompleted;
         fAborted_ = true;
@@ -348,7 +348,7 @@ void Response::Abort ()
 
 void Response::Redirect (const URI& url)
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
     Require (this->headersCanBeSet ());
     fBodyBytes_.clear ();
 
@@ -363,7 +363,7 @@ void Response::Redirect (const URI& url)
 
 void Response::write (const byte* s, const byte* e)
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
     Require (not this->responseCompleted ());
     Require (not this->responseStatusSent () or InChunkedMode_ ());
     Require (s <= e);
@@ -407,8 +407,8 @@ void Response::write (const wchar_t* s, const wchar_t* e)
 
 void Response::printf (const wchar_t* format, ...)
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    va_list                                            argsList;
+    lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+    va_list                                             argsList;
     va_start (argsList, format);
     String tmp = Characters::FormatV (format, argsList);
     va_end (argsList);
@@ -417,8 +417,8 @@ void Response::printf (const wchar_t* format, ...)
 
 String Response::ToString () const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    StringBuilder                                       sb = inherited::ToString ().SubString (0, -1); // strip trailing '}'
+    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+    StringBuilder                                        sb = inherited::ToString ().SubString (0, -1); // strip trailing '}'
     sb += L"Socket: " + Characters::ToString (fSocket_) + L", ";
     sb += L"InChunkedMode: " + Characters::ToString (fInChunkedModeCache_) + L", ";
     sb += L"State: " + Characters::ToString (fState_) + L", ";

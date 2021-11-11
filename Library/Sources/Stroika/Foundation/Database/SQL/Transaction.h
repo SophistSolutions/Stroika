@@ -8,7 +8,7 @@
 
 #include "../../Characters/String.h"
 #include "../../Configuration/Enumeration.h"
-#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Debug/AssertExternallySynchronizedMutex.h"
 
 #include "Connection.h"
 
@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Database::SQL {
      *
      *  \note Nested transactions not supported (for sqlite - add featre for detecting if engine supports)
      */
-    class Transaction : protected Debug::AssertExternallySynchronizedLock {
+    class Transaction : protected Debug::AssertExternallySynchronizedMutex {
     public:
         class IRep;
 
@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Database::SQL {
      *          But though each Statement can only be accessed from a single thread at a time, the underlying database may be
      *          threadsafe (even if accessed across processes).
      */
-    class Transaction::IRep : public Debug::AssertExternallySynchronizedLock {
+    class Transaction::IRep : public Debug::AssertExternallySynchronizedMutex {
     public:
         /**
          */

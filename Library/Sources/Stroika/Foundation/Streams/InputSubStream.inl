@@ -10,7 +10,7 @@
  ********************************************************************************
  */
 
-#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Memory/SmallStackBuffer.h"
 
 namespace Stroika::Foundation::Streams {
@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class InputSubStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
+    class InputSubStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedMutex {
     public:
         Rep_ (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const optional<SeekOffsetType>& start, const optional<SeekOffsetType>& end)
             : InputStream<ELEMENT_TYPE>::_IRep ()
@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Streams {
         virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
             Require (intoEnd - intoStart >= 1); // rule for InputStream<>::_IRep
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             Require (IsOpenRead ());
             if (fForcedEndInReal_) {
                 // adjust intoEnd to accomodate shortened stream
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Streams {
         }
         virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             Require (IsOpenRead ());
             if (fForcedEndInReal_) {
                 // adjust intoEnd to accomodate shortened stream

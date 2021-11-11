@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Time {
      *  \note   Date constructors REQUIRE valid inputs, and any operations which might overflow throw range_error
      *          instead of creating invalid values.
      *
-     *  \note   Would like to make Date inherit from Debug::AssertExternallySynchronizedLock to assure its not accidentially modified, but
+     *  \note   Would like to make Date inherit from Debug::AssertExternallySynchronizedMutex to assure its not accidentially modified, but
      *          thats difficult beacuse its sometimes uses as a constexpr
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>

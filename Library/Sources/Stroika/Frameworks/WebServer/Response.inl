@@ -35,7 +35,7 @@ namespace Stroika::Frameworks::WebServer {
     }
     inline void Response::writeln (const wchar_t* e)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         RequireNotNull (e);
         const wchar_t kEOL[] = L"\r\n";
         write (e, e + ::wcslen (e));
@@ -43,8 +43,8 @@ namespace Stroika::Frameworks::WebServer {
     }
     inline void Response::writeln (const String& e)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        constexpr wchar_t                                  kEOL[] = L"\r\n";
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        constexpr wchar_t                                   kEOL[] = L"\r\n";
         if (not e.empty ()) {
             wstring tmp{e.As<wstring> ()};
             write (Containers::Start (tmp), Containers::End (tmp));
@@ -53,7 +53,7 @@ namespace Stroika::Frameworks::WebServer {
     }
     inline void Response::EnterHeadMode ()
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         Require (fState_ == State::ePreparingHeaders);
         fHeadMode_ = true;
     }

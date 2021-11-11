@@ -37,8 +37,8 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::SendTo", L"end-start=%lld, sockAddr=%s", static_cast<long long> (end - start), Characters::ToString (sockAddr).c_str ())};
 #endif
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                sockaddr_storage                                   sa = sockAddr.As<sockaddr_storage> ();
+                lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+                sockaddr_storage                                    sa = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
                 Handle_ErrNoResultInterruption ([this, &start, &end, &sa, &sockAddr] () -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sockAddr.GetRequiredSize ()); });
 #elif qPlatform_Windows
@@ -50,7 +50,7 @@ namespace {
             }
             virtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) override
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
                 // Note - COULD have implemented timeout with SO_RCVTIMEO, but that would risk statefulness, and confusion setting/resetting the parameter. Could be done, but this seems
                 // cleaner...
                 constexpr Time::DurationSecondsType kMaxPolltime_{numeric_limits<int>::max () / 1000.0};
@@ -93,8 +93,8 @@ namespace {
             }
             virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
-                Debug::TraceContextBumper                          ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::JoinMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::JoinMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
+                lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4 or iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V6);
                 auto                       activity = Execution::LazyEvalActivity{[&] () -> Characters::String { return L"joining multicast group " + Characters::ToString (iaddr) + L" on interface " + Characters::ToString (onInterface); }};
                 Execution::DeclareActivity activityDeclare{&activity};
@@ -117,8 +117,8 @@ namespace {
             }
             virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
-                Debug::TraceContextBumper                          ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::LeaveMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::LeaveMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
+                lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
                 switch (iaddr.GetAddressFamily ()) {
                     case InternetAddress::AddressFamily::V4: {
                         ::ip_mreq m{};
@@ -138,7 +138,7 @@ namespace {
             }
             virtual uint8_t GetMulticastTTL () const override
             {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
                 switch (GetAddressFamily ()) {
                     case SocketAddress::INET: {
                         return getsockopt<uint8_t> (IPPROTO_IP, IP_MULTICAST_TTL);
@@ -153,7 +153,7 @@ namespace {
             }
             virtual void SetMulticastTTL (uint8_t ttl) override
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
                 switch (GetAddressFamily ()) {
                     case SocketAddress::INET: {
                         setsockopt<uint8_t> (IPPROTO_IP, IP_MULTICAST_TTL, ttl);
@@ -169,7 +169,7 @@ namespace {
             }
             virtual bool GetMulticastLoopMode () const override
             {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
                 switch (GetAddressFamily ()) {
                     case SocketAddress::INET: {
                         return !!getsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP);
@@ -184,7 +184,7 @@ namespace {
             }
             virtual void SetMulticastLoopMode (bool loopMode) override
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
                 switch (GetAddressFamily ()) {
                     case SocketAddress::INET: {
                         setsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP, loopMode);

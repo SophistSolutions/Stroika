@@ -61,40 +61,40 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual ElementEqualityComparerType GetElementEqualsComparer () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return ElementEqualityComparerType{fEqualsComparer_};
         }
         virtual _IterableRepSharedPtr Clone () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
         }
         virtual size_t GetLength () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return fData_.GetLength ();
         }
         virtual bool IsEmpty () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return fData_.GetLength () == 0;
         }
         virtual Iterator<value_type> MakeIterator () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
             // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
         virtual Iterator<value_type> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            size_t                                                     i = fData_.FindFirstThat (doToElement);
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            size_t                                                      i = fData_.FindFirstThat (doToElement);
             if (i == fData_.GetLength ()) {
                 return nullptr;
             }
@@ -107,35 +107,35 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _MultiSetRepSharedPtr CloneEmpty () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return Iterable<value_type>::template MakeSmartPtr<Rep_> (fEqualsComparer_); // keep same comparer, but no data
         }
         virtual _MultiSetRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            auto                                                       result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
-            auto&                                                      mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            auto                                                        result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
+            auto&                                                       mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
         }
         virtual bool Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return this->_Equals_Reference_Implementation (rhs);
         }
         virtual bool Contains (ArgByValueType<T> item) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            value_type                                                 tmp{item};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            value_type                                                  tmp{item};
             return Find_ (tmp) != kNotFound_;
         }
         virtual void Add (ArgByValueType<T> item, CounterType count) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
-            value_type                                           tmp{item, count};
-            size_t                                               index = Find_ (tmp);
+            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
+            value_type                                            tmp{item, count};
+            size_t                                                index = Find_ (tmp);
             if (index == kNotFound_) {
                 fData_.InsertAt (fData_.GetLength (), tmp);
             }
@@ -147,9 +147,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (ArgByValueType<T> item, CounterType count) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
-            value_type                                           tmp (item);
-            size_t                                               index = Find_ (tmp);
+            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
+            value_type                                            tmp (item);
+            size_t                                                index = Find_ (tmp);
             if (index != kNotFound_) {
                 Assert (index < fData_.GetLength ());
                 Assert (tmp.fCount >= count);
@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             if (nextI != nullptr) {
                 *nextI    = i;
                 auto iRep = Debug::UncheckedDynamicCast<const IteratorRep_*> (&nextI->ConstGetRep ());
@@ -180,8 +180,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void UpdateCount (const Iterator<value_type>& i, CounterType newCount, Iterator<value_type>* nextI) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
-            auto&                                                mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
+            auto&                                                 mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             if (newCount == 0) {
                 if (nextI != nullptr) {
                     *nextI = i;
@@ -205,9 +205,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual CounterType OccurrencesOf (ArgByValueType<T> item) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
-            value_type                                                 tmp (item);
-            size_t                                                     index = Find_ (tmp);
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            value_type                                                  tmp (item);
+            size_t                                                      index = Find_ (tmp);
             if (index == kNotFound_) {
                 return 0;
             }
@@ -217,12 +217,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual Iterable<T> Elements (const typename MultiSet<T, TRAITS>::_IRepSharedPtr& rep) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return this->_Elements_Reference_Implementation (rep);
         }
         virtual Iterable<T> UniqueElements (const typename MultiSet<T, TRAITS>::_IRepSharedPtr& rep) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return this->_UniqueElements_Reference_Implementation (rep);
         }
 
@@ -230,18 +230,18 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual size_t GetCapacity () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedLock> readLock{fData_};
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return fData_.GetCapacity ();
         }
         virtual void SetCapacity (size_t slotsAlloced) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedLock> writeLock{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             fData_.SetCapacity (slotsAlloced);
             fChangeCounts_.PerformedChange ();
         }
         virtual void Compact () override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            scoped_lock<Debug::AssertExternallySynchronizedMutex> critSec{fData_};
             fData_.Compact ();
         }
 

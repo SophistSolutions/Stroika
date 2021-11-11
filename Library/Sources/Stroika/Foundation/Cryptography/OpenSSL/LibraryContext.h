@@ -18,7 +18,7 @@
 #include "../../Configuration/Common.h"
 #include "../../Containers/Mapping.h"
 #include "../../Containers/Set.h"
-#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Debug/AssertExternallySynchronizedMutex.h"
 
 #include "CipherAlgorithm.h"
 #include "DigestAlgorithm.h"
@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
      *  For now, provide no way to access additional library contexts, as I have no such need right now
      *  and the docs don't make it super clear/simple.
      */
-    class LibraryContext : private Debug::AssertExternallySynchronizedLock {
+    class LibraryContext : private Debug::AssertExternallySynchronizedMutex {
     private:
         /**
          */

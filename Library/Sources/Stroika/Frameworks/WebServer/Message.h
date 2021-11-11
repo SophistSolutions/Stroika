@@ -7,7 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../../Foundation/Common/Property.h"
-#include "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
+#include "../../Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "../../Foundation/IO/Network/URI.h"
 
 #include "Request.h"
@@ -31,7 +31,7 @@ namespace Stroika::Frameworks::WebServer {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    class Message : private Debug::AssertExternallySynchronizedLock {
+    class Message : private Debug::AssertExternallySynchronizedMutex {
     public:
         /**
          */
@@ -47,9 +47,9 @@ namespace Stroika::Frameworks::WebServer {
         /**
          *  Allow users of the Connection object to have it share a 'assure externally synchronized' context.
          *
-         *  \see AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext
+         *  \see AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext
          */
-        nonvirtual void SetAssertExternallySynchronizedLockContext (const shared_ptr<SharedContext>& sharedContext);
+        nonvirtual void SetAssertExternallySynchronizedMutexContext (const shared_ptr<SharedContext>& sharedContext);
 #endif
 
     public:

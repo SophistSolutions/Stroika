@@ -44,9 +44,9 @@ namespace Stroika::Foundation::Characters {
     {
         Require (s == e or (s != nullptr and e != nullptr));
         Require (s <= e);
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        size_t                                             i      = fLength_;
-        size_t                                             rhsLen = e - s;
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        size_t                                              i      = fLength_;
+        size_t                                              rhsLen = e - s;
         fData_.GrowToSize_uninitialized (i + rhsLen);
         fLength_ = i + rhsLen;
         (void)::memcpy (fData_.begin () + i, s, sizeof (wchar_t) * rhsLen);
@@ -203,7 +203,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline void StringBuilder::push_back (Character c)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         fData_.GrowToSize_uninitialized (fLength_ + 1);
         fData_[fLength_] = c.GetCharacterCode ();
         fLength_++;
@@ -228,7 +228,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline const wchar_t* StringBuilder::c_str () const
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         fData_.GrowToSize_uninitialized (fLength_ + 1);
         fData_[fLength_] = '\0';
         return fData_.begin ();
@@ -239,7 +239,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline String StringBuilder::str () const
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         return String{fData_.begin (), fData_.begin () + fLength_};
     }
     template <>
@@ -297,7 +297,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline void StringBuilder::reserve (size_t newCapacity)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         fData_.reserve (newCapacity);
     }
 

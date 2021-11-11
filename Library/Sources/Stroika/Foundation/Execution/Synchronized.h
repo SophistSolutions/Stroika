@@ -206,7 +206,7 @@ namespace Stroika::Foundation::Execution {
      *          But why does it not suffer from the same performance deficiit?
      *
      *          Because with Java - you mixup exceptions and assertions. With Stroika, we have builtin
-     *          checking for races (Debug::AssertExternallySynchronizedLock) in most objects, so
+     *          checking for races (Debug::AssertExternallySynchronizedMutex) in most objects, so
      *          you only use Synchronized<> (or some other more performant mechanism) in the few places
      *          you need it.
      *

@@ -10,7 +10,7 @@
 
 #include "../../Characters/String.h"
 #include "../../Common/Property.h"
-#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Debug/AssertExternallySynchronizedMutex.h"
 
 #include "EngineProperties.h"
 
@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Database::SQL {
      *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
      *          threadsafe (even if accessed across processes).
      */
-    class Connection::IRep : protected Debug::AssertExternallySynchronizedLock, public enable_shared_from_this<Connection::IRep> {
+    class Connection::IRep : protected Debug::AssertExternallySynchronizedMutex, public enable_shared_from_this<Connection::IRep> {
     public:
         /**
          */
@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Database::SQL {
      *          The Connection::Ptr itself is standardC++ thread safety. The thread-safety of the underlying database depends on how the underlying
      *          shared_ptr<IRep> was created.
      */
-    class Connection::Ptr : private Debug::AssertExternallySynchronizedLock {
+    class Connection::Ptr : private Debug::AssertExternallySynchronizedMutex {
     public:
         /**
          */

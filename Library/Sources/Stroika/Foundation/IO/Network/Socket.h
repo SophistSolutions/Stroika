@@ -14,7 +14,7 @@
 
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
-#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Debug/AssertExternallySynchronizedMutex.h"
 #include "../../Execution/Exceptions.h"
 #if qPlatform_Windows
 #include "Platform/Windows/WinSock.h"
@@ -195,7 +195,7 @@ namespace Stroika::Foundation::IO::Network {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
      */
-    class Socket::Ptr : protected Debug::AssertExternallySynchronizedLock {
+    class Socket::Ptr : protected Debug::AssertExternallySynchronizedMutex {
     protected:
         /**
          *  Socket::Ptr maybe initialized with

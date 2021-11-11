@@ -10,7 +10,7 @@
 
 #include "../../Common/Compare.h"
 #include "../../Configuration/Common.h"
-#include "../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../Debug/AssertExternallySynchronizedMutex.h"
 
 #include "../Common.h"
 
@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  remove them from contains, not when the caches happen to empty.
      */
     template <typename T>
-    class Array : public Debug::AssertExternallySynchronizedLock {
+    class Array : public Debug::AssertExternallySynchronizedMutex {
     public:
         using value_type = T;
 

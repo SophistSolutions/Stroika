@@ -4,7 +4,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Containers/Support/ReserveTweaks.h"
-#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Execution/Common.h"
 #include "../Execution/OperationNotSupportedException.h"
 #include "../Memory/SmallStackBuffer.h"
@@ -24,7 +24,7 @@ namespace {
     using MyWCharTConverterType_ = codecvt<wchar_t, char, mbstate_t>;
 }
 
-class TextReader::FromBinaryStreamBaseRep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedLock {
+class TextReader::FromBinaryStreamBaseRep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedMutex {
 public:
     FromBinaryStreamBaseRep_ (const InputStream<byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
         : _fSource{src}
@@ -70,9 +70,9 @@ protected:
          *
          *  Since number of wchar_ts filled always <= number of bytes read, we can read up to that # of bytes from upstream binary stream.
          */
-        SmallStackBuffer<wchar_t, 8 * 1024>                outBuf{SmallStackBufferCommon::eUninitialized, size_t (intoEnd - intoStart)};
-        wchar_t*                                           outCursor = begin (outBuf);
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        SmallStackBuffer<wchar_t, 8 * 1024>                 outBuf{SmallStackBufferCommon::eUninitialized, size_t (intoEnd - intoStart)};
+        wchar_t*                                            outCursor = begin (outBuf);
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         {
             SmallStackBuffer<byte, 8 * 1024> inBuf{SmallStackBufferCommon::eUninitialized, size_t (intoEnd - intoStart)}; // wag at size
             size_t                           inBytes = _fSource.Read (begin (inBuf), end (inBuf));
@@ -164,14 +164,14 @@ protected:
 
     virtual SeekOffsetType GetReadOffset () const override
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         Require (IsOpenRead ());
         return _fOffset;
     }
 
     virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         Require (IsOpenRead ());
         AssertNotReached (); // not seekable
         return _fOffset;
@@ -215,7 +215,7 @@ protected:
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         Require (IsOpenRead ());
 
         // if already cached, return from cache. Note - even if only one element is in the Cache, thats enough to return
@@ -283,7 +283,7 @@ protected:
     }
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         Require (IsOpenRead ());
         switch (whence) {
             case Whence::eFromStart: {
@@ -345,7 +345,7 @@ private:
     SmallStackBuffer<wchar_t> fCache_; // Cache uses wchar_t instead of Character so can use resize_uninitialized () - requires is_trivially_constructible
 };
 
-class TextReader::IterableAdapterStreamRep_ final : public InputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock {
+class TextReader::IterableAdapterStreamRep_ final : public InputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedMutex {
 public:
     IterableAdapterStreamRep_ (const Traversal::Iterable<Character>& src)
         : fSource_{src}
@@ -373,7 +373,7 @@ protected:
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {
         Require (intoEnd - intoStart >= 1);
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         Require (IsOpenRead ());
         Character* outI = intoStart;
         if (fPutBack_) {
@@ -396,7 +396,7 @@ protected:
     }
     virtual optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         Require (IsOpenRead ());
         if (intoStart == nullptr) {
@@ -416,7 +416,7 @@ protected:
     }
     virtual SeekOffsetType GetReadOffset () const override
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         Require (IsOpenRead ());
         if (fPutBack_) {
             Assert (fOffset_ >= 1);
@@ -427,9 +427,9 @@ protected:
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         Require (IsOpenRead ());
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        size_t                                             sourceLen = fSource_.GetLength ();
-        SeekOffsetType                                     newOffset{};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        size_t                                              sourceLen = fSource_.GetLength ();
+        SeekOffsetType                                      newOffset{};
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0) [[UNLIKELY_ATTR]] {

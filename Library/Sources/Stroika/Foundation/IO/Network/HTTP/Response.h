@@ -10,7 +10,7 @@
 #include "../../../Common/Property.h"
 #include "../../../Configuration/Common.h"
 #include "../../../DataExchange/InternetMediaType.h"
-#include "../../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../../Debug/AssertExternallySynchronizedMutex.h"
 #include "../../../IO/Network/HTTP/Headers.h"
 #include "../../../IO/Network/HTTP/Status.h"
 #include "../../../IO/Network/URI.h"
@@ -27,7 +27,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     /*
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    class Response : protected Debug::AssertExternallySynchronizedLock {
+    class Response : protected Debug::AssertExternallySynchronizedMutex {
     public:
         Response (const Response&) = delete;
         Response (Response&& src);
@@ -44,9 +44,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Allow users of the Headers object to have it share a 'assure externally synchronized' context.
          *
-         *  \see AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext
+         *  \see AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext
          */
-        nonvirtual void SetAssertExternallySynchronizedLockContext (const shared_ptr<SharedContext>& sharedContext);
+        nonvirtual void SetAssertExternallySynchronizedMutexContext (const shared_ptr<SharedContext>& sharedContext);
 #endif
 
     public:
@@ -55,7 +55,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  It can be called in any state (during transaction or after).
          * 
          * \note - this returns an INTERNAL POINTER to the Response, so be SURE to remember this with respect to
-         *         thread safety, and lifetime (thread safety checked/enforced in debug builds with SetAssertExternallySynchronizedLockContext);
+         *         thread safety, and lifetime (thread safety checked/enforced in debug builds with SetAssertExternallySynchronizedMutexContext);
          */
         Common::ReadOnlyProperty<const IO::Network::HTTP::Headers&> headers;
 
@@ -68,7 +68,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          * It is legal to call to replace existing headers values.
          * 
          * \note - this returns an INTERNAL POINTER to the Response, so be SURE to remember this with respect to
-         *         thread safety, and lifetime (thread safety checked/enforced in debug builds with SetAssertExternallySynchronizedLockContext);
+         *         thread safety, and lifetime (thread safety checked/enforced in debug builds with SetAssertExternallySynchronizedMutexContext);
          */
         Common::ExtendableProperty<IO::Network::HTTP::Headers&> rwHeaders;
 

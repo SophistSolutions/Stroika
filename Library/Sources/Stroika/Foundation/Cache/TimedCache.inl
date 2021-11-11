@@ -34,14 +34,14 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename TRAITS>
     Time::DurationSecondsType TimedCache<KEY, VALUE, TRAITS>::GetTimeout () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fTimeout_;
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::SetTimeout (Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds)
     {
         Require (timeoutInSeconds > 0.0f);
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         if (fTimeout_ != timeoutInSeconds) {
             ClearIfNeeded_ ();
             fTimeout_ = timeoutInSeconds;
@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename TRAITS>
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         ClearIfNeeded_ ();
         typename MyMapType_::iterator i   = fMap_.find (key);
         Time::DurationSecondsType     now = Time::GetTickCount ();
@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         ClearIfNeeded_ ();
         typename MyMapType_::iterator i = fMap_.find (key);
         if (i == fMap_.end ()) {
@@ -101,19 +101,19 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::Remove (typename Configuration::ArgByValueType<KEY> key)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         fMap_.erase (key);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::clear ()
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         fMap_.clear ();
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::DoBookkeeping ()
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         ClearOld_ ();
     }
     template <typename KEY, typename VALUE, typename TRAITS>

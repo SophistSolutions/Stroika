@@ -10,7 +10,7 @@
  ********************************************************************************
  */
 
-#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
 
 namespace Stroika::Foundation::Streams {
 
@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class SplitterOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
+    class SplitterOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedMutex {
     public:
         Rep_ (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2)
             : OutputStream<ELEMENT_TYPE>::_IRep{}
@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Streams {
         }
         virtual void Flush () override
         {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             Require (IsOpenWrite ());
             fRealOut1_.Flush ();
             fRealOut2_.Flush ();
@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Streams {
         {
             Require (start < end); // for OutputStream<byte> - this function requires non-empty write
             Require (IsOpenWrite ());
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             fRealOut1_.Write (start, end);
             fRealOut2_.Write (start, end);
         }

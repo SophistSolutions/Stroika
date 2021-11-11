@@ -83,9 +83,9 @@ namespace Stroika::Foundation::Containers::Private {
     void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::More (optional<T>* result, bool advance)
     {
         RequireNotNull (result);
-        // NOTE: the reason this is Debug::AssertExternallySynchronizedLock, is because we only modify data on the newly cloned (breakreferences)
+        // NOTE: the reason this is Debug::AssertExternallySynchronizedMutex, is because we only modify data on the newly cloned (breakreferences)
         // iterator, and that must be in the thread (so externally synchronized) of the modifier
-        //    shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.GetPatchableContainerHelper ());
+        //    shared_lock<const Debug::AssertExternallySynchronizedMutex> lg (*fIterator.GetPatchableContainerHelper ());
         ValidateChangeCount ();
         More_SFINAE_ (result, advance);
     }
@@ -120,8 +120,8 @@ namespace Stroika::Foundation::Containers::Private {
         AssertNotNull (rrhs);
         //  ValidateChangeCount ();
         //  rhs->ValidateChangeCount ();
-        //        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec1 (*fIterator.GetPatchableContainerHelper ());
-        //      shared_lock<const Debug::AssertExternallySynchronizedLock> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
+        //        shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec1 (*fIterator.GetPatchableContainerHelper ());
+        //      shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
         return fIterator.Equals (rrhs->fIterator);
     }
 #if qDebug

@@ -18,7 +18,7 @@
 #include "../Configuration/Common.h"
 #include "../Configuration/Concepts.h"
 #include "../Configuration/TypeHints.h"
-#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Memory/SharedByValue.h"
 #include "../Memory/SharedPtr.h"
 
@@ -250,7 +250,7 @@ namespace Stroika::Foundation::Traversal {
      *
      */
     template <typename T>
-    class Iterable : public IterableBase, protected Debug::AssertExternallySynchronizedLock {
+    class Iterable : public IterableBase, protected Debug::AssertExternallySynchronizedMutex {
     public:
         static_assert (is_copy_constructible_v<Iterator<T>>, "Must be able to create Iterator<T> to use Iterable<T>");
 
@@ -1215,7 +1215,7 @@ namespace Stroika::Foundation::Traversal {
      *  _SafeReadRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the
      *  'this' object, and captures a const reference to the internal 'REP'.
      *
-     *  For DEBUGGING (catching races) purposes, it also locks the Debug::AssertExternallySynchronizedLock,
+     *  For DEBUGGING (catching races) purposes, it also locks the Debug::AssertExternallySynchronizedMutex,
      *  so that IF this object is accessed illegally by other threads while in use (this use), it will
      *  be caught.
      *
@@ -1242,7 +1242,7 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T>
     template <typename REP_SUB_TYPE>
-    class Iterable<T>::_SafeReadRepAccessor : private shared_lock<const Debug::AssertExternallySynchronizedLock> {
+    class Iterable<T>::_SafeReadRepAccessor : private shared_lock<const Debug::AssertExternallySynchronizedMutex> {
     public:
         _SafeReadRepAccessor () = delete;
         _SafeReadRepAccessor (const _SafeReadRepAccessor& src) noexcept;
@@ -1266,7 +1266,7 @@ namespace Stroika::Foundation::Traversal {
      *  _SafeReadWriteRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the
      *  'this' object, and captures a writable to the internal 'REP'.
      *
-     *  For DEBUGGING (catching races) purposes, it also locks the Debug::AssertExternallySynchronizedLock,
+     *  For DEBUGGING (catching races) purposes, it also locks the Debug::AssertExternallySynchronizedMutex,
      *  so that IF this object is accessed illegally by other threads while in use (this use), it will
      *  be caught.
      *
@@ -1275,7 +1275,7 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T>
     template <typename REP_SUB_TYPE>
-    class Iterable<T>::_SafeReadWriteRepAccessor : private lock_guard<const Debug::AssertExternallySynchronizedLock> {
+    class Iterable<T>::_SafeReadWriteRepAccessor : private lock_guard<const Debug::AssertExternallySynchronizedMutex> {
     public:
         _SafeReadWriteRepAccessor ()                                     = delete;
         _SafeReadWriteRepAccessor (const _SafeReadWriteRepAccessor& src) = default;

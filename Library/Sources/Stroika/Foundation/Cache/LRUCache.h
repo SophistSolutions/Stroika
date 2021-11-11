@@ -13,7 +13,7 @@
 #include "../Configuration/Common.h"
 #include "../Configuration/TypeHints.h"
 #include "../Containers/Mapping.h"
-#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Memory/SmallStackBuffer.h"
 
 #include "Statistics.h"
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Cache {
      *  @see SynchronizedLRUCache<> - internally synchronized version
      */
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename KEY_HASH_FUNCTION = nullptr_t, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
-    class LRUCache : private Debug::AssertExternallySynchronizedLock, private STATS_TYPE {
+    class LRUCache : private Debug::AssertExternallySynchronizedMutex, private STATS_TYPE {
     public:
         using KeyType = KEY;
 

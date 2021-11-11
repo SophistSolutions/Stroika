@@ -9,7 +9,7 @@
 #include "../Characters/CodePage.h"
 #include "../Characters/Format.h"
 #include "../Containers/Common.h"
-#include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Execution/Common.h"
 #include "../Execution/Exceptions.h"
 #include "../Execution/OperationNotSupportedException.h"
@@ -27,7 +27,7 @@ namespace {
     const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used
 }
 
-class TextWriter::UnSeekable_UTF8_Rep_ : public OutputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock {
+class TextWriter::UnSeekable_UTF8_Rep_ : public OutputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedMutex {
 public:
     UnSeekable_UTF8_Rep_ (const OutputStream<byte>::Ptr& src, bool useBOM)
         : _fSource{src}
@@ -75,7 +75,7 @@ protected:
 
         char outBuf[10 * 1024];
         //char    outBuf[10]; // to test
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
     Again:
         char*                         p = std::begin (outBuf);
         codecvt_utf8<wchar_t>::result r = kConverter_.out (fMBState_, sc, ec, pc, std::begin (outBuf), std::end (outBuf), p);
@@ -101,7 +101,7 @@ protected:
     OutputStream<byte>::Ptr _fSource;
 };
 
-class TextWriter::UnSeekable_WCharT_Rep_ : public OutputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock {
+class TextWriter::UnSeekable_WCharT_Rep_ : public OutputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedMutex {
 public:
     UnSeekable_WCharT_Rep_ (const OutputStream<byte>::Ptr& src, bool useBOM)
         : _fSource{src}
@@ -142,13 +142,13 @@ protected:
     }
     virtual void Write (const Character* start, const Character* end) override
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         Require (IsOpenWrite ());
         _fSource.Write (reinterpret_cast<const byte*> (start), reinterpret_cast<const byte*> (end));
     }
     virtual void Flush () override
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         Require (IsOpenWrite ());
         _fSource.Flush ();
     }

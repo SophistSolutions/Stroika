@@ -14,10 +14,6 @@
 
 /**
  *  \file
- *
- *  TODO:
- *      @todo   Since this lock is NOT recursive, we could add a capture of the current thread, and then
- *              ASSERT no calls come in on the same thread, as they would be guaranteed to deadlock!
  */
 
 namespace Stroika::Foundation::Execution {
