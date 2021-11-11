@@ -44,7 +44,7 @@ namespace {
     template <typename CONCRETE_CONTAINER>
     void RunTests_ ()
     {
-        RunTests_<CONCRETE_CONTAINER> (std::less<typename CONCRETE_CONTAINER::value_type>{}, [] () { return CONCRETE_CONTAINER (); });
+        RunTests_<CONCRETE_CONTAINER> (std::less<typename CONCRETE_CONTAINER::value_type>{}, [] () { return CONCRETE_CONTAINER{}; });
     }
 }
 
@@ -53,10 +53,12 @@ namespace {
     {
         SortedCollection<int>    a = {1, 2, 3};
         Traversal::Iterator<int> i = a.begin ();
-#if qStroika_Foundation_Traveral_OverwriteContainerWhileIteratorRunning_Buggy
-        i.clear ();
-#endif
+        // overwrite OK, but
         a = SortedCollection<int>{3, 4, 5};
+// cannot access i any longer
+#if qDebug && 0
+        i++; // assert failure
+#endif
     }
 }
 
