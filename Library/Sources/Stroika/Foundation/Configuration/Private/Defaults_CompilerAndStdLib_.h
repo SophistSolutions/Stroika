@@ -2026,6 +2026,22 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 #endif
 
 /*
+* Only broken on vs2k22, RELEASE X86 builds
+FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Tests\42\Test.cpp: 66
+   []  (0  seconds)  [42]  Foundation::Execution::Other  (../Builds/Release-x86/Tests/Test42.exe)
+*/
+#ifndef qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy
+
+#if defined(_MSC_VER)
+// first noticed broken in _MSC_VER_2k22_17Pt0_
+#define qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt0_ <= _MSC_VER and _MSC_VER <= _MSC_VER_2k22_17Pt0_)
+#else
+#define qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy 0
+#endif
+
+#endif
+
+/*
  *  In DateTime DateTime::Parse (const String& rep, const locale& l, const String& formatPattern)
  *
  *   (void)tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());

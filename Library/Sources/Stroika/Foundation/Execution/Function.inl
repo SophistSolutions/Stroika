@@ -49,7 +49,17 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION_SIGNATURE>
     inline strong_ordering Function<FUNCTION_SIGNATURE>::operator<=> (const Function& rhs) const
     {
+#if qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy
+        if (fOrdering_ < rhs.fOrdering_) {
+            return strong_ordering::less;
+        }
+        else if (fOrdering_ > rhs.fOrdering_) {
+            return strong_ordering::greater;
+        }
+        return strong_ordering::equal;
+#else
         return fOrdering_ <=> rhs.fOrdering_;
+#endif
     }
     template <typename FUNCTION_SIGNATURE>
     inline bool Function<FUNCTION_SIGNATURE>::operator== (const Function& rhs) const
