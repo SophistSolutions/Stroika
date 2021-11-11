@@ -587,6 +587,12 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual void Refresh () const;
 
+    public:
+        /**
+         *  \brief, does nothing if !qDebug, but if qDebug, checks internal state and asserts in good shape
+         */
+        nonvirtual void Invariant () const;
+
     private:
         unique_ptr<IRep> fRep_;
         optional<T>      fCurrentValue_;
@@ -676,6 +682,11 @@ namespace Stroika::Foundation::Traversal {
          *  @see Iterator<T>::Equals for details
          */
         virtual bool Equals (const IRep* rhs) const = 0;
+#if qDebug
+        /**
+         */
+        virtual void Invariant () const;
+#endif
     };
 
 #if __cpp_impl_three_way_comparison < 201907

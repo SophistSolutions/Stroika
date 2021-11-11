@@ -84,6 +84,11 @@ namespace Stroika::Foundation::Containers::Private {
         virtual RepSmartPtr Clone () const override;
         virtual void        More (optional<T>* result, bool advance) override;
         virtual bool        Equals (const typename Iterator<T>::IRep* rhs) const override;
+#if qDebug
+        /**
+         */
+        virtual void Invariant () const override;
+#endif
 
     public:
         /**

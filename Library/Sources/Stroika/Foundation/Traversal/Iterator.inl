@@ -21,6 +21,18 @@ namespace Stroika::Foundation::Traversal {
 
     /*
      ********************************************************************************
+     ********************** Iterator<T, ITERATOR_TRAITS>::IRep **********************
+     ********************************************************************************
+     */
+#if qDebug
+    template <typename T, typename ITERATOR_TRAITS>
+    inline void Iterator<T, ITERATOR_TRAITS>::IRep::Invariant () const
+    {
+    }
+#endif
+
+    /*
+     ********************************************************************************
      *************************** Iterator<T, ITERATOR_TRAITS> ***********************
      ********************************************************************************
      */
@@ -52,7 +64,7 @@ namespace Stroika::Foundation::Traversal {
     Iterator<T, ITERATOR_TRAITS>& Iterator<T, ITERATOR_TRAITS>::operator= (const Iterator& rhs)
     {
         if (&rhs != this) [[LIKELY_ATTR]] {
-            fRep_     = rhs.fRep_ == nullptr ? nullptr : Clone_ (*rhs.fRep_);
+            fRep_          = rhs.fRep_ == nullptr ? nullptr : Clone_ (*rhs.fRep_);
             fCurrentValue_ = rhs.fCurrentValue_;
         }
         return *this;
@@ -76,15 +88,26 @@ namespace Stroika::Foundation::Traversal {
         fRep_->More (&mutableThis->fCurrentValue_, false);
     }
     template <typename T, typename ITERATOR_TRAITS>
+    inline void Iterator<T, ITERATOR_TRAITS>::Invariant () const
+    {
+#if qDebug
+        if (fRep_) {
+            fRep_->Invariant ();
+        }
+#endif
+    }
+    template <typename T, typename ITERATOR_TRAITS>
     inline T Iterator<T, ITERATOR_TRAITS>::Current () const
     {
         RequireNotNull (fRep_);
         Require (fCurrentValue_.has_value ());
+        this->Invariant ();
         return *fCurrentValue_;
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline bool Iterator<T, ITERATOR_TRAITS>::Done () const
     {
+        this->Invariant ();
         return not fCurrentValue_.has_value ();
     }
     template <typename T, typename ITERATOR_TRAITS>
@@ -102,6 +125,7 @@ namespace Stroika::Foundation::Traversal {
     {
         Require (not Done ());
         RequireNotNull (fRep_);
+        this->Invariant ();
         return *fCurrentValue_;
     }
     template <typename T, typename ITERATOR_TRAITS>
@@ -109,6 +133,7 @@ namespace Stroika::Foundation::Traversal {
     {
         Require (not Done ());
         RequireNotNull (fRep_);
+        this->Invariant ();
         return fCurrentValue_.operator-> ();
     }
     template <typename T, typename ITERATOR_TRAITS>
@@ -116,6 +141,7 @@ namespace Stroika::Foundation::Traversal {
     {
         Require (not Done ());
         RequireNotNull (fRep_);
+        this->Invariant ();
         fRep_->More (&fCurrentValue_, true);
         return *this;
     }
@@ -125,6 +151,7 @@ namespace Stroika::Foundation::Traversal {
         RequireNotNull (fRep_);
         Require (not Done ());
         Iterator<T> tmp = *this;
+        this->Invariant ();
         fRep_->More (&fCurrentValue_, true);
         return tmp;
     }
