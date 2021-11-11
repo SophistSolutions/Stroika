@@ -175,9 +175,10 @@ public:
     {
         lock_guard critSec{fAvailableConnectionsChanged.fMutex};
         for (auto i = fAvailableConnections.begin (); i != fAvailableConnections.end (); ++i) {
+            auto result = *i;
             fAvailableConnections.Remove (i);
             ++fOutstandingConnections;
-            return *i;
+            return result;
         }
         return nullopt;
     }
