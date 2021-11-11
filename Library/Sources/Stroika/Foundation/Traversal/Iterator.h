@@ -588,8 +588,8 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual void Refresh () const;
 
     private:
-        unique_ptr<IRep> fIterator_;
-        optional<T>      fCurrent_;
+        unique_ptr<IRep> fRep_;
+        optional<T>      fCurrentValue_;
 
     private:
         static RepSmartPtr Clone_ (const IRep& rep);
@@ -626,7 +626,7 @@ namespace Stroika::Foundation::Traversal {
      *          Done -> More (&v, false); return v.has_value();
      *
      *          (note that for performance and thread safety reasons the iterator envelope
-     *           actually passes fCurrent_ into More when implenenting ++it
+     *           actually passes fCurrentValue_ into More when implenenting ++it
      */
     template <typename T, typename ITERATOR_TRAITS>
     class Iterator<T, ITERATOR_TRAITS>::IRep {
