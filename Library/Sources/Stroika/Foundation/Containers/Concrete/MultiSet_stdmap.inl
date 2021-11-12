@@ -9,8 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include <map>
-
 #include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
@@ -207,7 +205,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 
     private:
-        using DataStructureImplType_ = DataStructures::STLContainerWrapper<map<T, CounterType, INORDER_COMPARER>>;
+        using DataStructureImplType_ = DataStructures::STLContainerWrapper<STDMAP<INORDER_COMPARER>>;
         using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_, typename DataStructureImplType_::ForwardIterator, pair<T, CounterType>>;
 
     private:

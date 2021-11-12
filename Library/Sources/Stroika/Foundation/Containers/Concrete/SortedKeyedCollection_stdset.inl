@@ -26,8 +26,6 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
     class SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::IImplRepBase_ : public SortedKeyedCollection<T, KEY_TYPE, TRAITS>::_IRep {
-    private:
-        using inherited = typename SortedKeyedCollection<T, KEY_TYPE, TRAITS>::_IRep;
     };
 
     /*
@@ -51,7 +49,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         Rep_ (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& inorderComparer)
-        // clang-format off
+            // clang-format off
             : fKeyExtractor_ {keyExtractor}
             #if qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
             , fData_{SetInOrderComparer<KEY_EXTRACTOR,KEY_INORDER_COMPARER>{keyExtractor, inorderComparer}}

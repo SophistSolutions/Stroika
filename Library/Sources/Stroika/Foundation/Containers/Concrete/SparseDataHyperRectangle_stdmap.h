@@ -33,6 +33,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         using value_type = typename inherited::value_type;
 
     public:
+/**
+         *  \brief STDMAP is std::map<> that can be used inside SparseDataHyperRectangle_stdmap
+         */
+#if 0
+        //NYI
+        template <typename KEY_INORDER_COMPARER = less<key_type>>
+        using STDMAP = map<KEY_TYPE, CounterType, KEY_INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<pair<const key_type, CounterType>, sizeof (value_type) <= 1024>>;
+#endif
+
+    public:
         /**
          */
         SparseDataHyperRectangle_stdmap (Configuration::ArgByValueType<T> defaultItem = {});

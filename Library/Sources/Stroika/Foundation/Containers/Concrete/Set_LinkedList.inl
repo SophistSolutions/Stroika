@@ -21,8 +21,6 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     class Set_LinkedList<T>::IImplRepBase_ : public Set<T>::_IRep {
-    private:
-        using inherited = typename Set<T>::_IRep;
     };
 
     /**

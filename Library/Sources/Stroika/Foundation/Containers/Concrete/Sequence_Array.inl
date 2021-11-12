@@ -23,9 +23,6 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     class Sequence_Array<T>::IImplRep_ : public Sequence<T>::_IRep {
-    private:
-        using inherited = typename Sequence<T>::_IRep;
-
     public:
         virtual void   Compact ()                        = 0;
         virtual size_t GetCapacity () const              = 0;
