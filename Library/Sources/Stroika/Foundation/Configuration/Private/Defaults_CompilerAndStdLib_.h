@@ -1534,6 +1534,18 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 #endif
 
 
+#ifndef qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
+
+#if defined(__clang__) && !defined(__APPLE__)
+#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
+#else
+#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy 0
+#endif
+
+#endif
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
