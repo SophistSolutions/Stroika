@@ -39,10 +39,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         using KeyType                   = typename inherited::KeyType;
         using key_type                  = typename inherited::key_type;
         using value_type                = typename inherited::value_type;
-#if 0
-        template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER = less<key_type>>
-        using SetInOrderComparer = inherited::template SetInOrderComparer<KEY_EXTRACTOR, KEY_INORDER_COMPARER>;
-#else
+
+    public:
+        /**
+         *  \brief SetInOrderComparer is the COMPARER passed to the STL set. It intrinsically uses the provided extractor and key comparer
+         */
         template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER = less<key_type>>
         struct SetInOrderComparer {
             static_assert (not is_reference_v<KEY_EXTRACTOR>);
@@ -69,7 +70,6 @@ namespace Stroika::Foundation::Containers::Concrete {
             [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_INORDER_COMPARER fKeyComparer_;
             using is_transparent = int; // see https://en.cppreference.com/w/cpp/container/set/find - allows overloads to lookup by key
         };
-#endif
 
     public:
         /**
