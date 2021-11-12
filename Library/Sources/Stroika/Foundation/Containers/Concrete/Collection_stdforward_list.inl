@@ -9,8 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include <forward_list>
-
 #include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
@@ -115,7 +113,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 
     private:
-        using DataStructureImplType_ = DataStructures::STLContainerWrapper<forward_list<T>>;
+        using DataStructureImplType_ = DataStructures::STLContainerWrapper<STDFORWARDLIST>;
         using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
@@ -156,5 +154,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber
 #endif
     }
+
 }
 #endif /* _Stroika_Foundation_Containers_Concrete_Collection_stdforward_list_inl_ */

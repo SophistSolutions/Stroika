@@ -3,6 +3,8 @@
  */
 #include "../../StroikaPreComp.h"
 
+#include <set>
+
 #include "../SortedSet.h"
 
 #ifndef _Stroika_Foundation_Containers_Concrete_SortedSet_stdset_h_
@@ -39,6 +41,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         using ElementEqualityComparerType = typename Set<T>::ElementEqualityComparerType;
         using ElementInOrderComparerType  = typename inherited::ElementInOrderComparerType;
         using value_type                  = typename inherited::value_type;
+
+    public:
+        /**
+         */
+        template <typename INORDER_COMPARER>
+        using STDSET = set<value_type, INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<value_type, sizeof (value_type) <= 1024>>;
 
     public:
         /**

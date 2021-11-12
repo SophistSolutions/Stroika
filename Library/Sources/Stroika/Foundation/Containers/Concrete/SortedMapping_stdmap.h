@@ -3,6 +3,8 @@
  */
 #include "../../StroikaPreComp.h"
 
+#include <map>
+
 #include "../SortedMapping.h"
 
 #ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_h_
@@ -37,7 +39,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         using KeyEqualsCompareFunctionType = typename inherited::KeyEqualsCompareFunctionType;
         using KeyInOrderKeyComparerType    = typename inherited::KeyInOrderKeyComparerType;
         using value_type                   = typename inherited::value_type;
+        using key_type                     = typename inherited::key_type;
         using mapped_type                  = typename inherited::mapped_type;
+
+    public:
+        /**
+         *  \brief STDMAP is std::map<> that can be used inside SortedMapping_stdmap
+         */
+        template <typename KEY_INORDER_COMPARER = less<key_type>>
+        using STDMAP = map<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<pair<const key_type, mapped_type>, sizeof (value_type) <= 1024>>;
 
     public:
         /**

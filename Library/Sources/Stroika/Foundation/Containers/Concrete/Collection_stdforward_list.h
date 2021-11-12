@@ -3,6 +3,8 @@
  */
 #include "../../StroikaPreComp.h"
 
+#include <forward_list>
+
 #include "../Collection.h"
 
 #ifndef _Stroika_Foundation_Containers_Concrete_Collection_stdforward_list_h_
@@ -36,6 +38,13 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         using value_type = typename inherited::value_type;
+
+    public:
+        /**
+         *  \brief STDFORWARDLIST is std::forward_list<> that can be used inside Collection_stdforward_list
+         */
+        //using STDFORWARDLIST = forward_list<value_type, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<value_type, sizeof (value_type) <= 1024>>;
+        using STDFORWARDLIST = forward_list<value_type>; // above didn't work - must debug...
 
     public:
         /**

@@ -127,6 +127,11 @@ namespace Stroika::Foundation::Memory {
     using UseBlockAllocationIfAppropriate = conditional_t<qAllowBlockAllocation and andTrueCheck, BlockAllocationUseHelper<T>, Configuration::Empty>;
 
     /**
+     */
+    template <typename T, bool andTrueCheck = true>
+    using BlockAllocatorOrStdAllocatorAsAppropriate = conditional_t<qAllowBlockAllocation and andTrueCheck, BlockAllocator<T>, std::allocator<T>>;
+
+    /**
      *   \brief ManuallyBlockAllocated<T> is a simple wrapper on BlockAllocator<T>. If qAllowBlockAllocation defined, this will use block allocation for a given type - at a given call.
      *
      *   This is in sharp contrast to struct T : UseBlockAllocationIfAppropriate<T> {};

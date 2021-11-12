@@ -5,11 +5,10 @@
 #define _Stroika_Foundation_Containers_Concrete_Mapping_stdmap_inl_
 
 /*
-    ********************************************************************************
-    ***************************** Implementation Details ***************************
-    ********************************************************************************
-    */
-#include <map>
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
 
 #include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
@@ -45,7 +44,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             : fData_{inorderComparer}
         {
         }
-        Rep_ (map<KEY_TYPE, MAPPED_VALUE_TYPE>&& src)
+        Rep_ (STDMAP<>&& src)
             : fData_{move (src)}
         {
         }
@@ -197,7 +196,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 
     private:
-        using DataStructureImplType_ = DataStructures::STLContainerWrapper<map<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_INORDER_COMPARER>>;
+        using DataStructureImplType_ = DataStructures::STLContainerWrapper<STDMAP<KEY_INORDER_COMPARER>>;
         using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
@@ -217,7 +216,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap (map<KEY_TYPE, MAPPED_VALUE_TYPE>&& src)
+    inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap (STDMAP<>&& src)
         : inherited (inherited::template MakeSmartPtr<Rep_<typename map<KEY_TYPE, MAPPED_VALUE_TYPE>::key_compare>> (move (src)))
     {
         AssertRepValidType_ ();

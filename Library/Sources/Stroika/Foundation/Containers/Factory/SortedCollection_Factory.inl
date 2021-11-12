@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Containers::Factory {
      */
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     template <typename T, typename INORDER_COMPARER>
-    atomic<SortedCollection<T> (*) (const INORDER_COMPARER&)> SortedCollection_Factory<T, INORDER_COMPARER>::sFactory_ (nullptr);
+    atomic<SortedCollection<T> (*) (const INORDER_COMPARER&)> SortedCollection_Factory<T, INORDER_COMPARER>::sFactory_{nullptr};
 #endif
     template <typename T, typename INORDER_COMPARER>
     inline SortedCollection_Factory<T, INORDER_COMPARER>::SortedCollection_Factory (const INORDER_COMPARER& inorderComparer)

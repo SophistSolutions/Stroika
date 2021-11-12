@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers::Factory {
      */
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     template <typename T, typename EQUALS_COMPARER>
-    atomic<Set<T> (*) (const EQUALS_COMPARER&)> Set_Factory<T, EQUALS_COMPARER>::sFactory_ (nullptr);
+    atomic<Set<T> (*) (const EQUALS_COMPARER&)> Set_Factory<T, EQUALS_COMPARER>::sFactory_{nullptr};
 #endif
     template <typename T, typename EQUALS_COMPARER>
     inline Set_Factory<T, EQUALS_COMPARER>::Set_Factory (const EQUALS_COMPARER& equalsComparer)
@@ -75,11 +75,11 @@ namespace Stroika::Foundation::Containers::Factory {
     inline Set<T> Set_Factory<T, EQUALS_COMPARER>::Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, ...)
     {
         /*
-            *  Note - though this is not an efficient implementation of Set<> for large sizes,
-            *  its probably the most efficeint representation which adds no requirements to KEY_TYPE,
-            *  such as operator< (or a traits less) or a hash function. And its quite reasonable for
-            *  small Sets's - which are often the case.
-            */
+         *  Note - though this is not an efficient implementation of Set<> for large sizes,
+         *  its probably the most efficeint representation which adds no requirements to KEY_TYPE,
+         *  such as operator< (or a traits less) or a hash function. And its quite reasonable for
+         *  small Sets's - which are often the case.
+         */
         return Concrete::Set_LinkedList<T>{equalsComparer};
     }
 

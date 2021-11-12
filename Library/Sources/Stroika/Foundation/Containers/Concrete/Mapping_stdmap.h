@@ -39,15 +39,23 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         using KeyEqualsCompareFunctionType = typename inherited::KeyEqualsCompareFunctionType;
+        using key_type                     = typename inherited::key_type;
         using value_type                   = typename inherited::value_type;
         using mapped_type                  = typename inherited::mapped_type;
+
+    public:
+        /**
+         *  \brief STDMAP is std::map<> that can be used inside Mapping_stdmap
+         */
+        template <typename KEY_INORDER_COMPARER = less<key_type>>
+        using STDMAP = map<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<pair<const key_type, mapped_type>, sizeof (value_type) <= 1024>>;
 
     public:
         /**
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */
         Mapping_stdmap ();
-        Mapping_stdmap (std::map<KEY_TYPE, MAPPED_VALUE_TYPE>&& src);
+        Mapping_stdmap (STDMAP<>&& src);
         template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> ()>* = nullptr>
         explicit Mapping_stdmap (const KEY_INORDER_COMPARER& inorderComparer);
         Mapping_stdmap (const Mapping_stdmap& src) = default;

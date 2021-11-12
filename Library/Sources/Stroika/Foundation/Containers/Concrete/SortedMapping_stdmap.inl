@@ -10,8 +10,6 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_
 #define _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_
 
-#include <map>
-
 #include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 #include "../STL/Compare.h"
@@ -196,7 +194,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 
     private:
-        using DataStructureImplType_ = DataStructures::STLContainerWrapper<map<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_INORDER_COMPARER>>;
+        using DataStructureImplType_ = DataStructures::STLContainerWrapper<STDMAP<KEY_INORDER_COMPARER>>;
         using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:

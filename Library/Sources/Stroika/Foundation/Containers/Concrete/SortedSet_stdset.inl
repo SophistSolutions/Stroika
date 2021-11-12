@@ -9,8 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include <set>
-
 #include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 
@@ -165,7 +163,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 
     private:
-        using DataStructureImplType_ = DataStructures::STLContainerWrapper<set<value_type, INORDER_COMPARER>>;
+        using DataStructureImplType_ = DataStructures::STLContainerWrapper<STDSET<INORDER_COMPARER>>;
         using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
