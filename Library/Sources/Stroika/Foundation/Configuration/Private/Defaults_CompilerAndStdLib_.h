@@ -1522,6 +1522,18 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 
 #endif
 
+
+#ifndef qCompilerAndStdLib_to_chars_INT_Buggy
+
+#if defined(__clang__) && !defined(__APPLE__)
+#define qCompilerAndStdLib_to_chars_INT_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
+#else
+#define qCompilerAndStdLib_to_chars_INT_Buggy 0
+#endif
+
+#endif
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
