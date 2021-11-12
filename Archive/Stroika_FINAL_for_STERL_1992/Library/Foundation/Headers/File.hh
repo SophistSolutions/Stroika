@@ -15,7 +15,7 @@
  *		PathNames are by default intereptted as ROOT RELATIVE. This can be
  *	overriden by simply making the first pathname component a
  *	CurrentDirectoryPathComponent. This is different from UNIX, and perhaps
- *	slightly differnent from the mac (mac is wierd), and different from DOS.
+ *	slightly differnent from the mac (mac is weird), and different from DOS.
  *	So, the decision deserves an explanation.
  *
  *		Clearly when interpretting a PathName we need some cue to know that

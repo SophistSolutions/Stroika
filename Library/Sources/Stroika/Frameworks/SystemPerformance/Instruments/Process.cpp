@@ -213,7 +213,7 @@ namespace {
             DWORD            cbPrevious = sizeof (tpPrevious);
             ::AdjustTokenPrivileges (hToken, false, &tp, sizeof (tp), &tpPrevious, &cbPrevious);
             if (::GetLastError () != ERROR_SUCCESS) {
-                // wierd but docs for AdjustTokenPrivileges unclear if you can check for failure with return value - or rahter if not updating all privs
+                // weird but docs for AdjustTokenPrivileges unclear if you can check for failure with return value - or rahter if not updating all privs
                 // counts as failure...
                 return false;
             }
@@ -232,7 +232,7 @@ namespace {
             }
             ::AdjustTokenPrivileges (hToken, false, &tpPrevious, cbPrevious, nullptr, nullptr);
             if (::GetLastError () != ERROR_SUCCESS) {
-                // wierd but docs for AdjustTokenPrivileges unclear if you can check for failure with return value - or rahter if not updating all privs
+                // weird but docs for AdjustTokenPrivileges unclear if you can check for failure with return value - or rahter if not updating all privs
                 // counts as failure...
                 return false;
             }

@@ -8,7 +8,7 @@
  *		dealing with default buttons and the mosueless interface. Should be fairly transparent
  *		change since we can do alot in Emily codegen, and Dialog itself. We must implement that when
  *		we get the focus (if we are using mouseless interface) we then also set self as default button.
- *		(May want to parameterize this behaviour, but it is the default). Very wierd. LGP April 2, 1992.
+ *		(May want to parameterize this behaviour, but it is the default). Very weird. LGP April 2, 1992.
  *
  * Changes:
  *	$Log: PushButton.cc,v $

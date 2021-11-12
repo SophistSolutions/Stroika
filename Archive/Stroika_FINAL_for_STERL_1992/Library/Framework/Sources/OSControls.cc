@@ -99,7 +99,7 @@
  *
  *		Revision 1.59  1992/03/16  19:37:50  lewis
  *		"Fix" for textedits appearing and then disapearing in Emily of trying to do
- *		closer to the "right thing" for AdjustWidgetExtent () cuases some other wierd
+ *		closer to the "right thing" for AdjustWidgetExtent () cuases some other weird
  *		bugs with textedit. So disable it, and debug later.
  *
  *		Revision 1.58  1992/03/16  17:28:49  lewis

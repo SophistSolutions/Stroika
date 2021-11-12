@@ -8256,7 +8256,7 @@ with:
         <li>Support new WeakAssert() macro - for almost assertions</li>
         <li>deprecated DirectoryContentsIterator</li>
         <li>deprecated DeleteAllFilesInDirectory since now a cleaner way in stroika and that was never implemented for unix anyhow)- and used WeakAssert in a few places</li>
-        <li>fixed FileSystem::RemoveDirectory and FileSystem::RemoveDirectoryIf () to directly loop deleting and not use system(rm -rf xxx) - the later it turns out was buggy on windows (and produced wierd ...*: cannot remove '': No such file or directory output in regression test 42 on windows</li>
+        <li>fixed FileSystem::RemoveDirectory and FileSystem::RemoveDirectoryIf () to directly loop deleting and not use system(rm -rf xxx) - the later it turns out was buggy on windows (and produced weird ...*: cannot remove '': No such file or directory output in regression test 42 on windows</li>
         <li>assertions now explictly marked noexcept - cannot throw</li>
         <li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a183-{x86-vs2k15,x86-vs2k17,linux-gcc-6.1.0-x64}.txt</li>
         <li>Tested (passed regtests)

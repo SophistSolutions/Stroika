@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  This - so far - only works for GCC.
      *
-     *  This may not work perfectly if you call some wierd malloc variants, or mix __libc_malloc with free (), etc.
+     *  This may not work perfectly if you call some weird malloc variants, or mix __libc_malloc with free (), etc.
      *
      *  \note   You can enable this feature with
      *          ./configure ... --malloc-guard true

@@ -207,7 +207,7 @@ Date		Changer		Log Message
 02/04/92	LGP			Worked on cleanup of menu class - esp realization stuff. Also, fixed worked around bug with MotifOSControls
 						to make TrackPress wait til end of buttonup event before returning (fixed some textedit bugs).
 02/04/92	LGP			Sent in a copy of last Saturdays build with Simone to try on Carls machine and see if it works OK, or
-						if it still has that wierd XOR bug. Sterl working on TE. I added IsNativeMenu () to MenuItem for mactoolkit
+						if it still has that weird XOR bug. Sterl working on TE. I added IsNativeMenu () to MenuItem for mactoolkit
 						as step towards being able to get rid of the distinction between "standard" and "custom" menus -
 						now we should be able to "auto-detect". Still needs lots of work but mostly on mac, and Sterls using that.
   						Made Sequence Append/Prepend non-virtual since we really should do any optimizations for this case in
