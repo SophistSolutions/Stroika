@@ -138,6 +138,11 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
+        using key_type = KEY_TYPE;
+
+    public:
+        /**
+         */
         using KeyExtractorType = function<KEY_TYPE (ArgByValueType<value_type>)>;
 
     public:

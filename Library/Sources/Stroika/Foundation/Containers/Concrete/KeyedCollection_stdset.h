@@ -3,6 +3,8 @@
  */
 #include "../../StroikaPreComp.h"
 
+#include <set>
+
 #include "../KeyedCollection.h"
 
 #ifndef _Stroika_Foundation_Containers_Concrete_KeyedCollection_stdset_h_
@@ -34,7 +36,40 @@ namespace Stroika::Foundation::Containers::Concrete {
         using KeyExtractorType        = typename inherited::KeyExtractorType;
         using KeyEqualityComparerType = typename inherited::KeyEqualityComparerType;
         using KeyType                 = typename inherited::KeyType;
+        using key_type                = typename inherited::key_type;
         using value_type              = typename inherited::value_type;
+
+    public:
+        template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER = less<key_type>>
+        struct SetInOrderComparer {
+            SetInOrderComparer (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& inorderComparer)
+                : fKeyExtractor_{keyExtractor}
+                , fKeyComparer_{inorderComparer}
+            {
+            }
+            int operator() (const value_type& lhs, const KEY_TYPE& rhs) const
+            {
+                return fKeyComparer_ (fKeyExtractor_ (lhs), rhs);
+            };
+            int operator() (const KEY_TYPE& lhs, const value_type& rhs) const
+            {
+                return fKeyComparer_ (lhs, fKeyExtractor_ (rhs));
+            };
+            int operator() (const value_type& lhs, const value_type& rhs) const
+            {
+                return fKeyComparer_ (fKeyExtractor_ (lhs), fKeyExtractor_ (rhs));
+            };
+            [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_EXTRACTOR        fKeyExtractor_;
+            [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_INORDER_COMPARER fKeyComparer_;
+            using is_transparent = int; // see https://en.cppreference.com/w/cpp/container/set/find - allows overloads to lookup by key
+        };
+
+    public:
+        /**
+         *  \brief STDSET is std::set<> that can be used inside KeyedCollection_stdset
+         */
+        template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER = less<key_type>>
+        using STDSET = set<value_type, SetInOrderComparer<KEY_EXTRACTOR, KEY_INORDER_COMPARER>, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<value_type, sizeof (value_type) <= 1024>>;
 
     public:
         template <typename KEY_INORDER_COMPARER = less<KEY_TYPE>,

@@ -10,8 +10,6 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_KeyedCollection_stdset_inl_
 #define _Stroika_Foundation_Containers_Concrete_KeyedCollection_stdset_inl_
 
-#include <set>
-
 #include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
 #include "../STL/Compare.h"
@@ -49,7 +47,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Rep_ (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& inorderComparer)
             : fKeyExtractor_{keyExtractor}
             , fKeyComparer_{inorderComparer}
-            , fData_{SetInOrderComparer_{keyExtractor, inorderComparer}}
+            , fData_{SetInOrderComparer{keyExtractor, inorderComparer}}
         {
         }
         Rep_ (const Rep_& from) = default;
@@ -186,30 +184,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 
     private:
-        struct SetInOrderComparer_ {
-            SetInOrderComparer_ (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& inorderComparer)
-                : fKeyExtractor_{keyExtractor}
-                , fKeyComparer_{inorderComparer}
-            {
-            }
-            int operator() (const value_type& lhs, const KEY_TYPE& rhs) const
-            {
-                return fKeyComparer_ (fKeyExtractor_ (lhs), rhs);
-            };
-            int operator() (const KEY_TYPE& lhs, const value_type& rhs) const
-            {
-                return fKeyComparer_ (lhs, fKeyExtractor_ (rhs));
-            };
-            int operator() (const value_type& lhs, const value_type& rhs) const
-            {
-                return fKeyComparer_ (fKeyExtractor_ (lhs), fKeyExtractor_ (rhs));
-            };
-            [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_EXTRACTOR        fKeyExtractor_;
-            [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_INORDER_COMPARER fKeyComparer_;
-            using is_transparent = int; // see https://en.cppreference.com/w/cpp/container/set/find - allows overloads to lookup by key
-        };
-
-        using DataStructureImplType_ = DataStructures::STLContainerWrapper<set<value_type, SetInOrderComparer_>>;
+        using DataStructureImplType_ = DataStructures::STLContainerWrapper<STDSET<KEY_EXTRACTOR, KEY_INORDER_COMPARER>>;
         using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
