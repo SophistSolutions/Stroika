@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          *  \brief STDMAP is std::map<> that can be used inside MultiSet_stdmap
          */
-        template <typename INORDER_COMPARER = less<key_type>>
+        template <typename INORDER_COMPARER = less<T>>
         using STDMAP = map<T, CounterType, INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<pair<const T, CounterType>, sizeof (value_type) <= 1024>>;
 
     public:
