@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Characters {
     T String2Float (const wchar_t* start, const wchar_t* end)
     {
         Require (start != nullptr and end != nullptr and start != end);
-#if qCompilerAndStdLib_to_chars_FP_Buggy || qCompilerAndStdLib_from_chars_FP_Precision_Buggy
+#if qCompilerAndStdLib_to_chars_FP_Buggy or qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
         return String2Float (String{start, end});
 #else
         /*
