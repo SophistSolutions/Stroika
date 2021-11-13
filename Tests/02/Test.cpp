@@ -940,11 +940,7 @@ namespace {
         template <typename FLOAT_TYPE>
         void Verify_FloatStringRoundtripNearlyEquals_ (FLOAT_TYPE l)
         {
-#if qCompilerAndStdLib_to_chars_FP_Precision_Buggy
-            VerifyTestResult (Math::NearlyEquals (l, Characters::String2Float<FLOAT_TYPE> (Float2String (l, Float2StringOptions::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 2}))));
-#else
             VerifyTestResult (Math::NearlyEquals (l, Characters::String2Float<FLOAT_TYPE> (Float2String (l, Float2StringOptions::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 1}))));
-#endif
         }
     }
     void Test21_StringToIntEtc_ ()

@@ -1562,12 +1562,12 @@ int main ()
     test (f, sbPrecision);
     return 0;
 }*/
-#ifndef qCompilerAndStdLib_to_chars_FP_Precision_Buggy
+#ifndef qCompilerAndStdLib_from_chars_FP_Precision_Buggy
 #if defined(__GNUC__) && !defined(__clang__)
 // according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11
-#define qCompilerAndStdLib_to_chars_FP_Precision_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
+#define qCompilerAndStdLib_from_chars_FP_Precision_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
 #else
-#define qCompilerAndStdLib_to_chars_FP_Precision_Buggy 0
+#define qCompilerAndStdLib_from_chars_FP_Precision_Buggy 0
 #endif
 #endif
 
