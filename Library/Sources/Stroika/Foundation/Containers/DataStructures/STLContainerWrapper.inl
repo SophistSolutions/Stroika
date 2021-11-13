@@ -10,6 +10,23 @@
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
+    namespace Private_ {
+        template <typename T, typename A>
+        constexpr bool IsStdForwardList_ (forward_list<T, A>*)
+        {
+            return true;
+        }
+        constexpr bool IsStdForwardList_ (...)
+        {
+            return false;
+        }
+        template <typename T>
+        constexpr bool IsStdForwardList ()
+        {
+            return IsStdForwardList_ ((T*)nullptr);
+        }
+    }
+
 // Would like to leave on by default but we just added and cannot afford to have debug builds get that slow
 #ifndef qStroika_Foundation_Containers_DataStructures_STLContainerWrapper_IncludeSlowDebugChecks_
 #define qStroika_Foundation_Containers_DataStructures_STLContainerWrapper_IncludeSlowDebugChecks_ 0
@@ -105,9 +122,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename STL_CONTAINER_OF_T>
     inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness (const_iterator it) -> iterator
     {
-        using value_type = typename STL_CONTAINER_OF_T::value_type;
         // http://stackoverflow.com/questions/765148/how-to-remove-constness-of-const-iterator
-        if constexpr (is_same_v<STL_CONTAINER_OF_T, forward_list<value_type>>) {
+        if constexpr (Private_::IsStdForwardList<STL_CONTAINER_OF_T> ()) {
             return this->erase_after (it, it);
         }
         else {
