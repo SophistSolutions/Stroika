@@ -122,7 +122,11 @@
 			"__tuple": "cpp",
 			"coroutine": "cpp",
 			"queue": "cpp",
-			"stack": "cpp"
+			"stack": "cpp",
+			"ranges": "cpp",
+			"span": "cpp",
+			"charconv": "cpp",
+			"scoped_allocator": "cpp"
 		},
 		"git.ignoreLimitWarning": true,
 		"files.watcherExclude": {
