@@ -26,8 +26,6 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
     class KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::IImplRepBase_ : public KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep {
-    private:
-        using inherited = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep;
     };
 
     /*
@@ -38,20 +36,28 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER>
     class KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EXTRACTOR, KEY_INORDER_COMPARER>> {
+    public:
+        static_assert (not is_reference_v<KEY_EXTRACTOR>);
+        static_assert (not is_reference_v<KEY_INORDER_COMPARER>);
+
     private:
         using inherited = IImplRepBase_;
+
+    private:
         [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_EXTRACTOR        fKeyExtractor_;
         [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_INORDER_COMPARER fKeyComparer_;
 
     public:
         Rep_ (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& inorderComparer)
+            // clang-format off
             : fKeyExtractor_{keyExtractor}
-            , fKeyComparer_{inorderComparer}
+            , fKeyComparer_ {  inorderComparer }
             #if qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
             , fData_{SetInOrderComparer<KEY_EXTRACTOR,KEY_INORDER_COMPARER>{keyExtractor, inorderComparer}}
             #else
             , fData_{SetInOrderComparer{keyExtractor, inorderComparer}}
             #endif
+        // clang-format on
         {
         }
         Rep_ (const Rep_& from) = default;
@@ -217,7 +223,11 @@ namespace Stroika::Foundation::Containers::Concrete {
               enable_if_t<
                   Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
     KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdset (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer)
-        : inherited (inherited::template MakeSmartPtr<Rep_<KEY_EXTRACTOR, KEY_INORDER_COMPARER>> (forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_INORDER_COMPARER> (keyComparer)))
+#if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_20
+        : inherited (inherited::template MakeSmartPtr<Rep_<remove_cv_t<remove_reference_t<KEY_EXTRACTOR>>, remove_cv_t<remove_reference_t<KEY_INORDER_COMPARER>>>> (forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_INORDER_COMPARER> (keyComparer)))
+#else
+        : inherited (inherited::template MakeSmartPtr<Rep_<remove_cvref_t<KEY_EXTRACTOR>, remove_cvref_t<KEY_INORDER_COMPARER>>> (forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_INORDER_COMPARER> (keyComparer)))
+#endif
     {
         AssertRepValidType_ ();
     }

@@ -24,8 +24,6 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     class Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::IImplRepBase_ : public Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep {
-    private:
-        using inherited = typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep;
     };
 
     /*

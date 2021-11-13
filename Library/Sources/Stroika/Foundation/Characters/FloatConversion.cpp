@@ -241,12 +241,12 @@ namespace {
 }
 String Characters::Float2String (float f, const Float2StringOptions& options)
 {
-    return Float2String_<long double> (f, options);
+    return Float2String_<float> (f, options);
 }
 
 String Characters::Float2String (double f, const Float2StringOptions& options)
 {
-    return Float2String_<long double> (f, options);
+    return Float2String_<double> (f, options);
 }
 
 String Characters::Float2String (long double f, const Float2StringOptions& options)

@@ -24,9 +24,6 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename TRAITS>
     class MultiSet_Array<T, TRAITS>::IImplRepBase_ : public MultiSet<T, TRAITS>::_IRep {
-    private:
-        using inherited = typename MultiSet<T, TRAITS>::_IRep;
-
     public:
         virtual size_t GetCapacity () const              = 0;
         virtual void   SetCapacity (size_t slotsAlloced) = 0;

@@ -3,6 +3,8 @@
  */
 #include "../../StroikaPreComp.h"
 
+#include <map>
+
 #include "../MultiSet.h"
 
 #ifndef _Stroika_Foundation_Containers_Concrete_MultiSet_stdmap_h_
@@ -31,6 +33,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         using CounterType                 = typename inherited::CounterType;
         using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
         using value_type                  = typename inherited::value_type;
+
+    public:
+        /**
+         *  \brief STDMAP is std::map<> that can be used inside MultiSet_stdmap
+         */
+        template <typename INORDER_COMPARER = less<T>>
+        using STDMAP = map<T, CounterType, INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<pair<const T, CounterType>, sizeof (value_type) <= 1024>>;
 
     public:
         /**
