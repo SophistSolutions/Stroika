@@ -1509,15 +1509,15 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 
 #if defined(_MSC_VER)
 #define qCompilerAndStdLib_to_chars_FP_Buggy (_MSC_VER < _MSC_VER_2k19_16Pt0_)
+#elif defined(__GNUC__) && !defined(__clang__)
+// according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11
+#define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 10)
 #elif defined(__clang__) && defined(__APPLE__)
 // according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
 #define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
 // according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
 #define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
-#elif defined(__GNUC__) && !defined(__clang__)
-// according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11
-#define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 10)
 #else
 #define qCompilerAndStdLib_to_chars_FP_Buggy 0
 #endif
