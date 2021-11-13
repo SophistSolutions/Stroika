@@ -1524,6 +1524,56 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 
 #endif
 
+
+
+
+/*
+#include <cassert>
+#include <charconv>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <limits>
+
+using namespace std;
+
+int main ()
+{
+    using FLOAT_TYPE = float;
+    auto f = numeric_limits<FLOAT_TYPE>::min ();
+    auto sbPrecision = numeric_limits<FLOAT_TYPE>::digits10 + 1;
+    assert (sbPrecision == 7);
+    auto test = [] (FLOAT_TYPE f, int precision) {
+        char fAsString[1024];
+        auto r1 = to_chars (fAsString, fAsString + sizeof(fAsString), f, chars_format::general, precision);
+        *r1.ptr = 0;
+        if (precision == 7) {
+            assert (r1.ptr-fAsString == 12);
+            assert (strcmp (fAsString, "1.175494e-38") == 0);
+        }
+        // now complete roundtrip
+        FLOAT_TYPE r2 = 0;
+        auto [ptr, ec] = from_chars (fAsString, fAsString + sizeof(fAsString), r2);
+        auto f3 = strtof (fAsString, nullptr);
+        cerr << "precision " << precision << ", strtof =" << f3 << " and r2=" << r2 << "\n";
+        assert (r2 == f);
+    };
+    test (f, sbPrecision+1);
+    test (f, sbPrecision);
+    return 0;
+}*/
+#ifndef qCompilerAndStdLib_to_chars_FP_Precision_Buggy
+#if defined(__GNUC__) && !defined(__clang__)
+// according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11
+#define qCompilerAndStdLib_to_chars_FP_Precision_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
+#else
+#define qCompilerAndStdLib_to_chars_FP_Precision_Buggy 0
+#endif
+#endif
+
+
+
+
 #ifndef qCompilerAndStdLib_to_chars_INT_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
