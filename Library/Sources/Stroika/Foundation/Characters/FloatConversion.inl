@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     constexpr Float2StringOptions::Precision::Precision (unsigned int p)
-        : fPrecision (p)
+        : fPrecision{p}
     {
     }
     constexpr Float2StringOptions::Precision kDefaultPrecision{6};
@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename... ARGS>
     inline Float2StringOptions::Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2, ARGS&&... args)
-        : Float2StringOptions (Float2StringOptions{b1, b2}, forward<ARGS> (args)...)
+        : Float2StringOptions{Float2StringOptions{b1, b2}, forward<ARGS> (args)...}
     {
     }
     inline optional<unsigned int> Float2StringOptions::GetPrecision () const
