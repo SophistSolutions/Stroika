@@ -43,8 +43,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          *  \brief STDFORWARDLIST is std::forward_list<> that can be used inside Collection_stdforward_list
          */
-        //using STDFORWARDLIST = forward_list<value_type, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<value_type, sizeof (value_type) <= 1024>>;
-        using STDFORWARDLIST = forward_list<value_type>; // above didn't work - must debug...
+        using STDFORWARDLIST = forward_list<value_type, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<value_type, sizeof (value_type) <= 1024>>;
 
     public:
         /**
