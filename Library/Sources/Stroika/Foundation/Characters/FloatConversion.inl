@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Characters {
     {
     }
     inline FloatConversion::ToStringOptions::ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2)
-        : Float2StringOptions{b1}
+        : ToStringOptions{b1}
     {
         Memory::CopyToIf (&fPrecision_, b2.fPrecision_);
         Memory::CopyToIf (&fFmtFlags_, b2.fFmtFlags_);
@@ -175,16 +175,16 @@ namespace Stroika::Foundation::Characters {
 
             {
                 optional<ios_base::fmtflags> useFloatField;
-                switch (options.GetFloatFormat ().value_or (Float2StringOptions::FloatFormatType::eDEFAULT)) {
-                    case Float2StringOptions::FloatFormatType::eScientific:
+                switch (options.GetFloatFormat ().value_or (FloatConversion::ToStringOptions::FloatFormatType::eDEFAULT)) {
+                    case FloatConversion::ToStringOptions::FloatFormatType::eScientific:
                         useFloatField = ios_base::scientific;
                         break;
-                    case Float2StringOptions::FloatFormatType::eDefaultFloat:
+                    case FloatConversion::ToStringOptions::FloatFormatType::eDefaultFloat:
                         break;
-                    case Float2StringOptions::FloatFormatType::eFixedPoint:
+                    case FloatConversion::ToStringOptions::FloatFormatType::eFixedPoint:
                         useFloatField = ios_base::fixed;
                         break;
-                    case Float2StringOptions::FloatFormatType::eAutomatic: {
+                    case FloatConversion::ToStringOptions::FloatFormatType::eAutomatic: {
                         bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
                         if (useScientificNotation) {
                             useFloatField = ios_base::scientific;
@@ -213,7 +213,7 @@ namespace Stroika::Foundation::Characters {
                 (not options.GetUseLocale () and not options.GetIOSFmtFlags () and not options.GetFloatFormat ())
                     ? Private_::ToString_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetPrecision ().value_or (FloatConversion::ToStringOptions::kDefaultPrecision.fPrecision))
                     : ToString_GeneralCase_ (f, options);
-            if (options.GetTrimTrailingZeros ().value_or (Float2StringOptions::kDefaultTrimTrailingZeros)) {
+            if (options.GetTrimTrailingZeros ().value_or (FloatConversion::ToStringOptions::kDefaultTrimTrailingZeros)) {
                 TrimTrailingZeros_ (&result);
             }
             Ensure (String::EqualsComparer{CompareOptions::eCaseInsensitive}(result, Legacy_Float2String_ (f, options)));
