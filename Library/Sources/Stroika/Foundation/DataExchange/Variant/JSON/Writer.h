@@ -82,7 +82,7 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
 
             /**
              */
-            optional<Characters::Float2StringOptions> fFloatOptions;
+            optional<Characters::FloatConversion::ToStringOptions> fFloatOptions;
 
             /**
              *  This defaults to 4. If fJSONPrettyPrint evaluates false, then this is ignored.

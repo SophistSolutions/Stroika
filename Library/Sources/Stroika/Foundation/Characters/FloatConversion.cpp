@@ -30,15 +30,15 @@ using namespace Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
- **************************** Float2StringOptions *******************************
+ **************************** FloatConversion::ToStringOptions *******************************
  ********************************************************************************
  */
-Float2StringOptions::Float2StringOptions (UseCurrentLocale)
+FloatConversion::ToStringOptions::ToStringOptions (UseCurrentLocale)
     : fUseLocale_{locale{}}
 {
 }
 
-String Float2StringOptions::ToString () const
+String FloatConversion::ToStringOptions::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
@@ -67,27 +67,6 @@ String Float2StringOptions::ToString () const
   ********************************************************************************
   */
 namespace {
-    inline void TrimTrailingZeros_ (String* strResult)
-    {
-        RequireNotNull (strResult);
-        // strip trailing zeros - except for the last first one after the decimal point.
-        // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!
-        bool hasE = strResult->Find ('e', CompareOptions::eCaseInsensitive).has_value ();
-        //Assert (hasE == (strResult->find ('e') != String::npos or strResult->find ('E') != String::npos));
-        if (not hasE) {
-            size_t pastDot = strResult->find ('.');
-            if (pastDot != String::npos) {
-                pastDot++;
-                size_t pPastLastZero = strResult->length ();
-                for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
-                    if ((*strResult)[pPastLastZero - 1] != '0') {
-                        break;
-                    }
-                }
-                *strResult = strResult->SubString (0, pPastLastZero);
-            }
-        }
-    }
     inline char* mkFmtWithPrecisionArg_ (char* formatBufferStart, [[maybe_unused]] char* formatBufferEnd, char _Spec)
     {
         char* fmtPtr = formatBufferStart;
@@ -128,13 +107,13 @@ namespace {
         Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
         String tmp = String::FromASCII (buf.begin (), buf.begin () + resultStrLen);
         if (trimTrailingZeros) {
-            TrimTrailingZeros_ (&tmp);
+            Characters::Private_::TrimTrailingZeros_ (&tmp);
         }
         return tmp;
     }
 
     template <typename FLOAT_TYPE>
-    inline String Float2String_GenericCase_ (FLOAT_TYPE f, const Float2StringOptions& options)
+    inline String Float2String_GenericCase_ (FLOAT_TYPE f, const FloatConversion::ToStringOptions& options)
     {
         Require (not isnan (f));
         Require (not isinf (f));
@@ -154,21 +133,21 @@ namespace {
         s.flags (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_));
 
         // todo must set default precision because of the thread_local thing
-        unsigned int usePrecision = options.GetPrecision ().value_or (kDefaultPrecision.fPrecision);
+        unsigned int usePrecision = options.GetPrecision ().value_or (FloatConversion::ToStringOptions::kDefaultPrecision.fPrecision);
         s.precision (usePrecision);
 
         {
             optional<ios_base::fmtflags> useFloatField;
-            switch (options.GetFloatFormat ().value_or (Float2StringOptions::FloatFormatType::eDEFAULT)) {
-                case Float2StringOptions::FloatFormatType::eScientific:
+            switch (options.GetFloatFormat ().value_or (FloatConversion::ToStringOptions::FloatFormatType::eDEFAULT)) {
+                case FloatConversion::ToStringOptions::FloatFormatType::eScientific:
                     useFloatField = ios_base::scientific;
                     break;
-                case Float2StringOptions::FloatFormatType::eDefaultFloat:
+                case FloatConversion::ToStringOptions::FloatFormatType::eDefaultFloat:
                     break;
-                case Float2StringOptions::FloatFormatType::eFixedPoint:
+                case FloatConversion::ToStringOptions::FloatFormatType::eFixedPoint:
                     useFloatField = ios_base::fixed;
                     break;
-                case Float2StringOptions::FloatFormatType::eAutomatic: {
+                case FloatConversion::ToStringOptions::FloatFormatType::eAutomatic: {
                     bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
                     if (useScientificNotation) {
                         useFloatField = ios_base::scientific;
@@ -189,13 +168,13 @@ namespace {
         s << f;
 
         String tmp = options.GetUseLocale () ? String::FromNarrowString (s.str (), *options.GetUseLocale ()) : String::FromASCII (s.str ());
-        if (options.GetTrimTrailingZeros ().value_or (Float2StringOptions::kDefaultTrimTrailingZeros)) {
-            TrimTrailingZeros_ (&tmp);
+        if (options.GetTrimTrailingZeros ().value_or (FloatConversion::ToStringOptions::kDefaultTrimTrailingZeros)) {
+            Characters::Private_::TrimTrailingZeros_ (&tmp);
         }
         return tmp;
     }
     template <typename FLOAT_TYPE>
-    inline String Float2String_ (FLOAT_TYPE f, const Float2StringOptions& options)
+    inline String Float2String_ (FLOAT_TYPE f, const FloatConversion::ToStringOptions& options)
     {
         switch (fpclassify (f)) {
             case FP_INFINITE: {
@@ -231,7 +210,7 @@ namespace {
         [[maybe_unused]] constexpr bool kUsePerformanceOptimizedCases_ = true;
         if constexpr (kUsePerformanceOptimizedCases_) {
             if (not options.GetUseLocale ().has_value () and not options.GetIOSFmtFlags ().has_value () and not options.GetFloatFormat ().has_value ()) {
-                auto result = Float2String_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetPrecision ().value_or (kDefaultPrecision.fPrecision), options.GetTrimTrailingZeros ().value_or (Float2StringOptions::kDefaultTrimTrailingZeros));
+                auto result = Float2String_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetPrecision ().value_or (FloatConversion::ToStringOptions::kDefaultPrecision.fPrecision), options.GetTrimTrailingZeros ().value_or (FloatConversion::ToStringOptions::kDefaultTrimTrailingZeros));
                 Ensure (result == Float2String_GenericCase_<FLOAT_TYPE> (f, options));
                 return result;
             }
@@ -239,17 +218,41 @@ namespace {
         return Float2String_GenericCase_<FLOAT_TYPE> (f, options);
     }
 }
-String Characters::Float2String (float f, const Float2StringOptions& options)
+#if 0
+String Characters::Float2String (float f, const FloatConversion::ToStringOptions& options)
 {
+    Assert (Float2String_<float> (f, options) == FloatConversion::ToString (f, options));
     return Float2String_<float> (f, options);
 }
 
-String Characters::Float2String (double f, const Float2StringOptions& options)
+String Characters::Float2String (double f, const FloatConversion::ToStringOptions& options)
 {
+    Assert (Float2String_<double> (f, options) == FloatConversion::ToString (f, options));
     return Float2String_<double> (f, options);
 }
 
-String Characters::Float2String (long double f, const Float2StringOptions& options)
+String Characters::Float2String (long double f, const FloatConversion::ToStringOptions& options)
+{
+    Assert (String::EqualsComparer{CompareOptions::eCaseInsensitive}(Float2String_<long double> (f, options), FloatConversion::ToString (f, options)));
+    return Float2String_<long double> (f, options);
+}
+#endif
+
+/*
+ ********************************************************************************
+ *************************** Characters::Private_::Legacy_Float2String_ *********************************
+ ********************************************************************************
+ */
+
+String Characters::Private_::Legacy_Float2String_ (float f, const FloatConversion::ToStringOptions& options)
+{
+    return Float2String_<float> (f, options);
+}
+String Characters::Private_::Legacy_Float2String_ (double f, const FloatConversion::ToStringOptions& options)
+{
+    return Float2String_<double> (f, options);
+}
+String Characters::Private_::Legacy_Float2String_ (long double f, const FloatConversion::ToStringOptions& options)
 {
     return Float2String_<long double> (f, options);
 }
@@ -344,7 +347,7 @@ namespace Stroika::Foundation::Characters {
 #else
         auto result = String2Float_NewLogic_<float> (s);
 #if qDebug
-        static_assert (Math::nan<float> () != Math::nan<float> ());
+        //static_assert (Math::nan<float> () != Math::nan<float> ());
         Ensure ((result == String2Float_LegacyStr2D_<float> (s)) or isnan (result));
 #endif
         return result;

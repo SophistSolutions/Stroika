@@ -941,10 +941,10 @@ namespace {
         void Verify_FloatStringRoundtripNearlyEquals_ (FLOAT_TYPE l)
         {
             if constexpr (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
-                VerifyTestResult (Math::NearlyEquals (l, Characters::String2Float<FLOAT_TYPE> (Float2String (l, Float2StringOptions::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 2}))));
+                VerifyTestResult (Math::NearlyEquals (l, Characters::String2Float<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::ToStringOptions::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 2}))));
             }
             else {
-                VerifyTestResult (Math::NearlyEquals (l, Characters::String2Float<FLOAT_TYPE> (Float2String (l, Float2StringOptions::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 1}))));
+                VerifyTestResult (Math::NearlyEquals (l, Characters::String2Float<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::ToStringOptions::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 1}))));
             }
         }
     }
@@ -1019,8 +1019,8 @@ namespace {
             VerifyTestResult (Math::NearlyEquals (String2Float<double> (String{L"44.4333"}), 44.4333));
         }
         [[maybe_unused]] auto runLocaleIndepTest = [] () {
-            VerifyTestResult (Float2String (3000.5) == L"3000.5");
-            VerifyTestResult (Float2String (30000.5) == L"30000.5");
+            VerifyTestResult (FloatConversion::ToString (3000.5) == L"3000.5");
+            VerifyTestResult (FloatConversion::ToString (30000.5) == L"30000.5");
         };
         {
             // Verify change of locale has no effect on results
@@ -1081,13 +1081,13 @@ namespace {
     void Test24_Float2String ()
     {
         Debug::TraceContextBumper ctx{L"Test24_Float2String"};
-        VerifyTestResult (Float2String (0.0) == L"0");
-        VerifyTestResult (Float2String (3000.5) == L"3000.5");
-        VerifyTestResult (Float2String (3000.500) == L"3000.5");
-        VerifyTestResult (Float2String (3.1234, Characters::Float2StringOptions::Precision (2)) == L"3.1");
-        VerifyTestResult (Float2String (3.1234, Characters::Float2StringOptions::Precision (3)) == L"3.12");
-        VerifyTestResult (Float2String (31.234, Characters::Float2StringOptions::Precision (3)) == L"31.2");
-        VerifyTestResult (Float2String (30707548160.0) == L"3.07075e+10");
+        VerifyTestResult (FloatConversion::ToString (0.0) == L"0");
+        VerifyTestResult (FloatConversion::ToString (3000.5) == L"3000.5");
+        VerifyTestResult (FloatConversion::ToString (3000.500) == L"3000.5");
+        VerifyTestResult (FloatConversion::ToString (3.1234, Characters::Float2StringOptions::Precision (2)) == L"3.1");
+        VerifyTestResult (FloatConversion::ToString (3.1234, Characters::Float2StringOptions::Precision (3)) == L"3.12");
+        VerifyTestResult (FloatConversion::ToString (31.234, Characters::Float2StringOptions::Precision (3)) == L"31.2");
+        VerifyTestResult (FloatConversion::ToString (30707548160.0) == L"3.07075e+10");
     }
 }
 

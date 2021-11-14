@@ -39,11 +39,11 @@ namespace {
                 fIndentSpace = String{L" "sv}.Repeat (fSpacesPerIndent);
             }
         }
-        Characters::Float2StringOptions fFloatOptions;
-        bool                            fJSONPrettyPrint;
-        unsigned int                    fSpacesPerIndent;
-        String                          fIndentSpace;
-        bool                            fAllowNANInf;
+        Characters::FloatConversion::ToStringOptions fFloatOptions;
+        bool                                         fJSONPrettyPrint;
+        unsigned int                                 fSpacesPerIndent;
+        String                                       fIndentSpace;
+        bool                                         fAllowNANInf;
     };
 }
 
@@ -99,7 +99,7 @@ namespace {
     void PrettyPrint_ (const Options_& options, const String& v, const OutputStream<Character>::Ptr& out);
     void PrettyPrint_ (const Options_& options, long double v, const OutputStream<Character>::Ptr& out)
     {
-        String tmp{Characters::Float2String (v, options.fFloatOptions)};
+        String tmp{Characters::FloatConversion::ToString (v, options.fFloatOptions)};
         if (isnan (v) or isinf (v)) {
             Require (options.fAllowNANInf);
             PrettyPrint_ (options, tmp, out);

@@ -145,7 +145,7 @@ namespace {
         //const char    kOneTab_[]  =   "      ";
         const char kOneTab_[] = "\t";
         {
-            Float2StringOptions fo = Float2StringOptions{Float2StringOptions::TrimTrailingZerosType::eDontTrim, Float2StringOptions::Precision (2)};
+            FloatConversion::ToStringOptions fo = FloatConversion::ToStringOptions{FloatConversion::ToStringOptions::TrimTrailingZerosType::eDontTrim, FloatConversion::ToStringOptions::Precision (2)};
             outTo << kOneTab_ << "PERFORMANCE_SCORE" << kOneTab_ << Float2String (performanceScore, fo).AsNarrowSDKString () << endl;
         }
         outTo << kOneTab_ << "DETAILS:         " << kOneTab_;

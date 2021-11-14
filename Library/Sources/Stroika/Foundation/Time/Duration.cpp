@@ -272,7 +272,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         if (timeLeft > 0) {
             // DO nano, micro, milliseconds here
 
-            static const Float2StringOptions kFinalFloatOptions_{Float2StringOptions::eTrimZeros};
+            static const FloatConversion::ToStringOptions kFinalFloatOptions_{FloatConversion::ToStringOptions::eTrimZeros};
 
             static constexpr bool kFirstSubSecondUnitDoDecimalPlaceImmediately_{true};
 
@@ -284,7 +284,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                     result += kCommaSpace_;
                 }
                 if (kFirstSubSecondUnitDoDecimalPlaceImmediately_) {
-                    result += Characters::Float2String (timeLeft * 1.0e3, kFinalFloatOptions_) + kSpaceBeforeUnit_ + lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nMilliseconds);
+                    result += Characters::FloatConversion::ToString (timeLeft * 1.0e3, kFinalFloatOptions_) + kSpaceBeforeUnit_ + lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nMilliseconds);
                     timeLeft = 0;
                 }
                 else {
@@ -298,7 +298,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                     result += kCommaSpace_;
                 }
                 if (kFirstSubSecondUnitDoDecimalPlaceImmediately_) {
-                    result += Characters::Float2String (timeLeft * 1.0e6, kFinalFloatOptions_) + kSpaceBeforeUnit_ + lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nMicroSeconds);
+                    result += Characters::FloatConversion::ToString (timeLeft * 1.0e6, kFinalFloatOptions_) + kSpaceBeforeUnit_ + lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nMicroSeconds);
                     timeLeft = 0;
                 }
                 else {
@@ -312,7 +312,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                     result += kCommaSpace_;
                 }
                 if (kFirstSubSecondUnitDoDecimalPlaceImmediately_) {
-                    result += Characters::Float2String (timeLeft * 1.0e9, kFinalFloatOptions_) + kSpaceBeforeUnit_ + lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, nNanoSeconds);
+                    result += Characters::FloatConversion::ToString (timeLeft * 1.0e9, kFinalFloatOptions_) + kSpaceBeforeUnit_ + lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, nNanoSeconds);
                     timeLeft = 0;
                 }
                 else {

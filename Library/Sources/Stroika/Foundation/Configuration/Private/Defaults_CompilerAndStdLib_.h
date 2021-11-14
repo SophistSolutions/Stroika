@@ -1524,9 +1524,6 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 
 #endif
 
-
-
-
 /*
 #include <cassert>
 #include <charconv>
@@ -1570,9 +1567,6 @@ int main ()
 #define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy 0
 #endif
 #endif
-
-
-
 
 #ifndef qCompilerAndStdLib_to_chars_INT_Buggy
 

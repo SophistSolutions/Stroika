@@ -223,7 +223,7 @@ namespace Stroika::Foundation::Characters {
         template <typename T>
         inline String ToString_ (const T& t, enable_if_t<is_floating_point_v<T>>* = 0)
         {
-            return Float2String (t);
+            return FloatConversion::ToString (t);
         }
         template <typename T>
         inline String ToString_ (const shared_ptr<T>& pt)
