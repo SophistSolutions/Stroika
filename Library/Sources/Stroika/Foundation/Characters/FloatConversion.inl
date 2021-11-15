@@ -360,7 +360,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             if (String::AsASCIIQuietly (start, end, &asciiS)) {
                 auto b = asciiS.begin ();
                 auto e = asciiS.end ();
-                if (b != e and *b == '+') {
+                if (b != e and *b == '+') [[UNLIKELY_ATTR]] {
                     b++; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
                 }
                 auto [ptr, ec] = from_chars (b, e, result);
@@ -368,7 +368,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     return *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
                 }
                 // if error or trailing crap - return nan
-                if (ec != std::errc{} or ptr != e) {
+                if (ec != std::errc{} or ptr != e) [[UNLIKELY_ATTR]] {
                     result = Math::nan<T> ();
                 }
             }
@@ -410,16 +410,26 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             if (String::AsASCIIQuietly (start, end, &asciiS)) {
                 auto b = asciiS.begin ();
                 auto e = asciiS.end ();
-                if (b != e and *b == '+') {
+                if (b != e and *b == '+') [[UNLIKELY_ATTR]] {
                     b++; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
                 }
                 auto [ptr, ec] = from_chars (b, e, result);
                 if (ec == errc::result_out_of_range) [[UNLIKELY_ATTR]] {
                     return *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
                 }
-                // if error or trailing crap - return nan
-                if (ec != std::errc{} or ptr != e) {
+                // if error - return nan
+                if (ec != std::errc{}) [[UNLIKELY_ATTR]] {
                     result = Math::nan<T> ();
+                }
+                // If asked to return remainder do so.
+                // If NOT asked to return remainder, treat not using the entire string as forcing result to be a Nan (invalid parse of number of not the whole thing is a number)
+                if (remainder == nullptr) [[LIKELY_ATTR]] {
+                    if (ptr != e) [[UNLIKELY_ATTR]] {
+                        result = Math::nan<T> ();
+                    }
+                }
+                else {
+                    *remainder = ptr - b + start; // adjust in case we remapped data
                 }
             }
             else {
