@@ -111,15 +111,15 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 size_t pastDot = strResult->find ('.');
                 if (pastDot != String::npos) {
                     pastDot++;
-                    size_t len = strResult->length ();
+                    size_t len           = strResult->length ();
                     size_t pPastLastZero = len;
                     for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
                         if ((*strResult)[pPastLastZero - 1] != '0') {
                             break;
                         }
                     }
-                    if (len != pPastLastZero) [[UNLIKELY_ATTR]] {   // check common case of no change, but this substring and assign already pretty optimized (not sure helps performance)
-                        *strResult = strResult->SubString (0, pPastLastZero); 
+                    if (len != pPastLastZero) [[UNLIKELY_ATTR]] { // check common case of no change, but this substring and assign already pretty optimized (not sure helps performance)
+                        *strResult = strResult->SubString (0, pPastLastZero);
                     }
                 }
             }
