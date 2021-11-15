@@ -1560,9 +1560,9 @@ int main ()
     return 0;
 }*/
 #ifndef qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
-#if defined(__GNUC__) && !defined(__clang__)
-// according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11
-#define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
+#if defined(__GLIBCXX__)
+// according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11 (library so affects clang too if built with glibc)
+#define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GLIBCXX__ <= GLIBCXX_11x_)
 #else
 #define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy 0
 #endif
