@@ -212,7 +212,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 resultStrLen = ::snprintf (buf, buf.size (), mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), is_same_v<FLOAT_TYPE, long double> ? 'L' : '\0'), (int)precision, f);
             }
             else {
-                // THIS #if test should NOT be needed but g++ 9 didn't properly respect if constexpr
+                // THIS #if test should NOT be needed but g++ 9 didn't properly respect if constexpr (link errors)
 #if !qCompilerAndStdLib_to_chars_FP_Buggy
                 // empirically, on MSVC, this is much faster (appears 3x apx faster) -- LGP 2021-11-04
                 resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, precision).ptr - buf.begin ();
@@ -363,6 +363,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 if (b != e and *b == '+') {
                     b++; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
                 }
+                // THIS #if test should NOT be needed but clang++-7 didn't properly respect if constexpr (got link errors)
+#if !qCompilerAndStdLib_to_chars_FP_Buggy
                 auto [ptr, ec] = from_chars (b, e, result);
                 if (ec == errc::result_out_of_range) [[UNLIKELY_ATTR]] {
                     return *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
@@ -371,6 +373,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 if (ec != std::errc{} or ptr != e) {
                     result = Math::nan<T> ();
                 }
+#endif
             }
             else {
                 result = Private_::String2FloatViaStrToD_<T> (start, end, nullptr);
