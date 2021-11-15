@@ -394,7 +394,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     inline T ToFloat (const wchar_t* start, const wchar_t* end, const wchar_t** remainder)
     {
         RequireNotNull (remainder);
-        T              result; // intentionally uninitialized
+        T result; // intentionally uninitialized
         if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy or qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
             result = Private_::String2FloatViaStrToD_<T> (start, end, remainder);
         }
