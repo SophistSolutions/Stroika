@@ -79,35 +79,6 @@ namespace {
     }
 
     template <typename FLOAT_TYPE>
-    inline String Float2String_OptimizedForCLocaleAndNoStreamFlags_ (FLOAT_TYPE f, int precision, bool trimTrailingZeros)
-    {
-        Require (not isnan (f));
-        Require (not isinf (f));
-        size_t                 sz = precision + 100; // I think precision is enough
-        SmallStackBuffer<char> buf{SmallStackBuffer<char>::eUninitialized, sz};
-
-#if qCompilerAndStdLib_to_chars_FP_Buggy
-        char format[100]; // intentionally uninitialized, cuz filled in with mkFmtWithPrecisionArg_
-        int  resultStrLen = ::snprintf (buf, buf.size (), mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), is_same_v<FLOAT_TYPE, long double> ? 'L' : '\0'), (int)precision, f);
-#elif 1
-        // empirically, on MSVC, this is much faster (appears 3x apx faster) -- LGP 2021-11-04
-        ptrdiff_t resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, precision).ptr - buf.begin ();
-#elif __cpp_lib_format && 0
-        // I read this was supposed to be faster, but empirically on windows seems much slower -- LGP 2021-11-04
-        ptrdiff_t resultStrLen = format_to_n (buf.begin (), sz, is_same_v<FLOAT_TYPE, long double> ? "{:.{}Lg}"sv : "{:.{}g}"sv, f, precision).size;
-#else
-        char format[100]; // intentionally uninitialized, cuz filled in with mkFmtWithPrecisionArg_
-        int  resultStrLen = ::snprintf (buf, buf.size (), mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), is_same_v<FLOAT_TYPE, long double> ? 'L' : '\0'), (int)precision, f);
-#endif
-        Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
-        String tmp = String::FromASCII (buf.begin (), buf.begin () + resultStrLen);
-        if (trimTrailingZeros) {
-            Characters::FloatConversion::Private_::TrimTrailingZeros_ (&tmp);
-        }
-        return tmp;
-    }
-
-    template <typename FLOAT_TYPE>
     inline String Float2String_GenericCase_ (FLOAT_TYPE f, const FloatConversion::ToStringOptions& options)
     {
         Require (not isnan (f));
@@ -200,16 +171,6 @@ namespace {
         }
         Assert (!isnan (f));
         Assert (!isinf (f));
-
-        // Handle special cases as a performance optimization
-        [[maybe_unused]] constexpr bool kUsePerformanceOptimizedCases_ = true;
-        if constexpr (kUsePerformanceOptimizedCases_) {
-            if (not options.GetUseLocale ().has_value () and not options.GetIOSFmtFlags ().has_value () and not options.GetFloatFormat ().has_value ()) {
-                auto result = Float2String_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetPrecision ().value_or (FloatConversion::ToStringOptions::kDefaultPrecision.fPrecision), options.GetTrimTrailingZeros ().value_or (FloatConversion::ToStringOptions::kDefaultTrimTrailingZeros));
-                Ensure (result == Float2String_GenericCase_<FLOAT_TYPE> (f, options));
-                return result;
-            }
-        }
         return Float2String_GenericCase_<FLOAT_TYPE> (f, options);
     }
 }
@@ -284,55 +245,6 @@ namespace {
         return String2Float_LegacyStr2DHelper_<long double> (s, wcstold);
     }
 
-    /**
-     * Empirical test, 2021-11-05 on x64, windows, new laptop, vs2k19, showed about 30% speedup from this new logic.
-     * And putting in assertions to assure same results.
-    */
-    template <typename RETURN_TYPE>
-    RETURN_TYPE String2Float_NewLogic_ (const wchar_t* start, const wchar_t* end)
-    {
-        Memory::SmallStackBuffer<char> asciiS;
-        if (String::AsASCIIQuietly (start, end, &asciiS)) {
-            RETURN_TYPE r; // intentionally uninitialized
-            auto        b = asciiS.begin ();
-            auto        e = asciiS.end ();
-            if (b != e and *b == '+') {
-                b++; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
-            }
-            auto [ptr, ec] = from_chars (b, e, r);
-            if (ec == errc::result_out_of_range) {
-                return *b == '-' ? -numeric_limits<RETURN_TYPE>::infinity () : numeric_limits<RETURN_TYPE>::infinity ();
-            }
-            // if error or trailing crap - return nan
-            return (ec == std::errc () and ptr == e) ? r : Math::nan<RETURN_TYPE> ();
-        }
-        else {
-            return String2Float_LegacyStr2D_<RETURN_TYPE> (String{start, end});
-        }
-    }
-    template <typename RETURN_TYPE>
-    RETURN_TYPE String2Float_NewLogic_ (const String& s)
-    {
-        Memory::SmallStackBuffer<char> asciiS;
-        if (s.AsASCIIQuietly (&asciiS)) {
-            RETURN_TYPE r; // intentionally uninitialized
-            auto        b = asciiS.begin ();
-            auto        e = asciiS.end ();
-            if (b != e and *b == '+') {
-                b++; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
-            }
-            auto [ptr, ec] = from_chars (b, e, r);
-            if (ec == errc::result_out_of_range) {
-                return *b == '-' ? -numeric_limits<RETURN_TYPE>::infinity () : numeric_limits<RETURN_TYPE>::infinity ();
-            }
-            // if error or trailing crap - return nan
-            return (ec == std::errc () and ptr == e) ? r : Math::nan<RETURN_TYPE> ();
-        }
-        else {
-            return String2Float_LegacyStr2D_<RETURN_TYPE> (s);
-        }
-    }
-
 }
 
 namespace Stroika::Foundation::Characters::FloatConversion::Private_ {
@@ -352,60 +264,6 @@ namespace Stroika::Foundation::Characters::FloatConversion::Private_ {
         return String2Float_LegacyStr2D_<long double> (s);
     }
 }
-
-#if 0
-namespace Stroika::Foundation::Characters::FloatConversion::Private_ {
-    template <typename T>
-    T ToFloat_GenericImplementation_impl_ (const wchar_t* start, const wchar_t* end, const wchar_t** remainder)
-    {
-        // to share code, this routie allows remainder to be nullptr or not
-        if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy) {
-            return String2FloatViaStrToD_<T> (start, end, remainder);
-        }
-        else {
-            Assert (remainder == nullptr); // NYI
-            auto result = String2Float_NewLogic_<T> (start, end);
-            Ensure ((result == String2Float_LegacyStr2D_<T> (String{start, end})) or isnan (result));
-            return result;
-        }
-    }
-
-    template <>
-    float ToFloat_GenericImplementation_ (const wchar_t* start, const wchar_t* end)
-    {
-        return ToFloat_GenericImplementation_impl_<float> (start, end, nullptr);
-    }
-    template <>
-    double ToFloat_GenericImplementation_ (const wchar_t* start, const wchar_t* end)
-    {
-        return ToFloat_GenericImplementation_impl_<double> (start, end, nullptr);
-    }
-    template <>
-    long double ToFloat_GenericImplementation_ (const wchar_t* start, const wchar_t* end)
-    {
-        return ToFloat_GenericImplementation_impl_<long double> (start, end, nullptr);
-    }
-
-    template <>
-    float ToFloat_GenericImplementation_ (const wchar_t* start, const wchar_t* end, const wchar_t** remainder)
-    {
-        RequireNotNull (remainder);
-        return ToFloat_GenericImplementation_impl_<float> (start, end, remainder);
-    }
-    template <>
-    double ToFloat_GenericImplementation_ (const wchar_t* start, const wchar_t* end, const wchar_t** remainder)
-    {
-        RequireNotNull (remainder);
-        return ToFloat_GenericImplementation_impl_<double> (start, end, remainder);
-    }
-    template <>
-    long double ToFloat_GenericImplementation_ (const wchar_t* start, const wchar_t* end, const wchar_t** remainder)
-    {
-        RequireNotNull (remainder);
-        return ToFloat_GenericImplementation_impl_<long double> (start, end, remainder);
-    }
-}
-#endif
 
 namespace Stroika::Foundation::Characters::FloatConversion::Private_ {
     template <>
