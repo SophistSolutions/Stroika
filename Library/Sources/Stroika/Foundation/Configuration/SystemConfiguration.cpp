@@ -222,7 +222,7 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
             for (String line : TextReader::New (FileInputStream::New (kProcUptimeFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
                 Sequence<String> t = line.Tokenize ();
                 if (t.size () >= 2) {
-                    result.fBootedAt = DateTime::Now ().AddSeconds (-Characters::String2Float<double> (t[0]));
+                    result.fBootedAt = DateTime::Now ().AddSeconds (-Characters::FloatConversion::ToFloat<double> (t[0]));
                     succeeded        = true;
                 }
                 break;

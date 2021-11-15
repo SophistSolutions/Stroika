@@ -203,7 +203,7 @@ namespace {
         static POSIXSysTimeCaptureContext_ GetSysTimes_ ()
         {
             POSIXSysTimeCaptureContext_ result{};
-            using Characters::String2Float;
+            using Characters::FloatConversion::ToFloat;
             using IO::FileSystem::FileInputStream;
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
             static const filesystem::path                          kFileName_{"/proc/stat"sv};
@@ -214,21 +214,21 @@ namespace {
 #endif
                 size_t sz = line.size ();
                 if (sz >= 5 and line[0] == L"cpu") {
-                    result.user   = String2Float<double> (line[1]);
-                    result.nice   = String2Float<double> (line[2]);
-                    result.system = String2Float<double> (line[3]);
-                    result.idle   = String2Float<double> (line[4]);
+                    result.user   = ToFloat<double> (line[1]);
+                    result.nice   = ToFloat<double> (line[2]);
+                    result.system = ToFloat<double> (line[3]);
+                    result.idle   = ToFloat<double> (line[4]);
                     if (sz >= 6) {
-                        result.iowait = String2Float<double> (line[5]);
+                        result.iowait = ToFloat<double> (line[5]);
                     }
                     if (sz >= 7) {
-                        result.irq = String2Float<double> (line[6]);
+                        result.irq = ToFloat<double> (line[6]);
                     }
                     if (sz >= 8) {
-                        result.softirq = String2Float<double> (line[7]);
+                        result.softirq = ToFloat<double> (line[7]);
                     }
                     if (sz >= 9) {
-                        result.steal = String2Float<double> (line[8]);
+                        result.steal = ToFloat<double> (line[8]);
                     }
                     break; // once found no need to read the rest...
                 }

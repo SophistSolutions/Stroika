@@ -146,7 +146,7 @@ namespace {
         const char kOneTab_[] = "\t";
         {
             FloatConversion::ToStringOptions fo = FloatConversion::ToStringOptions{FloatConversion::ToStringOptions::TrimTrailingZerosType::eDontTrim, FloatConversion::ToStringOptions::Precision (2)};
-            outTo << kOneTab_ << "PERFORMANCE_SCORE" << kOneTab_ << Float2String (performanceScore, fo).AsNarrowSDKString () << endl;
+            outTo << kOneTab_ << "PERFORMANCE_SCORE" << kOneTab_ << FloatConversion::ToString (performanceScore, fo).AsNarrowSDKString () << endl;
         }
         outTo << kOneTab_ << "DETAILS:         " << kOneTab_;
         outTo << "[baseline test " << baselineTime << " secs, and comparison " << compareWithTime << " sec, and warnIfPerfScore > " << warnIfPerformanceScoreHigherThan << ", and perfScore=" << performanceScore << "]" << endl;
@@ -1523,7 +1523,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         {
             optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, L"x");
             if (arg.has_value ()) {
-                sTimeMultiplier_ = String2Float<double> (*arg);
+                sTimeMultiplier_ = FloatConversion::ToFloat<double> (*arg);
             }
         }
     }

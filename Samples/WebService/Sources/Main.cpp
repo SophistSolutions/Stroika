@@ -53,7 +53,7 @@ int main (int argc, const char* argv[])
         else if (Execution::MatchesCommandLineArgument (*argi, L"quit-after")) {
             ++argi;
             if (argi != args.end ()) {
-                quitAfter = Characters::String2Float<Time::DurationSecondsType> (*argi);
+                quitAfter = Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (*argi);
             }
             else {
                 cerr << "Expected arg to -quit-after" << endl;

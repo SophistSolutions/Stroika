@@ -259,7 +259,7 @@ int main (int argc, const char* argv[])
         if (Execution::MatchesCommandLineArgument (*argi, L"t")) {
             ++argi;
             if (argi != args.end ()) {
-                runFor = Characters::String2Float<Time::DurationSecondsType> (*argi);
+                runFor = Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (*argi);
             }
             else {
                 cerr << "Expected arg to -t" << endl;
@@ -269,7 +269,7 @@ int main (int argc, const char* argv[])
         if (Execution::MatchesCommandLineArgument (*argi, L"c")) {
             ++argi;
             if (argi != args.end ()) {
-                captureInterval = Characters::String2Float<Time::DurationSecondsType> (*argi);
+                captureInterval = Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (*argi);
             }
             else {
                 cerr << "Expected arg to -c" << endl;

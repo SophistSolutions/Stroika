@@ -159,7 +159,7 @@ namespace {
         }
         Assert (not tmp.empty ());
         if (containsDot) {
-            return VariantValue{Characters::String2Float<long double> (tmp.begin (), tmp.end ())};
+            return VariantValue{Characters::FloatConversion::ToFloat<long double> (tmp.begin (), tmp.end ())};
         }
         else {
             // if no - use unsigned since has wider range (if no -)

@@ -28,64 +28,62 @@
  *              just add option for "FIXEDWIDTH", and keep idea of changeing backended arg for ios_flags...
  */
 
-namespace Stroika::Foundation::Characters {
+namespace Stroika::Foundation::Characters::FloatConversion {
 
-    namespace FloatConversion {
+    /**
+     *  These are options for the Float2Stgring () function
+     *
+     *  Float2String uses the locale specified by ToStringOptions, but defaults to
+     *  the "C" locale.
+     *
+     *  Precision (here) is defined to be the number of significant digits (including before and after decimal point).
+     *
+     *  This prints and trims any trailing zeros (after the decimal point - fTrimTrailingZeros -
+     *  by default.
+     *
+     *  Float2String () maps NAN values to the string "NAN", and negative infinite values to "-INF", and positive infinite
+     *  values to "INF".
+     *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
+     */
+    struct ToStringOptions {
+        /**
+         * Control needless trailing zeros. For example, 3.000 instead of 3, or 4.2000 versus 4.2. Sometimes desirable (to show precision).
+         * But often not.
+         */
+        enum class TrimTrailingZerosType {
+            eTrim,
+            eDontTrim,
+
+            Stroika_Define_Enum_Bounds (eTrim, eDontTrim)
+        };
+        static constexpr TrimTrailingZerosType eTrimZeros     = TrimTrailingZerosType::eTrim;
+        static constexpr TrimTrailingZerosType eDontTrimZeros = TrimTrailingZerosType::eDontTrim;
 
         /**
-         *  These are options for the Float2Stgring () function
-         *
-         *  Float2String uses the locale specified by ToStringOptions, but defaults to
-         *  the "C" locale.
-         *
-         *  Precision (here) is defined to be the number of significant digits (including before and after decimal point).
-         *
-         *  This prints and trims any trailing zeros (after the decimal point - fTrimTrailingZeros -
-         *  by default.
-         *
-         *  Float2String () maps NAN values to the string "NAN", and negative infinite values to "-INF", and positive infinite
-         *  values to "INF".
-         *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
          */
-        struct ToStringOptions {
-            /**
-             * Control needless trailing zeros. For example, 3.000 instead of 3, or 4.2000 versus 4.2. Sometimes desirable (to show precision).
-             * But often not.
-             */
-            enum class TrimTrailingZerosType {
-                eTrim,
-                eDontTrim,
+        enum class UseCLocale { eUseCLocale };
+        static constexpr UseCLocale eUseCLocale = UseCLocale::eUseCLocale;
 
-                Stroika_Define_Enum_Bounds (eTrim, eDontTrim)
-            };
-            static constexpr TrimTrailingZerosType eTrimZeros     = TrimTrailingZerosType::eTrim;
-            static constexpr TrimTrailingZerosType eDontTrimZeros = TrimTrailingZerosType::eDontTrim;
-
-            /**
-             */
-            enum class UseCLocale { eUseCLocale };
-            static constexpr UseCLocale eUseCLocale = UseCLocale::eUseCLocale;
-
-            /**
+        /**
             */
-            enum class UseCurrentLocale { eUseCurrentLocale };
-            static constexpr UseCurrentLocale eUseCurrentLocale = UseCurrentLocale::eUseCurrentLocale;
+        enum class UseCurrentLocale { eUseCurrentLocale };
+        static constexpr UseCurrentLocale eUseCurrentLocale = UseCurrentLocale::eUseCurrentLocale;
 
-            /**
+        /**
              */
-            struct Precision {
-                constexpr Precision (unsigned int p);
-                unsigned int fPrecision;
-            };
+        struct Precision {
+            constexpr Precision (unsigned int p);
+            unsigned int fPrecision;
+        };
 
-            /**
+        /**
              * From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf,
              * init (basic_streambuf...) initializes precision to 6
              * Stroika need not maintain that default here, but it seems a sensible one...
              */
-            static const Precision kDefaultPrecision;
+        static const Precision kDefaultPrecision;
 
-            /**
+        /**
              * Automatic picks based on the precision and the number used, so for example, 0.0000001
              * will show as '1e-7', but 4 will show as '4'
              *
@@ -93,71 +91,71 @@ namespace Stroika::Foundation::Characters {
              *      eFixedPoint corresponds to ios_base::fixed
              *      eDefaultFloat corresponds to unsetf (floatfield) - which may be different than scientific or fixed point
              */
-            enum class FloatFormatType {
-                eScientific,
-                eDefaultFloat,
-                eFixedPoint,
-                eAutomatic,
+        enum class FloatFormatType {
+            eScientific,
+            eDefaultFloat,
+            eFixedPoint,
+            eAutomatic,
 
-                eDEFAULT = eDefaultFloat,
+            eDEFAULT = eDefaultFloat,
 
-                Stroika_Define_Enum_Bounds (eScientific, eAutomatic)
-            };
-            static constexpr FloatFormatType eScientific          = FloatFormatType::eScientific;
-            static constexpr FloatFormatType eDefaultFloat        = FloatFormatType::eDefaultFloat;
-            static constexpr FloatFormatType eFixedPoint          = FloatFormatType::eFixedPoint;
-            static constexpr FloatFormatType eAutomaticScientific = FloatFormatType::eAutomatic;
+            Stroika_Define_Enum_Bounds (eScientific, eAutomatic)
+        };
+        static constexpr FloatFormatType eScientific          = FloatFormatType::eScientific;
+        static constexpr FloatFormatType eDefaultFloat        = FloatFormatType::eDefaultFloat;
+        static constexpr FloatFormatType eFixedPoint          = FloatFormatType::eFixedPoint;
+        static constexpr FloatFormatType eAutomaticScientific = FloatFormatType::eAutomatic;
 
-            /**
+        /**
              * Default is to use use C-locale
              *  \note - if ios_base::fmtflags are specified, these REPLACE - not merged - with
              *          basic ios flags
              */
-            constexpr ToStringOptions () = default;
-            constexpr ToStringOptions (UseCLocale); // same as default
-            ToStringOptions (UseCurrentLocale);
-            ToStringOptions (const locale& l);
-            constexpr ToStringOptions (ios_base::fmtflags fmtFlags);
-            constexpr ToStringOptions (Precision precision);
-            constexpr ToStringOptions (FloatFormatType floatFormat);
-            constexpr ToStringOptions (TrimTrailingZerosType trimTrailingZeros);
-            ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2);
-            template <typename... ARGS>
-            ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2, ARGS&&... args);
+        constexpr ToStringOptions () = default;
+        constexpr ToStringOptions (UseCLocale); // same as default
+        ToStringOptions (UseCurrentLocale);
+        ToStringOptions (const locale& l);
+        constexpr ToStringOptions (ios_base::fmtflags fmtFlags);
+        constexpr ToStringOptions (Precision precision);
+        constexpr ToStringOptions (FloatFormatType floatFormat);
+        constexpr ToStringOptions (TrimTrailingZerosType trimTrailingZeros);
+        ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2);
+        template <typename... ARGS>
+        ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2, ARGS&&... args);
 
-        public:
-            nonvirtual optional<unsigned int> GetPrecision () const;
+    public:
+        nonvirtual optional<unsigned int> GetPrecision () const;
 
-        public:
-            nonvirtual optional<bool> GetTrimTrailingZeros () const;
+    public:
+        nonvirtual optional<bool> GetTrimTrailingZeros () const;
 
-        public:
-            nonvirtual optional<locale> GetUseLocale () const;
+    public:
+        nonvirtual optional<locale> GetUseLocale () const;
 
-        public:
-            nonvirtual optional<FloatFormatType> GetFloatFormat () const;
+    public:
+        nonvirtual optional<FloatFormatType> GetFloatFormat () const;
 
-        public:
-            nonvirtual optional<ios_base::fmtflags> GetIOSFmtFlags () const;
+    public:
+        nonvirtual optional<ios_base::fmtflags> GetIOSFmtFlags () const;
 
-        public:
-            static constexpr bool kDefaultTrimTrailingZeros{true};
+    public:
+        static constexpr bool kDefaultTrimTrailingZeros{true};
 
-        public:
-            /**
+    public:
+        /**
              *  @see Characters::ToString ();
              */
-            nonvirtual String ToString () const;
+        nonvirtual String ToString () const;
 
-        private:
-            optional<unsigned int>       fPrecision_;
-            optional<ios_base::fmtflags> fFmtFlags_;
-            optional<locale>             fUseLocale_; // if missing, use locale::classic
-            optional<bool>               fTrimTrailingZeros_;
-            optional<FloatFormatType>    fFloatFormat_;
-        };
+    private:
+        optional<unsigned int>       fPrecision_;
+        optional<ios_base::fmtflags> fFmtFlags_;
+        optional<locale>             fUseLocale_; // if missing, use locale::classic
+        optional<bool>               fTrimTrailingZeros_;
+        optional<FloatFormatType>    fFloatFormat_;
+    };
 
-        /**
+    /**
          *  ToString converts a floating point number to a string, controlled by paramtererized options. 
          *
          *  @see ToStringOptions
@@ -175,45 +173,18 @@ namespace Stroika::Foundation::Characters {
          *      o   String
          *      o           ... but this could sensibly be extended in the future
          */
-        template <typename STRING_TYPE = String, typename FLOAT_TYPE = float>
-        STRING_TYPE ToString (FLOAT_TYPE f, const ToStringOptions& options = {});
+    template <typename STRING_TYPE = String, typename FLOAT_TYPE = float>
+    STRING_TYPE ToString (FLOAT_TYPE f, const ToStringOptions& options = {});
 
-        template <>
-        String ToString (float f, const ToStringOptions& options);
-        template <>
-        String ToString (double f, const ToStringOptions& options);
-        template <>
-        String ToString (long double f, const ToStringOptions& options);
-
-    }
-
-    // DEPRECATED
-    using Float2StringOptions [[deprecated ("Since Stroika 2.1b14, use FloatConversion::ToStringOptions")]] = FloatConversion::ToStringOptions;
+    template <>
+    String ToString (float f, const ToStringOptions& options);
+    template <>
+    String ToString (double f, const ToStringOptions& options);
+    template <>
+    String ToString (long double f, const ToStringOptions& options);
 
     /**
-     *  Float2String converts a floating point number to a string, controlled by paramtererized options. 
-     *
-     *  @see Float2StringOptions
-     *
-     *  Float2String () maps NAN values to the string "NAN", and negative infinite values to "-INF", and positive infinite
-     *  values to "INF".
-     *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
-     */
-    [[deprecated ("Since Stroika 2.1b14, use FloatConversion::ToString")]] inline String Float2String (float f, const FloatConversion::ToStringOptions& options = FloatConversion::ToStringOptions{})
-    {
-        return FloatConversion::ToString (f, options);
-    }
-    [[deprecated ("Since Stroika 2.1b14, use FloatConversion::ToString")]] inline String Float2String (double f, const FloatConversion::ToStringOptions& options = FloatConversion::ToStringOptions{})
-    {
-        return FloatConversion::ToString (f, options);
-    }
-    [[deprecated ("Since Stroika 2.1b14, use FloatConversion::ToString")]] inline String Float2String (long double f, const FloatConversion::ToStringOptions& options = FloatConversion::ToStringOptions{})
-    {
-        return FloatConversion::ToString (f, options);
-    }
-
-    /**
-     *  String2Float/1:
+     *  ToFloat (no remainder parameter):
      *
      *  Convert the given decimal-format floating point string to an float,
      *  double, or long double.
@@ -238,7 +209,7 @@ namespace Stroika::Foundation::Characters {
      *  @see strtod(), or @see wcstod (), or String2Float/2 (). This is a simple wrapper on strtod() / wcstod () /
      *  strtold, etc... except that it returns nan() on invalid data, instead of zero.
      *
-     *  String2Float/2:
+     *  String2Float (with remainder parameter):
      *
      *  Simple wrapper on std::wcstof, std::wcstod, std::wcstold - except using String class, and returns the
      *  unused portion of the string in the REQUIRED remainder OUT parameter.
@@ -249,11 +220,13 @@ namespace Stroika::Foundation::Characters {
      *
      */
     template <typename T = double>
-    T String2Float (const wchar_t* start, const wchar_t* end);
+    T ToFloat (const wchar_t* start, const wchar_t* end);
     template <typename T = double>
-    T String2Float (const String& s);
+    T ToFloat (const String& s);
     template <typename T = double>
-    T String2Float (const String& s, String* remainder);
+    T ToFloat (const wchar_t* start, const wchar_t* end, const wchar_t** remainder);
+    template <typename T = double>
+    T ToFloat (const String& s, String* remainder);
 
 }
 

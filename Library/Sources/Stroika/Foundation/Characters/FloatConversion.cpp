@@ -30,7 +30,7 @@ using namespace Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
- **************************** FloatConversion::ToStringOptions *******************************
+ ******************** FloatConversion::ToStringOptions **************************
  ********************************************************************************
  */
 FloatConversion::ToStringOptions::ToStringOptions (UseCurrentLocale)
@@ -61,11 +61,6 @@ String FloatConversion::ToStringOptions::ToString () const
     return sb.str ();
 }
 
-/*
-  ********************************************************************************
-  ********************************* Float2String *********************************
-  ********************************************************************************
-  */
 namespace {
     inline char* mkFmtWithPrecisionArg_ (char* formatBufferStart, [[maybe_unused]] char* formatBufferEnd, char _Spec)
     {
@@ -107,7 +102,7 @@ namespace {
         Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
         String tmp = String::FromASCII (buf.begin (), buf.begin () + resultStrLen);
         if (trimTrailingZeros) {
-            Characters::Private_::TrimTrailingZeros_ (&tmp);
+            Characters::FloatConversion::Private_::TrimTrailingZeros_ (&tmp);
         }
         return tmp;
     }
@@ -169,7 +164,7 @@ namespace {
 
         String tmp = options.GetUseLocale () ? String::FromNarrowString (s.str (), *options.GetUseLocale ()) : String::FromASCII (s.str ());
         if (options.GetTrimTrailingZeros ().value_or (FloatConversion::ToStringOptions::kDefaultTrimTrailingZeros)) {
-            Characters::Private_::TrimTrailingZeros_ (&tmp);
+            Characters::FloatConversion::Private_::TrimTrailingZeros_ (&tmp);
         }
         return tmp;
     }
@@ -218,41 +213,21 @@ namespace {
         return Float2String_GenericCase_<FLOAT_TYPE> (f, options);
     }
 }
-#if 0
-String Characters::Float2String (float f, const FloatConversion::ToStringOptions& options)
-{
-    Assert (Float2String_<float> (f, options) == FloatConversion::ToString (f, options));
-    return Float2String_<float> (f, options);
-}
-
-String Characters::Float2String (double f, const FloatConversion::ToStringOptions& options)
-{
-    Assert (Float2String_<double> (f, options) == FloatConversion::ToString (f, options));
-    return Float2String_<double> (f, options);
-}
-
-String Characters::Float2String (long double f, const FloatConversion::ToStringOptions& options)
-{
-    Assert (String::EqualsComparer{CompareOptions::eCaseInsensitive}(Float2String_<long double> (f, options), FloatConversion::ToString (f, options)));
-    return Float2String_<long double> (f, options);
-}
-#endif
 
 /*
  ********************************************************************************
- *************************** Characters::Private_::Legacy_Float2String_ *********************************
+ *********** FloatConversion::Private_::Legacy_Float2String_ ********************
  ********************************************************************************
  */
-
-String Characters::Private_::Legacy_Float2String_ (float f, const FloatConversion::ToStringOptions& options)
+String Characters::FloatConversion::Private_::Legacy_Float2String_ (float f, const FloatConversion::ToStringOptions& options)
 {
     return Float2String_<float> (f, options);
 }
-String Characters::Private_::Legacy_Float2String_ (double f, const FloatConversion::ToStringOptions& options)
+String Characters::FloatConversion::Private_::Legacy_Float2String_ (double f, const FloatConversion::ToStringOptions& options)
 {
     return Float2String_<double> (f, options);
 }
-String Characters::Private_::Legacy_Float2String_ (long double f, const FloatConversion::ToStringOptions& options)
+String Characters::FloatConversion::Private_::Legacy_Float2String_ (long double f, const FloatConversion::ToStringOptions& options)
 {
     return Float2String_<long double> (f, options);
 }
@@ -314,6 +289,28 @@ namespace {
      * And putting in assertions to assure same results.
     */
     template <typename RETURN_TYPE>
+    RETURN_TYPE String2Float_NewLogic_ (const wchar_t* start, const wchar_t* end)
+    {
+        Memory::SmallStackBuffer<char> asciiS;
+        if (String::AsASCIIQuietly (start, end, &asciiS)) {
+            RETURN_TYPE r; // intentionally uninitialized
+            auto        b = asciiS.begin ();
+            auto        e = asciiS.end ();
+            if (b != e and *b == '+') {
+                b++; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
+            }
+            auto [ptr, ec] = from_chars (b, e, r);
+            if (ec == errc::result_out_of_range) {
+                return *b == '-' ? -numeric_limits<RETURN_TYPE>::infinity () : numeric_limits<RETURN_TYPE>::infinity ();
+            }
+            // if error or trailing crap - return nan
+            return (ec == std::errc () and ptr == e) ? r : Math::nan<RETURN_TYPE> ();
+        }
+        else {
+            return String2Float_LegacyStr2D_<RETURN_TYPE> (String{start, end});
+        }
+    }
+    template <typename RETURN_TYPE>
     RETURN_TYPE String2Float_NewLogic_ (const String& s)
     {
         Memory::SmallStackBuffer<char> asciiS;
@@ -338,68 +335,91 @@ namespace {
 
 }
 
-namespace Stroika::Foundation::Characters {
+namespace Stroika::Foundation::Characters::FloatConversion::Private_ {
     template <>
-    float String2Float (const String& s)
+    float ToFloat_Legacy_ (const String& s)
     {
-#if qCompilerAndStdLib_to_chars_FP_Buggy
         return String2Float_LegacyStr2D_<float> (s);
-#else
-        auto result = String2Float_NewLogic_<float> (s);
-#if qDebug
-        //static_assert (Math::nan<float> () != Math::nan<float> ());
-        Ensure ((result == String2Float_LegacyStr2D_<float> (s)) or isnan (result));
-#endif
-        return result;
-#endif
     }
-
     template <>
-    double String2Float (const String& s)
+    double ToFloat_Legacy_ (const String& s)
     {
-#if qCompilerAndStdLib_to_chars_FP_Buggy
         return String2Float_LegacyStr2D_<double> (s);
-#else
-        auto result = String2Float_NewLogic_<double> (s);
-#if qDebug
-        static_assert (Math::nan<double> () != Math::nan<double> ());
-        Ensure ((result == String2Float_LegacyStr2D_<double> (s)) or isnan (result));
-#endif
-        return result;
-#endif
     }
-
     template <>
-    long double String2Float (const String& s)
+    long double ToFloat_Legacy_ (const String& s)
     {
-#if qCompilerAndStdLib_to_chars_FP_Buggy
         return String2Float_LegacyStr2D_<long double> (s);
-#else
-        auto result = String2Float_NewLogic_<long double> (s);
-#if qDebug
-        static_assert (Math::nan<long double> () != Math::nan<long double> ());
-        Ensure ((result == String2Float_LegacyStr2D_<long double> (s)) or isnan (result));
-#endif
-        return result;
-#endif
     }
 }
 
-namespace Stroika::Foundation::Characters {
+#if 0
+namespace Stroika::Foundation::Characters::FloatConversion::Private_ {
+    template <typename T>
+    T ToFloat_GenericImplementation_impl_ (const wchar_t* start, const wchar_t* end, const wchar_t** remainder)
+    {
+        // to share code, this routie allows remainder to be nullptr or not
+        if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy) {
+            return String2FloatViaStrToD_<T> (start, end, remainder);
+        }
+        else {
+            Assert (remainder == nullptr); // NYI
+            auto result = String2Float_NewLogic_<T> (start, end);
+            Ensure ((result == String2Float_LegacyStr2D_<T> (String{start, end})) or isnan (result));
+            return result;
+        }
+    }
+
     template <>
-    float String2Float (const String& s, String* remainder)
+    float ToFloat_GenericImplementation_ (const wchar_t* start, const wchar_t* end)
+    {
+        return ToFloat_GenericImplementation_impl_<float> (start, end, nullptr);
+    }
+    template <>
+    double ToFloat_GenericImplementation_ (const wchar_t* start, const wchar_t* end)
+    {
+        return ToFloat_GenericImplementation_impl_<double> (start, end, nullptr);
+    }
+    template <>
+    long double ToFloat_GenericImplementation_ (const wchar_t* start, const wchar_t* end)
+    {
+        return ToFloat_GenericImplementation_impl_<long double> (start, end, nullptr);
+    }
+
+    template <>
+    float ToFloat_GenericImplementation_ (const wchar_t* start, const wchar_t* end, const wchar_t** remainder)
+    {
+        RequireNotNull (remainder);
+        return ToFloat_GenericImplementation_impl_<float> (start, end, remainder);
+    }
+    template <>
+    double ToFloat_GenericImplementation_ (const wchar_t* start, const wchar_t* end, const wchar_t** remainder)
+    {
+        RequireNotNull (remainder);
+        return ToFloat_GenericImplementation_impl_<double> (start, end, remainder);
+    }
+    template <>
+    long double ToFloat_GenericImplementation_ (const wchar_t* start, const wchar_t* end, const wchar_t** remainder)
+    {
+        RequireNotNull (remainder);
+        return ToFloat_GenericImplementation_impl_<long double> (start, end, remainder);
+    }
+}
+#endif
+
+namespace Stroika::Foundation::Characters::FloatConversion::Private_ {
+    template <>
+    float ToFloat_Legacy_ (const String& s, String* remainder)
     {
         return String2Float_LegacyStr2DHelper_<float> (s, remainder, wcstof);
     }
-
     template <>
-    double String2Float (const String& s, String* remainder)
+    double ToFloat_Legacy_ (const String& s, String* remainder)
     {
         return String2Float_LegacyStr2DHelper_<double> (s, remainder, wcstod);
     }
-
     template <>
-    long double String2Float (const String& s, String* remainder)
+    long double ToFloat_Legacy_ (const String& s, String* remainder)
     {
         return String2Float_LegacyStr2DHelper_<long double> (s, remainder, wcstold);
     }

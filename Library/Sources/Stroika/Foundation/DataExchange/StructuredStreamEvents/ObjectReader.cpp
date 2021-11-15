@@ -131,19 +131,19 @@ void Registry::SimpleReader_<bool>::Deactivating ()
 template <>
 void Registry::SimpleReader_<float>::Deactivating ()
 {
-    (*fValue_) = Characters::String2Float<float> (fBuf_.str ());
+    (*fValue_) = Characters::FloatConversion::ToFloat<float> (fBuf_.str ());
 }
 
 template <>
 void Registry::SimpleReader_<double>::Deactivating ()
 {
-    (*fValue_) = Characters::String2Float<double> (fBuf_.str ());
+    (*fValue_) = Characters::FloatConversion::ToFloat<double> (fBuf_.str ());
 }
 
 template <>
 void Registry::SimpleReader_<long double>::Deactivating ()
 {
-    (*fValue_) = Characters::String2Float<long double> (fBuf_.str ());
+    (*fValue_) = Characters::FloatConversion::ToFloat<long double> (fBuf_.str ());
 }
 
 template <>

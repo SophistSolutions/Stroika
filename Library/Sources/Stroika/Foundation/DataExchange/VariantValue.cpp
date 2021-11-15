@@ -476,7 +476,7 @@ VariantValue::FloatType_ VariantValue::AsFloatType_ () const
             auto v = Debug::UncheckedDynamicCast<const TIRep_<String>*> (fVal_.get ());
             AssertNotNull (v);
             // NB. this may return NAN if string not a well-formed number (including empty string case)
-            return Characters::String2Float<FloatType_> (v->fVal);
+            return Characters::FloatConversion::ToFloat<FloatType_> (v->fVal);
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

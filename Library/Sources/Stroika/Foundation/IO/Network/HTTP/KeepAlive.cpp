@@ -29,7 +29,7 @@ KeepAlive KeepAlive::Parse (const String& headerValue)
         if (kvp.length () == 2) {
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
             if (kvp[0] == L"timeout"sv) {
-                Time::DurationSecondsType toAt = Characters::String2Float<> (kvp[1]);
+                Time::DurationSecondsType toAt = Characters::FloatConversion::ToFloat<> (kvp[1]);
                 r.fTimeoutAt                   = Time::GetTickCount () + toAt;
                 return r;
             }
