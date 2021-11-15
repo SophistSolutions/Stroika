@@ -479,13 +479,13 @@ namespace {
                     }
                 }
                 {
-                    double szInBytes = Characters::String2Float<double> (l[1]) * 1024;
+                    double szInBytes = Characters::FloatConversion::ToFloat<double> (l[1]) * 1024;
                     if (not std::isnan (szInBytes) and not std::isinf (szInBytes)) {
                         v.fSizeInBytes = szInBytes;
                     }
                 }
                 {
-                    double usedSizeInBytes = Characters::String2Float<double> (l[2]) * 1024;
+                    double usedSizeInBytes = FloatConversion::ToFloat<double> (l[2]) * 1024;
                     if (not std::isnan (usedSizeInBytes) and not std::isinf (usedSizeInBytes)) {
                         v.fUsedSizeInBytes = usedSizeInBytes;
                     }
@@ -543,8 +543,8 @@ namespace {
                         v.fDeviceOrVolumeName = d;
                     }
                 }
-                v.fSizeInBytes          = Characters::String2Float<double> (l[includeFSTypes ? 2 : 1]) * 1024;
-                v.fUsedSizeInBytes      = Characters::String2Float<double> (l[includeFSTypes ? 3 : 2]) * 1024;
+                v.fSizeInBytes          = FloatConversion::ToFloat<double> (l[includeFSTypes ? 2 : 1]) * 1024;
+                v.fUsedSizeInBytes      = FloatConversion::ToFloat<double> (l[includeFSTypes ? 3 : 2]) * 1024;
                 v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
                 result.Add (IO::FileSystem::ToPath (l[includeFSTypes ? 6 : 5].Trim ()), v);
             }
@@ -567,7 +567,6 @@ namespace {
     private:
         static Mapping<dev_t, PerfStats_> ReadProcFS_diskstats_ ()
         {
-            using Characters::String2Float;
             Mapping<dev_t, PerfStats_>                             result;
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
             static const filesystem::path                          kProcMemInfoFileName_{"/proc/diskstats"sv};
@@ -606,7 +605,7 @@ namespace {
                         if (sysBlockInfoPath) {
                             for (Sequence<String> ll : reader.ReadMatrix (FileInputStream::New (*sysBlockInfoPath / "stat", FileInputStream::eNotSeekable))) {
                                 if (ll.size () >= 11) {
-                                    weightedTimeInQSeconds = String2Float (ll[11 - 1]) / 1000.0; // we record in seconds, but the value in file in milliseconds
+                                    weightedTimeInQSeconds = FloatConversion::ToFloat (ll[11 - 1]) / 1000.0; // we record in seconds, but the value in file in milliseconds
                                     break;
                                 }
                             }
@@ -615,8 +614,8 @@ namespace {
                     result.Add (
                         makedev (String2Int<unsigned int> (majorDevNumber), String2Int<unsigned int> (minorDevNumber)),
                         PerfStats_{
-                            String2Float (sectorsRead), String2Float (timeSpentReadingMS) / 1000, String2Float (readsCompleted),
-                            String2Float (sectorsWritten), String2Float (timeSpentWritingMS) / 1000, String2Float (writesCompleted),
+                            FloatConversion::ToFloat (sectorsRead), FloatConversion::ToFloat (timeSpentReadingMS) / 1000, FloatConversion::ToFloat (readsCompleted),
+                            FloatConversion::ToFloat (sectorsWritten), FloatConversion::ToFloat (timeSpentWritingMS) / 1000, FloatConversion::ToFloat (writesCompleted),
                             NullCoalesce (weightedTimeInQSeconds)});
                 }
             }
