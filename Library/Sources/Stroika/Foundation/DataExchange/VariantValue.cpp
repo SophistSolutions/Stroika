@@ -606,8 +606,8 @@ String VariantValue::AsString_ () const
              */
             //
             //
-            //????              static  const   Float2StringOptions kFmtOptions_ { Float2StringOptions::Precision{numeric_limits<FloatType_>::digits10 + 1} };
-            static const FloatConversion::ToStringOptions kFmtOptions_{FloatConversion::ToStringOptions::Precision{numeric_limits<FloatType_>::digits10 + 2}};
+            //????              static  const   Float2StringOptions kFmtOptions_ { FloatConversion::Precision{numeric_limits<FloatType_>::digits10 + 1} };
+            static const FloatConversion::ToStringOptions kFmtOptions_{FloatConversion::Precision{numeric_limits<FloatType_>::digits10 + 2}};
             return FloatConversion::ToString (v->fVal, kFmtOptions_);
         }
         case Type::eDate: {

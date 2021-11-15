@@ -31,86 +31,86 @@
 namespace Stroika::Foundation::Characters::FloatConversion {
 
     /**
-     *  These are options for the Float2Stgring () function
-     *
-     *  Float2String uses the locale specified by ToStringOptions, but defaults to
-     *  the "C" locale.
-     *
+     * Control needless trailing zeros. For example, 3.000 instead of 3, or 4.2000 versus 4.2. Sometimes desirable (to show precision).
+     * But often not.
+     */
+    enum class TrimTrailingZerosType {
+        eTrim,
+        eDontTrim,
+
+        Stroika_Define_Enum_Bounds (eTrim, eDontTrim)
+    };
+    constexpr TrimTrailingZerosType eTrimZeros     = TrimTrailingZerosType::eTrim;
+    constexpr TrimTrailingZerosType eDontTrimZeros = TrimTrailingZerosType::eDontTrim;
+
+    /**
+     */
+    enum class UseCLocale { eUseCLocale };
+    constexpr UseCLocale eUseCLocale = UseCLocale::eUseCLocale;
+
+    /**
+     */
+    enum class UseCurrentLocale { eUseCurrentLocale };
+    constexpr UseCurrentLocale eUseCurrentLocale = UseCurrentLocale::eUseCurrentLocale;
+
+    /**
      *  Precision (here) is defined to be the number of significant digits (including before and after decimal point).
+     */
+    struct Precision {
+        constexpr Precision (unsigned int p);
+        unsigned int fPrecision;
+    };
+
+    /**
+     * Automatic picks based on the precision and the number used, so for example, 0.0000001
+     * will show as '1e-7', but 4 will show as '4'
+     *
+     *      eScientific corresponds to ios_base::scientific
+     *      eFixedPoint corresponds to ios_base::fixed
+     *      eDefaultFloat corresponds to unsetf (floatfield) - which may be different than scientific or fixed point
+     */
+    enum class FloatFormatType {
+        eScientific,
+        eDefaultFloat,
+        eFixedPoint,
+        eAutomatic,
+
+        eDEFAULT = eDefaultFloat,
+
+        Stroika_Define_Enum_Bounds (eScientific, eAutomatic)
+    };
+    constexpr FloatFormatType eScientific          = FloatFormatType::eScientific;
+    constexpr FloatFormatType eDefaultFloat        = FloatFormatType::eDefaultFloat;
+    constexpr FloatFormatType eFixedPoint          = FloatFormatType::eFixedPoint;
+    constexpr FloatFormatType eAutomaticScientific = FloatFormatType::eAutomatic;
+
+    /**
+     *  These are options for the FloatConversion::ToString () function
+     *
+     *  FloatConversion::ToString uses the locale specified by ToStringOptions, but defaults to
+     *  the "C" locale.
      *
      *  This prints and trims any trailing zeros (after the decimal point - fTrimTrailingZeros -
      *  by default.
      *
      *  Float2String () maps NAN values to the string "NAN", and negative infinite values to "-INF", and positive infinite
-     *  values to "INF".
+     *  values to "INF" (ignoring case).
      *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
      */
     struct ToStringOptions {
+
         /**
-         * Control needless trailing zeros. For example, 3.000 instead of 3, or 4.2000 versus 4.2. Sometimes desirable (to show precision).
-         * But often not.
+         * From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf,
+         * init (basic_streambuf...) initializes precision to 6
+         * Stroika need not maintain that default here, but it seems a sensible one...
          */
-        enum class TrimTrailingZerosType {
-            eTrim,
-            eDontTrim,
-
-            Stroika_Define_Enum_Bounds (eTrim, eDontTrim)
-        };
-        static constexpr TrimTrailingZerosType eTrimZeros     = TrimTrailingZerosType::eTrim;
-        static constexpr TrimTrailingZerosType eDontTrimZeros = TrimTrailingZerosType::eDontTrim;
-
-        /**
-         */
-        enum class UseCLocale { eUseCLocale };
-        static constexpr UseCLocale eUseCLocale = UseCLocale::eUseCLocale;
-
-        /**
-            */
-        enum class UseCurrentLocale { eUseCurrentLocale };
-        static constexpr UseCurrentLocale eUseCurrentLocale = UseCurrentLocale::eUseCurrentLocale;
-
-        /**
-             */
-        struct Precision {
-            constexpr Precision (unsigned int p);
-            unsigned int fPrecision;
-        };
-
-        /**
-             * From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf,
-             * init (basic_streambuf...) initializes precision to 6
-             * Stroika need not maintain that default here, but it seems a sensible one...
-             */
         static const Precision kDefaultPrecision;
 
         /**
-             * Automatic picks based on the precision and the number used, so for example, 0.0000001
-             * will show as '1e-7', but 4 will show as '4'
-             *
-             *      eScientific corresponds to ios_base::scientific
-             *      eFixedPoint corresponds to ios_base::fixed
-             *      eDefaultFloat corresponds to unsetf (floatfield) - which may be different than scientific or fixed point
-             */
-        enum class FloatFormatType {
-            eScientific,
-            eDefaultFloat,
-            eFixedPoint,
-            eAutomatic,
-
-            eDEFAULT = eDefaultFloat,
-
-            Stroika_Define_Enum_Bounds (eScientific, eAutomatic)
-        };
-        static constexpr FloatFormatType eScientific          = FloatFormatType::eScientific;
-        static constexpr FloatFormatType eDefaultFloat        = FloatFormatType::eDefaultFloat;
-        static constexpr FloatFormatType eFixedPoint          = FloatFormatType::eFixedPoint;
-        static constexpr FloatFormatType eAutomaticScientific = FloatFormatType::eAutomatic;
-
-        /**
-             * Default is to use use C-locale
-             *  \note - if ios_base::fmtflags are specified, these REPLACE - not merged - with
-             *          basic ios flags
-             */
+         * Default is to use use C-locale
+         *  \note - if ios_base::fmtflags are specified, these REPLACE - not merged - with
+         *          basic ios flags
+         */
         constexpr ToStringOptions () = default;
         constexpr ToStringOptions (UseCLocale); // same as default
         ToStringOptions (UseCurrentLocale);
@@ -143,8 +143,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     public:
         /**
-             *  @see Characters::ToString ();
-             */
+         *  @see Characters::ToString ();
+         */
         nonvirtual String ToString () const;
 
     private:
@@ -156,23 +156,23 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     };
 
     /**
-         *  ToString converts a floating point number to a string, controlled by paramtererized options. 
-         *
-         *  @see ToStringOptions
-         *
-         *  ToString () maps NAN values to the string "NAN", and negative infinite values to "-INF", and positive infinite
-         *  values to "INF".
-         *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
-         * 
-         *  The supported type values for FLOAT_TYPE are:
-         *      o   float
-         *      o   double
-         *      o   long double
-         *
-         *  The supported type values for RESULT_TYPE are:
-         *      o   String
-         *      o           ... but this could sensibly be extended in the future
-         */
+     *  ToString converts a floating point number to a string, controlled by paramtererized options. 
+     *
+     *  @see ToStringOptions
+     *
+     *  ToString () maps NAN values to the string "NAN", and negative infinite values to "-INF", and positive infinite
+     *  values to "INF" (note NAN/INF are case insensitive).
+     *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
+     * 
+     *  The supported type values for FLOAT_TYPE are:
+     *      o   float
+     *      o   double
+     *      o   long double
+     *
+     *  The supported type values for RESULT_TYPE are:
+     *      o   String
+     *      o           ... but this could sensibly be extended in the future
+     */
     template <typename STRING_TYPE = String, typename FLOAT_TYPE = float>
     STRING_TYPE ToString (FLOAT_TYPE f, const ToStringOptions& options = {});
 
@@ -214,7 +214,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *  Simple wrapper on std::wcstof, std::wcstod, std::wcstold - except using String class, and returns the
      *  unused portion of the string in the REQUIRED remainder OUT parameter.
      *
-     *  \note UNLIKE String2Float/1, this SKIPS leading spaces, and is OK with trailing extra characters.
+     *  \note UNLIKE ToFloat/(no remainder parameter), this SKIPS leading spaces, and is OK with trailing extra characters.
      *
      *  \req remainder != nullptr
      *

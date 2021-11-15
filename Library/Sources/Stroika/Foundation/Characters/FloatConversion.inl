@@ -19,20 +19,20 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     /*
      ********************************************************************************
-     *************** FloatConversion::ToStringOptions::Precision ********************
+     ************************ FloatConversion::Precision ****************************
      ********************************************************************************
      */
-    constexpr ToStringOptions::Precision::Precision (unsigned int p)
+    constexpr Precision::Precision (unsigned int p)
         : fPrecision{p}
     {
     }
-    constexpr inline const ToStringOptions::Precision ToStringOptions::kDefaultPrecision{6};
 
     /*
      ********************************************************************************
      ********************* FloatConversion::ToStringOptions *************************
      ********************************************************************************
      */
+    constexpr inline const Precision ToStringOptions::kDefaultPrecision{6};
     constexpr ToStringOptions::ToStringOptions (UseCLocale)
     {
     }
@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     {
         return fUseLocale_;
     }
-    inline optional<ToStringOptions::FloatFormatType> ToStringOptions::GetFloatFormat () const
+    inline optional<FloatFormatType> ToStringOptions::GetFloatFormat () const
     {
         return fFloatFormat_;
     }
@@ -111,13 +111,16 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 size_t pastDot = strResult->find ('.');
                 if (pastDot != String::npos) {
                     pastDot++;
-                    size_t pPastLastZero = strResult->length ();
+                    size_t len = strResult->length ();
+                    size_t pPastLastZero = len;
                     for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
                         if ((*strResult)[pPastLastZero - 1] != '0') {
                             break;
                         }
                     }
-                    *strResult = strResult->SubString (0, pPastLastZero);
+                    if (len != pPastLastZero) [[UNLIKELY_ATTR]] {   // check common case of no change, but this substring and assign already pretty optimized (not sure helps performance)
+                        *strResult = strResult->SubString (0, pPastLastZero); 
+                    }
                 }
             }
         }
@@ -244,16 +247,16 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
             {
                 optional<ios_base::fmtflags> useFloatField;
-                switch (options.GetFloatFormat ().value_or (ToStringOptions::FloatFormatType::eDEFAULT)) {
-                    case ToStringOptions::FloatFormatType::eScientific:
+                switch (options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT)) {
+                    case FloatFormatType::eScientific:
                         useFloatField = ios_base::scientific;
                         break;
-                    case ToStringOptions::FloatFormatType::eDefaultFloat:
+                    case FloatFormatType::eDefaultFloat:
                         break;
-                    case ToStringOptions::FloatFormatType::eFixedPoint:
+                    case FloatFormatType::eFixedPoint:
                         useFloatField = ios_base::fixed;
                         break;
-                    case ToStringOptions::FloatFormatType::eAutomatic: {
+                    case FloatFormatType::eAutomatic: {
                         bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
                         if (useScientificNotation) {
                             useFloatField = ios_base::scientific;

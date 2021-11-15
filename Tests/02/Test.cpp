@@ -941,10 +941,10 @@ namespace {
         void Verify_FloatStringRoundtripNearlyEquals_ (FLOAT_TYPE l)
         {
             if constexpr (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
-                VerifyTestResult (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::ToStringOptions::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 2}))));
+                VerifyTestResult (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 2}))));
             }
             else {
-                VerifyTestResult (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::ToStringOptions::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 1}))));
+                VerifyTestResult (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 1}))));
             }
         }
     }
@@ -1084,9 +1084,9 @@ namespace {
         VerifyTestResult (FloatConversion::ToString (0.0) == L"0");
         VerifyTestResult (FloatConversion::ToString (3000.5) == L"3000.5");
         VerifyTestResult (FloatConversion::ToString (3000.500) == L"3000.5");
-        VerifyTestResult (FloatConversion::ToString (3.1234, Characters::FloatConversion::ToStringOptions::Precision (2)) == L"3.1");
-        VerifyTestResult (FloatConversion::ToString (3.1234, Characters::FloatConversion::ToStringOptions::Precision (3)) == L"3.12");
-        VerifyTestResult (FloatConversion::ToString (31.234, Characters::FloatConversion::ToStringOptions::Precision (3)) == L"31.2");
+        VerifyTestResult (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{2}) == L"3.1");
+        VerifyTestResult (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{3}) == L"3.12");
+        VerifyTestResult (FloatConversion::ToString (31.234, Characters::FloatConversion::Precision{3}) == L"31.2");
         VerifyTestResult (FloatConversion::ToString (30707548160.0) == L"3.07075e+10");
     }
 }

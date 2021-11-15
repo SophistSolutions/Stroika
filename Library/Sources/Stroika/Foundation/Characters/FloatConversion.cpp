@@ -133,16 +133,16 @@ namespace {
 
         {
             optional<ios_base::fmtflags> useFloatField;
-            switch (options.GetFloatFormat ().value_or (FloatConversion::ToStringOptions::FloatFormatType::eDEFAULT)) {
-                case FloatConversion::ToStringOptions::FloatFormatType::eScientific:
+            switch (options.GetFloatFormat ().value_or (FloatConversion::FloatFormatType::eDEFAULT)) {
+                case FloatConversion::FloatFormatType::eScientific:
                     useFloatField = ios_base::scientific;
                     break;
-                case FloatConversion::ToStringOptions::FloatFormatType::eDefaultFloat:
+                case FloatConversion::FloatFormatType::eDefaultFloat:
                     break;
-                case FloatConversion::ToStringOptions::FloatFormatType::eFixedPoint:
+                case FloatConversion::FloatFormatType::eFixedPoint:
                     useFloatField = ios_base::fixed;
                     break;
-                case FloatConversion::ToStringOptions::FloatFormatType::eAutomatic: {
+                case FloatConversion::FloatFormatType::eAutomatic: {
                     bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
                     if (useScientificNotation) {
                         useFloatField = ios_base::scientific;

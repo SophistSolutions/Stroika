@@ -272,7 +272,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         if (timeLeft > 0) {
             // DO nano, micro, milliseconds here
 
-            static const FloatConversion::ToStringOptions kFinalFloatOptions_{FloatConversion::ToStringOptions::eTrimZeros};
+            static const FloatConversion::ToStringOptions kFinalFloatOptions_{FloatConversion::eTrimZeros};
 
             static constexpr bool kFirstSubSecondUnitDoDecimalPlaceImmediately_{true};
 
