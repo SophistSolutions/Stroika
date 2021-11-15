@@ -985,6 +985,22 @@ namespace {
                 VerifyTestResult (FloatConversion::ToFloat<double> (L"-INF  f", &remainder) == FloatConversion::ToFloat<double> (L"-INF"));
                 VerifyTestResult (remainder == L"  f");
             }
+            {
+                // leading/trailing space (or other bad trailing characters) produces NAN for no &remainder overload
+                VerifyTestResult (isinf (FloatConversion::ToFloat<double> (L"INF")));
+                VerifyTestResult (not isnan (FloatConversion::ToFloat<double> (L"INF")));
+                VerifyTestResult (isinf (FloatConversion::ToFloat<double> (L"iNF")));
+                VerifyTestResult (isnan (FloatConversion::ToFloat<double> (L" INF")));
+                VerifyTestResult (isnan (FloatConversion::ToFloat<double> (L"INF ")));
+                // leading/trailing space produces NAN for WITH &remainder overload produces right value
+                String remainder;
+                VerifyTestResult (FloatConversion::ToFloat<double> (L"-INF  f", &remainder) == FloatConversion::ToFloat<double> (L"-INF"));
+                VerifyTestResult (remainder == L"  f");
+                VerifyTestResult (FloatConversion::ToFloat<double> (L" INF  f", &remainder) == FloatConversion::ToFloat<double> (L"INF"));
+                VerifyTestResult (remainder == L"  f");
+                VerifyTestResult (FloatConversion::ToFloat<double> (L" 3.0 ", &remainder) == 3.0);
+                VerifyTestResult (remainder == L" ");
+            }
             VerifyTestResult (isnan (CString::String2Float ("-1.#INF000000000000")));
             VerifyTestResult (isnan (FloatConversion::ToFloat<double> (L"1.#INF000000000000")));
             VerifyTestResult (isnan (CString::String2Float ("1.#INF000000000000")));

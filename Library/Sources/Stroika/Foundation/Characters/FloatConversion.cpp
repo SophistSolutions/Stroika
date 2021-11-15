@@ -204,7 +204,10 @@ namespace {
     {
         wchar_t*       e   = nullptr;
         const wchar_t* cst = s.c_str ();
-        RETURN_TYPE    d   = F (cst, &e);
+        if (::iswspace (*cst)) {
+            return Math::nan<RETURN_TYPE> (); // this was a bug in the 2.1b14 and earlier code according to docs - we should REJECT strings with leading space in this case
+        }
+        RETURN_TYPE d = F (cst, &e);
         // if trailing crap - return nan
         if (*e != '\0') {
             return Math::nan<RETURN_TYPE> ();

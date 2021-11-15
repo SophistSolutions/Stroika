@@ -408,11 +408,21 @@ namespace Stroika::Foundation::Characters::FloatConversion {
              */
             Memory::SmallStackBuffer<char> asciiS;
             if (String::AsASCIIQuietly (start, end, &asciiS)) {
-                auto b = asciiS.begin ();
-                auto e = asciiS.end ();
+                auto b         = asciiS.begin ();
+                auto originalB = b; // needed to properly compute remainder
+                auto e         = asciiS.end ();
+                if (remainder != nullptr) [[UNLIKELY_ATTR]] {
+                    // in remainder mode we skip leading whitespace
+                    while (b != e and iswspace (*b))
+                        [[UNLIKELY_ATTR]]
+                        {
+                            b++;
+                        }
+                }
                 if (b != e and *b == '+') [[UNLIKELY_ATTR]] {
                     b++; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
                 }
+
                 auto [ptr, ec] = from_chars (b, e, result);
                 if (ec == errc::result_out_of_range) [[UNLIKELY_ATTR]] {
                     return *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
@@ -429,7 +439,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     }
                 }
                 else {
-                    *remainder = ptr - b + start; // adjust in case we remapped data
+                    *remainder = ptr - originalB + start; // adjust in case we remapped data
                 }
             }
             else {

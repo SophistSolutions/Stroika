@@ -199,19 +199,19 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *  value will be the appropriate verison of infinity.
      *
      *  The argument should be pre-trimmed. If there is any leading or trailing garbage (even whitespace)
-     *  this function will return nan().
+     *  this function will return nan() (**note - unlike overload with 'remainder' arg).
      *
      *  If the argument is the string "NAN", a quiet NAN will be returned. If the string -INF or -INFINITY,
      *  a negative infinite float will be returned, and if INF or INFINITY is passed, a positive infinite
      *  value will be returned:
      *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
      *
-     *  @see strtod(), or @see wcstod (), or String2Float/2 (). This is a simple wrapper on strtod() / wcstod () /
+     *  @see strtod(), or @see wcstod (), or ToFloat (with remainder parameter):. This maybe implemented as a simple wrapper on strtod() / wcstod () /
      *  strtold, etc... except that it returns nan() on invalid data, instead of zero.
      *
-     *  String2Float (with remainder parameter):
+     *  ToFloat (with remainder parameter):
      *
-     *  Simple wrapper on std::wcstof, std::wcstod, std::wcstold - except using String class, and returns the
+     *  Logically a simple wrapper on std::wcstof, std::wcstod, std::wcstold - except using String class, and returns the
      *  unused portion of the string in the REQUIRED remainder OUT parameter.
      *
      *  \note UNLIKE ToFloat/(no remainder parameter), this SKIPS leading spaces, and is OK with trailing extra characters.
