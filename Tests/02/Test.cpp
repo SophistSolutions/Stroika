@@ -980,6 +980,11 @@ namespace {
             VerifyTestResult (isnan (FloatConversion::ToFloat<double> (String{})));
             VerifyTestResult (isnan (CString::String2Float ("     ")));
             VerifyTestResult (isnan (FloatConversion::ToFloat<double> (L"-1.#INF000000000000"))); // MSFT sometimes generates these but they arent legal INF values!
+            {
+                String remainder;
+                VerifyTestResult (FloatConversion::ToFloat<double> (L"-INF  f", &remainder) == FloatConversion::ToFloat<double> (L"-INF"));
+                VerifyTestResult (remainder == L"  f");
+            }
             VerifyTestResult (isnan (CString::String2Float ("-1.#INF000000000000")));
             VerifyTestResult (isnan (FloatConversion::ToFloat<double> (L"1.#INF000000000000")));
             VerifyTestResult (isnan (CString::String2Float ("1.#INF000000000000")));
