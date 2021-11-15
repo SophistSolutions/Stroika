@@ -1084,9 +1084,9 @@ namespace {
         VerifyTestResult (FloatConversion::ToString (0.0) == L"0");
         VerifyTestResult (FloatConversion::ToString (3000.5) == L"3000.5");
         VerifyTestResult (FloatConversion::ToString (3000.500) == L"3000.5");
-        VerifyTestResult (FloatConversion::ToString (3.1234, Characters::Float2StringOptions::Precision (2)) == L"3.1");
-        VerifyTestResult (FloatConversion::ToString (3.1234, Characters::Float2StringOptions::Precision (3)) == L"3.12");
-        VerifyTestResult (FloatConversion::ToString (31.234, Characters::Float2StringOptions::Precision (3)) == L"31.2");
+        VerifyTestResult (FloatConversion::ToString (3.1234, Characters::FloatConversion::ToStringOptions::Precision (2)) == L"3.1");
+        VerifyTestResult (FloatConversion::ToString (3.1234, Characters::FloatConversion::ToStringOptions::Precision (3)) == L"3.12");
+        VerifyTestResult (FloatConversion::ToString (31.234, Characters::FloatConversion::ToStringOptions::Precision (3)) == L"31.2");
         VerifyTestResult (FloatConversion::ToString (30707548160.0) == L"3.07075e+10");
     }
 }
