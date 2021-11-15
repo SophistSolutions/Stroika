@@ -1568,10 +1568,14 @@ int main ()
 #endif
 #endif
 
+/*
+/usr/lib/gcc/x86_64-linux-gnu/8/../../../../include/c++/8/charconv:632: undefined reference to `__muloti4'
+/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Builds/my-clang++-7-release-libstdc++/Stroika-Foundation.a(VariantValue.o): In function `bool std::__detail::__raise_and_add<unsigned long>(unsigned long&, int, unsigned char)':
+*/
 #ifndef qCompilerAndStdLib_to_chars_INT_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_to_chars_INT_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
+#define qCompilerAndStdLib_to_chars_INT_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 7))
 #else
 #define qCompilerAndStdLib_to_chars_INT_Buggy 0
 #endif
