@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     namespace Private_ {
         template <typename RETURN_TYPE>
-        RETURN_TYPE String2FloatViaStrToD_ (const wchar_t* start, const wchar_t* end, const wchar_t** remainder)
+        RETURN_TYPE ToFloat_ViaStrToD_ (const wchar_t* start, const wchar_t* end, const wchar_t** remainder)
         {
             if (start == end) {
                 if (remainder != nullptr) {
@@ -349,7 +349,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     {
         T result; // intentionally uninitialized
         if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy or qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
-            result = Private_::String2FloatViaStrToD_<T> (start, end, nullptr);
+            result = Private_::ToFloat_ViaStrToD_<T> (start, end, nullptr);
         }
         else {
             /*
@@ -373,7 +373,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 }
             }
             else {
-                result = Private_::String2FloatViaStrToD_<T> (start, end, nullptr);
+                result = Private_::ToFloat_ViaStrToD_<T> (start, end, nullptr);
             }
         }
         if constexpr (qDebug) {
@@ -399,7 +399,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         RequireNotNull (remainder);
         T result; // intentionally uninitialized
         if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy or qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
-            result = Private_::String2FloatViaStrToD_<T> (start, end, remainder);
+            result = Private_::ToFloat_ViaStrToD_<T> (start, end, remainder);
         }
         else {
             /*
@@ -423,7 +423,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 }
             }
             else {
-                result = Private_::String2FloatViaStrToD_<T> (start, end, remainder);
+                result = Private_::ToFloat_ViaStrToD_<T> (start, end, remainder);
             }
         }
         if constexpr (qDebug) {
