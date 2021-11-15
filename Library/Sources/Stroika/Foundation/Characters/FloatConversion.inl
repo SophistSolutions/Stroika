@@ -167,7 +167,14 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     tmp[len] = '\0';
                 }
                 RETURN_TYPE d = wcstoFloatType_<RETURN_TYPE> (cst, &e);
-                if (remainder != nullptr) {
+                // If asked to return remainder do so.
+                // If NOT asked to return remainder, treat not using the entire string as forcing result to be a Nan (invalid parse of number of not the whole thing is a number)
+                if (remainder == nullptr) {
+                    if (e != end) {
+                        d = Math::nan<RETURN_TYPE> ();
+                    }
+                }
+                else {
                     *remainder = e - cst + start; // adjust in case we remapped data
                 }
                 return d;
@@ -387,17 +394,56 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     inline T ToFloat (const wchar_t* start, const wchar_t* end, const wchar_t** remainder)
     {
         RequireNotNull (remainder);
-        // TODO from_chars () IMPL!!! HERE - IF POSSIBLE - like above
-        return Private_::String2FloatViaStrToD_<T> (start, end, remainder);
+        T              result; // intentionally uninitialized
+        if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy or qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
+            result = Private_::String2FloatViaStrToD_<T> (start, end, remainder);
+        }
+        else {
+            /*
+             *  Most of the time we can do this very efficiently, because there are just ascii characters.
+             *  Else, fallback on older algorithm that understands full unicode character set.
+             */
+            Memory::SmallStackBuffer<char> asciiS;
+            if (String::AsASCIIQuietly (start, end, &asciiS)) {
+                auto b = asciiS.begin ();
+                auto e = asciiS.end ();
+                if (b != e and *b == '+') {
+                    b++; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
+                }
+                auto [ptr, ec] = from_chars (b, e, result);
+                if (ec == errc::result_out_of_range) [[UNLIKELY_ATTR]] {
+                    return *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
+                }
+                // if error or trailing crap - return nan
+                if (ec != std::errc{} or ptr != e) {
+                    result = Math::nan<T> ();
+                }
+            }
+            else {
+                result = Private_::String2FloatViaStrToD_<T> (start, end, remainder);
+            }
+        }
+        if constexpr (qDebug) {
+            // test backward compat with old algorithm --LGP 2021-11-15
+            String tmpRem;
+            if (isnan (result)) {
+                Ensure (isnan (Private_::ToFloat_Legacy_<T> (String{start, end}, &tmpRem)));
+                Ensure (tmpRem == *remainder);
+            }
+            else {
+                Ensure (result == Private_::ToFloat_Legacy_<T> (String{start, end}, &tmpRem));
+                Ensure (tmpRem == *remainder);
+            }
+        }
+        return result;
     }
     template <typename T>
     inline T ToFloat (const String& s, String* remainder)
     {
-        // TODO from_chars () IMPL!!! HERE - IF POSSIBLE - like above
         RequireNotNull (remainder);
         auto [start, end]           = s.GetData<wchar_t> ();
         const wchar_t* tmpRemainder = nullptr;
-        auto           result       = Private_::String2FloatViaStrToD_<T> (start, end, &tmpRemainder);
+        auto           result       = ToFloat<T> (start, end, &tmpRemainder);
         AssertNotNull (tmpRemainder);
         *remainder = String{tmpRemainder};
         return result;
