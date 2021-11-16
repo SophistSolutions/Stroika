@@ -33,16 +33,13 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
-VERSION=1_77_0
+VERSION=1_78_0_b1
+#VERSION=1_77_0
 #VERSION=1_76_0
 #VERSION=1_75_0
-#VERSION=1_74_0
-#VERSION=1_73_0
-VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed s/_/\./g)
+VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed 's/_[ab][0-9]//'| sed s/_/\./g)
 VERSION_WITH_2DOTS=$(VERSION_WITH_DOTS)
 ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
-###tmphack for pre-release 1.67 release
-#VERSION_WITH_2DOTS=1.67.0
 
 # IF CENTOS, THEN USE OLDER BOOST - 1.76... - to avoid fail to compile...
 ifneq (,$(wildcard /etc/redhat-release))
@@ -83,6 +80,7 @@ FETCHURLS=
 FETCHURLS+=https://boostorg.jfrog.io/artifactory/main/release/$(VERSION_WITH_DOTS)/source/boost_$(VERSION).tar.gz
 FETCHURLS+=https://sourceforge.net/projects/boost/files/boost/$(VERSION_WITH_DOTS)/boost_$(VERSION).tar.gz/download
 FETCHURLS+=https://dl.bintray.com/boostorg/release/$(VERSION_WITH_DOTS)/source/boost_$(VERSION).tar.gz
+FETCHURLS+=https://boostorg.jfrog.io/artifactory/main/beta/$(VERSION_WITH_DOTS).beta1/source/boost_$(VERSION).tar.gz
 #FETCHURLS+=ftp://ftp.sophists.com/Pub/Mirror/boost_$(VERSION).tar.gz
 #(reasonable but breaks github 100mb limit)FETCHURLS+=file:///../Mirror/boost_$(VERSION).tar.gz
 ### the github.com/boostorg/boost/archive appear not fully compatible/real mirror of above - very different size and my build scripts dont work
