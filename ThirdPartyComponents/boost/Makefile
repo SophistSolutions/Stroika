@@ -42,10 +42,10 @@ VERSION_WITH_2DOTS=$(shell echo $(VERSION_WITH_DOTS) | sed 's/\.[ab][0-9]//')
 ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
 
 # IF CENTOS, THEN USE OLDER BOOST - 1.76... - to avoid fail to compile...
-# seems fixed as of boost 1.78.0b1
-#ifneq (,$(wildcard /etc/redhat-release))
-#     VERSION=1_76_0
-#endif
+# still seems broken on centos7 with 1_78_0_b1
+ifneq (,$(wildcard /etc/redhat-release))
+    VERSION=1_76_0
+endif
 
 
 ifneq (,$(findstring /cygdrive/,$(PATH)))
@@ -78,10 +78,10 @@ endif
 
 ### Haven't found any backup/mirrors and this only stores the last few versions. @todo - find a better backup! 
 FETCHURLS=
+FETCHURLS+=https://boostorg.jfrog.io/artifactory/main/beta/$(VERSION_WITH_2DOTS).beta1/source/boost_$(VERSION).tar.gz
 FETCHURLS+=https://boostorg.jfrog.io/artifactory/main/release/$(VERSION_WITH_DOTS)/source/boost_$(VERSION).tar.gz
 FETCHURLS+=https://sourceforge.net/projects/boost/files/boost/$(VERSION_WITH_DOTS)/boost_$(VERSION).tar.gz/download
 FETCHURLS+=https://dl.bintray.com/boostorg/release/$(VERSION_WITH_DOTS)/source/boost_$(VERSION).tar.gz
-FETCHURLS+=https://boostorg.jfrog.io/artifactory/main/beta/$(VERSION_WITH_2DOTS).beta1/source/boost_$(VERSION).tar.gz
 #FETCHURLS+=ftp://ftp.sophists.com/Pub/Mirror/boost_$(VERSION).tar.gz
 #(reasonable but breaks github 100mb limit)FETCHURLS+=file:///../Mirror/boost_$(VERSION).tar.gz
 ### the github.com/boostorg/boost/archive appear not fully compatible/real mirror of above - very different size and my build scripts dont work
