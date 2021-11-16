@@ -32,15 +32,16 @@ namespace {
         Mapping<int, int> m;
         m.Add (3, -3);
         m.Add (19, -19);
-#if qCompilerAndStdLib_attributes_before_template_in_Template_Buggy
-        for (KeyValuePair<int, int> p : m) {
-            Assert (p.fKey == -p.fValue);
+        if constexpr (qCompilerAndStdLib_attributes_before_template_in_Template_Buggy) {
+            for (KeyValuePair<int, int> p : m) {
+                Assert (p.fKey == -p.fValue);
+            }
         }
-#else
-        for ([[maybe_unused]] KeyValuePair<int, int> p : m) {
-            Assert (p.fKey == -p.fValue);
+        else {
+            for ([[maybe_unused]] KeyValuePair<int, int> p : m) {
+                Assert (p.fKey == -p.fValue);
+            }
         }
-#endif
     }
 }
 
