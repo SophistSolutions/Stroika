@@ -491,17 +491,19 @@ optional<DateTime> DateTime::ParseQuietly_ (const wstring& rep, const time_get<w
     istreambuf_iterator<wchar_t> itend;        // end-of-stream
 
     [[maybe_unused]] istreambuf_iterator<wchar_t> i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
-#if qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
-    // Now that I've understood this bug better, I think I can do a better/wider workaround, not just this specail case...
-    if (formatPattern == L"%x %X") {
-        // It now appears this MSFT-only issue is that if you have a 2-digit year, their %x-parse code reverses the month and day
-        wistringstream               iss2{rep};
-        istreambuf_iterator<wchar_t> itbegin2{iss2};
-        istreambuf_iterator<wchar_t> itend2;
-        errState = ios::goodbit;
-        tmget.get_date (itbegin2, itend2, iss, errState, &when);
+
+    if constexpr (qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy) {
+        // Now that I've understood this bug better, I think I can do a better/wider workaround, not just this specail case...
+        if (formatPattern == L"%x %X") {
+            // It now appears this MSFT-only issue is that if you have a 2-digit year, their %x-parse code reverses the month and day
+            wistringstream               iss2{rep};
+            istreambuf_iterator<wchar_t> itbegin2{iss2};
+            istreambuf_iterator<wchar_t> itend2;
+            errState = ios::goodbit;
+            tmget.get_date (itbegin2, itend2, iss, errState, &when);
+        }
     }
-#endif
+
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
         return nullopt;
     }
@@ -723,14 +725,14 @@ String DateTime::Format (const locale& l, const String& formatPattern) const
 
     tm when = As<tm> ();
 
-#if qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
-    if (l == locale::classic () and formatPattern == kLocaleStandardFormat) {
-        // this seems a weird format, but from https://en.cppreference.com/w/cpp/chrono/c/strftime: writes standard date and time string, e.g. Sun Oct 17 04:41:13 2010 (locale dependent)
-        static const String kAltPattern_{L"%a %b %e %T %Y"sv};
-        tmput.put (oss, oss, ' ', &when, kAltPattern_.c_str (), kAltPattern_.c_str () + kAltPattern_.length ());
-        return String{oss.str ()};
+    if constexpr (qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy) {
+        if (l == locale::classic () and formatPattern == kLocaleStandardFormat) {
+            // this seems a weird format, but from https://en.cppreference.com/w/cpp/chrono/c/strftime: writes standard date and time string, e.g. Sun Oct 17 04:41:13 2010 (locale dependent)
+            static const String kAltPattern_{L"%a %b %e %T %Y"sv};
+            tmput.put (oss, oss, ' ', &when, kAltPattern_.c_str (), kAltPattern_.c_str () + kAltPattern_.length ());
+            return String{oss.str ()};
+        }
     }
-#endif
 
     tmput.put (oss, oss, ' ', &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
     // docs aren't clear about expectations, but glibc (gcc8) produces trailing whitespace which

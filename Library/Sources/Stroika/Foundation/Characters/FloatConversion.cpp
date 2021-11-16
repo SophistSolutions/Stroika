@@ -156,18 +156,18 @@ namespace {
                 static const String kNAN_STR_{L"NAN"sv};
                 return kNAN_STR_;
             }
-#if qCompilerAndStdLib_valgrind_fpclassify_check_Buggy && qDebug
             default: {
-                if (Debug::IsRunningUnderValgrind ()) {
-                    if (isinf (f)) {
-                        DbgTrace ("fpclassify (%f) = %d", (double)f, fpclassify (f));
-                        static const String kNEG_INF_STR_{L"-INF"sv};
-                        static const String kINF_STR_{L"INF"sv};
-                        return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
+                if constexpr (qCompilerAndStdLib_valgrind_fpclassify_check_Buggy && qDebug) {
+                    if (Debug::IsRunningUnderValgrind ()) {
+                        if (isinf (f)) {
+                            DbgTrace ("fpclassify (%f) = %d", (double)f, fpclassify (f));
+                            static const String kNEG_INF_STR_{L"-INF"sv};
+                            static const String kINF_STR_{L"INF"sv};
+                            return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
+                        }
                     }
                 }
             }
-#endif
         }
         Assert (!isnan (f));
         Assert (!isinf (f));

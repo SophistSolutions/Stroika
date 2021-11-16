@@ -165,7 +165,7 @@ void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (err
         Throw (bad_alloc{});
     }
     if (errCode == errc::timed_out or errCode == errc::stream_timeout) {
-        Throw (TimeOutException (errCode));
+        Throw (TimeOutException{errCode});
     }
 #if qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
     if (errCode.category () == system_category ()) {

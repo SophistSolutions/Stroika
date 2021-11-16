@@ -169,11 +169,11 @@ optional<Date> Date::LocaleFreeParseMonthDayYear_ (const wstring& rep, size_t* c
 optional<Date> Date::ParseQuietly_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern, size_t* consumedCharsInStringUpTo)
 {
     Require (not rep.empty ());
-#if qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
-    if (formatPattern == kMonthDayYearFormat) { // this is locale-independent (I believe)
-        return LocaleFreeParseMonthDayYear_ (rep, consumedCharsInStringUpTo);
+    if constexpr (qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy) {
+        if (formatPattern == kMonthDayYearFormat) { // this is locale-independent (I believe)
+            return LocaleFreeParseMonthDayYear_ (rep, consumedCharsInStringUpTo);
+        }
     }
-#endif
     auto computeIdx = [] (const istreambuf_iterator<wchar_t>& s, const istreambuf_iterator<wchar_t>& c) -> size_t {
         size_t result = 0;
         for (auto i = s; i != c; ++i, ++result)

@@ -190,12 +190,13 @@ namespace Stroika::Foundation::IO::Network {
                 Assert (result != nullptr); // no need to throw, because according to list of errors in http://man7.org/linux/man-pages/man3/inet_ntop.3.html cannot be error
                 Assert (result == buf);
                 Assert (::strlen (buf) < sizeof (buf)); // docs don't say explicitly, but assuming it nul-terminates
-#if qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy
-                auto tmp = String::FromASCII (result);
-                return tmp;
-#else
-                return String::FromASCII (result);
-#endif
+                if constexpr (qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy) {
+                    auto tmp = String::FromASCII (result);
+                    return tmp;
+                }
+                else {
+                    return String::FromASCII (result);
+                }
             } break;
             default: {
                 RequireNotReached ();

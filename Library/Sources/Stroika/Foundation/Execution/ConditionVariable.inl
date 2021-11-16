@@ -63,14 +63,12 @@ namespace Stroika::Foundation::Execution {
             remaining = min (remaining, fThreadAbortCheckFrequency);
 
             Assert (lock.owns_lock ());
-#if qCompilerAndStdLib_conditionvariable_waitfor_nounlock_Buggy
-            {
+            if constexpr (qCompilerAndStdLib_conditionvariable_waitfor_nounlock_Buggy) {
                 if (remaining <= 0) {
                     lock.unlock ();
                     lock.lock ();
                 }
             }
-#endif
             cv_status tmp = fConditionVariable.wait_for (lock, Time::Duration (remaining).As<chrono::milliseconds> ());
             Assert (lock.owns_lock ());
             if (tmp == cv_status::timeout) {
