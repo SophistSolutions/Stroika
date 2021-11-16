@@ -42,9 +42,10 @@ VERSION_WITH_2DOTS=$(shell echo $(VERSION_WITH_DOTS) | sed 's/\.[ab][0-9]//')
 ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
 
 # IF CENTOS, THEN USE OLDER BOOST - 1.76... - to avoid fail to compile...
-ifneq (,$(wildcard /etc/redhat-release))
-     VERSION=1_76_0
-endif
+# seems fixed as of boost 1.78.0b1
+#ifneq (,$(wildcard /etc/redhat-release))
+#     VERSION=1_76_0
+#endif
 
 
 ifneq (,$(findstring /cygdrive/,$(PATH)))
