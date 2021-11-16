@@ -160,6 +160,14 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             else {
                 wchar_t*                          e   = nullptr;
                 const wchar_t*                    cst = start;
+
+                if (remainder == nullptr) {
+                     // REJECT strings with leading space in this case - must match exactly
+                    if (::iswspace (*cst)) {
+                        return Math::nan<RETURN_TYPE> ();
+                    }
+                }
+
                 Memory::SmallStackBuffer<wchar_t> tmp;
                 if (*end != '\0') {
                     // remap addresses - copying to a temporary buffer, so we can nul-terminate string passed to strtod (etc)
