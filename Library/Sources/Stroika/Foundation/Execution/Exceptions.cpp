@@ -46,7 +46,7 @@ namespace {
         sb += L" while ";
         for (auto i = activities.begin (); i != activities.end ();) {
             sb += i->AsString ();
-            i++;
+            ++i;
             if (i == activities.end ()) {
                 sb += tmp.second.value_or (L"."sv);
             }

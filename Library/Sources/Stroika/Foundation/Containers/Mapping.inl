@@ -224,7 +224,7 @@ namespace Stroika::Foundation::Containers {
         unsigned int cntAdded{};
         for (auto i = start; i != end; ++i) {
             if (Add (*i, addReplaceMode)) {
-                cntAdded++;
+                ++cntAdded;
             }
         }
         return cntAdded;
@@ -466,7 +466,7 @@ namespace Stroika::Foundation::Containers {
                         }
                         else {
                             auto result = (*myContext)->fKey;
-                            (*myContext)++;
+                            ++(*myContext);
                             return result;
                         }
                     };
@@ -510,7 +510,7 @@ namespace Stroika::Foundation::Containers {
                         }
                         else {
                             auto result = (*myContext)->fValue;
-                            (*myContext)++;
+                            ++(*myContext);
                             return result;
                         }
                     };

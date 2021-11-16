@@ -167,7 +167,7 @@ namespace Stroika::Foundation::Debug {
 #if qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy
                     &x;
 #endif
-                    i++;
+                    ++i;
                 }
                 return i;
             }

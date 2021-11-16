@@ -365,7 +365,7 @@ namespace Stroika::Foundation::Containers {
                         }
                         else {
                             auto result = (*myContext)->fKey;
-                            (*myContext)++;
+                            ++(*myContext);
                             return result;
                         }
                     };
@@ -411,7 +411,7 @@ namespace Stroika::Foundation::Containers {
                         }
                         else {
                             auto result = (*myContext)->fValue;
-                            (*myContext)++;
+                            ++(*myContext);
                             return result;
                         }
                     };

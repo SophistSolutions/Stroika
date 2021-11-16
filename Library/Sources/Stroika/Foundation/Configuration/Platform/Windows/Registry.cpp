@@ -199,7 +199,7 @@ Traversal::Iterable<shared_ptr<RegistryKey>> RegistryKey::EnumerateSubKeys () co
 Containers::Mapping<Characters::String, DataExchange::VariantValue> RegistryKey::EnumerateValues () const
 {
     Containers::Mapping<Characters::String, DataExchange::VariantValue> result;
-    for (int i = 0;; i++) {
+    for (int i = 0;; ++i) {
         Memory::SmallStackBuffer<TCHAR> achKeyBuf{1024};
         DWORD                           cbName = static_cast<DWORD> (achKeyBuf.size ()); // size of name string
     retry:

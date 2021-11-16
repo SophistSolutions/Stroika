@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Streams {
      *              },
      *              Thread::eAutoStart);
      *           Thread::Ptr producer = Thread::New ([&]() {
-     *                  for (unsigned int i = kStartWith; i <= kUpToInclusive_; i++) {
+     *                  for (unsigned int i = kStartWith; i <= kUpToInclusive_; ++i) {
      *                      pipe.Write (i);
      *                  };
      *                  pipe.CloseWrite ();    // critical or consumer hangs on final read

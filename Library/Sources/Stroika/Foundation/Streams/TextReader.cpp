@@ -379,12 +379,12 @@ protected:
         if (fPutBack_) {
             *outI     = *fPutBack_;
             fPutBack_ = nullopt;
-            outI++;
+            ++outI;
             // fOffset_ doesn't take into account putback
         }
-        for (; fSrcIter_ != fSource_.end () and outI != intoEnd; ++fSrcIter_, outI++) {
+        for (; fSrcIter_ != fSource_.end () and outI != intoEnd; ++fSrcIter_, ++outI) {
             *outI = *fSrcIter_;
-            fOffset_++;
+            ++fOffset_;
         }
         if (outI > intoStart) {
             fPrevCharCached_ = *(outI - 1);

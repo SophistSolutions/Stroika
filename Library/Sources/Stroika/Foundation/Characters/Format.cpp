@@ -48,7 +48,7 @@ String Characters::FormatV (const wchar_t* format, va_list argsList)
                     } break;
                     case 's': {
                         newFormat[newFormatIdx] = 'l';
-                        newFormatIdx++;
+                        ++newFormatIdx;
                         lookingAtFmtCvt = false; // DONE
                     } break;
                     case '.': {
@@ -70,7 +70,7 @@ String Characters::FormatV (const wchar_t* format, va_list argsList)
                 }
             }
             newFormat[newFormatIdx] = format[i];
-            newFormatIdx++;
+            ++newFormatIdx;
         }
         Assert (newFormatIdx >= origFormatLen);
         if (newFormatIdx > origFormatLen) {

@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 // @todo must patch!!!
                 // in case of update, set<> wont update the value so we must remove and re-add, but todo that, use previous iterator as hint
                 typename DataStructureImplType_::iterator hint = flagAndI.first;
-                hint++;
+                ++hint;
                 fData_.erase (flagAndI.first);
                 fData_.insert (hint, item);
                 return false;

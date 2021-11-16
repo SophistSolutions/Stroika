@@ -770,9 +770,9 @@ namespace {
                     if (write2StdErrCache) {
                         for (size_t i = 0; i < nBytesRead; ++i) {
                             *trailingStderrBufNextByte2WriteAt = buf[i];
-                            trailingStderrBufNWritten++;
+                            ++trailingStderrBufNWritten;
                             if (trailingStderrBufNextByte2WriteAt < end (trailingStderrBuf)) {
-                                trailingStderrBufNextByte2WriteAt++;
+                                ++trailingStderrBufNextByte2WriteAt;
                             }
                             else {
                                 trailingStderrBufNextByte2WriteAt = begin (trailingStderrBuf);
@@ -1119,7 +1119,7 @@ namespace {
                     // process actually finishes, it will change state and the wait should return immediately.
                     double remainingTimeout = (timesWaited <= 5) ? 0.1 : 0.5;
                     DWORD  waitResult       = ::WaitForMultipleObjects (static_cast<DWORD> (Memory::NEltsOf (events)), events, false, static_cast<int> (remainingTimeout * 1000));
-                    timesWaited++;
+                    ++timesWaited;
 
                     readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDOUT, out);
                     readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDERR, err);
@@ -1292,7 +1292,7 @@ pid_t Execution::DetachedProcessRunner (const filesystem::path& executable, cons
 
         /*
          */
-        for (int i = 0; i < kMaxFD_; i++) {
+        for (int i = 0; i < kMaxFD_; ++i) {
             ::close (i);
         }
         int id = ::open ("/dev/null", O_RDWR);

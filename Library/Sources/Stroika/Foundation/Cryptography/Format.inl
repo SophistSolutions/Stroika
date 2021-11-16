@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Cryptography {
             size_t                  i = 0;
             for (auto c : tmp) {
                 data[i] += (uint8_t)c;
-                i++;
+                ++i;
                 if (i >= 16) {
                     i = 0;
                 }

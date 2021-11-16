@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         size_t                                               n = 0;
         for (const Link* i = fHead_; i != nullptr; i = i->fNext) {
-            n++;
+            ++n;
         }
         return n;
     }
@@ -517,12 +517,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         size_t forwardCounter = 0;
         for (Link* i = fHead_; i != nullptr; i = i->fNext) {
             Assert (i->fNext == nullptr or i->fNext->fPrev == i); //  adjacent nodes point at each other
-            forwardCounter++;
+            ++forwardCounter;
         }
         size_t backwardCounter{};
         for (Link* i = fTail_; i != nullptr; i = i->fPrev) {
             Assert (i->fPrev == nullptr or i->fPrev->fNext == i); //  adjacent nodes point at each other
-            backwardCounter++;
+            ++backwardCounter;
         }
         Assert (forwardCounter == backwardCounter);
     }

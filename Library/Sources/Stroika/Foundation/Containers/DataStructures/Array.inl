@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             T*     rhs = &fItems_[fLength_ - 2];
             size_t i   = fLength_ - 1;
 
-            for (; i > index; i--) {
+            for (; i > index; --i) {
                 *lhs-- = *rhs--;
             }
             Assert (i == index);
@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         Invariant ();
         T* p = &fItems_[0];
-        for (size_t i = fLength_; i > 0; i--, p++) {
+        for (size_t i = fLength_; i > 0; --i, ++p) {
             p->T::~T ();
         }
         fLength_ = 0;
@@ -136,8 +136,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         const T*                                             i    = &fItems_[0];
         const T*                                             last = &fItems_[fLength_];
-        for (; i < last; i++) {
-            (doToElement) (*i);
+        for (; i < last; ++i) {
+            doToElement (*i);
         }
     }
     template <typename T>
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         const T*                                             start = &fItems_[0];
         const T*                                             i     = start;
         const T*                                             last  = &fItems_[fLength_];
-        for (; i < last; i++) {
+        for (; i < last; ++i) {
             if (doToElement (*i)) {
                 return i - start;
             }
@@ -560,7 +560,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  would be revisiting, or skipping forwards an item.
          */
         if (adjustmentAt.CurrentIndex () <= this->CurrentIndex ()) {
-            this->fCurrentIdx_++;
+            ++this->fCurrentIdx_;
         }
     }
     template <typename T>
@@ -637,7 +637,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         if (advance) [[LIKELY_ATTR]] {
             if (not this->Done ()) [[LIKELY_ATTR]] {
                 Assert (this->fCurrentIdx_ < this->fData_->fLength_);
-                this->fCurrentIdx_++;
+                ++this->fCurrentIdx_;
             }
         }
         return inherited::More (current, advance);
@@ -650,7 +650,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         if (advance) [[LIKELY_ATTR]] {
             if (not this->Done ()) {
                 Assert (this->fCurrentIdx_ < this->fData_->fLength_);
-                this->fCurrentIdx_++;
+                ++this->fCurrentIdx_;
             }
         }
         this->Invariant ();
@@ -673,7 +673,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (not this->Done ());
         this->Invariant ();
         Assert (this->fCurrentIdx_ < this->fData_->fLength_);
-        this->fCurrentIdx_++;
+        ++this->fCurrentIdx_;
         this->Invariant ();
         return *this;
     }

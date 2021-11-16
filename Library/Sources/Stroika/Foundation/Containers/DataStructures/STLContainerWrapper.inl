@@ -66,8 +66,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         while (oldI != pi->fStdIterator_) {
             Assert (newI != newE);
             Assert (oldI != oldE);
-            newI++;
-            oldI++;
+            ++newI;
+            ++oldI;
             Assert (newI != newE);
             Assert (oldI != oldE);
         }
@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         bool                                                 done = Done ();
         if (advance) {
             if (not done) {
-                fStdIterator_++;
+                ++fStdIterator_;
                 done = Done ();
             }
         }
@@ -177,7 +177,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
         if (advance) {
             if (not Done ()) {
-                fStdIterator_++;
+                ++fStdIterator_;
             }
         }
         if (Done ()) {
@@ -223,7 +223,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         RequireNotNull (adjustmentAt);
         if (this->fStdIterator_ == adjustmentAt->fStdIterator_) {
-            this->fStdIterator_++;
+            ++this->fStdIterator_;
         }
     }
     template <typename STL_CONTAINER_OF_T>

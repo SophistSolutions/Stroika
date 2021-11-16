@@ -1031,7 +1031,7 @@ namespace {
             if (ZREAD64 (*pzlib_filefunc_def, filestream, buf, uReadSize) != uReadSize)
                 break;
 
-            for (i = (int)uReadSize - 3; (i--) > 0;)
+            for (i = (int)uReadSize - 3; i-- > 0;)
                 if (((*(buf + i)) == 0x50) and ((*(buf + i + 1)) == 0x4b) &&
                     ((*(buf + i + 2)) == 0x05) and ((*(buf + i + 3)) == 0x06)) {
                     uPosFound = uReadPos + i;
@@ -1089,7 +1089,7 @@ namespace {
             if (ZREAD64 (*pzlib_filefunc_def, filestream, buf, uReadSize) != uReadSize)
                 break;
 
-            for (i = (int)uReadSize - 3; (i--) > 0;)
+            for (i = (int)uReadSize - 3; i-- > 0;)
                 if (((*(buf + i)) == 0x50) and ((*(buf + i + 1)) == 0x4b) &&
                     ((*(buf + i + 2)) == 0x06) and ((*(buf + i + 3)) == 0x07)) {
                     uPosFound = uReadPos + i;
@@ -2107,7 +2107,7 @@ namespace {
             if (ZREAD64 (s->z_filefunc, s->filestream, source, 12) < 12)
                 return UNZ_INTERNALERROR;
 
-            for (i = 0; i < 12; i++)
+            for (i = 0; i < 12; ++i)
                 zdecode (s->keys, s->pcrc_32_tab, source[i]);
 
             s->pfile_in_zip_read->pos_in_zipfile += 12;
@@ -2727,7 +2727,7 @@ public:
             printf("error %d with zipfile in unzGetGlobalInfo \n", err);
         printf("  Length  Method     Size Ratio   Date    Time   CRC-32     Name\n");
         printf("  ------  ------     ---- -----   ----    ----   ------     ----\n");
-        for (i = 0; i < gi.number_entry; i++) {
+        for (i = 0; i < gi.number_entry; ++i) {
             char filename_inzip[256];
             unz_file_info64 file_info;
             uLong ratio = 0;

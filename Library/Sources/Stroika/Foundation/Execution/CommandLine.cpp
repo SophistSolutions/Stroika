@@ -48,7 +48,7 @@ Sequence<String> Execution::ParseCommandLine (const String& cmdLine)
     StringBuilder curToken;
     Character     endQuoteChar = '\0';
 
-    for (size_t i = 0; i < e; i++) {
+    for (size_t i = 0; i < e; ++i) {
         Character c = cmdLine[i];
         if (endQuoteChar != '\0' and c == endQuoteChar) {
             result.Append (curToken.str ());

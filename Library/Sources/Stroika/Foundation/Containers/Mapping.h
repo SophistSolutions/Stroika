@@ -383,7 +383,7 @@ namespace Stroika::Foundation::Containers {
          *      TBD in the case of Remove() on in iterator???? Probably should have consistent
          *      answers but review Remove()for other containers as well.
          *
-         *  Remove with iterator returns the adjusted iterator value, now pointing to the next value to use (as in save that iterator value, i++) and remove the
+         *  Remove with iterator returns the adjusted iterator value, now pointing to the next value to use (as in save that iterator value, ++i) and remove the
          *  i iterator value).
          *
          *  \note mutates container

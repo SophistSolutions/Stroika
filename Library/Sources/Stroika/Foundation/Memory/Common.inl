@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Memory {
         //Require (count == 0 or rhs != nullptr);
         const uint8_t* li = lhs;
         const uint8_t* ri = rhs;
-        for (; count--; li++, ri++) {
+        for (; count--; ++li, ++ri) {
             if (int cmp = static_cast<int> (*li) - static_cast<int> (*ri)) {
                 return cmp;
             }

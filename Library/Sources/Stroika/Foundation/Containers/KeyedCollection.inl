@@ -213,7 +213,7 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep> r{this};
         for (auto i = start; i != end; ++i) {
             if (r._GetWriteableRep ().Add (*i)) {
-                cntAdded++;
+                ++cntAdded;
             }
         }
         return cntAdded;
@@ -392,7 +392,7 @@ namespace Stroika::Foundation::Containers {
                         }
                         else {
                             auto result = keyExtractor (**myContext);
-                            (*myContext)++;
+                            ++(*myContext);
                             return result;
                         }
                     };

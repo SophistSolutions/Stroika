@@ -191,7 +191,7 @@ SignalHandler kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
  */
 Thread::SuppressInterruptionInContext::SuppressInterruptionInContext ()
 {
-    t_InterruptionSuppressDepth_++;
+    ++t_InterruptionSuppressDepth_;
 }
 
 Thread::SuppressInterruptionInContext::~SuppressInterruptionInContext ()
@@ -961,7 +961,7 @@ void Thread::Ptr::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
     unsigned int tries = 0;
     while (true) {
         Abort ();
-        tries++;
+        ++tries;
         Time::DurationSecondsType timeLeft = timeoutAt - Time::GetTickCount ();
         if (timeLeft <= kAbortAndWaitForDoneUntil_TimeBetweenAborts_) {
             WaitForDoneUntil (timeoutAt); // throws if we should throw
@@ -1166,7 +1166,7 @@ void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, 
                     i = threads2WaitOn.erase (i);
                 }
                 else {
-                    i++;
+                    ++i;
                 }
             }
             if (not threads2WaitOn.empty () and timeOfLastWarning + kTimeBetweenDbgTraceWarnings_ < Time::GetTickCount ()) {

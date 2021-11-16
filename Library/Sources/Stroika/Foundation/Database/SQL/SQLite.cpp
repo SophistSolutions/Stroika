@@ -162,13 +162,13 @@ struct Connection::Rep_ final : IRep {
         {
             int n{};
             if (options.fDBPath) {
-                n++;
+                ++n;
             }
             if (options.fTemporaryDB) {
-                n++;
+                ++n;
             }
             if (options.fInMemoryDB) {
-                n++;
+                ++n;
             }
             Require (n == 1); // exactly one of fDBPath, fTemporaryDB, fInMemoryDB must be provided
         }

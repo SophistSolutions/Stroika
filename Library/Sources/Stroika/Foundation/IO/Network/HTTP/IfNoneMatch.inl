@@ -43,7 +43,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         wstring                    t = wireFormat.As<wstring> ();
         wstring                    curETagToken;
         bool                       readingETag = false;
-        for (auto i = t.begin (); i != t.end (); i++) {
+        for (auto i = t.begin (); i != t.end (); ++i) {
             if (readingETag) {
                 curETagToken += *i;
                 if (*i == '\"') {

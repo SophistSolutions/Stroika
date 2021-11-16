@@ -77,7 +77,7 @@ namespace {
             for (size_t i = 0; i < NEltsOf (kMallocGuardHeader_); ++i) {
                 kMallocGuardHeader_[i] = kMallocGuardHeader_BASE_[fromI];
                 kMallocGuardFooter_[i] = kMallocGuardFooter_[fromI];
-                fromI++;
+                ++fromI;
                 if (fromI >= NEltsOf (kMallocGuardHeader_BASE_)) {
                     fromI = 0;
                 }
@@ -160,7 +160,7 @@ sDoInit_x_;
         const byte* badFillI      = pBadFillStart;
         for (byte* oi = s; oi != e; ++oi) {
             *oi = *badFillI;
-            badFillI++;
+            ++badFillI;
             if (badFillI == pBadFillEnd) {
                 badFillI = pBadFillStart;
             }

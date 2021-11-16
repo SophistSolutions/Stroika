@@ -2644,7 +2644,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
                 wchar_t* outWBytes    = reinterpret_cast<wchar_t*> (outChars);
                 size_t   outByteCount = (inCharCnt * sizeof (wchar_t));
                 if (GetHandleBOM ()) {
-                    outWBytes++;       // skip BOM
+                    ++outWBytes;       // skip BOM
                     outByteCount -= 2; // subtract for BOM
                 }
                 *outCharCnt = outByteCount;
@@ -2666,7 +2666,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
                 wchar_t* outWBytes    = reinterpret_cast<wchar_t*> (outChars);
                 size_t   outByteCount = (inCharCnt * sizeof (wchar_t));
                 if (GetHandleBOM ()) {
-                    outWBytes++;       // skip BOM
+                    ++outWBytes;       // skip BOM
                     outByteCount -= 2; // subtract for BOM
                 }
                 *outCharCnt = outByteCount;

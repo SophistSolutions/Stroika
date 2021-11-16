@@ -282,7 +282,7 @@ namespace {
                 unsigned int cnt    =   0;
                 for (auto i = fAllocMap.begin (); i != fAllocMap.end (); ++i) {
                     if (i->second == *si) {
-                        cnt++;
+                        ++cnt;
                     }
                 }
                 DbgTrace ("items of size %d, count %d", *si, cnt);
@@ -327,7 +327,7 @@ namespace {
             }
             while (psi != prevSizes.end ()) {
                 DbgTrace ("Reverse-Leak: old size bucket %d", *psi);
-                psi++;
+                ++psi;
             }
         }
     }

@@ -236,7 +236,7 @@ void Logger::Log_ (Priority logLevel, const String& msg)
         if (fRep_->fSuppressDuplicatesThreshold_.cget ()->has_value ()) {
             auto lastMsgLocked = fRep_->fLastMsg_.rwget ();
             if (p == lastMsgLocked->fLastMsgSent_) {
-                lastMsgLocked->fRepeatCount_++;
+                ++lastMsgLocked->fRepeatCount_;
                 lastMsgLocked->fLastSentAt = Time::GetTickCount ();
                 return; // so will be handled later
             }

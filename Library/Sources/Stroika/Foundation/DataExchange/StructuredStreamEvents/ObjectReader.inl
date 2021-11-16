@@ -460,7 +460,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                 }
                 return reader->HandleChildStart (name);
             }
-            idx++;
+            ++idx;
         }
         return make_shared<IgnoreNodeReader> ();
     }
@@ -478,7 +478,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                 }
                 fMixinReaders_[idx]->HandleTextInside (text);
             }
-            idx++;
+            ++idx;
         }
     }
     template <typename T>

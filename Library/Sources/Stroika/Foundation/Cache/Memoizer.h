@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Cache {
          *  \par Example Usage
          *      \code
          *          unsigned int                      totalCallsCount{};
-         *          Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }};
+         *          Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount](int a, int b) { ++totalCallsCount;  return a + b; }};
          *          VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
          *          VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
          *      \endcode

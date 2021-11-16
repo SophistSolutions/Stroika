@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Cache {
      *              using Cache::CallerStalenessCache;
      *              static CallerStalenessCache<void, optional<int>> sCache_;
      *              return sCache_.LookupValue (sCache_.Ago (allowedStaleness.value_or (30)), [] () -> optional<int> {
-     *                  sCalls1_++;
+     *                  ++sCalls1_;
      *                  return 1;
      *              });
      *          }

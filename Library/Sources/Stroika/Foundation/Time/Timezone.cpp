@@ -86,7 +86,7 @@ optional<Timezone> Timezone::ParseTimezoneOffsetString (const char* tzStr)
         const char* tStrPtr = tzStr;
         bool        isNeg   = (*tStrPtr == '-');
         if (*tStrPtr == '+' or *tStrPtr == '-') {
-            tStrPtr++;
+            ++tStrPtr;
         }
         DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING sscanf_s
         int nTZItems = ::sscanf (tStrPtr, "%2d%2d", &tzHr, &tzMn);
@@ -116,7 +116,7 @@ optional<Timezone> Timezone::ParseTimezoneOffsetString (const wchar_t* tzStr)
         const wchar_t* tStrPtr = tzStr;
         bool           isNeg   = (*tStrPtr == '-');
         if (*tStrPtr == '+' or *tStrPtr == '-') {
-            tStrPtr++;
+            ++tStrPtr;
         }
         DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
         int nTZItems = ::swscanf (tStrPtr, L"%2d%2d", &tzHr, &tzMn);
@@ -483,7 +483,7 @@ namespace {
         aTm.tm_mday = 1;
         constexpr bool kImplErrorUnderflow_{true}; // Only KNOWN to be needed on windows with TZ=America/New_York, but probably we should always do this
         if (kImplErrorUnderflow_) {
-            aTm.tm_mday++;
+            ++aTm.tm_mday;
         }
         aTm.tm_isdst  = applyDST;
         time_t result = ::mktime (&aTm);

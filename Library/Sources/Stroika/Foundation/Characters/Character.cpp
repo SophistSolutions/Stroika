@@ -29,7 +29,7 @@ namespace {
             }
         }
         else {
-            for (size_t i = 0; i < length; i++) {
+            for (size_t i = 0; i < length; ++i) {
                 if (lhsStart[i].GetCharacterCode () != rhsStart[i].GetCharacterCode ()) {
                     return Common::ThreeWayCompare (lhsStart[i].GetCharacterCode (), rhsStart[i].GetCharacterCode ());
                 }
@@ -46,7 +46,7 @@ namespace {
         size_t lLen   = lhsEnd - lhsStart;
         size_t rLen   = rhsEnd - rhsStart;
         size_t length = min (lLen, rLen);
-        for (size_t i = 0; i < length; i++) {
+        for (size_t i = 0; i < length; ++i) {
             Character lc = lhsStart[i].ToLowerCase ();
             Character rc = rhsStart[i].ToLowerCase ();
             if (lc.GetCharacterCode () != rc.GetCharacterCode ()) {

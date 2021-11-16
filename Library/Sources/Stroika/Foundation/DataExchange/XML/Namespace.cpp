@@ -58,8 +58,8 @@ bool XML::operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefinit
         // keep looking
         Assert (li < le);
         Assert (ri < re);
-        li++;
-        ri++;
+        ++li;
+        ++ri;
     }
     // both ran out at the same time
     return false;
@@ -89,8 +89,8 @@ bool XML::operator== (const NamespaceDefinitionsList& lhs, const NamespaceDefini
         // keep looking
         Assert (li < le);
         Assert (ri < re);
-        li++;
-        ri++;
+        ++li;
+        ++ri;
     }
     // both ran out at the same time
     return true;

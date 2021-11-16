@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Memory {
             inline void Increment () noexcept
             {
                 RequireNotNull (fCountHolder_);
-                fCountHolder_->fCount++;
+                ++fCountHolder_->fCount;
             }
             inline bool Decrement () noexcept
             {

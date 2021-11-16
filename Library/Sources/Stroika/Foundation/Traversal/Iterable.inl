@@ -336,7 +336,7 @@ namespace Stroika::Foundation::Traversal {
             size_t total = 0;
             for (const auto ti : c) {
                 if (equalsComparer (ti, item)) {
-                    total++;
+                    ++total;
                 }
             }
             return total;
@@ -535,7 +535,7 @@ namespace Stroika::Foundation::Traversal {
         function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), extract1, extract2] () mutable -> optional<RESULT> {
             if (perIteratorContextBaseIterator) {
                 RESULT result{extract1 (*perIteratorContextBaseIterator), extract2 (*perIteratorContextBaseIterator)};
-                perIteratorContextBaseIterator++;
+                ++perIteratorContextBaseIterator;
                 return result;
             }
             return nullopt;
@@ -553,7 +553,7 @@ namespace Stroika::Foundation::Traversal {
         function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), extract1, extract2, extract3] () mutable -> optional<RESULT> {
             if (perIteratorContextBaseIterator) {
                 RESULT result{extract1 (*perIteratorContextBaseIterator), extract2 (*perIteratorContextBaseIterator), extract3 (*perIteratorContextBaseIterator)};
-                perIteratorContextBaseIterator++;
+                ++perIteratorContextBaseIterator;
                 return result;
             }
             return nullopt;
@@ -851,7 +851,7 @@ namespace Stroika::Foundation::Traversal {
         RESULT_TYPE  result{};
         unsigned int count{};
         for (T i : *this) {
-            count++;
+            ++count;
             result += i;
         }
         return (count == 0) ? optional<RESULT_TYPE>{} : (result / count);
@@ -916,7 +916,7 @@ namespace Stroika::Foundation::Traversal {
                             return origList[innerIndex++];
                         }
                         if (repeatCountIndex < count) [[LIKELY_ATTR]] {
-                            repeatCountIndex++;
+                            ++repeatCountIndex;
                             innerIndex = 0;
                             goto Again;
                         }

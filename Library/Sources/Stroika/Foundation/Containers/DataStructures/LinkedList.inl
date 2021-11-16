@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         size_t                                               n = 0;
         for (const Link* i = fHead_; i != nullptr; i = i->fNext) {
-            n++;
+            ++n;
         }
         return n;
     }

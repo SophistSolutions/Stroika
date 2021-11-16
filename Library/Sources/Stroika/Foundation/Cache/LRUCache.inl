@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Cache {
             Require (fCurV != fEndV);
             fCur = fCur->fNext;
             if (fCur == nullptr) {
-                fCurV++;
+                ++fCurV;
                 if (fCurV != fEndV) {
                     fCur = *fCurV;
                 }
@@ -153,7 +153,7 @@ namespace Stroika::Foundation::Cache {
         lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
         maxCacheSize = ((maxCacheSize + fHashtableSize_ - 1) / fHashtableSize_); // divide size over number of hash chains
         maxCacheSize = max (maxCacheSize, static_cast<size_t> (1));              // must be at least one per chain
-        for (size_t hi = 0; hi < fHashtableSize_; hi++) {
+        for (size_t hi = 0; hi < fHashtableSize_; ++hi) {
             if (maxCacheSize != fCachedElts_BUF_[hi].size ()) {
                 fCachedElts_BUF_[hi].resize (maxCacheSize);
                 // Initially link LRU together.
@@ -318,7 +318,7 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline void LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::ClearCache_ ()
     {
-        for (size_t hi = 0; hi < fHashtableSize_; hi++) {
+        for (size_t hi = 0; hi < fHashtableSize_; ++hi) {
             for (CacheElement_* cur = fCachedElts_First_[hi]; cur != nullptr; cur = cur->fNext) {
                 cur->fElement = nullopt;
             }

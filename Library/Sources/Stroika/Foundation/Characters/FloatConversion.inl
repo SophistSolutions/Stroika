@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             if (not hasE) {
                 size_t pastDot = strResult->find ('.');
                 if (pastDot != String::npos) {
-                    pastDot++;
+                    ++pastDot;
                     size_t len           = strResult->length ();
                     size_t pPastLastZero = len;
                     for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
@@ -369,7 +369,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 auto b = asciiS.begin ();
                 auto e = asciiS.end ();
                 if (b != e and *b == '+') [[UNLIKELY_ATTR]] {
-                    b++; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
+                    ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
                 }
                 auto [ptr, ec] = from_chars (b, e, result);
                 if (ec == errc::result_out_of_range) [[UNLIKELY_ATTR]] {
@@ -424,11 +424,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     while (b != e and iswspace (*b))
                         [[UNLIKELY_ATTR]]
                         {
-                            b++;
+                            ++b;
                         }
                 }
                 if (b != e and *b == '+') [[UNLIKELY_ATTR]] {
-                    b++; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
+                    ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
                 }
 
                 auto [ptr, ec] = from_chars (b, e, result);

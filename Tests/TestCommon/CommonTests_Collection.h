@@ -154,7 +154,7 @@ namespace CommonTests {
                 s.RemoveAll ();
                 VerifyTestResult (s.IsEmpty ());
 
-                for (i = 1; i <= K; i++) {
+                for (i = 1; i <= K; ++i) {
                     s.Add (i);
                 }
                 CollectionTimings_ (s);
@@ -165,7 +165,7 @@ namespace CommonTests {
                 cout << tab << "testing Collection<size_t>..." << endl;
 #endif
 
-                for (i = 1; i <= K; i++) {
+                for (i = 1; i <= K; ++i) {
                     s.Add (i);
                     VerifyTestResult (s.GetLength () == i);
                 }

@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             // this code assumes locking done by callers
             size_t length = fData_.GetLength ();
-            for (size_t i = 0; i < length; i++) {
+            for (size_t i = 0; i < length; ++i) {
                 if (fEqualsComparer_ (fData_.GetAt (i).fValue, item.fValue)) {
                     item = fData_.GetAt (i);
                     return i;

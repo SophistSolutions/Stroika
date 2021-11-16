@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Containers::Private {
                 if (equalsComparer (i, item)) {
                     return n;
                 }
-                n++;
+                ++n;
             }
             return {};
         }

@@ -249,7 +249,7 @@ Transfer::Cache::Element::Element (const Response& response)
             hi           = headers.erase (hi);
         }
         else {
-            hi++;
+            ++hi;
         }
     }
     fOtherHeaders = headers;

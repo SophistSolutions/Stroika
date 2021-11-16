@@ -327,7 +327,7 @@ size_t ThreadPool::GetTasksCount () const
             shared_ptr<MyRunnable_> tr{i->fRunnable};
             TaskType                task{tr->GetCurrentTask ()};
             if (task != nullptr) {
-                count++;
+                ++count;
             }
         }
     }

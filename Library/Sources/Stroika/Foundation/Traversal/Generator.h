@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Traversal {
      *          constexpr int kMax = 10;
      *          auto myContext = make_shared<int> (kMin - 1);
      *          auto getNext = [myContext] () -> optional<int> {
-     *              (*myContext)++;
+     *              ++(*myContext);
      *              if (*myContext > 10)
      *              {
      *                  return nullopt;

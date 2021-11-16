@@ -206,7 +206,7 @@ namespace Stroika::Foundation::Characters {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         fData_.GrowToSize_uninitialized (fLength_ + 1);
         fData_[fLength_] = c.GetCharacterCode ();
-        fLength_++;
+        ++fLength_;
     }
     inline size_t StringBuilder::GetLength () const
     {

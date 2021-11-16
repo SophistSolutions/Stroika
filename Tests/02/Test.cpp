@@ -102,7 +102,7 @@ namespace {
         {
             for (size_t j = 1; j <= kLoopEnd / 50; j++) {
                 String_ExternalMemoryOwnership_ApplicationLifetime a (L"a");
-                for (size_t i = 0; i <= kLoopEnd; i++) {
+                for (size_t i = 0; i <= kLoopEnd; ++i) {
                     big += a;
                     VerifyTestResult ((big.GetLength () - 1) == i);
                     VerifyTestResult (big[i] == 'a');
@@ -111,7 +111,7 @@ namespace {
             }
 
             String s1 = L"test strings";
-            for (int i = 1; i <= kLoopEnd; i++) {
+            for (int i = 1; i <= kLoopEnd; ++i) {
                 big += s1;
                 VerifyTestResult (big.GetLength () == s1.GetLength () * i);
             }
@@ -119,7 +119,7 @@ namespace {
         void StressTest2_ (String big)
         {
             String s1 = L"test strings";
-            for (int i = 1; i <= kLoopEnd; i++) {
+            for (int i = 1; i <= kLoopEnd; ++i) {
                 big = big + s1;
                 VerifyTestResult (big.GetLength () == s1.GetLength () * i);
 #if 0
@@ -1133,7 +1133,7 @@ namespace {
             int    i = 0;
             for (auto c : x) {
                 VerifyTestResult (c == x[i]);
-                i++;
+                ++i;
             }
             VerifyTestResult (i == 3);
         }
@@ -1145,7 +1145,7 @@ namespace {
             int    i = 0;
             for (auto c : x) {
                 VerifyTestResult (c == x[i]);
-                i++;
+                ++i;
                 x += L"9";
             }
             VerifyTestResult (i == 3);

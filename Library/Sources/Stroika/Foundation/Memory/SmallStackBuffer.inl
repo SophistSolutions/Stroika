@@ -308,7 +308,7 @@ namespace Stroika::Foundation::Memory {
 #else
             uninitialized_copy (&e, &e + 1, this->end ());
 #endif
-            this->fSize_++;
+            ++this->fSize_;
         }
         else {
             if constexpr (is_trivially_default_constructible_v<T>) {

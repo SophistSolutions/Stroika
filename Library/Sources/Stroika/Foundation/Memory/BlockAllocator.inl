@@ -339,7 +339,7 @@ namespace Stroika::Foundation::Memory {
         if (links.size () != originalSize and links.size () > 0) {
             // we delete some, which means that the next pointers are bad
             void** curLink = (void**)sHeadLink_;
-            for (size_t i = 1; i < links.size (); i++) {
+            for (size_t i = 1; i < links.size (); ++i) {
                 *curLink = links[i];
                 curLink  = (void**)*curLink;
             }
@@ -381,7 +381,7 @@ namespace Stroika::Foundation::Memory {
         }
         AssertNotNull (newLinks);
         void** curLink = newLinks;
-        for (size_t i = 1; i < kChunks; i++) {
+        for (size_t i = 1; i < kChunks; ++i) {
             *curLink = &(((char*)newLinks)[i * SIZE]);
             curLink  = (void**)*curLink;
         }

@@ -19,11 +19,11 @@ namespace Stroika::Foundation::Cache::Statistics {
      */
     inline void Stats_Basic::IncrementHits ()
     {
-        fCachedCollected_Hits++;
+        ++fCachedCollected_Hits;
     }
     inline void Stats_Basic::IncrementMisses ()
     {
-        fCachedCollected_Misses++;
+        ++fCachedCollected_Misses;
     }
 
     /*

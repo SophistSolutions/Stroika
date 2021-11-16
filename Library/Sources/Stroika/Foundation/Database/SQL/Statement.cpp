@@ -128,7 +128,7 @@ void Statement::Bind (const Traversal::Iterable<ParameterDescription>& parameter
         else {
             Bind (idx, i.fValue);
         }
-        idx++;
+        ++idx;
     }
 }
 

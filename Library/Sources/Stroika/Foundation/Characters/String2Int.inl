@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Characters {
                 auto b = asciiS.begin ();
                 auto e = asciiS.end ();
                 if (b != e and *b == '+') {
-                    b++; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
+                    ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
                 }
                 auto [ptr, ec] = from_chars (b, e, r);
                 if (ec == errc::result_out_of_range) [[UNLIKELY_ATTR]] {

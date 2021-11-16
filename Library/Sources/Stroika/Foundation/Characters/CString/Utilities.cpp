@@ -81,7 +81,7 @@ wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
                     } break;
                     case 's': {
                         newFormat[newFormatIdx] = 'l';
-                        newFormatIdx++;
+                        ++newFormatIdx;
                     } break;
                     case '.': {
                         // could still be part for format string
@@ -102,7 +102,7 @@ wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
                 }
             }
             newFormat[newFormatIdx] = format[i];
-            newFormatIdx++;
+            ++newFormatIdx;
         }
         Assert (newFormatIdx >= origFormatLen);
         if (newFormatIdx > origFormatLen) {

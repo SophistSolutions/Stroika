@@ -577,7 +577,7 @@ namespace {
             PWLAN_CONNECTION_ATTRIBUTES pConnectInfo{};
             [[maybe_unused]] auto&&     cleanup3 = Execution::Finally ([&] () noexcept { if (pConnectInfo != nullptr) {sWlanAPI_->fWlanFreeMemory (pConnectInfo);} });
 
-            for (DWORD i = 0; i < pIfList->dwNumberOfItems; i++) {
+            for (DWORD i = 0; i < pIfList->dwNumberOfItems; ++i) {
                 PWLAN_INTERFACE_INFO pIfInfo = (WLAN_INTERFACE_INFO*)&pIfList->InterfaceInfo[i];
                 WirelessInfoPlus_    wInfo;
                 Common::GUID         interfaceGUID{pIfInfo->InterfaceGuid};

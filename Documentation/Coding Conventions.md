@@ -92,6 +92,19 @@ but if count was numeric_limits\&lt;size_t\&gt;::max(), then the e pointer compu
 
 ---
 
+## Use ++prefix instead of postfix++ preferentially (and --prefix)
+
+### Rationale
+
+It often doesn't matter which you use, but sematically postfix requires returning the previous
+value which involves an extra copy. This CAN in PRINCIPLE be costly. So in things like
+for loops for the re-init case, and anyplace else we dont really count on the postfix++, just
+use prefix preferentially. Similarly for --;
+
+See https://stackoverflow.com/questions/24901/is-there-a-performance-difference-between-i-and-i-in-c
+
+---
+
 ## User-defined literals
 
 - Stroika makes extensive use of the builtin `operator"" sv`, which produces (more efficient) String objects (really the STL version produces string_view but Stroika's String class converts string_view to a String more efficiently - reusing the space for the characters)

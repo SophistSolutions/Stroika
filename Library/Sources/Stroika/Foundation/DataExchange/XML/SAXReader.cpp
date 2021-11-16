@@ -360,13 +360,13 @@ namespace {
                 : fSource{in}
             {
 #if qDebug
-                sStdIStream_InputStream_COUNT_++;
+                ++sStdIStream_InputStream_COUNT_;
 #endif
             }
             ~StdIStream_InputStream ()
             {
 #if qDebug
-                sStdIStream_InputStream_COUNT_--;
+                --sStdIStream_InputStream_COUNT_;
 #endif
             }
 
@@ -501,7 +501,7 @@ namespace {
             Require (uri != nullptr);
             Require (localName != nullptr);
             fCallback.StartElement (StructuredStreamEvents::Name (xercesString2String_ (uri), xercesString2String_ (localName)));
-            for (XMLSize_t i = 0; i < attributes.getLength (); i++) {
+            for (XMLSize_t i = 0; i < attributes.getLength (); ++i) {
                 StructuredStreamEvents::Name attrName{xercesString2String_ (attributes.getURI (i)), xercesString2String_ (attributes.getLocalName (i)), StructuredStreamEvents::Name::eAttribute};
                 fCallback.StartElement (attrName);
                 fCallback.TextInsideElement (xercesString2String_ (attributes.getValue (i)));

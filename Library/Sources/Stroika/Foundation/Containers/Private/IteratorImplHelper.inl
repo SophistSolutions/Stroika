@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Containers::Private {
     inline void ContainerDebugChangeCounts_::PerformedChange ()
     {
 #if qDebug
-        fChangeCount++;
+        ++fChangeCount;
 #endif
     }
 

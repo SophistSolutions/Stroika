@@ -336,7 +336,7 @@ namespace CommonTests {
                         VerifyTestResult (s.OccurrencesOf (i) == 1);
                         VerifyTestResult (s.GetLength () == i);
                     }
-                    for (size_t i = K; i > 0; i--) {
+                    for (size_t i = K; i > 0; --i) {
                         s.Remove (i);
                         VerifyTestResult (not s.Contains (i));
                         VerifyTestResult (s.GetLength () == (i - 1));

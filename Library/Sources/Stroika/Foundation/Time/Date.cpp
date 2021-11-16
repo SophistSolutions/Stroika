@@ -471,7 +471,7 @@ void Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
     }
     else {
         m -= 9;
-        y++;
+        ++y;
     }
     Ensure (1 <= m and m <= 12);
     *month = static_cast<MonthOfYear> (m);

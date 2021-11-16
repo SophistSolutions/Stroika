@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Math {
         RESULT_TYPE  result{};
         for (ITERATOR_OF_T i = start; i != end; ++i) {
             result += *i;
-            cnt++;
+            ++cnt;
         }
         return result / cnt;
     }
@@ -87,8 +87,8 @@ namespace Stroika::Foundation::Math {
         RESULT_TYPE mean = Mean (start, end);
         RESULT_TYPE accum{};
         size_t      n{};
-        for (auto i = start; i != end; i++) {
-            n++;
+        for (auto i = start; i != end; ++i) {
+            ++n;
             accum += (*i - mean) * (*i - mean);
         }
         Require (n >= 2);

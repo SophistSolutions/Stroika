@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Containers {
                 else {
                     bool done = fContext.fMultiSetIterator.Done ();
                     if (not done and advance) {
-                        fContext.fMultiSetIterator++;
+                        ++fContext.fMultiSetIterator;
                         done = fContext.fMultiSetIterator.Done ();
                     }
                     if (done) {
@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Containers {
                 RequireNotNull (result);
                 bool done = fContext.fMultiSetIterator.Done ();
                 if (not done and advance) {
-                    fContext.fMultiSetIterator++;
+                    ++fContext.fMultiSetIterator;
                     done = fContext.fMultiSetIterator.Done ();
                 }
                 if (done) {

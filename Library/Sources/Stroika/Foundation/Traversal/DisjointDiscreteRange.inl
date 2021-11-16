@@ -190,11 +190,11 @@ namespace Stroika::Foundation::Traversal {
                 Assert (myContext->fCurrentSubRangeIteratorAt <= nEltsPerRange);
                 value_type result = curRange.GetLowerBound () + myContext->fCurrentSubRangeIteratorAt;
                 if (myContext->fCurrentSubRangeIteratorAt == nEltsPerRange) {
-                    myContext->fSubRangeIdx++;
+                    ++myContext->fSubRangeIdx;
                     myContext->fCurrentSubRangeIteratorAt = 0;
                 }
                 else {
-                    myContext->fCurrentSubRangeIteratorAt++;
+                    ++myContext->fCurrentSubRangeIteratorAt;
                 }
                 return result;
             }

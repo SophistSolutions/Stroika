@@ -308,7 +308,7 @@ SignalHandlerRegistry::SignalHandlerRegistry ()
 {
 #if qDebug
     static int nConstructed = 0;
-    nConstructed++;
+    ++nConstructed;
     Assert (nConstructed == 1);
 #endif
     Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR"};

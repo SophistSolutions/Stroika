@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (srcText);
         RequireNotNull (outBuf);
         TCHAR* outPtr = outBuf;
-        for (size_t i = 1; i <= srcTextBytes; i++) {
+        for (size_t i = 1; i <= srcTextBytes; ++i) {
             TCHAR c = srcText[i - 1];
             if (c == '\r') {
                 // peek at next character - and if we have a CRLF sequence - then advance pointer
@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Characters {
                 // NB: we DON'T map plain CR to NL - to get that to happen - use NormalizeTextToNL()
                 if (i < srcTextBytes and srcText[i] == '\n') {
                     c = '\n';
-                    i++;
+                    ++i;
                 }
             }
             *outPtr++ = c;
@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Characters {
     size_t NativeToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, [[maybe_unused]] size_t outBufSize)
     {
         TCHAR* outPtr = outBuf;
-        for (size_t i = 1; i <= srcTextBytes; i++) {
+        for (size_t i = 1; i <= srcTextBytes; ++i) {
 #if qPlatform_MacOS
             TCHAR c = (srcText[i - 1] == '\r') ? '\n' : srcText[i - 1];
 #elif qPlatform_Windows
@@ -166,7 +166,7 @@ namespace Stroika::Foundation::Characters {
                 // NB: we DON'T map plain CR to NL - to get that to happen - use Led_NormalizeTextToNL()
                 if (i < srcTextBytes and srcText[i] == '\n') {
                     c = '\n';
-                    i++;
+                    ++i;
                 }
             }
 #else
@@ -200,7 +200,7 @@ namespace Stroika::Foundation::Characters {
         Require (srcText != outBuf); // though we support this for the others - its too hard
                                      // in this case for the PC...
         TCHAR* outPtr = outBuf;
-        for (size_t i = 1; i <= srcTextBytes; i++) {
+        for (size_t i = 1; i <= srcTextBytes; ++i) {
             Assert (outPtr < outBuf + outBufSize);
 #if defined(macintosh)
             TCHAR c = (srcText[i - 1] == '\n') ? '\r' : srcText[i - 1];
@@ -244,13 +244,13 @@ namespace Stroika::Foundation::Characters {
 
         // NB: We DO Support the case where srcText == outBuf!!!!
         TCHAR* outPtr = outBuf;
-        for (size_t i = 0; i < srcTextBytes; i++) {
+        for (size_t i = 0; i < srcTextBytes; ++i) {
             TCHAR c = srcText[i];
             if (c == '\r') {
                 // peek at next character - and if we have a CRLF sequence - then advance pointer
                 // (so we skip next NL) and pretend this was an NL..
                 if (i + 1 < srcTextBytes and srcText[i + 1] == '\n') {
-                    i++;
+                    ++i;
                 }
                 c = '\n';
             }

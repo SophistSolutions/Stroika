@@ -458,7 +458,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
                 case RelationNumaNode:
                     break;
                 case RelationProcessorCore:
-                    processorCoreCount++;
+                    ++processorCoreCount;
                     // A hyperthreaded core supplies more than one logical processor.
                     logicalProcessorCount += countSetBits (ptr->ProcessorMask);
                     break;
@@ -466,14 +466,14 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
                     break;
                 case RelationProcessorPackage:
                     // Logical processors share a physical package.
-                    processorPackageCount++;
+                    ++processorPackageCount;
                     break;
                 default:
                     DbgTrace ("Error: Unsupported LOGICAL_PROCESSOR_RELATIONSHIP value.\n");
                     break;
             }
             byteOffset += sizeof (SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
-            ptr++;
+            ++ptr;
         }
     }
 

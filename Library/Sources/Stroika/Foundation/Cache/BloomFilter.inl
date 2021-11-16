@@ -129,9 +129,9 @@ namespace Stroika::Foundation::Cache {
             }
             fBits_[idx] = true;
         }
-        fActualAddCalls_++;
+        ++fActualAddCalls_;
         if (apparentlyNewAddition) {
-            fApparentlyDistinctAddCalls_++;
+            ++fApparentlyDistinctAddCalls_;
         }
         return apparentlyNewAddition;
     }
@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Cache {
         size_t nTrue{};
         for (bool i : fBits_) {
             if (i) {
-                nTrue++;
+                ++nTrue;
             }
         }
         return Statistics{fHashFunctions_.size (), fBits_.size (), nTrue, fActualAddCalls_, fApparentlyDistinctAddCalls_};

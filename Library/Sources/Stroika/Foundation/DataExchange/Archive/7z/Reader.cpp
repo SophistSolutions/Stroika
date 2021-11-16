@@ -122,7 +122,7 @@ public:
     virtual Set<String> GetContainedFiles () const override
     {
         Set<String> result;
-        for (unsigned int i = 0; i < fDB_.NumFiles; i++) {
+        for (unsigned int i = 0; i < fDB_.NumFiles; ++i) {
             if (not SzArEx_IsDir (&fDB_, i)) {
                 size_t nameLen = ::SzArEx_GetFileNameUtf16 (&fDB_, i, nullptr);
                 if (nameLen < 1) {
@@ -160,13 +160,13 @@ public:
     UInt32 GetIdx_ (const String& fn) const
     {
         // could create map to lookup once and maintain
-        for (UInt32 i = 0; i < fDB_.NumFiles; i++) {
+        for (UInt32 i = 0; i < fDB_.NumFiles; ++i) {
             if (not SzArEx_IsDir (&fDB_, i)) {
                 size_t nameLen = SzArEx_GetFileNameUtf16 (&fDB_, i, nullptr);
                 if (nameLen < 1) {
                     break;
                 }
-                SmallStackBuffer<char16_t> fileName (SmallStackBufferCommon::eUninitialized, nameLen);
+                SmallStackBuffer<char16_t> fileName{SmallStackBufferCommon::eUninitialized, nameLen};
                 [[maybe_unused]] size_t    z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&fileName[0]));
                 if (String (&fileName[0]) == fn) {
                     return i;

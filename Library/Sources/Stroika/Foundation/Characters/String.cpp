@@ -142,7 +142,7 @@ Traversal::Iterator<Character> String::_IRep::MakeIterator () const
             RequireNotNull (result);
             if (advance) [[LIKELY_ATTR]] {
                 Require (fCurIdx <= fStr->_GetLength ());
-                fCurIdx++;
+                ++fCurIdx;
             }
             if (fCurIdx < fStr->_GetLength ()) [[LIKELY_ATTR]] {
                 *result = fStr->GetAt (fCurIdx);
@@ -544,14 +544,14 @@ optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) c
     switch (co) {
         case CompareOptions::eCaseInsensitive: {
             Character lcc = c.ToLowerCase ();
-            for (size_t i = startAt; i < length; i++) {
+            for (size_t i = startAt; i < length; ++i) {
                 if (accessor._ConstGetRep ().GetAt (i).ToLowerCase () == lcc) {
                     return i;
                 }
             }
         } break;
         case CompareOptions::eWithCase: {
-            for (size_t i = startAt; i < length; i++) {
+            for (size_t i = startAt; i < length; ++i) {
                 if (accessor._ConstGetRep ().GetAt (i) == c) {
                     return i;
                 }
@@ -578,8 +578,8 @@ optional<size_t> String::Find (const String& subString, size_t startAt, CompareO
     size_t limit = accessor._ConstGetRep ()._GetLength () - subStrLen;
     switch (co) {
         case CompareOptions::eCaseInsensitive: {
-            for (size_t i = startAt; i <= limit; i++) {
-                for (size_t j = 0; j < subStrLen; j++) {
+            for (size_t i = startAt; i <= limit; ++i) {
+                for (size_t j = 0; j < subStrLen; ++j) {
                     if (accessor._ConstGetRep ().GetAt (i + j).ToLowerCase () != subString[j].ToLowerCase ()) {
                         goto nogood1;
                     }
@@ -589,8 +589,8 @@ optional<size_t> String::Find (const String& subString, size_t startAt, CompareO
             }
         } break;
         case CompareOptions::eWithCase: {
-            for (size_t i = startAt; i <= limit; i++) {
-                for (size_t j = 0; j < subStrLen; j++) {
+            for (size_t i = startAt; i <= limit; ++i) {
+                for (size_t j = 0; j < subStrLen; ++j) {
                     if (accessor._ConstGetRep ().GetAt (i + j) != subString[j]) {
                         goto nogood2;
                     }
@@ -1027,7 +1027,7 @@ String String::StripAll (bool (*removeCharIf) (Character)) const
             // on first removal, clone part of string done so far, and start appending
             String tmp = result.SubString (0, i);
             // Now keep iterating IN THIS LOOP appending characters and return at the end of this loop
-            i++;
+            ++i;
             for (; i < n; ++i) {
                 c = result[i];
                 if (not removeCharIf (c)) {

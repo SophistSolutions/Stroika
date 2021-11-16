@@ -221,7 +221,7 @@ void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
     lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
 #if OPENSSL_VERSION_MAJOR >= 3
     if (auto l = fLoadedProviders_.Lookup (providerName)) {
-        l->second++;
+        ++l->second;
         fLoadedProviders_.Add (providerName, *l);
     }
     else {

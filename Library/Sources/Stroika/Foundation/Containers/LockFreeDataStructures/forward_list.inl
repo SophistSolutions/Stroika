@@ -352,7 +352,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         if (count <= 0)
             return iterator{};
         iterator result = pos = insert_after (pos, value);
-        for (int i = 1; i < count; i++) {
+        for (int i = 1; i < count; ++i) {
             pos = insert_after (pos, value);
         }
         return result;
@@ -448,7 +448,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         Assert (n != nullptr); //must be a valid node_ because ownership is a precondition
         Assert (n != kTerminalSentinal_);
         Assert (n != kSpinSentinal_);
-        n->referenceCount++;
+        ++n->referenceCount;
         return n;
     }
     template <typename T>

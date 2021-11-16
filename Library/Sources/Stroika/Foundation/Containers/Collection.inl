@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Containers {
         for (Iterator<T> i = this->begin (); i != this->end (); ++i) {
             if (p (*i)) {
                 Remove (i);
-                nRemoved++;
+                ++nRemoved;
             }
         }
         return nRemoved;

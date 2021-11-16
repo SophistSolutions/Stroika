@@ -444,7 +444,7 @@ namespace Stroika::Foundation::Containers {
                         }
                         else {
                             auto result = perIteratorContextBaseIterator->first;
-                            perIteratorContextBaseIterator++;
+                            ++perIteratorContextBaseIterator;
                             return result;
                         }
                     };
@@ -492,7 +492,7 @@ namespace Stroika::Foundation::Containers {
                         }
                         else {
                             auto result = perIteratorContextBaseIterator->second;
-                            perIteratorContextBaseIterator++;
+                            ++perIteratorContextBaseIterator;
                             return result;
                         }
                     };
