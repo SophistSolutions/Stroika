@@ -194,7 +194,7 @@ namespace {
         }
         for (Iterator<String> i = fruits.begin (); i != fruits.end ();) {
             if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*i, L"apple")) {
-                fruits.Remove (i, &i);  // 'i' has already been updated to refer to the next element, regardless of how the Collection<> represents its data
+                fruits.Remove (i, &i); // 'i' has already been updated to refer to the next element, regardless of how the Collection<> represents its data
             }
             else {
                 i++;
