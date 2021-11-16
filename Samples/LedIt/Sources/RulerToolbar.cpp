@@ -299,7 +299,7 @@ RulerBar::RulerBar (BOOL b3DExt)
     m_rightmargin.SetRuler (this);
 
     // all of the tab stops share handles
-    for (int i = 0; i < MAX_TAB_STOPS; i++) {
+    for (int i = 0; i < MAX_TAB_STOPS; ++i) {
         m_pTabItems[i].m_hbm     = m_tabItem.m_hbm;
         m_pTabItems[i].m_hbmMask = m_tabItem.m_hbmMask;
         m_pTabItems[i].m_size    = m_tabItem.m_size;
@@ -345,7 +345,7 @@ RulerBar::RulerBar (BOOL b3DExt)
 RulerBar::~RulerBar ()
 {
     // set handles to NULL to avoid deleting twice
-    for (int i = 0; i < MAX_TAB_STOPS; i++) {
+    for (int i = 0; i < MAX_TAB_STOPS; ++i) {
         m_pTabItems[i].m_hbm     = NULL;
         m_pTabItems[i].m_hbmMask = NULL;
     }
@@ -454,7 +454,7 @@ BOOL RulerBar::Create (CWnd* pParentWnd, DWORD dwStyle, UINT nID)
 
     int i;
     int nMax = 100;
-    for (i = 0; i < MAX_TAB_STOPS; i++) {
+    for (i = 0; i < MAX_TAB_STOPS; ++i) {
         m_pTabItems[i].SetRuler (this);
         m_pTabItems[i].SetVertPos (8);
         m_pTabItems[i].SetHorzPosTwips (0);
@@ -485,7 +485,7 @@ void RulerBar::Update (const WordProcessor::IncrementalParagraphInfo& pf)
             tabSoFar += tabStops.fTabStops[i];
             m_pTabItems[i].SetHorzPosTwips (tabSoFar);
         }
-        for (; i < MAX_TAB_STOPS; i++) {
+        for (; i < MAX_TAB_STOPS; ++i) {
             m_pTabItems[i].SetHorzPosTwips (0);
         }
     }
@@ -529,7 +529,7 @@ void RulerBar::FillInParaFormat (WordProcessor::IncrementalParagraphInfo& pf)
     int           nPos = 0;
     vector<TWIPS> v;
     int           soFar = 0;
-    for (size_t i = 0; i < MAX_TAB_STOPS; i++) {
+    for (size_t i = 0; i < MAX_TAB_STOPS; ++i) {
         // get rid of zeroes and multiples
         // i.e. if we have 0,0,0,1,2,3,4,4,5
         // we will get tabs at 1,2,3,4,5
@@ -543,16 +543,16 @@ void RulerBar::FillInParaFormat (WordProcessor::IncrementalParagraphInfo& pf)
     }
     pf.SetTabStopList (TextImager::StandardTabStopList (v));
 
-    pf.SetMargins (TWIPS (m_leftmargin.GetHorzPosTwips ()), TWIPS (m_rightmargin.GetHorzPosTwips ()));
-    pf.SetFirstIndent (TWIPS (m_indent.GetHorzPosTwips () - m_leftmargin.GetHorzPosTwips ()));
+    pf.SetMargins (TWIPS{m_leftmargin.GetHorzPosTwips ()}, TWIPS{m_rightmargin.GetHorzPosTwips ()});
+    pf.SetFirstIndent (TWIPS{m_indent.GetHorzPosTwips () - m_leftmargin.GetHorzPosTwips ()});
 }
 
 // simple bubble sort is adequate for small number of tabs
 void RulerBar::SortTabs ()
 {
     int i, j, nPos;
-    for (i = 0; i < MAX_TAB_STOPS - 1; i++) {
-        for (j = i + 1; j < MAX_TAB_STOPS; j++) {
+    for (i = 0; i < MAX_TAB_STOPS - 1; ++i) {
+        for (j = i + 1; j < MAX_TAB_STOPS; ++j) {
             if (m_pTabItems[j].GetHorzPosTwips () < m_pTabItems[i].GetHorzPosTwips ()) {
                 nPos = m_pTabItems[j].GetHorzPosTwips ();
                 m_pTabItems[j].SetHorzPosTwips (m_pTabItems[i].GetHorzPosTwips ());
@@ -589,7 +589,7 @@ void RulerBar::DrawTabs (CDC& dc)
 {
     int i;
     int nPos = 0;
-    for (i = 0; i < MAX_TAB_STOPS; i++) {
+    for (i = 0; i < MAX_TAB_STOPS; ++i) {
         if (m_pTabItems[i].GetHorzPosTwips () > nPos)
             nPos = (m_pTabItems[i].GetHorzPosTwips ());
         m_pTabItems[i].Draw (dc);
@@ -771,14 +771,14 @@ void RulerBar::SetMarginBounds ()
     m_rightmargin.SetBounds (nMin, nMax);
 
     // tabs can go from zero to the right page edge
-    for (int i = 0; i < MAX_TAB_STOPS; i++)
+    for (int i = 0; i < MAX_TAB_STOPS; ++i)
         m_pTabItems[i].SetBounds (0, nMax);
 }
 
 RulerItem* RulerBar::GetFreeTab ()
 {
     int i;
-    for (i = 0; i < MAX_TAB_STOPS; i++) {
+    for (i = 0; i < MAX_TAB_STOPS; ++i) {
         if (m_pTabItems[i].GetHorzPosTwips () == 0)
             return &m_pTabItems[i];
     }
@@ -788,7 +788,7 @@ RulerItem* RulerBar::GetFreeTab ()
 CTabRulerItem* RulerBar::GetHitTabPix (CPoint point)
 {
     int i;
-    for (i = 0; i < MAX_TAB_STOPS; i++) {
+    for (i = 0; i < MAX_TAB_STOPS; ++i) {
         if (m_pTabItems[i].HitTestPix (point))
             return &m_pTabItems[i];
     }

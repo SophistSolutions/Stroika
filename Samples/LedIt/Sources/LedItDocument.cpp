@@ -68,7 +68,7 @@ public:
         LMenu* windowMenu = LMenuBar::GetCurrentMenuBar ()->FetchMenu (kWindowsMenuID);
         AssertNotNil (windowMenu);
         size_t nMenuItems = ::CountMenuItems (windowMenu->GetMacMenuH ());
-        for (size_t i = 1; i <= nMenuItems; i++) {
+        for (size_t i = 1; i <= nMenuItems; ++i) {
             windowMenu->SetCommand (i, i - 1 + kBaseWindowCmd); // make first cmd = kBaseWindowCmd
         }
     }
@@ -81,7 +81,7 @@ public:
         AssertNotNil (windowMenu);
         windowMenu->RemoveItem (1);
         size_t nMenuItems = ::CountMenuItems (windowMenu->GetMacMenuH ());
-        for (size_t i = 1; i <= nMenuItems; i++) {
+        for (size_t i = 1; i <= nMenuItems; ++i) {
             windowMenu->SetCommand (i, i - 1 + kBaseWindowCmd); // make first cmd = kBaseWindowCmd
         }
     }
@@ -633,7 +633,7 @@ void LedItDocument::NameNewDoc ()
         // An existing window has the current name
         // Increment counter and try again
         ::GetIndString (name, STRx_Untitled, 2);
-        num++;
+        ++num;
         Str15 numStr;
         ::NumToString (num, numStr);
         LString::AppendPStr (name, numStr);
@@ -1670,7 +1670,7 @@ static void AppendFilterSuffix (CString& filter, OPENFILENAME& ofn, CString strF
     filter += (TCHAR)'*';
     filter += strFilterExt;
     filter += (TCHAR)'\0'; // next string please
-    ofn.nMaxCustFilter++;
+    ++ofn.nMaxCustFilter;
 }
 
 static void AppendFilterSuffix (CString& filter, OPENFILENAME& ofn, CDocTemplate* pTemplate)

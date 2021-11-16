@@ -20,12 +20,12 @@ namespace Stroika::Frameworks::Led {
     inline IdleManager::NonIdleContext::NonIdleContext ()
     {
         IdleManager::Get ().SetInIdleMode (false);
-        IdleManager::Get ().fNonIdleContextCount++;
+        ++IdleManager::Get ().fNonIdleContextCount;
     }
     inline IdleManager::NonIdleContext::~NonIdleContext ()
     {
         Assert (IdleManager::Get ().fNonIdleContextCount > 0);
-        IdleManager::Get ().fNonIdleContextCount--;
+        --IdleManager::Get ().fNonIdleContextCount;
     }
 
     /*
@@ -34,11 +34,11 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     inline IdleManager::IdleManager ()
-        : fNonIdleContextCount (0)
-        , fIdleManagerOSImpl (nullptr)
-        , fIdlers ()
-        , fNeedMgrIdleCalls (false)
-        , fEnterIdlers ()
+        : fNonIdleContextCount{0}
+        , fIdleManagerOSImpl{nullptr}
+        , fIdlers{}
+        , fNeedMgrIdleCalls{false}
+        , fEnterIdlers{}
     {
     }
     inline IdleManager& IdleManager::Get ()

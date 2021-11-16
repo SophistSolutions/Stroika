@@ -1259,12 +1259,12 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
     inline Led_StdDialogHelper_EditTablePropertiesDialog::Info::Info ()
-        : fTableBorderWidth (TWIPS (0))
+        : fTableBorderWidth (TWIPS{0})
         , fTableBorderColor (Color::kWhite)
         , fDefaultCellMargins ()
-        , fCellSpacing (TWIPS (0))
+        , fCellSpacing (TWIPS{0})
         , fCellWidth_Common (false)
-        , fCellWidth (TWIPS (0))
+        , fCellWidth (TWIPS{0})
         , fCellBackgroundColor_Common (false)
         , fCellBackgroundColor (Color::kWhite)
     {

@@ -85,7 +85,7 @@ bool EmbeddedObjectCreatorRegistry::Lookup (const char* embeddingTag, Assoc* res
     RequireNotNull (embeddingTag);
     RequireNotNull (result);
     const vector<EmbeddedObjectCreatorRegistry::Assoc>& types = GetAssocList ();
-    for (size_t i = 0; i < types.size (); i++) {
+    for (size_t i = 0; i < types.size (); ++i) {
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
         if (memcmp (assoc.fEmbeddingTag, embeddingTag, sizeof (assoc.fEmbeddingTag)) == 0) {
             *result = assoc;
@@ -590,7 +590,7 @@ void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
     size_t      urlStrLen = (urlEnd == nullptr) ? strlen (url) : (urlEnd - url);
     const char* name      = ::strchr (fURLData.PeekAtURLD (), '\r');
     if (name != nullptr) {
-        name++; // skip CR
+        ++name; // skip CR
     }
     size_t nameStrLen = (name == nullptr) ? 0 : ::strlen (name);
 
@@ -704,7 +704,7 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
     size_t      urlStrLen = (urlEnd == nullptr) ? strlen (url) : (urlEnd - url);
     const char* name      = ::strchr (fURLData.PeekAtURLD (), '\r');
     if (name != nullptr) {
-        name++; // skip CR
+        ++name; // skip CR
     }
     size_t nameStrLen = (name == nullptr) ? 0 : ::strlen (name);
 
@@ -1282,7 +1282,7 @@ const Led_PrivateEmbeddingTag StandardUnknownTypeStyleMarker::kDefaultEmbeddingT
 StandardUnknownTypeStyleMarker::StandardUnknownTypeStyleMarker (Led_ClipFormat format, const char* embeddingTag, const void* unknownTypeData, size_t nBytes, const Led_DIB* dib)
     : SimpleEmbeddedObjectStyleMarker ()
     ,
-    //  fShownSize (TWIPS_Point (TWIPS (0), TWIPS (0))),
+    //  fShownSize (TWIPS_Point (TWIPS{0}, TWIPS{0})),
     fShownSize ()
     , fData (nullptr)
     , fLength (nBytes)
@@ -1726,7 +1726,7 @@ static PixMap** MakePixMapFromDIB (const Led_DIB* dib)
         (*newCLUT)->ctSeed  = ::GetCTSeed ();
         (*newCLUT)->ctFlags = 0;
         (*newCLUT)->ctSize  = nColors - 1;
-        for (size_t i = 0; i < nColors; i++) {
+        for (size_t i = 0; i < nColors; ++i) {
             (*newCLUT)->ctTable[i].value     = i;
             (*newCLUT)->ctTable[i].rgb.red   = srcCLUT[i].rgbRed << 8;
             (*newCLUT)->ctTable[i].rgb.green = srcCLUT[i].rgbGreen << 8;
@@ -1743,7 +1743,7 @@ static PixMap** MakePixMapFromDIB (const Led_DIB* dib)
      *  Copy the PixMap data.
      */
     bool rowsReversed = (Led_ByteSwapFromWindows (hdr.biHeight) > 0);
-    for (size_t row = 0; row < dibImageSize.v; row++) {
+    for (size_t row = 0; row < dibImageSize.v; ++row) {
         const unsigned char* srcRow = srcBits + (rowsReversed ? (dibImageSize.v - row - 1) : row) * srcRowBytes;
         unsigned char*       dstRow = newImageData + row * dstRowBytes;
 
@@ -1754,7 +1754,7 @@ static PixMap** MakePixMapFromDIB (const Led_DIB* dib)
             } break;
 
             case 24: {
-                for (size_t col = 0; col < dibImageSize.h; col++) {
+                for (size_t col = 0; col < dibImageSize.h; ++col) {
                     const unsigned char* srcCell   = srcRow + 3 * col;
                     unsigned char*       dstCell   = dstRow + 4 * col;
                     unsigned char        blueComp  = *srcCell++;

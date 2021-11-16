@@ -771,7 +771,7 @@ void SpellCheckEngine_Basic::RegressionTest_1 ()
                                             &wordStartResult, &wordEndResult)) {
             // we found a possible undefined word.
             Led_tString word = Led_tString (wordStartResult, wordEndResult);
-            nWordsFound++;
+            ++nWordsFound;
             if (nWordsFound == 1) {
                 Assert (Led_tString (wordStartResult, wordEndResult) == LED_TCHAR_OF ("is"));
             }
@@ -854,7 +854,7 @@ void SpellCheckEngine_Basic::EditableDictionary::ReadFromBuffer (const Led_tChar
 
         p = wordEnd;
         if (p < readOnlyRAMDictEnd) {
-            p++; // skip CR or LF
+            ++p; // skip CR or LF
         }
         // If CRLF then set p to point after CRLF (not just CR or LF)
         if (p + 1 == i2) {

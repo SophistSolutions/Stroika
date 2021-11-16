@@ -78,7 +78,7 @@ size_t TextStore::CharacterToTCharIndex (size_t i)
 {
     size_t tCharIndex = 1;
     int    ii         = i;
-    for (; ii > 0; ii--) {
+    for (; ii > 0; --ii) {
         tCharIndex = FindNextCharacter (tCharIndex);
     }
     return (tCharIndex);
@@ -91,9 +91,9 @@ size_t TextStore::TCharToCharacterIndex (size_t i)
 {
     size_t charCount = 1;
     for (size_t tCharIndex = 0; tCharIndex < i; tCharIndex = FindNextCharacter (tCharIndex)) {
-        charCount++;
+        ++charCount;
     }
-    return (charCount);
+    return charCount;
 }
 #endif
 
@@ -151,7 +151,7 @@ size_t TextStore::GetStartOfLine (size_t lineNumber) const
         Led_tChar c;
         CopyOut (i, 1, &c);
         if (c == '\n') {
-            curLineNum++;
+            ++curLineNum;
         }
     }
     Assert (curLineNum == lineNumber);
@@ -182,7 +182,7 @@ size_t TextStore::GetEndOfLine (size_t lineNumber) const
             if (curLineNum == lineNumber) {
                 return i;
             }
-            curLineNum++;
+            ++curLineNum;
         }
     }
     return len;
@@ -211,7 +211,7 @@ size_t TextStore::GetLineContainingPosition (size_t charPosition) const
         Led_tChar c;
         CopyOut (i, 1, &c);
         if (c == '\n') {
-            curLineNum++;
+            ++curLineNum;
             lineStart = i;
             lineEnd   = i;
         }
@@ -237,7 +237,7 @@ size_t TextStore::GetLineCount () const
         Led_tChar c;
         CopyOut (i, 1, &c);
         if (c == '\n') {
-            curLineNum++;
+            ++curLineNum;
         }
     }
     return curLineNum;
@@ -270,7 +270,7 @@ size_t TextStore::GetStartOfLineContainingPosition (size_t afterPos) const
     Led_tChar    charBuf[64];
     const size_t kBufSize = sizeof (charBuf) / sizeof (charBuf[0]);
     Assert (afterPos < INT_MAX); // cuz of casts - cannot go up to UINT_MAX
-    for (ptrdiff_t curPos = afterPos - 1; curPos > -1; curPos--) {
+    for (ptrdiff_t curPos = afterPos - 1; curPos > -1; --curPos) {
         Assert (curPos >= 0);
         if (lastReadAtPos > static_cast<size_t> (curPos)) {
             if (lastReadAtPos > kBufSize) {
@@ -327,7 +327,7 @@ size_t TextStore::GetEndOfLineContainingPosition (size_t afterPos) const
     size_t       lastReadAtPos = 0; // flag no read so far
     Led_tChar    charBuf[64];
     const size_t kBufSize = sizeof (charBuf) / sizeof (charBuf[0]);
-    for (size_t curPos = afterPos; curPos + 1 <= GetLength (); curPos++) {
+    for (size_t curPos = afterPos; curPos + 1 <= GetLength (); ++curPos) {
         if (lastReadAtPos == 0 or lastReadAtPos + kBufSize <= curPos) {
             lastReadAtPos = curPos;
             Assert (lastReadAtPos >= 0);
@@ -413,13 +413,13 @@ size_t TextStore::FindPreviousCharacter (size_t beforePos) const
             }
 
             // we go back by BYTES til we find a syncronization point
-            for (cur = fromHere - 2; cur > buf; cur--) {
+            for (cur = fromHere - 2; cur > buf; --cur) {
                 Assert (cur >= buf);
                 if (not Led_IsLeadByte (*cur)) {
                     // Then we are in case 1, 2, 3, 4 or 6 (not 5 or 7). So ew know we are looking
                     // at an ASCII byte, or a secondbyte. Therefore - the NEXT byte from here must be
                     // a valid mbyte char boundary.
-                    cur++;
+                    ++cur;
                     notFoundSyncPoint = false;
                     break;
                 }
@@ -642,7 +642,7 @@ searchSMORE:
 
     // See if pattern matches current text
     CopyOut (searchIdx, patternLen, lookingAtData);
-    for (size_t i = 0; i < patternLen; i++) {
+    for (size_t i = 0; i < patternLen; ++i) {
         bool charsEqual = (lookingAtData[i] == pattern[i]);
         if (not matchCase and not charsEqual) {
 // if we are doing case-IN-sensative compare, and characters not the same, maybe they are
@@ -666,7 +666,7 @@ searchSMORE:
         }
 
         if (not charsEqual) {
-            searchIdx++;
+            ++searchIdx;
             goto searchSMORE;
         }
     }
@@ -698,7 +698,7 @@ searchSMORE:
                 if (not boundaryChar) {
                     // If the first char if the match wasn't a space/ending char, and the one
                     // preceeding it wasn't, then we've split a word. Try again
-                    searchIdx++;
+                    ++searchIdx;
                     goto searchSMORE;
                 }
             }
@@ -719,7 +719,7 @@ searchSMORE:
                     if (not boundaryChar) {
                         // If the first char if the match wasn't a space/ending char, and the one
                         // preceeding it wasn't, then we've split a word. Try again
-                        searchIdx++;
+                        ++searchIdx;
                         goto searchSMORE;
                     }
                 }

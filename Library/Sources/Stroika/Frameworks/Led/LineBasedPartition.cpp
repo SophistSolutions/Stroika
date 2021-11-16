@@ -33,7 +33,7 @@ void LineBasedPartition::FinalConstruct ()
     inherited::FinalConstruct ();
     PartitionMarker* pm = GetFirstPartitionMarker ();
     // Perform any splits of the first created PM into lines (in case text buffer starts with text in it)
-    for (size_t i = GetTextStore ().GetLength (); i > 0; i--) {
+    for (size_t i = GetTextStore ().GetLength (); i > 0; --i) {
         Led_tChar c;
         GetTextStore ().CopyOut (i - 1, 1, &c);
         if (c == '\n') {
@@ -65,7 +65,7 @@ void LineBasedPartition::UpdatePartitions (PartitionMarker* pm, const UpdateInfo
         */
         size_t startOfInsert = max (updateInfo.fReplaceFrom, pm->GetStart ());
         size_t endOfInsert   = min (updateInfo.GetResultingRHS (), pm->GetEnd ());
-        for (size_t i = endOfInsert; i > startOfInsert; i--) {
+        for (size_t i = endOfInsert; i > startOfInsert; --i) {
             CheckForSplits (pm, updateInfo, i);
         }
 
@@ -136,11 +136,11 @@ void LineBasedPartition::Invariant_ () const
         size_t len   = end - start;
 
         if (end > GetEnd ()) {
-            len--; // Last partition extends past end of text
+            --len; // Last partition extends past end of text
         }
         Memory::SmallStackBuffer<Led_tChar> buf (len);
         CopyOut (start, len, buf);
-        for (size_t i = 1; i < len; i++) {
+        for (size_t i = 1; i < len; ++i) {
             Assert (buf[i - 1] != '\n');
         }
         if (cur->GetNext () != nullptr) { // All but the last partition must be NL terminated...

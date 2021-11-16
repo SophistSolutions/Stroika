@@ -79,7 +79,7 @@ void Capturer::SetCaptureSets (const Collection<CaptureSet>& captureSets)
 {
     auto rwLock = fCaptureSets_.rwget ();
     rwLock.store (captureSets);
-    fCaptureSetChangeCount_++;
+    ++fCaptureSetChangeCount_;
     ManageRunner_ (not captureSets.empty ());
 }
 
@@ -88,7 +88,7 @@ void Capturer::AddCaptureSet (const CaptureSet& cs)
     RunnerOnce_ (cs);
     auto rwLock = fCaptureSets_.rwget ();
     rwLock->Add (cs);
-    fCaptureSetChangeCount_++;
+    ++fCaptureSetChangeCount_;
     ManageRunner_ (true); // start while still holding lock
 }
 

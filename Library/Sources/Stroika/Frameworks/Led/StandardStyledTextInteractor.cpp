@@ -82,7 +82,7 @@ void StandardStyledTextInteractor::HookLosingTextStore_ ()
 {
     // Remove all embeddings...
     vector<SimpleEmbeddedObjectStyleMarker*> embeddings = CollectAllEmbeddingMarkersInRange (0, GetLength ());
-    for (size_t i = 0; i < embeddings.size (); i++) {
+    for (size_t i = 0; i < embeddings.size (); ++i) {
         SimpleEmbeddedObjectStyleMarker* e = embeddings[i];
         AssertNotNull (e); // all embeddings returned must be non-null
         DISABLE_COMPILER_MSC_WARNING_START (28182)
@@ -204,10 +204,10 @@ bool StandardStyledTextInteractor::ShouldEnablePasteCommand () const
     }
 
     const vector<EmbeddedObjectCreatorRegistry::Assoc>& types = EmbeddedObjectCreatorRegistry::Get ().GetAssocList ();
-    for (size_t i = 0; i < types.size (); i++) {
+    for (size_t i = 0; i < types.size (); ++i) {
         EmbeddedObjectCreatorRegistry::Assoc assoc           = types[i];
         bool                                 clipAvailForAll = true;
-        for (size_t j = 0; j < assoc.fFormatTagCount; j++) {
+        for (size_t j = 0; j < assoc.fFormatTagCount; ++j) {
             if (not Led_ClipboardObjectAcquire::FormatAvailable (assoc.GetIthFormat (j))) {
                 clipAvailForAll = false;
                 break;
@@ -233,13 +233,13 @@ bool StandardStyledTextInteractor::CanAcceptFlavor (Led_ClipFormat clipFormat) c
     }
 
     const vector<EmbeddedObjectCreatorRegistry::Assoc>& types = EmbeddedObjectCreatorRegistry::Get ().GetAssocList ();
-    for (size_t i = 0; i < types.size (); i++) {
+    for (size_t i = 0; i < types.size (); ++i) {
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
 
         // This may sometimes false-posative - since we may (in priciple) require several other formats at the
         // same time. But this will at least return true whenever we CAN accept the format...
         // Maybe we should redesign/reimplement this API for a future release? LGP 960416
-        for (size_t j = 0; j < assoc.fFormatTagCount; j++) {
+        for (size_t j = 0; j < assoc.fFormatTagCount; ++j) {
             if (assoc.GetIthFormat (j) == clipFormat) {
                 return true;
             }
@@ -611,7 +611,7 @@ void StandardStyledTextIOSinkStream::AppendEmbedding (SimpleEmbeddedObjectStyleM
         Flush ();
     }
     AddEmbedding (embedding, *fTextStore, fInsertionStart, fStyleRunDatabase.get ());
-    fInsertionStart++;
+    ++fInsertionStart;
 }
 
 void StandardStyledTextIOSinkStream::AppendSoftLineBreak ()
@@ -1064,10 +1064,10 @@ bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_HTML (ReaderFlavorPa
 bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_OtherRegisteredEmbedding (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
 {
     const vector<EmbeddedObjectCreatorRegistry::Assoc>& types = EmbeddedObjectCreatorRegistry::Get ().GetAssocList ();
-    for (size_t i = 0; i < types.size (); i++) {
+    for (size_t i = 0; i < types.size (); ++i) {
         EmbeddedObjectCreatorRegistry::Assoc assoc           = types[i];
         bool                                 clipAvailForAll = (assoc.fFormatTagCount != 0);
-        for (size_t j = 0; j < assoc.fFormatTagCount; j++) {
+        for (size_t j = 0; j < assoc.fFormatTagCount; ++j) {
             if (not flavorPackage.GetFlavorAvailable (assoc.GetIthFormat (j))) {
                 clipAvailForAll = false;
                 break;

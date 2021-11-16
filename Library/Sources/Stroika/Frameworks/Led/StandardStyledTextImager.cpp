@@ -175,9 +175,9 @@ IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo_ (
 #endif
         ;
 
-    for (size_t i = 0; i < summaryInfo.size (); i++) {
+    for (size_t i = 0; i < summaryInfo.size (); ++i) {
         if (i == 0) {
-            fontSpec = IncrementalFontSpecification (summaryInfo[0]);
+            fontSpec = IncrementalFontSpecification{summaryInfo[0]};
         }
         else {
             // check each attribute (if not already different) and see if NOW different...
@@ -300,7 +300,7 @@ bool StandardStyledTextImager::DoContinuousStyle_Mac (size_t from, size_t nTChar
 vector<StandardStyledTextImager::InfoSummaryRecord> StandardStyledTextImager::Convert (const ScrpSTElement* teScrapFmt, size_t nElts)
 {
     vector<InfoSummaryRecord> result;
-    for (size_t i = 0; i < nElts; i++) {
+    for (size_t i = 0; i < nElts; ++i) {
         IncrementalFontSpecification fsp;
         fsp.SetOSRep (teScrapFmt[i].scrpFont, teScrapFmt[i].scrpSize, teScrapFmt[i].scrpFace);
         size_t            length = (i < (nElts - 1)) ? (teScrapFmt[i + 1].scrpStartChar - teScrapFmt[i].scrpStartChar) : 9999999;
@@ -324,7 +324,7 @@ void StandardStyledTextImager::Convert (const vector<InfoSummaryRecord>& fromLed
     ::OpenCPort (&tmpPort);
 #endif
 
-    for (size_t i = 0; i < nElts; i++) {
+    for (size_t i = 0; i < nElts; ++i) {
         InfoSummaryRecord isr = fromLedStyleRuns[i];
 
         (void)::memset (&teScrapFmt[i], 0, sizeof (teScrapFmt[i]));
@@ -392,7 +392,7 @@ vector<StandardStyledTextImager::InfoSummaryRecord> StyleDatabaseRep::GetStyleIn
     vector<InfoSummaryRecord> result;
     size_t                    tCharsSoFar           = 0;
     size_t                    nStandardStyleMarkers = standardStyleMarkers.size ();
-    for (size_t i = 0; i < nStandardStyleMarkers; i++) {
+    for (size_t i = 0; i < nStandardStyleMarkers; ++i) {
         StandardStyleMarker* marker = standardStyleMarkers[i];
         AssertNotNull (marker);
         size_t markerStart;
@@ -434,7 +434,7 @@ void StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowin
 {
     size_t setAt           = charAfterPos;
     size_t lengthUsedSoFar = 0;
-    for (size_t i = 0; i < nStyleInfos and lengthUsedSoFar < nTCharsFollowing; i++) {
+    for (size_t i = 0; i < nStyleInfos and lengthUsedSoFar < nTCharsFollowing; ++i) {
         InfoSummaryRecord isr    = styleInfos[i];
         size_t            length = isr.fLength;
         Assert (nTCharsFollowing >= lengthUsedSoFar);

@@ -764,7 +764,7 @@ namespace Stroika::Frameworks::Led::Platform {
             wstring tmpIMEBugWorkaroundCompString = IME::Get ().GetCompositionResultStringW (this->GetValidatedHWND ());
             if (fIMECurCharIdx < tmpIMEBugWorkaroundCompString.length ()) {
                 nChar = tmpIMEBugWorkaroundCompString[fIMECurCharIdx];
-                fIMECurCharIdx++;
+                ++fIMECurCharIdx;
             }
             else {
                 /*
@@ -1721,8 +1721,8 @@ namespace Stroika::Frameworks::Led::Platform {
         Require (fAcquireCount < 100); // not really a requirement - but hard to see how this could happen in LEGIT usage...
         // almost certainly a bug...
         if (fUpdateTablet != nullptr) {
-            fAcquireCount++;
-            return (fUpdateTablet);
+            ++fAcquireCount;
+            return fUpdateTablet;
         }
 
         /*

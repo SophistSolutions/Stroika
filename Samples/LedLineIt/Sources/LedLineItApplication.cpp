@@ -126,7 +126,7 @@ public:
                 }
 
                 // it worked, now bump untitled count
-                m_nUntitledCount++;
+                ++m_nUntitledCount;
             }
             else {
                 // open an existing document
@@ -217,7 +217,7 @@ public:
                     while (dp != NULL) {
                         CDocument* doc = t->GetNextDoc (dp);
                         AssertNotNull (doc);
-                        docCount++;
+                        ++docCount;
                         if (docCount == 1) {
                             // See if doc not dirty and has no file name and if so - set it to untitledDoc
                             if (not doc->IsModified () and doc->GetPathName ().GetLength () == 0) {
@@ -802,7 +802,7 @@ BOOL LedLineItApplication::ProcessShellCommand (CCommandLineInfo& rCmdInfo)
         */
 #if !qNo_argc_argv_MacrosSupported
         if (rCmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen) {
-            for (int i = 1; i < __argc; i++) {
+            for (int i = 1; i < __argc; ++i) {
                 LPCTSTR pszParam = __targv[i];
                 if (pszParam[0] == '-' || pszParam[0] == '/') {
                     // skip flags

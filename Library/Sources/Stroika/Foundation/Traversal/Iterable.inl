@@ -247,6 +247,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename CONTAINER_OF_T>
     Iterable<T> Iterable<T>::mk_ (CONTAINER_OF_T&& from)
     {
+        // @todo consider if this should use forward_list<> and stroika blockallocator? Just have to be more careful on the indexing (using iterator carefully)
         vector<T>                tmp{from.begin (), from.end ()}; // Somewhat simplistic / inefficient implementation
         size_t                   idx{0};
         function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
@@ -332,7 +333,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
     bool Iterable<T>::MultiSetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer)
     {
-        auto tallyOf = [&equalsComparer] (const auto& c, T item) -> size_t {
+        auto tallyOf = [&equalsComparer] (const auto& c, Configuration::ArgByValueType<T> item) -> size_t {
             size_t total = 0;
             for (const auto ti : c) {
                 if (equalsComparer (ti, item)) {

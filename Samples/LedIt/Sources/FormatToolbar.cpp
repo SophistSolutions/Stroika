@@ -478,14 +478,14 @@ int SizeComboBox::GetTwipSize ()
     LPCTSTR lpszText = str;
 
     while (*lpszText == ' ' || *lpszText == '\t')
-        lpszText++;
+        ++lpszText;
 
     if (lpszText[0] == NULL)
         return -1; // no text in control
 
     double d = _tcstod (lpszText, (LPTSTR*)&lpszText);
     while (*lpszText == ' ' || *lpszText == '\t')
-        lpszText++;
+        ++lpszText;
 
     if (*lpszText != NULL)
         return -2; // not terminated properly
@@ -508,7 +508,7 @@ BOOL CALLBACK AFX_EXPORT SizeComboBox::EnumSizeCallBack (LOGFONT FAR* /*lplf*/, 
         if (pThis->GetCount () != 0)
             pThis->ResetContent ();
 
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 16; ++i) {
             wsprintf (buf, _T("%d"), nFontSizes[i]);
             pThis->AddString (buf);
         }
@@ -534,7 +534,7 @@ void SizeComboBox::InsertSize (int nSize)
                 nIndex = nPos;
                 break;
             }
-            nPos++;
+            ++nPos;
         }
         nIndex = InsertString (nIndex, buf);
         ASSERT (nIndex != CB_ERR);

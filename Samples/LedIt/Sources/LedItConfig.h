@@ -58,9 +58,9 @@ const unsigned int kMaxNumUndoLevels = 512;
 
 #if defined(__cplusplus)
 const TWIPS kLedItViewTopMargin    = TWIPS (120);
-const TWIPS kLedItViewBottomMargin = TWIPS (0);
+const TWIPS kLedItViewBottomMargin = TWIPS{0};
 const TWIPS kLedItViewLHSMargin    = TWIPS (150);
-const TWIPS kLedItViewRHSMargin    = TWIPS (0);
+const TWIPS kLedItViewRHSMargin    = TWIPS{0};
 #endif
 
 // Eventually make it a runtime choice based on a user-config dialog (on mac - already chooseable for PC).

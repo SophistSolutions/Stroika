@@ -251,7 +251,7 @@ void FilteredSFGetDLog::NavEventProc (NavEventCallbackMessage inSelector, NavCBR
                 Rect   r;
                 ::GetDialogItem (dialog, fPopupDLGItemNumber, &i, &h, &r);
                 MenuHandle mm = GetPopUpMenuHandle ((ControlHandle)h);
-                for (size_t i = 0; i < fTypeSpecCount; i++) {
+                for (size_t i = 0; i < fTypeSpecCount; ++i) {
                     Str255 tmp;
                     tmp[0] = strlen (fTypeSpecs[i].fName);
                     memcpy (&tmp[1], fTypeSpecs[i].fName, tmp[0]);
@@ -309,7 +309,7 @@ bool FilteredSFGetDLog::NavObjectFilterProc (AEDesc* theItem, void* info, NavFil
             switch (fCurPopupIdx) {
                 case 1: {
                     // TRUE iff in list of types...
-                    for (size_t i = 0; i < fTypeSpecCount; i++) {
+                    for (size_t i = 0; i < fTypeSpecCount; ++i) {
                         if (thisFileType == fTypeSpecs[i].fOSType) {
                             allow = true;
                             break;
@@ -351,7 +351,7 @@ pascal short FilteredSFGetDLog::SFGetDlgHook (short item, DialogPtr dialog, void
         Rect   r;
         ::GetDialogItem (dialog, sThis->fPopupDLGItemNumber, &i, &h, &r);
         MenuHandle mm = GetPopUpMenuHandle ((ControlHandle)h);
-        for (size_t i = 0; i < sThis->fTypeSpecCount; i++) {
+        for (size_t i = 0; i < sThis->fTypeSpecCount; ++i) {
             Str255 tmp;
             tmp[0] = strlen (sThis->fTypeSpecs[i].fName);
             memcpy (&tmp[1], sThis->fTypeSpecs[i].fName, tmp[0]);
@@ -394,7 +394,7 @@ pascal Boolean FilteredSFGetDLog::SFFilterProc (CInfoPBPtr pb, void* myData)
     switch (sThis->fCurPopupIdx) {
         case 1: {
             // TRUE iff in list of types...
-            for (size_t i = 0; i < sThis->fTypeSpecCount; i++) {
+            for (size_t i = 0; i < sThis->fTypeSpecCount; ++i) {
                 if (thisFileType == sThis->fTypeSpecs[i].fOSType) {
                     filtered = false;
                     break;
@@ -599,7 +599,7 @@ void FilteredSFPutDLog::NavEventProc (NavEventCallbackMessage inSelector, NavCBR
                 Rect   r;
                 ::GetDialogItem (dialog, fPopupDLGItemNumber, &i, &h, &r);
                 MenuHandle mm = GetPopUpMenuHandle ((ControlHandle)h);
-                for (size_t i = 0; i < fTypeSpecCount; i++) {
+                for (size_t i = 0; i < fTypeSpecCount; ++i) {
                     Str255 tmp;
                     tmp[0] = strlen (fTypeSpecs[i].fName);
                     memcpy (&tmp[1], fTypeSpecs[i].fName, tmp[0]);
@@ -649,7 +649,7 @@ pascal short FilteredSFPutDLog::SFPutDlgHook (short item, DialogPtr dialog, void
         Rect   r;
         ::GetDialogItem (dialog, sThis->fPopupDLGItemNumber, &i, &h, &r);
         MenuHandle mm = GetPopUpMenuHandle ((ControlHandle)h);
-        for (size_t i = 0; i < sThis->fTypeSpecCount; i++) {
+        for (size_t i = 0; i < sThis->fTypeSpecCount; ++i) {
             Str255 tmp;
             tmp[0] = strlen (sThis->fTypeSpecs[i].fName);
             memcpy (&tmp[1], sThis->fTypeSpecs[i].fName, tmp[0]);
@@ -745,7 +745,7 @@ namespace {
               3. fill in item handle according to type.
         */
         item = (**append_item_list).items;
-        for (i = 0; i < new_items; i++) {
+        for (i = 0; i < new_items; ++i) {
             OffsetRect (&item->bounds, offset.h, offset.v);
             UnionRect (&item->bounds, &max_rect, &max_rect);
             usb.integer  = 0;

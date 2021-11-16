@@ -97,8 +97,8 @@ namespace Stroika::Frameworks::Led {
         size_t           subRow = 0;
 
         if (subRow + 1 < 1) {
-            subRow++;
-            *adjustMeInPlace = RowReference (cur);
+            ++subRow;
+            *adjustMeInPlace = RowReference{cur};
             return true;
         }
         else {
@@ -108,7 +108,7 @@ namespace Stroika::Frameworks::Led {
             else {
                 cur              = cur->GetNext ();
                 subRow           = 0;
-                *adjustMeInPlace = RowReference (cur);
+                *adjustMeInPlace = RowReference{cur};
                 return true;
             }
         }
@@ -126,7 +126,7 @@ namespace Stroika::Frameworks::Led {
         size_t           subRow = 0;
 
         if (subRow > 0) {
-            subRow--;
+            --subRow;
             *adjustMeInPlace = RowReference (cur);
             return true;
         }

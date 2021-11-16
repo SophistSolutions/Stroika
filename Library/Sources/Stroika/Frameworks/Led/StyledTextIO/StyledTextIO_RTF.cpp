@@ -146,7 +146,6 @@ namespace {
  ********************************************************************************
  */
 RTFIO::SingleByteCharsetToCharsetMappingTable::SingleByteCharsetToCharsetMappingTable (CodePage srcEncoding, CodePage dstEncoding, char bogusChar)
-//:fMappingTable ()
 {
     /*
      *  Walk the two (input and output) tables, and compute the table which would convert from src to dst.
@@ -158,7 +157,7 @@ RTFIO::SingleByteCharsetToCharsetMappingTable::SingleByteCharsetToCharsetMapping
     CodePageConverter srcCvt (srcEncoding);
     CodePageConverter dstCvt (dstEncoding);
 
-    for (size_t i = 0; i < 256; i++) {
+    for (size_t i = 0; i < 256; ++i) {
         wchar_t unicodeChar = '\0';
 
         {
@@ -283,7 +282,7 @@ IncrementalFontSpecification FontTable::GetFontSpec (int fontNumber)
 
 const FontTableEntry* FontTable::LookupEntryByNumber (int fontNumber)
 {
-    for (size_t i = 0; i < fEntries.size (); i++) {
+    for (size_t i = 0; i < fEntries.size (); ++i) {
         const FontTableEntry& fte = fEntries[i];
         if (fte.fFNum == fontNumber) {
             return &fte;
@@ -294,7 +293,7 @@ const FontTableEntry* FontTable::LookupEntryByNumber (int fontNumber)
 
 const FontTableEntry* FontTable::LookupEntryByName (const Led_SDK_String& name)
 {
-    for (size_t i = 0; i < fEntries.size (); i++) {
+    for (size_t i = 0; i < fEntries.size (); ++i) {
         const FontTableEntry& fte = fEntries[i];
         if (fte.fFontName == name) {
             return &fte;
@@ -317,10 +316,10 @@ int FontTable::FindSmallestUnusedFontNumber () const
     // Not terribly efficient, but OK for small numbers... LGP 960825
     int tryThis = 0;
 Again:
-    for (size_t i = 0; i < fEntries.size (); i++) {
+    for (size_t i = 0; i < fEntries.size (); ++i) {
         const FontTableEntry& fte = fEntries[i];
         if (fte.fFNum == tryThis) {
-            tryThis++;
+            ++tryThis;
             goto Again;
         }
     }
@@ -352,7 +351,7 @@ Color RTFIO::ColorTable::LookupColor (size_t colorNumber) const
 
 size_t RTFIO::ColorTable::LookupColor (const Color& color) const
 {
-    for (size_t i = 0; i < fEntries.size (); i++) {
+    for (size_t i = 0; i < fEntries.size (); ++i) {
         const Color& c = fEntries[i];
         if (c == color) {
             return i;
@@ -364,7 +363,7 @@ size_t RTFIO::ColorTable::LookupColor (const Color& color) const
 
 size_t RTFIO::ColorTable::EnterColor (const Color& color)
 {
-    for (size_t i = 0; i < fEntries.size (); i++) {
+    for (size_t i = 0; i < fEntries.size (); ++i) {
         const Color& c = fEntries[i];
         if (c == color) {
             return i;
@@ -947,7 +946,7 @@ void SinkStreamDestination::SetCellX (TWIPS cellx)
         /*
          *  The cellx value specifies the ENDPOINT of the cell, and we prefer to keep track of the WIDTH of each cell.
          */
-        TWIPS sub = TWIPS (0);
+        TWIPS sub = TWIPS{0};
         for (auto i = fThisRow.fCellInfosForThisRow.begin (); i != fThisRow.fCellInfosForThisRow.end (); ++i) {
             sub += (*i).f_cellx;
         }
@@ -1034,7 +1033,7 @@ void SinkStreamDestination::DoStartRow ()
     {
         vector<TWIPS> cellWidths;
         for (auto i = fThisRow.fCellInfosForThisRow.begin (); i != fThisRow.fCellInfosForThisRow.end (); ++i) {
-            const TWIPS kMinWidth = TWIPS (0);
+            const TWIPS kMinWidth = TWIPS{0};
             TWIPS       thisCellW = (*i).f_cellx;
             if (i == fThisRow.fCellInfosForThisRow.begin ()) {
                 thisCellW -= fThisRow.f_trleft;
@@ -1062,14 +1061,14 @@ void SinkStreamDestination::DoStartRow ()
     }
     fTableInRow       = true;
     fTableNextCellNum = 0;
-    fTableNextRowNum++;
+    ++fTableNextRowNum;
 }
 
 void SinkStreamDestination::DoStartCell ()
 {
     fSinkStream.StartTableCell (fThisRow.fCellInfosForThisRow[fTableNextCellNum].fColSpan);
     fTableInCell = true;
-    fTableNextCellNum++;
+    ++fTableNextCellNum;
 }
 
 void SinkStreamDestination::DoEndTable ()
@@ -1239,7 +1238,7 @@ void SinkStreamDestination::FlushParaEndings () const
  ********************************************************************************
  */
 SinkStreamDestination::CellInfo::CellInfo ()
-    : f_cellx (TWIPS (0))
+    : f_cellx (TWIPS{0})
     , f_clcbpat (Color::kWhite)
     , fColSpan (1)
 {
@@ -1251,10 +1250,10 @@ SinkStreamDestination::CellInfo::CellInfo ()
  ********************************************************************************
  */
 SinkStreamDestination::RowInfo::RowInfo ()
-    : f_trrh (TWIPS (0))
-    , f_trleft (TWIPS (0))
-    , fDefaultCellMargins (TWIPS (0), TWIPS (0), TWIPS (0), TWIPS (0))
-    , fDefaultCellSpacing (TWIPS (0), TWIPS (0), TWIPS (0), TWIPS (0))
+    : f_trrh (TWIPS{0})
+    , f_trleft (TWIPS{0})
+    , fDefaultCellMargins (TWIPS{0}, TWIPS{0}, TWIPS{0}, TWIPS{0})
+    , fDefaultCellSpacing (TWIPS{0}, TWIPS{0}, TWIPS{0}, TWIPS{0})
     , fCellInfosForThisRow ()
 {
 }
@@ -2497,7 +2496,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
      */
     bool         isOLEEmbedding        = false;
     bool         isPrivateLedEmbedding = false;
-    TWIPS_Point  shownSize             = TWIPS_Point (TWIPS (0), TWIPS (0));
+    TWIPS_Point  shownSize             = TWIPS_Point (TWIPS{0}, TWIPS{0});
     vector<char> objData;
     float        scaleX        = 1.0f;
     float        scaleY        = 1.0f;
@@ -2609,7 +2608,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
                         if (SearchForwardFor ("\\pict", s.length ())) {
                             ControlWord cw = ReadControlWord ();
                             if (cw.fWord == RTFIO::eControlAtom_pict) {
-                                TWIPS_Point  bmSize = TWIPS_Point (TWIPS (0), TWIPS (0));
+                                TWIPS_Point  bmSize = TWIPS_Point (TWIPS{0}, TWIPS{0});
                                 vector<char> pictureData;
                                 ImageFormat  imageFormat = eDefaultImageFormat;
                                 ReadTopLevelPictData (&shownSize, &imageFormat, &bmSize, &pictureData);
@@ -2672,11 +2671,11 @@ bool StyledTextIOReader_RTF::HandleControlWord_pard (ReaderContext& readerContex
     // Assign to current context AND destination at the same time...
     readerContext.GetDestination ().SetTabStops (readerContext.GetCurrentGroupContext ()->fDestinationContext.fTabStops = TextImager::StandardTabStopList (GetRTFInfo ().GetDefaultTabStop ()));
     readerContext.GetDestination ().SetJustification (readerContext.GetCurrentGroupContext ()->fDestinationContext.fJustification = eLeftJustify);
-    readerContext.GetDestination ().SetFirstIndent (readerContext.GetCurrentGroupContext ()->fDestinationContext.fFirstIndent = TWIPS (0));
-    readerContext.GetDestination ().SetLeftMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fLeftMargin = TWIPS (0));
-    readerContext.GetDestination ().SetRightMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fRightMargin = TWIPS (0));
-    readerContext.GetDestination ().SetSpaceBefore (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceBefore = TWIPS (0));
-    readerContext.GetDestination ().SetSpaceAfter (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceAfter = TWIPS (0));
+    readerContext.GetDestination ().SetFirstIndent (readerContext.GetCurrentGroupContext ()->fDestinationContext.fFirstIndent = TWIPS{0});
+    readerContext.GetDestination ().SetLeftMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fLeftMargin = TWIPS{0});
+    readerContext.GetDestination ().SetRightMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fRightMargin = TWIPS{0});
+    readerContext.GetDestination ().SetSpaceBefore (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceBefore = TWIPS{0});
+    readerContext.GetDestination ().SetSpaceAfter (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceAfter = TWIPS{0});
     readerContext.GetDestination ().SetSpaceBetweenLines (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceBetweenLines = 1000);
     readerContext.GetDestination ().SetSpaceBetweenLinesMult (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceBetweenLinesMult = true);
     readerContext.GetDestination ().SetListStyle (readerContext.GetCurrentGroupContext ()->fDestinationContext.fListStyle = eListStyle_None);
@@ -2706,8 +2705,8 @@ bool StyledTextIOReader_RTF::HandleControlWord_pict (ReaderContext& readerContex
 {
     CheckIfAboutToStartBody (readerContext);
 
-    TWIPS_Point  shownSize = TWIPS_Point (TWIPS (0), TWIPS (0));
-    TWIPS_Point  bmSize    = TWIPS_Point (TWIPS (0), TWIPS (0));
+    TWIPS_Point  shownSize = TWIPS_Point (TWIPS{0}, TWIPS{0});
+    TWIPS_Point  bmSize    = TWIPS_Point (TWIPS{0}, TWIPS{0});
     vector<char> objData;
     ImageFormat  imageFormat = eDefaultImageFormat;
     ReadTopLevelPictData (&shownSize, &imageFormat, &bmSize, &objData);
@@ -3061,7 +3060,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_UnknownControlWord (ReaderContext
 bool StyledTextIOReader_RTF::HandlePossibleSpecialCharacterControlWord (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
 {
     // Lookup. If good, then insert special character, and return true. Else return false to handle normally.
-    for (size_t i = 0; i < Memory::NEltsOf (kMappings); i++) {
+    for (size_t i = 0; i < Memory::NEltsOf (kMappings); ++i) {
         if (controlWord.fWord == kMappings[i].fControlWordName) {
             CheckIfAboutToStartBody (readerContext);
 #if qWideCharacters
@@ -3208,7 +3207,7 @@ RTFIO::ControlWord StyledTextIOReader_RTF::ReadControlWord ()
             // (really should NEVER happen as controlwords shouldn't ever get that long).
             if (controlWordLen < RTFIO::eMaxControlAtomNameLen) {
                 controlWordBuf[controlWordLen] = c;
-                controlWordLen++;
+                ++controlWordLen;
             }
 #if qDebug
             else {
@@ -3442,7 +3441,7 @@ void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo ([[maybe_unused]] 
     using RTFOLEEmbedding = RTFIO::RTFOLEEmbedding;
     //const Led_ClipFormat                                kOLEEmbedClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T ("Object Descriptor")));
     const vector<EmbeddedObjectCreatorRegistry::Assoc>& types = EmbeddedObjectCreatorRegistry::Get ().GetAssocList ();
-    for (size_t i = 0; i < types.size (); i++) {
+    for (size_t i = 0; i < types.size (); ++i) {
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
         if (memcmp (assoc.fEmbeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0) {
             AssertNotNull (assoc.fReadFromMemory);
@@ -3476,7 +3475,7 @@ void StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& re
     const char*                                         theData       = tag + sizeof (Led_PrivateEmbeddingTag);
     size_t                                              theDataNBytes = nBytes - sizeof (Led_PrivateEmbeddingTag);
     const vector<EmbeddedObjectCreatorRegistry::Assoc>& types         = EmbeddedObjectCreatorRegistry::Get ().GetAssocList ();
-    for (size_t i = 0; i < types.size (); i++) {
+    for (size_t i = 0; i < types.size (); ++i) {
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
         if (memcmp (assoc.fEmbeddingTag, tag, sizeof (assoc.fEmbeddingTag)) == 0) {
             AssertNotNull (assoc.fReadFromMemory);
@@ -3520,13 +3519,13 @@ void StyledTextIOReader_RTF::ReadTopLevelPictData (TWIPS_Point* shownSize, Image
     using ControlWord         = RTFIO::ControlWord;
 
     *imageFormat = eDefaultImageFormat;
-    *shownSize   = TWIPS_Point (TWIPS (0), TWIPS (0));
-    *bmSize      = TWIPS_Point (TWIPS (0), TWIPS (0));
+    *shownSize   = TWIPS_Point (TWIPS{0}, TWIPS{0});
+    *bmSize      = TWIPS_Point (TWIPS{0}, TWIPS{0});
     *objData     = vector<char> ();
     float scaleX = 1.0f;
     float scaleY = 1.0f;
-    TWIPS picH   = TWIPS (0);
-    TWIPS picV   = TWIPS (0);
+    TWIPS picH   = TWIPS{0};
+    TWIPS picV   = TWIPS{0};
 
     while (true) {
         switch (PeekNextChar ()) {
@@ -3723,8 +3722,8 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (TWIPS_Point shownSiz
             Brush            backgroundBrush (eraseColor.GetOSRep ());
             GDI_Obj_Selector pen (&memDC, ::GetStockObject (NULL_PEN));
             GDI_Obj_Selector brush (&memDC, backgroundBrush);
-            eraser.right++; // lovely - windows doesn't count last pixel... See Docs for Rectangle() and rephrase!!!
-            eraser.bottom++;
+            ++eraser.right; // lovely - windows doesn't count last pixel... See Docs for Rectangle() and rephrase!!!
+            ++eraser.bottom;
             memDC.Rectangle (AsRECT (eraser));
         }
 
@@ -3984,11 +3983,11 @@ void StyledTextIOReader_RTF::SkipToEndOfCurrentGroup ()
         switch (PeekNextChar ()) {
             case RTFIO::kRTFOpenGroupChar: {
                 ConsumeNextChar ();
-                depth++;
+                ++depth;
             } break;
             case RTFIO::kRTFCloseGroupChar: {
                 ConsumeNextChar ();
-                depth--;
+                --depth;
             } break;
             default: {
                 Assert (false);
@@ -4003,7 +4002,7 @@ void StyledTextIOReader_RTF::ScanForwardFor (const char* setOfChars)
 
 #if qUseCompiledSetHack
     bitset<256> compiledSet;
-    for (auto p = setOfChars; *p != '\0'; p++) {
+    for (auto p = setOfChars; *p != '\0'; ++p) {
         compiledSet[(unsigned char)*p] = true;
     }
 #endif
@@ -4019,7 +4018,7 @@ void StyledTextIOReader_RTF::ScanForwardFor (const char* setOfChars)
                 return;
             }
 #else
-            for (const char* p = setOfChars; *p != '\0'; p++) {
+            for (const char* p = setOfChars; *p != '\0'; ++p) {
                 if (c == *p) {
                     PutBackLastChar ();
                     return;
@@ -4267,7 +4266,7 @@ void StyledTextIOWriter_RTF::WriteBodyCharacter (WriterContext& writerContext, L
     if (writerContext.GetCurSrcOffset () - 1 == writerContext.fNextHidableTextChangeAt) {
         if (writerContext.fHidableTextRegionOpen) {
             write ("}");
-            writerContext.fIthHidableTextRun++;
+            ++writerContext.fIthHidableTextRun;
             if (writerContext.fIthHidableTextRun < fHidableTextRuns.size ()) {
                 writerContext.fNextHidableTextChangeAt += fHidableTextRuns[writerContext.fIthHidableTextRun].fOffsetFromPrev;
             }
@@ -4294,7 +4293,7 @@ void StyledTextIOWriter_RTF::WriteBodyCharacter (WriterContext& writerContext, L
         }
         writerContext.fLastEmittedISR = nextStyleRun;
         writerContext.fNextStyleChangeAt += writerContext.fLastEmittedISR.fLength;
-        writerContext.fIthStyleRun++;
+        ++writerContext.fIthStyleRun;
     }
 
     if (writerContext.fCharsToSkip > 0) {
@@ -4445,7 +4444,7 @@ void StyledTextIOWriter_RTF::WriteStartParagraph (WriterContext& writerContext)
     TextImager::StandardTabStopList tabStops = writerContext.GetSrcStream ().GetStandardTabStopList ();
     // assume we only save the specified tabstops, and that the default is already saved per-doc
     // since RTF1.4 doesn't seem to have a per-para 'deftabstop' value
-    TWIPS tabSoFar = TWIPS (0);
+    TWIPS tabSoFar = TWIPS{0};
     for (size_t i = 0; i < tabStops.fTabStops.size (); ++i) {
         tabSoFar += tabStops.fTabStops[i];
         WriteTagNValue ("tx", tabSoFar);
@@ -4459,8 +4458,8 @@ void StyledTextIOWriter_RTF::WriteStartParagraph (WriterContext& writerContext)
     }
 
     {
-        TWIPS lhs = TWIPS (0);
-        TWIPS rhs = TWIPS (0);
+        TWIPS lhs = TWIPS{0};
+        TWIPS rhs = TWIPS{0};
         writerContext.GetSrcStream ().GetMargins (&lhs, &rhs);
         if (lhs != 0) { // don't bother writing if default value
             WriteTagNValue ("li", lhs);
@@ -4579,7 +4578,7 @@ void StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* ta
         size_t columns = cellInfos.size ();
         //<celldef>s
         {
-            TWIPS cellxSoFar = TWIPS (0);
+            TWIPS cellxSoFar = TWIPS{0};
             for (vector<CellInfo>::const_iterator i = cellInfos.begin (); i != cellInfos.end (); ++i) {
                 WriteTagNValue ("clcbpat", static_cast<int> (fColorTable->LookupColor (i->f_clcbpat)));
 
@@ -4596,7 +4595,7 @@ void StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* ta
 #if qDebug
         size_t nCellsWritten = 0;
 #endif
-        for (size_t c = 0; c < columns; c++) {
+        for (size_t c = 0; c < columns; ++c) {
             unique_ptr<StyledTextIOWriter::SrcStream> srcStream = unique_ptr<StyledTextIOWriter::SrcStream> (table->MakeCellSubSrcStream (r, c));
             if (srcStream.get () != nullptr) {
                 WriterContext                                       wc (writerContext, *srcStream.get ());
@@ -4607,7 +4606,7 @@ void StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* ta
                 fStyleRunSummary = x;
                 WriteTag ("cell");
 #if qDebug
-                nCellsWritten++;
+                ++nCellsWritten;
 #endif
             }
         }
@@ -4918,7 +4917,7 @@ void StyledTextIOWriter_RTF::WriteFontTable (WriterContext& writerContext)
     AssertNotNull (fFontTable);
 
     size_t entryCount = fFontTable->fEntries.size ();
-    for (size_t i = 0; i < entryCount; i++) {
+    for (size_t i = 0; i < entryCount; ++i) {
         WriteFontTablesEntry (fFontTable->fEntries[i]);
     }
 
@@ -4982,7 +4981,7 @@ void StyledTextIOWriter_RTF::WriteColorTable (WriterContext& writerContext)
     WriteTag ("colortbl");
 
     size_t entryCount = fColorTable->fEntries.size ();
-    for (size_t i = 0; i < entryCount; i++) {
+    for (size_t i = 0; i < entryCount; ++i) {
         Color c = fColorTable->LookupColor (i);
         char  buf[1024];
         (void)snprintf (buf, Memory::NEltsOf (buf), "\\red%d\\green%d\\blue%d;", c.GetRed () >> 8, c.GetGreen () >> 8, c.GetBlue () >> 8);
@@ -5128,7 +5127,7 @@ void StyledTextIOWriter_RTF::AssureColorTableBuilt (WriterContext& writerContext
         fColorTable = new RTFIO::ColorTable ();
         set<Color> colorsUsed;
         writerContext.GetSrcStream ().SummarizeFontAndColorTable (nullptr, &colorsUsed);
-        for (set<Color>::const_iterator i = colorsUsed.begin (); i != colorsUsed.end (); i++) {
+        for (set<Color>::const_iterator i = colorsUsed.begin (); i != colorsUsed.end (); ++i) {
             (void)fColorTable->EnterColor (*i);
         }
     }
@@ -5155,7 +5154,7 @@ void StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerContext)
 #if qPlatform_Windows
         WindowDC screenDC (nullptr);
 #endif
-        for (set<Led_SDK_String>::const_iterator i = fontNames.begin (); i != fontNames.end (); i++) {
+        for (set<Led_SDK_String>::const_iterator i = fontNames.begin (); i != fontNames.end (); ++i) {
             const Led_SDK_String& name = *i;
             if (fFontTable->LookupEntryByName (name) == nullptr) {
                 FontTableEntry fte;

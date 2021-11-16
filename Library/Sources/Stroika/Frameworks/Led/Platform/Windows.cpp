@@ -125,7 +125,7 @@ namespace Stroika::Frameworks::Led::Platform {
             size_t      index = newSelStart - newRowStart;
             if (Led_FindPrevOrEqualCharBoundary (&text[0], &text[index]) != &text[index]) {
                 Assert (newSelStart > newRowStart);
-                newSelStart--;
+                --newSelStart;
             }
         }
 #endif

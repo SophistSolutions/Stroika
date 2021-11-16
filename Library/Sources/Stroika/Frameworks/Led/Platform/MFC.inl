@@ -1022,7 +1022,7 @@ namespace Stroika::Frameworks::Led::Platform {
             if (doSmartCNP) {
                 size_t nTChars = length / sizeof (Led_tChar);
                 if (nTChars > 0) {
-                    nTChars--; // on windows, the text buffer contains a trailing NUL-byte
+                    --nTChars; // on windows, the text buffer contains a trailing NUL-byte
                 }
                 doSmartCNP = this->LooksLikeSmartPastableText (buf, nTChars, &smartCNPInfo);
             }
@@ -1167,8 +1167,8 @@ namespace Stroika::Frameworks::Led::Platform {
         : inherited ()
         ,
         // NB: CTOR for TWIPS_Rect is TOP/LEFT/HEIGHT/WIDTH, so we set height/width to zero to get same TLBR.
-        fPrintMargins (TWIPS_Rect (TWIPS (1440), TWIPS (1440), TWIPS (0), TWIPS (0)))
-        , fPrintInfo (NULL)
+        fPrintMargins (TWIPS_Rect (TWIPS{1440}, TWIPS{1440}, TWIPS{0}, TWIPS{0}))
+        , fPrintInfo{NULL}
     {
     }
     template <typename BASECLASS>

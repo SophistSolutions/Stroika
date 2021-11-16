@@ -197,7 +197,7 @@ struct DoIt_IndentUnIndentList {
         unsigned char indentLevel = wp->GetListIndentLevel (selStart);
         if (indent) {
             if (indentLevel < 8) {
-                indentLevel++;
+                ++indentLevel;
             }
             else {
                 Led_BeepNotify ();
@@ -205,7 +205,7 @@ struct DoIt_IndentUnIndentList {
         }
         else {
             if (indentLevel > 0) {
-                indentLevel--;
+                --indentLevel;
             }
             else {
                 Led_BeepNotify ();
@@ -228,8 +228,8 @@ ParagraphInfo::ParagraphInfo ()
     , fLeftMargin (0)
     , fRightMargin (1)
     , fFirstIndent (0)
-    , fSpaceBefore (TWIPS (0))
-    , fSpaceAfter (TWIPS (0))
+    , fSpaceBefore (TWIPS{0})
+    , fSpaceAfter (TWIPS{0})
     , fLineSpacing ()
     , fListStyle (eListStyle_None)
     , fListIndentLevel (0)
@@ -276,7 +276,7 @@ ParagraphInfo ParagraphDatabaseRep::GetStaticDefaultParagraphInfo ()
 {
     ParagraphInfo defaultPi;
     const int     kDefaultInches = 6;
-    defaultPi.SetMargins (TWIPS (0), TWIPS (kDefaultInches * 1440));
+    defaultPi.SetMargins (TWIPS{0}, TWIPS (kDefaultInches * 1440));
     defaultPi.SetJustification (eLeftJustify);
     return defaultPi;
 }
@@ -898,8 +898,8 @@ struct FirstIndentExtractor {
 };
 struct MarginsRec {
     MarginsRec ()
-        : fLHS (TWIPS (0))
-        , fRHS (TWIPS (0))
+        : fLHS (TWIPS{0})
+        , fRHS (TWIPS{0})
     {
     }
     MarginsRec (TWIPS lhs, TWIPS rhs)
@@ -1664,8 +1664,8 @@ void WordProcessor::AutoFormatIndentedText (size_t from, size_t to)
         ParagraphInfo            pi = fParagraphDatabase->GetParagraphInfo (pm->GetStart ());
         IncrementalParagraphInfo newPI;
         if (pi.GetListStyle () == eListStyle_None) {
-            newPI.SetFirstIndent (TWIPS (0));
-            newPI.SetMargins (TWIPS (0), pi.GetRightMargin ());
+            newPI.SetFirstIndent (TWIPS{0});
+            newPI.SetMargins (TWIPS{0}, pi.GetRightMargin ());
             newPI.SetTabStopList (StandardTabStopList ());
         }
         else {
@@ -2010,7 +2010,7 @@ DistanceType WordProcessor::ComputeMaxHScrollPos () const
 TWIPS WordProcessor::CalculateFarthestRightMarginInDocument () const
 {
     CoordinateType longestRowWidth = 0;
-    RowReference   curRow          = RowReference (GetFirstPartitionMarker (), 0);
+    RowReference   curRow          = RowReference{GetFirstPartitionMarker (), 0};
     do {
         CoordinateType rhsMargin = 0;
         GetLayoutMargins (curRow, nullptr, &rhsMargin);
@@ -2898,7 +2898,7 @@ void WordProcessor::OnInsertTableCommand ()
             {
                 for (size_t r = 0; r < rows; ++r) {
                     for (size_t c = 0; c < cols; ++c) {
-                        TWIPS targetWidth = TWIPS (0);
+                        TWIPS targetWidth = TWIPS{0};
                         {
                             CoordinateType lhs = 0;
                             CoordinateType rhs = 0;
@@ -3180,8 +3180,8 @@ void WordProcessor::OnUpdateParagraphSpacingChangeCommand (CommandUpdater* enabl
 
 void WordProcessor::OnParagraphSpacingChangeCommand ()
 {
-    TWIPS       spaceBefore = TWIPS (0);
-    TWIPS       spaceAfter  = TWIPS (0);
+    TWIPS       spaceBefore = TWIPS{0};
+    TWIPS       spaceAfter  = TWIPS{0};
     LineSpacing lineSpacing;
 
     bool spaceBeforeValid = GetSpaceBefore (GetSelectionStart (), GetSelectionEnd (), &spaceBefore);
@@ -3203,9 +3203,9 @@ void WordProcessor::OnUpdateParagraphIndentsChangeCommand (CommandUpdater* enabl
 
 void WordProcessor::OnParagraphIndentsChangeCommand ()
 {
-    TWIPS leftMargin  = TWIPS (0);
-    TWIPS rightMargin = TWIPS (0);
-    TWIPS firstIndent = TWIPS (0);
+    TWIPS leftMargin  = TWIPS{0};
+    TWIPS rightMargin = TWIPS{0};
+    TWIPS firstIndent = TWIPS{0};
 
     // Should retrieve the 'isvalid' flags for margins separately so if we update one we aren't forced to update the other!
     bool leftMarginValid  = GetMargins (GetSelectionStart (), GetSelectionEnd (), &leftMargin, &rightMargin);
@@ -3492,8 +3492,8 @@ void WordProcessor::InteractiveSetStandardTabStopList (StandardTabStopList tabSt
 */
 void WordProcessor::InteractiveSetMargins (TWIPS leftMargin, TWIPS rightMargin)
 {
-    TWIPS oldLeftMargin  = TWIPS (0);
-    TWIPS oldRightMargin = TWIPS (0);
+    TWIPS oldLeftMargin  = TWIPS{0};
+    TWIPS oldRightMargin = TWIPS{0};
     if (not GetMargins (GetSelectionStart (), GetSelectionEnd (), &oldLeftMargin, &oldRightMargin) or
         ((oldLeftMargin != leftMargin) or (oldRightMargin != rightMargin))) {
         InteractiveWPHelper1<DoIt_SetMargins> (this, DoIt_SetMargins::Margins (leftMargin, rightMargin));
@@ -3506,7 +3506,7 @@ void WordProcessor::InteractiveSetMargins (TWIPS leftMargin, TWIPS rightMargin)
 */
 void WordProcessor::InteractiveSetFirstIndent (TWIPS firstIndent)
 {
-    TWIPS oldFirstIndent = TWIPS (0);
+    TWIPS oldFirstIndent = TWIPS{0};
     if (not GetFirstIndent (GetSelectionStart (), GetSelectionEnd (), &oldFirstIndent) or
         (oldFirstIndent != firstIndent)) {
         InteractiveWPHelper1<DoIt_SetFirstIndent> (this, firstIndent);
@@ -3520,9 +3520,9 @@ void WordProcessor::InteractiveSetFirstIndent (TWIPS firstIndent)
 */
 void WordProcessor::InteractiveSetMarginsAndFirstIndent (TWIPS leftMargin, TWIPS rightMargin, TWIPS firstIndent)
 {
-    TWIPS oldLeftMargin  = TWIPS (0);
-    TWIPS oldRightMargin = TWIPS (0);
-    TWIPS oldFirstIndent = TWIPS (0);
+    TWIPS oldLeftMargin  = TWIPS{0};
+    TWIPS oldRightMargin = TWIPS{0};
+    TWIPS oldFirstIndent = TWIPS{0};
     if (not GetMargins (GetSelectionStart (), GetSelectionEnd (), &oldLeftMargin, &oldRightMargin) or
         ((oldLeftMargin != leftMargin) or (oldRightMargin != rightMargin)) or
         not GetFirstIndent (GetSelectionStart (), GetSelectionEnd (), &oldFirstIndent) or
@@ -3540,8 +3540,8 @@ void WordProcessor::InteractiveSetParagraphSpacing (TWIPS spaceBefore, bool spac
     /*
      *  If any of these things have changed - do the command.
      */
-    TWIPS       oldSpaceBefore = TWIPS (0);
-    TWIPS       oldSpaceAfter  = TWIPS (0);
+    TWIPS       oldSpaceBefore = TWIPS{0};
+    TWIPS       oldSpaceAfter  = TWIPS{0};
     LineSpacing oldLineSpacing;
     if (
         not GetSpaceBefore (GetSelectionStart (), GetSelectionEnd (), &oldSpaceBefore) or
@@ -3724,7 +3724,7 @@ void WordProcessor::DrawSegment (Tablet* tablet,
 
     // Find all tabs in the segment, and draw them
     if (GetShowTabGlyphs () and GetJustification (from) == eLeftJustify) {
-        for (size_t i = from; i < to; i++) {
+        for (size_t i = from; i < to; ++i) {
             if (text.PeekAtVirtualText ()[i - from] == '\t') {
                 // Then I need to find distance from last char-pos to this one to draw my glyph
                 DistanceType beforeTabPos = drawInto.GetLeft () + CalcSegmentSize (from, i);
@@ -3886,7 +3886,7 @@ DistanceType WordProcessor::MeasureMinSegDescent (size_t from, size_t to) const
     Assert (outputSummaryLength != 0);
     DistanceType minHeightBelow = 0;
     size_t       indexIntoText  = 0;
-    for (size_t i = 0; i < outputSummaryLength; i++) {
+    for (size_t i = 0; i < outputSummaryLength; ++i) {
         const RunElement& re       = outputSummary[i];
         size_t            reFrom   = indexIntoText + from;
         size_t            reLength = re.fLength;
@@ -4243,7 +4243,7 @@ size_t WordProcessor::ResetTabStopsWithMargin (DistanceType lhsMargin, size_t fr
     size_t         lastTabIndex = 0;
     CoordinateType tabAdjust    = 0;
     DistanceType   widthAtStart = (startSoFar == 0 ? 0 : charLocations[startSoFar - 1]);
-    for (size_t i = startSoFar; i < startSoFar + nTChars; i++) {
+    for (size_t i = startSoFar; i < startSoFar + nTChars; ++i) {
         if (text[i] == '\t') {
             DistanceType widthSoFar = (i == 0 ? 0 : charLocations[i - 1]);
             tabAdjust               = widthAtStart + GetTabStopList (from).ComputeTabStopAfterPosition (Tablet_Acquirer (this), widthSoFar - widthAtStart + lhsMargin) - lhsMargin - charLocations[i];
@@ -4346,13 +4346,13 @@ DistanceType WordProcessor::CalcSpaceToEat (size_t rowContainingCharPos) const
 
     {
         size_t                              lenOfText = rowEnd - rowStart;
-        Memory::SmallStackBuffer<Led_tChar> buf (lenOfText);
+        Memory::SmallStackBuffer<Led_tChar> buf{lenOfText};
         CopyOut (rowStart, lenOfText, buf);
         // Throw away trailing space characters
         while (rowStart < rowEnd) {
             size_t i = rowEnd - rowStart - 1;
-            if (Character (buf[i]).IsWhitespace ()) {
-                rowEnd--;
+            if (Character{buf[i]}.IsWhitespace ()) {
+                --rowEnd;
             }
             else {
                 break;
@@ -4484,11 +4484,11 @@ void WordProcessorTextIOSinkStream::CTOR_COMMON ()
 {
     fNewParagraphInfo.SetJustification (eLeftJustify);
     fNewParagraphInfo.SetTabStopList (WordProcessor::GetDefaultStandardTabStopList ());
-    fNewParagraphInfo.SetFirstIndent (TWIPS (0));
-    fNewParagraphInfo.SetMargins (TWIPS (0), CalcDefaultRHSMargin ());
+    fNewParagraphInfo.SetFirstIndent (TWIPS{0});
+    fNewParagraphInfo.SetMargins (TWIPS{0}, CalcDefaultRHSMargin ());
     fNewParagraphInfo.SetListStyle (eListStyle_None);
-    fNewParagraphInfo.SetSpaceBefore (TWIPS (0));
-    fNewParagraphInfo.SetSpaceAfter (TWIPS (0));
+    fNewParagraphInfo.SetSpaceBefore (TWIPS{0});
+    fNewParagraphInfo.SetSpaceAfter (TWIPS{0});
 }
 
 void WordProcessorTextIOSinkStream::AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec)
@@ -4595,7 +4595,7 @@ void WordProcessorTextIOSinkStream::StartTable ()
     // either way - one we start a new table - they must both be closed
     fTableRowOpen  = false;
     fTableCellOpen = false;
-    fTableOpenLevel++;
+    ++fTableOpenLevel;
 #endif
 #if !qNestedTablesSupported
     if (GetNoTablesAllowed ()) {
@@ -4651,7 +4651,7 @@ void WordProcessorTextIOSinkStream::EndTable ()
     Require (not fTableCellOpen);
     // if this is a nested table, then the parent scope must have had an open cell/row, and otherwise,
     // NO
-    fTableOpenLevel--;
+    --fTableOpenLevel;
     if (fTableOpenLevel > 0) {
         fTableRowOpen  = true;
         fTableCellOpen = true;
@@ -4695,7 +4695,7 @@ void WordProcessorTextIOSinkStream::StartTableRow ()
     }
 #endif
     RequireNotNull (fCurrentTable);
-    fNextTableRow++;
+    ++fNextTableRow;
     if (GetOverwriteTableMode ()) {
         if (fNextTableRow > fCurrentTable->GetRowCount ()) {
             fCurrentTable->InsertRow (fNextTableRow - 1, 1);
@@ -4754,7 +4754,7 @@ void WordProcessorTextIOSinkStream::EndTableRow ()
             // not sure what to do in this case. All we know is the width of some SET of columns. We don't know how to apportion it between
             // columns. Assume that if it matters - it was specified elsewhere. I COULD use the info based on the existing colwidths
             // to at least set properly the last colwidth...
-            TWIPS prevColWidths = TWIPS (0);
+            TWIPS prevColWidths = TWIPS{0};
             for (size_t i = col; i < col + nColsInThisCell; ++i) {
                 Assert (fNextTableRow > 0);
                 prevColWidths += fCurrentTable->GetColumnWidth (fNextTableRow - 1, i);
@@ -4783,7 +4783,7 @@ void WordProcessorTextIOSinkStream::StartTableCell (size_t colSpan)
         if (fNextTableCell >= 1) {
             AppendText (LED_TCHAR_OF ("\t"), 1, nullptr);
         }
-        fNextTableCell++;
+        ++fNextTableCell;
         return;
     }
 #endif
@@ -4940,7 +4940,7 @@ void WordProcessorTextIOSinkStream::Flush ()
                     break;
                 }
                 else {
-                    stripParaCharCount++;
+                    ++stripParaCharCount;
                 }
             }
         }
@@ -5322,7 +5322,7 @@ size_t WordProcessorTextIOSrcStream::TableIOMapper::GetOffsetEnd () const
 TWIPS_Rect WordProcessorTextIOSrcStream::TableIOMapper::GetDefaultCellMarginsForRow (size_t /*row*/) const
 {
     // Right now - our table implementation just has ONE value for the entire table
-    TWIPS_Rect cellMargins = TWIPS_Rect (TWIPS (0), TWIPS (0), TWIPS (0), TWIPS (0));
+    TWIPS_Rect cellMargins = TWIPS_Rect (TWIPS{0}, TWIPS{0}, TWIPS{0}, TWIPS{0});
     fRealTable.GetDefaultCellMargins (&cellMargins.top, &cellMargins.left, &cellMargins.bottom, &cellMargins.right);
     return cellMargins;
 }
@@ -5331,7 +5331,7 @@ TWIPS_Rect WordProcessorTextIOSrcStream::TableIOMapper::GetDefaultCellSpacingFor
 {
     // Right now - our table implementation just has ONE value for the entire table
     TWIPS cellSpacing = fRealTable.GetCellSpacing ();
-    return TWIPS_Rect (cellSpacing, cellSpacing, TWIPS (0), TWIPS (0)); // carefull - TLBR sb cellSpacing and last 2 args to TWIPS_Rect::CTOR are height/width!
+    return TWIPS_Rect (cellSpacing, cellSpacing, TWIPS{0}, TWIPS{0}); // carefull - TLBR sb cellSpacing and last 2 args to TWIPS_Rect::CTOR are height/width!
 }
 
 /*
@@ -5515,7 +5515,7 @@ bool WordProcessor::WPPartition::NeedToCoalesce (PartitionMarker* pm) noexcept
             size_t trStart = end - 1;
             size_t trEnd   = end;
             if (pm->GetNext () != nullptr) {
-                trEnd++;
+                ++trEnd;
             }
 
             vector<Table*> tables = GetTablesInRange (trStart, trEnd);
@@ -5558,11 +5558,11 @@ void WordProcessor::WPPartition::Invariant_ () const
         size_t len   = end - start;
 
         if (end > GetEnd ()) {
-            len--; // Last partition extends past end of text
+            --len; // Last partition extends past end of text
         }
-        Memory::SmallStackBuffer<Led_tChar> buf (len);
+        Memory::SmallStackBuffer<Led_tChar> buf{len};
         CopyOut (start, len, buf);
-        for (size_t i = 1; i < len; i++) {
+        for (size_t i = 1; i < len; ++i) {
             Assert (buf[i - 1] != '\n');
             vector<Table*> tables = GetTablesInRange (start + i - 1, start + i);
             if (not tables.empty ()) {
@@ -5689,8 +5689,8 @@ protected:
 */
 Table::Table (WordProcessor::AbstractParagraphDatabaseRep* tableOwner, size_t addAt)
     : inherited ()
-    , fCellSpacing (TWIPS (0))
-    , fDefaultCellMargins (TWIPS (15), TWIPS (90), TWIPS (0), TWIPS (0))
+    , fCellSpacing (TWIPS{0})
+    , fDefaultCellMargins (TWIPS (15), TWIPS (90), TWIPS{0}, TWIPS{0})
     , // LHS and RHS both 90 TWIPS (tricky CTOR - last arg is WIDTH - not RHS).
     fTrackingAnchor_Row (0)
     , fTrackingAnchor_Col (0)
@@ -5763,7 +5763,7 @@ void Table::DrawSegment (const StyledTextImager* imager, const RunElement& /*run
         // vertical merge cells will NOT be supported for Led 3.1 -- LGP 2003-04-17
         size_t nCols   = GetColumnCount (ri);
         rowRect.bottom = rowRect.top + fRows[ri].fHeight;
-        for (size_t ci = 0; ci < nCols; ci++) {
+        for (size_t ci = 0; ci < nCols; ++ci) {
             if (GetCellFlags (ri, ci) == ePlainCell) {
                 Led_Rect scrolledCBWR = TableCoordinates2Window (GetCellBounds (ri, ci));
                 if (Intersect (scrolledCBWR, invalidRect)) {
@@ -6016,7 +6016,7 @@ void Table::GetClosestCell (const Led_Point& p, size_t* row, size_t* col) const
     Assert (rowCount > 0);
     CoordinateType top = spacing + border.v;
     size_t         ri  = 0;
-    for (; ri < rowCount; ri++) {
+    for (; ri < rowCount; ++ri) {
         DistanceType   h      = fRows[ri].fHeight;
         CoordinateType bottom = top + h;
         // Treat special case of above entire table as being row zero..
@@ -6035,7 +6035,7 @@ void Table::GetClosestCell (const Led_Point& p, size_t* row, size_t* col) const
     size_t colCount = GetColumnCount (ri);
     Assert (colCount > 0);
     size_t ci = 0;
-    for (; ci < colCount; ci++) {
+    for (; ci < colCount; ++ci) {
         size_t rri = ri;
         size_t cci = ci;
         GetRealCell (&rri, &cci);
@@ -6900,7 +6900,7 @@ void Table::SetTableBorderWidth (TWIPS w)
 TWIPS Table::GetColumnWidth (size_t row, size_t column) const
 {
     if (GetCellFlags (row, column) != ePlainCell) {
-        return TWIPS (0); // NOT REALLY SURE WHAT THIS SHOULD DO!!!
+        return TWIPS{0}; // NOT REALLY SURE WHAT THIS SHOULD DO!!!
     }
 
     return GetCell (row, column).GetCellXWidth ();
@@ -6947,14 +6947,14 @@ void Table::GetRealCell (size_t* row, size_t* column) const
 #endif
             if (flags & eMergeCellLeft) {
                 Assert (c > 0);
-                c--;
+                --c;
 #if qDebug
                 changed = true;
 #endif
             }
             if (flags & eMergeCellUp) {
                 Assert (r > 0);
-                r--;
+                --r;
 #if qDebug
                 changed = true;
 #endif
@@ -7359,10 +7359,10 @@ void Table::SetColumnCount (size_t row, size_t columns)
         while (curColCount < columns) {
             Cell cell (*this, ePlainCell);
             rowCells.push_back (cell);
-            curColCount++;
+            ++curColCount;
         }
         while (curColCount > columns) {
-            curColCount--;
+            --curColCount;
             rowCells.erase (rowCells.begin () + curColCount);
         }
     }

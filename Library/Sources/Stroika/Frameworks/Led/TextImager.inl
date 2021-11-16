@@ -103,7 +103,7 @@ namespace Stroika::Frameworks::Led {
         // Go back first to assure we've gotten the FIRST one after 'afterPos' - not just 'A' tabstop after 'afterPos'.
         while (guessIdx > 0 and guessVal > afterPos) {
             Assert (guessIdx == 0 or ComputeIthTab (guessIdx - 1) < ComputeIthTab (guessIdx)); // assure monotonicly increasing so this will complete!
-            guessIdx--;
+            --guessIdx;
             guessVal = ComputeIthTab (guessIdx);
         }
 

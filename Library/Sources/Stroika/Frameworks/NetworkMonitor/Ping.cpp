@@ -109,7 +109,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
         ICMP::V4::PacketHeader tmp{};
         tmp.type      = ICMP::V4::ICMP_ECHO_REQUEST;
         tmp.id        = static_cast<uint16_t> (fAllUInt16Distribution_ (fRng_));
-        tmp.seq       = fNextSequenceNumber_++;
+        tmp.seq       = ++fNextSequenceNumber_;
         tmp.timestamp = static_cast<uint32_t> (Time::GetTickCount () * 1000);
         return tmp;
     }();
@@ -260,10 +260,10 @@ SampleResults NetworkMonitor::Ping::Sample (const InternetAddress& addr, const S
             Pinger::ResultType tmp = pinger.RunOnce ();
             sampleTimes += tmp.fPingTime.As<DurationSecondsType> ();
             sampleHopCounts += tmp.fHopCount;
-            samplesTaken++;
+            ++samplesTaken;
         }
         catch (...) {
-            samplesTaken++;
+            ++samplesTaken;
         }
     }
     return sampleTimes.empty () ? SampleResults{{}, {}, samplesTaken} : SampleResults{Duration{*sampleTimes.Median ()}, *sampleHopCounts.Median (), static_cast<unsigned int> (samplesTaken - sampleTimes.size ())};

@@ -62,7 +62,7 @@ namespace {
             return false;
         }
         else {
-            *t = TWIPS (l);
+            *t = TWIPS{l};
             return true;
         }
 #else
@@ -86,7 +86,7 @@ namespace {
         int  i = 0;
         bool r = ParseStringToINT (s, &i);
         if (r) {
-            *t = TWIPS (i);
+            *t = TWIPS{i};
         }
         return r;
     }
@@ -2378,28 +2378,28 @@ void Led_StdDialogHelper_UpdateWin32FileAssocsDialog::OnCancel ()
 Led_StdDialogHelper_ParagraphIndentsDialog::Led_StdDialogHelper_ParagraphIndentsDialog (int resID)
     : inherited (resID)
     , fLeftMargin_Valid (false)
-    , fLeftMargin_Orig (TWIPS (0))
-    , fLeftMargin_Result (TWIPS (0))
+    , fLeftMargin_Orig (TWIPS{0})
+    , fLeftMargin_Result (TWIPS{0})
     , fRightMargin_Valid (false)
-    , fRightMargin_Orig (TWIPS (0))
-    , fRightMargin_Result (TWIPS (0))
+    , fRightMargin_Orig (TWIPS{0})
+    , fRightMargin_Result (TWIPS{0})
     , fFirstIndent_Valid (false)
-    , fFirstIndent_Orig (TWIPS (0))
-    , fFirstIndent_Result (TWIPS (0))
+    , fFirstIndent_Orig (TWIPS{0})
+    , fFirstIndent_Result (TWIPS{0})
 {
 }
 #elif qPlatform_Windows
 Led_StdDialogHelper_ParagraphIndentsDialog::Led_StdDialogHelper_ParagraphIndentsDialog (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
     : inherited (hInstance, resID, parentWnd)
     , fLeftMargin_Valid (false)
-    , fLeftMargin_Orig (TWIPS (0))
-    , fLeftMargin_Result (TWIPS (0))
+    , fLeftMargin_Orig (TWIPS{0})
+    , fLeftMargin_Result (TWIPS{0})
     , fRightMargin_Valid (false)
-    , fRightMargin_Orig (TWIPS (0))
-    , fRightMargin_Result (TWIPS (0))
+    , fRightMargin_Orig (TWIPS{0})
+    , fRightMargin_Result (TWIPS{0})
     , fFirstIndent_Valid (false)
-    , fFirstIndent_Orig (TWIPS (0))
-    , fFirstIndent_Result (TWIPS (0))
+    , fFirstIndent_Orig (TWIPS{0})
+    , fFirstIndent_Result (TWIPS{0})
 {
 }
 #endif
@@ -2470,11 +2470,11 @@ DISABLE_COMPILER_MSC_WARNING_END (4706)
 Led_StdDialogHelper_ParagraphSpacingDialog::Led_StdDialogHelper_ParagraphSpacingDialog (int resID)
     : inherited (resID)
     , fSpaceBefore_Valid (false)
-    , fSpaceBefore_Orig (TWIPS (0))
-    , fSpaceBefore_Result (TWIPS (0))
+    , fSpaceBefore_Orig (TWIPS{0})
+    , fSpaceBefore_Result (TWIPS{0})
     , fSpaceAfter_Valid (false)
-    , fSpaceAfter_Orig (TWIPS (0))
-    , fSpaceAfter_Result (TWIPS (0))
+    , fSpaceAfter_Orig (TWIPS{0})
+    , fSpaceAfter_Result (TWIPS{0})
     , fLineSpacing_Valid (false)
     , fLineSpacing_Orig ()
     , fLineSpacing_Result ()
@@ -2484,11 +2484,11 @@ Led_StdDialogHelper_ParagraphSpacingDialog::Led_StdDialogHelper_ParagraphSpacing
 Led_StdDialogHelper_ParagraphSpacingDialog::Led_StdDialogHelper_ParagraphSpacingDialog (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
     : inherited (hInstance, resID, parentWnd)
     , fSpaceBefore_Valid (false)
-    , fSpaceBefore_Orig (TWIPS (0))
-    , fSpaceBefore_Result (TWIPS (0))
+    , fSpaceBefore_Orig (TWIPS{0})
+    , fSpaceBefore_Result (TWIPS{0})
     , fSpaceAfter_Valid (false)
-    , fSpaceAfter_Orig (TWIPS (0))
-    , fSpaceAfter_Result (TWIPS (0))
+    , fSpaceAfter_Orig (TWIPS{0})
+    , fSpaceAfter_Result (TWIPS{0})
     , fLineSpacing_Valid (false)
     , fLineSpacing_Orig ()
     , fLineSpacing_Result ()
@@ -2589,7 +2589,7 @@ void Led_StdDialogHelper_ParagraphSpacingDialog::OnOK ()
         fLineSpacing_Valid = true;
         if (r == LineSpacing::eAtLeastTWIPSSpacing or r == LineSpacing::eExactTWIPSSpacing) {
             Led_SDK_String arg  = GetItemText (kParagraphSpacing_Dialog_SpaceAfterFieldID);
-            TWIPS          argT = TWIPS (0);
+            TWIPS          argT = TWIPS{0};
             if (ParseStringToTWIPS (arg, &argT)) {
                 fLineSpacing_Result = LineSpacing (LineSpacing::Rule (r), argT);
             }

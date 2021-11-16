@@ -214,7 +214,7 @@ namespace {
             cout << "\t\t\tWorking Or Resident-Set Size: " << Characters::ToString (thisProcWorkingOrResidentSetSize).AsNarrowSDKString () << endl;
             cout << "\t\t\tCombined IO Rate:             " << Characters::ToString (thisProcCombinedIORate).AsNarrowSDKString () << endl;
             Execution::Sleep (30s);
-            pass++;
+            ++pass;
         }
     }
 }

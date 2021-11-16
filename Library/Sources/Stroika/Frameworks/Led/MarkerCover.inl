@@ -374,14 +374,14 @@ namespace Stroika::Frameworks::Led {
                 prevNonEmptyMarker = nullptr;
             }
             else {
-                miStart++;
+                ++miStart;
                 Assert (miStart != miEnd);
             }
         }
 
         bool changedAnythingHERE = false;
         // iterate through markers, and create an ordered list of the MARKERs which overlap our change
-        for (auto mi = miStart; mi != miEnd; mi++) {
+        for (auto mi = miStart; mi != miEnd; ++mi) {
             MARKER* m = *mi;
             AssertMember (m, MARKER);
 
@@ -620,7 +620,7 @@ namespace Stroika::Frameworks::Led {
             typename MarkerVector::const_iterator i          = rangeAndSurroundingsMarkers.begin ();
             typename MarkerVector::const_iterator end        = rangeAndSurroundingsMarkers.end ();
             MARKER*                               prevMarker = *i;
-            i++;
+            ++i;
             for (; i != end; ++i) {
                 MARKER* m1 = prevMarker;
                 MARKER* m2 = *i;
@@ -714,7 +714,7 @@ namespace Stroika::Frameworks::Led {
         // Walk through - and see we have a cover, and non-overlapping...
         Assert (markers.size () > 0);
         size_t lastEnd = 0;
-        for (auto i = markers.begin (); i != markers.end (); i++) {
+        for (auto i = markers.begin (); i != markers.end (); ++i) {
             MARKER* m = *i;
             AssertMember (m, MARKER);
             Assert (m->GetLength () > 0); // we should eliminate all zero-length markers...

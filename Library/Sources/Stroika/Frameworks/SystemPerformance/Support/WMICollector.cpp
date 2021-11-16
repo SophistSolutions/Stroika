@@ -137,7 +137,7 @@ Mapping<String, double> WMICollector::PerInstanceData_::GetCurrentValues (const 
     }
 
     Mapping<String, double> result;
-    for (DWORD i = 0; i < dwItemCount; i++) {
+    for (DWORD i = 0; i < dwItemCount; ++i) {
         result.Add (items[i].szName, items[i].FmtValue.doubleValue);
     }
     return result;

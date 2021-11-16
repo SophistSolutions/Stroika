@@ -1084,7 +1084,7 @@ void TextInteractor::OptionallyAddExtraSpaceForSmartCutAndPasteModeAdds (size_t 
                 // Undo code uses the selection end at the end of insertions to see how much text needs to be
                 // saved for undoing purposes.
                 // LGP990401
-                selEnd++;
+                ++selEnd;
                 SetSelection (selEnd, selEnd);
             }
         }
@@ -2254,7 +2254,7 @@ void TextInteractor::InteractiveReplace_ (size_t from, size_t to, const Led_tCha
     if (updateCursorPosition) {
         size_t newSelection = newSel.GetStart ();
         if (newSelection > 0) {
-            newSelection--;
+            --newSelection;
         }
 
         SetSelection (newSelection, newSelection);
@@ -2896,7 +2896,7 @@ void TextInteractor::InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage,
             // So the marker now points one past where it really should. Backward adjust it, and set the selection there.
             size_t newSelection = newSel.GetStart ();
             if (newSelection > start) {
-                newSelection--;
+                --newSelection;
             }
 
             SetSelection (newSelection, newSelection);
@@ -2952,7 +2952,7 @@ void TextInteractor::InternalizeFlavor_Specific (ReaderFlavorPackage& flavorPack
             // So the marker now points one past where it really should. Backward adjust it, and set the selection there.
             size_t newSelection = newSel.GetStart ();
             if (newSelection > start) {
-                newSelection--;
+                --newSelection;
             }
 
             SetSelection (newSelection, newSelection);
@@ -3355,7 +3355,7 @@ bool TextInteractor::DelaySomeForScrollBarClick ()
         return true; // first time through - handle click immediately
     }
     else if (fLastScrolledAt < now) {
-        sTimesThruBeforeReset++;
+        ++sTimesThruBeforeReset;
         fLastScrolledAt = now + (sTimesThruBeforeReset <= kTimesForFirstClick ? kDelayAfterFirstTicks : kDelayAfterOtherTicks);
         return true; // enuf time has elapsed
     }

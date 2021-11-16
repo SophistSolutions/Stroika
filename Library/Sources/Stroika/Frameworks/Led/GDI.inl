@@ -1462,7 +1462,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_Windows
         return ::MulDiv (from, Globals::Get ().GetMainScreenLogPixelsV (), 1440);
 #else
-        return TWIPS (from * Globals::Get ().GetMainScreenLogPixelsV () / 1440);
+        return TWIPS{from * Globals::Get ().GetMainScreenLogPixelsV () / 1440};
 #endif
     }
     /*
@@ -1475,7 +1475,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_Windows
         return ::MulDiv (from, Globals::Get ().GetMainScreenLogPixelsH (), 1440);
 #else
-        return TWIPS (from * Globals::Get ().GetMainScreenLogPixelsH () / 1440);
+        return TWIPS{from * Globals::Get ().GetMainScreenLogPixelsH () / 1440};
 #endif
     }
 

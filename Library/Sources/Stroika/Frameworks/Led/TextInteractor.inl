@@ -357,7 +357,7 @@ namespace Stroika::Frameworks::Led {
     */
     inline void TextInteractor::IncrementCurClickCount (Foundation::Time::DurationSecondsType lastClickAt)
     {
-        fClickCount++;
+        ++fClickCount;
         fLastClickedAt = lastClickAt;
     }
     /*

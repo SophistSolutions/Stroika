@@ -93,12 +93,12 @@ MultiRowTextImager::PartitionElementCacheInfo MultiRowTextImager::GetPartitionEl
 
 bool MultiRowTextImager::GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, ptrdiff_t ith) const
 {
-    for (; ith > 0; ith--) {
+    for (; ith > 0; --ith) {
         if (not GetNextRowReference (adjustMeInPlace)) {
             return false;
         }
     }
-    for (; ith < 0; ith++) {
+    for (; ith < 0; ++ith) {
         if (not GetPreviousRowReference (adjustMeInPlace)) {
             return false;
         }
@@ -143,7 +143,7 @@ size_t MultiRowTextImager::CountRowDifference (RowReference lhs, RowReference rh
     RowReference     lastRowRef     = leftSmaller ? rhs : lhs;
 
     size_t rowsGoneBy = 0;
-    for (RowReference cur = firstRowRef; cur != lastRowRef; rowsGoneBy++) {
+    for (RowReference cur = firstRowRef; cur != lastRowRef; ++rowsGoneBy) {
         [[maybe_unused]] bool result = GetIthRowReferenceFromHere (&cur, 1);
         Assert (result);
     }
@@ -178,7 +178,7 @@ size_t MultiRowTextImager::CountRowDifferenceLimited (RowReference lhs, RowRefer
     RowReference     lastRowRef     = leftSmaller ? rhs : lhs;
 
     size_t rowsGoneBy = 0;
-    for (RowReference cur = firstRowRef; cur != lastRowRef; rowsGoneBy++) {
+    for (RowReference cur = firstRowRef; cur != lastRowRef; ++rowsGoneBy) {
         [[maybe_unused]] bool result = GetIthRowReferenceFromHere (&cur, 1);
         Assert (result);
         if (rowsGoneBy >= limit) {
@@ -564,7 +564,7 @@ void MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t start
 
     Assert (end <= GetLength () + 1);
     if (end == GetLength () + 1) {
-        end--; // don't include bogus char at end of buffer
+        --end; // don't include bogus char at end of buffer
     }
 
     Tablet*                   savedTablet = tablet;
@@ -656,7 +656,7 @@ void MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t start
         }
 
         remainingDrawArea->top = currentRowRect.bottom + interlineSpace;
-        (*rowsDrawn)++;
+        ++(*rowsDrawn);
     }
 }
 
@@ -862,7 +862,7 @@ void MultiRowTextImager::GetStableTypingRegionContaingMarkerRange (size_t fromMa
         // We don't want to return that. But otherwise - it is OK to return the NL at the end of the
         // other lines (though perhaps that is unnecceary).... LGP 950210
         if (cur->GetNext () == nullptr) {
-            end--;
+            --end;
         }
 
         // If we are strictly before the first row, we won't appear later...
@@ -870,7 +870,7 @@ void MultiRowTextImager::GetStableTypingRegionContaingMarkerRange (size_t fromMa
             break;
         }
 
-        curTopRowRelativeRowNumber++;
+        ++curTopRowRelativeRowNumber;
 
         if (Contains (*cur, fromMarkerPos) and Contains (*cur, toMarkerPos)) {
             (*expandedFromMarkerPos) = start;
@@ -1091,7 +1091,7 @@ size_t MultiRowTextImager::ComputeRowsThatWouldFitInWindowWithTopRow (const RowR
     size_t         rowCount   = 0;
     CoordinateType heightUsed = 0;
     for (RowReference curRow = newTopRow;;) {
-        rowCount++;
+        ++rowCount;
         PartitionMarker*          curPM       = curRow.GetPartitionMarker ();
         PartitionElementCacheInfo pmCacheInfo = GetPartitionElementCacheInfo (curPM);
         heightUsed += pmCacheInfo.GetRowHeight (curRow.GetSubRow ());
@@ -1100,7 +1100,7 @@ size_t MultiRowTextImager::ComputeRowsThatWouldFitInWindowWithTopRow (const RowR
         }
         if (heightUsed > windowHeight) {
             // we went one too far
-            rowCount--;
+            --rowCount;
             break;
         }
         else if (heightUsed == windowHeight) {
@@ -1162,11 +1162,11 @@ Led_Rect MultiRowTextImager::GetCharLocationRowRelative (size_t afterPosition, R
             Assert (start <= end);
         }
 
-        curTopRowRelativeRowNumber++;
+        ++curTopRowRelativeRowNumber;
 
         /*
-                *  When we've found the right row, then add in the right horizontal offset.
-                */
+         *  When we've found the right row, then add in the right horizontal offset.
+         */
         if (afterPosition >= start and afterPosition < end) {
             Assert (start <= afterPosition);
             DistanceType hStart = 0;
@@ -1292,7 +1292,7 @@ void MultiRowTextImager::PartitionElementCacheInfo::Clear ()
 
 void MultiRowTextImager::PartitionElementCacheInfo::IncrementRowCountAndFixCacheBuffers (size_t newStart, DistanceType newRowsHeight)
 {
-    fRep->fRowCountCache++;
+    ++fRep->fRowCountCache;
 
     // If rowStart array not big enough then allocate it from the heap...
     if (fRep->fRowCountCache > kPackRowStartCount + 1) {

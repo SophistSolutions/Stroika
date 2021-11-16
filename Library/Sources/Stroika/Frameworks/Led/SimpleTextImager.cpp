@@ -92,12 +92,12 @@ void SimpleTextImager::MyPartitionWatcher::DidCoalece (void* infoRecord) const n
  ********************************************************************************
  */
 SimpleTextImager::SimpleTextImager ()
-    : fICreatedPartition (false)
-    , fMyPartitionWatcher ()
-    , fRowHeight (DistanceType (-1))
-    , fInterlineSpace (0)
-    , fTopLinePartitionMarkerInWindow (NULL)
-    , fTotalRowsInWindow (0) // value must be computed
+    : fICreatedPartition{false}
+    , fMyPartitionWatcher{}
+    , fRowHeight{DistanceType (-1)}
+    , fInterlineSpace{0}
+    , fTopLinePartitionMarkerInWindow{NULL}
+    , fTotalRowsInWindow{0} // value must be computed
 {
 }
 
@@ -161,7 +161,7 @@ void SimpleTextImager::SetPartition (const PartitionPtr& partitionPtr)
 
 PartitioningTextImager::PartitionPtr SimpleTextImager::MakeDefaultPartition () const
 {
-    return PartitionPtr (new LineBasedPartition (GetTextStore ()));
+    return PartitionPtr{new LineBasedPartition (GetTextStore ())};
 }
 
 /*
@@ -197,12 +197,12 @@ DistanceType SimpleTextImager::MeasureSegmentBaseLine (size_t /*from*/, size_t /
 
 bool SimpleTextImager::GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, ptrdiff_t ith) const
 {
-    for (; ith > 0; ith--) {
+    for (; ith > 0; --ith) {
         if (not GetNextRowReference (adjustMeInPlace)) {
             return false;
         }
     }
-    for (; ith < 0; ith++) {
+    for (; ith < 0; ++ith) {
         if (not GetPreviousRowReference (adjustMeInPlace)) {
             return false;
         }
@@ -221,7 +221,7 @@ size_t SimpleTextImager::GetRowNumber (RowReference rowRef) const
          cur != NULL; cur     = cur->GetPrevious ()) {
         rowNumber += 1;
     }
-    return (rowNumber);
+    return rowNumber;
 }
 
 size_t SimpleTextImager::CountRowDifference (RowReference lhs, RowReference rhs) const
@@ -243,7 +243,7 @@ size_t SimpleTextImager::CountRowDifference (RowReference lhs, RowReference rhs)
     RowReference     lastRowRef     = leftSmaller ? rhs : lhs;
 
     size_t rowsGoneBy = 0;
-    for (RowReference cur = firstRowRef; cur != lastRowRef; rowsGoneBy++) {
+    for (RowReference cur = firstRowRef; cur != lastRowRef; ++rowsGoneBy) {
         [[maybe_unused]] bool result = GetIthRowReferenceFromHere (&cur, 1);
         Assert (result);
     }
@@ -264,7 +264,7 @@ size_t SimpleTextImager::GetTotalRowsInWindow () const
 size_t SimpleTextImager::GetLastRowInWindow () const
 {
     // NB: Use of this function is discouraged as it is inefficent in the presence of word-wrapping
-    return (GetRowNumber (GetLastRowReferenceInWindow ()));
+    return GetRowNumber (GetLastRowReferenceInWindow ());
 }
 
 void SimpleTextImager::SetTopRowInWindow (size_t newTopRow)
@@ -311,7 +311,7 @@ ptrdiff_t SimpleTextImager::CalculateRowDeltaFromCharDeltaFromTopOfWindow (long 
 ptrdiff_t SimpleTextImager::CalculateCharDeltaFromRowDeltaFromTopOfWindow (ptrdiff_t deltaRows) const
 {
     RowReference row = GetIthRowReferenceFromHere (GetTopRowReferenceInWindow (), deltaRows);
-    return (long (GetStartOfRow (row)) - long (GetMarkerPositionOfStartOfWindow ()));
+    return long (GetStartOfRow (row)) - long (GetMarkerPositionOfStartOfWindow ());
 }
 
 void SimpleTextImager::ScrollByIfRoom (ptrdiff_t downByRows)
@@ -613,7 +613,7 @@ void SimpleTextImager::DrawPartitionElement (PartitionMarker* pm, size_t startSu
 
     Assert (end <= GetLength () + 1);
     if (end == GetLength () + 1) {
-        end--; // don't include bogus char at end of buffer
+        --end; // don't include bogus char at end of buffer
     }
 
     Tablet* savedTablet = tablet;
@@ -687,7 +687,7 @@ void SimpleTextImager::DrawPartitionElement (PartitionMarker* pm, size_t startSu
         }
 
         remainingDrawArea->top = currentRowRect.bottom + interlineSpace;
-        (*rowsDrawn)++;
+        ++(*rowsDrawn);
     }
 }
 
@@ -709,7 +709,7 @@ DistanceType SimpleTextImager::ComputeMaxHScrollPos () const
     }
     DistanceType wWidth = GetWindowRect ().GetWidth ();
     if (maxHWidth > wWidth) {
-        return (maxHWidth - wWidth);
+        return maxHWidth - wWidth;
     }
     else {
         return 0;
@@ -724,21 +724,21 @@ Led_Rect SimpleTextImager::GetCharLocation (size_t afterPosition) const
 Led_Rect SimpleTextImager::GetCharWindowLocation (size_t afterPosition) const
 {
     Led_Point windowOrigin = GetWindowRect ().GetOrigin () - Led_Point (0, GetHScrollPos ());
-    return (windowOrigin +
-            GetCharLocationRowRelative (afterPosition, GetTopRowReferenceInWindow (), GetTotalRowsInWindow_ ()));
+    return windowOrigin +
+           GetCharLocationRowRelative (afterPosition, GetTopRowReferenceInWindow (), GetTotalRowsInWindow_ ());
 }
 
 size_t SimpleTextImager::GetCharAtLocation (const Led_Point& where) const
 {
-    return (GetCharAtLocationRowRelative (where, RowReference (GetFirstPartitionMarker ())));
+    return GetCharAtLocationRowRelative (where, RowReference (GetFirstPartitionMarker ()));
 }
 
 size_t SimpleTextImager::GetCharAtWindowLocation (const Led_Point& where) const
 {
     Led_Point windowOrigin = GetWindowRect ().GetOrigin () - Led_Point (0, GetHScrollPos ());
-    return (GetCharAtLocationRowRelative (where - windowOrigin,
-                                          GetTopRowReferenceInWindow (),
-                                          GetTotalRowsInWindow_ ()));
+    return GetCharAtLocationRowRelative (where - windowOrigin,
+                                         GetTopRowReferenceInWindow (),
+                                         GetTotalRowsInWindow_ ());
 }
 
 size_t SimpleTextImager::GetStartOfRow (size_t rowNumber) const
@@ -750,38 +750,38 @@ size_t SimpleTextImager::GetStartOfRow (size_t rowNumber) const
 
 size_t SimpleTextImager::GetStartOfRowContainingPosition (size_t charPosition) const
 {
-    return (GetStartOfRow (GetRowReferenceContainingPosition (charPosition)));
+    return GetStartOfRow (GetRowReferenceContainingPosition (charPosition));
 }
 
 size_t SimpleTextImager::GetEndOfRow (size_t rowNumber) const
 {
     // NB: Use of routines using rowNumbers force word-wrap, and so can be quite slow.
     // Routines using RowReferences often perform MUCH better
-    return (GetEndOfRow (GetIthRowReference (rowNumber)));
+    return GetEndOfRow (GetIthRowReference (rowNumber));
 }
 
 size_t SimpleTextImager::GetEndOfRowContainingPosition (size_t charPosition) const
 {
-    return (GetEndOfRow (GetRowReferenceContainingPosition (charPosition)));
+    return GetEndOfRow (GetRowReferenceContainingPosition (charPosition));
 }
 
 size_t SimpleTextImager::GetRealEndOfRow (size_t rowNumber) const
 {
     // NB: Use of routines using rowNumbers force word-wrap, and so can be quite slow.
     // Routines using RowReferences often perform MUCH better
-    return (GetRealEndOfRow (GetIthRowReference (rowNumber)));
+    return GetRealEndOfRow (GetIthRowReference (rowNumber));
 }
 
 size_t SimpleTextImager::GetRealEndOfRowContainingPosition (size_t charPosition) const
 {
-    return (GetRealEndOfRow (GetRowReferenceContainingPosition (charPosition)));
+    return GetRealEndOfRow (GetRowReferenceContainingPosition (charPosition));
 }
 
 size_t SimpleTextImager::GetStartOfRow (RowReference row) const
 {
     PartitionMarker* cur = row.GetPartitionMarker ();
     AssertNotNull (cur);
-    return (cur->GetStart ());
+    return cur->GetStart ();
 }
 
 size_t SimpleTextImager::GetEndOfRow (RowReference row) const
@@ -799,10 +799,10 @@ size_t SimpleTextImager::GetEndOfRow (RowReference row) const
         Led_tChar lastChar;
         CopyOut (prevToEnd, 1, &lastChar);
         if (RemoveMappedDisplayCharacters (&lastChar, 1) == 0) {
-            return (prevToEnd);
+            return prevToEnd;
         }
     }
-    return (markerEnd);
+    return markerEnd;
 }
 
 size_t SimpleTextImager::GetRealEndOfRow (RowReference row) const
@@ -812,7 +812,7 @@ size_t SimpleTextImager::GetRealEndOfRow (RowReference row) const
     Assert (cur->GetEnd () > 0);
     size_t markerEnd = cur->GetEnd ();
     Assert (markerEnd <= GetLength () + 1);
-    return (markerEnd);
+    return markerEnd;
 }
 
 SimpleTextImager::RowReference SimpleTextImager::GetRowReferenceContainingPosition (size_t charPosition) const
@@ -821,12 +821,12 @@ SimpleTextImager::RowReference SimpleTextImager::GetRowReferenceContainingPositi
     Require (charPosition <= GetEnd ());
     PartitionMarker* pm = GetPartitionMarkerContainingPosition (charPosition);
     AssertNotNull (pm);
-    return (RowReference (pm));
+    return (RowReference{pm});
 }
 
 size_t SimpleTextImager::GetRowContainingPosition (size_t charPosition) const
 {
-    return (GetRowNumber (GetRowReferenceContainingPosition (charPosition)));
+    return GetRowNumber (GetRowReferenceContainingPosition (charPosition));
 }
 
 size_t SimpleTextImager::GetRowCount () const
@@ -890,7 +890,7 @@ void SimpleTextImager::GetStableTypingRegionContaingMarkerRange (size_t fromMark
         // We don't want to return that. But otherwise - it is OK to return the NL at the end of the
         // other lines (though perhaps that is unnecceary).... LGP 950210
         if (cur->GetNext () == NULL) {
-            end--;
+            --end;
         }
 
         //size_t len = end - start;
@@ -900,7 +900,7 @@ void SimpleTextImager::GetStableTypingRegionContaingMarkerRange (size_t fromMark
             break;
         }
 
-        curTopRowRelativeRowNumber++;
+        ++curTopRowRelativeRowNumber;
 
         if (Contains (*cur, fromMarkerPos) and Contains (*cur, toMarkerPos)) {
             (*expandedFromMarkerPos) = start;
@@ -931,13 +931,13 @@ DistanceType SimpleTextImager::GetHeightOfRows (size_t startingRow, size_t rowCo
 DistanceType SimpleTextImager::GetHeightOfRows (RowReference startingRow, size_t rowCount) const
 {
     DistanceType height = 0;
-    for (RowReference curRow = startingRow; rowCount > 0; rowCount--) {
+    for (RowReference curRow = startingRow; rowCount > 0; --rowCount) {
         PartitionMarker* curPM = curRow.GetPartitionMarker ();
         height += GetRowHeight ();
         height += GetInterLineSpace (curPM);
         (void)GetNextRowReference (&curRow);
     }
-    return (height);
+    return height;
 }
 
 /*
@@ -1101,13 +1101,13 @@ size_t SimpleTextImager::ComputeRowsThatWouldFitInWindowWithTopRow (const RowRef
     size_t         rowCount   = 0;
     CoordinateType heightUsed = 0;
     for (RowReference curRow = newTopRow;;) {
-        rowCount++;
+        ++rowCount;
         PartitionMarker* curPM = curRow.GetPartitionMarker ();
         heightUsed += GetRowHeight ();
         heightUsed += GetInterLineSpace (curPM);
         if (heightUsed > windowHeight) {
             // we went one too far
-            rowCount--;
+            --rowCount;
             break;
         }
         else if (heightUsed == windowHeight) {
@@ -1122,7 +1122,7 @@ size_t SimpleTextImager::ComputeRowsThatWouldFitInWindowWithTopRow (const RowRef
         rowCount = 1;
     }
 
-    return (rowCount);
+    return rowCount;
 }
 
 Led_Rect SimpleTextImager::GetCharLocationRowRelative (size_t afterPosition, RowReference topRow, size_t maxRowsToCheck) const
@@ -1152,7 +1152,7 @@ Led_Rect SimpleTextImager::GetCharLocationRowRelative (size_t afterPosition, Row
 
         Assert (end <= GetEnd () + 1);
 
-        curTopRowRelativeRowNumber++;
+        ++curTopRowRelativeRowNumber;
 
         if (afterPosition >= start and afterPosition < end) {
             Assert (start <= afterPosition);
@@ -1206,7 +1206,7 @@ size_t SimpleTextImager::GetCharAtLocationRowRelative (const Led_Point& where, R
          */
         DistanceType interLineSpace = GetInterLineSpace (cur);
 
-        curTopRowRelativeRowNumber++;
+        ++curTopRowRelativeRowNumber;
         if (where.v >= topVPos and where.v < topVPos + CoordinateType (GetRowHeight () + interLineSpace)) {
             return GetRowRelativeCharAtLoc (where.h, start);
         }

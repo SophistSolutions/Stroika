@@ -59,7 +59,7 @@ void StyledTextIOReader_MIMETextEnriched::Read ()
         }
 
         if (gotCmdStart) {
-            currentOffset--; // backup over <
+            --currentOffset; // backup over <
         }
 
         FontSpecification fontSpec = GetAdjustedCurrentFontSpec ();
@@ -77,7 +77,7 @@ void StyledTextIOReader_MIMETextEnriched::Read ()
                 // LGP 951103
                 SmallStackBuffer<Led_tChar> buf2 (len);
                 size_t                      i2 = 0;
-                for (size_t i = 0; i < len; i++) {
+                for (size_t i = 0; i < len; ++i) {
                     Led_tChar prevChar = (i == 0) ? '\0' : buf[i - 1];
                     Led_tChar nextChar = (i == len - 1) ? '\0' : buf[i + 1];
 
@@ -122,28 +122,28 @@ void StyledTextIOReader_MIMETextEnriched::Read ()
                 GetSrcStream ().read (cmdBuf, len);
                 cmdBuf[len] = '\0';
                 if (strcmp (cmdBuf, "<bold>") == 0) {
-                    fBoldMode++;
+                    ++fBoldMode;
                 }
                 else if (strcmp (cmdBuf, "</bold>") == 0 and fBoldMode > 0) {
-                    fBoldMode--;
+                    --fBoldMode;
                 }
                 else if (strcmp (cmdBuf, "<italic>") == 0) {
-                    fItalicMode++;
+                    ++fItalicMode;
                 }
                 else if (strcmp (cmdBuf, "</italic>") == 0 and fItalicMode > 0) {
-                    fItalicMode--;
+                    --fItalicMode;
                 }
                 else if (strcmp (cmdBuf, "<underline>") == 0) {
-                    fItalicMode++;
+                    ++fItalicMode;
                 }
                 else if (strcmp (cmdBuf, "</underline>") == 0 and fUnderlineMode > 0) {
-                    fUnderlineMode--;
+                    --fUnderlineMode;
                 }
                 else if (strcmp (cmdBuf, "<fixed>") == 0) {
-                    fFixedWidthMode++;
+                    ++fFixedWidthMode;
                 }
                 else if (strcmp (cmdBuf, "</fixed>") == 0 and fFixedWidthMode > 0) {
-                    fFixedWidthMode--;
+                    --fFixedWidthMode;
                 }
                 else if ((strcmp (cmdBuf, "<smaller>") == 0) or (strcmp (cmdBuf, "</bigger>") == 0)) {
                     fFontSizeAdjust -= 2;
@@ -152,10 +152,10 @@ void StyledTextIOReader_MIMETextEnriched::Read ()
                     fFontSizeAdjust += 2;
                 }
                 else if (strcmp (cmdBuf, "<nofill>") == 0) {
-                    fNoFillMode++;
+                    ++fNoFillMode;
                 }
                 else if (strcmp (cmdBuf, "</nofill>") == 0 and fNoFillMode > 0) {
-                    fNoFillMode--;
+                    --fNoFillMode;
                 }
                 else if (strcmp (cmdBuf, "<param>") == 0) {
                     ScanFor ("</param>"); // skip/ignore

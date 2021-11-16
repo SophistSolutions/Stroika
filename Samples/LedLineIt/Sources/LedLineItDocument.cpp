@@ -366,7 +366,7 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                     curLineSize = 0;
                 }
                 else {
-                    curLineSize++;
+                    ++curLineSize;
                 }
                 maxLineSize = max (maxLineSize, curLineSize);
             }
@@ -418,7 +418,7 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                             curLineSize = 0;
                         }
                         else {
-                            curLineSize++;
+                            ++curLineSize;
                         }
                         patchedData[ourIdx++] = *p;
                         if (curLineSize >= fBreakWidths) {
@@ -440,7 +440,7 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                         curLineSize = 0;
                     }
                     else {
-                        curLineSize++;
+                        ++curLineSize;
                     }
                     patchedBytes[ourIdx++] = *p;
                     if (curLineSize >= fBreakWidths) {

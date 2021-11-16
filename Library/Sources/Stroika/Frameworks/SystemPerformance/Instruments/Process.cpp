@@ -827,7 +827,7 @@ namespace {
             DbgTrace ("nBytes read = %d", nBytes);
 #endif
             if (nBytes == NEltsOf (data)) {
-                nBytes--; // ignore trailing byte so we can nul-terminate
+                --nBytes; // ignore trailing byte so we can nul-terminate
             }
             data[nBytes] = byte{0}; // null-terminate so we can treat as c-string
 
@@ -998,13 +998,13 @@ namespace {
                      *  The enum in ./include/net/tcp_states.h is hopefully (apparently) the same as that in netinet/tcp.h
                      */
                     if (st == TCP_ESTABLISHED) {
-                        stats.fEstablished++;
+                        ++stats.fEstablished;
                     }
                     else if (st == TCP_LISTEN) {
-                        stats.fListening++;
+                        ++stats.fListening;
                     }
                     else {
-                        stats.fOther++;
+                        ++stats.fOther;
                     }
                 }
             }

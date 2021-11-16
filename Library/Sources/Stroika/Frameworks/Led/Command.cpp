@@ -246,7 +246,7 @@ void MultiLevelUndoCommandHandler::Post (Command* newCommand)
     if (partOfNewCommand) {
         if (fCommandGroupCount == fMaxUndoLevels) {
             size_t lastItemInFirstGroup = 0;
-            for (; lastItemInFirstGroup <= fUndoCursor; lastItemInFirstGroup++) {
+            for (; lastItemInFirstGroup <= fUndoCursor; ++lastItemInFirstGroup) {
                 if (fCommands[lastItemInFirstGroup] == nullptr) {
                     Assert (lastItemInFirstGroup != 0); // cannot have break here!
                     // must be a break in here someplace - delete back from here...
@@ -258,7 +258,7 @@ void MultiLevelUndoCommandHandler::Post (Command* newCommand)
             fUndoCursor = fCommands.size ();
         }
         else {
-            fCommandGroupCount++;
+            ++fCommandGroupCount;
         }
     }
     else {
@@ -345,7 +345,7 @@ void MultiLevelUndoCommandHandler::DoUndo (TextInteractor& interactor)
     fDoingCommands = true;
     try {
 #endif
-        for (int i = static_cast<int> (end); i >= static_cast<int> (start); i--) {
+        for (int i = static_cast<int> (end); i >= static_cast<int> (start); --i) {
             fCommands[i]->UnDo (interactor);
         }
 #if qDebug
@@ -358,7 +358,7 @@ void MultiLevelUndoCommandHandler::DoUndo (TextInteractor& interactor)
 #endif
 
     fUndoCursor = start;
-    fUndoneGroupCount++;
+    ++fUndoneGroupCount;
     Assert (fUndoneGroupCount <= fCommandGroupCount);
 }
 
@@ -378,7 +378,7 @@ void MultiLevelUndoCommandHandler::DoRedo (TextInteractor& interactor)
     fDoingCommands = true;
     try {
 #endif
-        for (size_t i = start; i <= end; i++) {
+        for (size_t i = start; i <= end; ++i) {
             fCommands[i]->ReDo (interactor);
         }
 #if qDebug
@@ -395,17 +395,17 @@ void MultiLevelUndoCommandHandler::DoRedo (TextInteractor& interactor)
     if (fCommands[fUndoCursor] == nullptr) {
         // if pointing to breaker, then point just past it, so new posted commands
         // come after that
-        fUndoCursor++;
+        ++fUndoCursor;
         Assert (fUndoCursor <= fCommands.size ());
     }
     Assert (fUndoneGroupCount <= fCommandGroupCount);
     Assert (fUndoneGroupCount >= 1);
-    fUndoneGroupCount--;
+    --fUndoneGroupCount;
 }
 
 void MultiLevelUndoCommandHandler::Commit ()
 {
-    for (size_t i = 0; i < fCommands.size (); i++) {
+    for (size_t i = 0; i < fCommands.size (); ++i) {
         delete fCommands[i];
     }
     fCommands.clear ();
@@ -490,11 +490,11 @@ bool MultiLevelUndoCommandHandler::GetLastCmdRangeBefore (size_t* startIdx, size
         if (i == 0) {
             return false;
         }
-        i--;
+        --i;
     }
     *endIdx = i;
 
-    for (; i > 0; i--) {
+    for (; i > 0; --i) {
         if (fCommands[i] == nullptr) {
             *startIdx = i + 1;
             return true;
@@ -522,11 +522,11 @@ bool MultiLevelUndoCommandHandler::GetLastCmdRangeAfter (size_t* startIdx, size_
     else {
         size_t i = fUndoCursor;
         if (fCommands[i] == nullptr) {
-            i++;
+            ++i;
         }
         *startIdx = i;
 
-        for (; i < listPastEnd; i++) {
+        for (; i < listPastEnd; ++i) {
             if (fCommands[i] == nullptr) {
                 *endIdx = i - 1;
                 return true;
@@ -543,7 +543,7 @@ void MultiLevelUndoCommandHandler::Commit_After (size_t after)
     Require (after >= 0);
     size_t commandsLen = fCommands.size ();
     if (commandsLen != 0) {
-        for (long i = static_cast<long> (commandsLen) - 1; i >= long (after); i--) {
+        for (long i = static_cast<long> (commandsLen) - 1; i >= long (after); --i) {
             Assert (i >= 0);
             delete fCommands[i];
             fCommands.erase (fCommands.begin () + i);
@@ -561,7 +561,7 @@ void MultiLevelUndoCommandHandler::Commit_Before (size_t before)
     while (countToCommit != 0) {
         delete fCommands[0];
         fCommands.erase (fCommands.begin ());
-        countToCommit--;
+        --countToCommit;
     }
 }
 

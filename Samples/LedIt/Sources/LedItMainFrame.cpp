@@ -189,7 +189,7 @@ static bool IsPopupInOwningMenu (HMENU popup, HMENU potentialOwner)
     RequireNotNull (popup);
     if (potentialOwner != NULL) {
         int nIndexMax = ::GetMenuItemCount (potentialOwner);
-        for (int nIndex = 0; nIndex < nIndexMax; nIndex++) {
+        for (int nIndex = 0; nIndex < nIndexMax; ++nIndex) {
             HMENU itsSubMenu = ::GetSubMenu (potentialOwner, nIndex);
             if (itsSubMenu == popup) {
                 return true;
@@ -233,7 +233,7 @@ void LedItMainFrame::OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysM
             state.m_nID = pPopupMenu->GetMenuItemID (state.m_nIndex);
             if (state.m_nID == 0 and prevItemSep) {
                 pPopupMenu->RemoveMenu (state.m_nIndex, MF_BYPOSITION);
-                state.m_nIndexMax--;
+                --state.m_nIndexMax;
                 continue;
             }
             if (state.m_nID != 0) {
@@ -244,7 +244,7 @@ void LedItMainFrame::OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysM
                 Verify (::GetMenuItemInfo (pPopupMenu->GetSafeHmenu (), state.m_nIndex, true, &mInfo));
                 if (mInfo.fState & MFS_DISABLED) {
                     pPopupMenu->RemoveMenu (state.m_nIndex, MF_BYPOSITION);
-                    state.m_nIndexMax--;
+                    --state.m_nIndexMax;
                     continue;
                 }
             }

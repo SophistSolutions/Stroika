@@ -192,7 +192,7 @@ TextImager::TextImager ()
     , fImageUsingOffscreenBitmaps (qUseOffscreenBitmapsToReduceFlicker)
     , fHScrollPos (0)
     , fSuppressGoalColumnRecompute (false)
-    , fSelectionGoalColumn (TWIPS (0))
+    , fSelectionGoalColumn (TWIPS{0})
     , fUseEOLBOLRowHilightStyle (true)
     , fSelectionShown (false)
     , fWindowRect (Led_Rect (0, 0, 0, 0))
@@ -842,10 +842,10 @@ size_t TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirect
                         CopyOut (GetTextStore ().GetStartOfLine (newLine), positionInLine, buf);
                         if (Led_FindPrevOrEqualCharBoundary (buf, buf + positionInLine) != buf + positionInLine) {
                             Assert (positionInLine > 0);
-                            positionInLine--;
+                            --positionInLine;
                         }
 #endif
-                        return (GetTextStore ().GetStartOfLine (newLine) + positionInLine);
+                        return GetTextStore ().GetStartOfLine (newLine) + positionInLine;
                     }
                 } break;
 
@@ -1307,7 +1307,7 @@ vector<Led_Rect> TextImager::GetSelectionWindowRects (size_t from, size_t to) co
     if (GetStartOfRow (bottomRow) == to) {
         // then use end of previous row
         Assert (topRow < bottomRow);
-        bottomRow--;
+        --bottomRow;
     }
 
     CoordinateType lastRowBottom = 0; // Keep track of last row's bottom for interline-space support
@@ -1358,7 +1358,7 @@ vector<Led_Rect> TextImager::GetSelectionWindowRects (size_t from, size_t to) co
         if (curRow == bottomRow) {
             break;
         }
-        curRow++;
+        ++curRow;
     }
 
 #if qDebug

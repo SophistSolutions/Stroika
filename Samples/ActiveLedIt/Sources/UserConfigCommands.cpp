@@ -226,7 +226,7 @@ UINT UserCommandNameNumberRegistry::Enter (const wstring& internalName)
         fName2Num.insert (map<wstring, UINT>::value_type (internalName, fNextUserCmdNum));
         fNum2Name.insert (map<UINT, wstring>::value_type (fNextUserCmdNum, internalName));
         cmdNum = fNextUserCmdNum;
-        fNextUserCmdNum++;
+        ++fNextUserCmdNum;
         if (fNextUserCmdNum > kLastOLEUserCmdCmdID) {
             Assert (false); // not a good thing - should deal with this more gracefully... probably wont ever happen - LGP 2004-01-21
             fNextUserCmdNum = kFirstOLEUserCmdCmdID;
@@ -899,7 +899,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
                 accels[goodKeysFound].key   = key;
                 Assert (cmdNum <= numeric_limits<WORD>::max ());
                 accels[goodKeysFound].cmd = static_cast<WORD> (cmdNum);
-                goodKeysFound++;
+                ++goodKeysFound;
             }
             *pVal = ::CreateAcceleratorTable (accels, static_cast<int> (goodKeysFound));
         }
@@ -1246,7 +1246,7 @@ CComPtr<IDispatch> GenerateBuiltinCommandsObject ()
     {
         const vector<Led_SDK_String>& fontNames = GetUsableFontNames ();
         Assert (fontNames.size () <= kLastFontNameCmd - kBaseFontNameCmd + 1);
-        for (UINT i = 0; i < fontNames.size (); i++) {
+        for (UINT i = 0; i < fontNames.size (); ++i) {
             UINT cmdNum = kBaseFontNameCmd + i;
             if (cmdNum > kLastFontNameCmd) {
                 break; // asserted out before above - now just ignore extra font names...
@@ -1278,7 +1278,7 @@ UINT CmdObjOrName2Num (const VARIANT& cmdObjOrName)
         if (lookForCmdName.length () > kFontNameCMDPrefix.length () and lookForCmdName.substr (0, kFontNameCMDPrefix.length ()) == ACP2WideString (kFontNameCMDPrefix)) {
             const vector<Led_SDK_String>& fontNames = GetUsableFontNames ();
             Assert (fontNames.size () <= kLastFontNameCmd - kBaseFontNameCmd + 1);
-            for (UINT i = 0; i < fontNames.size (); i++) {
+            for (UINT i = 0; i < fontNames.size (); ++i) {
                 UINT cmdNum = kBaseFontNameCmd + i;
                 if (cmdNum > kLastFontNameCmd) {
                     break; // asserted out before above - now just ignore extra font names...

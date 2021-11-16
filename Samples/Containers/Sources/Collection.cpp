@@ -197,7 +197,7 @@ namespace {
                 fruits.Remove (i, &i); // 'i' has already been updated to refer to the next element, regardless of how the Collection<> represents its data
             }
             else {
-                i++;
+                ++i;
             }
         }
         Assert (fruits.size () == 2);

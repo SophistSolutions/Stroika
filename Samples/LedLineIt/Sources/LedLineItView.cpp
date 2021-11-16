@@ -548,7 +548,7 @@ void LedLineItView::OnTypedNormalCharacter (Led_tChar theChar, bool optionPresse
                 if (not IsASCIISpace (buf[i])) {
                     break;
                 }
-                nTChars++;
+                ++nTChars;
             }
             InteractiveReplace (buf, nTChars);
         }

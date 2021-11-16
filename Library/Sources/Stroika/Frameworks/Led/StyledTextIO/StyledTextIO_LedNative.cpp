@@ -450,7 +450,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
             if (GetSrcStream ().read (portableStyleRuns, nStyleRuns * sizeof (PortableStyleRunData_Version4)) != nStyleRuns * sizeof (PortableStyleRunData_Version4)) {
                 Execution::Throw (DataExchange::BadFormatException::kThe);
             }
-            for (size_t i = 0; i < nStyleRuns; i++) {
+            for (size_t i = 0; i < nStyleRuns; ++i) {
                 styleRunInfo.push_back (mkInfoSummaryRecordFromPortData (portableStyleRuns[i]));
             }
         }
@@ -464,7 +464,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 
-        for (size_t i = 0; i < nEmbeddings; i++) {
+        for (size_t i = 0; i < nEmbeddings; ++i) {
             size_t whereAt      = InputStandardFromSrcStream_ULONG (GetSrcStream ());
             size_t howManyBytes = InputStandardFromSrcStream_ULONG (GetSrcStream ());
 
@@ -563,7 +563,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
             list.push_back (isr);
             GetSinkStream ().ApplyStyle (offsetInText, offsetInText + isr.fLength, list); // silly this API REQUIRES a list...
 
-            nStyleRuns++;
+            ++nStyleRuns;
             offsetInText += isr.fLength;
             i += thisBucket->fThisRecordLength;
         }
@@ -579,7 +579,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 
-        for (size_t i = 0; i < nEmbeddings; i++) {
+        for (size_t i = 0; i < nEmbeddings; ++i) {
             size_t whereAt      = InputStandardFromSrcStream_ULONG (GetSrcStream ()) - 1;
             size_t howManyBytes = InputStandardFromSrcStream_ULONG (GetSrcStream ());
 
@@ -678,7 +678,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
             list.push_back (isr);
             GetSinkStream ().ApplyStyle (offsetInText, offsetInText + isr.fLength, list); // silly this API REQUIRES a list...
 
-            nStyleRuns++;
+            ++nStyleRuns;
             offsetInText += isr.fLength;
             i += thisBucket->fThisRecordLength;
         }
@@ -694,7 +694,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 
-        for (size_t i = 0; i < nEmbeddings; i++) {
+        for (size_t i = 0; i < nEmbeddings; ++i) {
             size_t whereAt      = InputStandardFromSrcStream_ULONG (GetSrcStream ());
             size_t howManyBytes = InputStandardFromSrcStream_ULONG (GetSrcStream ());
 
@@ -755,7 +755,7 @@ SimpleEmbeddedObjectStyleMarker* StyledTextIOReader_LedNativeFileFormat::Interna
     }
 
     const vector<EmbeddedObjectCreatorRegistry::Assoc>& types = EmbeddedObjectCreatorRegistry::Get ().GetAssocList ();
-    for (size_t i = 0; i < types.size (); i++) {
+    for (size_t i = 0; i < types.size (); ++i) {
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
         if (memcmp (assoc.fEmbeddingTag, tag, sizeof (assoc.fEmbeddingTag)) == 0) {
             AssertNotNull (assoc.fReadFromMemory);
@@ -818,7 +818,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version5 ()
         OutputStandardToSinkStream_size_t_ (GetSinkStream (), howManyBytes);
 
         size_t styleRuns = styleRunInfo.size ();
-        for (size_t i = 0; i < styleRuns; i++) {
+        for (size_t i = 0; i < styleRuns; ++i) {
             PortableStyleRunData_Version5 data = mkPortableStyleRunData_Version5 (styleRunInfo[i]);
             write (&data, data.fThisRecordLength);
         }
@@ -837,7 +837,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version5 ()
         vector<SimpleEmbeddedObjectStyleMarker*> embeddings = GetSrcStream ().CollectAllEmbeddingMarkersInRange (0, totalTextLength);
         OutputStandardToSinkStream_size_t_ (GetSinkStream (), embeddings.size ());
         size_t markerPosOffset = GetSrcStream ().GetEmbeddingMarkerPosOffset ();
-        for (size_t i = 0; i < embeddings.size (); i++) {
+        for (size_t i = 0; i < embeddings.size (); ++i) {
             SimpleEmbeddedObjectStyleMarker* embedding = embeddings[i];
             // Write where embedding is located in text, relative to beginning of text (being internalized/extenralized)
             size_t whereAt = embedding->GetStart () - markerPosOffset;
@@ -912,7 +912,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
         OutputStandardToSinkStream_size_t_ (GetSinkStream (), howManyBytes);
 
         size_t styleRuns = styleRunInfo.size ();
-        for (size_t i = 0; i < styleRuns; i++) {
+        for (size_t i = 0; i < styleRuns; ++i) {
             PortableStyleRunData_Version6 data = mkPortableStyleRunData_Version6 (styleRunInfo[i]);
             write (&data, data.fThisRecordLength);
         }
@@ -931,7 +931,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
         vector<SimpleEmbeddedObjectStyleMarker*> embeddings = GetSrcStream ().CollectAllEmbeddingMarkersInRange (0, totalTextLength);
         OutputStandardToSinkStream_size_t_ (GetSinkStream (), embeddings.size ());
         size_t markerPosOffset = GetSrcStream ().GetEmbeddingMarkerPosOffset ();
-        for (size_t i = 0; i < embeddings.size (); i++) {
+        for (size_t i = 0; i < embeddings.size (); ++i) {
             SimpleEmbeddedObjectStyleMarker* embedding = embeddings[i];
             // Write where embedding is located in text, relative to beginning of text (being internalized/extenralized)
             size_t whereAt = embedding->GetStart () - markerPosOffset;

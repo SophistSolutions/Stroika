@@ -384,7 +384,7 @@ namespace Stroika::Frameworks::Led {
         {
             size_t Xend = end;
             if (start == end) {
-                Xend++;
+                ++Xend;
             }
 
             oldAlgorithmAnswer = (from < Xend) and (start < to);

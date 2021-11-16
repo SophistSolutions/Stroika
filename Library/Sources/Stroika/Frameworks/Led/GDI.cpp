@@ -362,7 +362,7 @@ namespace {
         COLORREF* ct = reinterpret_cast<COLORREF*> (colorTable); // use COLORREF instead of RGBQUAD cuz same size but COLOREF has op== defined
         if (find (ct, ct + *iP, c) == ct + *iP and c != RGB (255, 255, 255)) {
             colorTable[*iP] = mkRGBQuad (c);
-            (*iP)++;
+            ++(*iP);
         }
     }
 
@@ -385,17 +385,17 @@ namespace {
             size_t redIdx   = 0;
             size_t greenIdx = 0;
             size_t blueIdx  = 0;
-            for (; i < 256; i++) {
+            for (; i < 256; ++i) {
                 colorTable[i].rgbRed   = kColorSpecVals[redIdx];
                 colorTable[i].rgbGreen = kColorSpecVals[greenIdx];
                 colorTable[i].rgbBlue  = kColorSpecVals[blueIdx];
-                blueIdx++;
+                ++blueIdx;
                 if (blueIdx >= kColorSpecValCnt) {
                     blueIdx = 0;
-                    greenIdx++;
+                    ++greenIdx;
                     if (greenIdx >= kColorSpecValCnt) {
                         greenIdx = 0;
-                        redIdx++;
+                        ++redIdx;
                         if (redIdx >= kColorSpecValCnt) {
                             Assert (i == kColorSpecValCnt * kColorSpecValCnt * kColorSpecValCnt - 1);
                             break;
@@ -409,7 +409,7 @@ namespace {
          * (shades of gray) to save WHITE for the very end.
          */
 
-        i--; // don't count the WHITE color just added. It will be forced to be last.
+        --i; // don't count the WHITE color just added. It will be forced to be last.
         size_t nColorsLeft = 255 - i;
         Assert (nColorsLeft == 41);
 
@@ -432,8 +432,8 @@ namespace {
             COLORREF* ct = reinterpret_cast<COLORREF*> (colorTable); // use COLORREF instead of RGBQUAD cuz same size but COLOREF has op== defined
             if (find (ct, ct + i, c) == ct + i) {
                 colorTable[i] = mkRGBQuad (c);
-                i++;
-                nColorsLeft--;
+                ++i;
+                --nColorsLeft;
             }
             startAt += static_cast<BYTE> (aveSpace);
         }
@@ -504,7 +504,7 @@ namespace {
         pbmi->bmiHeader.biBitCount    = wBits;
         pbmi->bmiHeader.biCompression = BI_RGB; // OVERRIDE below for 16 and 32bpp
 
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < 256; ++i) {
             pbmi->bmiColors[i].rgbRed      = colorTable[i].rgbRed;
             pbmi->bmiColors[i].rgbGreen    = colorTable[i].rgbGreen;
             pbmi->bmiColors[i].rgbBlue     = colorTable[i].rgbBlue;
@@ -1476,7 +1476,7 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics,
             Assert (charsToGo > 0);
 
             charLocations[i] = runningCharCount;
-            i++;
+            ++i;
             if (--charsToGo == 0) {
                 break;
             }
@@ -1500,7 +1500,7 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics,
          */
         if (Led_FindPrevOrEqualCharBoundary (&text[0], &text[i + charsThisTime]) != &text[i + charsThisTime]) {
             Assert (charsThisTime > 0);
-            charsThisTime--;
+            --charsThisTime;
         }
 #endif
 
@@ -1508,7 +1508,7 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics,
         Memory::SmallStackBuffer<short> shortOffsets (charsThisTime + 1);
         Assert (Led_GetCurrentGDIPort () == *this);
         ::MeasureText (charsThisTime, &text[i], shortOffsets);
-        for (size_t j = 0; j < charsThisTime; j++) {
+        for (size_t j = 0; j < charsThisTime; ++j) {
             charLocations[i + j] = shortOffsets[j + 1] + runningCharCount; // Silly Apple defines shortOffsets[0] always to be zero!
         }
 #elif qPlatform_Windows
@@ -1537,7 +1537,7 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics,
                 Verify (sUniscribeDLL.ScriptStringAnalyse (m_hAttribDC, &text[i], charsThisTime, 0, -1, SSA_GLYPHS | SSA_FALLBACK, -1, &scriptControl, &scriptState, nullptr, nullptr, nullptr, &ssa) == S_OK);
 
 #if qTryScriptToCPX
-                for (size_t j = 0; j < charsThisTime; j++) {
+                for (size_t j = 0; j < charsThisTime; ++j) {
                     int leadingEdge = 0;
                     int trailingEdge = 0;
                     Verify (sUniscribeDLL.ScriptStringCPtoX (ssa, j, false, &leadingEdge) == S_OK);
@@ -1558,7 +1558,7 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics,
                 Assert (charsThisTime > 0);
                 Assert (logicalWidths[0] >= 0); // can be zero-width - but never negative...
                 charLocations[i] = runningCharCount + logicalWidths[0];
-                for (size_t j = 1; j < charsThisTime; j++) {
+                for (size_t j = 1; j < charsThisTime; ++j) {
                     Assert (logicalWidths[j] >= 0); // can be zero-width - but never negative...
                     charLocations[i + j] = charLocations[i + j - 1] + logicalWidths[j];
                 }
@@ -1571,7 +1571,7 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics,
 
         // Default code - if UNISCRIBE not compiled for or not dynamically loaded
         Win32_GetTextExtentExPoint (m_hAttribDC, &text[i], charsThisTime, kMaxTextWidthResult, nullptr, (int*)&charLocations[i], &size);
-        for (size_t j = 0; j < charsThisTime; j++) {
+        for (size_t j = 0; j < charsThisTime; ++j) {
             charLocations[i + j] += runningCharCount;
         }
 
@@ -1656,11 +1656,11 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
                 break;
             }
 
-// We can get away with nextTabAt++ even under SJIS so long as...
+// We can get away with ++nextTabAt even under SJIS so long as...
 #if qMultiByteCharacters
             Assert (not Led_IsValidSecondByte ('\t'));
 #endif
-            nextTabAt++;
+            ++nextTabAt;
         }
 
 // Actually image the characters
@@ -1852,7 +1852,7 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
             }
 
             widthSoFar += thisTabWidth;
-            nextTabAt++; // since we processed that tab...
+            ++nextTabAt; // since we processed that tab...
         }
         textCursor = nextTabAt;
     }
@@ -1943,8 +1943,8 @@ void Tablet::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Color
         Brush backgroundBrush (eraseColor.GetOSRep ());
         GDI_Obj_Selector pen (this, ::GetStockObject (NULL_PEN));
         GDI_Obj_Selector brush (this, backgroundBrush);
-        eraser.right++; // lovely - windows doesn't count last pixel... See Docs for Rectangle() and rephrase!!!
-        eraser.bottom++;
+        ++eraser.right; // lovely - windows doesn't count last pixel... See Docs for Rectangle() and rephrase!!!
+        ++eraser.bottom;
         Rectangle (AsRECT (eraser));
 #elif qStroika_FeatureSupported_XWindows
         XGCValues prevValues;
@@ -3300,7 +3300,7 @@ static void SwapArrays (LPCMAP4 pFormat4)
         *pendCount      = GetEndCountArray ((LPBYTE)pFormat4);
 
     // Swap the array elements for Intel.
-    for (i = 0; i < segCount; i++) {
+    for (i = 0; i < segCount; ++i) {
         pendCount[i]      = SWAPWORD (pendCount[i]);
         pstartCount[i]    = SWAPWORD (pstartCount[i]);
         pidDelta[i]       = SWAPWORD (pidDelta[i]);
@@ -3310,7 +3310,7 @@ static void SwapArrays (LPCMAP4 pFormat4)
     // Swap the Glyph Id array
     pGlyphId     = pidRangeOffset + segCount; // Per TT spec
     pEndOfBuffer = (USHORT*)((LPBYTE)pFormat4 + pFormat4->length);
-    for (; pGlyphId < pEndOfBuffer; pGlyphId++) {
+    for (; pGlyphId < pEndOfBuffer; ++pGlyphId) {
         *pGlyphId = SWAPWORD (*pGlyphId);
     }
 } /* end of function SwapArrays */
@@ -3366,7 +3366,7 @@ static BOOL GetFontFormat4Header (
     // Loop and Alias a writeable pointer to the field of interest
     pField = (USHORT*)pFormat4;
 
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < 7; ++i) {
         // Get the field from the subtable
         dwResult = GetFontData (
             hdc,
@@ -3378,7 +3378,7 @@ static BOOL GetFontFormat4Header (
         // swap it to make it right for Intel.
         *pField = SWAPWORD (*pField);
         // move on to the next
-        pField++;
+        ++pField;
         // accumulate our success
         fSuccess = (dwResult == sizeof (USHORT)) && fSuccess;
     }
@@ -3461,7 +3461,7 @@ static BOOL GetTTUnicodeCoverage (
 
     // Get the encodings and look for a Unicode Encoding
     iUnicode = nEncodings;
-    for (i = 0; i < nEncodings; i++) {
+    for (i = 0; i < nEncodings; ++i) {
         // Get the encoding entry for each encoding
         if (!GetFontEncoding (hdc, &Encoding, i)) {
             *pcbNeeded = 0;
@@ -3565,7 +3565,7 @@ static BOOL FindFormat4Segment (
     USHORT* pstartCount = GetStartCountArray ((LPBYTE)pTable);
 
     // Find segment that could contain the Unicode character code
-    for (i = 0; i < segCount && pendCount[i] < ch; i++)
+    for (i = 0; i < segCount && pendCount[i] < ch; ++i)
         ;
 
     // We looked in them all, ch not there

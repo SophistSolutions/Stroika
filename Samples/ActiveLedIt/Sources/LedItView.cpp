@@ -669,7 +669,7 @@ void LedItView::OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
 
     // Set the enable/disable state of each menu item.
     state.m_nIndexMax = pPopupMenu->GetMenuItemCount ();
-    for (state.m_nIndex = 0; state.m_nIndex < state.m_nIndexMax; state.m_nIndex++) {
+    for (state.m_nIndex = 0; state.m_nIndex < state.m_nIndexMax; ++state.m_nIndex) {
         state.m_nID = pPopupMenu->GetMenuItemID (state.m_nIndex);
         if (state.m_nID != 0) {
             Assert (state.m_pOther == NULL);
@@ -685,7 +685,7 @@ void LedItView::OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
             state.m_nID = pPopupMenu->GetMenuItemID (state.m_nIndex);
             if (state.m_nID == 0 and prevItemSep) {
                 pPopupMenu->RemoveMenu (state.m_nIndex, MF_BYPOSITION);
-                state.m_nIndexMax--;
+                --state.m_nIndexMax;
                 continue;
             }
             if (state.m_nID != 0) {
@@ -696,7 +696,7 @@ void LedItView::OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
                 Verify (::GetMenuItemInfo (pPopupMenu->GetSafeHmenu (), state.m_nIndex, true, &mInfo));
                 if (mInfo.fState & MFS_DISABLED) {
                     pPopupMenu->RemoveMenu (state.m_nIndex, MF_BYPOSITION);
-                    state.m_nIndexMax--;
+                    --state.m_nIndexMax;
                     continue;
                 }
             }

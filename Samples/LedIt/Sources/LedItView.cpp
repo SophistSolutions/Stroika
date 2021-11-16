@@ -305,7 +305,7 @@ public:
         size_t idx = cmdNum - WordProcessor::kFontMenuFirst_CmdID;
 
         // Pre-fill cache - at least to the cmd were looking for...
-        for (size_t i = sFontIDMapCache.size (); i <= idx; i++) {
+        for (size_t i = sFontIDMapCache.size (); i <= idx; ++i) {
             Str255 pFontName = {0};
             UInt16 menuItem  = fontMenu->IndexFromCommand (i + WordProcessor::kFontMenuFirst_CmdID);
             ::GetMenuItemText (fontMenu->GetMacMenuH (), menuItem, pFontName);
@@ -757,12 +757,12 @@ WordProcessor::IncrementalParagraphInfo LedItView::GetParaFormatSelection ()
     if (GetStandardTabStopList (GetSelectionStart (), GetSelectionEnd (), &tabstops)) {
         ipi.SetTabStopList (tabstops);
     }
-    TWIPS lhsMargin = TWIPS (0);
-    TWIPS rhsMargin = TWIPS (0);
+    TWIPS lhsMargin = TWIPS{0};
+    TWIPS rhsMargin = TWIPS{0};
     if (GetMargins (GetSelectionStart (), GetSelectionEnd (), &lhsMargin, &rhsMargin)) {
         ipi.SetMargins (lhsMargin, rhsMargin);
     }
-    TWIPS firstIndent = TWIPS (0);
+    TWIPS firstIndent = TWIPS{0};
     if (GetFirstIndent (GetSelectionStart (), GetSelectionEnd (), &firstIndent)) {
         ipi.SetFirstIndent (firstIndent);
     }

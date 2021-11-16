@@ -290,7 +290,7 @@ TextImager::StandardTabStopList StyledTextIOWriter::SrcStream::GetStandardTabSto
 */
 TWIPS StyledTextIOWriter::SrcStream::GetFirstIndent () const
 {
-    return TWIPS (0);
+    return TWIPS{0};
 }
 
 /*
@@ -301,7 +301,7 @@ void StyledTextIOWriter::SrcStream::GetMargins (TWIPS* lhs, TWIPS* rhs) const
 {
     RequireNotNull (lhs);
     RequireNotNull (rhs);
-    *lhs = TWIPS (0);
+    *lhs = TWIPS{0};
     *rhs = TWIPS (6 * 1440); // Not sure what I should return here??? maybe special case and not write anything to output file if returns zero? LGP-990221
 }
 
@@ -311,7 +311,7 @@ void StyledTextIOWriter::SrcStream::GetMargins (TWIPS* lhs, TWIPS* rhs) const
 */
 TWIPS StyledTextIOWriter::SrcStream::GetSpaceBefore () const
 {
-    return TWIPS (0);
+    return TWIPS{0};
 }
 
 /*
@@ -320,7 +320,7 @@ TWIPS StyledTextIOWriter::SrcStream::GetSpaceBefore () const
 */
 TWIPS StyledTextIOWriter::SrcStream::GetSpaceAfter () const
 {
-    return TWIPS (0);
+    return TWIPS{0};
 }
 
 /*

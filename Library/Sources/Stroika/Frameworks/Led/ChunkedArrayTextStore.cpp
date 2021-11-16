@@ -216,20 +216,20 @@ inline size_t ChunkedArrayMarkerHook::CountChildren () const
 {
     size_t nChildren = 0;
     for (auto curChild = fFirstSubMarker; curChild != NULL; curChild = OurStuff (curChild)->fNextSubMarker) {
-        nChildren++;
+        ++nChildren;
     }
-    return (nChildren);
+    return nChildren;
 }
 inline bool ChunkedArrayMarkerHook::CountChildrenMoreThan (size_t n) const // return true iff at least n children
 {
     size_t nChildren = 0;
     for (auto curChild = fFirstSubMarker; curChild != NULL; curChild = OurStuff (curChild)->fNextSubMarker) {
-        nChildren++;
+        ++nChildren;
         if (nChildren >= n) {
             return true;
         }
     }
-    return (nChildren >= n);
+    return nChildren >= n;
 }
 inline bool ChunkedArrayTextStore::AllHackMarkers (const Marker* m)
 {
@@ -499,12 +499,12 @@ public:
             // Save args, then push new args
             stack.GrowToSize (stackDepth + 1);
             stack[stackDepth] = mi;
-            stackDepth++;
+            ++stackDepth;
             m = mi; // bind formal arg
             goto RoutineTop;
         AfterCallPoint:
             Assert (stackDepth > 0);
-            stackDepth--;
+            --stackDepth;
             mi = stack[stackDepth];
         }
 
@@ -568,7 +568,7 @@ public:
             delete m;
 #if qKeepChunkedArrayStatistics
             Assert (fTotalHackMarkersPresent > 0);
-            fTotalHackMarkersPresent--;
+            --fTotalHackMarkersPresent;
 #endif
         }
     }
@@ -725,7 +725,7 @@ void ChunkedArrayTextStore::CopyOut (size_t from, size_t count, Led_tChar* buffe
 
         // For next time through the loop
         chunkIdx.fOffset = 0;
-        chunkIdx.fChunk++;
+        ++chunkIdx.fChunk;
         bytesToGo -= copyFromThisGuy;
     }
 }
@@ -813,7 +813,7 @@ void ChunkedArrayTextStore::InsertAfter_ (const Led_tChar* what, size_t howMany,
                 (void)AtomicAddChunk (fTextChunks.size ());
             }
             else {
-                chunkIdx.fChunk--;
+                --chunkIdx.fChunk;
                 chunkIdx.fOffset = preChunk->GetLength ();
             }
         }
@@ -881,7 +881,7 @@ void ChunkedArrayTextStore::InsertAfter_ (const Led_tChar* what, size_t howMany,
             bytesXfered += copyFromThisGuy;
 
             for (; bytesToGo != 0;) {
-                chunkIdx.fChunk++;
+                ++chunkIdx.fChunk;
                 if (chunkIdx.fChunk <= fTextChunks.size () - 1 and
                     fTextChunks[chunkIdx.fChunk]->GetBytesCanAccommodate () >= bytesToGo) {
                     // Yippie - we're done. Just prepend here, and lets go...
@@ -984,7 +984,7 @@ void ChunkedArrayTextStore::AddMarker (Marker* marker, size_t lhs, size_t length
     AddMarker1 (marker, &camoh->fRootMarker, true);
 
 #if qKeepChunkedArrayStatistics
-    camoh->fTotalMarkersPresent++;
+    ++camoh->fTotalMarkersPresent;
     camoh->fPeakTotalMarkersPresent = max (camoh->fPeakTotalMarkersPresent, camoh->fTotalMarkersPresent);
 #endif
     Invariant ();
@@ -1032,7 +1032,7 @@ Again:
         Assert (marker != curChild);
 
 #if qKeepTrackOfChildCountAndAvoidSomePossiblyAdds
-        specificInsideMarkerChildCount++;
+        ++specificInsideMarkerChildCount;
 #endif
 
         /*
@@ -1210,7 +1210,7 @@ void ChunkedArrayTextStore::RemoveMarkers (Marker* const markerArray[], size_t m
      *  But this is so simple, and runs at least 20x faster than the old code (for 500K delete
      *  all text test case). It seems fast enough for now - LGP 950416.
      */
-    for (size_t i = 0; i < markerCount; i++) {
+    for (size_t i = 0; i < markerCount; ++i) {
         Assert (not OurStuff (markerArray[i])->fIsHackMarker);
         OurStuff (markerArray[i])->fIsHackMarker    = true;
         OurStuff (markerArray[i])->fIsDeletedMarker = true;
@@ -1220,7 +1220,7 @@ void ChunkedArrayTextStore::RemoveMarkers (Marker* const markerArray[], size_t m
 #endif
     }
 
-    for (size_t i = 0; i < markerCount; i++) {
+    for (size_t i = 0; i < markerCount; ++i) {
         Marker* marker = markerArray[i];
         if (marker->fTextStoreHook != NULL) { // if its NULL - that means its already been destroyed as a
             // hack marker in a previous lap through the loop
@@ -1296,7 +1296,7 @@ void ChunkedArrayTextStore::RemoveMarker1 (Marker* marker)
         OurStuff (markerToMove)->fParent        = NULL;
         AddMarker1 (markerToMove, parent, false);
         markerToMove = nextMarkerToMove;
-        moveCount++;
+        ++moveCount;
     }
     if (moveCount > 1) {
         PossiblyAddHackMarkers (parent);
@@ -1358,8 +1358,8 @@ Marker* ChunkedArrayTextStore::AddHackMarkerHelper_ (Marker* insideMarker, size_
         Assert (not OurStuff (marker)->fIsHackMarker);
         OurStuff (marker)->fIsHackMarker = true;
 #if qKeepChunkedArrayStatistics
-        GetAMOH (insideMarker)->fTotalHackMarkersAlloced++;
-        GetAMOH (insideMarker)->fTotalHackMarkersPresent++;
+        ++GetAMOH (insideMarker)->fTotalHackMarkersAlloced;
+        ++GetAMOH (insideMarker)->fTotalHackMarkersPresent;
         GetAMOH (insideMarker)->fPeakHackMarkersPresent = max (GetAMOH (insideMarker)->fPeakHackMarkersPresent, GetAMOH (insideMarker)->fTotalHackMarkersPresent);
 #endif
     }
@@ -1567,12 +1567,12 @@ RoutineTop:
             stack.GrowToSize (stackDepth + 1);
             stack[stackDepth].saved_belowHere = belowHere;
             stack[stackDepth].saved_mi        = mi;
-            stackDepth++;
+            ++stackDepth;
             belowHere = mi; // bind formal arg
             goto RoutineTop;
         AfterCallPoint:
             Assert (stackDepth > 0);
-            stackDepth--;
+            --stackDepth;
             belowHere = stack[stackDepth].saved_belowHere;
             mi        = stack[stackDepth].saved_mi;
             AssertNotNull (mi);
@@ -1610,7 +1610,7 @@ ChunkedArrayTextStore::ChunkAndOffset ChunkedArrayTextStore::FindChunkIndex_ (si
         Assert (fCachedChunkIndexesOffset >= 0);
         bytePosSoFar = fCachedChunkIndexesOffset;
     }
-    for (size_t i = startAt; i < totalChunks; i++) {
+    for (size_t i = startAt; i < totalChunks; ++i) {
         AssertNotNull (fTextChunks[i]);
         size_t curChunkSize = fTextChunks[i]->GetLength ();
         if (bytePosSoFar + curChunkSize > charPos) {
@@ -1677,12 +1677,12 @@ RoutineTop:
         // Save args, then push new args
         stack.GrowToSize (stackDepth + 1);
         stack[stackDepth] = mi;
-        stackDepth++;
+        ++stackDepth;
         startAt = mi; // bind formal arg
         goto RoutineTop;
     AfterCallPoint:
         Assert (stackDepth > 0);
-        stackDepth--;
+        --stackDepth;
         mi = stack[stackDepth];
     }
     if (stackDepth != 0) {
@@ -1765,12 +1765,12 @@ RoutineTop:
         // Save args, then push new args
         stack.GrowToSize (stackDepth + 1);
         stack[stackDepth] = mi;
-        stackDepth++;
+        ++stackDepth;
         startAt = mi; // bind formal arg
         goto RoutineTop;
     AfterCallPoint:
         Assert (stackDepth > 0);
-        stackDepth--;
+        --stackDepth;
         mi = stack[stackDepth];
     }
 
@@ -1809,12 +1809,12 @@ RoutineTop:
         // Save args, then push new args
         stack.GrowToSize (stackDepth + 1);
         stack[stackDepth] = mi;
-        stackDepth++;
+        ++stackDepth;
         m = mi; // bind formal arg
         goto RoutineTop;
     AfterCallPoint:
         Assert (stackDepth > 0);
-        stackDepth--;
+        --stackDepth;
         mi = stack[stackDepth];
     }
 

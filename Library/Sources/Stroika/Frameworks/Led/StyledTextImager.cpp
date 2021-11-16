@@ -320,7 +320,7 @@ void StyledTextImager::DrawSegment (Tablet* tablet,
         *pixelsDrawn = 0;
     }
 
-    for (size_t i = 0; i < outputSummaryLength; i++) {
+    for (size_t i = 0; i < outputSummaryLength; ++i) {
         const RunElement& re       = outputSummary[i];
         size_t            reLength = re.fLength;
         size_t            reFrom   = text.MapVirtualOffsetToReal (indexIntoText_VISUAL) + from; // IN LOGICAL OFFSETS!!!
@@ -394,7 +394,7 @@ void StyledTextImager::MeasureSegmentWidth (size_t from, size_t to, const Led_tC
 
     size_t outputSummaryLength = outputSummary.size ();
     size_t indexIntoText       = 0;
-    for (size_t i = 0; i < outputSummaryLength; i++) {
+    for (size_t i = 0; i < outputSummaryLength; ++i) {
         const RunElement& re       = outputSummary[i];
         size_t            reFrom   = indexIntoText + from;
         size_t            reLength = re.fLength;
@@ -408,7 +408,7 @@ void StyledTextImager::MeasureSegmentWidth (size_t from, size_t to, const Led_tC
         }
         if (indexIntoText != 0) {
             DistanceType addX = distanceResults[indexIntoText - 1];
-            for (size_t j = 0; j < reLength; j++) {
+            for (size_t j = 0; j < reLength; ++j) {
                 distanceResults[indexIntoText + j] += addX;
             }
         }
@@ -445,7 +445,7 @@ DistanceType StyledTextImager::MeasureSegmentHeight (size_t from, size_t to) con
     DistanceType maxHeightAbove = 0;
     DistanceType maxHeightBelow = 0;
     size_t       indexIntoText  = 0;
-    for (size_t i = 0; i < outputSummaryLength; i++) {
+    for (size_t i = 0; i < outputSummaryLength; ++i) {
         const RunElement& re       = outputSummary[i];
         size_t            reFrom   = indexIntoText + from;
         size_t            reLength = re.fLength;
@@ -481,7 +481,7 @@ DistanceType StyledTextImager::MeasureSegmentBaseLine (size_t from, size_t to) c
     Assert (outputSummaryLength != 0);
     DistanceType maxHeight     = 0;
     size_t       indexIntoText = 0;
-    for (size_t i = 0; i < outputSummaryLength; i++) {
+    for (size_t i = 0; i < outputSummaryLength; ++i) {
         const RunElement& re       = outputSummary[i];
         size_t            reFrom   = indexIntoText + from;
         size_t            reLength = re.fLength;

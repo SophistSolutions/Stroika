@@ -442,12 +442,12 @@ namespace Stroika::Frameworks::Led {
         }
         // we go back by BYTES til we find a syncronization point
         const Led_tChar* cur = fromHere - 2;
-        for (; cur > startOfString; cur--) {
+        for (; cur > startOfString; --cur) {
             if (not Led_IsLeadByte (*cur)) {
                 // Then we are in case 1, 2, 3, 4 or 6 (not 5 or 7). So ew know we are looking
                 // at an ASCII byte, or a secondbyte. Therefore - the NEXT byte from here must be
                 // a valid mbyte char boundary.
-                cur++;
+                ++cur;
                 break;
             }
         }
@@ -516,12 +516,12 @@ namespace Stroika::Frameworks::Led {
 
         // we go back by BYTES til we find a syncronization point
         const Led_tChar* cur = guessedEnd - 1;
-        for (; cur > start; cur--) {
+        for (; cur > start; --cur) {
             if (not Led_IsLeadByte (*cur)) {
                 // Then we are in case 1, 2, 3, 4 or 6 (not 5 or 7). So ew know we are looking
                 // at an ASCII byte, or a secondbyte. Therefore - the NEXT byte from here must be
                 // a valid mbyte char boundary.
-                cur++;
+                ++cur;
                 break;
             }
         }

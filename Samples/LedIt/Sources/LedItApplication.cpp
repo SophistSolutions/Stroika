@@ -863,7 +863,7 @@ void LedItApplication::MakeMenuBar ()
         LMenu* fontMenu = LMenuBar::GetCurrentMenuBar ()->FetchMenu (cmd_FontMenu);
         AssertNotNull (fontMenu);
         size_t nMenuItems = ::CountMenuItems (fontMenu->GetMacMenuH ());
-        for (size_t i = 1; i <= nMenuItems; i++) {
+        for (size_t i = 1; i <= nMenuItems; ++i) {
             fontMenu->SetCommand (i, i - 1 + kBaseFontNameCmd); // make first cmd = kBaseFontNameCmd
         }
     }
@@ -2190,7 +2190,7 @@ void LedItApplication::FixupFontMenu (CMenu* fontMenu)
         ;
     }
 
-    for (UINT i = 0; i < fontNames.size (); i++) {
+    for (UINT i = 0; i < fontNames.size (); ++i) {
         UINT cmdNum = kBaseFontNameCmd + i;
         fontMenu->AppendMenu (MF_STRING, cmdNum, fontNames[i].c_str ());
     }

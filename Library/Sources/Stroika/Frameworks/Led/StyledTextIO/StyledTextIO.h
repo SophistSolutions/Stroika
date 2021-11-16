@@ -699,8 +699,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         else {
             AssertNotNull (fCursor_Data);
             *c = *fCursor_Data;
-            fCursor_Data++;
-            fCursor_Offset++;
+            ++fCursor_Data;
+            ++fCursor_Offset;
             return 1;
         }
     }

@@ -353,7 +353,7 @@ size_t Led::Led_SkrunchOutSpecialChars (Led_tChar* text, size_t textLen, Led_tCh
     Led_tChar* end          = text + textLen;
     for (Led_tChar* p = text; p + charsSkipped < end;) {
         if (*(p + charsSkipped) == charToRemove) {
-            charsSkipped++;
+            ++charsSkipped;
             continue;
         }
         *p = *(p + charsSkipped);
@@ -1297,10 +1297,10 @@ const char* Led_URLManager::SkipToNextArgument (const char* pFormat)
 
     //  The next format is directly after a ','
     while (*pFormat != ',' && *pFormat != '\0') {
-        pFormat++;
+        ++pFormat;
     }
     if (*pFormat == ',') {
-        pFormat++;
+        ++pFormat;
     }
     return (pFormat);
 }
@@ -1354,7 +1354,7 @@ HSZ Led_URLManager::ClientArguments (const char* pFormat, ...)
                         csRetval += '\\';
                     }
                     csRetval += *pConvert;
-                    pConvert++;
+                    ++pConvert;
                 }
                 csRetval += '\"';
             }
@@ -1413,7 +1413,7 @@ char* Led_URLManager::ExtractArgument (HSZ hszArgs, int iArg)
 
     //  Need to decrement the argument we're looking for, as the very
     //      first argument has no ',' at the beginning.
-    iArg--;
+    --iArg;
 
     //  Search through the arguments, seperated by ','.
     while (iArg) {
@@ -1421,21 +1421,21 @@ char* Led_URLManager::ExtractArgument (HSZ hszArgs, int iArg)
         if (*pTraverse == '\"') {
             //  Find the ending quote.
             while (*pTraverse != '\0') {
-                pTraverse++;
+                ++pTraverse;
                 if (*pTraverse == '\"') {
-                    pTraverse++; //  One beyond, please
+                    ++pTraverse; //  One beyond, please
                     break;
                 }
                 else if (*pTraverse == '\\') {
                     //  Attempting to embed a quoted, perhaps....
                     if (*(pTraverse + 1) == '\"') {
-                        pTraverse++;
+                        ++pTraverse;
                     }
                 }
             }
         }
         while (*pTraverse != '\0' && *pTraverse != ',') {
-            pTraverse++;
+            ++pTraverse;
         }
 
         //  Go beyond a comma
@@ -1443,7 +1443,7 @@ char* Led_URLManager::ExtractArgument (HSZ hszArgs, int iArg)
             pTraverse++;
         }
 
-        iArg--;
+        --iArg;
 
         if (*pTraverse == '\0') {
             break;
@@ -1463,7 +1463,7 @@ char* Led_URLManager::ExtractArgument (HSZ hszArgs, int iArg)
 
     //  specially handle quoted strings
     if (*pCounter == '\"') {
-        pCounter++;
+        ++pCounter;
         bQuoted = TRUE;
 
         while (*pCounter != '\0') {
@@ -1472,40 +1472,40 @@ char* Led_URLManager::ExtractArgument (HSZ hszArgs, int iArg)
             }
             else if (*pCounter == '\\') {
                 if (*(pCounter + 1) == '\"') {
-                    pCounter++;
-                    iLength++;
+                    ++pCounter;
+                    ++iLength;
                 }
             }
 
-            pCounter++;
-            iLength++;
+            ++pCounter;
+            ++iLength;
         }
     }
     while (*pCounter != '\0' && *pCounter != ',') {
-        iLength++;
-        pCounter++;
+        ++iLength;
+        ++pCounter;
     }
 
     //  Subtrace one to ignore ending quote if we were quoted....
     if (bQuoted == TRUE) {
-        iLength--;
+        --iLength;
     }
 
     //  Argument's of length 1 are of no interest.
     if (iLength == 1) {
         delete (pRemove);
-        return (nullptr);
+        return nullptr;
     }
 
     char* pRetVal = new char[iLength];
 
     if (*pTraverse == '\"') {
-        pTraverse++;
+        ++pTraverse;
     }
     CString::Copy (pRetVal, pTraverse, iLength);
 
     delete (pRemove);
-    return (pRetVal);
+    return pRetVal;
 }
 
 void Led_URLManager::ServerReturned (HDDEDATA hArgs, const char* pFormat, ...)
@@ -1587,11 +1587,11 @@ void Led_URLManager::ServerReturned (HDDEDATA hArgs, const char* pFormat, ...)
                 char* pCopy = pExtract;
                 while (*pCopy) {
                     if (*pCopy == '\\' && *(pCopy + 1) == '\"') {
-                        pCopy++;
+                        ++pCopy;
                     }
 
                     *pCS += *pCopy;
-                    pCopy++;
+                    ++pCopy;
                 }
             }
         }
@@ -1697,7 +1697,7 @@ bool Led::Led_CasedStringsEqual (const string& lhs, const string& rhs, bool igno
     if (lhs.length () != rhs.length ()) {
         return false;
     }
-    for (size_t i = 0; i < lhs.length (); i++) {
+    for (size_t i = 0; i < lhs.length (); ++i) {
         if (not Led_CasedCharsEqual (lhs[i], rhs[i], ignoreCase)) {
             return false;
         }

@@ -240,13 +240,13 @@ namespace Stroika::Frameworks::Led {
         //  ZERO based charPos - ie zero is just before first byte in first row
         //  Require (charPos >= 0); // yes I know this is a degenerate test - just for doc purposes...
         //  Assert (charPos < OURLENGTH);
-        for (size_t row = fRep->fRowCountCache; row >= 1; row--) {
+        for (size_t row = fRep->fRowCountCache; row >= 1; --row) {
             if (charPos >= PeekAtRowStart (row - 1)) {
-                return (row - 1);
+                return row - 1;
             }
         }
         Assert (false);
-        return (0); // if we get here - must have been before our line...
+        return 0; // if we get here - must have been before our line...
     }
 
     /*
@@ -298,8 +298,8 @@ namespace Stroika::Frameworks::Led {
         size_t                    subRow      = adjustMeInPlace->GetSubRow ();
         PartitionElementCacheInfo pmCacheInfo = GetPartitionElementCacheInfo (cur);
         if (subRow + 1 < pmCacheInfo.GetRowCount ()) {
-            subRow++;
-            *adjustMeInPlace = RowReference (cur, subRow);
+            ++subRow;
+            *adjustMeInPlace = RowReference{cur, subRow};
             return true;
         }
         else {
@@ -309,7 +309,7 @@ namespace Stroika::Frameworks::Led {
             else {
                 cur              = cur->GetNext ();
                 subRow           = 0;
-                *adjustMeInPlace = RowReference (cur, subRow);
+                *adjustMeInPlace = RowReference{cur, subRow};
                 return true;
             }
         }
@@ -326,8 +326,8 @@ namespace Stroika::Frameworks::Led {
         PartitionMarker* cur    = adjustMeInPlace->GetPartitionMarker ();
         size_t           subRow = adjustMeInPlace->GetSubRow ();
         if (subRow > 0) {
-            subRow--;
-            *adjustMeInPlace = RowReference (cur, subRow);
+            --subRow;
+            *adjustMeInPlace = RowReference{cur, subRow};
             return true;
         }
         else {
@@ -338,7 +338,7 @@ namespace Stroika::Frameworks::Led {
                 cur                                   = cur->GetPrevious ();
                 PartitionElementCacheInfo pmCacheInfo = GetPartitionElementCacheInfo (cur);
                 subRow                                = pmCacheInfo.GetRowCount () - 1;
-                *adjustMeInPlace                      = RowReference (cur, subRow);
+                *adjustMeInPlace                      = RowReference{cur, subRow};
                 return true;
             }
         }

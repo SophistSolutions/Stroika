@@ -20,7 +20,7 @@ inline AdjustToValidCharIndex (const Led_tChar* text, size_t index)
 {
     if (Led_FindPrevOrEqualCharBoundary (&text[0], &text[index]) != &text[index]) {
         Assert (index > 0);
-        index--;
+        --index;
     }
     return (index);
 }
@@ -65,8 +65,8 @@ void WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
 
     Assert (end <= GetEnd () + 1);
     if (end == GetEnd () + 1) {
-        end--; // don't include bogus char at end of buffer
-        len--;
+        --end; // don't include bogus char at end of buffer
+        --len;
     }
     Assert (end <= GetEnd ());
 
@@ -106,7 +106,7 @@ void WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
                 // NOT RIGHT - doesn't properly interpret tabstops!!! with respect to left margins!!! LGP 980908
                 CoordinateType lhsMargin;
                 CoordinateType rhsMargin;
-                GetLayoutMargins (RowReference (pm, cacheInfo.GetRowCount () - 1), &lhsMargin, &rhsMargin);
+                GetLayoutMargins (RowReference{pm, cacheInfo.GetRowCount () - 1}, &lhsMargin, &rhsMargin);
                 Assert (lhsMargin < rhsMargin);
                 wrapWidth = rhsMargin - lhsMargin;
             }
@@ -256,7 +256,7 @@ size_t WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* tex
      *      For more info, see SPR#435.
      */
     if (startSoFar != 0) {
-        wrapWidth--;
+        --wrapWidth;
     }
 
     /*
@@ -267,11 +267,11 @@ size_t WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* tex
 
     const size_t kCharsFromEndToSearchFrom = 5; // should be half of average word size (or so)
     size_t       bestBreakPointIndex       = 1;
-    for (; bestBreakPointIndex <= length; bestBreakPointIndex++) {
+    for (; bestBreakPointIndex <= length; ++bestBreakPointIndex) {
         DistanceType guessWidth = LookupLengthInVector (widthsVector, startSoFar, bestBreakPointIndex);
         if (guessWidth > wrapWidth) {
             if (bestBreakPointIndex > 1) {
-                bestBreakPointIndex--; // because overshot above
+                --bestBreakPointIndex; // because overshot above
             }
 #if qMultiByteCharacters
             bestBreakPointIndex = AdjustToValidCharIndex (text, bestBreakPointIndex);

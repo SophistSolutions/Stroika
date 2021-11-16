@@ -170,7 +170,7 @@ void SimpleTextStore::InsertAfter_ (const Led_tChar* what, size_t howMany, size_
     // update markers
     // since we did an insert - all this does is increment the start point for all markers that were
     // already past here and the lengths of any where the start is to the left and the right is past here.
-    for (size_t i = 0; i < fMarkers.size (); i++) {
+    for (size_t i = 0; i < fMarkers.size (); ++i) {
         Marker* mi    = fMarkers[i];
         size_t  start = mi->GetStart ();
         size_t  len   = mi->GetLength ();
@@ -199,7 +199,7 @@ void SimpleTextStore::DeleteAfter_ (size_t howMany, size_t after)
     fLength -= howMany;
 
     // update markers
-    for (size_t i = 0; i < fMarkers.size (); i++) {
+    for (size_t i = 0; i < fMarkers.size (); ++i) {
         Marker* mi    = fMarkers[i];
         size_t  start = mi->GetStart ();
         size_t  len   = mi->GetLength ();
@@ -259,7 +259,7 @@ void SimpleTextStore::AddMarker (Marker* marker, size_t lhs, size_t length, Mark
      *  Insert the marker in-order in the list.
      */
     // For now - assume we always append - for marker sub-order...
-    for (size_t i = 0; i < fMarkers.size (); i++) {
+    for (size_t i = 0; i < fMarkers.size (); ++i) {
         Marker* mi = fMarkers[i];
         if (mi->GetStart () > lhs) {
             // we've gone one too far!!!
@@ -278,7 +278,7 @@ void SimpleTextStore::AddMarker (Marker* marker, size_t lhs, size_t length, Mark
 void SimpleTextStore::RemoveMarkers (Marker* const markerArray[], size_t markerCount)
 {
     Assert (markerCount == 0 or markerArray != nullptr);
-    for (size_t i = 0; i < markerCount; i++) {
+    for (size_t i = 0; i < markerCount; ++i) {
         Marker* marker = markerArray[i];
         if (marker->fTextStoreHook != nullptr) {
             AssertNotNull (marker->GetOwner ());
@@ -323,7 +323,7 @@ void SimpleTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) 
 void SimpleTextStore::CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const
 {
     RequireNotNull (owner); // though it can be TextStore::kAnyMarkerOwner.
-    for (auto i = fMarkers.begin (); i != fMarkers.end (); i++) {
+    for (auto i = fMarkers.begin (); i != fMarkers.end (); ++i) {
         Marker* m = *i;
         AssertNotNull (m);
         if (Overlap (*m, from, to)) {
@@ -340,7 +340,7 @@ void SimpleTextStore::CollectAllMarkersInRangeInto (size_t from, size_t to, cons
 void SimpleTextStore::Invariant_ () const
 {
     TextStore::Invariant_ ();
-    for (size_t i = 0; i < fMarkers.size (); i++) {
+    for (size_t i = 0; i < fMarkers.size (); ++i) {
         Marker* mi = fMarkers[i];
         AssertNotNull (mi);
         Assert (IndexOf (fMarkers, mi) == i); // be sure same marker doesn't appear multiply in the

@@ -748,7 +748,7 @@ bool StyledTextIOReader_HTML::LookingAt (const char* text) const
     size_t i = p - text;
     while (i != 0) {
         PutBackLastChar ();
-        i--;
+        --i;
     }
     return result;
 }
@@ -794,18 +794,18 @@ void StyledTextIOReader_HTML::EmitText (const Led_tChar* text, size_t nBytes, bo
 
         // Normalize space (including NLs) to one
         Led_tChar* out = outBuf;
-        for (size_t i = 0; i < nBytes; i++) {
+        for (size_t i = 0; i < nBytes; ++i) {
             Led_tChar c             = outBuf[i];
             bool      thisCharSpace = IsASCIISpace (c);
             if (thisCharSpace) {
                 if (not fLastCharSpace) {
                     *out = ' ';
-                    out++;
+                    ++out;
                 }
             }
             else {
                 *out = c;
-                out++;
+                ++out;
             }
             fLastCharSpace = thisCharSpace;
         }
@@ -1071,19 +1071,19 @@ void StyledTextIOReader_HTML::ExtractHTMLTagIntoTagNameBuf (const char* text, si
         const char* in     = &text[0];
         const char* in_end = in + nBytes;
         char*       out    = &tagBuf[0];
-        in++; // skip '<'
+        ++in; // skip '<'
         if (*in == '/') {
             in++; // skip endTag character, and set flag
             *isStartTag = false;
         }
-        for (; in < in_end; in++) {
+        for (; in < in_end; ++in) {
             char c = *in;
             if (isalnum (c) or (c == '!') or (c == '_') or (c == '-')) {
                 if (isupper (c)) {
                     c = static_cast<char> (tolower (c));
                 }
                 *out = c;
-                out++;
+                ++out;
             }
             else {
                 break;
@@ -1673,7 +1673,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_table (bool start, const char*
      */
     if (start) {
         GetSinkStream ().StartTable ();
-        fTableOpenCount++;
+        ++fTableOpenCount;
         fTableRowOpen  = false;
         fTableCellOpen = false;
     }
@@ -1797,14 +1797,14 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_ul (bool start, const char* te
 {
     EndParaIfOpen ();
     if (start) {
-        fULNestingCount++;
+        ++fULNestingCount;
         EmitForcedLineBreak ();
         ListStyle listStyle = eListStyle_Bullet; // should get style from param to UL - as in 'type=disc'
         GetSinkStream ().SetListStyle (listStyle);
         GrabAndApplyCSSStyleFromTagText (text, nBytes);
     }
     else {
-        fULNestingCount--;
+        --fULNestingCount;
         if (fULNestingCount == 0) {
             EmitForcedLineBreak ();
             ListStyle listStyle = eListStyle_None; // should get style from param to saved-stack...

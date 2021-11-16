@@ -216,7 +216,7 @@ namespace Stroika::Frameworks::Led {
             Marker* const* markersToBeDeleted  = (Marker* const*)markersToBeDeleted_; // need cast - but safe - cuz array of MARKER* and looking for Marker* - safe cuz const array!
 
             textStore.RemoveMarkers (markersToBeDeleted, fMarkersToBeDeleted.size ());
-            for (size_t i = 0; i < fMarkersToBeDeleted.size (); i++) {
+            for (size_t i = 0; i < fMarkersToBeDeleted.size (); ++i) {
                 delete fMarkersToBeDeleted[i];
             }
             fMarkersToBeDeleted.clear ();
