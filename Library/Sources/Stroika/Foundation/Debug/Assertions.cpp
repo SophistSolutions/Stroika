@@ -178,6 +178,5 @@ void Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (cons
     quick_exit (1);
 #endif
 }
-}
 
 #endif
