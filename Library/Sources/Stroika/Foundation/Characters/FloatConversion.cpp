@@ -9,9 +9,6 @@
 #include <iomanip>
 #include <limits>
 #include <sstream>
-#if __cpp_lib_format
-#include <format>
-#endif
 
 #include "../Characters/StringBuilder.h"
 #include "../Characters/ToString.h"
