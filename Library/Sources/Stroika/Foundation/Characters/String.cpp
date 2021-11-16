@@ -403,7 +403,7 @@ String::_SharedPtrIRep String::mk_ (const wchar_t* start1, const wchar_t* end1, 
     RequireNotNull (end2);
     Require (start2 <= end2);
     size_t len1 = end1 - start1;
-    auto sRep = MakeSmartPtr<String_BufferedArray_Rep_> (start1, end1, end2 - start2);
+    auto   sRep = MakeSmartPtr<String_BufferedArray_Rep_> (start1, end1, end2 - start2);
     if (start2 != end2) [[LIKELY_ATTR]] {
         sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
     }
