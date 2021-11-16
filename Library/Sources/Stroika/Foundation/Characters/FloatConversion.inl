@@ -158,11 +158,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 return Math::nan<RETURN_TYPE> ();
             }
             else {
-                wchar_t*                          e   = nullptr;
-                const wchar_t*                    cst = start;
+                wchar_t*       e   = nullptr;
+                const wchar_t* cst = start;
 
                 if (remainder == nullptr) {
-                     // REJECT strings with leading space in this case - must match exactly
+                    // REJECT strings with leading space in this case - must match exactly
                     if (::iswspace (*cst)) {
                         return Math::nan<RETURN_TYPE> ();
                     }
