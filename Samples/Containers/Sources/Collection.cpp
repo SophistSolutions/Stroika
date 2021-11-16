@@ -30,6 +30,7 @@ namespace {
     {
         /*
          *  A Collection is the simplest form of Stroika container. You can add things, and remove them, and iterate over them.
+         *  The order items appear (in iteration) is undefined.
          *  View the class declaration, with all the methods well documented, must with examples of usage.
          */
         Collection<int> c;
@@ -51,7 +52,7 @@ namespace {
             // Unclear what the performance characteristics of this will be - with a linked list - O(1), but with array, O(N) worst case.
             c += 4;
 
-            // 'c' will now operate identically (same API) - but use a differnt backend datastructure for storage,
+            // 'c' will now operate identically (same API) - but use a different backend datastructure for storage,
             // always showing O(1) worst case addition time
             c = Concrete::Collection_stdforward_list<int>{c};
             c += 4;
@@ -114,19 +115,6 @@ namespace {
 }
 
 namespace {
-    void StoreOtherSortsOfElements_ ()
-    {
-        Debug::TraceContextBumper ctx{L"StoreOtherSortsOfElements_"};
-        using Characters::String;
-        Collection<String> fruits;
-        fruits += L"apple";
-        fruits += L"bananas";
-        fruits += L"cherries";
-        DbgTrace (L"fruits=%s", Characters::ToString (fruits).c_str ());
-    }
-}
-
-namespace {
     void UseLinqLikeFunctionalAPIs_ ()
     {
         Debug::TraceContextBumper ctx{L"PrintTheContentsOfAContainerToTheTraceLog_"};
@@ -183,7 +171,14 @@ namespace {
 }
 
 namespace {
-    void IteratorsAndSafeUpdateIteration_ ()
+    /*
+     *  This is just like STL containers. You cannot (generally) update a container while iterating,
+     *  except that some APIs allow the iterators to be updated as part of the update process (like erase).
+     * 
+     *  Unlike STL (generally - some implementations may offer this) - in DEBUG builds, Stroika will detect use
+     *  of an invalid iterator and trigger an assertion.
+     */
+    void UpdatingContainerWhileIterating_ ()
     {
         using Characters::String;
         Collection<String> fruits;
@@ -199,10 +194,7 @@ namespace {
         }
         for (Iterator<String> i = fruits.begin (); i != fruits.end ();) {
             if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*i, L"apple")) {
-                fruits.Remove (i, &i);
-                // with STL containers, it would be illegal to reference i again, as in i++.
-                // However, with Stroika iterators, they are smart about doing the right thing,
-                // when they point to a deleted item, and this code will work as expected.
+                fruits.Remove (i, &i);  // 'i' has already been updated to refer to the next element, regardless of how the Collection<> represents its data
             }
             else {
                 i++;
@@ -218,8 +210,7 @@ void Samples::Containers::Collection::RunDemo ()
     UseParticularConcreteRepresentation_ ();
     InterfaceWithSTLContainers_ ();
     PrintTheContentsOfAContainerToTheTraceLog_ ();
-    StoreOtherSortsOfElements_ ();
     UseLinqLikeFunctionalAPIs_ ();
     CollectionOfThingsWithNoOpEqualsAndNotDefaultConstructibleEtc_ ();
-    IteratorsAndSafeUpdateIteration_ ();
+    UpdatingContainerWhileIterating_ ();
 }
