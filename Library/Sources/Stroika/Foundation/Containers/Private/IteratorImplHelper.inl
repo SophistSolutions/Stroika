@@ -83,31 +83,15 @@ namespace Stroika::Foundation::Containers::Private {
     void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::More (optional<T>* result, bool advance)
     {
         RequireNotNull (result);
-        // NOTE: the reason this is Debug::AssertExternallySynchronizedMutex, is because we only modify data on the newly cloned (breakreferences)
-        // iterator, and that must be in the thread (so externally synchronized) of the modifier
-        //    shared_lock<const Debug::AssertExternallySynchronizedMutex> lg (*fIterator.GetPatchableContainerHelper ());
         ValidateChangeCount ();
-        More_SFINAE_ (result, advance);
-    }
-    template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
-    template <typename CHECK_KEY>
-    inline void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::More_SFINAE_ (optional<T>* result, bool advance, enable_if_t<is_same_v<T, CHECK_KEY>>*)
-    {
-        RequireNotNull (result);
-        fIterator.More (result, advance);
-    }
-    template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
-    template <typename CHECK_KEY>
-    inline void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::More_SFINAE_ (optional<T>* result, bool advance, enable_if_t<!is_same_v<T, CHECK_KEY>>*)
-    {
-        RequireNotNull (result);
-        optional<DataStructureImplValueType_> tmp;
-        fIterator.More (&tmp, advance);
-        if (tmp.has_value ()) {
-            *result = move (*tmp);
+        if constexpr (is_same_v<T, DataStructureImplValueType_>) {
+            fIterator.More (result, advance);
         }
         else {
-            *result = nullopt;
+            // Sometimes we use KeyValuePair<A,B> and map that to pair<A,B> in STL container, and this 'adapter' masks that difference.
+            optional<DataStructureImplValueType_> tmp;
+            fIterator.More (&tmp, advance);
+            *result = move (tmp);
         }
     }
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
@@ -118,10 +102,6 @@ namespace Stroika::Foundation::Containers::Private {
         RequireMember (rhs, ActualIterImplType_);
         const ActualIterImplType_* rrhs = Debug::UncheckedDynamicCast<const ActualIterImplType_*> (rhs);
         AssertNotNull (rrhs);
-        //  ValidateChangeCount ();
-        //  rhs->ValidateChangeCount ();
-        //        shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec1 (*fIterator.GetPatchableContainerHelper ());
-        //      shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
         return fIterator.Equals (rrhs->fIterator);
     }
 #if qDebug
