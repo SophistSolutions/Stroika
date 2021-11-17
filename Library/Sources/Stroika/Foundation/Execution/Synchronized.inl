@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     template <typename... ARGUMENT_TYPES>
     inline Synchronized<T, TRAITS>::Synchronized (ARGUMENT_TYPES&&... args)
-        : fProtectedValue_{forward<ARGUMENT_TYPES> (args)...}
+        : fProtectedValue_ (forward<ARGUMENT_TYPES> (args)...)  // use () not {} so works with T with explicit CTOR (empirically has trouble - not sure why)
     {
 #if qStroika_FeatureSupported_Valgrind
         if (TRAITS::kSupportSharedLocks) {
