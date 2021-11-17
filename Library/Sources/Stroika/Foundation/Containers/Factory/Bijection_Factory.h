@@ -42,6 +42,10 @@ namespace Stroika::Foundation::Containers::Factory {
         using InjectivityViolationPolicy = Bijection_Base::InjectivityViolationPolicy;
 
     public:
+        static_assert (not is_reference_v<DOMAIN_TYPE>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
+        static_assert (not is_reference_v<RANGE_TYPE>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
+        static_assert (not is_reference_v<DOMAIN_EQUALS_COMPARER>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
+        static_assert (not is_reference_v<RANGE_EQUALS_COMPARER>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
         static_assert (Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER> (), "Domain Equals comparer required with Bijection_Factory");
         static_assert (Common::IsEqualsComparer<RANGE_EQUALS_COMPARER> (), "Range Equals comparer required with Bijection_Factory");
 

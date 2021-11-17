@@ -43,6 +43,9 @@ namespace Stroika::Foundation::Containers::Factory {
 #endif
 
     public:
+        static_assert (not is_reference_v<T>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<>(), or remove_cvref_t");
+
+    public:
         /**
          *  You can call this directly, but there is no need, as the Sequence<T,TRAITS> CTOR does so automatically.
          */

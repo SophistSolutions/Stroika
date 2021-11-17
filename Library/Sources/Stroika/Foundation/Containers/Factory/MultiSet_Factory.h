@@ -45,6 +45,7 @@ namespace Stroika::Foundation::Containers::Factory {
 #endif
 
     public:
+        static_assert (not is_reference_v<T> and not is_reference_v<EQUALS_COMPARER>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<>(), or remove_cvref_t");
         static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Equals comparer required with MultiSet_Factory");
 
     public:

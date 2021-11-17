@@ -24,8 +24,12 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
     inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer)
-        // Use inherited() to avoid matching inherited(initializer_list<>... - see docs in inherited::CTORs...
-        : inherited (Factory::Set_Factory<T, EQUALS_COMPARER> (forward<EQUALS_COMPARER> (equalsComparer)) ())
+    // Use inherited() to avoid matching inherited(initializer_list<>... - see docs in inherited::CTORs...
+#if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_20
+        : inherited (Factory::Set_Factory<T, remove_cv_t<remove_reference_t<EQUALS_COMPARER>>> (forward<EQUALS_COMPARER> (equalsComparer)) ())
+#else
+        : inherited (Factory::Set_Factory<T, remove_cvref_t<EQUALS_COMPARER>> (forward<EQUALS_COMPARER> (equalsComparer)) ())
+#endif
     {
         static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Set constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
         _AssertRepValidType ();
