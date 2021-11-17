@@ -59,13 +59,13 @@ namespace Stroika::Foundation::Containers::Factory {
         /*
          *  Use SFINAE to select best default implementation.
          */
-        return Default_SFINAE_ (keyExtractor, keyComparer, static_cast<T*> (nullptr));
+        return Default_SFINAE_ (keyExtractor, keyComparer, static_cast<KEY_TYPE*> (nullptr));
     }
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
-    template <typename CHECK_T>
-    KeyedCollection<T, KEY_TYPE, TRAITS> KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::Default_SFINAE_ (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer, CHECK_T*, enable_if_t<Configuration::has_lt<CHECK_T>::value>*)
+    template <typename CHECK_KEY_TYPE>
+    KeyedCollection<T, KEY_TYPE, TRAITS> KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::Default_SFINAE_ (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer, CHECK_KEY_TYPE*, enable_if_t<Configuration::has_lt<CHECK_KEY_TYPE>::value>*)
     {
-        if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<T>>) {
+        if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<CHECK_KEY_TYPE>>) {
             return Concrete::KeyedCollection_stdset<T, KEY_TYPE, TRAITS>{keyExtractor};
         }
         else {
