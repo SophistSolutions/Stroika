@@ -172,6 +172,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *
      *  The supported type values for RESULT_TYPE are:
      *      o   String
+     *      o   string
+     *      o   wstring
      *      o           ... but this could sensibly be extended in the future
      */
     template <typename STRING_TYPE = String, typename FLOAT_TYPE = float>
@@ -183,32 +185,46 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     String ToString (double f, const ToStringOptions& options);
     template <>
     String ToString (long double f, const ToStringOptions& options);
+    template <>
+    string ToString (float f, const ToStringOptions& options);
+    template <>
+    string ToString (double f, const ToStringOptions& options);
+    template <>
+    string ToString (long double f, const ToStringOptions& options);
+    template <>
+    wstring ToString (float f, const ToStringOptions& options);
+    template <>
+    wstring ToString (double f, const ToStringOptions& options);
+    template <>
+    wstring ToString (long double f, const ToStringOptions& options);
 
     /**
      *  ToFloat (no remainder parameter):
      *
-     *  Convert the given decimal-format floating point string to an float,
-     *  double, or long double.
+     *      Convert the given decimal-format floating point string to an float,
+     *      double, or long double.
      *
-     *  String2Float will return nan () if no valid parse (for example, -1.#INF000000000000 is,
-     *  invalid and returns nan, despite the fact that this is often emitted by the MSFT sprintf() for inf values).
+     *      ToFloat will return nan () if no valid parse (for example, -1.#INF000000000000 is,
+     *      invalid and returns nan, despite the fact that this is often emitted by the MSFT sprintf() for inf values).
      *
-     *  If the argument value is too large or too small to fit in 'T' (ERANGE) - then the value will be
-     *  pinned to -numeric_limits<T>::infinity () or numeric_limits<T>::infinity ().
+     *      The overloads taking string or const char* arguments Require() that the input is ASCII ('C' locale required/assumed).
      *
-     *  If the input string is INF or INFINITY (with an optional +/- prefix) - the returned
-     *  value will be the appropriate verison of infinity.
+     *      If the argument value is too large or too small to fit in 'T' (ERANGE) - then the value will be
+     *      pinned to -numeric_limits<T>::infinity () or numeric_limits<T>::infinity ().
      *
-     *  The argument should be pre-trimmed. If there is any leading or trailing garbage (even whitespace)
-     *  this function will return nan() (**note - unlike overload with 'remainder' arg).
+     *      If the input string is INF or INFINITY (with an optional +/- prefix) - the returned
+     *      value will be the appropriate verison of infinity.
      *
-     *  If the argument is the string "NAN", a quiet NAN will be returned. If the string -INF or -INFINITY,
-     *  a negative infinite float will be returned, and if INF or INFINITY is passed, a positive infinite
-     *  value will be returned:
-     *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
+     *      The argument should be pre-trimmed. If there is any leading or trailing garbage (even whitespace)
+     *      this function will return nan() (**note - unlike overload with 'remainder' arg).
      *
-     *  @see strtod(), or @see wcstod (), or ToFloat (with remainder parameter):. This maybe implemented as a simple wrapper on strtod() / wcstod () /
-     *  strtold, etc... except that it returns nan() on invalid data, instead of zero.
+     *      If the argument is the string "NAN", a quiet NAN will be returned. If the string -INF or -INFINITY,
+     *      a negative infinite float will be returned, and if INF or INFINITY is passed, a positive infinite
+     *      value will be returned:
+     *          @see http://en.cppreference.com/w/cpp/string/byte/strtof
+     *
+     *      @see strtod(), or @see wcstod (), or ToFloat (with remainder parameter):. This maybe implemented as a simple wrapper on strtod() / wcstod () /
+     *      strtold, etc... except that it returns nan() on invalid data, instead of zero.
      *
      *  ToFloat (with remainder parameter):
      *
@@ -225,7 +241,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *
      */
     template <typename T = double>
+    T ToFloat (const char* start, const char* end);
+    template <typename T = double>
     T ToFloat (const wchar_t* start, const wchar_t* end);
+    template <typename T = double>
+    T ToFloat (const string& s);
     template <typename T = double>
     T ToFloat (const String& s);
     template <typename T = double>

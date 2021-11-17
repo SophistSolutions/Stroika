@@ -10,7 +10,7 @@
 
 /**
  * TODO:
- *      @todo   Add Int2String () module? Like Float2String, and this String2Int?
+ *      @todo   Add Int2String () module? Like FloatConversion::ToString, and this String2Int?
  *
  *      @todo   DOCUMENT BEHAVIOR OF STRING2INT() for bad strings. What does it do?
  *              AND SIMILARPT FOR hexString2Int. And for both - probably rewrite to use strtoul/strtol etc

@@ -206,16 +206,16 @@ namespace Stroika::Foundation::Characters::CString {
      *  strtod() /etc are more flexible. This is merely meant to be an often convenient wrapper.
      *  Use strtod etc directly to see if the string parsed properly.
      */
-    double String2Float (const string& s);
-    double String2Float (const wchar_t* s);
-    double String2Float (const wstring& s);
+    [[deprecated ("Since Stroika 2.1b14, use Characters::FloatConversion::ToFloat ()")]] double String2Float (const string& s);
+    [[deprecated ("Since Stroika 2.1b14, use Characters::FloatConversion::ToFloat ()")]] double String2Float (const wchar_t* s);
+    [[deprecated ("Since Stroika 2.1b14, use Characters::FloatConversion::ToFloat ()")]] double String2Float (const wstring& s);
 
     /**
      *  Note - this routine ignores the current locale settings, and always uses the 'C' locale.
      *
      *  @see Characters::Float2String
      */
-    wstring Float2String (double f);
+    [[deprecated ("Since Stroika 2.1b14, use Characters::FloatConversion::ToString ()")]] wstring Float2String (double f);
 
     /*
     @CONFIGVAR:     qPlatformSupports_wcscasecmp

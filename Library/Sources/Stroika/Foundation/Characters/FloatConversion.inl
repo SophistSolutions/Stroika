@@ -129,25 +129,85 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     namespace Private_ {
         // TEMPLATE version of wcstof(etc) - to make easier to call from generic algorithm
         template <typename T>
-        T wcstoFloatType_ (const wchar_t* s, wchar_t** e);
+        T CStr2FloatType_ (const wchar_t* s, wchar_t** e);
+        template <typename T>
+        T CStr2FloatType_ (const char* s, char** e);
         template <>
-        inline float wcstoFloatType_ (const wchar_t* s, wchar_t** e)
+        inline float CStr2FloatType_ (const wchar_t* s, wchar_t** e)
         {
             return ::wcstof (s, e);
         }
         template <>
-        inline double wcstoFloatType_ (const wchar_t* s, wchar_t** e)
+        inline double CStr2FloatType_ (const wchar_t* s, wchar_t** e)
         {
             return wcstod (s, e);
         }
         template <>
-        inline long double wcstoFloatType_ (const wchar_t* s, wchar_t** e)
+        inline long double CStr2FloatType_ (const wchar_t* s, wchar_t** e)
         {
             return wcstold (s, e);
+        }
+        template <>
+        inline float CStr2FloatType_ (const char* s, char** e)
+        {
+            return ::strtof (s, e);
+        }
+        template <>
+        inline double CStr2FloatType_ (const char* s, char** e)
+        {
+            return strtod (s, e);
+        }
+        template <>
+        inline long double CStr2FloatType_ (const char* s, char** e)
+        {
+            return strtold (s, e);
         }
     }
 
     namespace Private_ {
+        template <typename RETURN_TYPE>
+        RETURN_TYPE ToFloat_ViaStrToD_ (const char* start, const char* end, const char** remainder)
+        {
+            if (start == end) {
+                if (remainder != nullptr) {
+                    *remainder = start;
+                }
+                return Math::nan<RETURN_TYPE> ();
+            }
+            else {
+                char*       e   = nullptr;
+                const char* cst = start;
+
+                if (remainder == nullptr) {
+                    // REJECT strings with leading space in this case - must match exactly
+                    if (::isspace (*cst)) {
+                        return Math::nan<RETURN_TYPE> ();
+                    }
+                }
+
+                Memory::SmallStackBuffer<char> tmp;
+                if (*end != '\0') {
+                    // remap addresses - copying to a temporary buffer, so we can nul-terminate string passed to strtod (etc)
+                    size_t len = end - start;
+                    tmp.GrowToSize (len + 1);
+                    (void)::memcpy (tmp.begin (), start, len);
+                    cst      = tmp.begin ();
+                    tmp[len] = '\0';
+                }
+                RETURN_TYPE d = CStr2FloatType_<RETURN_TYPE> (cst, &e);
+                // If asked to return remainder do so.
+                // If NOT asked to return remainder, treat not using the entire string as forcing result to be a Nan (invalid parse of number of not the whole thing is a number)
+                if (remainder == nullptr) {
+                    if (e != end) {
+                        d = Math::nan<RETURN_TYPE> ();
+                    }
+                }
+                else {
+                    *remainder = e - cst + start; // adjust in case we remapped data
+                }
+                return d;
+            }
+        }
         template <typename RETURN_TYPE>
         RETURN_TYPE ToFloat_ViaStrToD_ (const wchar_t* start, const wchar_t* end, const wchar_t** remainder)
         {
@@ -177,7 +237,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     cst      = tmp.begin ();
                     tmp[len] = '\0';
                 }
-                RETURN_TYPE d = wcstoFloatType_<RETURN_TYPE> (cst, &e);
+                RETURN_TYPE d = CStr2FloatType_<RETURN_TYPE> (cst, &e);
                 // If asked to return remainder do so.
                 // If NOT asked to return remainder, treat not using the entire string as forcing result to be a Nan (invalid parse of number of not the whole thing is a number)
                 if (remainder == nullptr) {
@@ -346,12 +406,92 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     {
         return Private_::ToString_String_Implementation_ (f, options);
     }
+    template <>
+    inline string ToString (float f, const ToStringOptions& options)
+    {
+        // @todo improve performance for this case
+        Require (not options.GetUseLocale ());
+        return Private_::ToString_String_Implementation_ (f, options).AsASCII ();
+    }
+    template <>
+    inline string ToString (double f, const ToStringOptions& options)
+    {
+        // @todo improve performance for this case
+        Require (not options.GetUseLocale ());
+        return Private_::ToString_String_Implementation_ (f, options).AsASCII ();
+    }
+    template <>
+    inline string ToString (long double f, const ToStringOptions& options)
+    {
+        // @todo improve performance for this case
+        Require (not options.GetUseLocale ());
+        return Private_::ToString_String_Implementation_ (f, options).AsASCII ();
+    }
+    template <>
+    inline wstring ToString (float f, const ToStringOptions& options)
+    {
+        // @todo improve performance for this case
+        Require (not options.GetUseLocale ());
+        return Private_::ToString_String_Implementation_ (f, options).As<wstring> ();
+    }
+    template <>
+    inline wstring ToString (double f, const ToStringOptions& options)
+    {
+        // @todo improve performance for this case
+        Require (not options.GetUseLocale ());
+        return Private_::ToString_String_Implementation_ (f, options).As<wstring> ();
+    }
+    template <>
+    inline wstring ToString (long double f, const ToStringOptions& options)
+    {
+        // @todo improve performance for this case
+        Require (not options.GetUseLocale ());
+        return Private_::ToString_String_Implementation_ (f, options).As<wstring> ();
+    }
 
     /*
      ********************************************************************************
      ************************ FloatConversion::ToFloat ******************************
      ********************************************************************************
      */
+    template <typename T>
+    T ToFloat (const char* start, const char* end)
+    {
+        T result; // intentionally uninitialized
+        if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy or qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
+            result = Private_::ToFloat_ViaStrToD_<T> (start, end, nullptr);
+        }
+        else {
+            /*
+             *  Most of the time we can do this very efficiently, because there are just ascii characters.
+             *  Else, fallback on older algorithm that understands full unicode character set.
+             */
+            auto b = start;
+            auto e = end;
+            if (b != e and *b == '+') [[UNLIKELY_ATTR]] {
+                ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
+            }
+            auto [ptr, ec] = from_chars (b, e, result);
+            if (ec == errc::result_out_of_range) [[UNLIKELY_ATTR]] {
+                return *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
+            }
+            // if error or trailing crap - return nan
+            if (ec != std::errc{} or ptr != e) [[UNLIKELY_ATTR]] {
+                result = Math::nan<T> ();
+            }
+        }
+        if constexpr (qDebug) {
+            /// @todo not sure this overload can do that ensure
+            // test backward compat with old algorithm --LGP 2021-11-08
+            if (isnan (result)) {
+                Ensure (isnan (Private_::ToFloat_Legacy_<T> (String::FromASCII (start, end))));
+            }
+            else {
+                Ensure (result == Private_::ToFloat_Legacy_<T> (String::FromASCII (start, end)));
+            }
+        }
+        return result;
+    }
     template <typename T>
     T ToFloat (const wchar_t* start, const wchar_t* end)
     {
@@ -397,6 +537,13 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             }
         }
         return result;
+    }
+    template <typename T>
+    inline T ToFloat (const string& s)
+    {
+        const char* start = s.c_str ();
+        const char* end   = start + s.length ();
+        return ToFloat<T> (start, end);
     }
     template <typename T>
     inline T ToFloat (const String& s)

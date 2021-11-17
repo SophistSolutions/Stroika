@@ -973,12 +973,12 @@ namespace {
         }
         {
             VerifyTestResult (isnan (FloatConversion::ToFloat<double> (String{})));
-            VerifyTestResult (isnan (CString::String2Float (string{})));
+            VerifyTestResult (isnan (FloatConversion::ToFloat (string{})));
             VerifyTestResult (isnan (FloatConversion::ToFloat<double> (wstring{})));
-            VerifyTestResult (isnan (CString::String2Float ("")));
-            VerifyTestResult (isnan (CString::String2Float (wstring{L""})));
+            VerifyTestResult (isnan (FloatConversion::ToFloat ("")));
+            VerifyTestResult (isnan (FloatConversion::ToFloat (wstring{L""})));
             VerifyTestResult (isnan (FloatConversion::ToFloat<double> (String{})));
-            VerifyTestResult (isnan (CString::String2Float ("     ")));
+            VerifyTestResult (isnan (FloatConversion::ToFloat ("     ")));
             VerifyTestResult (isnan (FloatConversion::ToFloat<double> (L"-1.#INF000000000000"))); // MSFT sometimes generates these but they arent legal INF values!
             {
                 String remainder;
@@ -1001,9 +1001,9 @@ namespace {
                 VerifyTestResult (FloatConversion::ToFloat<double> (L" 3.0 ", &remainder) == 3.0);
                 VerifyTestResult (remainder == L" ");
             }
-            VerifyTestResult (isnan (CString::String2Float ("-1.#INF000000000000")));
+            VerifyTestResult (isnan (FloatConversion::ToFloat ("-1.#INF000000000000")));
             VerifyTestResult (isnan (FloatConversion::ToFloat<double> (L"1.#INF000000000000")));
-            VerifyTestResult (isnan (CString::String2Float ("1.#INF000000000000")));
+            VerifyTestResult (isnan (FloatConversion::ToFloat ("1.#INF000000000000")));
             VerifyTestResult (isinf (FloatConversion::ToFloat<double> (L"INF")));
             VerifyTestResult (isinf (FloatConversion::ToFloat<double> (L"INFINITY")));
             VerifyTestResult (isinf (FloatConversion::ToFloat<double> (L"-INF")));
@@ -1054,12 +1054,12 @@ namespace {
                 }
             }
 
-            VerifyTestResult (isinf (CString::String2Float (L"INF")));
-            VerifyTestResult (isinf (CString::String2Float (L"INFINITY")));
-            VerifyTestResult (isinf (CString::String2Float (L"-INF")));
-            VerifyTestResult (isinf (CString::String2Float (L"-INFINITY")));
-            VerifyTestResult (isinf (CString::String2Float (L"+INF")));
-            VerifyTestResult (isinf (CString::String2Float (L"+INFINITY")));
+            VerifyTestResult (isinf (FloatConversion::ToFloat (L"INF")));
+            VerifyTestResult (isinf (FloatConversion::ToFloat (L"INFINITY")));
+            VerifyTestResult (isinf (FloatConversion::ToFloat (L"-INF")));
+            VerifyTestResult (isinf (FloatConversion::ToFloat (L"-INFINITY")));
+            VerifyTestResult (isinf (FloatConversion::ToFloat (L"+INF")));
+            VerifyTestResult (isinf (FloatConversion::ToFloat (L"+INFINITY")));
         }
         {
             // roundtrip lossless
@@ -1074,11 +1074,11 @@ namespace {
             Test21_StringNumericConversions_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<long double>::lowest ());
         }
         {
-            VerifyTestResult (Math::NearlyEquals (CString::String2Float ("3"), 3.0));
-            VerifyTestResult (Math::NearlyEquals (CString::String2Float (L"3"), 3.0));
+            VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat ("3"), 3.0));
+            VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat (L"3"), 3.0));
             VerifyTestResult (Math::NearlyEquals (Characters::FloatConversion::ToFloat (L"3"), 3.0));
-            VerifyTestResult (Math::NearlyEquals (CString::String2Float ("-44.4"), -44.4));
-            VerifyTestResult (Math::NearlyEquals (CString::String2Float (L"-44.4"), -44.4));
+            VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat ("-44.4"), -44.4));
+            VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat (L"-44.4"), -44.4));
             VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"-44.4"), -44.4));
             VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (String{L"44.4333"}), 44.4333));
         }
