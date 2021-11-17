@@ -539,13 +539,13 @@ namespace {
             template <typename CONTAINER, typename ADD_FUNCTION, typename REMOVE_FUNCTION, typename EXAMINE_FUNCTION, typename ITER_FUNCTION>
             void TestBasics_ (ADD_FUNCTION addF, REMOVE_FUNCTION remF, EXAMINE_FUNCTION examineF, ITER_FUNCTION iterF)
             {
-                static const size_t     kIOverallRepeatCount_               = kVerySlow_ ? 10 : (kSortaSlow_ ? 50 : 1000);
-                static const int        kInnterConstantForHowMuchStuffTodo_ = kVerySlow_ ? 10 : ((qDebug or kSortaSlow_) ? 100 : 1000);
+                static const size_t     kIOverallRepeatCount_              = kVerySlow_ ? 10 : (kSortaSlow_ ? 50 : 1000);
+                static const int        kInnerConstantForHowMuchStuffTodo_ = kVerySlow_ ? 10 : ((qDebug or kSortaSlow_) ? 100 : 1000);
                 Synchronized<CONTAINER> syncObj;
                 Thread::Ptr             adderThread = Thread::New (
                     [&syncObj, &addF] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
-                            for (int j : Traversal::DiscreteRange<int>{1, kInnterConstantForHowMuchStuffTodo_}) {
+                            for (int j : Traversal::DiscreteRange<int>{1, kInnerConstantForHowMuchStuffTodo_}) {
                                 addF (&syncObj.rwget ().rwref (), j);
                             }
                         }
@@ -554,7 +554,7 @@ namespace {
                 Thread::Ptr removerThread = Thread::New (
                     [&syncObj, &remF] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
-                            for (int j : Traversal::DiscreteRange<int>{1, kInnterConstantForHowMuchStuffTodo_}) {
+                            for (int j : Traversal::DiscreteRange<int>{1, kInnerConstantForHowMuchStuffTodo_}) {
                                 remF (&syncObj.rwget ().rwref (), j);
                             }
                         }
