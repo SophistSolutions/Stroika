@@ -936,7 +936,7 @@ namespace {
 }
 
 namespace {
-    namespace Test21_StringToIntEtc_Helper_ {
+    namespace Test21_StringNumericConversions_Helper_ {
         template <typename FLOAT_TYPE>
         void Verify_FloatStringRoundtripNearlyEquals_ (FLOAT_TYPE l)
         {
@@ -948,9 +948,9 @@ namespace {
             }
         }
     }
-    void Test21_StringToIntEtc_ ()
+    void Test21_StringNumericConversions_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test21_StringToIntEtc_"};
+        Debug::TraceContextBumper ctx{L"Test21_StringNumericConversions_"};
         {
             VerifyTestResult (CString::String2Int<int> ("-3") == -3);
             VerifyTestResult (CString::String2Int<int> ("3") == 3);
@@ -1011,6 +1011,49 @@ namespace {
             VerifyTestResult (isinf (FloatConversion::ToFloat<double> (L"+INF")));
             VerifyTestResult (isinf (FloatConversion::ToFloat<double> (L"+INFINITY")));
 
+            {
+                /*
+                 *  numeric conversions I18n
+                 */
+                {
+                    auto checkJapaneseNumbers = [] () {
+                        // From https://www.fluentin3months.com/japanese-numbers/
+                        const String          kNumber8a_ = L"はち";
+                        const String          kNumber8b_ = L"八";
+                        const String          kNumber8c_ = L"やっつ";
+                        const String          kNumber8d_ = L"八つ";
+                        [[maybe_unused]] auto xa         = FloatConversion::ToFloat<double> (kNumber8a_);
+                        [[maybe_unused]] auto xb         = FloatConversion::ToFloat<double> (kNumber8b_);
+                        [[maybe_unused]] auto xc         = FloatConversion::ToFloat<double> (kNumber8c_);
+                        [[maybe_unused]] auto xd         = FloatConversion::ToFloat<double> (kNumber8d_);
+                        // This test is an ABJECT FAILURE - https://stroika.atlassian.net/browse/STK-747 but LOW PRIORITY
+                    };
+                    checkJapaneseNumbers ();
+                    if (auto ln = Configuration::FindLocaleNameQuietly (L"ja", L"JP")) {
+                        Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString ().c_str ()}};
+                        checkJapaneseNumbers ();
+                    }
+                }
+
+                {
+                    // European comma/period confusion
+                    // BROKEN - see https://stroika.atlassian.net/browse/STK-748
+                    // See https://docs.oracle.com/cd/E19455-01/806-0169/overview-9/index.html
+                    if (auto ln = Configuration::FindLocaleNameQuietly (L"en", L"US")) {
+                        Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString ().c_str ()}};
+                        VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"100.1"), 100.1));
+                        [[maybe_unused]] auto i2 = FloatConversion::ToFloat<double> (L"967,295.01");
+                        //VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967,295.01") , 967295.01));
+                    }
+                    if (auto ln = Configuration::FindLocaleNameQuietly (L"es", L"ES")) {
+                        Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString ().c_str ()}};
+                        VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"100,1"), 100.1));
+                        [[maybe_unused]] auto i2 = FloatConversion::ToFloat<double> (L"967.295,01");
+                        //VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967.295,01") , 967295.01));
+                    }
+                }
+            }
+
             VerifyTestResult (isinf (CString::String2Float (L"INF")));
             VerifyTestResult (isinf (CString::String2Float (L"INFINITY")));
             VerifyTestResult (isinf (CString::String2Float (L"-INF")));
@@ -1020,15 +1063,15 @@ namespace {
         }
         {
             // roundtrip lossless
-            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<float>::min ());
-            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<float>::max ());
-            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<float>::lowest ());
-            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<double>::min ());
-            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<double>::max ());
-            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<double>::lowest ());
-            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<long double>::min ());
-            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<long double>::max ());
-            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<long double>::lowest ());
+            Test21_StringNumericConversions_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<float>::min ());
+            Test21_StringNumericConversions_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<float>::max ());
+            Test21_StringNumericConversions_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<float>::lowest ());
+            Test21_StringNumericConversions_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<double>::min ());
+            Test21_StringNumericConversions_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<double>::max ());
+            Test21_StringNumericConversions_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<double>::lowest ());
+            Test21_StringNumericConversions_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<long double>::min ());
+            Test21_StringNumericConversions_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<long double>::max ());
+            Test21_StringNumericConversions_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<long double>::lowest ());
         }
         {
             VerifyTestResult (Math::NearlyEquals (CString::String2Float ("3"), 3.0));
@@ -1555,7 +1598,7 @@ namespace {
         Test18_Compare_ ();
         Test19_ConstCharStar_ ();
         Test20_CStringHelpers_ ();
-        Test21_StringToIntEtc_ ();
+        Test21_StringNumericConversions_ ();
         Test22_StartsWithEndsWithMatch_ ();
         Test23_FormatV_ ();
         Test24_Float2String ();

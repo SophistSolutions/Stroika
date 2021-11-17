@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
      */
     struct ToStringOptions {
-
+    public:
         /**
          * From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf,
          * init (basic_streambuf...) initializes precision to 6
@@ -106,6 +106,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          */
         static const Precision kDefaultPrecision;
 
+    public:
         /**
          * Default is to use use C-locale
          *  \note - if ios_base::fmtflags are specified, these REPLACE - not merged - with
@@ -215,6 +216,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *  unused portion of the string in the REQUIRED remainder OUT parameter.
      *
      *  \note UNLIKE ToFloat/(no remainder parameter), this SKIPS leading spaces, and is OK with trailing extra characters.
+     * 
+     *  \note SEE https://stroika.atlassian.net/browse/STK-748
+     *        We will PROBABLY change this API to take a ToFloatOptions parameter to handle proper locale/conversions of strings to numbers
+     *        but so far I've not been able to get any of that working, so ignore for now...
      *
      *  \req remainder != nullptr
      *

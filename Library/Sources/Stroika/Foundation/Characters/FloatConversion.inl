@@ -377,7 +377,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 }
                 // if error or trailing crap - return nan
                 if (ec != std::errc{} or ptr != e) [[UNLIKELY_ATTR]] {
-                    result = Math::nan<T> ();
+                    // result = Math::nan<T> ();
+                    // This could be a locale issue, so until we have a parameter saying FORCE-C-LOCALE, treat librarly and let strtod have a shot
+                    // See https://stroika.atlassian.net/browse/STK-748
+                    result = Private_::ToFloat_ViaStrToD_<T> (start, end, nullptr);
                 }
             }
             else {

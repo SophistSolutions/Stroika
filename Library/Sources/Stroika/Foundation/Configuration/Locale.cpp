@@ -70,6 +70,14 @@ vector<Characters::String> Configuration::GetAvailableLocales ()
  */
 Characters::String Configuration::FindLocaleName (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
 {
+    if (auto r = FindLocaleNameQuietly (iso2LetterLanguageCode, iso2LetterTerritoryCode)) {
+        return *r;
+    }
+    Execution::Throw (Execution::RuntimeErrorException{Characters::Format (L"Locale (%s-%s) not found", iso2LetterLanguageCode.c_str (), iso2LetterTerritoryCode.c_str ())});
+}
+
+optional<Characters::String> Configuration::FindLocaleNameQuietly (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
+{
     using namespace Characters;
     Require (iso2LetterLanguageCode.length () == 2);
     Require (iso2LetterTerritoryCode.length () == 2); // may lift this in the future and make it optional
@@ -100,15 +108,9 @@ Characters::String Configuration::FindLocaleName (const Characters::String& iso2
         iso2LetterTerritoryCode.ToLowerCase (),
         iso2LetterTerritoryCode.ToUpperCase (),
     };
-    static const set<String> part4
-    {
-#if qCompilerAndStdLib_process_init_constructor_array_Buggy
-        {L""},
-            {L".utf8"},
-#else
+    static const set<String> part4{
         String{},
-            L".utf8"sv,
-#endif
+        L".utf8"sv,
     };
     for (const auto& i1 : part1) {
         for (const auto& i2 : part2) {
@@ -122,7 +124,7 @@ Characters::String Configuration::FindLocaleName (const Characters::String& iso2
             }
         }
     }
-    Execution::Throw (Execution::RuntimeErrorException{Characters::Format (L"Locale (%s-%s) not found", iso2LetterLanguageCode.c_str (), iso2LetterTerritoryCode.c_str ())});
+    return nullopt;
 }
 
 /*

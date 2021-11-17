@@ -79,9 +79,19 @@ namespace Stroika::Foundation::Configuration {
      *  Not all systems appear to follow the same naming conventions for locales, so provide a handy
      *  lookup function.
      *
-     *  This will throw an exception if no matching locale is fine
+     *  This will throw an exception if no matching locale is found
      */
     Characters::String FindLocaleName (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode);
+
+    /**
+     *  \brief  Not all systems appear to follow the same naming conventions for locales, so help lookup
+     *
+     *  Not all systems appear to follow the same naming conventions for locales, so provide a handy
+     *  lookup function.
+     *
+     *  This will return nullopt if no matching locale is found
+     */
+    optional<Characters::String> FindLocaleNameQuietly (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode);
 
     /**
      *  \brief  Find the locale matching these properties (for exception trying)
