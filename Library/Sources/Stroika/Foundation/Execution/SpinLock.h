@@ -51,6 +51,13 @@ namespace Stroika::Foundation::Execution {
      *         the lock are seen in other threads a release atomic_fence() is required on the unlock.
      *
      *         This is the DEFAULT behavior we provide with the default BarrierType - eReleaseAcquire
+     * 
+     *  \note   More good references (to verify if this logic is right - which I'm not 100% clear on)
+     *          o   https://www.boost.org/doc/libs/1_54_0/doc/html/atomic/usage_examples.html#boost_atomic.usage_examples.example_spinlock
+     *          o   https://blog.regehr.org/archives/2173
+     *              This strongly suggests I may want to do a more fair spinlock, but doesn't appear to have
+     *              the fences. In fact, he alleges if you do procedure properly you dont need the fence.
+     *              HMM. Need good test cases before I can really play around with this very safely.
      */
     class SpinLock {
     public:

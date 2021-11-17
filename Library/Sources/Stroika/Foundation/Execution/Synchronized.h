@@ -723,7 +723,7 @@ namespace Stroika::Foundation::Execution {
         ReadLockType_ fSharedLock_{}; // MAYBE unused if actaul readlock held elsewhere, like in subclass
 
     private:
-        friend class Synchronized<T, TRAITS>;
+        friend class Synchronized;
     };
 
     /**
@@ -777,7 +777,7 @@ namespace Stroika::Foundation::Execution {
         WriteLockType_ fWriteLock_; // can be empty if actual lock held elsewhere (like in caller/subclass)
 
     private:
-        friend class Synchronized<T, TRAITS>;
+        friend class Synchronized;
     };
 
 #if __cpp_impl_three_way_comparison < 201907
