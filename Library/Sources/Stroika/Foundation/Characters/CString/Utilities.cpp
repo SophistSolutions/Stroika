@@ -57,7 +57,7 @@ string Characters::CString::FormatV (const char* format, va_list argsList)
 #endif
     va_end (argListCopy);
     Assert (::strlen (msgBuf) < msgBuf.GetSize ());
-    return string (msgBuf);
+    return string{msgBuf};
 }
 
 DISABLE_COMPILER_MSC_WARNING_START (6262)
@@ -146,7 +146,7 @@ wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
     }
     va_end (argListCopy);
     Assert (::wcslen (msgBuf) < msgBuf.GetSize ());
-    return wstring (msgBuf);
+    return wstring{msgBuf};
 }
 DISABLE_COMPILER_MSC_WARNING_END (6262)
 

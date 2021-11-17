@@ -93,7 +93,7 @@ String Characters::FormatV (const wchar_t* format, va_list argsList)
     }
     va_end (argListCopy);
     Assert (::wcslen (msgBuf) < msgBuf.GetSize ());
-    return String (msgBuf);
+    return String{msgBuf};
 }
 DISABLE_COMPILER_MSC_WARNING_END (6262)
 
