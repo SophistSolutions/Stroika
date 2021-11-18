@@ -75,6 +75,8 @@ RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/insta
 SHELL ["cmd", "/S", "/C"]
 RUN md c:\tools\cygwin && cd c:\tools\cygwin && curl -Sso cygwinsetup.exe https://cygwin.com/setup-x86_64.exe && start /wait cygwinsetup -q --root C:\tools\cygwin -P default,make,unzip,git,wget,patch,pkg-config,dos2unix,p7zip -X --site http://ctm.crouchingtigerhiddenfruitbat.org/pub/cygwin/circa/64bit/2020/05/31/142136/
 
+#RUN choco install -y cygwin
+#RUN powershell -Command "Get-ChildItem -Path C:\tools -Recurse -Attributes ReparsePoint | Remove-Item"
 #RUN choco install -y cyg-get
 #RUN cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
 
