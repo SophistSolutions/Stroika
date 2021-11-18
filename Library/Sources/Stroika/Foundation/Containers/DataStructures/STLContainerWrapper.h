@@ -133,10 +133,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool Done () const;
 
     public:
-        template <typename VALUE_TYPE>
-        nonvirtual void More (optional<VALUE_TYPE>* current, bool advance);
-
-    public:
         nonvirtual ForwardIterator& operator++ () noexcept;
 
     public:

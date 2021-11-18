@@ -250,7 +250,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         i.Invariant ();
 
         ForwardIterator next = i;
-        next.More (nullptr, true);
+        ++next;
 
         Link* victim = const_cast<Link*> (i.fCurrent_);
 
@@ -295,9 +295,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  @todo   We may want to correct that (see STL container impl -
          *  returning ptr to next node would do it).
          */
-        optional<T> current;
-        for (ForwardIterator it{this}; it.More (&current, true), current.has_value ();) {
-            if (equalsComparer (*current, item)) {
+        for (ForwardIterator it{this}; not it.Done (); ++it) {
+            if (equalsComparer (it.Current (), item)) {
                 this->RemoveAt (it);
                 break;
             }
@@ -438,31 +437,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Invariant ();
         return fCurrent_ == nullptr;
-    }
-    template <typename T>
-    inline void LinkedList<T>::ForwardIterator::More (optional<T>* result, bool advance)
-    {
-        Invariant ();
-        if (advance) {
-            Require (not Done ()); // new requirement since Stroika 2.1b14
-            /*
-             * We could already be done since after the last Done() call, we could
-             * have done a removeall.
-             */
-            if (fCurrent_ != nullptr) {
-                fCurrent_ = fCurrent_->fNext;
-            }
-        }
-        Invariant ();
-        if (result != nullptr) {
-            if (this->Done ()) {
-                *result = nullopt;
-            }
-            else {
-                AssertNotNull (fCurrent_);
-                *result = fCurrent_->fItem;
-            }
-        }
     }
     template <typename T>
     inline auto LinkedList<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&

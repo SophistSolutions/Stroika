@@ -153,27 +153,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fStdIterator_ == fData_->end ();
     }
     template <typename STL_CONTAINER_OF_T>
-    template <typename VALUE_TYPE>
-    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (optional<VALUE_TYPE>* result, bool advance)
-    {
-        RequireNotNull (result);
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
-        if (advance) {
-            Require (not Done ()); // new requirement since Stroika 2.1b14
-            if (not Done ()) {
-                ++fStdIterator_;
-            }
-        }
-        if (result != nullptr) {
-            if (Done ()) {
-                *result = nullopt;
-            }
-            else {
-                *result = *fStdIterator_;
-            }
-        }
-    }
-    template <typename STL_CONTAINER_OF_T>
     inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
     {
         Require (not Done ());

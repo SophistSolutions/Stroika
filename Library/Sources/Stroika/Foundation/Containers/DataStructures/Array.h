@@ -331,9 +331,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         ForwardIterator (const ForwardIterator& src) = default;
 
     public:
-        nonvirtual void More (optional<T>* result, bool advance);
-
-    public:
         nonvirtual bool Done () const;
 
     public:
@@ -357,9 +354,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         nonvirtual bool Done () const;
-
-    public:
-        nonvirtual void More (optional<T>* result, bool advance);
 
     public:
         nonvirtual BackwardIterator& operator++ () noexcept;

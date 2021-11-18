@@ -618,28 +618,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return bool (this->CurrentIndex () == this->fData_->fLength_);
     }
     template <typename T>
-    inline void Array<T>::ForwardIterator::More (optional<T>* result, bool advance)
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this->fData_};
-        this->Invariant ();
-        if (advance) [[LIKELY_ATTR]] {
-            Require (not Done ()); // new requirement since Stroika 2.1b14
-            if (not this->Done ()) {
-                Assert (this->fCurrentIdx_ < this->fData_->fLength_);
-                ++this->fCurrentIdx_;
-            }
-        }
-        this->Invariant ();
-        if (result != nullptr) {
-            if (this->Done ()) {
-                *result = nullopt;
-            }
-            else {
-                *result = (*this->fData_)[this->fCurrentIdx_];
-            }
-        }
-    }
-    template <typename T>
     inline auto Array<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this->fData_};
@@ -677,34 +655,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
         this->Invariant ();
         return bool (this->CurrentIndex () == this->fData_->fLength_); // a little queer/confusing, but in C++ only legal extra address is past end, one before start not legal
-    }
-    template <typename T>
-    inline void Array<T>::BackwardIterator::More (optional<T>* result, bool advance)
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this->fData_};
-        this->Invariant ();
-        if (advance) {
-            Require (not Done ()); // new requirement since Stroika 2.1b14
-            if (not this->Done ()) {
-                if (this->_fCurrent == this->_fStart) {
-                    this->_fCurrent = this->_fEnd; // magic to indicate done
-                    Ensure (this->Done ());
-                }
-                else {
-                    this->_fCurrent--;
-                    Ensure (not this->Done ());
-                }
-            }
-        }
-        this->Invariant ();
-        if (result != nullptr) {
-            if (this->Done ()) {
-                *result = nullopt;
-            }
-            else {
-                *result = *this->_fCurrent;
-            }
-        }
     }
     template <typename T>
     inline auto Array<T>::BackwardIterator::operator++ () noexcept -> BackwardIterator&

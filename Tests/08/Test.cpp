@@ -58,8 +58,8 @@ namespace {
         {
             size_t           i = 1;
             optional<size_t> cur;
-            for (DataStructures::DoublyLinkedList<size_t>::ForwardIterator it{&someLL}; it.More (&cur, true), cur; i++) {
-                if (i == 100 - 1) {
+            for (DataStructures::DoublyLinkedList<size_t>::ForwardIterator it{&someLL}; not it.Done (); ++it, ++i) {
+                if (i == 100) {
                     someLL.AddAfter (it, 1);
                     break;
                 }

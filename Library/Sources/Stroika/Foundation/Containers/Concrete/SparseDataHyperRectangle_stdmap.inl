@@ -154,10 +154,17 @@ namespace Stroika::Foundation::Containers::Concrete {
             virtual void More (optional<tuple<T, INDEXES...>>* result, bool advance) override
             {
                 RequireNotNull (result);
-                // NOTE: the reason this is Debug::AssertExternallySynchronizedMutex, is because we only modify data on the newly cloned (breakreferences)
-                // iterator, and that must be in the thread (so externally synchronized) of the modifier
-                // shared_lock<const Debug::AssertExternallySynchronizedMutex> lg (*fIterator.GetPatchableContainerHelper ());
-                More_SFINAE_ (result, advance);
+                if (advance) [[LIKELY_ATTR]] {
+                    Require (not fIterator.Done ()); // new requirement since Stroika 2.1b14
+                    ++fIterator;
+                }
+                if (fIterator.Done ()) [[UNLIKELY_ATTR]] {
+                    *result = nullopt;
+                }
+                else {
+                    auto tmp = fIterator.Current ();
+                    *result  = tuple_cat (tuple<T>{tmp.second}, tmp.first);
+                }
             }
             virtual bool Equals (const typename Iterator<tuple<T, INDEXES...>>::IRep* rhs) const override
             {
@@ -168,31 +175,6 @@ namespace Stroika::Foundation::Containers::Concrete {
                 //          shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec1 (*fIterator.GetPatchableContainerHelper ());
                 //          shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
                 return fIterator.Equals (rrhs->fIterator);
-            }
-
-        private:
-            /*
-             *  More_SFINAE_ () trick is cuz if types are the same, we can just pass pointer, but if they differ, we need
-             *  a temporary, and to copy.
-             */
-            template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
-            nonvirtual void More_SFINAE_ (optional<tuple<T, INDEXES...>>* result, bool advance, enable_if_t<is_same_v<T, CHECK_KEY>>* = 0)
-            {
-                RequireNotNull (result);
-                fIterator.More (result, advance);
-            }
-            template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
-            nonvirtual void More_SFINAE_ (optional<tuple<T, INDEXES...>>* result, bool advance, enable_if_t<!is_same_v<T, CHECK_KEY>>* = 0)
-            {
-                RequireNotNull (result);
-                optional<pair<tuple<INDEXES...>, T>> tmp;
-                fIterator.More (&tmp, advance);
-                if (tmp.has_value ()) {
-                    *result = tuple_cat (tuple<T>{tmp->second}, tmp->first);
-                }
-                else {
-                    *result = nullopt;
-                }
             }
 
         public:

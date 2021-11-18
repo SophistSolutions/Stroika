@@ -258,7 +258,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         nonvirtual bool Done () const;
-        nonvirtual void More (optional<T>* result, bool advance);
         nonvirtual ForwardIterator& operator++ () noexcept;
 
     public:

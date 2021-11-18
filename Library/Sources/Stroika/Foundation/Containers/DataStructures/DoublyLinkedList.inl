@@ -355,7 +355,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (not i.Done ());
         this->Invariant ();
         ForwardIterator next = i;
-        next.More (nullptr, true);
+        ++next;
 
         Link* victim = const_cast<Link*> (i.fCurrent_);
         AssertNotNull (victim); // cuz not done
@@ -562,32 +562,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
         Invariant ();
         return bool (fCurrent_ == nullptr);
-    }
-    template <typename T>
-    inline void DoublyLinkedList<T>::ForwardIterator::More (optional<T>* result, bool advance)
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
-        Invariant ();
-        if (advance) {
-            Require (not Done ()); // new requirement since Stroika 2.1b14
-            /*
-             * We could already be done since after the last Done() call, we could
-             * have done a removeall.
-             */
-            if (fCurrent_ != nullptr) {
-                fCurrent_ = fCurrent_->fNext;
-            }
-        }
-        Invariant ();
-        if (result != nullptr) {
-            if (this->Done ()) {
-                *result = nullopt;
-            }
-            else {
-                AssertNotNull (fCurrent_); // because not done
-                *result = fCurrent_->fItem;
-            }
-        }
     }
     template <typename T>
     inline auto DoublyLinkedList<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
