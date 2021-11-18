@@ -583,7 +583,7 @@ namespace Stroika::Foundation::Traversal {
         /*
          *  \brief Refresh the current iterator state based on what is in the underlying IRep
          * 
-         *  Useful when you change the rep directly.
+         *  Useful when you change the rep directly. This should VERY RARELY be needed - just in implementing iterator patching (say during a remove).
          */
         nonvirtual void Refresh () const;
 
@@ -614,25 +614,22 @@ namespace Stroika::Foundation::Traversal {
      *  IRep is a support class used to implement the @ref Iterator<T> pattern.
      *
      *  \note IRep subclasses are constructed already pointing at the first element.
-     *        So a leading call to More (&value, false); can be used to fetch the first vale
+     *        So a leading call to More (&value, false); can be used to fetch the first value
      *        and value.has_value() will be false if there were no values
      *
-     *  Subclassed by front-end container writers.
-     *  Most of the work is done in More, which does a lot of work because it is the
-     *  only virtual function called during iteration, and will need to lock its
-     *  container when doing "safe" iteration. More does the following:
-     *  iterate to the next container value if advance is true
-     *  (then) copy the current value into current, if current is not null
-     *  return true if iteration can continue (not done iterating)
-     *
+     *  Subclassed by concrete container writers.
+     * 
+     *  \note Design Note:
+     *      o   More (optional<T>*, bool advance) API combines operator++ and iterator != end ()
+     *      o   The reason it combines the two, is because they TYPICALLY are done together at the same time,
+     *          and its a virtual call, so combining the two into a single call will most frequently be a
+     *          performance optimizaiton.
+     * 
      *  typical uses:
      *
      *          it++ -> More (&ignoredvalue, true)
      *          *it -> More (&v, false); return *v;
      *          Done -> More (&v, false); return v.has_value();
-     *
-     *          (note that for performance and thread safety reasons the iterator envelope
-     *           actually passes fCurrentValue_ into More when implenenting ++it
      */
     template <typename T, typename ITERATOR_TRAITS>
     class Iterator<T, ITERATOR_TRAITS>::IRep {
@@ -652,16 +649,18 @@ namespace Stroika::Foundation::Traversal {
          */
         virtual RepSmartPtr Clone () const = 0;
         /**
-         *  More () takes two required arguments - one an optional<T> result, and the other a flag about whether or
+         *  More () takes two required arguments - one an optional<T>* result, and the other a flag about whether or
          *  not to advance.
          *
-         *  If advance is true, it moves the iterator to the next legal position.
+         *  If advance is true, it moves the iterator to the next legal position 
          *
-         *  It IS legal to call More () with advance true even when already at the end of iteration.
-         *  This design choice was made to be multi-threading friendly.
+         *  \note (requires not Done() before advancing) - NEW Since Stroika 2.1b14
+         *
+         *          BEFORE 2.1b14: It WAS legal to call More () with advance true even when already at the end of iteration.
+         *          This design choice was made to be multi-threading friendly.
          *
          *  This function returns the current value in result if the iterator is positioned at a valid position,
-         *  and sets result to an empty value if at the end - its 'at end'.
+         *  and sets result to an nullopt if at the end - its 'at end'.
          *
          *  \req result != nullptr
          *
