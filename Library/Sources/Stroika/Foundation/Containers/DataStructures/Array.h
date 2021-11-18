@@ -289,9 +289,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual size_t CurrentIndex () const; //  NB: This can be called if we are done - if so, it returns GetLength() + 1.
 
     public:
-        nonvirtual bool Done () const;
-
-    public:
         nonvirtual void SetIndex (size_t i);
 
     public:
@@ -337,6 +334,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void More (optional<T>* result, bool advance);
 
     public:
+        nonvirtual bool Done () const;
+
+    public:
         nonvirtual ForwardIterator& operator++ () noexcept;
     };
 
@@ -356,7 +356,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         BackwardIterator (const Array* data);
 
     public:
+        nonvirtual bool Done () const;
+
+    public:
         nonvirtual void More (optional<T>* result, bool advance);
+
+    public:
+        nonvirtual BackwardIterator& operator++ () noexcept;
     };
 
 }

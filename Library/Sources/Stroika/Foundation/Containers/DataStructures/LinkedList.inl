@@ -444,6 +444,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Invariant ();
         if (advance) {
+            Require (not Done ()); // new requirement since Stroika 2.1b14
             /*
              * We could already be done since after the last Done() call, we could
              * have done a removeall.
