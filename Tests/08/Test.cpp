@@ -56,9 +56,9 @@ namespace {
         VerifyTestResult (someLL.GetAt (55) == 55); //  VerifyTestResult(someArray [55] == 55);
         VerifyTestResult (someLL.GetAt (55) != 56); //  VerifyTestResult(someArray [55] != 56);
         {
-            size_t i = 1;
-            size_t cur;
-            for (DataStructures::DoublyLinkedList<size_t>::ForwardIterator it (&someLL); it.More (&cur, true); i++) {
+            size_t           i = 1;
+            optional<size_t> cur;
+            for (DataStructures::DoublyLinkedList<size_t>::ForwardIterator it{&someLL}; it.More (&cur, true), cur; i++) {
                 if (i == 100 - 1) {
                     someLL.AddAfter (it, 1);
                     break;

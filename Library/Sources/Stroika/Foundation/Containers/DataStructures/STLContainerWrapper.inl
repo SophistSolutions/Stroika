@@ -154,23 +154,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename STL_CONTAINER_OF_T>
     template <typename VALUE_TYPE>
-    inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (VALUE_TYPE* current, bool advance)
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
-        bool                                                 done = Done ();
-        if (advance) {
-            if (not done) {
-                ++fStdIterator_;
-                done = Done ();
-            }
-        }
-        if ((current != nullptr) and (not done)) {
-            *current = *fStdIterator_;
-        }
-        return not done;
-    }
-    template <typename STL_CONTAINER_OF_T>
-    template <typename VALUE_TYPE>
     inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (optional<VALUE_TYPE>* result, bool advance)
     {
         RequireNotNull (result);
@@ -180,11 +163,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 ++fStdIterator_;
             }
         }
-        if (Done ()) {
-            *result = nullopt;
-        }
-        else {
-            *result = *fStdIterator_;
+        if (result != nullptr) {
+            if (Done ()) {
+                *result = nullopt;
+            }
+            else {
+                *result = *fStdIterator_;
+            }
         }
     }
     template <typename STL_CONTAINER_OF_T>

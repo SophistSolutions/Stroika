@@ -134,8 +134,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         template <typename VALUE_TYPE>
-        nonvirtual bool More (VALUE_TYPE* current, bool advance);
-        template <typename VALUE_TYPE>
         nonvirtual void More (optional<VALUE_TYPE>* current, bool advance);
 
     public:

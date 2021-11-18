@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             typename Rep_::DataStructureImplType_::ForwardIterator it{&fData_};
             // skip the smaller items
-            while (it.More (nullptr, true) and fInorderComparer_ (it.Current (), item))
+            while ((it.More (nullptr, true), not it.Done ()) and fInorderComparer_ (it.Current (), item))
                 ;
             // at this point - we are pointing at the first link >= item, so insert before it
             fData_.AddBefore (it, item);

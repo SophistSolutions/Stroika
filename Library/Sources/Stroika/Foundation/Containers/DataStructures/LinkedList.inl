@@ -440,29 +440,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fCurrent_ == nullptr;
     }
     template <typename T>
-    inline bool LinkedList<T>::ForwardIterator::More (T* current, bool advance)
-    {
-        Invariant ();
-        if (advance) {
-            /*
-             * We could already be done since after the last Done() call, we could
-             * have done a removeall.
-             */
-            if (fCurrent_ != nullptr) {
-                fCurrent_ = fCurrent_->fNext;
-            }
-        }
-        Invariant ();
-        if (current != nullptr and not Done ()) {
-            AssertNotNull (fCurrent_); // because not done
-            *current = fCurrent_->fItem;
-        }
-        return not Done ();
-    }
-    template <typename T>
     inline void LinkedList<T>::ForwardIterator::More (optional<T>* result, bool advance)
     {
-        RequireNotNull (result);
         Invariant ();
         if (advance) {
             /*
@@ -474,18 +453,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
         }
         Invariant ();
-        if (this->Done ()) {
-            *result = nullopt;
+        if (result != nullptr) {
+            if (this->Done ()) {
+                *result = nullopt;
+            }
+            else {
+                AssertNotNull (fCurrent_);
+                *result = fCurrent_->fItem;
+            }
         }
-        else {
-            AssertNotNull (fCurrent_);
-            *result = fCurrent_->fItem;
-        }
-    }
-    template <typename T>
-    inline bool LinkedList<T>::ForwardIterator::More (nullptr_t, bool advance)
-    {
-        return More (static_cast<T*> (nullptr), advance);
     }
     template <typename T>
     inline auto LinkedList<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&

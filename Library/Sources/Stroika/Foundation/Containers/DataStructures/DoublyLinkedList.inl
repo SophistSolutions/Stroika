@@ -564,32 +564,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return bool (fCurrent_ == nullptr);
     }
     template <typename T>
-    inline bool DoublyLinkedList<T>::ForwardIterator::More (T* current, bool advance)
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
-        Invariant ();
-
-        if (advance) {
-            /*
-             * We could already be done since after the last Done() call, we could
-             * have done a removeall.
-             */
-            if (fCurrent_ != nullptr) {
-                fCurrent_ = fCurrent_->fNext;
-            }
-        }
-        Invariant ();
-        if (current != nullptr and not Done ()) {
-            AssertNotNull (fCurrent_); // because Done() test
-            *current = fCurrent_->fItem;
-        }
-        return not Done ();
-    }
-    template <typename T>
     inline void DoublyLinkedList<T>::ForwardIterator::More (optional<T>* result, bool advance)
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
-        RequireNotNull (result);
         Invariant ();
         if (advance) {
             /*
@@ -601,19 +578,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
         }
         Invariant ();
-        if (this->Done ()) {
-            *result = nullopt;
+        if (result != nullptr) {
+            if (this->Done ()) {
+                *result = nullopt;
+            }
+            else {
+                AssertNotNull (fCurrent_); // because not done
+                *result = fCurrent_->fItem;
+            }
         }
-        else {
-            AssertNotNull (fCurrent_); // because not done
-            *result = fCurrent_->fItem;
-        }
-    }
-    template <typename T>
-    inline bool DoublyLinkedList<T>::ForwardIterator::More (nullptr_t, bool advance)
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
-        return More (static_cast<T*> (nullptr), advance);
     }
     template <typename T>
     inline auto DoublyLinkedList<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&

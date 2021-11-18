@@ -60,8 +60,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * Delicate matter so that we assure ctors/dtors/op= called at
          * right time.
          */
-        SetLength (fLength_ + 1, item); //  Add space for extra item
-        size_t oldLength = fLength_ - 1;
+        size_t oldLength = fLength_;
+        SetLength (oldLength + 1, item); //  Add space for extra item
         if (index < oldLength) {
             /*
              * Slide items down, and add our new entry
@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
         const T* current = &fItems_[0];
         const T* last    = &fItems_[fLength_];
-        for (; current < last; current++) {
+        for (; current < last; ++current) {
             if (equalsComparer (*current, item)) {
                 return true;
             }
@@ -494,19 +494,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fCurrentIdx_ == rhs.fCurrentIdx_;
     }
     template <typename T>
-    inline bool Array<T>::IteratorBase::More (T* current, [[maybe_unused]] bool advance)
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};
-        Invariant ();
-        if (not Done ()) [[LIKELY_ATTR]] {
-            if (current != nullptr) [[LIKELY_ATTR]] {
-                *current = (*fData_)[fCurrentIdx_];
-            }
-            return true;
-        }
-        return false;
-    }
-    template <typename T>
     inline bool Array<T>::IteratorBase::Done () const
     {
 #if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
@@ -630,19 +617,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         this->Invariant ();
     }
     template <typename T>
-    inline bool Array<T>::ForwardIterator::More (T* current, bool advance)
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this->fData_};
-        this->Invariant ();
-        if (advance) [[LIKELY_ATTR]] {
-            if (not this->Done ()) [[LIKELY_ATTR]] {
-                Assert (this->fCurrentIdx_ < this->fData_->fLength_);
-                ++this->fCurrentIdx_;
-            }
-        }
-        return inherited::More (current, advance);
-    }
-    template <typename T>
     inline void Array<T>::ForwardIterator::More (optional<T>* result, bool advance)
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this->fData_};
@@ -654,17 +628,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
         }
         this->Invariant ();
-        if (this->Done ()) {
-            *result = nullopt;
+        if (result != nullptr) {
+            if (this->Done ()) {
+                *result = nullopt;
+            }
+            else {
+                *result = (*this->fData_)[this->fCurrentIdx_];
+            }
         }
-        else {
-            *result = (*this->fData_)[this->fCurrentIdx_];
-        }
-    }
-    template <typename T>
-    inline bool Array<T>::ForwardIterator::More (nullptr_t, bool advance)
-    {
-        return More (static_cast<T*> (nullptr), advance);
     }
     template <typename T>
     inline auto Array<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
@@ -684,7 +655,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename T>
-    inline Array<T>::BackwardIterator::BackwardIterator (const Array<T>* data)
+    inline Array<T>::BackwardIterator::BackwardIterator (const Array* data)
         : inherited (data)
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this->fData_};
@@ -695,25 +666,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
             this->_fCurrent = this->_fEnd - 1; // last valid item
         }
         this->Invariant ();
-    }
-    template <typename T>
-    inline bool Array<T>::BackwardIterator::More (T* current, bool advance)
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this->fData_};
-        this->Invariant ();
-        if (advance) [[LIKELY_ATTR]] {
-            if (not this->Done ()) [[LIKELY_ATTR]] {
-                if (this->_fCurrent == this->_fStart) {
-                    this->_fCurrent = this->_fEnd; // magic to indicate done
-                    Ensure (this->Done ());
-                }
-                else {
-                    this->_fCurrent--;
-                    Ensure (not this->Done ());
-                }
-            }
-        }
-        return inherited::More (current, advance);
     }
     template <typename T>
     inline void Array<T>::BackwardIterator::More (optional<T>* result, bool advance)
@@ -733,17 +685,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
         }
         this->Invariant ();
-        if (this->Done ()) {
-            *result = nullopt;
+        if (result != nullptr) {
+            if (this->Done ()) {
+                *result = nullopt;
+            }
+            else {
+                *result = *this->_fCurrent;
+            }
         }
-        else {
-            *result = *this->_fCurrent;
-        }
-    }
-    template <typename T>
-    inline bool Array<T>::BackwardIterator::More (nullptr_t, bool advance)
-    {
-        return More (static_cast<T*> (nullptr), advance);
     }
 
 }
