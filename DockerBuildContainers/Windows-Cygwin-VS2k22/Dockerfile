@@ -41,30 +41,17 @@ ARG VS_17_0=https://download.visualstudio.microsoft.com/download/pr/8cea3871-c74
 ARG VS_17_0_1=https://download.visualstudio.microsoft.com/download/pr/8cea3871-c742-43fb-bf8b-8da0699ab4af/faa4a70c6431c2bc5e915c6ad07425c17fb1a96cd106405677aa08b6d949ba63/vs_BuildTools.exe
 
 
-## LOSE  --nocache modify cuz doesnt seem to work and not sure what it does
-
 SHELL ["powershell"]
 RUN Invoke-WebRequest "$env:VS_17_0_1" `
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
+
 SHELL ["cmd", "/S", "/C"]
-## Component.VC.14.20 ... components added for the sake of building old boost versions... (1.77.0 and earlier) - TRIED - DIDNT WORK
-# --add Microsoft.VisualStudio.Component.VC.14.20.x86.x64 `
-# --add Microsoft.VisualStudio.Component.VC.14.20.ATLMFC `
-# ADDED explicitly versioned VC loads
 RUN %TEMP%\vs_buildtools.exe `
     --installPath "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools" `
     --includeRecommended `
-    # --includeOptional `
     --add Microsoft.VisualStudio.Workload.VCTools `
     --add Microsoft.VisualStudio.Workload.UniversalBuildTools `
     --add Microsoft.VisualStudio.Component.VC.ATLMFC `
-    # --add Microsoft.VisualStudio.Component.VC.ATL `
-    # --add Microsoft.VisualStudio.Component.VC.14.30.17.0.x86.x64 `
-    # --add Microsoft.VisualStudio.Component.VC.14.30.17.0.ATL `
-    # --add Microsoft.VisualStudio.Component.VC.14.30.17.0.MFC `
-    # --add Microsoft.VisualStudio.Component.VC.14.29.16.11.x86.x64 `
-    # --add Microsoft.VisualStudio.Component.VC.14.29.16.11.ATL `
-    # --add Microsoft.VisualStudio.Component.VC.14.29.16.11.MFC `
     --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 `
     --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 `
     --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 `

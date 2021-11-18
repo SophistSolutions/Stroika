@@ -35,6 +35,7 @@ ARG VS_16_11_7=https://download.visualstudio.microsoft.com/download/pr/c91ba3a2-
 SHELL ["powershell"]
 RUN Invoke-WebRequest "$env:VS_16_11_7" `
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
+
 SHELL ["cmd", "/S", "/C"]
 RUN %TEMP%\vs_buildtools.exe `
     --add Microsoft.VisualStudio.Workload.VCTools `
