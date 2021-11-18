@@ -1295,7 +1295,7 @@ namespace Stroika::Foundation::Traversal {
         [[deprecated ("Since Stroika 2.1b14, just directly assign to _fRep")]] nonvirtual void _UpdateRep (const typename _SharedByValueRepType::shared_ptr_type& sp);
 
     private:
-        Iterable<T>*  fIterableEnvelope_;
+        Iterable<T>*  fIterableEnvelope_;       // mostly saved for assertions, but also for _UpdateRep- when we lose that - we can ifdef qDebug this field (as we do for read accessor)
         REP_SUB_TYPE* fRepReference_;
     };
 

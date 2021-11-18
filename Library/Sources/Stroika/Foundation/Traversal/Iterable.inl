@@ -178,6 +178,9 @@ namespace Stroika::Foundation::Traversal {
     inline REP_SUB_TYPE& Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_GetWriteableRep ()
     {
         EnsureNotNull (fRepReference_);
+        EnsureNotNull (fIterableEnvelope_);
+        EnsureNotNull (fIterableEnvelope_->_fRep);
+        Ensure (fIterableEnvelope_->_fRep.use_count () == 1);
         return *fRepReference_;
     }
     template <typename T>
