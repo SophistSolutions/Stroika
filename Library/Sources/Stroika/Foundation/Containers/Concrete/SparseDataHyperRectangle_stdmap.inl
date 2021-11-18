@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 : fIterator{data}
             {
                 RequireNotNull (data);
-                fIterator.More (static_cast<pair<tuple<INDEXES...>, T>*> (nullptr), true); //tmphack cuz current backend iterators require a first more() - fix that!
+                //fIterator.More (nullptr, true); //tmphack cuz current backend iterators require a first more() - fix that!
             }
 
         public:
