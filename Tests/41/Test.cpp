@@ -572,6 +572,36 @@ namespace {
                     [&syncObj, &iterF] () {
                         constexpr size_t kMultiplierCuzThisTooFast_{7};
                         for (size_t i = 1; i < kIOverallRepeatCount_ * kMultiplierCuzThisTooFast_; ++i) {
+
+#if 1
+                            /*
+                             *  SADLY, even after major cleanups to container code, I still have this bug:
+                             *      https://stroika.atlassian.net/browse/STK-700
+                             * 
+                             *  To reproduce:
+                             *      +   Use Ubuntu 2004
+                             *      +   configure xxx --compiler-driver g++ --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread --block-allocation disable
+                             *          (much of the above just to make quick repro and easier to debug)
+                             *      +   Only the below case 'TestBasics_<Sequence<int>>' is needed to reproduce the bug. Any of the other
+                             *          Stroika ones reproduces it, but the vector one does NOT (strongly hinting the bug is with the container code not
+                             *          with the Locking code).
+                             *      +   useful to add DbgTrace (L"consructing new sharedimpl for %p", fSharedImpl_.get ()); etc in SharedByValue<T, TRAITS>::BreakReferences_
+                             *      +   First note - performarnce issue described below (see ANTI-PATTERN below).
+                             *      +   The storm of clones appears to trigger some bug in the cloning logic with respect to threads. MAYBE because
+                             *          we really do need todo some sort of atomic support for the shared_ptr stuff (though I dont think so).
+                             *          Anyhow, I spent hours tracking this down and didn't solve, so just make notes for a later attempt.
+                             *              --LGP 2021-11-17
+                             */
+                            auto HACK_WORKAROUND_SERIOUS_BUG = syncObj.cget ();
+#endif
+
+                            /**
+                             *  Note that this code is something of an ANTI-PATTERN (even once we fix https://stroika.atlassian.net/browse/STK-700).
+                             *  Because the syncObj.load () upps the reference count to 2 during the iteration, the other threads will then be forced
+                             *  (as part of their updates) to do a storm of Clones. It would be better performance wise - typically - do do 
+                             *  a scoped_lock on syncObj before the load, since that way UPDATES will BLOCK (instead of going ahead and cloning). You might
+                             *  want this behavior in some cases, but mostly probably not.
+                             */
                             for (auto j : syncObj.load ()) {
                                 iterF (j);
                             }
@@ -585,11 +615,19 @@ namespace {
         void DoIt ()
         {
             //
-            //  If you see hang here - see
+            //  If you see hang here/TSAN issue - see
             //      https://stroika.atlassian.net/browse/STK-700
             //
             Debug::TraceContextBumper traceCtx{"{}::Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_::DoIt ()"};
             int64_t                   cnt{};
+            {
+                Debug::TraceContextBumper ctx1{"TestBasics_<vector<int>>"};
+                Private_::TestBasics_<vector<int>> (
+                    [] (vector<int>* c, int i) { c->push_back (i); },
+                    [] (vector<int>* c, [[maybe_unused]] int i) { size_t n = c->size (); if (n != 0) c->erase (c->begin () + (n / 2)); },
+                    [] (const vector<int>* c) { (void)std::find (c->begin (), c->end (), 3); },
+                    [&cnt] (int v) { cnt += v; });
+            }
             {
                 Debug::TraceContextBumper ctx1{"...TestBasics_<Sequence<int>>"};
                 Private_::TestBasics_<Sequence<int>> (
