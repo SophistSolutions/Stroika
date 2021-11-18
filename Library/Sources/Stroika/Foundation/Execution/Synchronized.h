@@ -659,7 +659,8 @@ namespace Stroika::Foundation::Execution {
         : public conditional_t<TRAITS::kDbgTraceLockUnlockIfNameSet, Private_::DbgTraceNameObj_, Configuration::Empty> {
     protected:
         /**
-         *  If specified, either subclass, or external lock used for lifetime of this object.
+         *  If specified, either subclass, or external lock used for lifetime of this object. So this class
+         *  just provides access, but doesn't actually do a lock.
          */
         enum class _ExternallyLocked {
             _eExternallyLocked
