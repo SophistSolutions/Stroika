@@ -181,6 +181,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return *this;
     }
     template <typename STL_CONTAINER_OF_T>
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Current () const -> value_type
+    {
+        shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
+        AssertNotNull (fData_);
+        Require (not Done ());
+        return *fStdIterator_;
+    }
+    template <typename STL_CONTAINER_OF_T>
     inline size_t STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::CurrentIndex () const
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};

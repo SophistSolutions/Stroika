@@ -508,6 +508,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};
         Invariant ();
+        Require (0 <= fCurrentIdx_ and fCurrentIdx_ < fData_->fLength_);
         return (*fData_)[fCurrentIdx_];
     }
     template <typename T>

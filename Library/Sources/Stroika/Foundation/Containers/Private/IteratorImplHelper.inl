@@ -82,8 +82,27 @@ namespace Stroika::Foundation::Containers::Private {
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
     void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::More (optional<T>* result, bool advance)
     {
-        RequireNotNull (result);
         ValidateChangeCount ();
+        // Typically calls have advance = true
+        if (advance) [[LIKELY_ATTR]] {
+            Require (not fIterator.Done ()); // new requirement since Stroika 2.1b14
+            ++fIterator;
+        }
+        if (fIterator.Done ()) [[UNLIKELY_ATTR]] {
+            *result = nullopt;
+        }
+        else {
+            *result = fIterator.Current (); // better to use move()?
+#if 0
+            if constexpr (is_same_v<T, DataStructureImplValueType_>) {
+            }
+            else {
+                // Sometimes we use KeyValuePair<A,B> and map that to pair<A,B> in STL container, and this 'adapter' masks that difference.
+                *result = move (fIterator.Current ()); // better to use move()?
+            }
+#endif
+        }
+#if 0
         if constexpr (is_same_v<T, DataStructureImplValueType_>) {
             fIterator.More (result, advance);
         }
@@ -93,6 +112,7 @@ namespace Stroika::Foundation::Containers::Private {
             fIterator.More (&tmp, advance);
             *result = move (tmp);
         }
+#endif
     }
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
     bool IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::Equals (const typename Iterator<T>::IRep* rhs) const

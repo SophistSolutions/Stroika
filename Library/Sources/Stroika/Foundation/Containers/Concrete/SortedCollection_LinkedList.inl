@@ -173,9 +173,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual void AddWithoutLocks_ (ArgByValueType<value_type> item)
         {
             typename Rep_::DataStructureImplType_::ForwardIterator it{&fData_};
-            // skip the smaller items
+// skip the smaller items
+#if 1
+            for (; not it.Done () and fInorderComparer_ (it.Current (), item); ++it)
+                ;
+#else
             while ((it.More (nullptr, true), not it.Done ()) and fInorderComparer_ (it.Current (), item))
                 ;
+#endif
             // at this point - we are pointing at the first link >= item, so insert before it
             fData_.AddBefore (it, item);
         }
