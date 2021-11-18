@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Configuration {
      ********************************************************************************
      */
     template <>
-    inline uint16_t EndianConverter (uint16_t value, Endian from, Endian to)
+    constexpr inline uint16_t EndianConverter (uint16_t value, Endian from, Endian to)
     {
         Require (from == Endian::eBig or from == Endian::eLittle); // just cuz thats all thats implemented
         Require (to == Endian::eBig or to == Endian::eLittle);     // just cuz thats all thats implemented
@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Configuration {
         }
     }
     template <>
-    inline uint32_t EndianConverter (uint32_t value, Endian from, Endian to)
+    constexpr inline uint32_t EndianConverter (uint32_t value, Endian from, Endian to)
     {
         Require (from == Endian::eBig or from == Endian::eLittle); // just cuz thats all thats implemented
         Require (to == Endian::eBig or to == Endian::eLittle);     // just cuz thats all thats implemented

@@ -451,7 +451,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline T LinkedList<T>::ForwardIterator::Current () const
     {
-        Require (not(Done ()));
+        Require (not (Done ()));
         Invariant ();
         AssertNotNull (fCurrent_);
         return fCurrent_->fItem;
@@ -459,7 +459,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     size_t LinkedList<T>::ForwardIterator::CurrentIndex () const
     {
-        Require (not(Done ()));
+        Require (not (Done ()));
         RequireNotNull (fData_);
         RequireNotNull (this->fCurrent_);
         size_t i = 0;

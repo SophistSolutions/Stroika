@@ -43,15 +43,13 @@ namespace Stroika::Foundation::Configuration {
     /**
      *  Utility to convert endianness. Logically this can be defined on any numeric
      *  integer type, but for now is restricted to uint16_t, uint32_t;
-     *
-     *  @todo - make this constexpr
      */
     template <typename T>
-    T EndianConverter (T value, Endian from, Endian to);
+    constexpr T EndianConverter (T value, Endian from, Endian to);
     template <>
-    uint16_t EndianConverter (uint16_t value, Endian from, Endian to);
+    constexpr uint16_t EndianConverter (uint16_t value, Endian from, Endian to);
     template <>
-    uint32_t EndianConverter (uint32_t value, Endian from, Endian to);
+    constexpr uint32_t EndianConverter (uint32_t value, Endian from, Endian to);
 
 }
 
