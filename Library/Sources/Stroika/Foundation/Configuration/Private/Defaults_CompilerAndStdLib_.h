@@ -1596,6 +1596,28 @@ int main ()
 #endif
 
 /*
+In file included from ./../Characters/../Containers/Concrete/Sequence_stdvector.h:112:
+In file included from ./../Characters/../Containers/Concrete/Sequence_stdvector.inl:18:
+./../Characters/../Containers/Concrete/../Private/IteratorImplHelper.h:78:184: error: missing default argument on parameter 'args'
+        explicit IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, const ContainerDebugChangeCounts_* changeCounter = nullptr, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args);
+                                                                                                                                                                                       ^
+/Applications/Xcode_12.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:3033:32: note: in instantiation of function template 
+*/
+#ifndef qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+// Appears broken on XCode 12
+// BUt fixed in XCode 13
+#define qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
+//#elif defined(__clang__) && !defined(__APPLE__)
+//#define qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+#else
+#define qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy 0
+#endif
+
+#endif
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
 WinSock.cpp

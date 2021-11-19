@@ -74,8 +74,14 @@ namespace Stroika::Foundation::Containers::Private {
     public:
         IteratorImplHelper_ ()                           = delete;
         IteratorImplHelper_ (const IteratorImplHelper_&) = default;
+#if qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy
+        template <typename... ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS>
+        explicit IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, const ContainerDebugChangeCounts_* changeCounter, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args);
+        explicit IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data);
+#else
         template <typename... ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS>
         explicit IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, const ContainerDebugChangeCounts_* changeCounter = nullptr, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args);
+#endif
 
     public:
         virtual ~IteratorImplHelper_ () = default;
