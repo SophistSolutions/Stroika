@@ -320,8 +320,10 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \req RequireNotNull (rep.get ())
          */
-        explicit Iterator (RepSmartPtr&& rep);
+        Iterator (const RepSmartPtr& rep);
+        Iterator (RepSmartPtr&& rep);
         Iterator (const Iterator& src);
+        Iterator (Iterator&& src);
         constexpr Iterator (nullptr_t);
         Iterator () = delete;
 

@@ -37,10 +37,11 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T, typename ITERATOR_TRAITS>
-    inline Iterator<T, ITERATOR_TRAITS>::Iterator (const Iterator& src)
-        : fRep_{src.fRep_ == nullptr ? nullptr : Clone_ (*src.fRep_)}
-        , fCurrentValue_{src.fCurrentValue_}
+    inline Iterator<T, ITERATOR_TRAITS>::Iterator (const RepSmartPtr& rep)
+        : fRep_{rep}
     {
+        RequireNotNull (fRep_);
+        fRep_->More (&fCurrentValue_, false);
         this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
@@ -49,6 +50,20 @@ namespace Stroika::Foundation::Traversal {
     {
         RequireNotNull (fRep_);
         fRep_->More (&fCurrentValue_, false);
+        this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
+    }
+    template <typename T, typename ITERATOR_TRAITS>
+    inline Iterator<T, ITERATOR_TRAITS>::Iterator (Iterator&& src)
+        : fRep_{move (src.fRep_)}
+        , fCurrentValue_{move (src.fCurrentValue_)}
+    {
+        this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
+    }
+    template <typename T, typename ITERATOR_TRAITS>
+    inline Iterator<T, ITERATOR_TRAITS>::Iterator (const Iterator& src)
+        : fRep_{src.fRep_ == nullptr ? nullptr : Clone_ (*src.fRep_)}
+        , fCurrentValue_{src.fCurrentValue_}
+    {
         this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
