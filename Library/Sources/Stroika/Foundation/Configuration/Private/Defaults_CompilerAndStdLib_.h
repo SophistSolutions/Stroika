@@ -1588,7 +1588,7 @@ int main ()
 // Appears broken on XCode 13
 #define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
+#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
 #else
 #define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy 0
 #endif
