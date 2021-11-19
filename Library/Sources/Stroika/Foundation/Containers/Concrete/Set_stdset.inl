@@ -143,9 +143,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto nextIR = fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
-                auto resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_);
-                resultRep->fIterator.SetUnderlyingIteratorRep (nextIR);
-                *nextI = Iterator<value_type>{move (resultRep)};
+                *nextI = Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, nextIR)};
             }
         }
 

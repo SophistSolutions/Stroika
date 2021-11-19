@@ -74,7 +74,8 @@ namespace Stroika::Foundation::Containers::Private {
     public:
         IteratorImplHelper_ ()                           = delete;
         IteratorImplHelper_ (const IteratorImplHelper_&) = default;
-        explicit IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, const ContainerDebugChangeCounts_* changeCounter = nullptr);
+        template <typename... ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS>
+        explicit IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, const ContainerDebugChangeCounts_* changeCounter = nullptr, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args);
 
     public:
         virtual ~IteratorImplHelper_ () = default;

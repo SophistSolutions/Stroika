@@ -76,13 +76,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            auto                                                        iLink = fData_.FindFirstThat (doToElement);
-            if (iLink == nullptr) {
-                return nullptr;
+            if (auto iLink = fData_.FindFirstThat (doToElement)) {
+                return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, iLink)};
             }
-            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_);
-            resultRep->fIterator.SetUnderlyingIteratorRep (iLink);
-            return Iterator<value_type>{move (resultRep)};
+            return nullptr;
         }
 
         // Set<T>::_IRep overrides
@@ -153,9 +150,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.RemoveAt (mir.fIterator);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
-                auto resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_);
-                resultRep->fIterator.SetUnderlyingIteratorRep (next);
-                *nextI = Iterator<value_type>{move (resultRep)};
+                *nextI = Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, next)};
             }
         }
 
