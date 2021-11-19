@@ -274,7 +274,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <typename FUNCTION>
-    inline typename DoublyLinkedList<T>::Link* DoublyLinkedList<T>::FindFirstThat (FUNCTION doToElement) const
+    inline auto DoublyLinkedList<T>::FindFirstThat (FUNCTION doToElement) const -> UnderlyingIteratorRep
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         for (Link* i = fHead_; i != nullptr; i = i->fNext) {
@@ -534,9 +534,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename T>
-    inline DoublyLinkedList<T>::ForwardIterator::ForwardIterator (const DoublyLinkedList* data)
+    inline DoublyLinkedList<T>::ForwardIterator::ForwardIterator (const DoublyLinkedList* data, UnderlyingIteratorRep startAt)
         : fData_{data}
-        , fCurrent_{data->fHead_}
+        , fCurrent_{startAt}
+    {
+    }
+    template <typename T>
+    inline DoublyLinkedList<T>::ForwardIterator::ForwardIterator (const DoublyLinkedList* data)
+        : ForwardIterator{data, data->fHead_}
     {
     }
     template <typename T>
@@ -557,11 +562,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
     }
     template <typename T>
-    inline bool DoublyLinkedList<T>::ForwardIterator::Done () const
+    inline bool DoublyLinkedList<T>::ForwardIterator::Done () const noexcept
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
         Invariant ();
-        return bool (fCurrent_ == nullptr);
+        return fCurrent_ == nullptr;
     }
     template <typename T>
     inline auto DoublyLinkedList<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
@@ -595,12 +600,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return n;
     }
     template <typename T>
-    inline auto DoublyLinkedList<T>::ForwardIterator::GetCurrentLink () const -> const Link*
+    inline auto DoublyLinkedList<T>::ForwardIterator::GetUnderlyingIteratorRep () const -> UnderlyingIteratorRep
     {
         return fCurrent_;
     }
     template <typename T>
-    inline void DoublyLinkedList<T>::ForwardIterator::SetCurrentLink (const Link* l)
+    inline void DoublyLinkedList<T>::ForwardIterator::SetUnderlyingIteratorRep (UnderlyingIteratorRep l)
     {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*fData_};
         // MUST COME FROM THIS LIST
@@ -608,7 +613,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fCurrent_ = l;
     }
     template <typename T>
-    inline bool DoublyLinkedList<T>::ForwardIterator::Equals (const typename DoublyLinkedList<T>::ForwardIterator& rhs) const
+    inline bool DoublyLinkedList<T>::ForwardIterator::Equals (const ForwardIterator& rhs) const
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
         return fCurrent_ == rhs.fCurrent_;

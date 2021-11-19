@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return nullptr;
             }
             Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_);
-            resultRep->fIterator.SetCurrentSTLIterator (iLink);
+            resultRep->fIterator.SetUnderlyingIteratorRep (iLink);
             return Iterator<value_type>{move (resultRep)};
         }
 
@@ -123,11 +123,11 @@ namespace Stroika::Foundation::Containers::Concrete {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             auto&                                                 mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.GetReferredToData () == &fData_);
-            auto newI = fData_.erase (mir.fIterator.GetCurrentSTLIterator ());
+            auto newI = fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 auto resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_);
-                resultRep->fIterator.SetCurrentSTLIterator (newI);
+                resultRep->fIterator.SetUnderlyingIteratorRep (newI);
                 *nextI = Iterator<value_type>{move (resultRep)};
             }
         }
@@ -136,11 +136,11 @@ namespace Stroika::Foundation::Containers::Concrete {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             auto&                                                 mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             fData_.Invariant ();
-            *fData_.remove_constness (mir.fIterator.GetCurrentSTLIterator ()) = newValue;
+            *fData_.remove_constness (mir.fIterator.GetUnderlyingIteratorRep ()) = newValue;
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 auto resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_);
-                resultRep->fIterator.SetCurrentSTLIterator (mir.fIterator.GetCurrentSTLIterator ());
+                resultRep->fIterator.SetUnderlyingIteratorRep (mir.fIterator.GetUnderlyingIteratorRep ());
                 *nextI = Iterator<value_type>{move (resultRep)};
             }
             fData_.Invariant ();

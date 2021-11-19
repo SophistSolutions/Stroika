@@ -338,7 +338,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <typename FUNCTION>
-    inline typename LinkedList<T>::Link* LinkedList<T>::FindFirstThat (FUNCTION doToElement) const
+    inline auto LinkedList<T>::FindFirstThat (FUNCTION doToElement) const -> UnderlyingIteratorRep
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         for (Link* i = fHead_; i != nullptr; i = i->fNext) {
@@ -406,13 +406,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     /*
      ********************************************************************************
-     ********************* LinkedList<T,TRAITS>::ForwardIterator ********************
+     ************************* LinkedList<T>::ForwardIterator ***********************
      ********************************************************************************
      */
     template <typename T>
-    inline LinkedList<T>::ForwardIterator::ForwardIterator (const LinkedList<T>* data)
+    inline LinkedList<T>::ForwardIterator::ForwardIterator (const LinkedList* data, UnderlyingIteratorRep startAt)
         : fData_{data}
-        , fCurrent_{data->fHead_}
+        , fCurrent_{startAt}
+    {
+        RequireNotNull (data);
+    }
+    template <typename T>
+    inline LinkedList<T>::ForwardIterator::ForwardIterator (const LinkedList* data)
+        : ForwardIterator{data, data->fHead_}
     {
         RequireNotNull (data);
     }
@@ -433,7 +439,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
     }
     template <typename T>
-    inline bool LinkedList<T>::ForwardIterator::Done () const
+    inline bool LinkedList<T>::ForwardIterator::Done () const noexcept
     {
         Invariant ();
         return fCurrent_ == nullptr;
@@ -469,12 +475,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return i;
     }
     template <typename T>
-    inline auto LinkedList<T>::ForwardIterator::GetCurrentLink () const -> const Link*
+    inline auto LinkedList<T>::ForwardIterator::GetUnderlyingIteratorRep () const -> UnderlyingIteratorRep
     {
         return fCurrent_;
     }
     template <typename T>
-    inline void LinkedList<T>::ForwardIterator::SetCurrentLink (const Link* l)
+    inline void LinkedList<T>::ForwardIterator::SetUnderlyingIteratorRep (const UnderlyingIteratorRep l)
     {
         // MUUST COME FROM THIS LIST
         // CAN be nullptr

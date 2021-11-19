@@ -519,6 +519,23 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fCurrentIdx_ = i;
     }
     template <typename T>
+    inline auto Array<T>::IteratorBase::GetUnderlyingIteratorRep () const -> UnderlyingIteratorRep
+    {
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};
+        /*
+         * NB: This can be called if we are done - if so, it returns GetLength().
+         */
+        Invariant ();
+        return fCurrentIdx_;
+    }
+    template <typename T>
+    inline void Array<T>::IteratorBase::SetUnderlyingIteratorRep (UnderlyingIteratorRep i)
+    {
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};
+        Require (i <= fData_->fLength_);
+        fCurrentIdx_ = i;
+    }
+    template <typename T>
     inline void Array<T>::IteratorBase::PatchBeforeAdd (const IteratorBase& adjustmentAt)
     {
         this->Invariant ();
@@ -601,15 +618,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename T>
-    inline Array<T>::ForwardIterator::ForwardIterator (const Array* data)
+    inline Array<T>::ForwardIterator::ForwardIterator (const Array* data, UnderlyingIteratorRep startAt)
         : inherited{data}
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this->fData_};
-        this->fCurrentIdx_ = 0;
+        this->fCurrentIdx_ = startAt;
         this->Invariant ();
     }
     template <typename T>
-    inline bool Array<T>::ForwardIterator::Done () const
+    inline Array<T>::ForwardIterator::ForwardIterator (const Array* data)
+        : ForwardIterator{data, 0}
+    {
+    }
+    template <typename T>
+    inline bool Array<T>::ForwardIterator::Done () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};
@@ -635,20 +657,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename T>
-    inline Array<T>::BackwardIterator::BackwardIterator (const Array* data)
-        : inherited (data)
+    inline Array<T>::BackwardIterator::BackwardIterator (const Array* data, UnderlyingIteratorRep startAt)
+        : inherited{data}
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this->fData_};
-        if (data->GetLength () == 0) {
-            this->_fCurrent = this->_fEnd; // magic to indicate done
-        }
-        else {
-            this->_fCurrent = this->_fEnd - 1; // last valid item
-        }
+        this->_fCurrent = startAt;
         this->Invariant ();
     }
     template <typename T>
-    inline bool Array<T>::BackwardIterator::Done () const
+    inline Array<T>::BackwardIterator::BackwardIterator (const Array* data)
+        : BackwardIterator{data->GetLength () == 0 ? data->GetLength () : data->GetLength () - 1} // start on last item or at magic (at end) value
+    {
+    }
+    template <typename T>
+    inline bool Array<T>::BackwardIterator::Done () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};

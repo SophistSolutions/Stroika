@@ -99,6 +99,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         using value_type = T;
 
     public:
+        /**
+         *  Basic (mostly internal) element used by ForwardIterator. Abstract name so can be referenced generically across 'DataStructure' objects
+         */
+        using UnderlyingIteratorRep = size_t;
+
+    public:
         Array () = default;
         Array (const Array& from);
 
@@ -301,6 +307,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void PatchBeforeRemove (const IteratorBase* adjustmentAt);
 
     public:
+        nonvirtual UnderlyingIteratorRep GetUnderlyingIteratorRep () const;
+
+    public:
+        nonvirtual void SetUnderlyingIteratorRep (const UnderlyingIteratorRep l);
+
+    public:
         nonvirtual void Invariant () const;
 
 #if qDebug
@@ -328,10 +340,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         ForwardIterator (const Array* data);
+        ForwardIterator (const Array* data, UnderlyingIteratorRep startAt);
         ForwardIterator (const ForwardIterator& src) = default;
 
     public:
-        nonvirtual bool Done () const;
+        nonvirtual bool Done () const noexcept;
 
     public:
         nonvirtual ForwardIterator& operator++ () noexcept;
@@ -351,9 +364,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         BackwardIterator (const Array* data);
+        BackwardIterator (const Array* data, UnderlyingIteratorRep startAt);
 
     public:
-        nonvirtual bool Done () const;
+        nonvirtual bool Done () const noexcept;
 
     public:
         nonvirtual BackwardIterator& operator++ () noexcept;

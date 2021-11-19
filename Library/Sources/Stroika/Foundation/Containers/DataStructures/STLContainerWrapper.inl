@@ -137,14 +137,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename STL_CONTAINER_OF_T>
-    inline STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const STLContainerWrapper* data)
-        : fData_{const_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (data)}
-        , fStdIterator_{(const_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (data))->begin ()}
+    inline STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const STLContainerWrapper* data, UnderlyingIteratorRep startAt)
+        : fData_{data}
+        , fStdIterator_{startAt}
     {
         RequireNotNull (data);
     }
     template <typename STL_CONTAINER_OF_T>
-    inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Done () const
+    inline STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const STLContainerWrapper* data)
+        : ForwardIterator{data, data->cbegin ()}
+    {
+        RequireNotNull (data);
+    }
+    template <typename STL_CONTAINER_OF_T>
+    inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Done () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_STLContainerWrapper_IncludeSlowDebugChecks_
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
@@ -175,13 +181,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fStdIterator_ - fData_->begin ();
     }
     template <typename STL_CONTAINER_OF_T>
-    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::GetCurrentSTLIterator () const -> const_iterator
+    inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::GetUnderlyingIteratorRep () const -> UnderlyingIteratorRep
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
         return fStdIterator_;
     }
     template <typename STL_CONTAINER_OF_T>
-    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::SetCurrentSTLIterator (const_iterator l)
+    inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::SetUnderlyingIteratorRep (UnderlyingIteratorRep l)
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*fData_};
         fStdIterator_ = l;

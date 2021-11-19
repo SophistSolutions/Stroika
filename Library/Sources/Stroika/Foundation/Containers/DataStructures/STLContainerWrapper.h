@@ -57,6 +57,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  Basic (mostly internal) element used by ForwardIterator. Abstract name so can be referenced generically across 'DataStructure' objects
+         */
+        using UnderlyingIteratorRep = const_iterator;
+
+    public:
+        /**
          *  pass through CTOR args to underlying container
          */
         template <typename... EXTRA_ARGS>
@@ -127,10 +133,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         explicit ForwardIterator (const STLContainerWrapper* data);
+        explicit ForwardIterator (const STLContainerWrapper* data, UnderlyingIteratorRep startAt);
         explicit ForwardIterator (const ForwardIterator& from) = default;
 
     public:
-        nonvirtual bool Done () const;
+        nonvirtual bool Done () const noexcept;
 
     public:
         nonvirtual ForwardIterator& operator++ () noexcept;
@@ -145,10 +152,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual size_t CurrentIndex () const;
 
     public:
-        nonvirtual const_iterator GetCurrentSTLIterator () const;
+        nonvirtual UnderlyingIteratorRep GetUnderlyingIteratorRep () const;
 
     public:
-        nonvirtual void SetCurrentSTLIterator (const_iterator l);
+        nonvirtual void SetUnderlyingIteratorRep (UnderlyingIteratorRep l);
 
     public:
         nonvirtual bool Equals (const ForwardIterator& rhs) const;

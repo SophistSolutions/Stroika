@@ -64,6 +64,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         class Link;
 
     public:
+        /**
+         *  Basic (mostly internal) element used by ForwardIterator. Abstract name so can be referenced generically across 'DataStructure' objects
+         */
+        using UnderlyingIteratorRep = const Link*;
+
+    public:
         /*
          *  Take iteartor 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
          *  iteartor from 'this' - which points at the same logical position. This requires that this container
@@ -137,7 +143,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Typical: O(N), but can be less if systematically finding entries near start of container
          */
         template <typename FUNCTION>
-        nonvirtual Link* FindFirstThat (FUNCTION doToElement) const;
+        nonvirtual UnderlyingIteratorRep FindFirstThat (FUNCTION doToElement) const;
 
     public:
         /**
@@ -252,12 +258,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         ForwardIterator (const ForwardIterator& from) = default;
         ForwardIterator (const LinkedList* data);
+        ForwardIterator (const LinkedList* data, UnderlyingIteratorRep startAt);
 
     public:
         nonvirtual ForwardIterator& operator= (const ForwardIterator& it);
 
     public:
-        nonvirtual bool Done () const;
+        nonvirtual bool Done () const noexcept;
+
+    public:
         nonvirtual ForwardIterator& operator++ () noexcept;
 
     public:
@@ -267,10 +276,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual size_t CurrentIndex () const;
 
     public:
-        nonvirtual const Link* GetCurrentLink () const;
+        nonvirtual UnderlyingIteratorRep GetUnderlyingIteratorRep () const;
 
     public:
-        nonvirtual void SetCurrentLink (const Link* l);
+        nonvirtual void SetUnderlyingIteratorRep (const UnderlyingIteratorRep l);
 
     public:
         nonvirtual bool Equals (const ForwardIterator& rhs) const;

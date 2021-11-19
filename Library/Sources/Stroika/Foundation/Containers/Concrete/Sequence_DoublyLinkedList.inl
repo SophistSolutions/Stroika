@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return nullptr;
             }
             Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_);
-            resultRep->fIterator.SetCurrentLink (iLink);
+            resultRep->fIterator.SetUnderlyingIteratorRep (iLink);
             return Iterator<value_type>{move (resultRep)};
         }
 
@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 auto resultRep = Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_);
-                resultRep->fIterator.SetCurrentLink (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetCurrentLink ());
+                resultRep->fIterator.SetUnderlyingIteratorRep (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ());
                 *nextI = Iterator<value_type>{move (resultRep)};
             }
         }
