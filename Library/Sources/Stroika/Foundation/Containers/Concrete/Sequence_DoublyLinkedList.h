@@ -25,12 +25,13 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   Sequence_DoublyLinkedList<T> is an Array-based concrete implementation of the Sequence<T> container pattern.
      * 
-     *  \note Performance notes
-     *      o   Append/Prepend should perform well (constant time)
-     *      o   it is SLOW to array index a Sequence_LinkedList.
-     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
+     * \note Performance Notes:
+     *      o   GetLength () is O(N)
+     *      o   Append () is O(N)
+     *      o   Prepend () is constant
+     *      o   Indexing (GetAt/SetAt,operator[]) are O(N)
      */
     template <typename T>
     class Sequence_DoublyLinkedList : public Sequence<T> {

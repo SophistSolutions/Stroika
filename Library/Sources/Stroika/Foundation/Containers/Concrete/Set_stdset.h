@@ -23,7 +23,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   Set_stdset<KEY_TYPE, VALUE_TYPE, TRAITS> is an std::set-based concrete implementation of the Set<T> container pattern.
      *
-     *  \note   \em Implemenation   Just indirect to SortedSet_stdset<>, which in turn mostly indirects to std::set<T>
+     * \note Performance Notes:
+     *      Set_stdset<T> is a compact, and reasonable implementation of Set<>, and scales well.
+     *
+     *      o   GetLength () is constant
+     *      o   Uses Memory::BlockAllocatorOrStdAllocatorAsAppropriate
+     *      o   Additions and Removals are generally O(ln(N))
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *

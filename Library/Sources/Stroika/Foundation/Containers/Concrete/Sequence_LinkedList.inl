@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                     fData_.Prepend (from[i - 1]);
                 }
             }
-            else if (at == fData_.GetLength ()) {
+            else if (at == fData_.GetLength ()) { // ** very costly - see if below case works for both - I THINK it does
                 for (const T* p = from; p != to; ++p) {
                     fData_.Append (*p);
                 }

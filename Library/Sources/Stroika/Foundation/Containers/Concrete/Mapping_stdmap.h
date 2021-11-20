@@ -23,14 +23,17 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an std::map-based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-     *
      *  \note   \em Implementation Details
      *          This module is essentially identical to SortedMapping_stdmap, but making it dependent on SortedMapping<> creates
      *          problems with circular dependencies - especially give how the default Mapping CTOR calls the factory class
      *          which maps back to the _stdmap<> variant.
      *
      *          There maybe another (better) way, but this works.
+     *
+     * \note Performance Notes:
+     *      o   GetLength () is constant
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class Mapping_stdmap : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> {

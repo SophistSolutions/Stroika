@@ -26,6 +26,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   Stack_LinkedList<T> is an LinkedList-based concrete implementation of the Stack<T> container pattern.
      *
+     * \note Performance Notes:
+     *      Very good low overhead implementation
+     *
+     *      o   GetLength () is O(N)
+     *      o   Uses Memory::UseBlockAllocationIfAppropriate
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      */

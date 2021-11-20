@@ -27,8 +27,13 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   SortedMapping_stdmap<KEY_TYPE,MAPPED_VALUE_TYPE> is an std::map-based concrete implementation of the SortedMapping<KEY_TYPE,MAPPED_VALUE_TYPE> container pattern.
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     * \note Performance Notes:
+     *      Very good low overhead implementation
      *
+     *      o   GetLength () is constant
+     *      o   Uses Memory::BlockAllocatorOrStdAllocatorAsAppropriate
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class SortedMapping_stdmap : public SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE> {

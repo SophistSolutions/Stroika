@@ -25,12 +25,17 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   Sequence_LinkedList<T> is a LinkedList-based concrete implementation of the Sequence<T> container pattern.
      * 
-     *  \note Performance notes
-     *      o   it is SLOW to append to a Sequence_LinkedList - use Sequence_DoublyLinkedList (or array or stdvector) for better append performance.
-     *      o   it is SLOW to array index a Sequence_LinkedList.
+     * \note Performance Notes:
+     *       
+     *      Suitable for short lists, low memory overhead, where you can new entries, and remove from the start
+     *      (or if array indexing is rare). To keep the order, but not use it much.
+     * 
+     *      o   GetLength () is constant
+     *      o   Append () is O(N)
+     *      o   Prepend () is constant
+     *      o   Indexing (GetAt/SetAt,operator[]) are O(N)
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-     *
      */
     template <typename T>
     class Sequence_LinkedList : public Sequence<T> {

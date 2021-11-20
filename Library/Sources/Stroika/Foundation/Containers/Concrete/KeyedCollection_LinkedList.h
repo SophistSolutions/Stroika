@@ -33,8 +33,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief KeyedCollection_LinkedList<T> is an LinkedList-based concrete implementation of the KeyedCollection<T> container pattern.
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     * \note Performance Notes:
+     *      o   GetLength () is O(N)
      *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T, typename KEY_TYPE, typename TRAITS = KeyedCollection_DefaultTraits<T, KEY_TYPE>>
     class KeyedCollection_LinkedList : public KeyedCollection<T, KEY_TYPE, TRAITS> {

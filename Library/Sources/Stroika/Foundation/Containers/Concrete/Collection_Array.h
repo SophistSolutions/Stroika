@@ -22,8 +22,13 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      * \brief   Collection_Array<T> is an Array-based concrete implementation of the Collection<T> container pattern.
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     * \note Performance Notes:
+     *      A good low overhead, fast implementation. Adds and removes by iterator from the middle of the collection are slow.
+     *      And adds are generally fast, but occasionally (on realloc) very slow once.
      *
+     *      o   GetLength () is constant
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T>
     class Collection_Array : public Collection<T> {

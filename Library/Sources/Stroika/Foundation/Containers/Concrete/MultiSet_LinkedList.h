@@ -23,10 +23,10 @@
 namespace Stroika::Foundation::Containers::Concrete {
 
     /**
-     *
+     * \note Performance Notes:
+     *      o   GetLength () is O(N)
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-     *
      */
     template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
     class MultiSet_LinkedList : public MultiSet<T, TRAITS> {
