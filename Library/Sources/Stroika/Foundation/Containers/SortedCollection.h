@@ -14,8 +14,7 @@
  *  \file
  *
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *                  (one bad implementation that doesn't even do sorting yet, and regtests so bad they don't notice)
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *
  *  TODO:
