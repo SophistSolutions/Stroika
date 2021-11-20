@@ -12,6 +12,7 @@
 #define _Stroika_Foundation_Containers_Concrete_MultiSet_Factory_inl_
 
 #include "../Concrete/MultiSet_Array.h"
+#include "../Concrete/MultiSet_stdmap.h"
 
 namespace Stroika::Foundation::Containers::Factory {
 
@@ -54,7 +55,18 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename TRAITS, typename EQUALS_COMPARER>
     inline MultiSet<T, TRAITS> MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::Default_ (const EQUALS_COMPARER& equalsComparer)
     {
-        return Concrete::MultiSet_Array<T, TRAITS>{equalsComparer};
+        if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>> and Configuration::has_lt<T>::value) {
+            return Concrete::MultiSet_stdmap<T, TRAITS>{};
+        }
+        else {
+            /*
+             *  Note - though this is not an efficient implementation of Set<> for large sizes,
+             *  its probably the most efficient representation which adds no requirements to KEY_TYPE,
+             *  such as operator< (or a traits less) or a hash function. And its quite reasonable for
+             *  small Sets's - which are often the case.
+             */
+            return Concrete::MultiSet_Array<T, TRAITS>{equalsComparer};
+        }
     }
 
 }

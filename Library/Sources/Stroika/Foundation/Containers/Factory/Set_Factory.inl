@@ -55,32 +55,18 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename EQUALS_COMPARER>
     inline Set<T> Set_Factory<T, EQUALS_COMPARER>::Default_ (const EQUALS_COMPARER& equalsComparer)
     {
-        /*
-         *  Use SFINAE to select best default implementation.
-         */
-        return Default_SFINAE_ (equalsComparer, static_cast<T*> (nullptr));
-    }
-    template <typename T, typename EQUALS_COMPARER>
-    template <typename CHECK_T>
-    inline Set<T> Set_Factory<T, EQUALS_COMPARER>::Default_SFINAE_ ([[maybe_unused]] const EQUALS_COMPARER& equalsComparer, CHECK_T*, enable_if_t<Configuration::has_lt<CHECK_T>::value>*)
-    {
-        if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>>) {
+        if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>> and Configuration::has_lt<T>::value) {
             return Concrete::Set_stdset<T>{};
         }
         else {
+            /*
+             *  Note - though this is not an efficient implementation of Set<> for large sizes,
+             *  its probably the most efficient representation which adds no requirements to KEY_TYPE,
+             *  such as operator< (or a traits less) or a hash function. And its quite reasonable for
+             *  small Sets's - which are often the case.
+             */
             return Concrete::Set_LinkedList<T>{equalsComparer};
         }
-    }
-    template <typename T, typename EQUALS_COMPARER>
-    inline Set<T> Set_Factory<T, EQUALS_COMPARER>::Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, ...)
-    {
-        /*
-         *  Note - though this is not an efficient implementation of Set<> for large sizes,
-         *  its probably the most efficeint representation which adds no requirements to KEY_TYPE,
-         *  such as operator< (or a traits less) or a hash function. And its quite reasonable for
-         *  small Sets's - which are often the case.
-         */
-        return Concrete::Set_LinkedList<T>{equalsComparer};
     }
 
 }

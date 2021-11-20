@@ -63,11 +63,6 @@ namespace Stroika::Foundation::Containers::Factory {
 
     private:
         static KeyedCollection<T, KEY_TYPE, TRAITS> Default_ (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer);
-
-    private:
-        template <typename CHECK_KEY_TYPE>
-        static KeyedCollection<T, KEY_TYPE, TRAITS> Default_SFINAE_ (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer, CHECK_KEY_TYPE*, enable_if_t<Configuration::has_lt<CHECK_KEY_TYPE>::value>* = 0);
-        static KeyedCollection<T, KEY_TYPE, TRAITS> Default_SFINAE_ (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer, ...);
     };
 
 }

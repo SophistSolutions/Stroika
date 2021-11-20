@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers::Factory {
      *  \note   Mapping_Factory<K,P> makes up its own default comparer, and so can use order mappings, like Mapping_stdmap, whereas
      *          Mapping_Factory<K,P,E> - since it takes an equals comparer - is restricted to backends that work with an equals comparere.
      */
-    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = void>
+    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
     class Mapping_Factory {
     private:
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Containers::Factory {
         static_assert (Common::IsEqualsComparer<KEY_EQUALS_COMPARER> (), "Equals comparer required with Mapping_Factory");
 
     public:
-        Mapping_Factory (const KEY_EQUALS_COMPARER& equalsComparer);
+        Mapping_Factory (const KEY_EQUALS_COMPARER& equalsComparer = {});
 
     public:
         /**
@@ -72,35 +72,6 @@ namespace Stroika::Foundation::Containers::Factory {
 
     private:
         static Mapping<KEY_TYPE, VALUE_TYPE> Default_ (const KEY_EQUALS_COMPARER&);
-    };
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    class Mapping_Factory<KEY_TYPE, VALUE_TYPE, void> {
-    private:
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-        static atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_;
-#else
-        static inline atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_{nullptr};
-#endif
-
-    public:
-        /**
-         *  You can call this directly, but there is no need, as the Mapping<T,TRAITS> CTOR does so automatically.
-         */
-        nonvirtual Mapping<KEY_TYPE, VALUE_TYPE> operator() () const;
-
-    public:
-        /**
-         *  Register a replacement creator/factory for the given Mapping<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
-         */
-        static void Register (Mapping<KEY_TYPE, VALUE_TYPE> (*factory) () = nullptr);
-
-    private:
-        static Mapping<KEY_TYPE, VALUE_TYPE> Default_ ();
-
-    private:
-        template <typename CHECK_KEY>
-        static Mapping<KEY_TYPE, VALUE_TYPE> Default_SFINAE_ (CHECK_KEY*, enable_if_t<Configuration::has_lt<CHECK_KEY>::value>* = 0);
-        static Mapping<KEY_TYPE, VALUE_TYPE> Default_SFINAE_ (...);
     };
 
 }

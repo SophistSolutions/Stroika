@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /**
      */
-    template <typename T, typename TRAITS = MultiSet<T>>
+    template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
     class MultiSet_stdmap : public MultiSet<T, TRAITS> {
     private:
         using inherited = MultiSet<T, TRAITS>;

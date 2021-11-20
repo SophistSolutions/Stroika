@@ -69,11 +69,6 @@ namespace Stroika::Foundation::Containers::Factory {
 
     private:
         static Set<T> Default_ (const EQUALS_COMPARER& equalsComparer);
-
-    private:
-        template <typename CHECK_T>
-        static Set<T> Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, CHECK_T*, enable_if_t<Configuration::has_lt<CHECK_T>::value>* = 0);
-        static Set<T> Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, ...);
     };
 
 }

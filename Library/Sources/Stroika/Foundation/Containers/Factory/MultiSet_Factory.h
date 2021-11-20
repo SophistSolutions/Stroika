@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Containers::Factory {
     *
     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
     */
-    template <typename T, typename TRAITS, typename EQUALS_COMPARER>
+    template <typename T, typename TRAITS, typename EQUALS_COMPARER = equal_to<T>>
     class MultiSet_Factory {
     private:
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy

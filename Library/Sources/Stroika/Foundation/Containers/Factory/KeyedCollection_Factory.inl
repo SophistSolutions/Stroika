@@ -56,34 +56,20 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
     inline KeyedCollection<T, KEY_TYPE, TRAITS> KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::Default_ (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer)
     {
-        /*
-         *  Use SFINAE to select best default implementation.
-         */
-        return Default_SFINAE_ (keyExtractor, keyComparer, static_cast<KEY_TYPE*> (nullptr));
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
-    template <typename CHECK_KEY_TYPE>
-    KeyedCollection<T, KEY_TYPE, TRAITS> KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::Default_SFINAE_ (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer, CHECK_KEY_TYPE*, enable_if_t<Configuration::has_lt<CHECK_KEY_TYPE>::value>*)
-    {
-        if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<CHECK_KEY_TYPE>>) {
+        if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and Configuration::has_lt<KEY_TYPE>::value) {
             return Concrete::KeyedCollection_stdset<T, KEY_TYPE, TRAITS>{keyExtractor};
         }
         else {
+            /*
+             *  Note - though this is not an efficient implementation of KeyedCollection<> for large sizes, its probably the most
+             *  efficeint representation which adds no requirements to KEY_TYPE, such as operator< (or a traits less) or
+             *  a hash function. And its quite reasonable for small KeyedCollection's - which are often the case.
+             *
+             *  Calls may use an explicit initializer of KeyedCollection_xxx<> to get better performance for large sized
+             *  maps.
+             */
             return Concrete::KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>{keyExtractor, keyComparer};
         }
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
-    KeyedCollection<T, KEY_TYPE, TRAITS> KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::Default_SFINAE_ (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer, ...)
-    {
-        /*
-         *  Note - though this is not an efficient implementation of KeyedCollection<> for large sizes, its probably the most
-         *  efficeint representation which adds no requirements to KEY_TYPE, such as operator< (or a traits less) or
-         *  a hash function. And its quite reasonable for small KeyedCollection's - which are often the case.
-         *
-         *  Calls may use an explicit initializer of KeyedCollection_xxx<> to get better performance for large sized
-         *  maps.
-         */
-        return Concrete::KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>{keyExtractor, keyComparer};
     }
 
 }
