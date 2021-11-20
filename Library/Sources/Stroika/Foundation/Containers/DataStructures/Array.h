@@ -301,12 +301,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool Equals (const IteratorBase& rhs) const;
 
     public:
-        nonvirtual void PatchBeforeAdd (const IteratorBase& adjustmentAt);
-
-    public:
-        nonvirtual void PatchBeforeRemove (const IteratorBase* adjustmentAt);
-
-    public:
         nonvirtual UnderlyingIteratorRep GetUnderlyingIteratorRep () const;
 
     public:

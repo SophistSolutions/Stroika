@@ -199,14 +199,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fStdIterator_ == rhs.fStdIterator_;
     }
     template <typename STL_CONTAINER_OF_T>
-    void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::PatchBeforeRemove (const ForwardIterator* adjustmentAt)
-    {
-        RequireNotNull (adjustmentAt);
-        if (this->fStdIterator_ == adjustmentAt->fStdIterator_) {
-            ++this->fStdIterator_;
-        }
-    }
-    template <typename STL_CONTAINER_OF_T>
     inline auto STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::GetReferredToData () const -> const STLContainerWrapper*
     {
         return fData_;

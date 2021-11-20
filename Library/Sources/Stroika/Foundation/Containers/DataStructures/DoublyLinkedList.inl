@@ -618,36 +618,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
         return fCurrent_ == rhs.fCurrent_;
     }
-    template <typename T>
-    inline void DoublyLinkedList<T>::ForwardIterator::PatchBeforeRemove (const ForwardIterator* adjustmentAt)
-    {
-        RequireNotNull (adjustmentAt);
-        this->Invariant ();
-        auto link = adjustmentAt->fCurrent_;
-        RequireNotNull (link);
-
-        /*
-         *  There are basicly three cases:
-         *
-         *  (1)     We remove the current. In this case, we just advance current to the next
-         *          item (prev is already all set), and set _fSuppressMore since we are advanced
-         *          to the next item.
-         *  (2)     We remove our previous. Technically this poses no problems, except then
-         *          our previos pointer is invalid. We could recompute it, but that would
-         *          involve rescanning the list from the beginning - slow. And we probably
-         *          will never need the next pointer (unless we get a remove current call).
-         *          So just set it to nullptr, which conventionally means no valid value.
-         *          It will be recomputed if needed.
-         *  (3)     We are deleting some other value. No probs.
-         */
-        if (this->fCurrent_ == link) {
-            this->fCurrent_ = this->fCurrent_->fNext;
-            // fPrev remains the same - right now it points to a bad item, since
-            // PatchRemove() called before the actual removal, but right afterwards
-            // it will point to our new fCurrent_.
-            //     this->_fSuppressMore = true; // Since we advanced cursor...
-        }
-    }
 #if qDebug
     template <typename T>
     void DoublyLinkedList<T>::ForwardIterator::Invariant_ () const

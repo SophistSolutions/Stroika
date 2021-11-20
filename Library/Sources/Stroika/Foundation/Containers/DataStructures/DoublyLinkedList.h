@@ -315,9 +315,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool Equals (const ForwardIterator& rhs) const;
 
     public:
-        nonvirtual void PatchBeforeRemove (const ForwardIterator* adjustmentAt);
-
-    public:
         nonvirtual void Invariant () const;
 
     private:
