@@ -16,8 +16,6 @@
  *
  *  TODO:
  *
- *      @todo   Finish using CONTAINER_LOCK_HELPER_START() - synchronization support
- *              THEN - MAYBE - try todo better, but at least do this as starter
  */
 
 namespace Stroika::Foundation::Containers::Concrete {

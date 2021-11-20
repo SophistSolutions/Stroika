@@ -13,10 +13,6 @@
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- *  TODO:
- *
- *      @todo   Correctly implement override of Iterator<T>::IRep::Equals()
- *
  */
 
 namespace Stroika::Foundation::Containers::Concrete {

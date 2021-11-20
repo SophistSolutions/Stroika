@@ -13,19 +13,20 @@
 /**
   *  \file
   *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+  *  \version    <a href="Code-Status.md#Beta">Beta</a>
   *
-  *  TODO:
-  *
-  *      @todo   Get use of Private::IteratorImplHelper_ working
-  *
-  *      @todo   Correctly implement override of Iterator<T>::IRep::Equals ()
   */
 
 namespace Stroika::Foundation::Containers::Concrete {
 
     /**
      *
+     *
+     * \note Performance Notes:
+     *      Very good low overhead implementation
+     *
+     *      o   GetLength () is constant
+     *      o   Uses Memory::BlockAllocatorOrStdAllocatorAsAppropriate
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
