@@ -405,7 +405,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fSlotsAllocated_;
     }
     template <typename T>
-    inline void Array<T>::Compact ()
+    inline void Array<T>::shrink_to_fit ()
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         SetCapacity (GetLength ());

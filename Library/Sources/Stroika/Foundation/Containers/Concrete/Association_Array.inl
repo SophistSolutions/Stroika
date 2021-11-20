@@ -170,12 +170,12 @@ namespace Stroika ::Foundation::Containers ::Concrete {
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline void Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Compact ()
+    inline void Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::shrink_to_fit ()
     {
         using _SafeReadWriteRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template _SafeReadWriteRepAccessor<Rep_>;
         _SafeReadWriteRepAccessor                                   accessor{this};
         shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{accessor._ConstGetRep ().fData_};
-        accessor._GetWriteableRep ().fData_.Compact ();
+        accessor._GetWriteableRep ().fData_.shrink_to_fit ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline size_t Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::GetCapacity () const

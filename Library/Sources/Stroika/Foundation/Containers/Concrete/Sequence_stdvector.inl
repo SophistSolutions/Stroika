@@ -206,7 +206,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         return *this;
     }
     template <typename T>
-    inline void Sequence_stdvector<T>::Compact ()
+    inline void Sequence_stdvector<T>::shrink_to_fit ()
     {
         using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
         _SafeReadWriteRepAccessor                                   accessor{this};

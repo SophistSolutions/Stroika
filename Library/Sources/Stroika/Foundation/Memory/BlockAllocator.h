@@ -136,6 +136,8 @@ namespace Stroika::Foundation::Memory {
           * the general free store.
           *
           * Also - beware - this locks out other threads (from allocation/deallocation) during execution (which can take a while).
+          * 
+          * \note Similar to shrink_to_fit
           */
         static void Compact ();
 

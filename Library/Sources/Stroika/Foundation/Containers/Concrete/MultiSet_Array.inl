@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual size_t GetCapacity () const              = 0;
         virtual void   SetCapacity (size_t slotsAlloced) = 0;
-        virtual void   Compact ()                        = 0;
+        virtual void   shrink_to_fit ()                  = 0;
     };
 
     /*
@@ -231,10 +231,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.SetCapacity (slotsAlloced);
             fChangeCounts_.PerformedChange ();
         }
-        virtual void Compact () override
+        virtual void shrink_to_fit () override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> critSec{fData_};
-            fData_.Compact ();
+            fData_.shrink_to_fit ();
         }
 
     private:
@@ -331,11 +331,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         accessor._GetWriteableRep ().SetCapacity (slotsAlloced);
     }
     template <typename T, typename TRAITS>
-    inline void MultiSet_Array<T, TRAITS>::Compact ()
+    inline void MultiSet_Array<T, TRAITS>::shrink_to_fit ()
     {
         using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<IImplRepBase_>;
         _SafeReadWriteRepAccessor accessor{this};
-        accessor._GetWriteableRep ().Compact ();
+        accessor._GetWriteableRep ().shrink_to_fit ();
     }
     template <typename T, typename TRAITS>
     inline size_t MultiSet_Array<T, TRAITS>::capacity () const

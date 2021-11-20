@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  This has no semantics, no observable behavior. But depending on the representation of
          *  the concrete Association, calling this may save memory.
          */
-        nonvirtual void Compact ();
+        nonvirtual void shrink_to_fit ();
 
     public:
         /*

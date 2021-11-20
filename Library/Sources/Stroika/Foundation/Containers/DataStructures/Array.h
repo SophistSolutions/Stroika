@@ -28,7 +28,7 @@
  *      Array<T> also provides a dynamic sizing capability. It reallocs its
  *  underlying storgage is such a ways as to keep a buffer of n(currently 5)%
  *  extra, so that reallocs on resizes only occur logn times on n appends.
- *  To save even this space, you can call Compact().
+ *  To save even this space, you can call shrink_to_fit().
  *
  *      Unlike other dynamic array implementations, when an item is removed,
  *  it is destructed then. So the effects of buffering have no effects on the
@@ -217,7 +217,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void SetCapacity (size_t slotsAlloced);
 
     public:
-        nonvirtual void Compact ();
+        nonvirtual void shrink_to_fit ();
 
     public:
         class IteratorBase;

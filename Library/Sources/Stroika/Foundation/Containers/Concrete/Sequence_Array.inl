@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     class Sequence_Array<T>::IImplRep_ : public Sequence<T>::_IRep {
     public:
-        virtual void   Compact ()                        = 0;
+        virtual void   shrink_to_fit ()                  = 0;
         virtual size_t GetCapacity () const              = 0;
         virtual void   SetCapacity (size_t slotsAlloced) = 0;
     };
@@ -194,10 +194,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Sequence_Array<T>::IImplRep_
     public:
-        virtual void Compact () override
+        virtual void shrink_to_fit () override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
-            fData_.Compact ();
+            fData_.shrink_to_fit ();
             fChangeCounts_.PerformedChange ();
         }
         virtual size_t GetCapacity () const override
@@ -262,9 +262,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline void Sequence_Array<T>::Compact ()
+    inline void Sequence_Array<T>::shrink_to_fit ()
     {
-        typename inherited::template _SafeReadWriteRepAccessor<IImplRep_>{this}._GetWriteableRep ().Compact ();
+        typename inherited::template _SafeReadWriteRepAccessor<IImplRep_>{this}._GetWriteableRep ().shrink_to_fit ();
     }
     template <typename T>
     inline size_t Sequence_Array<T>::GetCapacity () const

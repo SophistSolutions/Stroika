@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual void   SetCapacity (size_t slotsAlloced);
 
     public:
-        nonvirtual void Compact ();
+        nonvirtual void shrink_to_fit ();
 
     public:
         /**

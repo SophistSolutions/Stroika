@@ -157,10 +157,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline void Collection_Array<T>::Compact ()
+    inline void Collection_Array<T>::shrink_to_fit ()
     {
         using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
-        _SafeReadWriteRepAccessor{this}._GetWriteableRep ().fData_.Compact ();
+        _SafeReadWriteRepAccessor{this}._GetWriteableRep ().fData_.shrink_to_fit ();
     }
     template <typename T>
     inline size_t Collection_Array<T>::GetCapacity () const

@@ -179,7 +179,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
     keep key as a 'key' concept for Map<>, and use 'index' - which is analagous - but different -
     for sequence (important difference is stickiness of assocation when container is modified).
 
-- No Compact() methods
+- No Compact()/shrink_to_fit() methods
   - Stroika 1.0 had Compact() methods - that could be used to generically request that a container
     be compacted.
     We decided against that for Stroika v2 because
