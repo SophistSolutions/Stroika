@@ -70,8 +70,6 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             AssertNotImplemented ();
 #if 0
-            // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-            // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
 #endif
         }

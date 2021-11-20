@@ -100,10 +100,9 @@ namespace Stroika::Foundation::Traversal {
         return *fRep_;
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline void Iterator<T, ITERATOR_TRAITS>::Refresh () const
+    inline void Iterator<T, ITERATOR_TRAITS>::Refresh ()
     {
-        auto mutableThis = const_cast<Iterator*> (this);
-        fRep_->More (&mutableThis->fCurrentValue_, false);
+        fRep_->More (&this->fCurrentValue_, false);
         this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>

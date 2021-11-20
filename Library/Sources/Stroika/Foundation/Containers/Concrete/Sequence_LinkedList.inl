@@ -47,6 +47,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual size_t GetLength () const override
         {
+            // NOTE: O(N), but could easily be made faster caching the length
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return fData_.GetLength ();
         }
@@ -58,8 +59,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-            // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
         virtual Iterator<value_type> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
@@ -83,8 +82,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             RequireNotNull (i);
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             auto                                                        result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
-            auto&                                                       mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
-            result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
+            result->fData_.MoveIteratorHereAfterClone (&Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ()).fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
         }

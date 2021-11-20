@@ -408,6 +408,7 @@ namespace Stroika::Foundation::Containers {
          *  to have it updated to safely continue iterating.
          *
          *  \note mutates container
+         *  \note As with ALL methods that modify the Mapping, this invalidates the iterator 'i', but if you pass nextI (can be same variable as i) - it will be updated with a valid iterator pointing to the same location.
          */
         nonvirtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI = nullptr);
 

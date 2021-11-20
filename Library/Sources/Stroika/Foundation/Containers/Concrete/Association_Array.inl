@@ -54,8 +54,6 @@ namespace Stroika ::Foundation::Containers ::Concrete {
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{fData_};
-            // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-            // use iterator (which currently implies lots of locks) with this->_Apply ()
             fData_.Apply (doToElement);
         }
         virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override

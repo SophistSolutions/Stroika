@@ -587,7 +587,7 @@ namespace Stroika::Foundation::Traversal {
          * 
          *  Useful when you change the rep directly. This should VERY RARELY be needed - just in implementing iterator patching (say during a remove).
          */
-        nonvirtual void Refresh () const;
+        nonvirtual void Refresh ();
 
     public:
         /**
