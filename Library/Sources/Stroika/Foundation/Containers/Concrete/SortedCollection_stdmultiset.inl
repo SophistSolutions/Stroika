@@ -105,13 +105,20 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.insert (item);
             fChangeCounts_.PerformedChange ();
         }
-        virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue) override
+        virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
-            auto&                                                 mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            auto                                                  nextIR = fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
+            scoped_lock<Debug::AssertExternallySynchronizedMutex>            writeLock{fData_};
+            optional<typename DataStructureImplType_::UnderlyingIteratorRep> savedUnderlyingIndex;
+            if (nextI != nullptr) {
+                savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
+            }
+            auto& mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            auto  nextIR = fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
             fData_.insert (newValue);
             fChangeCounts_.PerformedChange ();
+            if (nextI != nullptr) {
+                *nextI = Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
+            }
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {

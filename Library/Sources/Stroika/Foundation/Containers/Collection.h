@@ -221,7 +221,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue);
+        nonvirtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI = nullptr);
 
     public:
         /**
@@ -359,11 +359,11 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     public:
-        virtual _IRepSharedPtr CloneEmpty () const                                                 = 0;
-        virtual _IRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const               = 0;
-        virtual void           Add (ArgByValueType<value_type> item)                               = 0;
-        virtual void           Update (const Iterator<value_type>& i, ArgByValueType<T> newValue)  = 0;
-        virtual void           Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) = 0;
+        virtual _IRepSharedPtr CloneEmpty () const                                                                             = 0;
+        virtual _IRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const                                           = 0;
+        virtual void           Add (ArgByValueType<value_type> item)                                                           = 0;
+        virtual void           Update (const Iterator<value_type>& i, ArgByValueType<T> newValue, Iterator<value_type>* nextI) = 0;
+        virtual void           Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                             = 0;
     };
 
     /**
