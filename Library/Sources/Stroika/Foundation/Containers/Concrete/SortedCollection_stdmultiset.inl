@@ -107,8 +107,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedMutex>            writeLock{fData_};
-            auto  nextIR = fData_.erase (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ());
+            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
+            auto                                                  nextIR = fData_.erase (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ());
             fData_.insert (newValue);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
