@@ -975,7 +975,7 @@ namespace Stroika::Foundation::Traversal {
     inline Iterator<T> Iterable<T>::FindFirstThat (const Iterator<T>& startAt, const function<bool (ArgByValueType<T> item)>& doToElement) const
     {
         RequireNotNull (doToElement);
-        for (Iterator<T> i = startAt; i != Iterable<T>::end (); ++i) {
+        for (Iterator<T> i = startAt; i != end (); ++i) {
             if (doToElement (*i)) {
                 return i;
             }
@@ -986,7 +986,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename CONTAINER_OF_T>
     CONTAINER_OF_T Iterable<T>::As () const
     {
-        return CONTAINER_OF_T (begin (), end ());
+        return CONTAINER_OF_T (begin (), end ()); // use () instead of {} because we do want to allow coersion here - since use explictly called As<>
     }
     template <typename T>
     T Iterable<T>::Nth (size_t n) const
@@ -997,7 +997,7 @@ namespace Stroika::Foundation::Traversal {
             if (idx == 0) {
                 return i;
             }
-            idx--;
+            --idx;
         }
         AssertNotReached ();
         return *begin ();
@@ -1010,7 +1010,7 @@ namespace Stroika::Foundation::Traversal {
             if (idx == 0) {
                 return i;
             }
-            idx--;
+            --idx;
         }
         return defaultValue;
     }
