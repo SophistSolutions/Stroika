@@ -1609,8 +1609,8 @@ In file included from ./../Characters/../Containers/Concrete/Sequence_stdvector.
 // Appears broken on XCode 12
 // BUt fixed in XCode 13
 #define qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
-//#elif defined(__clang__) && !defined(__APPLE__)
-//#define qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+#elif defined(__clang__) && !defined(__APPLE__)
+#define qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 7))
 #else
 #define qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy 0
 #endif
