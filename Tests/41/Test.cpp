@@ -665,7 +665,7 @@ namespace {
             {
                 Debug::TraceContextBumper traceCtx{"{}SyncLRUCacheT1_..."};
                 using namespace Cache;
-                SynchronizedLRUCache cache {pair<string, string>{}, 3u, 10u, hash<string>{}};
+                SynchronizedLRUCache cache{pair<string, string>{}, 3u, 10u, hash<string>{}};
                 Thread::Ptr          writerThread = Thread::New (
                     [&cache] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
