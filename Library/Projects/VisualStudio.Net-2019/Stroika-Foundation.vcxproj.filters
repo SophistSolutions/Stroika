@@ -2148,6 +2148,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.h">
       <Filter>Sources\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_stdmultiset.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3506,6 +3509,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.inl">
       <Filter>Sources\Debug</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_stdmultiset.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

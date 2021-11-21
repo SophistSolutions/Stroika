@@ -17,12 +17,14 @@
 #include "../TestHarness/TestHarness.h"
 
 #include "Stroika/Foundation/Containers/Concrete/SortedCollection_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedCollection_stdmultiset.h"
 
 using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 
 using Concrete::SortedCollection_LinkedList;
+using Concrete::SortedCollection_stdmultiset;
 
 namespace {
     template <typename CONCRETE_CONTAINER, typename INORDER_COMPARER, typename CONCRETE_CONTAINER_FACTORY>
@@ -80,6 +82,10 @@ namespace {
         RunTests_<SortedCollection_LinkedList<size_t>> ();
         RunTests_<SortedCollection_LinkedList<SimpleClass>> ();
         RunTests_<SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, [] () { return SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
+
+        RunTests_<SortedCollection_stdmultiset<size_t>> ();
+        RunTests_<SortedCollection_stdmultiset<SimpleClass>> ();
+        RunTests_<SortedCollection_stdmultiset<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, [] () { return SortedCollection_stdmultiset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
 
         TestOverwriteContainerWhileIteratorRunning_ ();
     }
