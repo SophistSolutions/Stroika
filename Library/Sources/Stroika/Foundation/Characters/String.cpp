@@ -72,14 +72,14 @@ namespace   {
             using inherited = _IRep;
         public:
             MyRep_ (const _SafeReadRepAccessor& savedSP, const wchar_t* start, const wchar_t* end)
-                : inherited (start, end)
-                , fSaved_ (savedSP)
+                : inherited{start, end}
+                , fSaved_{savedSP}
             {
                 Assert (reinterpret_cast<const wchar_t*> (fSaved_._ConstGetRep ().Peek ()) <= _fStart and _fStart <= _fEnd);
             }
             MyRep_ (const MyRep_& from)
-                : inherited (from._fStart, from._fEnd)
-                , fSaved_ (from.fSaved_)
+                : inherited {from._fStart, from._fEnd}
+                , fSaved_ {from.fSaved_}
             {
                 Assert (reinterpret_cast<const wchar_t*> (fSaved_._ConstGetRep ().Peek ()) <= _fStart and _fStart <= _fEnd);
             }

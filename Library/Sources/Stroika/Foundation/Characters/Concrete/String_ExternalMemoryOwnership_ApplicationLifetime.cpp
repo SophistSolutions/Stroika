@@ -27,7 +27,7 @@ namespace {
 
     public:
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
-            : inherited (start, end)
+            : inherited{start, end}
         {
         }
         virtual _IterableRepSharedPtr Clone () const override
@@ -43,7 +43,7 @@ private:
 
 public:
     MyRep_ (const wchar_t* start, const wchar_t* end)
-        : inherited (start, end) // don't copy memory - but copy raw pointers! So they MUST BE (externally promised) 'externally owned for the application lifetime and constant' - like c++ string constants
+        : inherited{start, end} // don't copy memory - but copy raw pointers! So they MUST BE (externally promised) 'externally owned for the application lifetime and constant' - like c++ string constants
     {
         // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
         Require (*end == '\0' and start + ::wcslen (start) <= end);
@@ -70,7 +70,7 @@ public:
  ********************************************************************************
  */
 String_ExternalMemoryOwnership_ApplicationLifetime::String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t* start, const wchar_t* end)
-    : inherited (_SharedPtrIRep (new MyRep_ (start, end)))
+    : inherited{_SharedPtrIRep (new MyRep_ (start, end))}
 {
     Require (*end == '\0');
     Require (end == start + ::wcslen (start)); // require standard C-string

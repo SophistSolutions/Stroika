@@ -319,7 +319,7 @@ namespace Stroika::Foundation::Streams {
      */
     template <typename ELEMENT_TYPE>
     inline MemoryStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
-        : inherited (from)
+        : inherited{from}
     {
     }
     template <typename ELEMENT_TYPE>

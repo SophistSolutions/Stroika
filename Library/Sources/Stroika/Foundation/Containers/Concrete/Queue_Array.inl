@@ -128,13 +128,13 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     inline Queue_Array<T>::Queue_Array ()
-        : inherited (inherited::template MakeSmartPtr<Rep_> ())
+        : inherited{inherited::template MakeSmartPtr<Rep_> ()}
     {
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline Queue_Array<T>::Queue_Array (const Queue_Array<T>& src)
-        : inherited (src)
+    inline Queue_Array<T>::Queue_Array (const Queue_Array& src)
+        : inherited{src}
     {
         AssertRepValidType_ ();
     }

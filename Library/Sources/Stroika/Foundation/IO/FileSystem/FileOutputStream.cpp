@@ -271,6 +271,6 @@ auto FileOutputStream::New (Execution::InternallySynchronized internallySynchron
  ********************************************************************************
  */
 IO::FileSystem::FileOutputStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
-    : inherited (from)
+    : inherited{from}
 {
 }

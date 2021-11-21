@@ -181,7 +181,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename INORDER_COMPARER>
     inline SortedSet_stdset<T>::SortedSet_stdset (const INORDER_COMPARER& inorderComparer)
-        : inherited (inherited::template MakeSmartPtr<Rep_<INORDER_COMPARER>> (inorderComparer))
+        : inherited{inherited::template MakeSmartPtr<Rep_<INORDER_COMPARER>> (inorderComparer)}
     {
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedSet");
         AssertRepValidType_ ();
@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     SortedSet_stdset<T>::SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, const initializer_list<value_type>& src)
-        : SortedSet_stdset (inOrderComparer)
+        : SortedSet_stdset{inOrderComparer}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
     SortedSet_stdset<T>::SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, CONTAINER_OF_ADDABLE&& src)
-        : SortedSet_stdset (inOrderComparer)
+        : SortedSet_stdset{inOrderComparer}
     {
         this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         AssertRepValidType_ ();

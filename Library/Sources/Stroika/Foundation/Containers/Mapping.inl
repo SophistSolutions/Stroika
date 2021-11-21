@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Containers {
 #if 0
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>&& src)
-        : inherited (move (src))
+        : inherited{move (src)}
     {
         auto&& srcRepAccessor  = _SafeReadWriteRepAccessor<_IRep>{&src};
         auto&& thisRepAccessor = _SafeReadRepAccessor<_IRep>{this};
@@ -265,7 +265,7 @@ namespace Stroika::Foundation::Containers {
     template <typename CONTAINER_OF_ADDABLE>
     void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (const CONTAINER_OF_ADDABLE& items)
     {
-        if (this == &items) {
+        if (this == &items) { // avoid modifying container while iterating over it
             RemoveAll ();
         }
         else {
@@ -352,7 +352,7 @@ namespace Stroika::Foundation::Containers {
         CONTAINER_OF_Key_T result;
         for (auto i : *this) {
             // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
-            result.insert (result.end (), pair<KEY_TYPE, MAPPED_VALUE_TYPE> (i.fKey, i.fValue));
+            result.insert (result.end (), pair<KEY_TYPE, MAPPED_VALUE_TYPE>{i.fKey, i.fValue});
         }
         return result;
     }
@@ -477,7 +477,7 @@ namespace Stroika::Foundation::Containers {
                 }
             };
             MyIterable_ (const MyMapping_& m)
-                : Iterable<KEY_TYPE> (Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (m))
+                : Iterable<KEY_TYPE>{Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (m)}
             {
             }
         };

@@ -30,14 +30,14 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline SortedSet<T>::SortedSet (const _IRepSharedPtr& src) noexcept
-        : inherited (src)
+        : inherited{src}
     {
         RequireNotNull (src);
         _AssertRepValidType ();
     }
     template <typename T>
     inline SortedSet<T>::SortedSet (_IRepSharedPtr&& src) noexcept
-        : inherited ((RequireNotNull (src), move (src)))
+        : inherited{(RequireNotNull (src), move (src))}
     {
         _AssertRepValidType ();
     }
@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>*>
     inline SortedSet<T>::SortedSet (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src)
-        : SortedSet (forward<INORDER_COMPARER> (inOrderComparer))
+        : SortedSet{forward<INORDER_COMPARER> (inOrderComparer)}
     {
         this->AddAll (src);
         _AssertRepValidType ();

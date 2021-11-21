@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ********************* SortedCollection_stdmultiset<T>::IImplRepBase_ ****************
+     ******************* SortedCollection_stdmultiset<T>::IImplRepBase_ *************
      ********************************************************************************
      */
     template <typename T>
@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ************************* SortedCollection_stdmultiset<T>::Rep_ *********************
+     ******************** SortedCollection_stdmultiset<T>::Rep_ *********************
      ********************************************************************************
      */
     template <typename T>
@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     ************************* SortedCollection_stdmultiset<T> ***************************
+     ************************* SortedCollection_stdmultiset<T> **********************
      ********************************************************************************
      */
     template <typename T>
@@ -180,7 +180,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename INORDER_COMPARER>
     inline SortedCollection_stdmultiset<T>::SortedCollection_stdmultiset (const INORDER_COMPARER& inorderComparer)
-        : inherited (inherited::template MakeSmartPtr<Rep_<INORDER_COMPARER>> (inorderComparer))
+        : inherited{inherited::template MakeSmartPtr<Rep_<INORDER_COMPARER>> (inorderComparer)}
     {
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedCollection");
         AssertRepValidType_ ();
@@ -194,7 +194,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     SortedCollection_stdmultiset<T>::SortedCollection_stdmultiset (const InOrderComparerType& inOrderComparer, const initializer_list<value_type>& src)
-        : SortedCollection_stdmultiset (inOrderComparer)
+        : SortedCollection_stdmultiset{inOrderComparer}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
     SortedCollection_stdmultiset<T>::SortedCollection_stdmultiset (const InOrderComparerType& inOrderComparer, CONTAINER_OF_ADDABLE&& src)
-        : SortedCollection_stdmultiset (inOrderComparer)
+        : SortedCollection_stdmultiset{inOrderComparer}
     {
         this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -226,7 +226,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_T>
     inline SortedCollection_stdmultiset<T>::SortedCollection_stdmultiset (const InOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-        : SortedCollection_stdmultiset (inOrderComparer)
+        : SortedCollection_stdmultiset{inOrderComparer}
     {
         this->AddAll (start, end);
         AssertRepValidType_ ();

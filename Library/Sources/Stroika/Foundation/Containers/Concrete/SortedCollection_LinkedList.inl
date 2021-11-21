@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename INORDER_COMPARER>
     inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (const INORDER_COMPARER& inorderComparer)
-        : inherited (inherited::template MakeSmartPtr<Rep_<INORDER_COMPARER>> (inorderComparer))
+        : inherited{inherited::template MakeSmartPtr<Rep_<INORDER_COMPARER>> (inorderComparer)}
     {
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedCollection");
         AssertRepValidType_ ();
@@ -220,7 +220,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     SortedCollection_LinkedList<T>::SortedCollection_LinkedList (const SortedCollection<T>& src)
-        : SortedCollection_LinkedList ()
+        : SortedCollection_LinkedList{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();

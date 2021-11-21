@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename EQUALS_COMPARER>
     inline Set_LinkedList<T>::Set_LinkedList (const EQUALS_COMPARER& equalsComparer)
-        : inherited (inherited::template MakeSmartPtr<Rep_<EQUALS_COMPARER>> (equalsComparer))
+        : inherited{inherited::template MakeSmartPtr<Rep_<EQUALS_COMPARER>> (equalsComparer)}
     {
         static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Equals comparer required with Set_LinkedList");
         AssertRepValidType_ ();
@@ -189,7 +189,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     inline Set_LinkedList<T>::Set_LinkedList (const ElementEqualityComparerType& equalsComparer, const initializer_list<T>& src)
-        : Set_LinkedList (equalsComparer)
+        : Set_LinkedList{equalsComparer}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
     inline Set_LinkedList<T>::Set_LinkedList (const ElementEqualityComparerType& equalsComparer, CONTAINER_OF_ADDABLE&& src)
-        : Set_LinkedList (equalsComparer)
+        : Set_LinkedList{equalsComparer}
     {
         this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         AssertRepValidType_ ();

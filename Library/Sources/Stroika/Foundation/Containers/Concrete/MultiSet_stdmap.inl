@@ -227,7 +227,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename TRAITS>
     template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>*>
     inline MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const INORDER_COMPARER& inorderComparer)
-        : inherited (inherited::template MakeSmartPtr<Rep_<INORDER_COMPARER>> (inorderComparer))
+        : inherited{inherited::template MakeSmartPtr<Rep_<INORDER_COMPARER>> (inorderComparer)}
     {
         AssertRepValidType_ ();
     }
@@ -248,7 +248,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T, typename TRAITS>
     MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const initializer_list<value_type>& src)
-        : MultiSet_stdmap ()
+        : MultiSet_stdmap{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();

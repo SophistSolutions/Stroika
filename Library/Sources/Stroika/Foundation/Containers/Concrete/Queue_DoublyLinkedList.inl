@@ -133,7 +133,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (const Queue_DoublyLinkedList<T>& src)
-        : inherited (src)
+        : inherited{src}
     {
         AssertRepValidType_ ();
     }

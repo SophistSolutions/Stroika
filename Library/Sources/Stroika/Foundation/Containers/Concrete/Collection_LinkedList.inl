@@ -139,13 +139,13 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     inline Collection_LinkedList<T>::Collection_LinkedList ()
-        : inherited (inherited::template MakeSmartPtr<Rep_> ())
+        : inherited{inherited::template MakeSmartPtr<Rep_> ()}
     {
         AssertRepValidType_ ();
     }
     template <typename T>
     Collection_LinkedList<T>::Collection_LinkedList (const T* start, const T* end)
-        : Collection_LinkedList ()
+        : Collection_LinkedList{}
     {
         Require ((start == end) or (start != nullptr and end != nullptr));
         this->AddAll (start, end);
@@ -153,7 +153,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     Collection_LinkedList<T>::Collection_LinkedList (const Collection<T>& src)
-        : Collection_LinkedList ()
+        : Collection_LinkedList{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();

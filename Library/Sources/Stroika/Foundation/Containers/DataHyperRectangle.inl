@@ -17,26 +17,26 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T, typename... INDEXES>
     inline DataHyperRectangle<T, INDEXES...>::DataHyperRectangle (const DataHyperRectangle<T, INDEXES...>& src) noexcept
-        : inherited (src)
+        : inherited{src}
     {
         _AssertRepValidType ();
     }
     template <typename T, typename... INDEXES>
     inline DataHyperRectangle<T, INDEXES...>::DataHyperRectangle (DataHyperRectangle<T, INDEXES...>&& src) noexcept
-        : inherited (move (src))
+        : inherited{move (src)}
     {
         _AssertRepValidType ();
     }
     template <typename T, typename... INDEXES>
     inline DataHyperRectangle<T, INDEXES...>::DataHyperRectangle (const _IRepSharedPtr& src) noexcept
-        : inherited (src)
+        : inherited{src}
     {
         RequireNotNull (src);
         _AssertRepValidType ();
     }
     template <typename T, typename... INDEXES>
     inline DataHyperRectangle<T, INDEXES...>::DataHyperRectangle (_IRepSharedPtr&& src) noexcept
-        : inherited ((RequireNotNull (src), move (src)))
+        : inherited{(RequireNotNull (src), move (src))}
     {
         _AssertRepValidType ();
     }

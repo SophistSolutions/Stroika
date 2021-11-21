@@ -217,14 +217,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap (STDMAP<>&& src)
-        : inherited (inherited::template MakeSmartPtr<Rep_<typename map<KEY_TYPE, MAPPED_VALUE_TYPE>::key_compare>> (move (src)))
+        : inherited{inherited::template MakeSmartPtr<Rep_<typename map<KEY_TYPE, MAPPED_VALUE_TYPE>::key_compare>> (move (src))}
     {
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> ()>*>
     inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap (const KEY_INORDER_COMPARER& inorderComparer)
-        : inherited (inherited::template MakeSmartPtr<Rep_<KEY_INORDER_COMPARER>> (inorderComparer))
+        : inherited{inherited::template MakeSmartPtr<Rep_<KEY_INORDER_COMPARER>> (inorderComparer)}
     {
         AssertRepValidType_ ();
     }

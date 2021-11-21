@@ -493,7 +493,7 @@ namespace {
 #endif
             i = reinterpret_cast<const ifreq*> (reinterpret_cast<const byte*> (i) + len);
         }
-        return results;
+        return move (results);
     }
 }
 #endif

@@ -227,7 +227,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     inline Sequence_Array<T>::Sequence_Array ()
-        : inherited (inherited::template MakeSmartPtr<Rep_> ())
+        : inherited{inherited::template MakeSmartPtr<Rep_> ()}
     {
         AssertRepValidType_ ();
     }

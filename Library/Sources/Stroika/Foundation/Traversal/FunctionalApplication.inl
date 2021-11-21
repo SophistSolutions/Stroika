@@ -62,33 +62,33 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename MAPPER_ENGINE>
     inline FunctionalApplicationContext<T, MAPPER_ENGINE>::FunctionalApplicationContext (Iterable<T> i, MAPPER_ENGINE m)
-        : inherited (i)
-        , fMappingEngine_ (m)
+        : inherited{i}
+        , fMappingEngine_{m}
     {
     }
     template <typename T, typename MAPPER_ENGINE>
     template <typename OUT_T>
     inline FunctionalApplicationContext<OUT_T, MAPPER_ENGINE> FunctionalApplicationContext<T, MAPPER_ENGINE>::Map (const function<OUT_T (T)>& do2Each)
     {
-        return FunctionalApplicationContext<OUT_T, MAPPER_ENGINE> (fMappingEngine_.Map (inherited (*this), do2Each), fMappingEngine_);
+        return FunctionalApplicationContext<OUT_T, MAPPER_ENGINE>{fMappingEngine_.Map (inherited{*this}, do2Each), fMappingEngine_};
     }
     template <typename T, typename MAPPER_ENGINE>
     template <typename OUT_T>
     inline OUT_T FunctionalApplicationContext<T, MAPPER_ENGINE>::Reduce (const function<OUT_T (T, OUT_T)>& do2Each, OUT_T memo)
     {
-        return fMappingEngine_.Reduce (inherited (*this), do2Each, memo);
+        return fMappingEngine_.Reduce (inherited{*this}, do2Each, memo);
     }
     template <typename T, typename MAPPER_ENGINE>
     template <typename INOUT_T>
     inline FunctionalApplicationContext<INOUT_T, MAPPER_ENGINE> FunctionalApplicationContext<T, MAPPER_ENGINE>::Filter (const function<bool (INOUT_T)>& includeTest)
     {
-        return FunctionalApplicationContext<INOUT_T, MAPPER_ENGINE> (fMappingEngine_.Filter (inherited (*this), includeTest), fMappingEngine_);
+        return FunctionalApplicationContext<INOUT_T, MAPPER_ENGINE>{fMappingEngine_.Filter (inherited{*this}, includeTest), fMappingEngine_};
     }
     template <typename T, typename MAPPER_ENGINE>
     template <typename INOUT_T>
     optional<INOUT_T> FunctionalApplicationContext<T, MAPPER_ENGINE>::Find (const function<bool (INOUT_T)>& thatPassesThisTest)
     {
-        return fMappingEngine_.Find (inherited (*this), thatPassesThisTest);
+        return fMappingEngine_.Find (inherited{*this}, thatPassesThisTest);
     }
 
 }

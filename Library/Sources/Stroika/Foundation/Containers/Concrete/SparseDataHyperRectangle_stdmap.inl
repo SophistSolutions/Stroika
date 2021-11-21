@@ -198,13 +198,13 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename... INDEXES>
     SparseDataHyperRectangle_stdmap<T, INDEXES...>::SparseDataHyperRectangle_stdmap (Configuration::ArgByValueType<T> defaultItem)
-        : inherited (inherited::template MakeSmartPtr<Rep_> (defaultItem))
+        : inherited{inherited::template MakeSmartPtr<Rep_> (defaultItem)}
     {
         AssertRepValidType_ ();
     }
     template <typename T, typename... INDEXES>
     inline SparseDataHyperRectangle_stdmap<T, INDEXES...>::SparseDataHyperRectangle_stdmap (const SparseDataHyperRectangle_stdmap<T, INDEXES...>& src)
-        : inherited (static_cast<const inherited&> (src))
+        : inherited{static_cast<const inherited&> (src)}
     {
         AssertRepValidType_ ();
     }

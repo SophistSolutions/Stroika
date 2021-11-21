@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Time {
     {
         Assert (fRepType_ == eEmpty_);
         if (not durationStr.empty ()) {
-            (*(inherited*)this) = inherited (ParseTime_ (durationStr));
+            (*(inherited*)this) = inherited{ParseTime_ (durationStr)};
             new (&fStringRep_) string (durationStr);
             fRepType_ = eString_;
         }

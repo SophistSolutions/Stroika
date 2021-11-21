@@ -445,7 +445,7 @@ Traversal::Iterable<InternetAddress> Network::InternetAddresses_Any (InternetPro
     if (InternetProtocol::IP::SupportIPV6 (ipSupport)) {
         result += V6::kAddrAny;
     }
-    return result;
+    return move (result);
 }
 
 /*
@@ -462,7 +462,7 @@ Traversal::Iterable<InternetAddress> Network::InternetAddresses_Localhost (Inter
     if (InternetProtocol::IP::SupportIPV6 (ipSupport)) {
         result += V6::kLocalhost;
     }
-    return result;
+    return move (result);
 }
 
 /*

@@ -131,13 +131,13 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     inline Collection_stdforward_list<T>::Collection_stdforward_list ()
-        : inherited (inherited::template MakeSmartPtr<Rep_> ())
+        : inherited{inherited::template MakeSmartPtr<Rep_> ()}
     {
         AssertRepValidType_ ();
     }
     template <typename T>
     inline Collection_stdforward_list<T>::Collection_stdforward_list (const T* start, const T* end)
-        : Collection_stdforward_list ()
+        : Collection_stdforward_list{}
     {
         Require ((start == end) or (start != nullptr and end != nullptr));
         this->AddAll (start, end);
@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     inline Collection_stdforward_list<T>::Collection_stdforward_list (const Collection<T>& src)
-        : Collection_stdforward_list ()
+        : Collection_stdforward_list{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();

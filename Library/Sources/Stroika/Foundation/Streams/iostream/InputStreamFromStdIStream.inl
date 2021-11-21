@@ -179,7 +179,7 @@ namespace Stroika::Foundation::Streams::iostream {
      */
     template <typename ELEMENT_TYPE, typename TRAITS>
     inline InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Ptr::Ptr (const shared_ptr<Rep_>& from)
-        : inherited (from)
+        : inherited{from}
     {
     }
 

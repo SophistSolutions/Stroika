@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename INORDER_COMPARER>
     inline Set_stdset<T>::Set_stdset (const INORDER_COMPARER& inorderComparer)
-        : inherited (inherited::template MakeSmartPtr<Rep_<INORDER_COMPARER>> (inorderComparer))
+        : inherited{inherited::template MakeSmartPtr<Rep_<INORDER_COMPARER>> (inorderComparer)}
     {
         AssertRepValidType_ ();
     }
@@ -181,7 +181,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     inline Set_stdset<T>::Set_stdset (const ElementEqualityComparerType& equalsComparer, const initializer_list<T>& src)
-        : Set_stdset (equalsComparer)
+        : Set_stdset{equalsComparer}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -197,7 +197,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
     inline Set_stdset<T>::Set_stdset (const ElementEqualityComparerType& equalsComparer, CONTAINER_OF_ADDABLE&& src)
-        : Set_stdset (equalsComparer)
+        : Set_stdset{equalsComparer}
     {
         this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -213,7 +213,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename COPY_FROM_ITERATOR_T>
     inline Set_stdset<T>::Set_stdset (const ElementEqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end)
-        : Set_stdset (equalsComparer)
+        : Set_stdset{equalsComparer}
     {
         this->AddAll (start, end);
         AssertRepValidType_ ();

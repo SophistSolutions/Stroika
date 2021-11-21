@@ -181,7 +181,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     inline Sequence_stdvector<T>::Sequence_stdvector (vector<value_type>&& src)
-        : inherited (inherited::template MakeSmartPtr<Rep_> (move (src)))
+        : inherited{inherited::template MakeSmartPtr<Rep_> (move (src))}
     {
         AssertRepValidType_ ();
     }
@@ -202,7 +202,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline Sequence_stdvector<T>& Sequence_stdvector<T>::operator= (const Sequence_stdvector& rhs)
+    inline auto Sequence_stdvector<T>::operator= (const Sequence_stdvector& rhs) -> Sequence_stdvector&
     {
         AssertRepValidType_ ();
         inherited::operator= (rhs);

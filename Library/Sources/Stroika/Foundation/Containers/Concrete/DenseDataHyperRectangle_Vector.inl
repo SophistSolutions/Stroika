@@ -134,13 +134,13 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename... INDEXES>
     DenseDataHyperRectangle_Vector<T, INDEXES...>::DenseDataHyperRectangle_Vector (INDEXES... dimensions)
-        : inherited (inherited::template MakeSmartPtr<Rep_> (forward<INDEXES> (dimensions)...))
+        : inherited{inherited::template MakeSmartPtr<Rep_> (forward<INDEXES> (dimensions)...)}
     {
         AssertRepValidType_ ();
     }
     template <typename T, typename... INDEXES>
     inline DenseDataHyperRectangle_Vector<T, INDEXES...>::DenseDataHyperRectangle_Vector (const DenseDataHyperRectangle_Vector<T, INDEXES...>& src)
-        : inherited (static_cast<const inherited&> (src))
+        : inherited{static_cast<const inherited&> (src)}
     {
         AssertRepValidType_ ();
     }
@@ -159,5 +159,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMember
 #endif
     }
+
 }
 #endif /* _Stroika_Foundation_Containers_Concrete_DenseDataHyperRectangle_Vector_inl_ */

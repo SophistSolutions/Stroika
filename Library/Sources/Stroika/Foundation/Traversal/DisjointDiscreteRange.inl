@@ -27,24 +27,24 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename RANGE_TYPE>
     inline DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (const RangeType& from)
-        : inherited (from)
+        : inherited{from}
     {
     }
     template <typename T, typename RANGE_TYPE>
     inline DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (const initializer_list<RangeType>& from)
-        : inherited (from)
+        : inherited{from}
     {
     }
     template <typename T, typename RANGE_TYPE>
     template <typename CONTAINER_OF_DISCRETERANGE_OF_T>
     DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from)
-        : DisjointDiscreteRange (from.begin (), from.end ())
+        : DisjointDiscreteRange{from.begin (), from.end ()}
     {
     }
     template <typename T, typename RANGE_TYPE>
     template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
     DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, RangeType>, int>*)
-        : inherited (start, end)
+        : inherited{start, end}
     {
     }
     template <typename T, typename RANGE_TYPE>

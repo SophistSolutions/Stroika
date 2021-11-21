@@ -291,7 +291,7 @@ MessageStartTextInputStreamBinaryAdapter::Ptr MessageStartTextInputStreamBinaryA
  ********************************************************************************
  */
 MessageStartTextInputStreamBinaryAdapter::Ptr::Ptr (const shared_ptr<InputStream<Character>::_IRep>& from)
-    : inherited (from)
+    : inherited{from}
 {
 }
 
