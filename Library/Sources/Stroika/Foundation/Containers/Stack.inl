@@ -18,8 +18,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Stack<T>::Stack ()
-        // Use inherited() to avoid matching inherited(initializer_list<>... - see docs in inherited::CTORs...
-        : inherited (Factory::Stack_Factory<T>{}())
+        : inherited{Factory::Stack_Factory<T>{}()}
     {
         _AssertRepValidType ();
     }
@@ -33,7 +32,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline Stack<T>::Stack (const _IRepSharedPtr& src) noexcept
-        : inherited (src)
+        : inherited{src}
     {
         RequireNotNull (src);
         _AssertRepValidType ();

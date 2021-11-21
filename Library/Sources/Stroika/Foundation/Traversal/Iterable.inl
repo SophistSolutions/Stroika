@@ -213,12 +213,6 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    inline Iterable<T>::Iterable (const Iterable& from) noexcept
-        : _fRep{from._fRep}
-    {
-        Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
-    }
-    template <typename T>
     template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_base_of_v<Iterable<T>, Configuration::remove_cvref_t<CONTAINER_OF_T>>>*>
     Iterable<T>::Iterable (CONTAINER_OF_T&& from)
         : _fRep{mk_ (forward<CONTAINER_OF_T> (from))._fRep}

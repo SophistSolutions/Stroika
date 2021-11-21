@@ -23,8 +23,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Collection<T>::Collection ()
-        // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
-        : inherited (Factory::Collection_Factory<T>{}())
+        : inherited{Factory::Collection_Factory<T>{}()}
     {
         _AssertRepValidType ();
     }

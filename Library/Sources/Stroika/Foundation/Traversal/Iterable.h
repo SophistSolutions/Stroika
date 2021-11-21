@@ -279,9 +279,15 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief  Iterable are safely copyable (by value).
+         *  \brief  Iterable are safely copyable (by value). Since Iterable uses COW, this just copies the underlying pointer and increments the reference count.
          */
-        Iterable (const Iterable& from) noexcept;
+        Iterable (const Iterable& src) noexcept = default;
+
+    public:
+        /**
+         *  \brief  Iterable are safely moveable.
+         */
+        Iterable (Iterable&& src) noexcept = default;
 
     public:
         /**

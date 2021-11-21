@@ -131,13 +131,11 @@ namespace Stroika::Foundation::Traversal {
             }
         };
         MyIterable_ ()
-            // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
-            : Iterable<T> (Iterable<T>::template MakeSmartPtr<MyRep_> ())
+            : Iterable<T>{Iterable<T>::template MakeSmartPtr<MyRep_> ()}
         {
         }
         MyIterable_ (T start, T end)
-            // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
-            : Iterable<T> (Iterable<T>::template MakeSmartPtr<MyRep_> (start, end))
+            : Iterable<T>{Iterable<T>::template MakeSmartPtr<MyRep_> (start, end)}
         {
         }
     };
