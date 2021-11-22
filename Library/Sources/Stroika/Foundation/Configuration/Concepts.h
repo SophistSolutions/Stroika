@@ -6,7 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
-#include <iterator> // needed for std::begin/std::end calls
+#include <functional> // needed for std::equal_to
+#include <iterator>   // needed for std::begin/std::end calls
 
 #include "../Configuration/Common.h"
 
@@ -52,7 +53,7 @@ namespace Stroika::Foundation::Configuration {
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (neq, (x != x));
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (lt, (x < x));
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x - x));
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (equal_to, (equal_to<X>{}));
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (equal_to, (std::equal_to<X>{}));
 
     /*
      *  has_beginend<T>::value is true iff T has a begin/end method
