@@ -870,8 +870,7 @@ namespace Stroika::Foundation::Traversal {
          *      BASED ON Microsoft .net Linq.
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.first(v=vs.110).aspx
          */
-        nonvirtual optional<T>                                                             First () const;
-        nonvirtual [[deprecated ("Since Stroika 2.1b12, use First<RESULTT>")]] optional<T> First (const function<bool (ArgByValueType<T>)>& that) const;
+        nonvirtual optional<T> First () const;
         template <typename RESULT_T = T>
         nonvirtual optional<RESULT_T> First (const function<optional<RESULT_T> (ArgByValueType<T>)>& that) const;
 
@@ -906,8 +905,7 @@ namespace Stroika::Foundation::Traversal {
          *      BASED ON Microsoft .net Linq. (Last)
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.last(v=vs.110).aspx
          */
-        nonvirtual optional<T>                                                            Last () const;
-        nonvirtual [[deprecated ("Since Stroika 2.1b12, use Last<RESULTT>")]] optional<T> Last (const function<bool (ArgByValueType<T>)>& that) const;
+        nonvirtual optional<T> Last () const;
         template <typename RESULT_T = T>
         nonvirtual optional<RESULT_T> Last (const function<optional<RESULT_T> (ArgByValueType<T>)>& that) const;
 
@@ -1159,11 +1157,15 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual size_t size () const;
 
     public:
+        using _APPLY_ARGTYPE [[deprecated ("Since Stroika 2.1b14, use const function<void (ArgByValueType<T> item)>")]]      = const function<void (ArgByValueType<T> item)>&;
+        using _APPLYUNTIL_ARGTYPE [[deprecated ("Since Stroika 2.1b14, use const function<bool (ArgByValueType<T> item)>")]] = const function<bool (ArgByValueType<T> item)>&;
+        [[deprecated ("Since Stroika 2.1b12, use First<RESULTT>")]] optional<T> First (const function<bool (ArgByValueType<T>)>& that) const;
+        [[deprecated ("Since Stroika 2.1b12, use Last<RESULTT>")]] optional<T>  Last (const function<bool (ArgByValueType<T>)>& that) const;
         template <typename T1, typename T2, typename RESULT = pair<T1, T2>>
-        [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2>)")]] nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2) const;
+        [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2>)")]] Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2) const;
         template <typename T1, typename T2, typename T3, typename RESULT = tuple<T1, T2, T3>>
-        [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2,T3>)")]] nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const;
-        [[deprecated ("Since Stroika 2.1b14 use Find ()")]] Iterator<T>                                                                                                           FindFirstThat (const function<bool (ArgByValueType<T> item)>& that) const
+        [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2,T3>)")]] Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const;
+        [[deprecated ("Since Stroika 2.1b14 use Find ()")]] Iterator<T>                                                                                                FindFirstThat (const function<bool (ArgByValueType<T> item)>& that) const
         {
             return Find (that);
         }
@@ -1333,10 +1335,6 @@ namespace Stroika::Foundation::Traversal {
 
     protected:
         using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
-
-    public:
-        using _APPLY_ARGTYPE [[deprecated ("Since Stroika 2.1b14, use const function<void (ArgByValueType<T> item)>")]]      = const function<void (ArgByValueType<T> item)>&;
-        using _APPLYUNTIL_ARGTYPE [[deprecated ("Since Stroika 2.1b14, use const function<bool (ArgByValueType<T> item)>")]] = const function<bool (ArgByValueType<T> item)>&;
 
     public:
         virtual _IterableRepSharedPtr Clone () const = 0;
