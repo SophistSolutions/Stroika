@@ -544,7 +544,7 @@ namespace Stroika::Foundation::Traversal {
          *  equivalent to:
          *
          *      for (Iterator<T> i = begin (); i != end (); ++i) {
-         *          if (doToElement (*i)) {
+         *          if (that (*i)) {
          *              return it;
          *          }
          *      }
@@ -572,6 +572,7 @@ namespace Stroika::Foundation::Traversal {
          *      \endcode
          *
          *  @see First () - often more handy
+         *  \note Before Stroika 2.1b14, the overload taking just THAT_FUNCTION was called FindFirstThat, and used function<bool(T)> instead of a templated function.
          * 
          *  \note THAT_FUNTION type used to be hardwired to function<bool (ArgByValueType<T> item)>&, but now use template argument
          *     and (SOON concept) but for now enable_if_t
