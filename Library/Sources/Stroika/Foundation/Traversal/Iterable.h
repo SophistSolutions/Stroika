@@ -578,8 +578,12 @@ namespace Stroika::Foundation::Traversal {
          */
         template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>* = nullptr>
         nonvirtual Iterator<T> Find (THAT_FUNCTION&& that) const;
+        template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
+        nonvirtual Iterator<T> Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {}) const;
         template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>* = nullptr>
         nonvirtual Iterator<T> Find (const Iterator<T>& startAt, THAT_FUNCTION&& that) const;
+        template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
+        nonvirtual Iterator<T> Find (const Iterator<T>& startAt, Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {}) const;
 
     public:
         /**
@@ -1349,7 +1353,7 @@ namespace Stroika::Foundation::Traversal {
         virtual size_t      GetLength () const                                                       = 0;
         virtual bool        IsEmpty () const                                                         = 0;
         virtual void        Apply (const function<void (ArgByValueType<T> item)>& doToElement) const = 0;
-        virtual Iterator<T> Find (const function<bool (ArgByValueType<T> item)>&) const              = 0;
+        virtual Iterator<T> Find (const function<bool (ArgByValueType<T> item)>& that) const         = 0;
 
     protected:
         /*

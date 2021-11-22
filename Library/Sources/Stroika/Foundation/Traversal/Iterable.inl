@@ -972,11 +972,28 @@ namespace Stroika::Foundation::Traversal {
         return _SafeReadRepAccessor<>{this}._ConstGetRep ().Find (that);
     }
     template <typename T>
+    template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
+    inline Iterator<T> Iterable<T>::Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer) const
+    {
+        return Find ([v, equalsComparer] (Configuration::ArgByValueType<T> arg) { return equalsComparer (v, arg); });
+    }
+    template <typename T>
     template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>*>
     inline Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, THAT_FUNCTION&& that) const
     {
         for (Iterator<T> i = startAt; i != end (); ++i) {
             if (that (*i)) {
+                return i;
+            }
+        }
+        return end ();
+    }
+    template <typename T>
+    template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
+    Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer) const
+    {
+        for (Iterator<T> i = startAt; i != end (); ++i) {
+            if (equalsComparer (v, *i)) {
                 return i;
             }
         }
