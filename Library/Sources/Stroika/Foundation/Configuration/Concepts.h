@@ -44,6 +44,9 @@ namespace Stroika::Foundation::Configuration {
      *  for now
      *
      *  Starting to experiment...
+     * 
+     *  \par EXAMPLE
+     *      has_eq<T>::value
      */
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x));
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (neq, (x != x));
