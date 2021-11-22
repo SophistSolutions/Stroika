@@ -220,6 +220,19 @@ namespace Stroika::Foundation::Configuration {
     using remove_cvref_t = std::remove_cvref_t<T>;
 #endif
 
+    /**
+     * Return true iff FUNCTOR is of the form  function<bool(T)> or convertible to that.
+     */
+    template <typename FUNCTOR_ARG, typename FUNCTOR>
+    constexpr bool IsTPredicate ()
+    {
+        using T = remove_cvref_t<FUNCTOR_ARG>;
+        if constexpr (is_invocable_v<FUNCTOR, T>) {
+            return std::is_convertible_v<std::invoke_result_t<FUNCTOR, T>, bool>;
+        }
+        return false;
+    }
+
 }
 
 /*

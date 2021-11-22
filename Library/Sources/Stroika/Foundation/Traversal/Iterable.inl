@@ -966,17 +966,17 @@ namespace Stroika::Foundation::Traversal {
         _SafeReadRepAccessor<>{this}._ConstGetRep ().Apply (doToElement);
     }
     template <typename T>
-    inline Iterator<T> Iterable<T>::Find (const function<bool (ArgByValueType<T> item)>& that) const
+    template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>*>
+    inline Iterator<T> Iterable<T>::Find (THAT_FUNCTION&& that) const
     {
-        RequireNotNull (that);
         return _SafeReadRepAccessor<>{this}._ConstGetRep ().Find (that);
     }
     template <typename T>
-    inline Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, const function<bool (ArgByValueType<T> item)>& doToElement) const
+    template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>*>
+    inline Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, THAT_FUNCTION&& that) const
     {
-        RequireNotNull (doToElement);
         for (Iterator<T> i = startAt; i != end (); ++i) {
-            if (doToElement (*i)) {
+            if (that (*i)) {
                 return i;
             }
         }

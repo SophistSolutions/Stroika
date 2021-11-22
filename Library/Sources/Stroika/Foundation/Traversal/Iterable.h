@@ -572,9 +572,14 @@ namespace Stroika::Foundation::Traversal {
          *      \endcode
          *
          *  @see First () - often more handy
+         * 
+         *  \note THAT_FUNTION type used to be hardwired to function<bool (ArgByValueType<T> item)>&, but now use template argument
+         *     and (SOON concept) but for now enable_if_t
          */
-        nonvirtual Iterator<T> Find (const function<bool (ArgByValueType<T> item)>& that) const;
-        nonvirtual Iterator<T> Find (const Iterator<T>& startAt, const function<bool (ArgByValueType<T> item)>& that) const;
+        template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>* = nullptr>
+        nonvirtual Iterator<T> Find (THAT_FUNCTION&& that) const;
+        template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>* = nullptr>
+        nonvirtual Iterator<T> Find (const Iterator<T>& startAt, THAT_FUNCTION&& that) const;
 
     public:
         /**
