@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  Not needed, but this provides the ability to performance tweek the search done by FindFirstThat/FindLastThat
+         *  Not needed, but this provides the ability to performance tweek the search done by Find/FindLastThat
          */
         struct FindHints {
             value_type fSeedPosition;
@@ -109,8 +109,8 @@ namespace Stroika::Foundation::Traversal {
          *  Find the first element of the DisjointDiscreteRange that passes the argument function test.
          &&&& docs - assumes a bit that one subrange meeting criteria - fill in details
             */
-        nonvirtual optional<value_type> FindFirstThat (const function<bool (value_type)>& testF) const;
-        nonvirtual optional<value_type> FindFirstThat (const function<bool (value_type)>& testF, const FindHints& hints) const;
+        nonvirtual optional<value_type> Find (const function<bool (value_type)>& that) const;
+        nonvirtual optional<value_type> Find (const function<bool (value_type)>& that, const FindHints& hints) const;
 
     public:
         /**

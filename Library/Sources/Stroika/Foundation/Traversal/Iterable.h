@@ -226,7 +226,7 @@ namespace Stroika::Foundation::Traversal {
      *
      *  *Design Note*:
      *      Rejected idea:
-     *          Add overload of FindFirstThat() that takes Iterator<T> as arugument instead of T
+     *          Add overload of Find() that takes Iterator<T> as arugument instead of T
      *          so you can delete the item pointed to by T.
      *
      *          This was rejected because it can easily be done directly with iterators, and seems
@@ -567,14 +567,14 @@ namespace Stroika::Foundation::Traversal {
          *      \code
          *          bool IsAllWhitespace (String s) const
          *          {
-         *              return not s.FindFirstThat ([] (Character c) -> bool { return not c.IsWhitespace (); });
+         *              return not s.Find ([] (Character c) -> bool { return not c.IsWhitespace (); });
          *          }
          *      \endcode
          *
          *  @see First () - often more handy
          */
-        nonvirtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<T> item)>& doToElement) const;
-        nonvirtual Iterator<T> FindFirstThat (const Iterator<T>& startAt, const function<bool (ArgByValueType<T> item)>& doToElement) const;
+        nonvirtual Iterator<T> Find (const function<bool (ArgByValueType<T> item)>& that) const;
+        nonvirtual Iterator<T> Find (const Iterator<T>& startAt, const function<bool (ArgByValueType<T> item)>& that) const;
 
     public:
         /**
@@ -724,12 +724,6 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual Iterable<RESULT> Select (const function<RESULT (const T&)>& extract) const;
         template <typename RESULT>
         nonvirtual Iterable<RESULT> Select (const function<optional<RESULT> (const T&)>& extract) const;
-
-    public:
-        template <typename T1, typename T2, typename RESULT = pair<T1, T2>>
-        [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2>)")]] nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2) const;
-        template <typename T1, typename T2, typename T3, typename RESULT = tuple<T1, T2, T3>>
-        [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2,T3>)")]] nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const;
 
     public:
         /**
@@ -1164,6 +1158,20 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual size_t size () const;
 
+    public:
+        template <typename T1, typename T2, typename RESULT = pair<T1, T2>>
+        [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2>)")]] nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2) const;
+        template <typename T1, typename T2, typename T3, typename RESULT = tuple<T1, T2, T3>>
+        [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2,T3>)")]] nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const;
+        [[deprecated ("Since Stroika 2.1b14 use Find ()")]] Iterator<T>                                                                                                           FindFirstThat (const function<bool (ArgByValueType<T> item)>& that) const
+        {
+            return Find (that);
+        }
+        [[deprecated ("Since Stroika 2.1b14 use Find ()")]] Iterator<T> FindFirstThat (const Iterator<T>& startAt, const function<bool (ArgByValueType<T> item)>& that) const
+        {
+            return Find (startAt, that);
+        }
+
     protected:
         /**
          *  @see Memory::SharedByValue_State
@@ -1338,7 +1346,7 @@ namespace Stroika::Foundation::Traversal {
         virtual size_t      GetLength () const                                                       = 0;
         virtual bool        IsEmpty () const                                                         = 0;
         virtual void        Apply (const function<void (ArgByValueType<T> item)>& doToElement) const = 0;
-        virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<T> item)>&) const     = 0;
+        virtual Iterator<T> Find (const function<bool (ArgByValueType<T> item)>&) const              = 0;
 
     protected:
         /*
@@ -1347,7 +1355,7 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual bool _IsEmpty () const;
         nonvirtual void _Apply (const function<void (ArgByValueType<T> item)>& doToElement) const;
-        nonvirtual Iterator<T> _FindFirstThat (const function<bool (ArgByValueType<T> item)>& doToElement) const;
+        nonvirtual Iterator<T> _Find (const function<bool (ArgByValueType<T> item)>& that) const;
     };
 
     /**
@@ -1384,7 +1392,6 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual auto     operator() (const Iterable& lhs, const Iterable& rhs) const;
         T_THREEWAY_COMPARER fElementComparer;
     };
-
 }
 
 /*

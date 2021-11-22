@@ -80,9 +80,9 @@ namespace Stroika::Foundation::Traversal {
         this->_Apply (doToElement);
     }
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    Iterator<T> IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const
+    Iterator<T> IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::Find (const function<bool (ArgByValueType<value_type> item)>& that) const
     {
-        return this->_FindFirstThat (doToElement);
+        return this->_Find (that);
     }
 
     /*

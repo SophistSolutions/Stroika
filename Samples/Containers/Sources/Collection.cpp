@@ -188,7 +188,7 @@ namespace {
         fruits += L"cherries";
 
         {
-            Iterator<String> i = fruits.FindFirstThat ([] (String i) { return i == L"apple"; });
+            Iterator<String> i = fruits.Find ([] (String i) { return i == L"apple"; });
             Assert (i != fruits.end ());
             Assert (fruits.size () == 4);
         }

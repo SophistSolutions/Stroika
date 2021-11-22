@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Traversal {
             virtual size_t      GetLength () const override;
             virtual bool        IsEmpty () const override;
             virtual void        Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override;
-            virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override;
+            virtual Iterator<T> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override;
         };
     };
 

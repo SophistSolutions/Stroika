@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Typical: O(N), but can be less if systematically finding entries near start of container
          */
         template <typename FUNCTION>
-        nonvirtual UnderlyingIteratorRep FindFirstThat (FUNCTION doToElement) const;
+        nonvirtual UnderlyingIteratorRep Find (FUNCTION doToElement) const;
 
     public:
         /**

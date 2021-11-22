@@ -71,10 +71,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<value_type> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
+        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            if (auto iLink = fData_.FindFirstThat (doToElement)) {
+            if (auto iLink = fData_.Find (that)) {
                 return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, iLink)};
             }
             return nullptr;
@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            if (auto i = this->FindFirstThat ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); })) {
+            if (auto i = this->Find ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); })) {
                 if (item != nullptr) {
                     *item = *i;
                 }
@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             KEY_TYPE                                              key{fKeyExtractor_ (item)};
-            if (auto i = this->FindFirstThat ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); })) {
+            if (auto i = this->Find ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); })) {
                 auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
                 fData_.SetAt (mir.fIterator, item);
                 fChangeCounts_.PerformedChange ();
@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Remove (ArgByValueType<KEY_TYPE> key) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
-            if (auto i = this->FindFirstThat ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); })) {
+            if (auto i = this->Find ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); })) {
                 Remove (i, nullptr);
                 return true;
             }

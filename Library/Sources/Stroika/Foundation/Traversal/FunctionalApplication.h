@@ -241,7 +241,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          */
         template <typename INOUT_T>
-        optional<INOUT_T> Find (const function<bool (INOUT_T)>& thatPassesThisTest);
+        optional<INOUT_T> Find (const function<bool (INOUT_T)>& that);
     };
 
 }

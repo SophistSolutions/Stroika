@@ -125,9 +125,9 @@ namespace Stroika::Foundation::Traversal {
             {
                 this->_Apply (doToElement);
             }
-            virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const
+            virtual Iterator<T> Find (const function<bool (ArgByValueType<value_type> item)>& that) const
             {
-                return this->_FindFirstThat (doToElement);
+                return this->_Find (that);
             }
         };
         MyIterable_ ()

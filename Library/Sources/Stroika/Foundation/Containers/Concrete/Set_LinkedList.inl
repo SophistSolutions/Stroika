@@ -71,10 +71,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<value_type> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
+        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            if (auto iLink = fData_.FindFirstThat (doToElement)) {
+            if (auto iLink = fData_.Find (that)) {
                 return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, iLink)};
             }
             return nullptr;

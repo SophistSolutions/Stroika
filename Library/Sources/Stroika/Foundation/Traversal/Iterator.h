@@ -411,7 +411,7 @@ namespace Stroika::Foundation::Traversal {
          *  \em Design Note:
          *      I HATE type punning - which this is. And I may want to lose this.
          *
-         *      However, this API works beatifully with Iterable<>::FindFirstThat - and perhaps other things that
+         *      However, this API works beatifully with Iterable<>::Find - and perhaps other things that
          *      return iterators.
          *
          *      also, it allows

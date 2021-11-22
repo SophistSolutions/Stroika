@@ -86,9 +86,9 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T, typename MAPPER_ENGINE>
     template <typename INOUT_T>
-    optional<INOUT_T> FunctionalApplicationContext<T, MAPPER_ENGINE>::Find (const function<bool (INOUT_T)>& thatPassesThisTest)
+    optional<INOUT_T> FunctionalApplicationContext<T, MAPPER_ENGINE>::Find (const function<bool (INOUT_T)>& that)
     {
-        return fMappingEngine_.Find (inherited{*this}, thatPassesThisTest);
+        return fMappingEngine_.Find (inherited{*this}, that);
     }
 
 }

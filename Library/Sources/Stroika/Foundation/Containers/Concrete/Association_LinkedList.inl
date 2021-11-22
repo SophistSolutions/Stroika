@@ -58,11 +58,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             fData_.Apply (doToElement);
         }
-        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
+        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{fData_};
             using RESULT_TYPE = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
-            auto iLink        = fData_.FindFirstThat (doToElement);
+            auto iLink        = fData_.Find (that);
             if (iLink == nullptr) {
                 return RESULT_TYPE::GetEmptyIterator ();
             }

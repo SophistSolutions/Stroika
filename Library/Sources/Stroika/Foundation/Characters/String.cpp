@@ -186,9 +186,9 @@ void String::_IRep::Apply (const function<void (Configuration::ArgByValueType<va
     _Apply (doToElement);
 }
 
-Traversal::Iterator<Character> String::_IRep::FindFirstThat (const function<bool (Configuration::ArgByValueType<value_type> item)>& doToElement) const
+Traversal::Iterator<Character> String::_IRep::Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const
 {
-    return _FindFirstThat (doToElement);
+    return _Find (that);
 }
 
 /*
@@ -1096,7 +1096,7 @@ String String::ToUpperCase () const
 bool String::IsWhitespace () const
 {
     // It is all whitespace if the first non-whatspace character is 'EOF'
-    return not FindFirstThat ([] (Character c) -> bool { return not c.IsWhitespace (); });
+    return not Find ([] (Character c) -> bool { return not c.IsWhitespace (); });
 }
 
 String String::LimitLength (size_t maxLen, bool keepLeft) const

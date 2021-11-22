@@ -809,6 +809,7 @@ namespace Stroika::Foundation::Characters {
         nonvirtual optional<size_t> Find (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
         nonvirtual optional<size_t> Find (const String& subString, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
         nonvirtual optional<pair<size_t, size_t>> Find (const RegularExpression& regEx, size_t startAt = 0) const;
+        nonvirtual Traversal::Iterator<Character> Find (const function<bool (Character item)>& that) const;
 
     public:
         /**
@@ -1416,7 +1417,7 @@ namespace Stroika::Foundation::Characters {
         virtual size_t                         GetLength () const override;
         virtual bool                           IsEmpty () const override;
         virtual void                           Apply (const function<void (Configuration::ArgByValueType<value_type> item)>& doToElement) const override;
-        virtual Traversal::Iterator<Character> FindFirstThat (const function<bool (Configuration::ArgByValueType<value_type> item)>& doToElement) const override;
+        virtual Traversal::Iterator<Character> Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const override;
 
     public:
         nonvirtual Character GetAt (size_t index) const;

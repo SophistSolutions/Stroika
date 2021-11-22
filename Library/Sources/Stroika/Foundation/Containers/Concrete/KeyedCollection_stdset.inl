@@ -92,10 +92,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<T> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
+        virtual Iterator<T> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return this->_FindFirstThat (doToElement);
+            return this->_Find (that);
         }
 
         // KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep overrides

@@ -72,10 +72,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
+        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return this->_FindFirstThat (doToElement);
+            return this->_Find (that);
         }
 
         // Association<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::AssociationTraitsType>::_IRep overrides

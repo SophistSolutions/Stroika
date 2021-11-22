@@ -204,7 +204,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Typical: O(N), but can be less if systematically finding entries near start of array
          */
         template <typename FUNCTION>
-        nonvirtual size_t FindFirstThat (FUNCTION doToElement) const;
+        nonvirtual size_t Find (FUNCTION doToElement) const;
 
     public:
         /*

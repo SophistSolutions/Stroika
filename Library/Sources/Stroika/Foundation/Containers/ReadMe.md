@@ -76,7 +76,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 - Stroika containers are lazy copied (copy-on-write - aka COW)
   - Performance tradeoff: some access patterns are slower due to extra vtable lookup per operation, but most common operations (copying etc) much faster, and abstraction allowing changing representations often makes faster still. Plus, if you use functional apis, these generally avoid much of the vtable lookup cost. And smart compiles (especially link time codegen) can avoid most of the cost.
 - A sensible taxonmy of containers based on access pattern, and for each, multiple backend data structures to implement them.
-- Linq-like rich variety of functional accessors, like Apply (), FindFirstThat (), Where, Select (), Distinct (), OrderBy (), Accumulate (), Min/Max (), Any (), etc inherited from Iterable\<T>
+- Linq-like rich variety of functional accessors, like Apply (), Find (), Where, Select (), Distinct (), OrderBy (), Accumulate (), Min/Max (), Any (), etc inherited from Iterable\<T>
 
 - Internal thread safety checks, (generally) assure threadsafe access (see Debug::AssertExternallySyncrhonized)
 

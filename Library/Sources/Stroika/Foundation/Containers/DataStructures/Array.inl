@@ -142,7 +142,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <typename FUNCTION>
-    inline size_t Array<T>::FindFirstThat (FUNCTION doToElement) const
+    inline size_t Array<T>::Find (FUNCTION doToElement) const
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         const T*                                             start = &fItems_[0];

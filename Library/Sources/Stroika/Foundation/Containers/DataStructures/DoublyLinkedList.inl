@@ -274,7 +274,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <typename FUNCTION>
-    inline auto DoublyLinkedList<T>::FindFirstThat (FUNCTION doToElement) const -> UnderlyingIteratorRep
+    inline auto DoublyLinkedList<T>::Find (FUNCTION doToElement) const -> UnderlyingIteratorRep
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         for (Link* i = fHead_; i != nullptr; i = i->fNext) {

@@ -61,7 +61,7 @@ namespace Stroika::Frameworks::SystemPerformance {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         Require (fType2MeasurementTypes_.ContainsKey (typeid (decay_t<T>)));
         MeasurementType mt = fType2MeasurementTypes_[typeid (decay_t<T>)];
-        if (auto i = m.fMeasurements.FindFirstThat ([=] (const Measurement& m) { return m.fType == mt; })) {
+        if (auto i = m.fMeasurements.Find ([=] (const Measurement& m) { return m.fType == mt; })) {
             return fObjectVariantMapper_.ToObject<T> (i->fValue);
         }
         return nullopt;

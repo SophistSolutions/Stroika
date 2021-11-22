@@ -58,11 +58,11 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    inline Iterator<T> Iterable<T>::_IRep::_FindFirstThat (const function<bool (ArgByValueType<T> item)>& doToElement) const
+    inline Iterator<T> Iterable<T>::_IRep::_Find (const function<bool (ArgByValueType<T> item)>& that) const
     {
-        RequireNotNull (doToElement);
-        for (Iterator<T> i = MakeIterator (); i != Iterable<T>::end (); ++i) {
-            if (doToElement (*i)) {
+        RequireNotNull (that);
+        for (Iterator<T> i = MakeIterator (); i != end (); ++i) {
+            if (that (*i)) {
                 return i;
             }
         }
@@ -282,7 +282,7 @@ namespace Stroika::Foundation::Traversal {
     bool Iterable<T>::Contains (ArgByValueType<T> element, const EQUALS_COMPARER& equalsComparer) const
     {
         // grab iterator to first matching item, and contains if not at end; this is faster than using iterators
-        return static_cast<bool> (this->FindFirstThat ([&element, &equalsComparer] (T i) -> bool {
+        return static_cast<bool> (this->Find ([&element, &equalsComparer] (T i) -> bool {
             return equalsComparer (i, element);
         }));
     }
@@ -966,13 +966,13 @@ namespace Stroika::Foundation::Traversal {
         _SafeReadRepAccessor<>{this}._ConstGetRep ().Apply (doToElement);
     }
     template <typename T>
-    inline Iterator<T> Iterable<T>::FindFirstThat (const function<bool (ArgByValueType<T> item)>& doToElement) const
+    inline Iterator<T> Iterable<T>::Find (const function<bool (ArgByValueType<T> item)>& that) const
     {
-        RequireNotNull (doToElement);
-        return _SafeReadRepAccessor<>{this}._ConstGetRep ().FindFirstThat (doToElement);
+        RequireNotNull (that);
+        return _SafeReadRepAccessor<>{this}._ConstGetRep ().Find (that);
     }
     template <typename T>
-    inline Iterator<T> Iterable<T>::FindFirstThat (const Iterator<T>& startAt, const function<bool (ArgByValueType<T> item)>& doToElement) const
+    inline Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, const function<bool (ArgByValueType<T> item)>& doToElement) const
     {
         RequireNotNull (doToElement);
         for (Iterator<T> i = startAt; i != end (); ++i) {

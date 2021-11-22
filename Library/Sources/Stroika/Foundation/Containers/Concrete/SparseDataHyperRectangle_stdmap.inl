@@ -69,13 +69,13 @@ namespace Stroika::Foundation::Containers::Concrete {
                     doToElement (tuple_cat (tuple<T>{item.second}, item.first));
                 });
         }
-        virtual Iterator<tuple<T, INDEXES...>> FindFirstThat (const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
+        virtual Iterator<tuple<T, INDEXES...>> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
-            auto iLink        = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (
+            auto iLink        = const_cast<DataStructureImplType_&> (fData_).Find (
                 [&] (const pair<tuple<INDEXES...>, T>& item) {
-                    return doToElement (tuple_cat (tuple<T>{item.second}, item.first));
+                    return that (tuple_cat (tuple<T>{item.second}, item.first));
                 });
             if (iLink == fData_.end ()) {
                 return RESULT_TYPE::GetEmptyIterator ();

@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Traversal {
         Containers::Sequence<RangeType> subRanges{this->SubRanges ()};
         // Find the first subrange which might contain elt, or successors
         value_type          next = RANGE_TYPE::TraitsType::GetNext (elt);
-        Iterator<RangeType> i{subRanges.FindFirstThat ([next] (const RangeType& r) -> bool { return r.GetUpperBound () >= next; })};
+        Iterator<RangeType> i{subRanges.Find ([next] (const RangeType& r) -> bool { return r.GetUpperBound () >= next; })};
         if (i) {
             return max (next, i->GetLowerBound ());
         }
@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Traversal {
         Containers::Sequence<RangeType> subRanges{this->SubRanges ()};
         // Find the first subrange which might contain elt, or predecessors
         value_type          prev = RANGE_TYPE::TraitsType::GetPrevious (elt);
-        Iterator<RangeType> i{subRanges.FindFirstThat ([prev] (const RangeType& r) -> bool { return r.GetUpperBound () >= prev; })};
+        Iterator<RangeType> i{subRanges.Find ([prev] (const RangeType& r) -> bool { return r.GetUpperBound () >= prev; })};
         if (i) {
             if (i->Contains (prev)) {
                 return prev;
@@ -159,7 +159,7 @@ namespace Stroika::Foundation::Traversal {
         };
 
         // if none contain next, find the last before we pass prev
-        i = prevOfIterator (subRanges.FindFirstThat ([prev] (const RangeType& r) -> bool { return r.GetUpperBound () > prev; }));
+        i = prevOfIterator (subRanges.Find ([prev] (const RangeType& r) -> bool { return r.GetUpperBound () > prev; }));
         if (i) {
             Ensure (i->GetUpperBound () < prev);
             return i->GetUpperBound ();
@@ -203,20 +203,20 @@ namespace Stroika::Foundation::Traversal {
         return Traversal::CreateGenerator<value_type> (getNext);
     }
     template <typename T, typename RANGE_TYPE>
-    auto DisjointDiscreteRange<T, RANGE_TYPE>::FindFirstThat (const function<bool (value_type)>& testF) const -> optional<value_type>
+    auto DisjointDiscreteRange<T, RANGE_TYPE>::Find (const function<bool (value_type)>& that) const -> optional<value_type>
     {
-        return this->empty () ? optional<value_type> () : FindFirstThat (testF, FindHints (this->GetBounds ().GetLowerBound (), true));
+        return this->empty () ? optional<value_type> () : Find (that, FindHints (this->GetBounds ().GetLowerBound (), true));
     }
     template <typename T, typename RANGE_TYPE>
-    auto DisjointDiscreteRange<T, RANGE_TYPE>::FindFirstThat (const function<bool (value_type)>& testF, const FindHints& hints) const -> optional<value_type>
+    auto DisjointDiscreteRange<T, RANGE_TYPE>::Find (const function<bool (value_type)>& that, const FindHints& hints) const -> optional<value_type>
     {
         Require (this->Contains (hints.fSeedPosition));
-        optional<value_type> o = ScanFindAny_ (testF, hints.fSeedPosition, hints.fForwardFirst);
+        optional<value_type> o = ScanFindAny_ (that, hints.fSeedPosition, hints.fForwardFirst);
         if (o) {
             // If we found any, then there is a first, so find scan back to find it...
             value_type firstTrueFor{*o};
             value_type i{firstTrueFor};
-            while (testF (i)) {
+            while (that (i)) {
                 firstTrueFor           = i;
                 optional<value_type> o = GetPrevious (i);
                 if (o) {

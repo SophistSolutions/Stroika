@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename RANGE_TYPE>
     bool DisjointRange<T, RANGE_TYPE>::Contains (value_type elt) const
     {
-        return static_cast<bool> (fSubRanges_.FindFirstThat ([&elt] (const RangeType& r) { return r.Contains (elt); }));
+        return static_cast<bool> (fSubRanges_.Find ([&elt] (const RangeType& r) { return r.Contains (elt); }));
     }
     template <typename T, typename RANGE_TYPE>
     bool DisjointRange<T, RANGE_TYPE>::Contains (const RangeType& rhs) const
@@ -219,7 +219,7 @@ namespace Stroika::Foundation::Traversal {
                 };
 
                 auto findStartI = [this, &rStart] () -> Iterator<RangeType> {
-                    return fSubRanges_.FindFirstThat ([&rStart] (const RangeType& r) -> bool { return r.GetLowerBound () >= rStart or r.Contains (rStart); });
+                    return fSubRanges_.Find ([&rStart] (const RangeType& r) -> bool { return r.GetLowerBound () >= rStart or r.Contains (rStart); });
                 };
 
                 Iterator<RangeType> startI = findStartI ();
@@ -233,7 +233,7 @@ namespace Stroika::Foundation::Traversal {
                     //
                     // when appending, we can sometimes extend the last item
                     value_type          prevVal = RangeType::TraitsType::GetPrevious (rStart);
-                    Iterator<RangeType> i       = fSubRanges_.FindFirstThat ([prevVal] (const RangeType& r) -> bool { return r.GetUpperBound () == prevVal; });
+                    Iterator<RangeType> i       = fSubRanges_.Find ([prevVal] (const RangeType& r) -> bool { return r.GetUpperBound () == prevVal; });
                     if (i) {
                         Assert (i->GetUpperBound () == prevVal);
                         RangeType newValue{i->GetLowerBound (), rStart};
@@ -272,7 +272,7 @@ namespace Stroika::Foundation::Traversal {
                 /*
                  *  Next adjust RHS of rhs-most element.
                  */
-                Iterator<RangeType> endI = prevOfIterator (fSubRanges_.FindFirstThat (startI, [rEnd] (const RangeType& r) -> bool { return rEnd < r.GetLowerBound (); }));
+                Iterator<RangeType> endI = prevOfIterator (fSubRanges_.Find (startI, [rEnd] (const RangeType& r) -> bool { return rEnd < r.GetLowerBound (); }));
                 if (endI == fSubRanges_.end ()) {
                     endI = prevOfIterator (fSubRanges_.end ());
                 }
@@ -302,7 +302,7 @@ namespace Stroika::Foundation::Traversal {
 
                 // hack cuz endI invalidated - REALLY must rewrite this algorithm given new rules for iterator patching / invalidation!!!
                 {
-                    endI = prevOfIterator (fSubRanges_.FindFirstThat (startI, [rEnd] (const RangeType& r) -> bool { return rEnd < r.GetLowerBound (); }));
+                    endI = prevOfIterator (fSubRanges_.Find (startI, [rEnd] (const RangeType& r) -> bool { return rEnd < r.GetLowerBound (); }));
                     if (endI == fSubRanges_.end ()) {
                         endI = prevOfIterator (fSubRanges_.end ());
                     }

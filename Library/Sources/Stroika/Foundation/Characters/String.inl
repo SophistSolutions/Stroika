@@ -374,6 +374,10 @@ namespace Stroika::Foundation::Characters {
     {
         return Find (subString, 0, co);
     }
+    inline Traversal::Iterator<Character> String::Find (const function<bool (Character item)>& that) const
+    {
+        return inherited::Find (that);
+    }
     inline bool String::Contains (Character c, CompareOptions co) const
     {
         return static_cast<bool> (Find (c, co));

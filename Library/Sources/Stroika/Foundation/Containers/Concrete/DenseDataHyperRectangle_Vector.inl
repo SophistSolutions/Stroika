@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.Apply (doToElement);
 #endif
         }
-        virtual Iterator<tuple<T, INDEXES...>> FindFirstThat ([[maybe_unused]] const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
+        virtual Iterator<tuple<T, INDEXES...>> Find ([[maybe_unused]] const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             return RESULT_TYPE::GetEmptyIterator ();
 #else
             shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{fData_};
-            auto                                                        iLink = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (doToElement);
+            auto                                                        iLink = const_cast<DataStructureImplType_&> (fData_).Find (doToElement);
             if (iLink == fData_.end ()) {
                 return RESULT_TYPE::GetEmptyIterator ();
             }

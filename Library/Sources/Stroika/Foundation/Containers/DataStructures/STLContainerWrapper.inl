@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename STL_CONTAINER_OF_T>
     template <typename FUNCTION>
-    auto STLContainerWrapper<STL_CONTAINER_OF_T>::FindFirstThat (FUNCTION doToElement) const -> const_iterator
+    auto STLContainerWrapper<STL_CONTAINER_OF_T>::Find (FUNCTION doToElement) const -> const_iterator
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         for (auto i = this->begin (); i != this->end (); ++i) {
@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename STL_CONTAINER_OF_T>
     template <typename FUNCTION>
-    auto STLContainerWrapper<STL_CONTAINER_OF_T>::FindFirstThat (FUNCTION doToElement) -> iterator
+    auto STLContainerWrapper<STL_CONTAINER_OF_T>::Find (FUNCTION doToElement) -> iterator
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         for (auto i = this->begin (); i != this->end (); ++i) {
