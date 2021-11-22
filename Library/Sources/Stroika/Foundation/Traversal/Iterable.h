@@ -1400,6 +1400,7 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual auto     operator() (const Iterable& lhs, const Iterable& rhs) const;
         T_THREEWAY_COMPARER fElementComparer;
     };
+
 }
 
 /*
