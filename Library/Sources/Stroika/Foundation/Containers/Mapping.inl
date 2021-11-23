@@ -263,7 +263,7 @@ namespace Stroika::Foundation::Containers {
             RemoveAll ();
         }
         else {
-            for (auto i : items) {
+            for (const auto& i : items) {
                 Remove (i.first);
             }
         }
@@ -344,7 +344,7 @@ namespace Stroika::Foundation::Containers {
     CONTAINER_OF_Key_T Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ ([[maybe_unused]] enable_if_t<is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesInsertPair) const
     {
         CONTAINER_OF_Key_T result;
-        for (auto i : *this) {
+        for (const auto& i : *this) {
             // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
             result.insert (result.end (), pair<KEY_TYPE, MAPPED_VALUE_TYPE>{i.fKey, i.fValue});
         }
@@ -355,7 +355,7 @@ namespace Stroika::Foundation::Containers {
     CONTAINER_OF_Key_T Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ (enable_if_t<!is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int>) const
     {
         CONTAINER_OF_Key_T result;
-        for (auto i : *this) {
+        for (const auto& i : *this) {
             // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
             result.insert (result.end (), value_type{i.fKey, i.fValue});
         }

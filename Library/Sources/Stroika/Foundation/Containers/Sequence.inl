@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Containers {
     {
 #if 1
         Sequence<T> result;
-        for (const auto i : Iterable<T>::Where (includeIfTrue)) {
+        for (const auto& i : Iterable<T>::Where (includeIfTrue)) {
             //result.Add (i);
             result.push_back (i);
         }

@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     bool Set<T>::Contains (const Iterable<value_type>& items) const
     {
-        for (auto i : items) {
+        for (const auto& i : items) {
             if (not Contains (i)) {
                 return false;
             }
@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     bool Set<T>::ContainsAll (const Iterable<value_type>& items) const
     {
-        for (auto i : items) {
+        for (const auto& i : items) {
             if (not Contains (i)) {
                 return false;
             }
@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     bool Set<T>::ContainsAny (const Iterable<value_type>& items) const
     {
-        for (auto i : items) {
+        for (const auto& i : items) {
             if (Contains (i)) {
                 return true;
             }
@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     bool Set<T>::IsSubsetOf (const Set& superset) const
     {
-        for (auto i : *this) {
+        for (const auto& i : *this) {
             if (not superset.Contains (i)) {
                 return false;
             }
@@ -246,8 +246,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     bool Set<T>::Intersects (const Iterable<value_type>& rhs) const
     {
-        for (T i : rhs) {
-            if (Contains (i)) [[UNLIKELY_ATTR]] {
+        for (const auto& i : rhs) {
+            if (Contains (i)) {
                 return true;
             }
         }
@@ -283,7 +283,7 @@ namespace Stroika::Foundation::Containers {
         /*
          * note: TRIED using Apply() - and didn't seem to help performance --LGP 2021-11-08
          */
-        for (T i : rhs) {
+        for (const auto& i : rhs) {
             if (Contains (i)) {
                 result.Add (i);
             }
@@ -362,7 +362,7 @@ namespace Stroika::Foundation::Containers {
          * 
          * note: TRIED using Apply() - and didn't seem to help performance --LGP 2021-11-08
          */
-        for (T i : *this) {
+        for (const auto& i : *this) {
             if (not rhs.Contains (i)) {
                 result.Add (i);
             }
@@ -386,7 +386,7 @@ namespace Stroika::Foundation::Containers {
          * note: TRIED using Apply() - and didn't seem to help performance --LGP 2021-11-08
          */
         Set<T> result = *this;
-        for (auto i : rhs) {
+        for (const auto& i : rhs) {
             result.Remove (i);
         }
         return result;
