@@ -95,10 +95,19 @@ namespace Stroika::Foundation::Common {
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
-         // @todo understand why constexpr doesnt work here on g++10 and clang++10
-            //constexpr
+         *  Define operator<=> in the obvious way key <=> key first, and then if equal, compare values.
+         *  This method is only defined if BOTH the key and value have a defined spaceship operator
          */
-        auto operator<=> (const KeyValuePair&) const = default;
+        template <typename T1 = KEY_TYPE, typename T2 = VALUE_TYPE, enable_if_t<Configuration::has_spaceship<T1>::value and Configuration::has_spaceship<T2>::value>* = nullptr>
+        constexpr auto operator<=> (const KeyValuePair&) const;
+
+    public:
+        /**
+         *  Define operator== in the obvious way key == key and value == value.
+         *  This method is only defined if BOTH the key and value have a defined operator==
+         */
+        template <typename T1 = KEY_TYPE, typename T2 = VALUE_TYPE, enable_if_t<Configuration::has_eq<T1>::value and Configuration::has_eq<T2>::value>* = nullptr>
+        constexpr bool operator== (const KeyValuePair&) const;
 #endif
     };
 
@@ -110,7 +119,7 @@ namespace Stroika::Foundation::Common {
     bool operator< (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
     template <typename KEY_TYPE, typename VALUE_TYPE>
     bool operator<= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
-    template <typename KEY_TYPE, typename VALUE_TYPE>
+    template <typename KEY_TYPE, typename VALUE_TYPE, enable_if_t<Configuration::has_eq<KEY_TYPE>::value and Configuration::has_eq<VALUE_TYPE>::value>* = nullptr>
     bool operator== (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
     template <typename KEY_TYPE, typename VALUE_TYPE>
     bool operator!= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);

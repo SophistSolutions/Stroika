@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
 #include "../Configuration/TypeHints.h"
 
 /**
@@ -70,11 +71,13 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
+        template <typename TEST = VALUE_TYPE, enable_if_t<Configuration::has_spaceship<TEST>::value>* = nullptr>
         constexpr auto operator<=> (const CountedValue&) const;
 
     public:
         /**
          */
+        template <typename TEST = VALUE_TYPE, enable_if_t<Configuration::has_eq<TEST>::value>* = nullptr>
         constexpr bool operator== (const CountedValue&) const;
 #endif
     };
@@ -87,7 +90,7 @@ namespace Stroika::Foundation::Common {
     bool operator< (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     bool operator<= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
-    template <typename VALUE_TYPE, typename COUNTER_TYPE>
+    template <typename VALUE_TYPE, typename COUNTER_TYPE, enable_if_t<Configuration::has_eq<VALUE_TYPE>::value>* = nullptr>
     bool operator== (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     bool operator!= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);

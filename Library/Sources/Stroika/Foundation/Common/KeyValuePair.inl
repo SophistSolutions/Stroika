@@ -113,6 +113,24 @@ namespace Stroika::Foundation::Common {
         fValue = forward<VALUE_TYPE2> (rhs.fValue);
         return *this;
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    template <typename T1, typename T2, enable_if_t<Configuration::has_spaceship<T1>::value and Configuration::has_spaceship<T2>::value>*>
+    constexpr inline auto KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator<=> (const KeyValuePair& rhs) const
+    {
+        auto cmp = fKey <=> rhs.fKey;
+        if (cmp != Common::kEqual) {
+            return cmp;
+        }
+        return fValue <=> rhs.fValue;
+    }
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    template <typename T1, typename T2, enable_if_t<Configuration::has_eq<T1>::value and Configuration::has_eq<T2>::value>*>
+    constexpr inline bool KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator== (const KeyValuePair& rhs) const
+    {
+        return fKey == rhs.fKey and fValue == rhs.fValue;
+    }
+#endif
 
 #if __cpp_impl_three_way_comparison < 201907
     /*
@@ -134,7 +152,7 @@ namespace Stroika::Foundation::Common {
     {
         return operator< (lhs, rhs) or operator== (lhs, rhs);
     }
-    template <typename KEY_TYPE, typename VALUE_TYPE>
+    template <typename KEY_TYPE, typename VALUE_TYPE, enable_if_t<Configuration::has_eq<KEY_TYPE>::value and Configuration::has_eq<VALUE_TYPE>::value>*>
     inline bool operator== (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
     {
         return lhs.fKey == rhs.fKey and lhs.fValue == rhs.fValue;
