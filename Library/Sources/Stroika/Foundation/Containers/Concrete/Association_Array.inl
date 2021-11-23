@@ -56,13 +56,12 @@ namespace Stroika ::Foundation::Containers ::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
+        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{fData_};
-            using RESULT_TYPE = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
-            size_t i          = fData_.Find (that);
+            size_t                                                      i = fData_.Find (that);
             if (i == fData_.GetLength ()) {
-                return RESULT_TYPE::GetEmptyIterator ();
+                return nullptr;
             }
             Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<IteratorRep_> (&fData_);
             resultRep->fIterator.SetIndex (i);
