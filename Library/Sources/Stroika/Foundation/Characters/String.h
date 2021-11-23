@@ -1413,11 +1413,15 @@ namespace Stroika::Foundation::Characters {
 
         // Overrides for Iterable<Character>
     public:
-        virtual Traversal::Iterator<Character> MakeIterator () const override;
-        virtual size_t                         GetLength () const override;
-        virtual bool                           IsEmpty () const override;
-        virtual void                           Apply (const function<void (Configuration::ArgByValueType<value_type> item)>& doToElement) const override;
-        virtual Traversal::Iterator<Character> Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const override;
+        virtual Traversal::Iterator<value_type> MakeIterator () const override;
+        virtual size_t                          GetLength () const override;
+        virtual bool                            IsEmpty () const override;
+        virtual void                            Apply (const function<void (Configuration::ArgByValueType<value_type> item)>& doToElement) const override;
+        virtual Traversal::Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const override;
+        virtual Traversal::Iterator<value_type> Find_equal_to (const Configuration::ArgByValueType<value_type>& v) const override
+        {
+            return this->_Find_equal_to_default_implementation (v);
+        }
 
     public:
         nonvirtual Character GetAt (size_t index) const;

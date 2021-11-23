@@ -1289,16 +1289,16 @@ namespace Stroika::Foundation::Traversal {
     };
 
     /**
-     *  _SafeReadWriteRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the
-     *  'this' object, and captures a writable to the internal 'REP'.
-     *
-     *  For DEBUGGING (catching races) purposes, it also locks the Debug::AssertExternallySynchronizedMutex,
-     *  so that IF this object is accessed illegally by other threads while in use (this use), it will
-     *  be caught.
-     *
-     *  @see _SafeReadRepAccessor
-     *
-     */
+ *  _SafeReadWriteRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the
+ *  'this' object, and captures a writable to the internal 'REP'.
+ *
+ *  For DEBUGGING (catching races) purposes, it also locks the Debug::AssertExternallySynchronizedMutex,
+ *  so that IF this object is accessed illegally by other threads while in use (this use), it will
+ *  be caught.
+ *
+ *  @see _SafeReadRepAccessor
+ *
+ */
     template <typename T>
     template <typename REP_SUB_TYPE>
     class Iterable<T>::_SafeReadWriteRepAccessor : private lock_guard<const Debug::AssertExternallySynchronizedMutex> {
@@ -1325,6 +1325,39 @@ namespace Stroika::Foundation::Traversal {
         REP_SUB_TYPE* fRepReference_;
     };
 
+#if 0
+    /**
+     *  AWKWARD attempt at templating / automating the inclusio of the Find_equal_to() methods
+     *      -- LGP 2021-11-22
+     */
+    template <typename T, bool HAS_EQUAL_TO>
+    struct Add_FindByEqualTo_PureVirtualDeclaration;
+    template <typename T>
+    struct Add_FindByEqualTo_PureVirtualDeclaration<T, false> {
+    };
+    template <typename T>
+    struct Add_FindByEqualTo_PureVirtualDeclaration<T, true> {
+        virtual Iterator<T> Find_equal_to ([[maybe_unused]] const ArgByValueType<T>& v) const = 0;
+    };
+    /**
+     * @see Add_FindByEqualTo_PureVirtualDeclaration
+     */
+    template <typename T, bool HAS_EQUAL_TO, typename IMPL>
+    struct Add_FindByEqualTo_Override;
+    template <typename T, typename IMPL>
+    struct Add_FindByEqualTo_Override<T, false, IMPL> {
+    };
+    template <typename T, typename IMPL>
+    struct Add_FindByEqualTo_Override<T, true, IMPL> {
+        virtual Iterator<T> Find_equal_to (const ArgByValueType<T>& v) const override
+        {
+            return IMPL{}(v);
+        }
+    };
+    then below...
+              //  : public Add_FindByEqualTo_PureVirtualDeclaration<T, Configuration::HasUsableEqualToOptimization<T> ()>
+#endif
+
     /**
      *  \brief  Implementation detail for iterator implementors.
      *
@@ -1350,11 +1383,28 @@ namespace Stroika::Foundation::Traversal {
         virtual _IterableRepSharedPtr Clone () const = 0;
         /*
          */
-        virtual Iterator<T> MakeIterator () const                                                    = 0;
-        virtual size_t      GetLength () const                                                       = 0;
-        virtual bool        IsEmpty () const                                                         = 0;
-        virtual void        Apply (const function<void (ArgByValueType<T> item)>& doToElement) const = 0;
-        virtual Iterator<T> Find (const function<bool (ArgByValueType<T> item)>& that) const         = 0;
+        virtual Iterator<value_type> MakeIterator () const                                                    = 0;
+        virtual size_t               GetLength () const                                                       = 0;
+        virtual bool                 IsEmpty () const                                                         = 0;
+        virtual void                 Apply (const function<void (ArgByValueType<T> item)>& doToElement) const = 0;
+        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<T> item)>& that) const         = 0;
+        /**
+         *  Find_equal_to is Not LOGICALLY needed, as you can manually iterate (just use Find()). 
+         * But this CAN be much faster (and commonly is) - and is used very heavily by iterables, so
+         * its worth the singling out of this important special case.
+         * 
+        // @todo make this pure virtual once I've had a chance to subclass
+         *  Not 
+         * The COST of having this is that ALL Iterable<T>::_IRep MUST provide this implementation
+         * As in:
+         * 
+                virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v) const override
+                {
+                    return this->_Find_equal_to_default_implementation (v);
+                }
+         * and obviously imopelmetantiosn that can provide a faster implemetnation will do so.
+         */
+        virtual Iterator<value_type> Find_equal_to (const ArgByValueType<T>& v) const = 0;
 
     protected:
         /*
@@ -1362,8 +1412,12 @@ namespace Stroika::Foundation::Traversal {
          * actual subclasses.
          */
         nonvirtual bool _IsEmpty () const;
-        nonvirtual void _Apply (const function<void (ArgByValueType<T> item)>& doToElement) const;
-        nonvirtual Iterator<T> _Find (const function<bool (ArgByValueType<T> item)>& that) const;
+        nonvirtual void _Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const;
+        nonvirtual Iterator<value_type> _Find (const function<bool (ArgByValueType<value_type> item)>& that) const;
+        /**
+         *  Default implementation for Find_equal_to function.
+         */
+        nonvirtual Iterator<value_type> _Find_equal_to_default_implementation (const ArgByValueType<value_type>& v) const;
     };
 
     /**

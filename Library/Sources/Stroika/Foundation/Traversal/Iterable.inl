@@ -68,6 +68,26 @@ namespace Stroika::Foundation::Traversal {
         }
         return end ();
     }
+    template <typename T>
+    auto Iterable<T>::_IRep::_Find_equal_to_default_implementation ([[maybe_unused]] const ArgByValueType<value_type>& v) const -> Iterator<value_type>
+    {
+        if constexpr (Configuration::HasUsableEqualToOptimization<T> ()) {
+            /*
+             *  This is the default implementation. It is only ever compiled if there is a valid equal_to<> around, and
+             *  that valid equal_to<> is stateless (verified by Configuration::HasUsableEqualToOptimization).
+             */
+            for (Iterator<T> i = MakeIterator (); i != end (); ++i) {
+                if (equal_to<T>{}(v, *i)) {
+                    return i;
+                }
+            }
+            return end ();
+        }
+        else {
+            RequireNotReached ();
+            return end ();
+        }
+    }
 
     /*
      ********************************************************************************
@@ -975,7 +995,13 @@ namespace Stroika::Foundation::Traversal {
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
     inline Iterator<T> Iterable<T>::Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer) const
     {
-        return Find ([v, equalsComparer] (Configuration::ArgByValueType<T> arg) { return equalsComparer (v, arg); });
+        if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>> and Configuration::HasUsableEqualToOptimization<T> ()) {
+            // This CAN be much faster than the default implementation for this special (but common) case (often a tree structure will have been maintained making this find faster)
+            return _SafeReadRepAccessor<>{this}._ConstGetRep ().Find_equal_to (v);
+        }
+        else {
+            return Find ([v, equalsComparer] (Configuration::ArgByValueType<T> arg) { return equalsComparer (v, arg); });
+        }
     }
     template <typename T>
     template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>*>

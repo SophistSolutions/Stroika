@@ -70,10 +70,14 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
+        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{fData_};
             return this->_Find (that);
+        }
+        virtual Iterator<value_type> Find_equal_to ([[maybe_unused]] const ArgByValueType<value_type>& v) const override
+        {
+            return this->_Find_equal_to_default_implementation (v);
         }
 
         // Association<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::AssociationTraitsType>::_IRep overrides

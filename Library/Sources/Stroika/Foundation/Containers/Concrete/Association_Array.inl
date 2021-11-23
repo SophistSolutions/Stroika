@@ -63,9 +63,11 @@ namespace Stroika ::Foundation::Containers ::Concrete {
             if (i == fData_.GetLength ()) {
                 return nullptr;
             }
-            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<IteratorRep_> (&fData_);
-            resultRep->fIterator.SetIndex (i);
-            return RESULT_TYPE{move (resultRep)};
+            return Iterator<value_type>{Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSmartPtr<IteratorRep_> (&fData_, i)};
+        }
+        virtual Iterator<value_type> Find_equal_to ([[maybe_unused]] const ArgByValueType<value_type>& v) const override
+        {
+            return this->_Find_equal_to_default_implementation (v);
         }
 
         // Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides

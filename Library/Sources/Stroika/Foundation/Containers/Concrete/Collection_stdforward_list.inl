@@ -58,15 +58,19 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return fData_.empty ();
         }
-        virtual void Apply (const function<void (ArgByValueType<T> item)>& doToElement) const override
+        virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<T> Find (const function<bool (ArgByValueType<T> item)>& that) const override
+        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return this->_Find (that);
+        }
+        virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v) const override
+        {
+            return this->_Find_equal_to_default_implementation (v);
         }
 
         // Collection<T>::_IRep overrides

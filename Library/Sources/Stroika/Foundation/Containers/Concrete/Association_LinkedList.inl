@@ -70,6 +70,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             resultRep->fIterator.SetUnderlyingIteratorRep (iLink);
             return RESULT_TYPE (move (resultRep));
         }
+        virtual Iterator<value_type> Find_equal_to ([[maybe_unused]] const ArgByValueType<value_type>& v) const override
+        {
+            return this->_Find_equal_to_default_implementation (v);
+        }
 
         // Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides
     public:

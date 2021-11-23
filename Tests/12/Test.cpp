@@ -22,6 +22,15 @@ using namespace Stroika::Foundation::Containers;
 
 using Concrete::Bijection_LinkedList;
 
+// https://stroika.atlassian.net/browse/STK-749
+namespace Stroika::Foundation::Configuration {
+    template <>
+    constexpr bool HasUsableEqualToOptimization<std::pair<Stroika::SimpleClassWithoutComparisonOperators, Stroika::SimpleClassWithoutComparisonOperators>> ()
+    {
+        return false;
+    };
+}
+
 namespace {
     template <typename CONCRETE_CONTAINER>
     void RunTests_ ()

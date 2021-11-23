@@ -79,6 +79,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return nullptr;
         }
+        virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v) const override
+        {
+            return this->_Find_equal_to_default_implementation (v);
+        }
 
         // KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep overrides
     public:

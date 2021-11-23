@@ -186,7 +186,7 @@ void String::_IRep::Apply (const function<void (Configuration::ArgByValueType<va
     _Apply (doToElement);
 }
 
-Traversal::Iterator<Character> String::_IRep::Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const
+auto String::_IRep::Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const -> Traversal::Iterator<value_type>
 {
     return _Find (that);
 }

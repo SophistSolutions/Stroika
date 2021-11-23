@@ -91,6 +91,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             return RESULT_TYPE (move (resultRep));
 #endif
         }
+        virtual Iterator<value_type> Find_equal_to ([[maybe_unused]] const ArgByValueType<value_type>& v) const override
+        {
+            return this->_Find_equal_to_default_implementation (v);
+        }
 
         // DataHyperRectangle<T, INDEXES...>::_IRep overrides
     public:

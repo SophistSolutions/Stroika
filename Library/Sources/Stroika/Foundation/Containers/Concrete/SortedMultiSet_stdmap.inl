@@ -75,6 +75,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return this->_Find (that);
         }
+        virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v) const override
+        {
+            return this->_Find_equal_to_default_implementation (v);
+        }
 
         // MultiSet<T, TRAITS>::_IRep overrides
     public:

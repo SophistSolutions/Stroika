@@ -84,6 +84,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             resultRep->fIterator.SetUnderlyingIteratorRep (iLink);
             return RESULT_TYPE{move (resultRep)};
         }
+        virtual Iterator<tuple<T, INDEXES...>> Find_equal_to (const ArgByValueType<value_type>& v) const override
+        {
+            return this->_Find_equal_to_default_implementation (v);
+        }
 
         // DataHyperRectangle<T, INDEXES...>::_IRep overrides
     public:
