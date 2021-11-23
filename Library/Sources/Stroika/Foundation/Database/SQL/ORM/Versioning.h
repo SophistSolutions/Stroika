@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     };
 
     /**
-     *  @todo HANDLE THE VERSIONING peice - have hardwired version table, and add support to provisioner to UPGRADE tables
+     *  @todo HANDLE THE VERSIONING piece - have hardwired version table, and add support to provisioner to UPGRADE tables
      *  EVENTAULLY even support upgrade by migrating to new DB, but for now in-place is good enuf
      */
     void ProvisionForVersion (SQL::Connection::Ptr conn, Configuration::Version targetDBVersion, const Traversal::Iterable<Schema::Table>& tables);

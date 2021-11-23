@@ -40,7 +40,7 @@
  *              .. mujst have filter etc funtions not do anything but acuulate lambdas.
  *              then construct inverted compuation as iterator.
  *
- *              MAYBE can do by having each peice that reutrns an iterator do the work
+ *              MAYBE can do by having each piece that reutrns an iterator do the work
  *              of priducing apull based iteraotr?
  *                  THAT SEEM BEST!
  *

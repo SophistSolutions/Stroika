@@ -70,7 +70,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *
      *  \par Empty String versus optional 'missing' !has_value
      *
-     *      For the various optional peices of a URL (or URI), we could represent this as
+     *      For the various optional pieces of a URL (or URI), we could represent this as
      *      an empty string, or call the feature optional, and return nullopt.
      *
      *      We COULD allow for EITHER, but that would be clearly needlessly confusing.
@@ -96,7 +96,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *
      *  \note   As () versus AsEncoded () versus AsDecoded ()
      *          Some objects (like Host, or UserInfo) make sense to access in either encoded or decoded for. Other objects, like an
-     *          Authority, or URI, really don't make sense except in ENCODED form (because you couldn't parse out the peices to
+     *          Authority, or URI, really don't make sense except in ENCODED form (because you couldn't parse out the pieces to
      *          get back to the original). So - for objects where it makes sense to access either way, we provide AsEncoded/AsDecoded
      *          methods, and for objects that really require the string form to be encoded - we just call that As<>.
      *
@@ -367,7 +367,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          */
         UserInfo (const String& decodedUserInfo);
         UserInfo (const UserInfo&) noexcept = default;
-        UserInfo (UserInfo&&) noexcept = default;
+        UserInfo (UserInfo&&) noexcept      = default;
 
     private:
         UserInfo () = default;

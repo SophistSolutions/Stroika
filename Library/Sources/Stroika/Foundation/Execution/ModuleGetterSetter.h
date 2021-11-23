@@ -95,7 +95,7 @@ namespace Stroika::Foundation ::Execution {
          *
          *  \note - this returns a copy of T, not a reference, in order to properly manage locking, though
          *          since its inlined, for most cases, much of that case may be optimized away (the most expensive
-         *          unavoidable peice being the readlock).
+         *          unavoidable piece being the readlock).
          */
         nonvirtual T Get ();
 

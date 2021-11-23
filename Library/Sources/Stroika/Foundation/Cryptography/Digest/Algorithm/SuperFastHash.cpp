@@ -65,7 +65,7 @@ void Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash>::Write (const std::b
     Require (len < numeric_limits<uint32_t>::max ());
 
     fRemainder_ += static_cast<uint32_t> (len);
-    fRemainder_ &= 0x3; // old code just did fRemainder_ = len & 3, but we now get len in bits and peices
+    fRemainder_ &= 0x3; // old code just did fRemainder_ = len & 3, but we now get len in bits and pieces
     Assert (0 <= fRemainder_ && fRemainder_ <= 3);
 
     const byte* data = start;
