@@ -155,6 +155,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          */
         nonvirtual strong_ordering operator<=> (const CacheControl&) const = default;
+
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const CacheControl&) const = default;
 #endif
     public:
         /**
@@ -223,6 +228,15 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     bool operator!= (const CacheControl& lhs, const CacheControl& rhs);
 #endif
 
+}
+
+// https://stroika.atlassian.net/browse/STK-749
+namespace Stroika::Foundation::Configuration {
+    template <>
+    constexpr bool HasUsableEqualToOptimization<std::pair<Stroika::Foundation::Characters::RegularExpression, Stroika::Foundation::IO::Network::HTTP::CacheControl>> ()
+    {
+        return false;
+    };
 }
 
 /*
