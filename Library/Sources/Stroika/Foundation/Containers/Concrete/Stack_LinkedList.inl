@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     Stack_LinkedList<T>::Stack_LinkedList ()
-        : inherited {inherited::template MakeSmartPtr<Rep_> ()}
+        : inherited{inherited::template MakeSmartPtr<Rep_> ()}
     {
         AssertRepValidType_ ();
     }
