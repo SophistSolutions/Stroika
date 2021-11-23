@@ -112,6 +112,12 @@ namespace Stroika::Foundation::IO::Network {
         URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& path = String{}, const optional<String>& query = nullopt, const optional<String>& fragment = nullopt);
         URI (const string& encodedURI);
         URI (const String& encodedURI);
+        URI (const URI&) = default;
+        URI (URI&&)      = default;
+
+    public:
+        nonvirtual URI& operator= (const URI&) = default;
+        nonvirtual URI& operator= (URI&&) = default;
 
     public:
         /**

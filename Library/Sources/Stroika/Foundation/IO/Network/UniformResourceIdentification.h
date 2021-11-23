@@ -129,6 +129,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         SchemeType (const wchar_t* s);
         SchemeType (const wstring_view& s);
         SchemeType (const String& s);
+        SchemeType (const SchemeType&) noexcept = default;
+        SchemeType (SchemeType&&) noexcept      = default;
+
+    public:
+        nonvirtual SchemeType& operator= (const SchemeType&) = default;
+        nonvirtual SchemeType& operator= (SchemeType&&) = default;
 
     public:
         /**
@@ -210,9 +216,15 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          */
         Host (const String& registeredName);
         Host (const InternetAddress& addr);
+        Host (const Host&) noexcept = default;
+        Host (Host&&) noexcept      = default;
 
     private:
         Host () = default;
+
+    public:
+        nonvirtual Host& operator= (const Host&) = default;
+        nonvirtual Host& operator= (Host&&) = default;
 
     public:
         /**
@@ -354,9 +366,15 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *  \req not decodedUserInfo.empty ()
          */
         UserInfo (const String& decodedUserInfo);
+        UserInfo (const UserInfo&) noexcept = default;
+        UserInfo (UserInfo&&) noexcept = default;
 
     private:
         UserInfo () = default;
+
+    public:
+        nonvirtual UserInfo& operator= (const UserInfo&) = default;
+        nonvirtual UserInfo& operator= (UserInfo&&) = default;
 
     public:
         /**
@@ -453,6 +471,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     class Authority {
     public:
         Authority (const optional<Host>& h = nullopt, const optional<PortType>& port = nullopt, const optional<UserInfo>& userInfo = nullopt);
+        Authority (const Authority&) noexcept = default;
+        Authority (Authority&&) noexcept      = default;
+
+    public:
+        nonvirtual Authority& operator= (const Authority&) = default;
+        nonvirtual Authority& operator= (Authority&&) = default;
 
     public:
         /**
@@ -582,6 +606,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     public:
         Query (const string& query);
         Query (const String& query);
+        Query (const Query&) noexcept = default;
+        Query (Query&&) noexcept      = default;
+
+    public:
+        nonvirtual Query& operator= (const Query&) = default;
+        nonvirtual Query& operator= (Query&&) = default;
 
     public:
         nonvirtual const Containers::Mapping<String, String>& GetMap () const;

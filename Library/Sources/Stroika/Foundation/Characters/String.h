@@ -331,8 +331,9 @@ namespace Stroika::Foundation::Characters {
         String (const u16string& r);
         String (const u32string& r);
         String (const Iterable<Character>& src);
-        String (const String& from) noexcept;
         explicit String (const Character& c);
+        String (const String& from) noexcept = default;
+        String (String&& from) noexcept      = default;
 
     public:
         ~String () = default;
@@ -361,6 +362,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         nonvirtual String& operator= (const String& rhs) = default;
+        nonvirtual String& operator= (String&& rhs) = default;
 
     public:
         /**

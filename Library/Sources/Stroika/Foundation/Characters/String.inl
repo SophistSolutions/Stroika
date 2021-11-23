@@ -91,10 +91,6 @@ namespace Stroika::Foundation::Characters {
      ************************************* String ***********************************
      ********************************************************************************
      */
-    inline String::String (const String& from) noexcept
-        : inherited{from}
-    {
-    }
     inline String::String (const _SharedPtrIRep& rep) noexcept
         : inherited{rep}
     {

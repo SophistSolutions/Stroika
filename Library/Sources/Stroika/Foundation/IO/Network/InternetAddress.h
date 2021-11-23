@@ -160,7 +160,7 @@ namespace Stroika::Foundation::IO::Network {
          *      Construct an InternetAddress from in_addr - V4 address.
          *      Note that provided in_addr must already be in network order (unless explicit byte order provided as argument)
          *
-         *  constexpr  InternetAddress (byte octet1, byte octet2, byte octet3, byte octet4);
+         *  constexpr InternetAddress (byte octet1, byte octet2, byte octet3, byte octet4);
          *  constexpr InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4);
          *      Construct an InternetAddress V4 address in A.B.C.D octet form.
          *
@@ -172,6 +172,8 @@ namespace Stroika::Foundation::IO::Network {
          *      Construct an InternetAddress octets, either 4 or 16 in length, and which must agree with provided address-family
          */
         constexpr InternetAddress ();
+        constexpr InternetAddress (const InternetAddress&) noexcept = default;
+        constexpr InternetAddress (InternetAddress&&) noexcept      = default;
         explicit InternetAddress (const string& s, AddressFamily af = AddressFamily::UNKNOWN);
         explicit InternetAddress (const String& s, AddressFamily af = AddressFamily::UNKNOWN);
         constexpr InternetAddress (const in_addr_t& i);
@@ -187,6 +189,10 @@ namespace Stroika::Foundation::IO::Network {
         constexpr InternetAddress (array<byte, 16> octets, AddressFamily af = AddressFamily::V6);
         template <typename ITERABLE_OF_UINT8OrByte, enable_if_t<Configuration::IsIterableOfT_v<ITERABLE_OF_UINT8OrByte, byte> or Configuration::IsIterableOfT_v<ITERABLE_OF_UINT8OrByte, uint8_t>>* = nullptr>
         InternetAddress (ITERABLE_OF_UINT8OrByte octets, AddressFamily af);
+
+    public:
+        constexpr InternetAddress& operator= (const InternetAddress&) = default;
+        constexpr InternetAddress& operator= (InternetAddress&&) = default;
 
     public:
         /**
