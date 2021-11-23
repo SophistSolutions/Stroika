@@ -995,7 +995,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
     inline Iterator<T> Iterable<T>::Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer) const
     {
-        if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>> and Configuration::HasUsableEqualToOptimization<T> ()) {
+        if constexpr (is_same_v< Configuration::remove_cvref_t<EQUALS_COMPARER>, equal_to<T>> and Configuration::HasUsableEqualToOptimization<T> ()) {
             // This CAN be much faster than the default implementation for this special (but common) case (often a tree structure will have been maintained making this find faster)
             return _SafeReadRepAccessor<>{this}._ConstGetRep ().Find_equal_to (v);
         }
