@@ -277,7 +277,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename TRAITS>
     inline MultiSet_Array<T, TRAITS>::MultiSet_Array ()
-        : inherited{equal_to<T>{}}
+        : MultiSet_Array{equal_to<T>{}}
     {
         AssertRepValidType_ ();
     }
