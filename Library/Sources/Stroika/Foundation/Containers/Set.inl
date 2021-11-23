@@ -5,6 +5,7 @@
 #define _Stroika_Foundation_Containers_Set_inl_
 
 #include "../Common/Compare.h"
+#include "../Configuration/Concepts.h"
 #include "../Debug/Assertions.h"
 #include "Factory/Set_Factory.h"
 
@@ -24,17 +25,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
     inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer)
-#if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_20
-        : inherited
-    {
-        Factory::Set_Factory<T, remove_cv_t<remove_reference_t<EQUALS_COMPARER>>> (forward<EQUALS_COMPARER> (equalsComparer)) ()
-    }
-#else
-        : inherited
-    {
-        Factory::Set_Factory<T, remove_cvref_t<EQUALS_COMPARER>> (forward<EQUALS_COMPARER> (equalsComparer)) ()
-    }
-#endif
+        : inherited {Factory::Set_Factory<T, Configuration::remove_cvref_t<EQUALS_COMPARER>> (forward<EQUALS_COMPARER> (equalsComparer)) ()}
     {
         static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Set constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
         _AssertRepValidType ();
