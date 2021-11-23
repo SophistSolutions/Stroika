@@ -8,12 +8,15 @@
       "name": "(gdb-UNIX) Launch EXE",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/Builds/Debug-unix/Tests/Test02",
+      "program": "${workspaceFolder}/Builds/g++-10-debug-c++17/Tests/Test18",
       //"program": "${workspaceFolder}/Builds/Debug/Samples-SystemPerformanceClient/SystemPerformanceClient",
       "args": ["-m"],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}",
-      "environment": [],
+      "environment": [
+        {"name": "UBSAN_OPTIONS","value":"halt_on_error=1"},
+        {"name": "ASAN_OPTIONS","value":"halt_on_error=1"},
+       ],
       "externalConsole": false,
       "MIMode": "gdb",
       "setupCommands": [
