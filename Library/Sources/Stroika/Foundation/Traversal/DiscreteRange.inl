@@ -88,11 +88,11 @@ namespace Stroika::Foundation::Traversal {
                 , fForcedEnd{false}
             {
             }
-            virtual _IterableRepSharedPtr Clone () const
+            virtual _IterableRepSharedPtr Clone () const override
             {
                 return Iterable<T>::template MakeSmartPtr<MyRep_> (*this);
             }
-            virtual Iterator<T> MakeIterator () const
+            virtual Iterator<T> MakeIterator () const override
             {
                 if (fForcedEnd) {
                     return Iterator<T>{Iterator<T>::template MakeSmartPtr<DiscreteRange::MyIteratorRep_> ()};
@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Traversal {
                     return Iterator<T>{Iterator<T>::template MakeSmartPtr<DiscreteRange::MyIteratorRep_> (fStart, fEnd)};
                 }
             }
-            virtual size_t GetLength () const
+            virtual size_t GetLength () const override
             {
                 using SignedDifferenceType = typename TRAITS::SignedDifferenceType;
                 if (fForcedEnd) {
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Traversal {
                     return 1 + DiscreteRange{fStart, fEnd}.GetDistanceSpanned ();
                 }
             }
-            virtual bool IsEmpty () const
+            virtual bool IsEmpty () const override
             {
                 if (fForcedEnd) {
                     return true;
@@ -121,11 +121,11 @@ namespace Stroika::Foundation::Traversal {
                     //return fStart == fEnd;
                 }
             }
-            virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const
+            virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
             {
                 this->_Apply (doToElement);
             }
-            virtual Iterator<T> Find (const function<bool (ArgByValueType<value_type> item)>& that) const
+            virtual Iterator<T> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
             {
                 return this->_Find (that);
             }

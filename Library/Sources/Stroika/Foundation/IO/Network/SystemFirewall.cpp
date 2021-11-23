@@ -254,7 +254,7 @@ Traversal::Iterable<Rule> SystemFirewall::Manager::LookupByGroup (const String& 
             rules += r;
         }
     }
-    return rules;
+    return move (rules);
 }
 
 Traversal::Iterable<Rule> SystemFirewall::Manager::LookupAll () const
@@ -296,5 +296,5 @@ Traversal::Iterable<Rule> SystemFirewall::Manager::LookupAll () const
         r->Release ();
     }
 #endif
-    return rules;
+    return move (rules);
 }

@@ -55,5 +55,5 @@ Traversal::Iterable<SocketAddress> Network::SocketAddresses (const Traversal::It
     for (const auto i : internetAddresses) {
         tmp += SocketAddress{i, portNumber};
     }
-    return tmp;
+    return move (tmp);
 }

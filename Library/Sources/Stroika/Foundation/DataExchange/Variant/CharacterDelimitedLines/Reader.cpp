@@ -57,7 +57,7 @@ public:
     nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<Character>::Ptr& in) const
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx ("DataExchange::Variant::CharacterDelimitedLines::Reader::Rep_::ReadMatrix");
+        Debug::TraceContextBumper ctx {"DataExchange::Variant::CharacterDelimitedLines::Reader::Rep_::ReadMatrix"};
 #endif
         Sequence<Sequence<String>> result;
         for (String line : in.ReadLines ()) {
@@ -70,7 +70,7 @@ public:
 #endif
             result.Append (tokens);
         }
-        return result;
+        return move (result);
     }
 #if 0
     nonvirtual  Mapping<String, String>  ReadAsMapping (const Streams::InputStream<Character>::Ptr& in) const

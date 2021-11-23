@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Traversal {
             // unsure if we update in place, or create a new container? May need traits param to define how todo this!
             result.Append (do2Each (i));
         }
-        return result;
+        return move (result);
     }
     template <typename IN_T, typename OUT_T>
     OUT_T DirectPushMapEngine::Reduce (const Iterable<IN_T>& from, const function<OUT_T (IN_T, OUT_T)>& do2Each, OUT_T memo)
@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Traversal {
                 result.Append (i);
             }
         }
-        return result;
+        return move (result);
     }
     template <typename IN_OUT_T>
     optional<IN_OUT_T> DirectPushMapEngine::Find (const Iterable<IN_OUT_T>& from, const function<bool (IN_OUT_T)>& thatPassesThisTest)
