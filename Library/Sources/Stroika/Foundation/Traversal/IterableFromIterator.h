@@ -87,6 +87,11 @@ namespace Stroika::Foundation::Traversal {
 
 #if qDebug
         protected:
+            // @todo clarify, but I think this is just a debugging hack to make sure the underlying itertor
+            // lifetime is long enough for any iterators generated from this iterable.
+            // But I'm not clear this makes sense anymore after all the recent (--LGP 2021-11-23) iterable threading/lifetime
+            // changes. Not sure this really does anything useful, but we can revisit later since it doesn't appear to cause any harm either (besides
+            // possibly pointless complexity and a little rare speed in the debug code).
             struct _IteratorTracker {
                 shared_ptr<unsigned int> fCountRunning = make_shared<unsigned int> (0);
                 ~_IteratorTracker ();
@@ -110,11 +115,8 @@ namespace Stroika::Foundation::Traversal {
             virtual size_t               GetLength () const override;
             virtual bool                 IsEmpty () const override;
             virtual void                 Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override;
-            virtual Iterator<T>          Find (const function<bool (ArgByValueType<value_type> item)>& that) const override;
-            virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v) const override
-            {
-                return this->_Find_equal_to_default_implementation (v);
-            }
+            virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override;
+            virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v) const override;
         };
     };
 
