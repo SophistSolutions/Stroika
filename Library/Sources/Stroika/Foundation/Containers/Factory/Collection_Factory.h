@@ -61,6 +61,7 @@ namespace Stroika::Foundation::Containers::Factory {
     private:
         static Collection<T> Default_ ();
     };
+
 }
 
 /*

@@ -49,6 +49,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T>
     inline Collection<T> Collection_Factory<T>::Default_ ()
     {
+        // This generally performs well, so long as you don't call 'GetLength'
         return Concrete::Collection_LinkedList<T>{};
     }
 

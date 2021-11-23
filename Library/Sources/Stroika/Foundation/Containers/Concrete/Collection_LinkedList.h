@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         Collection_LinkedList ();
         Collection_LinkedList (const T* start, const T* end);
-        Collection_LinkedList (const Collection<T>& src);
+        Collection_LinkedList (const Traversal::Iterable<T>& src);
         Collection_LinkedList (const Collection_LinkedList& src) noexcept = default;
         Collection_LinkedList (Collection_LinkedList&& src) noexcept      = default;
 

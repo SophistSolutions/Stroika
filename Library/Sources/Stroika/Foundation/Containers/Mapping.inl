@@ -13,7 +13,6 @@
 
 #include "../Debug/Assertions.h"
 #include "../Debug/Cast.h"
-#include "../Execution/Finally.h"
 #include "../Traversal/Generator.h"
 #include "Factory/Mapping_Factory.h"
 
@@ -199,12 +198,7 @@ namespace Stroika::Foundation::Containers {
     template <typename VALUE_EQUALS_COMPARER>
     inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::ContainsMappedValue (ArgByValueType<mapped_type> v, const VALUE_EQUALS_COMPARER& valueEqualsComparer) const
     {
-        for (MAPPED_VALUE_TYPE t : *this) {
-            if (valueEqualsComparer (t.fValue, v)) {
-                return true;
-            }
-        }
-        return false;
+        return this->Find ([&valueEqualsComparer, &v] (const auto& t) { return valueEqualsComparer (t.fValue, v); }) != nullptr;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode)

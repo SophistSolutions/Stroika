@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Containers::Factory {
 #endif
     template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
     inline Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Bijection_Factory (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
-        : Bijection_Factory (InjectivityViolationPolicy::eDEFAULT, domainEqualsComparer, rangeEqualsComparer)
+        : Bijection_Factory{InjectivityViolationPolicy::eDEFAULT, domainEqualsComparer, rangeEqualsComparer}
     {
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>

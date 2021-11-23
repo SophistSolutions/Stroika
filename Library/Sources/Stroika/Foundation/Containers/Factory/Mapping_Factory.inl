@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Containers::Factory {
 #endif
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
     inline Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Mapping_Factory (const KEY_EQUALS_COMPARER& keyEqualsComparer)
-        : fKeyEqualsComparer_ (keyEqualsComparer)
+        : fKeyEqualsComparer_{keyEqualsComparer}
     {
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>

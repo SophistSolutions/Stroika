@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Containers::Factory {
 #endif
     template <typename T, typename EQUALS_COMPARER>
     inline Set_Factory<T, EQUALS_COMPARER>::Set_Factory (const EQUALS_COMPARER& equalsComparer)
-        : fEqualsComparer_ (equalsComparer)
+        : fEqualsComparer_{equalsComparer}
     {
     }
     template <typename T, typename EQUALS_COMPARER>

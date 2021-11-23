@@ -310,7 +310,7 @@ namespace Stroika::Foundation::Traversal {
          *          Because of quirks of C++ overload resolution (https://en.cppreference.com/w/cpp/language/list_initialization)
          *          use of mem-initializers with Iterable<T> constructor calls have the unintuitive behavior of
          *          invoking the initializer_list<T> constructor preferatially (see docs above and 'Otherwise, the constructors of T are considered, in two phases'
-         * 
+         * R
          */
         Iterable (const initializer_list<T>& from);
 
@@ -1413,7 +1413,8 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual bool _IsEmpty () const;
         nonvirtual void _Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const;
-        nonvirtual Iterator<value_type> _Find (const function<bool (ArgByValueType<value_type> item)>& that) const;
+        template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>* = nullptr>
+        nonvirtual Iterator<value_type> _Find (THAT_FUNCTION&& that) const;
         /**
          *  Default implementation for Find_equal_to function.
          */

@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    Collection_LinkedList<T>::Collection_LinkedList (const Collection<T>& src)
+    Collection_LinkedList<T>::Collection_LinkedList (const Traversal::Iterable<T>& src)
         : Collection_LinkedList{}
     {
         this->AddAll (src);

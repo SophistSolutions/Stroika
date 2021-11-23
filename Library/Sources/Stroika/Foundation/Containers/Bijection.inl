@@ -461,11 +461,11 @@ namespace Stroika::Foundation::Containers {
             }
         };
 #if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        auto rep = dynamic_pointer_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep> (const_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep*> (this)->shared_from_this ());
+        auto rep = dynamic_pointer_cast<_IRep> (const_cast<_IRep*> (this)->shared_from_this ());
 #else
-        auto rep = const_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep*> (this)->shared_from_this ();
+        auto rep = const_cast<_IRep*> (this)->shared_from_this ();
 #endif
-        return MyIterable_ (Bijection<DOMAIN_TYPE, RANGE_TYPE>{rep});
+        return MyIterable_{Bijection<DOMAIN_TYPE, RANGE_TYPE>{rep}};
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     Iterable<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep::_Image_Reference_Implementation () const
@@ -508,9 +508,9 @@ namespace Stroika::Foundation::Containers {
             }
         };
 #if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        auto rep = dynamic_pointer_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep> (const_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep*> (this)->shared_from_this ());
+        auto rep = dynamic_pointer_cast<_IRep> (const_cast<_IRep*> (this)->shared_from_this ());
 #else
-        auto rep = const_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep*> (this)->shared_from_this ();
+        auto rep = const_cast<_IRep*> (this)->shared_from_this ();
 #endif
         return MyIterable_{Bijection<DOMAIN_TYPE, RANGE_TYPE>{rep}};
     }

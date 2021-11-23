@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Collection<T>::Collection ()
-        : inherited{Factory::Collection_Factory<T>{}()}
+        : inherited{Factory::Collection_Factory<value_type>{}()}
     {
         _AssertRepValidType ();
     }
@@ -67,12 +67,7 @@ namespace Stroika::Foundation::Containers {
     template <typename EQUALS_COMPARER>
     bool Collection<T>::Contains (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer) const
     {
-        for (const auto i : *this) {
-            if (equalsComparer (i, item)) {
-                return true;
-            }
-        }
-        return false;
+        return this->Find (item, equalsComparer) != nullptr;
     }
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
@@ -114,11 +109,9 @@ namespace Stroika::Foundation::Containers {
     template <typename EQUALS_COMPARER>
     inline bool Collection<T>::Remove (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer)
     {
-        for (Iterator<value_type> i = this->begin (); i != this->end (); ++i) {
-            if (equalsComparer (*i, item)) {
-                _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i, nullptr);
-                return true;
-            }
+        if (auto i = this->Find (item, equalsComparer)) {
+            _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i, nullptr);
+            return true;
         }
         return false;
     }
@@ -154,10 +147,13 @@ namespace Stroika::Foundation::Containers {
     nonvirtual size_t Collection<T>::RemoveAll (const PREDICATE& p)
     {
         size_t nRemoved{};
-        for (Iterator<T> i = this->begin (); i != this->end (); ++i) {
+        for (Iterator<T> i = this->begin (); i != this->end ();) {
             if (p (*i)) {
-                Remove (i);
+                Remove (i, &i);
                 ++nRemoved;
+            }
+            else {
+                ++i;
             }
         }
         return nRemoved;
@@ -173,11 +169,9 @@ namespace Stroika::Foundation::Containers {
     template <typename PREDICATE>
     nonvirtual bool Collection<T>::Remove (const PREDICATE& p)
     {
-        for (Iterator<T> i = this->begin (); i != this->end (); ++i) {
-            if (p (*i)) {
-                Remove (i);
-                return true;
-            }
+        if (auto i = this->Find (p)) {
+            Remove (i);
+            return true;
         }
         return false;
     }
@@ -190,19 +184,19 @@ namespace Stroika::Foundation::Containers {
     template <typename EQUALS_COMPARER>
     inline void Collection<T>::erase (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer)
     {
-        Remove (item, equalsComparer);
+        Remove (item, forward<EQUALS_COMPARER> (equalsComparer));
     }
     template <typename T>
     inline auto Collection<T>::erase (const Iterator<value_type>& i) -> Iterator<value_type>
     {
-        Iterator<T> nextI{nullptr};
+        Iterator<value_type> nextI{nullptr};
         Remove (i, &nextI);
         return nextI;
     }
     template <typename T>
     inline Collection<T> Collection<T>::Where (const function<bool (ArgByValueType<value_type>)>& doToElement) const
     {
-        return Iterable<T>::Where (doToElement, Collection<T>{});
+        return Iterable<value_type>::Where (doToElement, Collection<value_type>{});
     }
     template <typename T>
     inline auto Collection<T>::operator+= (ArgByValueType<value_type> item) -> Collection&
@@ -263,6 +257,7 @@ namespace Stroika::Foundation::Containers {
         result += rhs;
         return result;
     }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Collection_inl_ */
