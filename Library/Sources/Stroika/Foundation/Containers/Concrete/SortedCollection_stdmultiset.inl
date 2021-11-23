@@ -84,7 +84,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v) const override
         {
-            return this->_Find_equal_to_default_implementation (v);
+            // if doing a find by 'equals-to' - we already have this indexed
+            auto found = fData_.find (v);
+            Ensure ((found == fData_.end () and this->_Find_equal_to_default_implementation (v) == nullptr) or (found == Debug::UncheckedDynamicCast<const IteratorRep_&> (this->_Find_equal_to_default_implementation (v).ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ()));
+            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, found)};
         }
 
         // Collection<T>::_IRep overrides

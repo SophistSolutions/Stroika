@@ -83,6 +83,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v) const override
         {
+            // stdmap indexes on key, not full 'value_type' (though maybe we could somehow use that as a hint)
             return this->_Find_equal_to_default_implementation (v);
         }
 

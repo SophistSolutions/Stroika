@@ -85,6 +85,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v) const override
         {
+            // sorted key by equals_to not full value_type, but maybe could use that as a hint to start search?
             return this->_Find_equal_to_default_implementation (v);
         }
 

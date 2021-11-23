@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>* >
+    template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>*>
     inline Iterator<T> Iterable<T>::_IRep::_Find (THAT_FUNCTION&& that) const
     {
         RequireNotNull (that);
