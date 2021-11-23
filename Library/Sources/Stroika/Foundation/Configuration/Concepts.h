@@ -49,11 +49,22 @@ namespace Stroika::Foundation::Configuration {
      *  \par EXAMPLE
      *      has_eq<T>::value
      */
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x));
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x)); // SEE https://stroika.atlassian.net/browse/STK-749
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (neq, (x != x));
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (lt, (x < x));
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x - x));
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (equal_to, (std::equal_to<X>{}));
+
+    // WARNING - see HasUsableEqualToOptimization - below - but this version of has_equal_to returns true, even when it should not, say for
+    //  static_assert (!Configuration::has_eq<TableProvisioner>::value);
+    //  static_assert (!Configuration::has_equal_to<TableProvisioner>::value);
+    //      Seems same bug on VS2k19 and gcc, so almost certainly my bug....
+    //      -- LGP 2021-11-22
+    // SEE  https://stroika.atlassian.net/browse/STK-749
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (equal_to, (static_cast<bool> (std::equal_to<X>{}(x, x))));
+
+#if __cpp_impl_three_way_comparison >= 201907
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (spaceship, (x <=> x));
+#endif
 
     /*
      *  has_beginend<T>::value is true iff T has a begin/end method
@@ -129,6 +140,27 @@ namespace Stroika::Foundation::Configuration {
     {
         return has_minus<T>::value && is_convertible_v<minus_result<T>, int>;
     }
+
+    /**
+     *  Check if equal_to<T> is both well defined, and contains no data. The reason it matters that it contains no data, is because
+     *  then one instance is as good as another, and it need not be passed anywhere, opening an optimization opportunity.
+     */
+    template <typename T>
+    constexpr bool HasUsableEqualToOptimization ()
+    {
+        // This check of has_eq () should NOT be needed but only is because has_equal_to<> is WRONG and produces false positives
+        // SEE https://stroika.atlassian.net/browse/STK-749
+        // -- LGP 2021-11-22
+        if constexpr (Configuration::has_eq<T>::value and Configuration::has_equal_to<T>::value) {
+            struct equal_to_empty_tester : equal_to<T> {
+                int a;
+            };
+            // leverage empty base class optimization to see if equal_to contains any real data
+            return sizeof (equal_to_empty_tester) == sizeof (int);
+        }
+        return false;
+    }
+    //static_assert (HasUsableEqualToOptimization<int> ());     // hack to test working
 
     /*
      * FROM http://stackoverflow.com/questions/16893992/check-if-type-can-be-explicitly-converted

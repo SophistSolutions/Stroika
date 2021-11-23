@@ -10,6 +10,15 @@
  ********************************************************************************
  */
 
+// https://stroika.atlassian.net/browse/STK-749
+namespace Stroika::Foundation::Configuration {
+    template <>
+    constexpr bool HasUsableEqualToOptimization<Stroika::Foundation::Characters::RegularExpression> ()
+    {
+        return false;
+    };
+}
+
 namespace Stroika::Foundation::Characters {
 
     /*
