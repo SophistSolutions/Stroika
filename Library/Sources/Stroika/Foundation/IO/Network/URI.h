@@ -112,12 +112,16 @@ namespace Stroika::Foundation::IO::Network {
         URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& path = String{}, const optional<String>& query = nullopt, const optional<String>& fragment = nullopt);
         URI (const string& encodedURI);
         URI (const String& encodedURI);
+#if !qCompilerAndStdLib_move_and_copy_and_opequal_optional_Buggy
         URI (const URI&) = default;
         URI (URI&&)      = default;
+#endif
 
     public:
+#if !qCompilerAndStdLib_move_and_copy_and_opequal_optional_Buggy
         nonvirtual URI& operator= (const URI&) = default;
         nonvirtual URI& operator= (URI&&) = default;
+#endif
 
     public:
         /**

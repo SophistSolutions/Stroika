@@ -856,6 +856,36 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 
 #endif
 
+
+/*
+n file included from ../../IO/Network/UniformResourceIdentification.h:735,
+                 from ../../IO/Network/URI.h:21,
+                 from SQLite.h:22,
+                 from SQLite.cpp:14:
+../../IO/Network/UniformResourceIdentification.inl: In constructor 'Stroika::Foundation::IO::Network::UniformResourceIdentification::Authority                               ::Authority(const std::optional<Stroika::Foundation::IO::Network::UniformResourceIdentification::Host>&, const std::optional<short unsigned in                               t>&, const std::optional<Stroika::Foundation::IO::Network::UniformResourceIdentification::UserInfo>&)':
+../../IO/Network/UniformResourceIdentification.inl:266:30: error: use of deleted function 'std::optional<Stroika::Foundation::IO::Network::Uni                               formResourceIdentification::Host>::optional(const std::optional<Stroika::Foundation::IO::Network::UniformResourceIdentification::Host>&)'
+         , fUserInfo_{userInfo}
+                              ^
+In file included from /usr/include/c++/8/bits/node_handle.h:39,
+                 from /usr/include/c++/8/bits/hashtable.h:37,
+                 from /usr/include/c++/8/unordered_map:46,
+                 from /usr/include/c++/8/functional:61,
+                 from ../../Characters/../Common/Compare.h:13,
+                 from ../../Characters/String.h:16,
+                 from ../../Characters/Format.h:15,
+    */
+#ifndef qCompilerAndStdLib_move_and_copy_and_opequal_optional_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// First noted BROKEN IN GCC8
+#define qCompilerAndStdLib_move_and_copy_and_opequal_optional_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
+#else
+#define qCompilerAndStdLib_move_and_copy_and_opequal_optional_Buggy 0
+#endif
+
+#endif
+
+
 /*
 esponse.h: In member function ‘auto Stroika::Frameworks::WebServer::Response::UpdateHeader(FUNCTION&&)’:
 Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘unsigned char:3’ and ‘Stroika::Frameworks::WebServer::Response::State’)

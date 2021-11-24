@@ -216,15 +216,19 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          */
         Host (const String& registeredName);
         Host (const InternetAddress& addr);
+#if !qCompilerAndStdLib_move_and_copy_and_opequal_optional_Buggy
         Host (const Host&) noexcept = default;
         Host (Host&&) noexcept      = default;
+#endif
 
     private:
         Host () = default;
 
     public:
+#if !qCompilerAndStdLib_move_and_copy_and_opequal_optional_Buggy
         nonvirtual Host& operator= (const Host&) = default;
         nonvirtual Host& operator= (Host&&) = default;
+#endif
 
     public:
         /**
@@ -366,15 +370,19 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *  \req not decodedUserInfo.empty ()
          */
         UserInfo (const String& decodedUserInfo);
+#if !qCompilerAndStdLib_move_and_copy_and_opequal_optional_Buggy
         UserInfo (const UserInfo&) noexcept = default;
         UserInfo (UserInfo&&) noexcept      = default;
+#endif
 
     private:
         UserInfo () = default;
 
     public:
+#if !qCompilerAndStdLib_move_and_copy_and_opequal_optional_Buggy
         nonvirtual UserInfo& operator= (const UserInfo&) = default;
         nonvirtual UserInfo& operator= (UserInfo&&) = default;
+#endif
 
     public:
         /**
@@ -471,12 +479,16 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     class Authority {
     public:
         Authority (const optional<Host>& h = nullopt, const optional<PortType>& port = nullopt, const optional<UserInfo>& userInfo = nullopt);
+#if !qCompilerAndStdLib_move_and_copy_and_opequal_optional_Buggy
         Authority (const Authority&) noexcept = default;
         Authority (Authority&&) noexcept      = default;
+#endif
 
     public:
+#if !qCompilerAndStdLib_move_and_copy_and_opequal_optional_Buggy
         nonvirtual Authority& operator= (const Authority&) = default;
         nonvirtual Authority& operator= (Authority&&) = default;
+#endif
 
     public:
         /**
