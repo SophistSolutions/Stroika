@@ -213,12 +213,22 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *  this using optional<Host> and say that the optional host is missing.
          *
          *  So, \req not registeredName.empty ()
+         * 
+         *  \todo https://stroika.atlassian.net/browse/STK-750
+         *        noexcept - unclear why I cannot declare copy constructor and copy assignment operators as noexect
+         *        on GCC. THIS compiles fine, but then later bits of code that use it fail to compile (g++ 9 at least).
          */
         Host (const String& registeredName);
         Host (const InternetAddress& addr);
+        Host (const Host&)     = default;
+        Host (Host&&) noexcept = default;
 
     private:
         Host () = default;
+
+    public:
+        nonvirtual Host& operator= (const Host&) = default;
+        nonvirtual Host& operator= (Host&&) noexcept = default;
 
     public:
         /**
@@ -360,9 +370,15 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *  \req not decodedUserInfo.empty ()
          */
         UserInfo (const String& decodedUserInfo);
+        UserInfo (const UserInfo&) noexcept = default;
+        UserInfo (UserInfo&&) noexcept      = default;
 
     private:
         UserInfo () = default;
+
+    public:
+        nonvirtual UserInfo& operator= (const UserInfo&) noexcept = default;
+        nonvirtual UserInfo& operator= (UserInfo&&) noexcept = default;
 
     public:
         /**
@@ -458,7 +474,18 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     class Authority {
     public:
+        /**
+         *  \todo https://stroika.atlassian.net/browse/STK-750
+         *        noexcept - unclear why I cannot declare copy constructor and copy assignment operators as noexect
+         *        on GCC. THIS compiles fine, but then later bits of code that use it fail to compile (g++ 9 at least).
+         */
         Authority (const optional<Host>& h = nullopt, const optional<PortType>& port = nullopt, const optional<UserInfo>& userInfo = nullopt);
+        Authority (const Authority&)     = default;
+        Authority (Authority&&) noexcept = default;
+
+    public:
+        nonvirtual Authority& operator= (const Authority&) = default;
+        nonvirtual Authority& operator= (Authority&&) noexcept = default;
 
     public:
         /**
