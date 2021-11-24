@@ -191,8 +191,8 @@ namespace Stroika::Foundation::IO::Network {
         InternetAddress (ITERABLE_OF_UINT8OrByte octets, AddressFamily af);
 
     public:
-        constexpr InternetAddress& operator= (const InternetAddress&) = default;
-        constexpr InternetAddress& operator= (InternetAddress&&) = default;
+        constexpr InternetAddress& operator= (const InternetAddress&) noexcept = default;
+        constexpr InternetAddress& operator= (InternetAddress&&) noexcept = default;
 
     public:
         /**
