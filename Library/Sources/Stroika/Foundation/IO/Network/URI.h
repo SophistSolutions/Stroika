@@ -115,12 +115,6 @@ namespace Stroika::Foundation::IO::Network {
         URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& path = String{}, const optional<String>& query = nullopt, const optional<String>& fragment = nullopt);
         URI (const string& encodedURI);
         URI (const String& encodedURI);
-        URI (const URI&)noexcept  = default;
-        URI ( URI&&) noexcept = default;
-
-    public:
-        nonvirtual URI& operator= (const URI&) noexcept = default;
-         nonvirtual URI& operator= (URI&&) noexcept = default;
 
     public:
         /**
