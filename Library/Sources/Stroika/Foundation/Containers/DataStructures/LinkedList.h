@@ -218,14 +218,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void SetAt (T item, size_t i);
 
     public:
-        nonvirtual void Invariant () const;
+        nonvirtual void Invariant () const noexcept;
 
     private:
         Link* fHead_{nullptr};
 
 #if qDebug
     private:
-        virtual void Invariant_ () const;
+        virtual void Invariant_ () const noexcept;
 #endif
 
     private:
@@ -285,7 +285,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool Equals (const ForwardIterator& rhs) const;
 
     public:
-        nonvirtual void Invariant () const;
+        nonvirtual void Invariant () const noexcept;
 
     private:
         const LinkedList* fData_;
@@ -293,7 +293,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
 #if qDebug
     private:
-        virtual void Invariant_ () const;
+        virtual void Invariant_ () const noexcept;
 #endif
 
     private:

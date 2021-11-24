@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Containers::Private {
 #if qDebug
         /**
          */
-        virtual void Invariant () const override;
+        virtual void Invariant () const noexcept override;
 #endif
 
     public:

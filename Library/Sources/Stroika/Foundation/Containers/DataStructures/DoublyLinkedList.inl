@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Ensure (fTail_ == nullptr);
     }
     template <typename T>
-    inline void DoublyLinkedList<T>::Invariant () const
+    inline void DoublyLinkedList<T>::Invariant () const noexcept
     {
 #if qDebug
         Invariant_ ();
@@ -485,7 +485,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 #if qDebug
     template <typename T>
-    void DoublyLinkedList<T>::Invariant_ () const
+    void DoublyLinkedList<T>::Invariant_ () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_DoublyLinkedList_IncludeSlowDebugChecks_
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
@@ -555,7 +555,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return *this;
     }
     template <typename T>
-    inline void DoublyLinkedList<T>::ForwardIterator::Invariant () const
+    inline void DoublyLinkedList<T>::ForwardIterator::Invariant () const noexcept
     {
 #if qDebug
         Invariant_ ();
@@ -620,7 +620,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 #if qDebug
     template <typename T>
-    void DoublyLinkedList<T>::ForwardIterator::Invariant_ () const
+    void DoublyLinkedList<T>::ForwardIterator::Invariant_ () const noexcept
     {
     }
 #endif

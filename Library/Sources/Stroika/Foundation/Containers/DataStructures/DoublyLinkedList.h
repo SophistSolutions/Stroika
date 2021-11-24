@@ -247,7 +247,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
 
     public:
-        nonvirtual void Invariant () const;
+        nonvirtual void Invariant () const noexcept;
 
     private:
         Link* fHead_{};
@@ -255,7 +255,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
 #if qDebug
     private:
-        virtual void Invariant_ () const;
+        virtual void Invariant_ () const noexcept;
 #endif
 
     private:
@@ -315,7 +315,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool Equals (const ForwardIterator& rhs) const;
 
     public:
-        nonvirtual void Invariant () const;
+        nonvirtual void Invariant () const noexcept;
 
     private:
         const DoublyLinkedList* fData_{nullptr};
@@ -323,7 +323,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
 #if qDebug
     private:
-        nonvirtual void Invariant_ () const;
+        nonvirtual void Invariant_ () const noexcept;
 #endif
 
     private:

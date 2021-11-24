@@ -338,7 +338,7 @@ namespace Stroika::Foundation::Memory {
         return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline void SmallStackBuffer<T, BUF_SIZE>::Invariant () const
+    inline void SmallStackBuffer<T, BUF_SIZE>::Invariant () const noexcept
     {
 #if qDebug
         Invariant_ ();
@@ -346,13 +346,13 @@ namespace Stroika::Foundation::Memory {
     }
 #if qDebug
     template <typename T, size_t BUF_SIZE>
-    void SmallStackBuffer<T, BUF_SIZE>::Invariant_ () const
+    void SmallStackBuffer<T, BUF_SIZE>::Invariant_ () const noexcept
     {
         Assert (capacity () >= size ());
         ValidateGuards_ ();
     }
     template <typename T, size_t BUF_SIZE>
-    void SmallStackBuffer<T, BUF_SIZE>::ValidateGuards_ () const
+    void SmallStackBuffer<T, BUF_SIZE>::ValidateGuards_ () const noexcept
     {
         Assert (::memcmp (kGuard1_, fGuard1_, sizeof (kGuard1_)) == 0);
         Assert (::memcmp (kGuard2_, fGuard2_, sizeof (kGuard2_)) == 0);

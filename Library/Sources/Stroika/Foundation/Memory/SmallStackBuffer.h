@@ -298,12 +298,12 @@ namespace Stroika::Foundation::Memory {
         T* fLiveData_{};
 
     public:
-        nonvirtual void Invariant () const;
+        nonvirtual void Invariant () const noexcept;
 
     private:
 #if qDebug
-        nonvirtual void Invariant_ () const;
-        nonvirtual void ValidateGuards_ () const;
+        nonvirtual void Invariant_ () const noexcept;
+        nonvirtual void ValidateGuards_ () const noexcept;
 #endif
 
     private:

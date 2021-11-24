@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Traversal {
      */
 #if qDebug
     template <typename T, typename ITERATOR_TRAITS>
-    inline void Iterator<T, ITERATOR_TRAITS>::IRep::Invariant () const
+    inline void Iterator<T, ITERATOR_TRAITS>::IRep::Invariant () const noexcept
     {
     }
 #endif
@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Traversal {
         this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline void Iterator<T, ITERATOR_TRAITS>::Invariant () const
+    inline void Iterator<T, ITERATOR_TRAITS>::Invariant () const noexcept
     {
 #if qDebug
         if (fRep_) {

@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual bool FindIf (PREDICATE pred) const;
 
     public:
-        nonvirtual void Invariant () const;
+        nonvirtual void Invariant () const noexcept;
 
     public:
         nonvirtual iterator remove_constness (const_iterator it);

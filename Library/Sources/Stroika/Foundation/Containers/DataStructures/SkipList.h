@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Prioritize (const KeyType& key);
 
     public:
-        nonvirtual void Invariant () const;
+        nonvirtual void Invariant () const noexcept;
 
 #if qDebug
     public:
@@ -162,7 +162,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
 #if qDebug
     protected:
-        nonvirtual void Invariant_ () const;
+        nonvirtual void Invariant_ () const noexcept;
 #endif
 
     private:

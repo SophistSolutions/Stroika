@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename T>
-    inline void Array<T>::Invariant () const
+    inline void Array<T>::Invariant () const noexcept
     {
 #if qDebug
         Invariant_ ();
@@ -327,7 +327,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 #if qDebug
     template <typename T>
-    void Array<T>::Invariant_ () const
+    void Array<T>::Invariant_ () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
@@ -536,7 +536,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fCurrentIdx_ = i;
     }
     template <typename T>
-    inline void Array<T>::IteratorBase::Invariant () const
+    inline void Array<T>::IteratorBase::Invariant () const noexcept
     {
 #if qDebug
         Invariant_ ();
@@ -544,7 +544,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 #if qDebug
     template <typename T>
-    void Array<T>::IteratorBase::Invariant_ () const
+    void Array<T>::IteratorBase::Invariant_ () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};

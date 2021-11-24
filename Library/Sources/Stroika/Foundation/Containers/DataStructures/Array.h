@@ -253,11 +253,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void AddAfter (const BackwardIterator& i, ArgByValueType<T> item);
 
     public:
-        nonvirtual void Invariant () const;
+        nonvirtual void Invariant () const noexcept;
 
 #if qDebug
     private:
-        nonvirtual void Invariant_ () const;
+        nonvirtual void Invariant_ () const noexcept;
 #endif
 
     private:
@@ -307,11 +307,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void SetUnderlyingIteratorRep (const UnderlyingIteratorRep l);
 
     public:
-        nonvirtual void Invariant () const;
+        nonvirtual void Invariant () const noexcept;
 
 #if qDebug
     private:
-        nonvirtual void Invariant_ () const;
+        nonvirtual void Invariant_ () const noexcept;
 #endif
 
     private:

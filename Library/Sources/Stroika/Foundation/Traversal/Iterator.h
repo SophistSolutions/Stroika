@@ -593,7 +593,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief, does nothing if !qDebug, but if qDebug, checks internal state and asserts in good shape
          */
-        nonvirtual void Invariant () const;
+        nonvirtual void Invariant () const noexcept;
 
     private:
         unique_ptr<IRep> fRep_;
@@ -686,7 +686,7 @@ namespace Stroika::Foundation::Traversal {
 #if qDebug
         /**
          */
-        virtual void Invariant () const;
+        virtual void Invariant () const noexcept;
 #endif
     };
 
