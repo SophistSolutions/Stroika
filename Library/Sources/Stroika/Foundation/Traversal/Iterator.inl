@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T, typename ITERATOR_TRAITS>
-    inline Iterator<T, ITERATOR_TRAITS>::Iterator (const RepSmartPtr& rep)
+    inline Iterator<T, ITERATOR_TRAITS>::Iterator (const RepSmartPtr& rep) noexcept
         : fRep_{rep}
     {
         RequireNotNull (fRep_);
@@ -45,18 +45,11 @@ namespace Stroika::Foundation::Traversal {
         this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline Iterator<T, ITERATOR_TRAITS>::Iterator (RepSmartPtr&& rep)
+    inline Iterator<T, ITERATOR_TRAITS>::Iterator (RepSmartPtr&& rep) noexcept
         : fRep_{move (rep)}
     {
         RequireNotNull (fRep_);
         fRep_->More (&fCurrentValue_, false);
-        this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
-    }
-    template <typename T, typename ITERATOR_TRAITS>
-    inline Iterator<T, ITERATOR_TRAITS>::Iterator (Iterator&& src)
-        : fRep_{move (src.fRep_)}
-        , fCurrentValue_{move (src.fCurrentValue_)}
-    {
         this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
@@ -67,22 +60,39 @@ namespace Stroika::Foundation::Traversal {
         this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
-    constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (nullptr_t)
+    inline Iterator<T, ITERATOR_TRAITS>::Iterator (Iterator&& src) noexcept
+        : fRep_{move (src.fRep_)}
+        , fCurrentValue_{move (src.fCurrentValue_)}
+    {
+        this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
+    }
+    template <typename T, typename ITERATOR_TRAITS>
+    constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (nullptr_t) noexcept
         : Iterator{ConstructionFlagForceAtEnd_::ForceAtEnd}
     {
     }
     template <typename T, typename ITERATOR_TRAITS>
-    constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (ConstructionFlagForceAtEnd_)
+    constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (ConstructionFlagForceAtEnd_) noexcept
         : fRep_{nullptr}
     {
         Assert (Done ());
     }
     template <typename T, typename ITERATOR_TRAITS>
-    Iterator<T, ITERATOR_TRAITS>& Iterator<T, ITERATOR_TRAITS>::operator= (const Iterator& rhs)
+    inline Iterator<T, ITERATOR_TRAITS>& Iterator<T, ITERATOR_TRAITS>::operator= (const Iterator& rhs)
     {
         if (&rhs != this) [[LIKELY_ATTR]] {
             fRep_          = rhs.fRep_ == nullptr ? nullptr : Clone_ (*rhs.fRep_);
             fCurrentValue_ = rhs.fCurrentValue_;
+            this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
+        }
+        return *this;
+    }
+    template <typename T, typename ITERATOR_TRAITS>
+    inline Iterator<T, ITERATOR_TRAITS>& Iterator<T, ITERATOR_TRAITS>::operator= (Iterator&& rhs) noexcept
+    {
+        if (&rhs != this) [[LIKELY_ATTR]] {
+            fRep_          = move (rhs.fRep_);
+            fCurrentValue_ = move (rhs.fCurrentValue_);
             this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
         }
         return *this;
@@ -223,7 +233,7 @@ namespace Stroika::Foundation::Traversal {
         return rep.Clone ();
     }
     template <typename T, typename ITERATOR_TRAITS>
-    constexpr Iterator<T, ITERATOR_TRAITS> Iterator<T, ITERATOR_TRAITS>::GetEmptyIterator ()
+    constexpr inline Iterator<T, ITERATOR_TRAITS> Iterator<T, ITERATOR_TRAITS>::GetEmptyIterator ()
     {
         return Iterator<T, ITERATOR_TRAITS>{ConstructionFlagForceAtEnd_::ForceAtEnd};
     }
@@ -266,7 +276,7 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename ITERATOR>
-    constexpr typename iterator_traits<ITERATOR>::pointer Iterator2Pointer (ITERATOR i)
+    constexpr inline typename iterator_traits<ITERATOR>::pointer Iterator2Pointer (ITERATOR i)
     {
         // this overload wont always work.. I hope it gives good compiler error message??? --LGP 2014-10-07
         //

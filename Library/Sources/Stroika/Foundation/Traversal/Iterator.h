@@ -318,23 +318,26 @@ namespace Stroika::Foundation::Traversal {
          *
          *  CTOR overload taking nullptr - is the same as GetEmptyIterator ()
          *
+         *  \note since copy constructor calls Clone_, these can throw exceptions but move copies/assignments are no-except
+         * 
          *  \req RequireNotNull (rep.get ())
          */
-        Iterator (const RepSmartPtr& rep);
-        Iterator (RepSmartPtr&& rep);
+        Iterator (const RepSmartPtr& rep) noexcept;
+        Iterator (RepSmartPtr&& rep) noexcept;
         Iterator (const Iterator& src);
-        Iterator (Iterator&& src);
-        constexpr Iterator (nullptr_t);
+        Iterator (Iterator&& src) noexcept;
+        constexpr Iterator (nullptr_t) noexcept;
         Iterator () = delete;
 
     private:
-        constexpr Iterator (ConstructionFlagForceAtEnd_);
+        constexpr Iterator (ConstructionFlagForceAtEnd_) noexcept;
 
     public:
         /**
-         *  \brief  Iterators are safely copyable, preserving their current position.
+         *  \brief  Iterators are safely copyable, preserving their current position. Copy-Assigning could throw since it probably involves a Clone()
          */
         nonvirtual Iterator& operator= (const Iterator& rhs);
+        nonvirtual Iterator& operator= (Iterator&& rhs) noexcept;
 
     public:
         /**
