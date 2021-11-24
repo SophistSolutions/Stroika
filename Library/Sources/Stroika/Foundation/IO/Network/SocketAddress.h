@@ -54,11 +54,11 @@ namespace Stroika::Foundation::IO::Network {
          *  The overload with InternetAddress and portNumber, take care of this automatically, with the portNumber
          *  in host-byte-order.
          */
-        SocketAddress ();
-        SocketAddress (const sockaddr& iaddr);
-        SocketAddress (const sockaddr_in& iaddr);
-        SocketAddress (const sockaddr_in6& iaddr);
-        SocketAddress (const sockaddr_storage& iaddr);
+        constexpr SocketAddress () noexcept;
+        constexpr SocketAddress (const sockaddr& iaddr) noexcept;
+        constexpr SocketAddress (const sockaddr_in& iaddr) noexcept;
+        constexpr SocketAddress (const sockaddr_in6& iaddr) noexcept;
+        constexpr SocketAddress (const sockaddr_storage& iaddr) noexcept;
 #if qPlatform_Windows
         SocketAddress (const SOCKET_ADDRESS& sockaddr);
 #endif

@@ -16,26 +16,25 @@ namespace Stroika::Foundation::IO::Network {
      *********************** IO::Network::SocketAddress *****************************
      ********************************************************************************
      */
-    inline SocketAddress::SocketAddress ()
+    constexpr inline SocketAddress::SocketAddress () noexcept
         : fSocketAddress_{}
     {
     }
-    inline SocketAddress::SocketAddress (const sockaddr& iaddr)
+    constexpr inline SocketAddress::SocketAddress (const sockaddr& iaddr) noexcept
+        : fSocketAddress_{iaddr}
     {
-        fSocketAddress_ = iaddr;
     }
-    inline SocketAddress::SocketAddress (const sockaddr_in& iaddr)
+    constexpr inline SocketAddress::SocketAddress (const sockaddr_in& iaddr) noexcept
+        : fSocketAddress_V4_{iaddr}
     {
-        fSocketAddress_V4_ = iaddr;
     }
-    inline SocketAddress::SocketAddress (const sockaddr_in6& iaddr)
+    constexpr inline SocketAddress::SocketAddress (const sockaddr_in6& iaddr) noexcept
+        : fSocketAddress_V6_{iaddr}
     {
-        fSocketAddress_V6_ = iaddr;
     }
-    inline SocketAddress::SocketAddress (const sockaddr_storage& iaddr)
-        : fSocketAddress_ ()
+    constexpr inline SocketAddress::SocketAddress (const sockaddr_storage& iaddr) noexcept
+        : fSocketAddressStorage_{iaddr}
     {
-        fSocketAddressStorage_ = iaddr;
     }
     inline SocketAddress::SocketAddress (const InternetAddress& iaddr, PortType portNumber)
     {
