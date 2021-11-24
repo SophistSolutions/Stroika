@@ -120,10 +120,12 @@ namespace Stroika::Foundation::IO::Network {
         URI (const string& encodedURI);
         URI (const String& encodedURI);
         URI (const URI&) = default;
-        URI (URI&&)  noexcept = default;
+        // clang-format off
+        URI (URI&&) noexcept = default;
+        // clang-format on
 
     public:
-        nonvirtual URI& operator= (const URI&)  = default;
+        nonvirtual URI& operator= (const URI&) = default;
         nonvirtual URI& operator= (URI&&) noexcept = default;
 
     public:
