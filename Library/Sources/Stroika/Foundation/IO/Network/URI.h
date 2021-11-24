@@ -111,7 +111,7 @@ namespace Stroika::Foundation::IO::Network {
          *  Copy and Move constructors/assignment operators are noexcept because the underlying objects are, but 
          *  the default constructor is NOT noexcept because the instance always allocates at least a string (could be remedied, but not as of now).
          */
-        URI ()  = default;
+        URI () = default;
         URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& path = String{}, const optional<String>& query = nullopt, const optional<String>& fragment = nullopt);
         URI (const string& encodedURI);
         URI (const String& encodedURI);
