@@ -107,17 +107,20 @@ namespace Stroika::Foundation::IO::Network {
          *  These will raise exceptions if anything illegal in the URL specification.
          *
          *  Constructor from String(or string) and no other arguments, is equivalent to calling URI::Parse ()
+         * 
+         *  Copy and Move constructors/assignment operators are noexcept because the underlying objects are, but 
+         *  the default constructor is NOT noexcept because the instance always allocates at least a string (could be remedied, but not as of now).
          */
-        URI () noexcept = default;
+        URI ()  = default;
         URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& path = String{}, const optional<String>& query = nullopt, const optional<String>& fragment = nullopt);
         URI (const string& encodedURI);
         URI (const String& encodedURI);
-        URI (const URI&) noexcept = default;
+        URI (const URI&)noexcept  = default;
         URI ( URI&&) noexcept = default;
 
     public:
         nonvirtual URI& operator= (const URI&) noexcept = default;
-        nonvirtual URI& operator= (URI&&) noexcept = default;
+         nonvirtual URI& operator= (URI&&) noexcept = default;
 
     public:
         /**
