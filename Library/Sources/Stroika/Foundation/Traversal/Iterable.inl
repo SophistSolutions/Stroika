@@ -245,13 +245,6 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T>
-    inline Iterable<T>& Iterable<T>::operator= (const Iterable& rhs)
-    {
-        RequireNotNull (rhs._fRep);
-        _fRep = rhs._fRep;
-        return *this;
-    }
-    template <typename T>
     inline Iterable<T>::operator bool () const
     {
         return not empty ();

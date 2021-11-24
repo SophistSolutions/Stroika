@@ -319,7 +319,7 @@ namespace Stroika::Foundation::Traversal {
          *  \brief  Iterable's are typically constructed as concrete subtype objects, 
          *          whose CTOR passed in a shared copyable rep.
          *
-         *  \note - though Iterables are not movable, the repPtr in construction can be, so that we don't
+         *  \note - the repPtr in construction can be, so that we don't
          *          need to increment its reference count as we pass it though the call chain to where it will be finally
          *          stored.
          */
@@ -331,12 +331,9 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief  Iterable are safely copyable (by value).
-         *
-         *  But the 'move' assignment operator requires the rhs to not have any other threads accessing it
-         *  at the time of move.
          */
-        nonvirtual Iterable<T>& operator= (const Iterable& rhs);
+        nonvirtual Iterable& operator= (const Iterable& rhs) noexcept = default;
+        nonvirtual Iterable& operator= (Iterable&& rhs) noexcept = default;
 
     public:
         /**
