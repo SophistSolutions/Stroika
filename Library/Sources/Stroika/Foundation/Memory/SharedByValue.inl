@@ -35,27 +35,9 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    inline SharedByValue<T, TRAITS>::SharedByValue () noexcept
+    inline SharedByValue<T, TRAITS>::SharedByValue ([[maybe_unused]] nullptr_t) noexcept
         : fCopier_{element_copier_type{}}
         , fSharedImpl_{}
-    {
-    }
-    template <typename T, typename TRAITS>
-    inline SharedByValue<T, TRAITS>::SharedByValue ([[maybe_unused]] nullptr_t n) noexcept
-        : fCopier_{element_copier_type{}}
-        , fSharedImpl_{}
-    {
-    }
-    template <typename T, typename TRAITS>
-    inline SharedByValue<T, TRAITS>::SharedByValue (const SharedByValue& from) noexcept
-        : fCopier_{from.fCopier_}
-        , fSharedImpl_{from.fSharedImpl_}
-    {
-    }
-    template <typename T, typename TRAITS>
-    inline SharedByValue<T, TRAITS>::SharedByValue (SharedByValue&& from) noexcept
-        : fCopier_{from.fCopier_}
-        , fSharedImpl_{move (from.fSharedImpl_)}
     {
     }
     template <typename T, typename TRAITS>
@@ -72,7 +54,7 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T, typename TRAITS>
     inline SharedByValue<T, TRAITS>::SharedByValue (shared_ptr_type&& from, const element_copier_type&& copier) noexcept
-        : fCopier_{copier}
+        : fCopier_{move (copier)}
         , fSharedImpl_{move (from)}
     {
     }
@@ -81,28 +63,6 @@ namespace Stroika::Foundation::Memory {
         : fCopier_{copier}
         , fSharedImpl_{from}
     {
-    }
-    template <typename T, typename TRAITS>
-    inline SharedByValue<T, TRAITS>& SharedByValue<T, TRAITS>::operator= (const SharedByValue& rhs)
-    {
-        // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
-        // and we can avoid the (common) and costly memory barrier
-        if (fSharedImpl_ != rhs.fSharedImpl_) [[LIKELY_ATTR]] {
-            fCopier_     = rhs.fCopier_;
-            fSharedImpl_ = rhs.fSharedImpl_;
-        }
-        return *this;
-    }
-    template <typename T, typename TRAITS>
-    inline SharedByValue<T, TRAITS>& SharedByValue<T, TRAITS>::operator= (SharedByValue&& rhs) noexcept
-    {
-        // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
-        // and we can avoid the (common) and costly memory barrier
-        if (fSharedImpl_ != rhs.fSharedImpl_) [[LIKELY_ATTR]] {
-            fCopier_     = move (rhs.fCopier_);
-            fSharedImpl_ = move (rhs.fSharedImpl_);
-        }
-        return *this;
     }
     template <typename T, typename TRAITS>
     inline SharedByValue<T, TRAITS>& SharedByValue<T, TRAITS>::operator= (const shared_ptr_type& from)
