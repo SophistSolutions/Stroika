@@ -88,24 +88,14 @@ namespace Stroika::Foundation::Debug {
 #if qDebug
         try {
             Require (rhs._fSharedContext->fLocks_ == 0 and rhs._fSharedContext->GetSharedLockEmpty_ ()); // to move, the rhs can have no locks of any kind (since we change rhs)
-            // NOTE - we also should check if fLocks_ != 0 -= thats OK if WE are the locker.
-            // BUT - I think I need todo work here to TRANSFER the locks (and thats not done here/yet)
-            //
-            //Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->GetSharedLockEmpty_ ());         // ditto for thing being assigned to
             // https://stroika.atlassian.net/browse/STK-752
+            // review - SB OK to assign over this with locks if the locks are all from this thread
             if (_fSharedContext->fLocks_ != 0) {
-                // must do some sanity check and then transfer locks
                 Assert (false); // NYI
             }
             if (not _fSharedContext->GetSharedLockEmpty_ ()) {
-                auto tmp = _fSharedContext->CountSharedLockThreads_ ();
-                Assert (tmp.second == 0); // not good enuf - must transer lock to RHS
-                // UNCLEAR if should transfer rhs._fSharedContext making this increment irrelevant
-                for (size_t i = 0; i < tmp.second; ++i) {
-                    //  rhs.lock_shared ();
-                }
+                Assert (_fSharedContext->CountSharedLockThreads_ ().second == 0); // not good enuf - must transer lock to RHS
             }
-            //  _fSharedContext = move (rhs._fSharedContext);
         }
         catch (...) {
             AssertNotReached ();
