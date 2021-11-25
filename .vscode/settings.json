@@ -31,7 +31,8 @@
     "shared_mutex": "cpp",
     "thread": "cpp",
     "evp.h": "c",
-    "charconv": "cpp"
+    "charconv": "cpp",
+    "limits": "cpp"
   },
   "files.watcherExclude": {
     "Archive/**": true,
