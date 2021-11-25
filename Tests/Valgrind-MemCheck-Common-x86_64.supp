@@ -21,3 +21,9 @@
    fun:_ZN7Stroika10Foundation10Characters12Float2String*_19Float2StringOptionsE
    ...
 }
+{
+   https://stroika.atlassian.net/browse/STK-751
+   Memcheck:Cond
+   fun:value_or<bool const&>
+   fun:_ZN7Stroika10Foundation10Characters15FloatConversion*
+}
