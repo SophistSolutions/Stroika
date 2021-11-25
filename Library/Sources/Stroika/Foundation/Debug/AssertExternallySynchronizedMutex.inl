@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Debug {
             // NOTE - we also should check if fLocks_ != 0 -= thats OK if WE are the locker.
             // BUT - I think I need todo work here to TRANSFER the locks (and thats not done here/yet)
             //
-            //Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->GetSharedLockEmpty ());         // ditto for thing being assigned to
+            //Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->GetSharedLockEmpty_ ());         // ditto for thing being assigned to
             // https://stroika.atlassian.net/browse/STK-752
             if (_fSharedContext->fLocks_ != 0) {
                 // must do some sanity check and then transfer locks
