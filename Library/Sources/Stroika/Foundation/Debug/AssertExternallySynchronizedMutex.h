@@ -192,6 +192,11 @@ namespace Stroika::Foundation::Debug {
         /**
          *  \note   Copy/Move constructor checks for existing locks while copying.
          *          Must be able to readlock source on copy, and have zero existing locks on src for move.
+         *          These 'constructors' don't really do/copy/move anything, but just check the state of their own
+         *          lock count and the state of the 'src' lock counts.
+         * 
+         *          NOTE - the 'SharedContext' does NOT get copied by copy constructors, move constructors etc. Its tied
+         *          to the l-value.
          */
 #if qDebug
         AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext = nullptr) noexcept;
@@ -288,6 +293,7 @@ namespace Stroika::Foundation::Debug {
         static mutex& GetSharedLockMutexThreads_ (); // MUTEX ONLY FOR fSharedLockThreads_ (could do one mutex per AssertExternallySynchronizedMutex but static probably performs better)
 #endif
     };
+
 }
 
 /*
