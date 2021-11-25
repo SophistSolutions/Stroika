@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Debug {
         : AssertExternallySynchronizedMutex{sharedContext}
     {
         try {
-            Require (src._fSharedContext->fLocks_ == 0 and src._fSharedContext->GetSharedLockEmpty ()); // to move, the src can have no locks of any kind (since we change src)
+            Require (src._fSharedContext->fLocks_ == 0 and src._fSharedContext->GetSharedLockEmpty_ ()); // to move, the src can have no locks of any kind (since we change src)
         }
         catch (...) {
             AssertNotReached ();
@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Debug {
         : AssertExternallySynchronizedMutex{}
     {
         try {
-            Require (src._fSharedContext->fLocks_ == 0 and src._fSharedContext->GetSharedLockEmpty ()); // to move, the src can have no locks of any kind (since we change src)
+            Require (src._fSharedContext->fLocks_ == 0 and src._fSharedContext->GetSharedLockEmpty_ ()); // to move, the src can have no locks of any kind (since we change src)
         }
         catch (...) {
             AssertNotReached ();
