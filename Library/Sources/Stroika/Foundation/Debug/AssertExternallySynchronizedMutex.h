@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Debug {
          */
         struct SharedContext {
         public:
-            SharedContext ()                     = default;
+            SharedContext () noexcept                     = default;
             SharedContext (const SharedContext&) = delete;
             SharedContext& operator= (const SharedContext&) = delete;
             ~SharedContext ()
@@ -149,39 +149,35 @@ namespace Stroika::Foundation::Debug {
             // GetSharedLockMutexThreads_ () used to access fSharedLockThreads_
             forward_list<thread::id> fSharedLockThreads_;
 
-            bool GetSharedLockEmpty () const
+        private:
+            bool GetSharedLockEmpty_ () const
             {
                 lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
                 return fSharedLockThreads_.empty ();
             }
-            size_t GetSharedLockThreadsCount () const
+            pair<size_t, size_t> CountSharedLockThreads_ () const
             {
                 lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-                size_t            i = 0;
-                //
-                for (
-#if !qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy
-                    [[maybe_unused]]
-#endif
-                    const auto& x : fSharedLockThreads_) {
-#if qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy
-                    &x;
-#endif
-                    ++i;
-                }
-                return i;
+                size_t            thisThreadCnt  = CountOfIInSharedLockThreads_ (this_thread::get_id ());
+                size_t            otherThreadCnt = GetSharedLockThreadsCount_ () - thisThreadCnt;
+                return make_pair (thisThreadCnt, otherThreadCnt);
             }
-            size_t CountOfIInSharedLockThreads (thread::id i) const
+            size_t GetSharedLockThreadsCount_ () const
+            {
+                lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
+                return std::distance (fSharedLockThreads_.begin (), fSharedLockThreads_.end ());
+            }
+            size_t CountOfIInSharedLockThreads_ (thread::id i) const
             {
                 lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
                 return std::count (fSharedLockThreads_.begin (), fSharedLockThreads_.end (), i);
             }
-            void AddSharedLock (thread::id i)
+            void AddSharedLock_ (thread::id i)
             {
                 lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
                 fSharedLockThreads_.push_front (i);
             }
-            void RemoveSharedLock (thread::id i)
+            void RemoveSharedLock_ (thread::id i)
             {
                 lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
                 fSharedLockThreads_.remove (i);

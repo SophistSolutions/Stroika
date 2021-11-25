@@ -68,10 +68,12 @@ namespace Stroika::Foundation::Debug {
             DISABLE_COMPILER_MSC_WARNING_START (26110);                         // to copy, the src can have shared_locks, but no (write) locks
             shared_lock<const AssertExternallySynchronizedMutex> critSec1{rhs}; // ""
             if (this == &rhs) {
-                Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->GetSharedLockThreadsCount () == 1); // we locked ourselves above
+                Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->GetSharedLockThreadsCount_ () == 1); // we locked ourselves above
             }
             else {
-                Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->GetSharedLockEmpty ()); // We must not have any locks going to replace this
+                // @todo This logic SB same as for MOVE, but for some reason this hasn't been triggered yet...
+                // https://stroika.atlassian.net/browse/STK-752
+                Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->GetSharedLockEmpty_ ()); // We must not have any locks going to replace this
             }
             DISABLE_COMPILER_MSC_WARNING_END (26110);
         }
@@ -85,8 +87,24 @@ namespace Stroika::Foundation::Debug {
     {
 #if qDebug
         try {
-            Require (rhs._fSharedContext->fLocks_ == 0 and rhs._fSharedContext->GetSharedLockEmpty ()); // to move, the rhs can have no locks of any kind (since we change rhs)
-            Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->GetSharedLockEmpty ());         // ditto for thing being assigned to
+            Require (rhs._fSharedContext->fLocks_ == 0 and rhs._fSharedContext->GetSharedLockEmpty_ ()); // to move, the rhs can have no locks of any kind (since we change rhs)
+            // NOTE - we also should check if fLocks_ != 0 -= thats OK if WE are the locker.
+            // BUT - I think I need todo work here to TRANSFER the locks (and thats not done here/yet)
+            //
+            //Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->GetSharedLockEmpty ());         // ditto for thing being assigned to
+            // https://stroika.atlassian.net/browse/STK-752
+            if (_fSharedContext->fLocks_ != 0) {
+                // must do some sanity check and then transfer locks
+                Assert (false); // NYI
+            }
+            if (not _fSharedContext->GetSharedLockEmpty_ ()) {
+                auto tmp = _fSharedContext->CountSharedLockThreads_ ();
+                Assert (tmp.second == 0); // not good enuf - must transer lock to RHS
+                // UNCLEAR if should transfer rhs._fSharedContext making this increment irrelevant
+                for (size_t i = 0; i < tmp.second; ++i) {
+                    this->lock_shared ();
+                }
+            }
         }
         catch (...) {
             AssertNotReached ();
