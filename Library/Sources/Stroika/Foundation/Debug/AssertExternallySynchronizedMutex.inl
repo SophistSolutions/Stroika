@@ -17,7 +17,7 @@ namespace Stroika::Foundation::Debug {
 
     /*
      ********************************************************************************
-     *************** Debug::AssertExternallySynchronizedMutex ************************
+     **************** Debug::AssertExternallySynchronizedMutex **********************
      ********************************************************************************
      */
 #if qDebug
@@ -102,9 +102,10 @@ namespace Stroika::Foundation::Debug {
                 Assert (tmp.second == 0); // not good enuf - must transer lock to RHS
                 // UNCLEAR if should transfer rhs._fSharedContext making this increment irrelevant
                 for (size_t i = 0; i < tmp.second; ++i) {
-                    this->lock_shared ();
+                  //  rhs.lock_shared ();
                 }
             }
+          //  _fSharedContext = move (rhs._fSharedContext);
         }
         catch (...) {
             AssertNotReached ();

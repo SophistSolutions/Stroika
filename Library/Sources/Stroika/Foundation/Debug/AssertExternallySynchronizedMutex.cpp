@@ -17,7 +17,7 @@ using namespace Stroika::Foundation::Debug;
 #if qDebug
 /*
  ********************************************************************************
- ****************** Debug::AssertExternallySynchronizedMutex *********************
+ ****************** Debug::AssertExternallySynchronizedMutex ********************
  ********************************************************************************
  */
 void AssertExternallySynchronizedMutex::lock_ () const noexcept

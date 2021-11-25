@@ -158,8 +158,8 @@ namespace Stroika::Foundation::Debug {
             pair<size_t, size_t> CountSharedLockThreads_ () const
             {
                 lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-                size_t            thisThreadCnt  = CountOfIInSharedLockThreads_ (this_thread::get_id ());
-                size_t            otherThreadCnt = GetSharedLockThreadsCount_ () - thisThreadCnt;
+                size_t            thisThreadCnt  = std::count (fSharedLockThreads_.begin (), fSharedLockThreads_.end (), this_thread::get_id ());
+                size_t            otherThreadCnt = std::distance (fSharedLockThreads_.begin (), fSharedLockThreads_.end ()) - thisThreadCnt;
                 return make_pair (thisThreadCnt, otherThreadCnt);
             }
             size_t GetSharedLockThreadsCount_ () const
