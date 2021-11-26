@@ -145,6 +145,16 @@ namespace {
             using namespace Configuration;
 
             {
+                static_assert (has_eq_v<int>);
+                static_assert (not has_eq_v<SimpleClassWithoutComparisonOperators>);
+                static_assert (has_neq_v<int>);
+                static_assert (not has_neq_v<SimpleClassWithoutComparisonOperators>);
+                static_assert (has_lt_v<int>);
+                static_assert (not has_lt_v<SimpleClassWithoutComparisonOperators>);
+                static_assert (has_minus_v<int>);
+                static_assert (not has_minus_v<SimpleClassWithoutComparisonOperators>);
+            }
+            {
                 // https://stroika.atlassian.net/browse/STK-749
                 static_assert (is_detected_v<has_eq_t, std::pair<int, int>>);
                 static_assert (HasUsableEqualToOptimization<int> ());
