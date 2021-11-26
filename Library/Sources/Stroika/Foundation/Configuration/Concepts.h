@@ -38,16 +38,22 @@ namespace Stroika::Foundation::Configuration {
      *              return a == b;
      *          }
      *      \endcode
+     * 
+     *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
+     * 
+     *  \note - why no has_equal_to_v<> defined?
+     *        @see https://stackoverflow.com/questions/70119120/how-to-fix-sfinae-check-for-operator-existing-so-that-it-works-with-stdpair/70122069#70122069
+     * 
+     *  Issue is that it cannot be usefully defined (as nearly as I can tell in C++17).
      */
     template <typename T>
     using has_eq_t = decltype (std::declval<T> () == std::declval<T> ());
     template <typename T>
     constexpr inline bool has_eq_v = is_detected_v<has_eq_t, T>;
     template <typename T, typename U>
-    constexpr inline bool has_eq_v<std::pair<T, U>> = has_eq_v<T>and has_eq_v<U>;    // see https://stroika.atlassian.net/browse/STK-749 - not sure why STL doesn't do this directly in pair<> template
+    constexpr inline bool has_eq_v<std::pair<T, U>> = has_eq_v<T>and has_eq_v<U>;
     template <typename... Ts>
     constexpr inline bool has_eq_v<std::tuple<Ts...>> = (has_eq_v<Ts> and ...);
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x)); // DEPRECATED - use has_eq_v
 
     /**
      *  \brief check if the given type T can be compared with operator!=
@@ -60,6 +66,8 @@ namespace Stroika::Foundation::Configuration {
      *              return a != b;
      *          }
      *      \endcode
+     * 
+     *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
      */
     template <typename T>
     using has_neq_t = decltype (std::declval<T> () != std::declval<T> ());
@@ -69,8 +77,7 @@ namespace Stroika::Foundation::Configuration {
     constexpr inline bool has_neq_v<std::pair<T, U>> = has_neq_v<T>and has_neq_v<U>;
     template <typename... Ts>
     constexpr inline bool has_neq_v<std::tuple<Ts...>> = (has_neq_v<Ts> and ...);
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (neq, (x != x));// DEPRECATED - use has_neq_v
-   
+
     /**
      *  \brief check if the given type T can be compared with operator!=
      * 
@@ -82,6 +89,8 @@ namespace Stroika::Foundation::Configuration {
      *              return a < b;
      *          }
      *      \endcode
+     * 
+     *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
      */
     template <typename T>
     using has_lt_t = decltype (std::declval<T> () < std::declval<T> ());
@@ -91,7 +100,6 @@ namespace Stroika::Foundation::Configuration {
     constexpr inline bool has_lt_v<std::pair<T, U>> = has_lt_v<T>and has_lt_v<U>;
     template <typename... Ts>
     constexpr inline bool has_lt_v<std::tuple<Ts...>> = (has_lt_v<Ts> and ...);
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (lt, (x < x));// DEPRECATED - use has_lt_v
 
     /**
      *  \brief check if the given type T can be compared with operator!=
@@ -104,6 +112,8 @@ namespace Stroika::Foundation::Configuration {
      *              return a - b;
      *          }
      *      \endcode
+     * 
+     *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
      */
     template <typename T>
     using has_minus_t = decltype (std::declval<T> () - std::declval<T> ());
@@ -113,7 +123,6 @@ namespace Stroika::Foundation::Configuration {
     constexpr inline bool has_minus_v<std::pair<T, U>> = has_minus_v<T>and has_minus_v<U>;
     template <typename... Ts>
     constexpr inline bool has_minus_v<std::tuple<Ts...>> = (has_minus_v<Ts> and ...);
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x - x));// DEPRECATED - use has_minus_v
 
     /**
      *  \brief check if the given type T can be compared with operator<=>
@@ -126,6 +135,8 @@ namespace Stroika::Foundation::Configuration {
      *              return a <=> b;
      *          }
      *      \endcode
+     * 
+     *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
      */
 #if __cpp_impl_three_way_comparison >= 201907
     template <typename T>
@@ -136,40 +147,13 @@ namespace Stroika::Foundation::Configuration {
     constexpr inline bool has_spaceship_v<std::pair<T, U>> = has_spaceship_v<T>and has_spaceship_v<U>;
     template <typename... Ts>
     constexpr inline bool has_spaceship_v<std::tuple<Ts...>> = (has_spaceship_v<Ts> and ...);
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (spaceship, (x <=> x));// DEPRECATED - use has_spaceship_v
 #endif
 
 
-
-    /**
-     *  \brief check if the given type T can be compared with equal_to<T>{}
-     * 
-     *  \par Example Usage
-     *      \code
-     *          if constexpr (has_equal_to_v<T>) {
-     *              T a{};
-     *              T b{};
-     *              return equal_to<T>{} (a, b);
-     *          }
-     *      \endcode
-     */
-    template <typename T>
-    using has_equal_to_t = decltype (equal_to<T>{} (std::declval<T> () , std::declval<T> ()));
-    template <typename T>
-    constexpr inline bool has_equal_to_v = is_detected_v<has_equal_to_t, T>;
-    template <typename T, typename U>
-    constexpr inline bool has_equal_to_v<std::pair<T, U>> = has_equal_to_v<T>and has_equal_to_v<U>;
-    template <typename... Ts>
-    constexpr inline bool has_equal_to_v<std::tuple<Ts...>> = (has_equal_to_v<Ts> and ...);
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (equal_to, (static_cast<bool> (std::equal_to<X>{}(x, x))));// DEPRECATED - use has_equal_to_v
-
-    // WARNING - see HasUsableEqualToOptimization - below - but this version of has_equal_to returns true, even when it should not, say for
-    //  static_assert (!Configuration::has_eq<TableProvisioner>::value);
-    //  static_assert (!Configuration::has_equal_to<TableProvisioner>::value);
-    //      Seems same bug on VS2k19 and gcc, so almost certainly my bug....
-    //      -- LGP 2021-11-22
-    // SEE  https://stroika.atlassian.net/browse/STK-749
-
+    // move to bottom when I've removed dependencies
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x));   // DEPRECATED - use has_eq_v
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x - x)); // DEPRECATED - use has_minus_v
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (lt, (x < x));    // DEPRECATED - use has_lt_v
 
     /*
      *  has_beginend<T>::value is true iff T has a begin/end method
@@ -253,10 +237,7 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     constexpr bool HasUsableEqualToOptimization ()
     {
-        // This check of has_eq () should NOT be needed but only is because has_equal_to<> is WRONG and produces false positives
-        // SEE https://stroika.atlassian.net/browse/STK-749
-        // -- LGP 2021-11-22
-        if constexpr (has_eq_v<T> and Configuration::has_equal_to<T>::value) {
+        if constexpr (has_eq_v<T>) {
             struct equal_to_empty_tester : equal_to<T> {
                 int a;
             };
@@ -265,7 +246,6 @@ namespace Stroika::Foundation::Configuration {
         }
         return false;
     }
-    //static_assert (HasUsableEqualToOptimization<int> ());     // hack to test working
 
     /*
      * FROM http://stackoverflow.com/questions/16893992/check-if-type-can-be-explicitly-converted
@@ -374,6 +354,12 @@ namespace Stroika::Foundation::Configuration {
         }
         return false;
     }
+
+    /// DEPRECATED CALLS
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (neq, (x != x)); // DEPRECATED - use has_neq_v
+#if __cpp_impl_three_way_comparison >= 201907
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (spaceship, (x <=> x)); // DEPRECATED - use has_spaceship_v
+#endif
 
 }
 

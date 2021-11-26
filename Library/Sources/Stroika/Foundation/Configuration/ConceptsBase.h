@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Configuration {
     struct has_##NAME : integral_constant<bool, not is_same<NAME##_result<T>, Stroika::Foundation::Configuration::substitution_failure>::value> { \
     };                                                                                                                                            \
     template <typename ITERABLE>                                                                                                                  \
-    [[deprecated("Since Stroika 2.1b14 use has_XX_v via is_detected_v")]] constexpr bool Has##NAME##_v = has_##NAME<ITERABLE>::value;
+    [[deprecated ("Since Stroika 2.1b14 use has_XX_v via is_detected_v")]] constexpr bool Has##NAME##_v = has_##NAME<ITERABLE>::value;
 
     /**
     * 
