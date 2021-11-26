@@ -149,7 +149,6 @@ namespace Stroika::Foundation::Configuration {
     constexpr inline bool has_spaceship_v<std::tuple<Ts...>> = (has_spaceship_v<Ts> and ...);
 #endif
 
-
     // move to bottom when I've removed dependencies
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x));   // DEPRECATED - use has_eq_v
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x - x)); // DEPRECATED - use has_minus_v
