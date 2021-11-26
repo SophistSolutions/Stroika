@@ -82,6 +82,7 @@ namespace Stroika::Foundation::Configuration {
     *
      *  Credit to https://stackoverflow.com/users/16746390/kenash0625
      *  For his suggestion in https://stackoverflow.com/questions/70119120/how-to-fix-sfinae-check-for-operator-existing-so-that-it-works-with-stdpair/70122139#70122139
+     *  See also Detection Idioms - https://segmentfault.com/a/1190000040852065/en
     */
     template <
         template <typename...> typename Detector,
