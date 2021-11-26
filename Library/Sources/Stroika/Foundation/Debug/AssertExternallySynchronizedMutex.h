@@ -45,10 +45,10 @@ namespace Stroika::Foundation::Debug {
     /**
      *  \brief      NOT a real lock - just a debugging infrastructure support tool so in debug builds can be assured threadsafe
      *
-     *  This class is a 'no op' in production builds, as a 'locker' for a class that needs
+     *  This class is a 'no op' in production builds, as a 'recursive mutex' for a class that needs
      *  no thread locking because its externally synchronized.
      *
-     *  This 'lock tester' is recursive (a recursive-mutex) - or really super-recursive - because it allows
+     *  AssertExternallySynchronizedMutex is recursive (a recursive-mutex) - or really super-recursive - because it allows
      *  lock/shared_lock to be mixed logically (unlike stdc++ shared_mutex).
      * 
      *  \note This means it is LEGAL to call lock () while holding a shared_lock, IFF that shared_lock is for the
@@ -63,10 +63,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  In debug builds, it enforces this fact through assertions.
      *
-     *  \note   This doesn't gaurnatee catching all races, but it catches many incorrect thread usage cases
-     *
-     *  \note   This may 'catch' a race by having its internal data structures (multiset) corrupted. Interpret
-     *          corrupt multiset as a likely race indicator
+     *  \note   This doesn't guarnantee catching all races, but it catches many incorrect thread usage cases
      *
      *  \note   ***Not Cancelation Point***
      *

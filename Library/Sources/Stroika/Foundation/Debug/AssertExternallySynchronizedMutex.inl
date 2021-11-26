@@ -33,74 +33,34 @@ namespace Stroika::Foundation::Debug {
     inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext, const AssertExternallySynchronizedMutex& src) noexcept
         : AssertExternallySynchronizedMutex{sharedContext}
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec1{src}; // to copy, the src can have shared_locks, but no (write) locks
+        shared_lock<const AssertExternallySynchronizedMutex> readLockSrc{src}; // to copy, the src can have shared_locks, but no (write) locks
     }
     inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex (const AssertExternallySynchronizedMutex& src) noexcept
         : AssertExternallySynchronizedMutex{}
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec1{src}; // to copy, the src can have shared_locks, but no (write) locks
+        shared_lock<const AssertExternallySynchronizedMutex> readLockSrc{src}; // to copy, the src can have shared_locks, but no (write) locks
     }
     inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext, [[maybe_unused]] AssertExternallySynchronizedMutex&& src) noexcept
         : AssertExternallySynchronizedMutex{sharedContext}
     {
-        try {
-            Require (src._fSharedContext->fLocks_ == 0 and src._fSharedContext->GetSharedLockEmpty_ ()); // to move, the src can have no locks of any kind (since we change src)
-        }
-        catch (...) {
-            AssertNotReached ();
-        }
+        lock_guard<const AssertExternallySynchronizedMutex> writeLockSrc{src}; // move we must be able to modify source
     }
     inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex ([[maybe_unused]] AssertExternallySynchronizedMutex&& src) noexcept
         : AssertExternallySynchronizedMutex{}
     {
-        try {
-            Require (src._fSharedContext->fLocks_ == 0 and src._fSharedContext->GetSharedLockEmpty_ ()); // to move, the src can have no locks of any kind (since we change src)
-        }
-        catch (...) {
-            AssertNotReached ();
-        }
+        lock_guard<const AssertExternallySynchronizedMutex> writeLockRHS{src}; // move we must be able to modify source
     }
 #endif
     inline AssertExternallySynchronizedMutex& AssertExternallySynchronizedMutex::operator= ([[maybe_unused]] const AssertExternallySynchronizedMutex& rhs) noexcept
     {
-#if qDebug
-        try {
-            DISABLE_COMPILER_MSC_WARNING_START (26110);                         // to copy, the src can have shared_locks, but no (write) locks
-            shared_lock<const AssertExternallySynchronizedMutex> critSec1{rhs}; // ""
-            if (this == &rhs) {
-                Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->GetSharedLockThreadsCount_ () == 1); // we locked ourselves above
-            }
-            else {
-                // @todo This logic SB same as for MOVE, but for some reason this hasn't been triggered yet...
-                // https://stroika.atlassian.net/browse/STK-752
-                Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->GetSharedLockEmpty_ ()); // We must not have any locks going to replace this
-            }
-            DISABLE_COMPILER_MSC_WARNING_END (26110);
-        }
-        catch (...) {
-            AssertNotReached ();
-        }
-#endif
+        shared_lock<const AssertExternallySynchronizedMutex> readLockRHS{rhs};     // we must be able to read RHS
+        lock_guard<const AssertExternallySynchronizedMutex>  writeLockThis{*this}; // we must be able modify this
         return *this;
     }
     inline AssertExternallySynchronizedMutex& AssertExternallySynchronizedMutex::operator= ([[maybe_unused]] AssertExternallySynchronizedMutex&& rhs) noexcept
     {
-#if qDebug
-        try {
-            Require (rhs._fSharedContext->fLocks_ == 0 and rhs._fSharedContext->GetSharedLockEmpty_ ()); // to move, the rhs can have no locks of any kind (since we change rhs)
-            // https://stroika.atlassian.net/browse/STK-752
-            // review - SB OK to assign over this with locks if the locks are all from this thread
-            if (_fSharedContext->fLocks_ != 0) {
-                Assert (false); // NYI
-            }
-            if (not _fSharedContext->GetSharedLockEmpty_ ()) {
-                Assert (_fSharedContext->CountSharedLockThreads_ ().second == 0); // not good enuf - must transer lock to RHS
-            }
-        }
-        catch (...) {
-            AssertNotReached ();
-        }
-#endif
+        lock_guard<const AssertExternallySynchronizedMutex> writeLockRHS{rhs};    // move we must be able to modify rhs to move it
+        lock_guard<const AssertExternallySynchronizedMutex> writeLockThis{*this}; // we must be able modify this
         return *this;
     }
 #if qDebug
