@@ -5,6 +5,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Configuration/Concepts.h"
 #include "Stroika/Foundation/Configuration/Endian.h"
 #include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/Configuration/SystemConfiguration.h"
@@ -135,6 +136,28 @@ namespace {
     }
 }
 
+
+namespace {
+    namespace Test5_SFINAE_Concepts_ {
+        void DoAll ()
+        {
+            Debug::TraceContextBumper ctx{L"{}::Test5_SFINAE_Concepts_"};
+            using namespace Configuration;
+
+            {
+                // https://stroika.atlassian.net/browse/STK-749
+                static_assert (is_detected_v<has_eq_t, std::pair<int, int>>);
+                static_assert (HasUsableEqualToOptimization<int> ());
+                static_assert (HasUsableEqualToOptimization<pair<int, int>> ());
+                static_assert (HasUsableEqualToOptimization<SimpleClass> ());
+                static_assert (HasUsableEqualToOptimization<pair<SimpleClass, SimpleClass>> ());
+                static_assert (not HasUsableEqualToOptimization<SimpleClassWithoutComparisonOperators> ());
+                static_assert (not HasUsableEqualToOptimization<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> ());
+            }
+        }
+    }
+}
+
 namespace {
     void DoRegressionTests_ ()
     {
@@ -142,6 +165,7 @@ namespace {
         Test2_EnumNames_ ();
         Test3_Endian_ ();
         Test4_SystemConfigruation_::DoAll ();
+        Test5_SFINAE_Concepts_::DoAll ();
     }
 }
 

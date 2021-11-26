@@ -50,6 +50,25 @@ namespace Stroika::Foundation::Configuration {
      *      has_eq<T>::value
      */
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x)); // SEE https://stroika.atlassian.net/browse/STK-749
+
+
+    /**
+     */
+    template <typename T>
+    using has_eq_t = decltype (std::declval<T> () == std::declval<T> ());
+
+    /**
+     */
+    template <typename T>
+    constexpr inline bool has_eq_v = is_detected_v<has_eq_t, T>;
+    template <typename T, typename U>
+    constexpr inline bool has_eq_v<std::pair<T, U>> = has_eq_v<T>and has_eq_v<U>;    // see https://stroika.atlassian.net/browse/STK-749 - not sure why STL doesn't do this directly in pair<> template
+    template <typename... Ts>
+    constexpr inline bool has_eq_v<std::tuple<Ts...>> = (has_eq_v<Ts> and ...);
+
+
+
+
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (neq, (x != x));
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (lt, (x < x));
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x - x));
@@ -151,7 +170,7 @@ namespace Stroika::Foundation::Configuration {
         // This check of has_eq () should NOT be needed but only is because has_equal_to<> is WRONG and produces false positives
         // SEE https://stroika.atlassian.net/browse/STK-749
         // -- LGP 2021-11-22
-        if constexpr (Configuration::has_eq<T>::value and Configuration::has_equal_to<T>::value) {
+        if constexpr (has_eq_v<T> and Configuration::has_equal_to<T>::value) {
             struct equal_to_empty_tester : equal_to<T> {
                 int a;
             };

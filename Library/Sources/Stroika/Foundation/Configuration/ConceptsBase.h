@@ -76,6 +76,24 @@ namespace Stroika::Foundation::Configuration {
     template <typename ITERABLE>                                                                                                                  \
     constexpr bool Has##NAME##_v = has_##NAME<ITERABLE>::value;
 
+    /**
+    * 
+    *     // just needed til we have c++ 20 concepts
+    *
+     *  Credit to https://stackoverflow.com/users/16746390/kenash0625
+     *  For his suggestion in https://stackoverflow.com/questions/70119120/how-to-fix-sfinae-check-for-operator-existing-so-that-it-works-with-stdpair/70122139#70122139
+    */
+    template <
+        template <typename...> typename Detector,
+        typename T,
+        typename SFINAE = void>
+    constexpr inline bool is_detected_v = false;
+    template <
+        template <typename...> typename Detector,
+        typename T>
+    constexpr inline bool is_detected_v<
+        Detector, T, std::void_t<Detector<T>>> = true;
+
 }
 
 /*

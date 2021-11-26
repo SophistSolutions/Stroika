@@ -22,6 +22,7 @@ using namespace Stroika::Foundation::Containers;
 
 using Concrete::Bijection_LinkedList;
 
+#if 0
 // https://stroika.atlassian.net/browse/STK-749
 namespace Stroika::Foundation::Configuration {
     template <>
@@ -30,6 +31,7 @@ namespace Stroika::Foundation::Configuration {
         return false;
     };
 }
+#endif
 
 namespace {
     template <typename CONCRETE_CONTAINER>
