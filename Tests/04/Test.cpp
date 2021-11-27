@@ -158,7 +158,6 @@ namespace {
             }
             {
                 // https://stroika.atlassian.net/browse/STK-749
-                static_assert (is_detected_v<has_eq_t, std::pair<int, int>>);
                 static_assert (HasUsableEqualToOptimization<int> ());
                 static_assert (HasUsableEqualToOptimization<pair<int, int>> ());
                 static_assert (HasUsableEqualToOptimization<SimpleClass> ());

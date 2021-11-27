@@ -26,6 +26,10 @@
 
 namespace Stroika::Foundation::Configuration {
 
+    namespace Private_ {
+        template <typename T>
+        using has_eq_t = decltype (static_cast<bool> (std::declval<T> () == std::declval<T> ()));
+    }
     /**
      *  \brief check if the given type T can be compared with operator==
      * 
@@ -46,14 +50,16 @@ namespace Stroika::Foundation::Configuration {
      *  Issue is that it cannot be usefully defined (as nearly as I can tell in C++17).
      */
     template <typename T>
-    using has_eq_t = decltype (static_cast<bool> (std::declval<T> () == std::declval<T> ()));
-    template <typename T>
-    constexpr inline bool has_eq_v = is_detected_v<has_eq_t, T>;
+    constexpr inline bool has_eq_v = is_detected_v<Private_::has_eq_t, T>;
     template <typename T, typename U>
     constexpr inline bool has_eq_v<std::pair<T, U>> = has_eq_v<T>and has_eq_v<U>;
     template <typename... Ts>
     constexpr inline bool has_eq_v<std::tuple<Ts...>> = (has_eq_v<Ts> and ...);
 
+    namespace Private_ {
+        template <typename T>
+        using has_neq_t = decltype (static_cast<bool> (std::declval<T> () != std::declval<T> ()));
+    }
     /**
      *  \brief check if the given type T can be compared with operator!=
      * 
@@ -69,16 +75,18 @@ namespace Stroika::Foundation::Configuration {
      *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
      */
     template <typename T>
-    using has_neq_t = decltype (static_cast<bool> (std::declval<T> () != std::declval<T> ()));
-    template <typename T>
-    constexpr inline bool has_neq_v = is_detected_v<has_neq_t, T>;
+    constexpr inline bool has_neq_v = is_detected_v<Private_::has_neq_t, T>;
     template <typename T, typename U>
     constexpr inline bool has_neq_v<std::pair<T, U>> = has_neq_v<T>and has_neq_v<U>;
     template <typename... Ts>
     constexpr inline bool has_neq_v<std::tuple<Ts...>> = (has_neq_v<Ts> and ...);
 
+    namespace Private_ {
+        template <typename T>
+        using has_lt_t = decltype (static_cast<bool> (std::declval<T> () < std::declval<T> ()));
+    }
     /**
-     *  \brief check if the given type T can be compared with operator!=
+     *  \brief check if the given type T can be compared with operator<
      * 
      *  \par Example Usage
      *      \code
@@ -92,16 +100,18 @@ namespace Stroika::Foundation::Configuration {
      *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
      */
     template <typename T>
-    using has_lt_t = decltype (static_cast<bool> (std::declval<T> () < std::declval<T> ()));
-    template <typename T>
-    constexpr inline bool has_lt_v = is_detected_v<has_lt_t, T>;
+    constexpr inline bool has_lt_v = is_detected_v<Private_::has_lt_t, T>;
     template <typename T, typename U>
     constexpr inline bool has_lt_v<std::pair<T, U>> = has_lt_v<T>and has_lt_v<U>;
     template <typename... Ts>
     constexpr inline bool has_lt_v<std::tuple<Ts...>> = (has_lt_v<Ts> and ...);
 
+    namespace Private_ {
+        template <typename T>
+        using has_minus_t = decltype (std::declval<T> () - std::declval<T> ());
+    }
     /**
-     *  \brief check if the given type T can be compared with operator!=
+     *  \brief check if the given type T can be combined with a second T using operator-
      * 
      *  \par Example Usage
      *      \code
@@ -115,37 +125,43 @@ namespace Stroika::Foundation::Configuration {
      *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
      */
     template <typename T>
-    using has_minus_t = decltype (std::declval<T> () - std::declval<T> ());
-    template <typename T>
-    constexpr inline bool has_minus_v = is_detected_v<has_minus_t, T>;
+    constexpr inline bool has_minus_v = is_detected_v<Private_::has_minus_t, T>;
     template <typename T, typename U>
     constexpr inline bool has_minus_v<std::pair<T, U>> = has_minus_v<T>and has_minus_v<U>;
     template <typename... Ts>
     constexpr inline bool has_minus_v<std::tuple<Ts...>> = (has_minus_v<Ts> and ...);
 
+    namespace Private_ {
+        template <typename T>
+        using has_plus_t = decltype (std::declval<T> () + std::declval<T> ());
+    }
     /**
-     *  \brief check if the given type T can be compared with operator+
+     *  \brief check if the given type T can be combined with a second T using operator+
      * 
      *  \par Example Usage
      *      \code
      *          if constexpr (has_plus_v<T>) {
      *              T a{};
      *              T b{};
-     *              return a - b;
+     *              return a + b;
      *          }
      *      \endcode
      * 
      *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
      */
     template <typename T>
-    using has_plus_t = decltype (std::declval<T> () + std::declval<T> ());
-    template <typename T>
-    constexpr inline bool has_plus_v = is_detected_v<has_plus_t, T>;
+    constexpr inline bool has_plus_v = is_detected_v<Private_::has_plus_t, T>;
     template <typename T, typename U>
     constexpr inline bool has_plus_v<std::pair<T, U>> = has_plus_v<T>and has_plus_v<U>;
     template <typename... Ts>
     constexpr inline bool has_plus_v<std::tuple<Ts...>> = (has_plus_v<Ts> and ...);
 
+#if __cpp_impl_three_way_comparison >= 201907
+    namespace Private_ {
+        template <typename T>
+        using has_spaceship_t = decltype (std::declval<T> () <=> std::declval<T> ());
+    }
+#endif
     /**
      *  \brief check if the given type T can be compared with operator<=>
      * 
@@ -162,9 +178,7 @@ namespace Stroika::Foundation::Configuration {
      */
 #if __cpp_impl_three_way_comparison >= 201907
     template <typename T>
-    using has_spaceship_t = decltype (std::declval<T> () <=> std::declval<T> ());
-    template <typename T>
-    constexpr inline bool has_spaceship_v = is_detected_v<has_spaceship_t, T>;
+    constexpr inline bool has_spaceship_v = is_detected_v<Private_::has_spaceship_t, T>;
     template <typename T, typename U>
     constexpr inline bool has_spaceship_v<std::pair<T, U>> = has_spaceship_v<T>and has_spaceship_v<U>;
     template <typename... Ts>
