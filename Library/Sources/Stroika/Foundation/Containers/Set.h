@@ -59,6 +59,13 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
+     *  \em vs std::set<T>:
+     *      Stroika's Set<T> is like std::set<T>, except that
+     *          o   you can separately select different algorithms (besides red-black tree) and not change the API used (Set<T>).
+     *          o   You don't need to have a less<T> method defined. You just need to provide some mechanism (either operator== or argument to constructor)
+     *              saying how to compare elements for equality
+     *          o   If you have a less<T> already defined, like std::set<T>, this will be used by default to construct a tree-based set.
+     *          o   Sets can also be implemented by hash-tables, etc.
      *
      *  \em Concrete Implementations:
      *      o   @see Concrete::Set_LinkedList<>

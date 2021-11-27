@@ -107,7 +107,6 @@ namespace Stroika::Foundation::Characters {
         template <typename T>
         constexpr inline bool has_CountedValue_v = Configuration::is_detected_v<Private_::has_CountedValue_t_, T>;
 
-
         template <typename T>
         inline String ToString_ (const T& t, enable_if_t<has_ToStringMethod_v<T>>* = 0)
         {

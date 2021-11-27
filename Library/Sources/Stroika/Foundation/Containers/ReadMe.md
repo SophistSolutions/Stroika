@@ -121,6 +121,12 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 - [Set\<T>](Set.h)
   - a container of T, where once an item is added, additionally adds () do nothing.
   - Supported backends: LinkedList, std::set
+  - Set vs std::set<T>:
+    Stroika's Set<T> is like std::set<T>, except that
+    - you can separately select different algorithms (besides red-black tree) and not change the API used (Set<T>).
+    - You don't need to have a less<T> method defined. You just need to provide some mechanism (either operator== or argument to constructor)  saying how to compare elements for equality
+    - If you have a less<T> already defined, like std::set<T>, this will be used by default to construct a tree-based set.
+    - Sets can also be implemented by hash-tables, etc.
 - [SortedAssociation\<KEY_TYPE, VALUE_TYPE>](SortedAssociation.h)
   - see Association.
   - NYI
@@ -139,6 +145,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 - [SortedSet\<T>](SortedSet.h)
   - See Set; but adds parameter saying how T items sorted
   - Supported backends: std::set
+
 - [SparseDataHyperRectange\< T, ... INDEXES>](SparseDataHyperRectangle.h)
   - A DataHyperRectangle where you specify a special 'default' value, which will appear in any cell you 'get' without first setting (as if the hyper-rectangle was pre-initialized to that value).
   - Supported backends: std::map
