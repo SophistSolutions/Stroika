@@ -178,6 +178,17 @@ namespace {
                 //      -- LGP 2021-11-22
                 // SEE  https://stroika.atlassian.net/browse/STK-749
             }
+            {
+                static_assert (has_beginend_v<vector<int>>);
+                static_assert (not has_beginend_v<int>);
+                static_assert (not has_beginend_v<Traversal::Iterator<int>>);
+                static_assert (has_beginend_v<Traversal::Iterable<int>>);
+                static_assert (has_beginend_v<Traversal::Iterable<int>> == has_beginend<Traversal::Iterable<int>>::value);
+                static_assert (IsIterable_v<int> == has_beginend_v<int>);
+                static_assert (IsIterable_v<String> == has_beginend_v<String>);
+                static_assert (IsIterable_v<std::pair<int, int>[1]>);
+                static_assert (has_beginend_v<std::pair<int, int>[1]>);
+            }
         }
     }
 }

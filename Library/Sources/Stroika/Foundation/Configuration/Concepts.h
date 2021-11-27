@@ -29,7 +29,23 @@ namespace Stroika::Foundation::Configuration {
     namespace Private_ {
         template <typename T>
         using has_eq_t = decltype (static_cast<bool> (std::declval<T> () == std::declval<T> ()));
+        template <typename T>
+        using has_neq_t = decltype (static_cast<bool> (std::declval<T> () != std::declval<T> ()));
+        template <typename T>
+        using has_lt_t = decltype (static_cast<bool> (std::declval<T> () < std::declval<T> ()));
+        template <typename T>
+        using has_minus_t = decltype (std::declval<T> () - std::declval<T> ());
+        template <typename T>
+        using has_plus_t = decltype (std::declval<T> () + std::declval<T> ());
+#if __cpp_impl_three_way_comparison >= 201907
+        template <typename T>
+        using has_spaceship_t = decltype (std::declval<T> () <=> std::declval<T> ());
+#endif
+        // Subtle - but begin () doesn't work with rvalues, so must use declval<T&> -- LGP 2021-11-26
+        template <typename T>
+        using has_beginend_t = decltype (static_cast<bool> (begin (declval<T&> ()) != end (declval<T&> ())));
     }
+
     /**
      *  \brief check if the given type T can be compared with operator==
      * 
@@ -56,10 +72,6 @@ namespace Stroika::Foundation::Configuration {
     template <typename... Ts>
     constexpr inline bool has_eq_v<std::tuple<Ts...>> = (has_eq_v<Ts> and ...);
 
-    namespace Private_ {
-        template <typename T>
-        using has_neq_t = decltype (static_cast<bool> (std::declval<T> () != std::declval<T> ()));
-    }
     /**
      *  \brief check if the given type T can be compared with operator!=
      * 
@@ -81,10 +93,6 @@ namespace Stroika::Foundation::Configuration {
     template <typename... Ts>
     constexpr inline bool has_neq_v<std::tuple<Ts...>> = (has_neq_v<Ts> and ...);
 
-    namespace Private_ {
-        template <typename T>
-        using has_lt_t = decltype (static_cast<bool> (std::declval<T> () < std::declval<T> ()));
-    }
     /**
      *  \brief check if the given type T can be compared with operator<
      * 
@@ -106,10 +114,6 @@ namespace Stroika::Foundation::Configuration {
     template <typename... Ts>
     constexpr inline bool has_lt_v<std::tuple<Ts...>> = (has_lt_v<Ts> and ...);
 
-    namespace Private_ {
-        template <typename T>
-        using has_minus_t = decltype (std::declval<T> () - std::declval<T> ());
-    }
     /**
      *  \brief check if the given type T can be combined with a second T using operator-
      * 
@@ -131,10 +135,6 @@ namespace Stroika::Foundation::Configuration {
     template <typename... Ts>
     constexpr inline bool has_minus_v<std::tuple<Ts...>> = (has_minus_v<Ts> and ...);
 
-    namespace Private_ {
-        template <typename T>
-        using has_plus_t = decltype (std::declval<T> () + std::declval<T> ());
-    }
     /**
      *  \brief check if the given type T can be combined with a second T using operator+
      * 
@@ -156,12 +156,6 @@ namespace Stroika::Foundation::Configuration {
     template <typename... Ts>
     constexpr inline bool has_plus_v<std::tuple<Ts...>> = (has_plus_v<Ts> and ...);
 
-#if __cpp_impl_three_way_comparison >= 201907
-    namespace Private_ {
-        template <typename T>
-        using has_spaceship_t = decltype (std::declval<T> () <=> std::declval<T> ());
-    }
-#endif
     /**
      *  \brief check if the given type T can be compared with operator<=>
      * 
@@ -185,10 +179,6 @@ namespace Stroika::Foundation::Configuration {
     constexpr inline bool has_spaceship_v<std::tuple<Ts...>> = (has_spaceship_v<Ts> and ...);
 #endif
 
-    namespace Private_ {
-        template <typename T>
-        using has_beginend_t = decltype (static_cast<bool> (begin (declval<T> ()) != end (declval<T> ())));
-    }
     /**
      *  \brief check if the given type T can be combined with a second T using operator+
      * 
@@ -205,7 +195,12 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     constexpr inline bool has_beginend_v = is_detected_v<Private_::has_beginend_t, T>;
 
-    // &&& ABOVE INCOMPLETE UNTESTED - NEW BEGINEND STUFF
+    /**
+     *  Check if ITERABLE has begin/end methods, and the begin/end stuff looks like they return an iterator.
+     *  This does NOT check for subclassing Traversal::Iterable<> (so works with an array, or stl vector etc).
+     */
+    template <typename ITERABLE>
+    constexpr bool IsIterable_v = has_beginend_v<ITERABLE>;
 
     /*
      *  has_beginend<T>::value is true iff T has a begin/end method
@@ -234,17 +229,6 @@ namespace Stroika::Foundation::Configuration {
             using type = decltype (check (declval<T> ()));
         };
     }
-    /**
-     *  Check if has begin/end methods 
-     */
-    template <typename ITERABLE>
-    using IsIterable = integral_constant<bool, has_beginend<ITERABLE>::value>;
-
-    /**
-     *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>)
-     */
-    template <typename ITERABLE>
-    constexpr bool IsIterable_v = IsIterable<ITERABLE>::value;
 
     /**
      *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>)
@@ -417,6 +401,8 @@ namespace Stroika::Foundation::Configuration {
 #if __cpp_impl_three_way_comparison >= 201907
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (spaceship, (x <=> x)); // DEPRECATED - use has_spaceship_v
 #endif
+    template <typename ITERABLE>
+    using IsIterable [[deprecated ("Since Stroika 2.1b14 dont use (probaly use IsIterable_v)")]] = integral_constant<bool, has_beginend_v<ITERABLE>>;
 
 }
 
