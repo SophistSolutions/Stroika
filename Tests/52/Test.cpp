@@ -752,6 +752,52 @@ namespace {
 }
 
 namespace {
+    namespace Private_ {
+        template <typename CONTAINER>
+        void CopyContainerByValue (CONTAINER c, int nMoreCalls)
+        {
+            auto checkContains = [] (const CONTAINER& c) {
+                using ELEMENTTYPE = typename CONTAINER::value_type;
+                for (int i = 0; i < 500; ++i) {
+                    if constexpr (is_same_v<set<ELEMENTTYPE>, CONTAINER>) {
+                        VerifyTestResult (c.find (i) != c.end ());
+                    }
+                    else {
+                        VerifyTestResult (c.Contains (i));
+                    }
+                }
+                if constexpr (is_same_v<set<ELEMENTTYPE>, CONTAINER>) {
+                    VerifyTestResult (c.find (501) == c.end ());
+                }
+                else {
+                    VerifyTestResult (not c.Contains (501));
+                }
+            };
+            if (nMoreCalls == 0) {
+                checkContains (c);
+            }
+            else {
+                CopyContainerByValue (c, nMoreCalls - 1);
+            }
+        }
+    }
+    template <typename CONTAINER, typename ELEMENTTYPE = typename CONTAINER::value_type>
+    void Test_SetvsSet_ ()
+    {
+        CONTAINER c;
+        for (int i = 0; i < 500; ++i) {
+            if constexpr (is_same_v<set<ELEMENTTYPE>, CONTAINER>) {
+                c.insert (i);
+            }
+            else {
+                c.Add (i);
+            }
+        }
+        Private_::CopyContainerByValue (c, 5);
+    }
+}
+
+namespace {
     template <typename WIDESTRING_IMPL>
     void Test_String_Format_ ()
     {
@@ -1444,7 +1490,14 @@ namespace {
             &failedTests);
 #endif
         Tester (
-            L"String Chracters::Format ()",
+            L"std::set<int> vs Set<int>",
+            Test_SetvsSet_<set<int>>, L"set<int>",
+            Test_SetvsSet_<Set<int>>, L"Set<int>",
+            13000,
+            0.2,
+            &failedTests);
+        Tester (
+            L"String Characters::Format ()",
             Test_String_Format_<wstring>, L"sprintf",
             Test_String_Format_<String>, L"String Characters::Format",
             2100000,
