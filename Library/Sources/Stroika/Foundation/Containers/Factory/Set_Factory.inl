@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Containers::Factory {
         sFactory_ = factory;
     }
     template <typename T, typename EQUALS_COMPARER>
-    inline Set<T> Set_Factory<T, EQUALS_COMPARER>::Default_ (const EQUALS_COMPARER& equalsComparer)
+    inline Set<T> Set_Factory<T, EQUALS_COMPARER>::Default_ ([[maybe_unused]]const EQUALS_COMPARER& equalsComparer)
     {
         if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>> and Configuration::has_lt_v<T>) {
             return Concrete::Set_stdset<T>{};
