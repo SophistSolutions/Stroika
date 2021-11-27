@@ -62,8 +62,24 @@ namespace Stroika::Foundation::Configuration {
 
     }
 
+    // handy to have remove_cvref/remove_cvref_t definition around, even if using pre-c++20
+    // Put in our namespace, and when we switch to C++20, we can deprecate our local namespace copy
+#if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_20
+    template <class T>
+    struct remove_cvref {
+        typedef std::remove_cv_t<std::remove_reference_t<T>> type;
+    };
+    template <class T>
+    using remove_cvref_t = typename remove_cvref<T>::type;
+#else
+    template <class T>
+    using remove_cvref = std::remove_cvref<T>;
+    template <class T>
+    using remove_cvref_t = std::remove_cvref_t<T>;
+#endif
+
     /**
-     *  \brief check if the given type T can be compared with operator==
+     *  \brief check if the given type T can be compared with operator==, and result is convertible to bool
      * 
      *  \par Example Usage
      *      \code
@@ -89,7 +105,7 @@ namespace Stroika::Foundation::Configuration {
     constexpr inline bool has_eq_v<std::tuple<Ts...>> = (has_eq_v<Ts> and ...);
 
     /**
-     *  \brief check if the given type T can be compared with operator!=
+     *  \brief check if the given type T can be compared with operator!=, and result is convertible to bool
      * 
      *  \par Example Usage
      *      \code
@@ -110,7 +126,7 @@ namespace Stroika::Foundation::Configuration {
     constexpr inline bool has_neq_v<std::tuple<Ts...>> = (has_neq_v<Ts> and ...);
 
     /**
-     *  \brief check if the given type T can be compared with operator<
+     *  \brief check if the given type T can be compared with operator<, and result is convertible to bool
      * 
      *  \par Example Usage
      *      \code
@@ -196,7 +212,7 @@ namespace Stroika::Foundation::Configuration {
 #endif
 
     /**
-     *  \brief check if the given type T can be combined with a second T using operator+
+     *  \brief check if the given type T can have std::begin()/std::end () applied, and they can be compared and that compare converted to bool
      * 
      *  \par Example Usage
      *      \code
@@ -224,20 +240,13 @@ namespace Stroika::Foundation::Configuration {
     template <typename ITERABLE_OF_T, typename T>
     constexpr bool IsIterableOfT_v = Private_::IsIterableOfT_t<ITERABLE_OF_T, T>::value;
 
-    // move to bottom when I've removed dependencies
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (beginend, (std::begin (x) != std::end (x))); // DEPRECATED -
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (begin, std::begin (x));                      // DEPRECATED -
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x));                               // DEPRECATED - use has_eq_v
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x - x));                             // DEPRECATED - use has_minus_v
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (lt, (x < x));                                // DEPRECATED - use has_lt_v
-
     /**
      *  See http://en.cppreference.com/w/cpp/concept/EqualityComparable
      */
     template <typename T>
     constexpr bool EqualityComparable ()
     {
-        return has_eq<T>::value && is_convertible_v<eq_result<T>, bool>;
+        return has_eq_v<T>;
     }
 
     /**
@@ -246,13 +255,7 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     constexpr bool LessThanComparable ()
     {
-        return has_lt<T>::value && is_convertible_v<lt_result<T>, bool>;
-    }
-
-    template <typename T>
-    constexpr bool HasMinusWithIntegerResult ()
-    {
-        return has_minus<T>::value && is_convertible_v<minus_result<T>, int>;
+        return has_lt_v<T>;
     }
 
     /**
@@ -271,6 +274,7 @@ namespace Stroika::Foundation::Configuration {
         }
         return false;
     }
+
 
     /*
      * FROM http://stackoverflow.com/questions/16893992/check-if-type-can-be-explicitly-converted
@@ -351,22 +355,6 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     constexpr bool is_callable_v = is_callable<T>::value;
 
-    // handy to have remove_cvref/remove_cvref_t definition around, even if using pre-c++20
-    // Put in our namespace, and when we switch to C++20, we can deprecate our local namespace copy
-#if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_20
-    template <class T>
-    struct remove_cvref {
-        typedef std::remove_cv_t<std::remove_reference_t<T>> type;
-    };
-    template <class T>
-    using remove_cvref_t = typename remove_cvref<T>::type;
-#else
-    template <class T>
-    using remove_cvref = std::remove_cvref<T>;
-    template <class T>
-    using remove_cvref_t = std::remove_cvref_t<T>;
-#endif
-
     /**
      * Return true iff FUNCTOR is of the form  function<bool(T)> or convertible to that.
      */
@@ -381,6 +369,19 @@ namespace Stroika::Foundation::Configuration {
     }
 
     /// DEPRECATED CALLS
+    // move to bottom when I've removed dependencies
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (beginend, (std::begin (x) != std::end (x))); // DEPRECATED -
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (begin, std::begin (x));                      // DEPRECATED -
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x));                               // DEPRECATED - use has_eq_v
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x - x));                             // DEPRECATED - use has_minus_v
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (lt, (x < x));                                // DEPRECATED - use has_lt_v
+
+    template <typename T>
+    [[deprecated ("Since Stroika 2.1b14 - not sure why had something so specific")]] constexpr bool HasMinusWithIntegerResult ()
+    {
+        return has_minus<T>::value && is_convertible_v<minus_result<T>, int>;
+    }
+
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (neq, (x != x)); // DEPRECATED - use has_neq_v
 #if __cpp_impl_three_way_comparison >= 201907
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (spaceship, (x <=> x)); // DEPRECATED - use has_spaceship_v
