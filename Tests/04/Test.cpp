@@ -189,6 +189,13 @@ namespace {
                 static_assert (IsIterable_v<std::pair<int, int>[1]>);
                 static_assert (has_beginend_v<std::pair<int, int>[1]>);
             }
+            {
+                static_assert (IsIterableOfT_v<vector<int>, int>);
+                static_assert (not IsIterableOfT_v<vector<int>, char*>);
+                static_assert (not IsIterableOfT_v<vector<int>, String>);
+                static_assert (not IsIterableOfT_v<char, String>);
+
+            }
         }
     }
 }
