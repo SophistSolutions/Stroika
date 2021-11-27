@@ -66,6 +66,8 @@ namespace Stroika::Foundation::Characters {
      *
      *  \note *Implementation Note*
      *      This implementation defaults to calling T().ToString ().
+     * 
+     *  \note @see has_ToString_v to check if Characters::ToString () well defined.
      */
     template <typename T>
     String ToString (const T& t);
@@ -102,14 +104,16 @@ namespace Stroika::Foundation::Characters {
     template <>
     String ToString (const unsigned long long t, std::ios_base::fmtflags flags);
 
-}
-
-namespace Stroika::Foundation::Configuration {
+    namespace Private_ {
+        template <typename T>
+        using has_ToString_t = decltype (static_cast<Characters::String> (declval<T&> ().ToString ()));
+    }
     /*
-     *  has_ToString<T>::value is true iff T has a begin/end method
-     *  @todo fix so checks results act more like iterators - subclass from iterator_tag>
+     *  \brief Return true iff Characters::ToString (T) is well defined.
      */
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (ToString, (Characters::ToString (x)));
+    template <typename T>
+    constexpr inline bool has_ToString_v = Configuration::is_detected_v<Private_::has_ToString_t, T>;
+
 }
 
 /*

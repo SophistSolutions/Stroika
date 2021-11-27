@@ -60,6 +60,70 @@ namespace Stroika::Foundation::Configuration {
         template <typename ITERABLE_OF_T, typename T>
         using IsIterableOfT_t = integral_constant<bool, not is_same<typename IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
 
+        /*
+         * FROM http://stackoverflow.com/questions/16893992/check-if-type-can-be-explicitly-converted
+         */
+        template <typename From, typename To>
+        struct is_explicitly_convertible {
+            template <typename T>
+            static void f (T);
+
+            template <typename F, typename T>
+            static constexpr auto test (int) -> decltype (f (static_cast<T> (declval<F> ())), true)
+            {
+                return true;
+            }
+
+            template <typename F, typename T>
+            static constexpr auto test (...) -> bool
+            {
+                return false;
+            }
+
+            static bool const value = test<From, To> (0);
+        };
+
+        /**
+     *  Check T is an interator, but checking if it has iterator_traits...
+     *  from https://stackoverflow.com/questions/12032771/how-to-check-if-an-arbitrary-type-is-an-iterator
+     */
+        template <typename T, typename = void>
+        struct is_iterator {
+            static constexpr bool value = false;
+        };
+        template <typename T>
+        struct is_iterator<T, enable_if_t<!is_same_v<typename iterator_traits<T>::value_type, void>>> {
+            static constexpr bool value = true;
+        };
+
+        // From https://stackoverflow.com/questions/15393938/find-out-if-a-c-object-is-callable
+        template <typename T>
+        struct is_callable_impl_ {
+        private:
+            typedef char (&yes)[1];
+            typedef char (&no)[2];
+
+            struct Fallback {
+                void operator() ();
+            };
+            struct Derived : T, Fallback {
+            };
+
+            template <typename U, U>
+            struct Check;
+
+            template <typename>
+            static yes test (...);
+
+            template <typename C>
+            static no test (Check<void (Fallback::*) (), &C::operator()>*);
+
+        public:
+            static const bool value = sizeof (test<Derived> (0)) == sizeof (yes);
+        };
+        template <typename T>
+        using is_callable = conditional_t<is_class_v<T>, is_callable_impl_<T>, false_type>;
+
     }
 
     // handy to have remove_cvref/remove_cvref_t definition around, even if using pre-c++20
@@ -275,85 +339,28 @@ namespace Stroika::Foundation::Configuration {
         return false;
     }
 
-
-    /*
-     * FROM http://stackoverflow.com/questions/16893992/check-if-type-can-be-explicitly-converted
+    /**
+     *  \brief 
+     * 
+     *  \par Example Usage
+     *      \code
+     *      \endcode
+     * 
+     *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
      */
     template <typename From, typename To>
-    struct is_explicitly_convertible {
-        template <typename T>
-        static void f (T);
-
-        template <typename F, typename T>
-        static constexpr auto test (int) -> decltype (f (static_cast<T> (declval<F> ())), true)
-        {
-            return true;
-        }
-
-        template <typename F, typename T>
-        static constexpr auto test (...) -> bool
-        {
-            return false;
-        }
-
-        static bool const value = test<From, To> (0);
-    };
-
-    /**
-     *  Check T is an interator, but checking if it has iterator_traits...
-     *  from https://stackoverflow.com/questions/12032771/how-to-check-if-an-arbitrary-type-is-an-iterator
-     */
-    template <typename T, typename = void>
-    struct is_iterator {
-        static constexpr bool value = false;
-    };
-    template <typename T>
-    struct is_iterator<T, enable_if_t<!is_same_v<typename iterator_traits<T>::value_type, void>>> {
-        static constexpr bool value = true;
-    };
+    constexpr inline bool is_explicitly_convertible_v = Private_::is_explicitly_convertible<From, To>::value;
 
     /**
      *  Check T is an interator, but checking if it has iterator_traits...
      */
     template <typename T>
-    constexpr bool is_iterator_v = is_iterator<T>::value;
-
-    namespace Private_ {
-        // From https://stackoverflow.com/questions/15393938/find-out-if-a-c-object-is-callable
-        template <typename T>
-        struct is_callable_impl_ {
-        private:
-            typedef char (&yes)[1];
-            typedef char (&no)[2];
-
-            struct Fallback {
-                void operator() ();
-            };
-            struct Derived : T, Fallback {
-            };
-
-            template <typename U, U>
-            struct Check;
-
-            template <typename>
-            static yes test (...);
-
-            template <typename C>
-            static no test (Check<void (Fallback::*) (), &C::operator()>*);
-
-        public:
-            static const bool value = sizeof (test<Derived> (0)) == sizeof (yes);
-        };
-    }
-    /**
-     */
-    template <typename T>
-    using is_callable = conditional_t<is_class_v<T>, Private_::is_callable_impl_<T>, false_type>;
+    constexpr bool is_iterator_v = Private_::is_iterator<T>::value;
 
     /**
      */
     template <typename T>
-    constexpr bool is_callable_v = is_callable<T>::value;
+    constexpr bool is_callable_v = Private_::is_callable<T>::value;
 
     /**
      * Return true iff FUNCTOR is of the form  function<bool(T)> or convertible to that.
@@ -368,7 +375,8 @@ namespace Stroika::Foundation::Configuration {
         return false;
     }
 
-    /// DEPRECATED CALLS
+    /// DEPRECATED CALLS ////////////////////
+
     // move to bottom when I've removed dependencies
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (beginend, (std::begin (x) != std::end (x))); // DEPRECATED -
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (begin, std::begin (x));                      // DEPRECATED -
@@ -379,7 +387,7 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     [[deprecated ("Since Stroika 2.1b14 - not sure why had something so specific")]] constexpr bool HasMinusWithIntegerResult ()
     {
-        return has_minus<T>::value && is_convertible_v<minus_result<T>, int>;
+        return has_minus_v<T> && is_convertible_v<minus_result<T>, int>;
     }
 
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (neq, (x != x)); // DEPRECATED - use has_neq_v

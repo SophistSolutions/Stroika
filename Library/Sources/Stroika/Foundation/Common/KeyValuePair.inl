@@ -152,7 +152,7 @@ namespace Stroika::Foundation::Common {
     {
         return operator< (lhs, rhs) or operator== (lhs, rhs);
     }
-    template <typename KEY_TYPE, typename VALUE_TYPE, enable_if_t<Configuration::has_eq<KEY_TYPE>::value and Configuration::has_eq<VALUE_TYPE>::value>*>
+    template <typename KEY_TYPE, typename VALUE_TYPE, enable_if_t<Configuration::has_eq_v<KEY_TYPE> and Configuration::has_eq_v<VALUE_TYPE>>*>
     inline bool operator== (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
     {
         return lhs.fKey == rhs.fKey and lhs.fValue == rhs.fValue;

@@ -35,7 +35,10 @@
 namespace Stroika::Foundation::Containers::DataStructures {
 
     namespace Private_ {
-        STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (erase, (x.erase (x.begin (), x.begin ())));
+        template <typename T>
+        using has_erase_t = decltype (declval<T&> ().erase (begin (declval<T&> ()), end (declval<T&> ())));
+        template <typename T>
+        constexpr inline bool has_erase_v = Configuration::is_detected_v<has_erase_t, T>;
     }
 
     /**

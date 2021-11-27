@@ -74,20 +74,47 @@ namespace Stroika::Foundation::Characters {
 
     namespace Private_ {
 
-        STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (ToString, (x.ToString ()));
-        STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (beginenditerable, (x.begin () != x.end ()));
-        STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (pair, (x.first, x.second));
-        STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (KeyValuePair, (x.fKey, x.fValue));
-        STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (CountedValue, (x.fValue, x.fCount));
-        STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (name, (x.name (), x.name ()));
+        template <typename T>
+        using has_ToStringMethod_t_ = decltype (static_cast<Characters::String> (declval<const T&> ().ToString ()));
+        template <typename T>
+        using has_pair_t_ = decltype (declval<const T&> ().first, declval<const T&> ().second);
+        template <typename T>
+        using has_KeyValuePair_t_ = decltype (declval<const T&> ().fKey, declval<const T&> ().fValue);
+        template <typename T>
+        using has_CountedValue_t_ = decltype (declval<const T&> ().fValue, declval<const T&> ().fCount);
+
+        /**
+         *  \brief checks if the given type has a .ToString () const method returning a string
+         */
+        template <typename T>
+        constexpr inline bool has_ToStringMethod_v = Configuration::is_detected_v<Private_::has_ToStringMethod_t_, T>;
+
+        /**
+         *  \brief this given type appears to be a 'pair' of some sort
+         */
+        template <typename T>
+        constexpr inline bool has_pair_v = Configuration::is_detected_v<Private_::has_pair_t_, T>;
+
+        /**
+         *  \brief this given type appears to be a 'KeyValuePair' of some sort
+         */
+        template <typename T>
+        constexpr inline bool has_KeyValuePair_v = Configuration::is_detected_v<Private_::has_KeyValuePair_t_, T>;
+
+        /**
+         *  \brief this given type appears to be a 'CountedValue' of some sort
+         */
+        template <typename T>
+        constexpr inline bool has_CountedValue_v = Configuration::is_detected_v<Private_::has_CountedValue_t_, T>;
+
 
         template <typename T>
-        inline String ToString_ (const T& t, enable_if_t<has_ToString<T>::value>* = 0)
+        inline String ToString_ (const T& t, enable_if_t<has_ToStringMethod_v<T>>* = 0)
         {
             return t.ToString ();
         }
         template <typename T>
-        String ToString_ (const T& t, enable_if_t<has_beginenditerable<T>::value and not has_ToString<T>::value and not is_convertible_v<T, String>>* = 0)
+        String ToString_ (const T& t, enable_if_t<Configuration::IsIterable_v<T> and not has_ToStringMethod_v<T> and not is_convertible_v<T, String>>* = 0)
         {
             StringBuilder sb;
             sb << L"[";
@@ -165,7 +192,7 @@ namespace Stroika::Foundation::Characters {
             return sb.str ();
         }
         template <typename T>
-        String ToString_ (const T& t, enable_if_t<has_pair<T>::value>* = 0)
+        String ToString_ (const T& t, enable_if_t<has_pair_v<T>>* = 0)
         {
             StringBuilder sb;
             sb << L"{";
@@ -174,7 +201,7 @@ namespace Stroika::Foundation::Characters {
             return sb.str ();
         }
         template <typename T>
-        String ToString_ (const T& t, enable_if_t<has_KeyValuePair<T>::value>* = 0)
+        String ToString_ (const T& t, enable_if_t<has_KeyValuePair_v<T>>* = 0)
         {
             StringBuilder sb;
             sb << L"{";
@@ -183,7 +210,7 @@ namespace Stroika::Foundation::Characters {
             return sb.str ();
         }
         template <typename T>
-        String ToString_ (const T& t, enable_if_t<has_CountedValue<T>::value>* = 0)
+        String ToString_ (const T& t, enable_if_t<has_CountedValue_v<T>>* = 0)
         {
             StringBuilder sb;
             sb << L"{";
@@ -197,28 +224,6 @@ namespace Stroika::Foundation::Characters {
             // SHOULD MAYBE only do if can detect is-defined Configuration::DefaultNames<T>, but right now not easy, and
             // not a problem: just don't call this, or replace it with a specific specialization of ToString
             return Configuration::DefaultNames<T>{}.GetName (t);
-        }
-        template <typename T, size_t SZ>
-        String ToString_array_ (const T (&arr)[SZ])
-        {
-            StringBuilder sb;
-            sb << L"[";
-            for (size_t i = 0; i < SZ; ++i) {
-                sb << L" " << ToString (arr[i]);
-                if (i + 1 < SZ) {
-                    sb << L",";
-                }
-                else {
-                    sb << L" ";
-                }
-            }
-            sb << L"]";
-            return sb.str ();
-        }
-        template <typename T>
-        inline String ToString_ (const T& t, enable_if_t<is_array_v<T> and not is_convertible_v<T, String>>* = 0)
-        {
-            return ToString_array_ (t);
         }
         template <typename T>
         inline String ToString_ (const T& t, enable_if_t<is_floating_point_v<T>>* = 0)

@@ -58,32 +58,29 @@ namespace Stroika::Foundation::Configuration {
      *  Since I cannot (so far figure out how to) do in a single simple statement/template,
      *  at least do this magic in a macro...
      */
-#define STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(NAME, XTEST)                                                                                  \
-    namespace Private_ {                                                                                                                          \
-        template <typename T>                                                                                                                     \
-        struct NAME##_result_impl {                                                                                                               \
-            template <typename X>                                                                                                                 \
-            static auto                                                     check (const X& x) -> decltype (XTEST);                               \
-            static Stroika::Foundation::Configuration::substitution_failure check (...);                                                          \
-            using type = decltype (check (declval<T> ()));                                                                                        \
-        };                                                                                                                                        \
-    }                                                                                                                                             \
-    template <typename T>                                                                                                                         \
-    using NAME##_result = typename Private_::NAME##_result_impl<T>::type;                                                                         \
-    template <typename T>                                                                                                                         \
-    struct has_##NAME : integral_constant<bool, not is_same<NAME##_result<T>, Stroika::Foundation::Configuration::substitution_failure>::value> { \
-    };                                                                                                                                            \
-    template <typename ITERABLE>                                                                                                                  \
-    [[deprecated ("Since Stroika 2.1b14 use has_XX_v via is_detected_v")]] constexpr bool Has##NAME##_v = has_##NAME<ITERABLE>::value;
+#define STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(NAME, XTEST)                                                    \
+    namespace Private_ {                                                                                            \
+        template <typename T>                                                                                       \
+        struct NAME##_result_impl {                                                                                 \
+            template <typename X>                                                                                   \
+            static auto                                                     check (const X& x) -> decltype (XTEST); \
+            static Stroika::Foundation::Configuration::substitution_failure check (...);                            \
+            using type = decltype (check (declval<T> ()));                                                          \
+        };                                                                                                          \
+    }                                                                                                               \
+    template <typename T>                                                                                           \
+    using NAME##_result = typename Private_::NAME##_result_impl<T>::type;                                           \
+    template <typename T>                                                                                           \
+    struct [[deprecated ("Since Stroika 2.1b14 - use templates in Concepts.h and is_detected_v")]] has_##NAME : integral_constant<bool, not is_same<NAME##_result<T>, Stroika::Foundation::Configuration::substitution_failure>::value>{};
 
     /**
-    * 
-    *     // just needed til we have c++ 20 concepts
-    *
+     * 
+     *     // just needed til we have c++ 20 concepts
+     *
      *  Credit to https://stackoverflow.com/users/16746390/kenash0625
      *  For his suggestion in https://stackoverflow.com/questions/70119120/how-to-fix-sfinae-check-for-operator-existing-so-that-it-works-with-stdpair/70122139#70122139
      *  See also Detection Idioms - https://segmentfault.com/a/1190000040852065/en
-    */
+     */
     template <
         template <typename...> typename Detector,
         typename T,

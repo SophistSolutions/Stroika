@@ -173,7 +173,7 @@ namespace Stroika::Foundation::Memory {
      *          VerifyTestResult (url.GetScheme () == L"dyn");
      *          // wchar_t* overload is optional gets STRING with value "d";
      */
-    template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename T = RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = enable_if_t<Configuration::is_explicitly_convertible<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>::value>>
+    template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename T = RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = enable_if_t<Configuration::is_explicitly_convertible_v<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>>>
     optional<T> OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
 
     /**

@@ -119,7 +119,7 @@ namespace Stroika::Foundation::Common {
     bool operator< (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
     template <typename KEY_TYPE, typename VALUE_TYPE>
     bool operator<= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
-    template <typename KEY_TYPE, typename VALUE_TYPE, enable_if_t<Configuration::has_eq<KEY_TYPE>::value and Configuration::has_eq<VALUE_TYPE>::value>* = nullptr>
+    template <typename KEY_TYPE, typename VALUE_TYPE, enable_if_t<Configuration::has_eq_v<KEY_TYPE> and Configuration::has_eq_v<VALUE_TYPE>>* = nullptr>
     bool operator== (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
     template <typename KEY_TYPE, typename VALUE_TYPE>
     bool operator!= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);

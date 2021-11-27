@@ -183,7 +183,6 @@ namespace {
                 static_assert (not has_beginend_v<int>);
                 static_assert (not has_beginend_v<Traversal::Iterator<int>>);
                 static_assert (has_beginend_v<Traversal::Iterable<int>>);
-                static_assert (has_beginend_v<Traversal::Iterable<int>> == has_beginend<Traversal::Iterable<int>>::value);
                 static_assert (IsIterable_v<int> == has_beginend_v<int>);
                 static_assert (IsIterable_v<String> == has_beginend_v<String>);
                 static_assert (IsIterable_v<std::pair<int, int>[1]>);

@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Common {
     }
 #if __cpp_impl_three_way_comparison >= 201907
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    template <typename TEST, enable_if_t<Configuration::has_spaceship<TEST>::value>*>
+    template <typename TEST, enable_if_t<Configuration::has_spaceship_v<TEST>>*>
     constexpr auto CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator<=> (const CountedValue& rhs) const
     {
         auto cmp = fValue <=> rhs.fValue;
@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Common {
         return fCount <=> rhs.fCount;
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    template <typename TEST, enable_if_t<Configuration::has_eq<TEST>::value>*>
+    template <typename TEST, enable_if_t<Configuration::has_eq_v<TEST>>*>
     constexpr bool CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator== (const CountedValue& rhs) const
     {
         return fValue == rhs.fValue and fValue == rhs.fValue;
@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Common {
     {
         return operator< (lhs, rhs) or operator== (lhs, rhs);
     }
-    template <typename VALUE_TYPE, typename COUNTER_TYPE, enable_if_t<Configuration::has_eq<VALUE_TYPE>::value>*>
+    template <typename VALUE_TYPE, typename COUNTER_TYPE, enable_if_t<Configuration::has_eq_v<VALUE_TYPE>>*>
     inline bool operator== (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
     {
         return lhs.fValue == rhs.fValue and lhs.fValue == rhs.fValue;
