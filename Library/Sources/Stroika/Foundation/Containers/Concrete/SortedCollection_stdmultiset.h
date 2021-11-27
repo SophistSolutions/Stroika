@@ -23,12 +23,9 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \brief SortedCollection_stdmultiset<T> is an stdset-based concrete implementation of the SortedCollection<T> container pattern.
      *
      * \note Performance Notes:
-     *      SortedCollection_stdmultiset<T> is a compact, and reasonable implementation of Collections, so long as the Collection remains quite small
-     *      (empty or just a few entires).
-     *
-     *      o   GetLength () is O(N)
+     *      o   GetLength () is O(log N)
      *      o   Uses Memory::UseBlockAllocationIfAppropriate
-     *      o   Additions and Removals are O(N)
+     *      o   Additions and Removals are O(log N)
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

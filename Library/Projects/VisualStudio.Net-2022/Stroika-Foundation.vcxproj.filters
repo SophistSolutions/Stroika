@@ -2148,6 +2148,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_stdmultiset.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_stdmultiset.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3508,6 +3511,9 @@
       <Filter>Sources\Containers\Support</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_stdmultiset.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_stdmultiset.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
   </ItemGroup>

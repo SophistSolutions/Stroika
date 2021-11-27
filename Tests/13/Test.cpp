@@ -18,6 +18,7 @@
 #include "Stroika/Foundation/Containers/Concrete/Collection_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Collection_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Collection_stdforward_list.h"
+#include "Stroika/Foundation/Containers/Concrete/Collection_stdmultiset.h"
 
 using namespace Stroika;
 using namespace Stroika::Foundation;
@@ -26,15 +27,23 @@ using namespace Stroika::Foundation::Containers;
 using Concrete::Collection_Array;
 using Concrete::Collection_LinkedList;
 using Concrete::Collection_stdforward_list;
+using Concrete::Collection_stdmultiset;
 
 namespace {
+
+    template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY>
+    void RunTests_ (CONCRETE_CONTAINER_FACTORY factory)
+    {
+        Debug::TraceContextBumper ctx{L"{}::RunTests_"};
+        using T = typename CONCRETE_CONTAINER::value_type;
+        CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> (
+            factory,
+            [] ([[maybe_unused]] const typename CONCRETE_CONTAINER::ArchetypeContainerType& c) {});
+    }
     template <typename CONCRETE_CONTAINER>
     void RunTests_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::RunTests_"};
-        CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> (
-            [] () { return CONCRETE_CONTAINER (); },
-            [] ([[maybe_unused]] const typename CONCRETE_CONTAINER::ArchetypeContainerType& c) {});
+        RunTests_<CONCRETE_CONTAINER> ([] () { return CONCRETE_CONTAINER{}; });
     }
 }
 
@@ -70,6 +79,12 @@ namespace {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
+        struct MySimpleClassWithoutComparisonOperators_LESS_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
+            bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
+            {
+                return lhs.GetValue () < rhs.GetValue ();
+            }
+        };
         RunTests_<Collection<size_t>> ();
         RunTests_<Collection<SimpleClass>> ();
         RunTests_<Collection<SimpleClassWithoutComparisonOperators>> ();
@@ -85,6 +100,10 @@ namespace {
         RunTests_<Collection_stdforward_list<size_t>> ();
         RunTests_<Collection_stdforward_list<SimpleClass>> ();
         RunTests_<Collection_stdforward_list<SimpleClassWithoutComparisonOperators>> ();
+
+        RunTests_<Collection_stdmultiset<size_t>> ();
+        RunTests_<Collection_stdmultiset<SimpleClass>> ();
+        RunTests_<Collection_stdmultiset<SimpleClassWithoutComparisonOperators>> ([] () { return Collection_stdmultiset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_ ()); });
 
         ExampleCTORS_Test_2_::DoTest ();
     }
