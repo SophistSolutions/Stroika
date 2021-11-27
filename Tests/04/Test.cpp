@@ -194,7 +194,6 @@ namespace {
                 static_assert (not IsIterableOfT_v<vector<int>, char*>);
                 static_assert (not IsIterableOfT_v<vector<int>, String>);
                 static_assert (not IsIterableOfT_v<char, String>);
-
             }
         }
     }

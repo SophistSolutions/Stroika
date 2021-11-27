@@ -44,6 +44,22 @@ namespace Stroika::Foundation::Configuration {
         // Subtle - but begin () doesn't work with rvalues, so must use declval<T&> -- LGP 2021-11-26
         template <typename T>
         using has_beginend_t = decltype (static_cast<bool> (begin (declval<T&> ()) != end (declval<T&> ())));
+
+        // Would be nice to simplify, but my current version of is_detected_v only takes one template parameter, and the std::experimental version not included in VS2k19
+        template <typename ITERABLE_OF_T, typename T>
+        struct IsIterableOfT_Impl2_ {
+            template <typename X, typename USE_ITERABLE = ITERABLE_OF_T, bool ITER_RESULT_CONVERTIBLE_TO_T = is_convertible_v<decltype (*begin (declval<USE_ITERABLE&> ())), T>>
+            static auto check (const X& x) -> conditional_t<
+                is_detected_v<has_beginend_t, ITERABLE_OF_T> and
+                    ITER_RESULT_CONVERTIBLE_TO_T,
+                substitution_succeeded<T>,
+                substitution_failure>;
+            static substitution_failure check (...);
+            using type = decltype (check (declval<T> ()));
+        };
+        template <typename ITERABLE_OF_T, typename T>
+        using IsIterableOfT_t = integral_constant<bool, not is_same<typename IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
+
     }
 
     /**
@@ -202,50 +218,18 @@ namespace Stroika::Foundation::Configuration {
     template <typename ITERABLE>
     constexpr bool IsIterable_v = has_beginend_v<ITERABLE>;
 
-    /*
-     *  has_beginend<T>::value is true iff T has a begin/end method
-     *  @todo fix so checks results act more like iterators - subclass from iterator_tag>
-     */
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (beginend, (std::begin (x) != std::end (x)));
-
-    /*
-     *  has_beginend<T>::value is true iff T has a begin/end method
-     *  @todo fix so checks results act more like iterators - subclass from iterator_tag>
-     */
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (begin, std::begin (x));
-
-    /**
-     */
-    namespace Private_ {
-        template <typename ITERABLE_OF_T, typename T>
-        struct IsIterableOfT_Impl2_ {
-            template <typename X, typename USE_ITERABLE = ITERABLE_OF_T, bool ITER_RESULT_CONVERTIBLE_TO_T = is_convertible_v<typename iterator_traits<begin_result<USE_ITERABLE>>::value_type, T>>
-            static auto check (const X& x) -> conditional_t<
-                has_beginend<ITERABLE_OF_T>::value and
-                    ITER_RESULT_CONVERTIBLE_TO_T,
-                substitution_succeeded<T>,
-                substitution_failure>;
-            static substitution_failure check (...);
-            using type = decltype (check (declval<T> ()));
-        };
-    }
-
     /**
      *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>)
      */
     template <typename ITERABLE_OF_T, typename T>
-    using IsIterableOfT = integral_constant<bool, not is_same<typename Private_::IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
-
-    /**
-     *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>)
-     */
-    template <typename ITERABLE_OF_T, typename T>
-    constexpr bool IsIterableOfT_v = IsIterableOfT<ITERABLE_OF_T, T>::value;
+    constexpr bool IsIterableOfT_v = Private_::IsIterableOfT_t<ITERABLE_OF_T, T>::value;
 
     // move to bottom when I've removed dependencies
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x));   // DEPRECATED - use has_eq_v
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x - x)); // DEPRECATED - use has_minus_v
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (lt, (x < x));    // DEPRECATED - use has_lt_v
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (beginend, (std::begin (x) != std::end (x))); // DEPRECATED -
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (begin, std::begin (x));                      // DEPRECATED -
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x));                               // DEPRECATED - use has_eq_v
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x - x));                             // DEPRECATED - use has_minus_v
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (lt, (x < x));                                // DEPRECATED - use has_lt_v
 
     /**
      *  See http://en.cppreference.com/w/cpp/concept/EqualityComparable
