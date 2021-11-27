@@ -185,7 +185,6 @@ namespace Stroika::Foundation::Configuration {
     constexpr inline bool has_spaceship_v<std::tuple<Ts...>> = (has_spaceship_v<Ts> and ...);
 #endif
 
-
     namespace Private_ {
         template <typename T>
         using has_beginend_t = decltype (static_cast<bool> (begin (declval<T> ()) != end (declval<T> ())));
@@ -205,7 +204,6 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename T>
     constexpr inline bool has_beginend_v = is_detected_v<Private_::has_beginend_t, T>;
-
 
     // &&& ABOVE INCOMPLETE UNTESTED - NEW BEGINEND STUFF
 
@@ -260,7 +258,6 @@ namespace Stroika::Foundation::Configuration {
     template <typename ITERABLE_OF_T, typename T>
     constexpr bool IsIterableOfT_v = IsIterableOfT<ITERABLE_OF_T, T>::value;
 
-    
     // move to bottom when I've removed dependencies
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x));   // DEPRECATED - use has_eq_v
     STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x - x)); // DEPRECATED - use has_minus_v
