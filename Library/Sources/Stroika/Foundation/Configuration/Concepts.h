@@ -185,10 +185,29 @@ namespace Stroika::Foundation::Configuration {
     constexpr inline bool has_spaceship_v<std::tuple<Ts...>> = (has_spaceship_v<Ts> and ...);
 #endif
 
-    // move to bottom when I've removed dependencies
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x));   // DEPRECATED - use has_eq_v
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x - x)); // DEPRECATED - use has_minus_v
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (lt, (x < x));    // DEPRECATED - use has_lt_v
+
+    namespace Private_ {
+        template <typename T>
+        using has_beginend_t = decltype (static_cast<bool> (begin (declval<T> ()) != end (declval<T> ())));
+    }
+    /**
+     *  \brief check if the given type T can be combined with a second T using operator+
+     * 
+     *  \par Example Usage
+     *      \code
+     *          if constexpr (has_beginend_v<T>) {
+     *              T a{};
+     *              return begin (a) != end (a);
+     *          }
+     *      \endcode
+     * 
+     *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
+     */
+    template <typename T>
+    constexpr inline bool has_beginend_v = is_detected_v<Private_::has_beginend_t, T>;
+
+
+    // &&& ABOVE INCOMPLETE UNTESTED - NEW BEGINEND STUFF
 
     /*
      *  has_beginend<T>::value is true iff T has a begin/end method
@@ -240,6 +259,12 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename ITERABLE_OF_T, typename T>
     constexpr bool IsIterableOfT_v = IsIterableOfT<ITERABLE_OF_T, T>::value;
+
+    
+    // move to bottom when I've removed dependencies
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x));   // DEPRECATED - use has_eq_v
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x - x)); // DEPRECATED - use has_minus_v
+    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (lt, (x < x));    // DEPRECATED - use has_lt_v
 
     /**
      *  See http://en.cppreference.com/w/cpp/concept/EqualityComparable
