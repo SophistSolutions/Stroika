@@ -256,24 +256,21 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * It is legal to remove something that is not there. This function removes the first instance of item
-         * (or each item for the 'items' overload), meaning that another instance of item could still be in the
-         * Collection<T> after the remove.
-         *
-         *  The no-argument verison Produces an empty collection.
+         *  \brief RemoveAll removes all, or all matching (predicate, iterator range, equals comparer or whatever) items.
+         * 
+         *  The no-arg overload removes all (quickly).
+         * 
+         *  The overloads that remove some subset of the items returns the number of items so removed.
          * 
          *  The overload with Iterator<T> arguments (start/end) must be iterators from this container.
-         *
-         * The overload RemoveAll(PREDICATE) applies the function p(T) -> bool and deletes all entries that return true for the predicate.
-         * Returns the number of items removed in this way.
          *
          *  \note mutates container
          */
         nonvirtual void RemoveAll ();
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual void RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, const EQUALS_COMPARER& equalsComparer = {});
+        nonvirtual size_t RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, const EQUALS_COMPARER& equalsComparer = {});
         template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
-        nonvirtual void RemoveAll (const CONTAINER_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer = {});
+        nonvirtual size_t RemoveAll (const CONTAINER_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer = {});
         template <typename PREDICATE>
         nonvirtual size_t RemoveAll (const PREDICATE& p);
 

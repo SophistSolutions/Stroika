@@ -272,19 +272,25 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename CONTAINER_OF_ADDABLE>
-    void KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveAll (const CONTAINER_OF_ADDABLE& items)
+    inline size_t KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveAll (const CONTAINER_OF_ADDABLE& items)
     {
+        size_t cnt{};
         for (auto i : items) {
             Remove (i.first);
+            ++cnt;
         }
+        return cnt;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    void KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    inline size_t KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
     {
+        size_t cnt{};
         for (auto i = start; i != end; ++i) {
             Remove (i->first);
+            ++cnt;
         }
+        return cnt;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     auto KeyedCollection<T, KEY_TYPE, TRAITS>::Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const -> ArchetypeContainerType

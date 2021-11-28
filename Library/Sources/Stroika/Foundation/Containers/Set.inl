@@ -209,17 +209,20 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    void Set<T>::RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+   inline size_t Set<T>::RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
     {
+        size_t cnt{};
         for (auto i = start; i != end; ++i) {
+            ++cnt;
             Remove (*i);
         }
+        return cnt;
     }
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE>
-    inline void Set<T>::RemoveAll (const CONTAINER_OF_ADDABLE& s)
+    inline size_t Set<T>::RemoveAll (const CONTAINER_OF_ADDABLE& s)
     {
-        RemoveAll (std::begin (s), std::end (s));
+        return RemoveAll (std::begin (s), std::end (s));
     }
     template <typename T>
     inline void Set<T>::RemoveAll ()

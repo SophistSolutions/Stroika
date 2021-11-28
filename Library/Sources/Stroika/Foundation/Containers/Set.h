@@ -333,12 +333,18 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \brief RemoveAll removes all, or all matching (predicate, iterator range, equals comparer or whatever) items.
+         * 
+         *  The no-arg overload removes all (quickly).
+         * 
+         *  The overloads that remove some subset of the items returns the number of items so removed.
+         * 
          *  \note mutates container
          */
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        nonvirtual size_t RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
         template <typename CONTAINER_OF_ADDABLE>
-        nonvirtual void RemoveAll (const CONTAINER_OF_ADDABLE& s);
+        nonvirtual size_t RemoveAll (const CONTAINER_OF_ADDABLE& s);
         nonvirtual void RemoveAll ();
 
     public:

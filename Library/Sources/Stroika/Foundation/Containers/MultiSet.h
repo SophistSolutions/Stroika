@@ -281,10 +281,16 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \brief RemoveAll removes all, or all matching (predicate, iterator range, equals comparer or whatever) items.
+         * 
+         *  The no-arg overload removes all (quickly).
+         * 
+         *  The overloads that remove some subset of the items returns the number of items so removed.
+         * 
          *  \note mutates container
          */
         nonvirtual void RemoveAll ();
-        nonvirtual void RemoveAll (ArgByValueType<T> item);
+        nonvirtual size_t RemoveAll (ArgByValueType<T> item);
 
     public:
         /**

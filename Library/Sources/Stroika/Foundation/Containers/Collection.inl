@@ -150,21 +150,25 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    void Collection<T>::RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, const EQUALS_COMPARER& equalsComparer)
+    size_t Collection<T>::RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, const EQUALS_COMPARER& equalsComparer)
     {
+        size_t cnt{};
         for (auto i = start; i != end;) {
-            Remove (*i, equalsComparer, &i);
+            if (RemoveIf (*i, equalsComparer, &i)) {
+                ++cnt;
+            }
         }
+        return cnt;
     }
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
-    inline void Collection<T>::RemoveAll (const CONTAINER_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer)
+    inline size_t Collection<T>::RemoveAll (const CONTAINER_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer)
     {
         if (static_cast<const void*> (this) == static_cast<const void*> (addressof (c))) {
-            RemoveAll (equalsComparer);
+            return RemoveAll (equalsComparer);
         }
         else {
-            RemoveAll (std::begin (c), std::end (c), equalsComparer);
+            return RemoveAll (std::begin (c), std::end (c), equalsComparer);
         }
     }
     template <typename T>

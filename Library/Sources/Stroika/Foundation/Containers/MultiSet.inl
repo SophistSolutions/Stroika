@@ -346,11 +346,6 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    void MultiSet<T, TRAITS>::RemoveAll (ArgByValueType<T> item)
-    {
-        Remove (item, OccurrencesOf (item));
-    }
-    template <typename T, typename TRAITS>
     auto MultiSet<T, TRAITS>::TotalOccurrences () const -> CounterType
     {
         CounterType sum = 0;
@@ -412,6 +407,11 @@ namespace Stroika::Foundation::Containers {
         if (not tmp._ConstGetRep ().IsEmpty ()) {
             this->_fRep = tmp._ConstGetRep ().CloneEmpty ();
         }
+    }
+    template <typename T, typename TRAITS>
+    inline size_t MultiSet<T, TRAITS>::RemoveAll (ArgByValueType<T> item)
+    {
+        return RemoveIf (item, OccurrencesOf (item));
     }
     template <typename T, typename TRAITS>
     inline void MultiSet<T, TRAITS>::Add (ArgByValueType<T> item)
