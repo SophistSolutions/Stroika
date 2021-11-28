@@ -2,7 +2,6 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
 //  TEST    Foundation::Containers::Set
-//      STATUS  PRELIMINARY
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
@@ -26,7 +25,7 @@ using namespace Stroika::Foundation::Containers;
 
 using Concrete::Set_LinkedList;
 using Concrete::Set_stdset;
-
+ 
 namespace {
     template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY>
     void DoTestForConcreteContainer_ (CONCRETE_CONTAINER_FACTORY factory)

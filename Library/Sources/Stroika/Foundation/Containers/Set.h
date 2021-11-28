@@ -417,7 +417,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *      Synonym for Remove/RemoveAll.
+         *      Synonym for RemoveIf/RemoveAll.
          *
          *  Design note  use Addll/RemoveAll() for CONTAINER variant - since can easily lead to ambiguity/confusion
          *

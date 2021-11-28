@@ -49,7 +49,7 @@ namespace CommonTests {
                 VerifyTestResult (coll.Contains (2));
                 VerifyTestResult (coll.GetLength () == 2);
                 VerifyTestResult ((coll.Keys () == Set<int>{1, 2}));
-                coll.Remove (99);
+                VerifyTestResult (not coll.RemoveIf (99));
                 VerifyTestResult (coll.GetLength () == 2);
                 coll.Remove (1);
                 VerifyTestResult (coll.GetLength () == 1);

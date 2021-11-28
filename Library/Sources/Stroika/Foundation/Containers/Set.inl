@@ -378,7 +378,7 @@ namespace Stroika::Foundation::Containers {
          */
         Set<T> result = *this;
         for (const auto& i : rhs) {
-            result.Remove (i);
+            result.RemoveIf (i);
         }
         return result;
     }
@@ -390,7 +390,7 @@ namespace Stroika::Foundation::Containers {
          *  But due to COW in SharedByValue, this is better if 'rhs' not found in this.
          */
         Set<T> result = *this;
-        result.Remove (rhs);
+        result.RemoveIf (rhs);
         return result;
     }
     template <typename T>
@@ -408,7 +408,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline Set<T>& Set<T>::operator-= (ArgByValueType<value_type> item)
     {
-        Remove (item);
+        RemoveIf (item);
         return *this;
     }
     template <typename T>
