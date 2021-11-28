@@ -25,7 +25,7 @@ using namespace Stroika::Foundation::Containers;
 
 using Concrete::Set_LinkedList;
 using Concrete::Set_stdset;
- 
+
 namespace {
     template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY>
     void DoTestForConcreteContainer_ (CONCRETE_CONTAINER_FACTORY factory)

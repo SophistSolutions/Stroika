@@ -219,7 +219,7 @@ public:
 public:
     void Remove (SignalID signal)
     {
-        fHandlers_.rwget ()->Remove (signal);
+        fHandlers_.rwget ()->RemoveIf (signal);
         PopulateSafeSignalHandlersCache_ (signal);
     }
 
