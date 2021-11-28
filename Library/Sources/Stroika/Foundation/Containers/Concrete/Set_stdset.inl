@@ -112,16 +112,18 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return this->_Equals_Reference_Implementation (rhs);
         }
-        virtual bool Contains (ArgByValueType<value_type> item) const override
+        virtual bool Lookup (ArgByValueType<value_type> item, optional<value_type>* oResult, Iterator<value_type>* iResult) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return fData_.Contains (item);
-        }
-        virtual optional<value_type> Lookup (ArgByValueType<T> item) const override
-        {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            auto                                                        i = fData_.find (item);
-            return (i == fData_.end ()) ? optional<T>{} : optional<T>{*i};
+            auto                                                        i       = fData_.find (item);
+            bool                                                        notDone = i != fData_.end ();
+            if (oResult != nullptr and notDone) {
+                *oResult = *i;
+            }
+            if (iResult != nullptr and notDone) {
+                *iResult = Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, i)};
+            }
+            return notDone;
         }
         virtual void Add (ArgByValueType<value_type> item) override
         {

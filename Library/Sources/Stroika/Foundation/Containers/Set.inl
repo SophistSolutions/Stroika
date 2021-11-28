@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline bool Set<T>::Contains (ArgByValueType<value_type> item) const
     {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Contains (item);
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (item, nullptr, nullptr);
     }
     template <typename T>
     bool Set<T>::Contains (const Iterable<value_type>& items) const
@@ -142,7 +142,9 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline auto Set<T>::Lookup (ArgByValueType<value_type> item) const -> optional<value_type>
     {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (item);
+        optional<value_type> r;
+        _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (item, &r, nullptr);
+        return r; // don't move due to return value optimization
     }
     template <typename T>
     inline void Set<T>::Add (ArgByValueType<value_type> item)
@@ -438,6 +440,13 @@ namespace Stroika::Foundation::Containers {
         RemoveAll ();
     }
     template <typename T>
+    inline auto Set<T>::find (ArgByValueType<value_type> item) -> Iterator<value_type>
+    {
+        Iterator<value_type> r{nullptr};
+        _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (item, nullptr, &r);
+        return move (r);
+    }
+    template <typename T>
     inline void Set<T>::insert (ArgByValueType<value_type> item)
     {
         Add (item);
@@ -509,7 +518,7 @@ namespace Stroika::Foundation::Containers {
         // Note - no need to iterate over rhs because we checked sizes the same
         [[maybe_unused]] size_t rhsSize{};
         for (auto i = rhs.MakeIterator (); not i.Done (); ++i) {
-            if (not Contains (*i)) {
+            if (not Lookup (*i, nullptr, nullptr)) {
                 return false;
             }
             ++rhsSize;

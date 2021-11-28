@@ -111,16 +111,18 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return this->_Equals_Reference_Implementation (rhs);
         }
-        virtual bool Contains (ArgByValueType<value_type> item) const override
+        virtual bool Lookup (ArgByValueType<value_type> item, optional<value_type>* oResult, Iterator<value_type>* iResult) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return fData_.Lookup (item, fEqualsComparer_) != nullptr;
-        }
-        virtual optional<T> Lookup (ArgByValueType<value_type> item) const override
-        {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            const T*                                                    l = fData_.Lookup (item, fEqualsComparer_);
-            return (l == nullptr) ? optional<value_type>{} : optional<value_type>{*l};
+            typename DataStructureImplType_::UnderlyingIteratorRep      l       = fData_.Find ([this, item] (ArgByValueType<value_type> i) { return fEqualsComparer_ (i, item); });
+            bool                                                        notDone = l != nullptr;
+            if (oResult != nullptr and notDone) {
+                *oResult = l->fItem;
+            }
+            if (iResult != nullptr and notDone) {
+                *iResult = Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, l)};
+            }
+            return notDone;
         }
         virtual void Add (ArgByValueType<value_type> item) override
         {

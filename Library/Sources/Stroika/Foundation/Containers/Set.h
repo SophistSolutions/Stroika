@@ -443,6 +443,12 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  // @todo ADD THIS FUNCTIONALITY - useful cuz can be applied to Remove() API
+         */
+        nonvirtual Iterator<value_type> find (ArgByValueType<value_type> item);
+
+    public:
+        /**
          * \brief STL-ish alias for Add ().
          *
          *  \note mutates container
@@ -510,15 +516,19 @@ namespace Stroika::Foundation::Containers {
         using _IRepSharedPtr = typename Set<T>::_IRepSharedPtr;
 
     public:
-        virtual ElementEqualityComparerType GetElementEqualsComparer () const                                   = 0;
-        virtual _IRepSharedPtr              CloneEmpty () const                                                 = 0;
-        virtual _IRepSharedPtr              CloneAndPatchIterator (Iterator<value_type>* i) const               = 0;
-        virtual bool                        Equals (const typename Iterable<value_type>::_IRep& rhs) const      = 0;
-        virtual bool                        Contains (ArgByValueType<value_type> item) const                    = 0;
-        virtual optional<value_type>        Lookup (ArgByValueType<value_type> item) const                      = 0;
-        virtual void                        Add (ArgByValueType<value_type> item)                               = 0;
-        virtual void                        Remove (ArgByValueType<value_type> item)                            = 0;
-        virtual void                        Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) = 0;
+        virtual ElementEqualityComparerType GetElementEqualsComparer () const                              = 0;
+        virtual _IRepSharedPtr              CloneEmpty () const                                            = 0;
+        virtual _IRepSharedPtr              CloneAndPatchIterator (Iterator<value_type>* i) const          = 0;
+        virtual bool                        Equals (const typename Iterable<value_type>::_IRep& rhs) const = 0;
+        /**
+         *  Return true iff item found.
+         *  ONLY IF returns true, and arg oResult is non-null, *oResult set to found item.
+         *  ONLY IF returns true, and arg iResult is non-null, *iResult set to found item.
+         */
+        virtual bool Lookup (ArgByValueType<value_type> item, optional<value_type>* oResult, Iterator<value_type>* iResult) const = 0;
+        virtual void Add (ArgByValueType<value_type> item)                                                                        = 0;
+        virtual void Remove (ArgByValueType<value_type> item)                                                                     = 0;
+        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                          = 0;
 
         /*
          *  Reference Implementations (often not used except for ensure's, but can be used for
