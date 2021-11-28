@@ -413,7 +413,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
     {
         auto l = fDirectHandlers_.rwget ();
         if (directHandlers.empty ()) {
-            l->Remove (signal);
+            l->RemoveIf (signal);
         }
         else {
             l->Add (signal, directHandlers);

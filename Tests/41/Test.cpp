@@ -640,7 +640,7 @@ namespace {
                 Debug::TraceContextBumper ctx1{"...TestBasics_<Set<int>>"};
                 Private_::TestBasics_<Set<int>> (
                     [] (Set<int>* c, int i) { c->Add (i); },
-                    [] (Set<int>* c, int i) { c->Remove (i); },
+                    [] (Set<int>* c, int i) { c->RemoveIf (i); },
                     [] (const Set<int>* c) { [[maybe_unused]] bool b = c->Contains (5); },
                     [&cnt] (int v) { cnt += v; });
             }
