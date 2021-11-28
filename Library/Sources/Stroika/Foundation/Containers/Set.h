@@ -298,10 +298,11 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  The overload taking an item doesn't require the value exists, but removes it if it does.
-         *  The overload taking an iterator requires the iterator is valid.
+         *  \brief Remove the item (given by value or iterator pointing to it) from the contain. The item MUST exist.
+         * 
+         *  \req argument (i or item) is present in the Set.
          *
-         *  @see RemoveIf ()
+         *  @see RemoveIf () to remove without the requirement that the value exist in the Set
          *
          *  \note mutates container
          */
@@ -527,8 +528,11 @@ namespace Stroika::Foundation::Containers {
          */
         virtual bool Lookup (ArgByValueType<value_type> item, optional<value_type>* oResult, Iterator<value_type>* iResult) const = 0;
         virtual void Add (ArgByValueType<value_type> item)                                                                        = 0;
-        virtual void Remove (ArgByValueType<value_type> item)                                                                     = 0;
-        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                          = 0;
+        /**
+         *  Return true iff item found. Either way assure it doesn't exsist
+         */
+        virtual bool RemoveIf (ArgByValueType<value_type> item)                          = 0;
+        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) = 0;
 
         /*
          *  Reference Implementations (often not used except for ensure's, but can be used for

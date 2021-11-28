@@ -135,22 +135,26 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             fChangeCounts_.PerformedChange ();
         }
-        virtual void Remove (ArgByValueType<T> item, CounterType count) override
+        virtual size_t RemoveIf (ArgByValueType<T> item, CounterType count) override
         {
-            if (count == 0) {
-                return;
-            }
+            Require (count != 0);
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             auto                                                  i = fData_.find (item);
             Require (i != fData_.end ());
             if (i != fData_.end ()) {
-                Require (i->second >= count);
-                i->second -= count;
-                if (i->second == 0) {
+                size_t result; // intentionally uninitialized
+                if (i->second > count) {
+                    i->second -= count;
+                    result = count;
+                }
+                else {
+                    result = i->second;
                     fData_.erase (i);
                 }
                 fChangeCounts_.PerformedChange ();
+                return result;
             }
+            return 0;
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {

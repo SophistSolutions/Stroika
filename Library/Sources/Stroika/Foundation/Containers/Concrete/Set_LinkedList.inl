@@ -135,16 +135,17 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.Prepend (item); // order meaningless for set, and prepend cheaper on linked list
             fChangeCounts_.PerformedChange ();
         }
-        virtual void Remove (ArgByValueType<value_type> item) override
+        virtual bool RemoveIf (ArgByValueType<value_type> item) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 if (fEqualsComparer_ (it.Current (), item)) {
                     fData_.RemoveAt (it);
                     fChangeCounts_.PerformedChange ();
-                    return;
+                    return true;
                 }
             }
+            return false;
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {

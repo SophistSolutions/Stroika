@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 nextI->Refresh (); // update to reflect changes made to rep
             }
         }
-        virtual bool Remove (ArgByValueType<KEY_TYPE> key) override
+        virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             if (auto i = this->Find ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); })) {

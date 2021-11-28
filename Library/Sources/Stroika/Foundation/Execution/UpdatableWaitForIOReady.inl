@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     void UpdatableWaitForIOReady<T, TRAITS>::Remove ([[maybe_unused]] T fd)
     {
-        if (fData_.rwget ()->Remove ([&] (auto p) { return p.first == fd; })) {
+        if (fData_.rwget ()->RemoveIf ([&] (auto p) { return p.first == fd; })) {
             fEventFD_->Set (); // force wakeup of any waits
         }
     }

@@ -159,16 +159,17 @@ namespace Stroika::Foundation::Containers::Concrete {
             fChangeCounts_.PerformedChange ();
             return true;
         }
-        virtual void Remove (ArgByValueType<KEY_TYPE> key) override
+        virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
                 if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                     fData_.RemoveAt (it);
                     fChangeCounts_.PerformedChange ();
-                    return;
+                    return true;
                 }
             }
+            return false;
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {

@@ -377,12 +377,10 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  NOTE- calling Remove(Key) when the key is not found is perfectly legal.
-         *
-         *  @todo CONSIDER:::
-         *      TBD in the case of Remove() on in iterator???? Probably should have consistent
-         *      answers but review Remove()for other containers as well.
-         *
+         * \brief Remove the given item (which must exist).
+         * 
+         * \note - for the argument 'key' overload, this is a change in Stroika 2.1b14: before it was legal and silently ignored if you removed an item that didn't exist.
+         * 
          *  Remove with iterator returns the adjusted iterator value, now pointing to the next value to use (as in save that iterator value, ++i) and remove the
          *  i iterator value).
          *
@@ -390,6 +388,14 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual void Remove (ArgByValueType<key_type> key);
         nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
+
+    public:
+        /**
+         * \brief Remove the given item, if it exists. Return true if found and removed.
+         * 
+         *  \note mutates container
+         */
+        nonvirtual bool RemoveIf (ArgByValueType<key_type> key);
 
     public:
         /**
@@ -622,7 +628,7 @@ namespace Stroika::Foundation::Containers {
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<mapped_type>* item) const = 0;
         // return true if NEW mapping added (container enlarged) - if replaceExistingMapping we unconditionally update but can still return false
         virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode) = 0;
-        virtual void Remove (ArgByValueType<KEY_TYPE> key)                                                                 = 0;
+        virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key)                                                               = 0;
         // if nextI is non-null, its filled in with the next item in iteration order after i (has been removed)
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                       = 0;
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) = 0;

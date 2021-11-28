@@ -106,11 +106,36 @@ namespace Stroika::Foundation::Containers {
         writerRep->Update (patchedIterator, newValue, nextI);
     }
     template <typename T>
+    inline void Collection<T>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
+    {
+        Require (not i.Done ());
+        auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
+        writerRep->Remove (patchedIterator, nextI);
+    }
+    template <typename T>
     template <typename EQUALS_COMPARER>
-    inline bool Collection<T>::Remove (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer)
+    inline void Collection<T>::Remove (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer)
+    {
+        auto i = this->Find (item, equalsComparer);
+        Require (i != this->end ());
+        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i, nullptr);
+    }
+    template <typename T>
+    template <typename EQUALS_COMPARER>
+    inline bool Collection<T>::RemoveIf (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer)
     {
         if (auto i = this->Find (item, equalsComparer)) {
             _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i, nullptr);
+            return true;
+        }
+        return false;
+    }
+    template <typename T>
+    template <typename PREDICATE>
+    nonvirtual bool Collection<T>::RemoveIf (const PREDICATE& p)
+    {
+        if (auto i = this->Find (p)) {
+            Remove (i);
             return true;
         }
         return false;
@@ -157,23 +182,6 @@ namespace Stroika::Foundation::Containers {
             }
         }
         return nRemoved;
-    }
-    template <typename T>
-    inline void Collection<T>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
-    {
-        Require (not i.Done ());
-        auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
-        writerRep->Remove (patchedIterator, nextI);
-    }
-    template <typename T>
-    template <typename PREDICATE>
-    nonvirtual bool Collection<T>::Remove (const PREDICATE& p)
-    {
-        if (auto i = this->Find (p)) {
-            Remove (i);
-            return true;
-        }
-        return false;
     }
     template <typename T>
     inline void Collection<T>::clear ()

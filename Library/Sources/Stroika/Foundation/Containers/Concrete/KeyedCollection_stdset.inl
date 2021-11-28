@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 *nextI = Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, nextStdI)};
             }
         }
-        virtual bool Remove (ArgByValueType<KEY_TYPE> key) override
+        virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             auto                                                  i = fData_.find (key);

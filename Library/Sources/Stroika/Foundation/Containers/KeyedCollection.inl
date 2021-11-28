@@ -236,13 +236,13 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (ArgByValueType<KeyType> key)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (key);
+        Verify (_SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveIf (key));
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (ArgByValueType<value_type> elt)
     {
-        _SafeReadWriteRepAccessor<_IRep> r{this};
-        r._GetWriteableRep ().Remove (r._ConstGetRep ().GetKeyExtractor () (elt));
+        _SafeReadWriteRepAccessor<_IRep> writeAccessor{this};
+        Verify (writeAccessor._GetWriteableRep ().RemoveIf (writeAccessor._ConstGetRep ().GetKeyExtractor () (elt)));
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::Remove (const Iterator<value_type>& i, const Iterator<value_type>* nextI)
@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveIf (ArgByValueType<KeyType> key)
     {
-        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (key);
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveIf (key);
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveIf (ArgByValueType<value_type> elt)

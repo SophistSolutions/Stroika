@@ -238,7 +238,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Remove (ArgByValueType<key_type> key)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (key);
+        Verify (_SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveIf (key)); // use RemoveIf () if key may not exist
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
@@ -246,6 +246,11 @@ namespace Stroika::Foundation::Containers {
         Require (not i.Done ());
         auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
         writerRep->Remove (patchedIterator, nextI);
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveIf (ArgByValueType<key_type> key)
+    {
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (key);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll ()

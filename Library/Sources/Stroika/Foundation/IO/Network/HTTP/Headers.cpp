@@ -600,7 +600,7 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
                         // then remove a specific one
                         Collection<Cookie> cookieDetails = fSetCookieList_->cookieDetails ();
                         auto               removeMe      = Cookie::Parse (*value);
-                        auto               r             = cookieDetails.Remove (removeMe);
+                        bool               r             = cookieDetails.RemoveIf (removeMe);
                         if (nRemoveals != nullptr) {
                             *nRemoveals = r ? 1 : 0;
                         }
@@ -641,7 +641,7 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
 void Headers::SetExtras_ (const String& headerName, const optional<String>& value)
 {
     lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-    fExtraHeaders_.Remove ([=] (const auto& i) { return kHeaderNameEqualsComparer (i.fKey, headerName); });
+    fExtraHeaders_.RemoveIf ([=] (const auto& i) { return kHeaderNameEqualsComparer (i.fKey, headerName); });
     if (value) {
         fExtraHeaders_.Add (KeyValuePair<String, String>{headerName, *value});
     }

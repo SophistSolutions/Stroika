@@ -230,17 +230,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
 }
 
-#if 0
-// https://stroika.atlassian.net/browse/STK-749
-namespace Stroika::Foundation::Configuration {
-    template <>
-    constexpr bool HasUsableEqualToOptimization<std::pair<Stroika::Foundation::Characters::RegularExpression, Stroika::Foundation::IO::Network::HTTP::CacheControl>> ()
-    {
-        return false;
-    };
-}
-#endif
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************

@@ -252,6 +252,12 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \brief remove the argument data from the multiset. The data specified MUST exist (require) - else use RemoveIf ()
+         * 
+         *  \see RemoveIf
+         * 
+         *  \req count >= 1
+         *
          * This function requires that the iterator 'i' came from this container.
          *
          * The value pointed to by 'i' is removed.
@@ -260,9 +266,18 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual void Remove (ArgByValueType<T> item);
-        nonvirtual void Remove (ArgByValueType<T> item, CounterType count);
+        nonvirtual void Remove (ArgByValueType<T> item, CounterType count = 1);
         nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
+
+    public:
+        /**
+         *  \brief remove the argument data from the multiset (can specify remove of more than are present) - returns number actually removed (multisets never have count < 0)
+         * 
+         *  \req count >= 1
+         * 
+         *  \note mutates container
+         */
+        nonvirtual size_t RemoveIf (ArgByValueType<T> item, CounterType count = 1);
 
     public:
         /**
@@ -444,7 +459,7 @@ namespace Stroika::Foundation::Containers {
         virtual bool                        Equals (const _IRep& rhs) const                                                                = 0;
         virtual bool                        Contains (ArgByValueType<T> item) const                                                        = 0;
         virtual void                        Add (ArgByValueType<T> item, CounterType count)                                                = 0;
-        virtual void                        Remove (ArgByValueType<T> item, CounterType count)                                             = 0;
+        virtual size_t                      RemoveIf (ArgByValueType<T> item, CounterType count)                                           = 0;
         virtual void                        Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                            = 0;
         virtual void                        UpdateCount (const Iterator<value_type>& i, CounterType newCount, Iterator<value_type>* nextI) = 0;
         virtual CounterType                 OccurrencesOf (ArgByValueType<T> item) const                                                   = 0;

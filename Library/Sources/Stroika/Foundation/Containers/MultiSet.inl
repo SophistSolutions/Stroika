@@ -456,14 +456,9 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T, typename TRAITS>
-    inline void MultiSet<T, TRAITS>::Remove (ArgByValueType<T> item)
-    {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (item, 1);
-    }
-    template <typename T, typename TRAITS>
     inline void MultiSet<T, TRAITS>::Remove (ArgByValueType<T> item, CounterType count)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (item, count);
+        Verify (_SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveIf (item, count) == count);
     }
     template <typename T, typename TRAITS>
     inline void MultiSet<T, TRAITS>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
@@ -471,6 +466,11 @@ namespace Stroika::Foundation::Containers {
         Require (not i.Done ());
         auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
         writerRep->Remove (patchedIterator, nextI);
+    }
+    template <typename T, typename TRAITS>
+    inline size_t MultiSet<T, TRAITS>::RemoveIf (ArgByValueType<T> item, CounterType count)
+    {
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveIf (item, count);
     }
     template <typename T, typename TRAITS>
     inline void MultiSet<T, TRAITS>::UpdateCount (const Iterator<value_type>& i, CounterType newCount, Iterator<value_type>* nextI)

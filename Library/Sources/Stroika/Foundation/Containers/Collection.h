@@ -225,26 +225,34 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * It is legal to remove something that is not there. This function removes the first instance of item
-         * (or each item for the 'items' overload), meaning that another instance of item could still be in the
-         * Collection<T> after the remove. Thus function just reduces the MultiSet() by one (or zero if item wasn't found).
+         *  \brief Remove () the argument value (which must exist)
          *
-         * SECOND OVERLOAD:
-         * This function requires that the iterator 'i' came from this container.
-         *
-         * The value pointed to by 'i' is removed.
-         *
-         * The overload Remove(PREDICATE) applies the function p(T) -> bool and deletes the first entry (if any) that return true for the predicate.
+         *  \see RemoveIf() to remove an item that may not exist
          * 
-         * The first and third overloads return true iff an entry was removed.
+         *  This will reduce the size of the container by one.
          *
          *  \note mutates container
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool Remove (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer = {});
+        nonvirtual void Remove (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer = {});
         nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
+
+    public:
+        /**
+         *  \brief RemoveIf () the (the first matching) argument value, if present. Returns true if item removed.
+         *
+         * It is legal to remove something that is not there. This function removes the first instance of item
+         * (or each item for the 'items' overload), meaning that another instance of item could still be in the
+         * Collection<T> after the remove.
+         *
+         * The overload Remove(PREDICATE) applies the function p(T) -> bool and deletes the first entry (if any) that return true for the predicate.
+         * 
+         *  \note mutates container
+         */
+        template <typename EQUALS_COMPARER = equal_to<T>>
+        nonvirtual bool RemoveIf (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer = {});
         template <typename PREDICATE>
-        nonvirtual bool Remove (const PREDICATE& p);
+        nonvirtual bool RemoveIf (const PREDICATE& p);
 
     public:
         /**

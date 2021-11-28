@@ -131,15 +131,18 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.insert (item);
             fChangeCounts_.PerformedChange ();
         }
-        virtual void Remove (ArgByValueType<value_type> item) override
+        virtual bool RemoveIf (ArgByValueType<value_type> item) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             fData_.Invariant ();
             auto i = fData_.find (item);
-            if (i != fData_.end ()) {
+            Require (i != fData_.end ()); // require item found
+            if (i != fData_.end ()) [[LIKELY_ATTR]] {
                 fData_.erase (i);
                 fChangeCounts_.PerformedChange ();
+                return true;
             }
+            return false;
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {

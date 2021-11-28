@@ -145,30 +145,28 @@ namespace Stroika::Foundation::Containers::Concrete {
                 fChangeCounts_.PerformedChange ();
             }
         }
-        virtual void Remove (ArgByValueType<T> item, CounterType count) override
+        virtual size_t RemoveIf (ArgByValueType<T> item, CounterType count) override
         {
-            if (count != 0) {
-                scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
-                for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
-                    auto current = it.Current ();
-                    if (fEqualsComparer_ (current.fValue, item)) {
-                        if (current.fCount > count) {
-                            current.fCount -= count;
-                        }
-                        else {
-                            current.fCount = 0; // Should this be an underflow excpetion, assertion???
-                        }
-                        if (current.fCount == 0) {
-                            fData_.RemoveAt (it);
-                        }
-                        else {
-                            fData_.SetAt (it, current);
-                        }
-                        fChangeCounts_.PerformedChange ();
-                        break;
+            Require (count != 0);
+            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+                auto current = it.Current ();
+                if (fEqualsComparer_ (current.fValue, item)) {
+                    size_t result; // intentionally uninitialized
+                    if (current.fCount > count) {
+                        current.fCount -= count;
+                        fData_.SetAt (it, current);
+                        result = count;
                     }
+                    else {
+                        result = current.fCount;
+                        fData_.RemoveAt (it);
+                    }
+                    fChangeCounts_.PerformedChange ();
+                    return result;
                 }
             }
+            return 0;
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {

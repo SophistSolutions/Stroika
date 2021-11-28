@@ -21,7 +21,7 @@ namespace Stroika::Frameworks::SystemPerformance {
         Require (this != &m);
         fMeasuredAt = m.fMeasuredAt;
         for (const auto& mi : m.fMeasurements) {
-            fMeasurements.Remove ([=] (const Measurement& mm) { return mm.fType == mi.fType; });
+            fMeasurements.RemoveIf ([=] (const Measurement& mm) { return mm.fType == mi.fType; });
             fMeasurements.Add (mi);
         }
     }

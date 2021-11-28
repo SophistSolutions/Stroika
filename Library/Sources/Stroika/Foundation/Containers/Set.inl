@@ -193,7 +193,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Set<T>::Remove (ArgByValueType<value_type> item)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (item);
+        Verify (_SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveIf (item));
     }
     template <typename T>
     inline void Set<T>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
@@ -205,18 +205,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline bool Set<T>::RemoveIf (ArgByValueType<value_type> item)
     {
-        /*
-         *  Note, this is an non-performance optimal implementation, but is not a race, because from the outside
-         *  if someone calls RemoveIf() - they don't know/care if this call or another at the same time is doing the
-         *  addition. Any 'race' would be in the logical of the calling code.
-         */
-        if (Contains (item)) {
-            Remove (item);
-            return true;
-        }
-        else {
-            return false;
-        }
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveIf (item);
     }
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE>

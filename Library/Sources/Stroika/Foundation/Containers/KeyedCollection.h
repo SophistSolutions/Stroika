@@ -372,10 +372,9 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  The overload taking an item doesn't require the value exists, but removes it if it does.
-         *  The overload taking an iterator requires the iterator is valid.
-         *
-         *  @see RemoveIf ()
+         *  \brief Remove the argument value (which must exist) from the KeyedCollection.
+         * 
+         *  @see RemoveIf () for when the argument might not exist
          *
          *  \note mutates container
          */
@@ -537,7 +536,7 @@ namespace Stroika::Foundation::Containers {
         virtual bool Add (ArgByValueType<value_type> item)                               = 0;
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) = 0;
         // returns true iff a change made, false if elt was not present
-        virtual bool Remove (ArgByValueType<KEY_TYPE> key) = 0;
+        virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) = 0;
 
     protected:
         nonvirtual Iterable<KEY_TYPE> _Keys_Reference_Implementation () const;

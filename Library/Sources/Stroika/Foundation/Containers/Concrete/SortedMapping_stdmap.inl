@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.Invariant ();
             return result;
         }
-        virtual void Remove (ArgByValueType<KEY_TYPE> key) override
+        virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             fData_.Invariant ();
@@ -165,7 +165,9 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (i != fData_.end ()) {
                 fData_.erase (i);
                 fChangeCounts_.PerformedChange ();
+                return true;
             }
+            return false;
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
