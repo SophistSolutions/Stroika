@@ -419,7 +419,7 @@ namespace Stroika::Foundation::Containers {
         nonvirtual size_t RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
         template <typename CONTAINER_OF_ADDABLE>
         nonvirtual size_t RemoveAll (const CONTAINER_OF_ADDABLE& s);
-        nonvirtual void RemoveAll ();
+        nonvirtual void   RemoveAll ();
 
     public:
         /**

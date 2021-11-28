@@ -648,7 +648,7 @@ namespace {
                 Debug::TraceContextBumper ctx1{"...TestBasics_<Mapping<int, Time::DateTime>>"};
                 Private_::TestBasics_<Mapping<int, Time::DateTime>> (
                     [] (Mapping<int, Time::DateTime>* c, int i) { c->Add (i, Time::DateTime::Now ()); },
-                    [] (Mapping<int, Time::DateTime>* c, int i) { c->Remove (i); },
+                    [] (Mapping<int, Time::DateTime>* c, int i) { c->RemoveIf (i); },
                     [] (const Mapping<int, Time::DateTime>* c) { [[maybe_unused]] bool b = c->ContainsKey (5); },
                     [&cnt] (KeyValuePair<int, Time::DateTime> v) { cnt += v.fKey; });
             }

@@ -289,7 +289,7 @@ namespace Stroika::Foundation::Containers {
          * 
          *  \note mutates container
          */
-        nonvirtual void RemoveAll ();
+        nonvirtual void   RemoveAll ();
         nonvirtual size_t RemoveAll (ArgByValueType<T> item);
 
     public:
