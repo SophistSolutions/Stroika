@@ -271,6 +271,22 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
+    template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>*>
+    size_t KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveAll (const PREDICATE& p)
+    {
+        size_t nRemoved{};
+        for (Iterator<T> i = this->begin (); i != this->end ();) {
+            if (p (*i)) {
+                Remove (i, &i);
+                ++nRemoved;
+            }
+            else {
+                ++i;
+            }
+        }
+        return nRemoved;
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename CONTAINER_OF_ADDABLE>
     inline size_t KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveAll (const CONTAINER_OF_ADDABLE& items)
     {

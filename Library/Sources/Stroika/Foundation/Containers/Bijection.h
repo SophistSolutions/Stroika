@@ -412,10 +412,17 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *
+         *  \brief RemoveAll removes all, or all matching (predicate, iterator range, equals comparer or whatever) items.
+         * 
+         *  The no-arg overload removes all (quickly).
+         * 
+         *  The overloads that remove some subset of the items returns the number of items so removed.
+         * 
          *  \note mutates container
          */
         nonvirtual void RemoveAll ();
+        template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<pair<DOMAIN_TYPE, RANGE_TYPE>, PREDICATE> ()>* = nullptr>
+        nonvirtual size_t RemoveAll (const PREDICATE& p);
 
     public:
         /*

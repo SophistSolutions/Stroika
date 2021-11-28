@@ -346,6 +346,22 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+    template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<pair<DOMAIN_TYPE, RANGE_TYPE>, PREDICATE> ()>*>
+    size_t Bijection<DOMAIN_TYPE, RANGE_TYPE>::RemoveAll (const PREDICATE& p)
+    {
+        size_t nRemoved{};
+        for (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i = this->begin (); i != this->end ();) {
+            if (p (*i)) {
+                Remove (i, &i);
+                ++nRemoved;
+            }
+            else {
+                ++i;
+            }
+        }
+        return nRemoved;
+    }
+    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <typename TARGET_CONTAINER>
     TARGET_CONTAINER Bijection<DOMAIN_TYPE, RANGE_TYPE>::Inverse () const
     {

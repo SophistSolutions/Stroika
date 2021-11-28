@@ -172,8 +172,8 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <typename PREDICATE>
-    nonvirtual size_t Collection<T>::RemoveAll (const PREDICATE& p)
+    template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>*>
+    size_t Collection<T>::RemoveAll (const PREDICATE& p)
     {
         size_t nRemoved{};
         for (Iterator<T> i = this->begin (); i != this->end ();) {

@@ -290,6 +290,22 @@ namespace Stroika::Foundation::Containers {
         return cnt;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>, PREDICATE> ()>*>
+    size_t Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (const PREDICATE& p)
+    {
+        size_t nRemoved{};
+        for (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> i = this->begin (); i != this->end ();) {
+            if (p (*i)) {
+                Remove (i, &i);
+                ++nRemoved;
+            }
+            else {
+                ++i;
+            }
+        }
+        return nRemoved;
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI)
     {
         Require (not i.Done ());

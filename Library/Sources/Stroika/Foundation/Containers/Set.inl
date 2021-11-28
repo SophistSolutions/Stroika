@@ -233,6 +233,22 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
+    template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>*>
+    size_t Set<T>::RemoveAll (const PREDICATE& p)
+    {
+        size_t nRemoved{};
+        for (Iterator<T> i = this->begin (); i != this->end ();) {
+            if (p (*i)) {
+                Remove (i, &i);
+                ++nRemoved;
+            }
+            else {
+                ++i;
+            }
+        }
+        return nRemoved;
+    }
+    template <typename T>
     inline Set<T> Set<T>::Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const
     {
         return Iterable<T>::Where (includeIfTrue, Set<T>{});

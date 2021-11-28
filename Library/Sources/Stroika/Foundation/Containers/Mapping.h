@@ -412,6 +412,8 @@ namespace Stroika::Foundation::Containers {
         nonvirtual size_t RemoveAll (const CONTAINER_OF_ADDABLE& items);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         nonvirtual size_t RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>, PREDICATE> ()>* = nullptr>
+        nonvirtual size_t RemoveAll (const PREDICATE& p);
 
     public:
         /**
