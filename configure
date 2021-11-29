@@ -2164,12 +2164,7 @@ sub PostProcessOptions_ ()
 
 	
 	if (! defined $FEATUREFLAG_ActivePerl) {
-		if ($FEATUREFLAG_OpenSSL eq "use" && ("$^O" eq "cygwin")) {
-			$FEATUREFLAG_ActivePerl = "use";
-		}
-		else {
-			$FEATUREFLAG_ActivePerl = $LIBFEATUREFLAG_No;
-		}
+		$FEATUREFLAG_ActivePerl = $LIBFEATUREFLAG_No;
 	}
 	if (! defined $FEATUREFLAG_WIX) {
 		if ("$^O" eq "cygwin") {
