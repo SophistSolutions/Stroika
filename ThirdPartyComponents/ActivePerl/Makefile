@@ -1,7 +1,6 @@
 #
 #	OpenSSL 1.1.0f and later requires ActivePerl to build on windows, so keep
-#	a binary around. HOWEVER, Since openSSL 3.0, this no longer appears true, so I've disabled
-#	the build of activePerl by default.
+#	a binary around.
 #
 #	To 'capture-current' - install the desired version of ActivePerl (and update VER below).
 #	And run make-current
