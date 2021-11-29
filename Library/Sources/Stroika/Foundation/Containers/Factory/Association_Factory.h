@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Containers {
 
         private:
             template <typename CHECK_KEY>
-            static Association<KEY_TYPE, VALUE_TYPE> Default_SFINAE_ (CHECK_KEY*, enable_if_t<Configuration::has_lt<CHECK_KEY>::value>* = 0);
+            static Association<KEY_TYPE, VALUE_TYPE> Default_SFINAE_ (CHECK_KEY*, enable_if_t<Configuration::has_lt_v<CHECK_KEY>>* = 0);
             static Association<KEY_TYPE, VALUE_TYPE> Default_SFINAE_ (...);
         };
     }

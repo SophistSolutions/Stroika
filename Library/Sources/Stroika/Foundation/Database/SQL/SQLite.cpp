@@ -410,11 +410,11 @@ struct Statement::MyRep_ : IRep {
             }
             case WhichSQLFlag::eNormalized:
                 if constexpr (CompiledOptions::kThe.ENABLE_NORMALIZE) {
-                    // This ifdef should NOT be needed (because if constexpr should prevent it from being evaluated), but
-                    // that doesn't appear to work on MSVC 2k19 - and for now - more of a PITA than its worth for bug define
-                    #ifdef SQLITE_ENABLE_NORMALIZE
+// This ifdef should NOT be needed (because if constexpr should prevent it from being evaluated), but
+// that doesn't appear to work on MSVC 2k19 - and for now - more of a PITA than its worth for bug define
+#ifdef SQLITE_ENABLE_NORMALIZE
                     return String::FromUTF8 (::sqlite3_normalized_sql (fStatementObj_));
-                    #endif
+#endif
                 }
                 RequireNotReached ();
                 return String{};

@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     template <typename CHECK_KEY>
-    inline Association<KEY_TYPE, VALUE_TYPE> Association_Factory<KEY_TYPE, VALUE_TYPE, false_type>::Default_SFINAE_ (CHECK_KEY*, enable_if_t<Configuration::has_lt<CHECK_KEY>::value>*)
+    inline Association<KEY_TYPE, VALUE_TYPE> Association_Factory<KEY_TYPE, VALUE_TYPE, false_type>::Default_SFINAE_ (CHECK_KEY*, enable_if_t<Configuration::has_lt_v<CHECK_KEY>>*)
     {
         return Concrete::Association_stdmultimap<KEY_TYPE, VALUE_TYPE> (); // OK to omit TRAITS (and not manually pass in equals) cuz checked using default traits so no need to specify traits here
     }
