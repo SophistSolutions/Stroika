@@ -87,15 +87,15 @@ checkin from one spot.
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
-- \$TEST_TARGET=Ubuntu2104_x86_64
+- \$TEST_TARGET=Ubuntu2110_x86_64
 
   (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
 
   ```bash
   RUN_IN_DOCKER=1 \
-      USE_TEST_BASENAME=Ubuntu2104_x86_64 \
+      USE_TEST_BASENAME=Ubuntu2110_x86_64 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
-      CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2104-regression-tests \
+      CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests \
       MACHINE=Hercules \
       ./ScriptsLib/RunRemoteRegressionTests
   ```

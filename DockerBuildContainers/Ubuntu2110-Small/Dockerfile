@@ -1,5 +1,5 @@
 # Could use about any version of ubuntu, but 1804 or later comes with C++17 friendly compilers
-FROM ubuntu:21.04
+FROM ubuntu:21.10
 
 # Sometimes apt-get complains about issues with TERM
 #ARG DEBIAN_FRONTEND=noninteractive

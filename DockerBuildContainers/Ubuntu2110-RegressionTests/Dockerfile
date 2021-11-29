@@ -1,4 +1,4 @@
-FROM sophistsolutionsinc/stroika-buildvm-ubuntu2104-small
+FROM sophistsolutionsinc/stroika-buildvm-ubuntu2110-small
 
 # Get latest packages system, so can do installs
 RUN apt-get update
@@ -21,10 +21,11 @@ RUN apt-get install -y libz.a
 RUN apt-get install -y clang++-10
 RUN apt-get install -y clang++-11
 RUN apt-get install -y clang++-12
+RUN apt-get install -y clang++-13
 # For reasons which elude me, installing libc++-N removes all the other
 # libc++ versions! There can be only one, so just test the most recent
 # https://askubuntu.com/questions/1227092/how-can-i-install-multiple-versions-of-llvm-libc-on-the-same-computer-at-the-s
-RUN apt-get install -y libc++-12-dev libc++abi-12-dev
+RUN apt-get install -y libc++-13-dev libc++abi-13-dev
 
 # for testing configuration 'only-zlib-system-third-party-component'
 # retest - seems to fail installing (--LGP 2021-04-23)
@@ -34,4 +35,4 @@ RUN apt-get install -y libc++-12-dev libc++abi-12-dev
 RUN apt-get install -y valgrind
 
 # Cross-compile tests for ARM (iputils-ping is how we detect if machine exists to run regtests on)
-RUN apt-get install -y g++-8-arm-linux-gnueabihf g++-9-arm-linux-gnueabihf g++-10-arm-linux-gnueabihf g++-11-arm-linux-gnueabihf iputils-ping
+RUN apt-get install -y g++-9-arm-linux-gnueabihf g++-10-arm-linux-gnueabihf g++-11-arm-linux-gnueabihf iputils-ping
