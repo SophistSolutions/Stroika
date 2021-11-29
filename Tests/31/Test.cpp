@@ -549,7 +549,12 @@ namespace {
 #endif
                 }
                 catch (...) {
-                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Skipping provider=%s, due to exception: %s", provider.c_str (), Characters::ToString (current_exception ()).c_str ()).c_str ());
+                    if (provider == L"legacy") {
+                        DbgTrace (L"Skipping provider=%s, due to exception: %s", provider.c_str (), Characters::ToString (current_exception ()).c_str ());
+                    }
+                    else {
+                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Skipping provider=%s, due to exception: %s", provider.c_str (), Characters::ToString (current_exception ()).c_str ()).c_str ());
+                    }
                     continue;
                 }
                 unsigned int                  nCipherTests{};
