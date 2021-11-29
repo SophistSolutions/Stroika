@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Common {
     }
 #if __cpp_impl_three_way_comparison >= 201907
     template <typename KEY_TYPE, typename VALUE_TYPE>
-    template <typename T1, typename T2, enable_if_t<Configuration::has_spaceship<T1>::value and Configuration::has_spaceship<T2>::value>*>
+    template <typename T1, typename T2, enable_if_t<Configuration::has_spaceship_v<T1> and Configuration::has_spaceship_v<T2>>*>
     constexpr inline auto KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator<=> (const KeyValuePair& rhs) const
     {
         auto cmp = fKey <=> rhs.fKey;
@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Common {
         return fValue <=> rhs.fValue;
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
-    template <typename T1, typename T2, enable_if_t<Configuration::has_eq<T1>::value and Configuration::has_eq<T2>::value>*>
+    template <typename T1, typename T2, enable_if_t<Configuration::has_eq_v<T1> and Configuration::has_eq_v<T2>>*>
     constexpr inline bool KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator== (const KeyValuePair& rhs) const
     {
         return fKey == rhs.fKey and fValue == rhs.fValue;

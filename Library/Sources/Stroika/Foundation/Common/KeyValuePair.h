@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Common {
          *  Define operator<=> in the obvious way key <=> key first, and then if equal, compare values.
          *  This method is only defined if BOTH the key and value have a defined spaceship operator
          */
-        template <typename T1 = KEY_TYPE, typename T2 = VALUE_TYPE, enable_if_t<Configuration::has_spaceship<T1>::value and Configuration::has_spaceship<T2>::value>* = nullptr>
+        template <typename T1 = KEY_TYPE, typename T2 = VALUE_TYPE, enable_if_t<Configuration::has_spaceship_v<T1> and Configuration::has_spaceship_v<T2>>* = nullptr>
         constexpr auto operator<=> (const KeyValuePair&) const;
 
     public:
@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Common {
          *  Define operator== in the obvious way key == key and value == value.
          *  This method is only defined if BOTH the key and value have a defined operator==
          */
-        template <typename T1 = KEY_TYPE, typename T2 = VALUE_TYPE, enable_if_t<Configuration::has_eq<T1>::value and Configuration::has_eq<T2>::value>* = nullptr>
+        template <typename T1 = KEY_TYPE, typename T2 = VALUE_TYPE, enable_if_t<Configuration::has_eq_v<T1> and Configuration::has_eq_v<T2>>* = nullptr>
         constexpr bool operator== (const KeyValuePair&) const;
 #endif
     };

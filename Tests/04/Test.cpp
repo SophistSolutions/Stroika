@@ -164,19 +164,11 @@ namespace {
                 static_assert (HasUsableEqualToOptimization<pair<SimpleClass, SimpleClass>> ());
                 static_assert (not HasUsableEqualToOptimization<SimpleClassWithoutComparisonOperators> ());
                 static_assert (not HasUsableEqualToOptimization<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> ());
-
                 {
                     using namespace Stroika::Foundation::Database::SQL::ORM;
                     static_assert (not has_eq_v<TableProvisioner>);
                     static_assert (not HasUsableEqualToOptimization<TableProvisioner> ());
                 }
-
-                // WARNING - see HasUsableEqualToOptimization - below - but this version of has_equal_to returns true, even when it should not, say for
-                //  static_assert (!Configuration::has_eq<TableProvisioner>::value);
-                //  static_assert (!Configuration::has_equal_to<TableProvisioner>::value);
-                //      Seems same bug on VS2k19 and gcc, so almost certainly my bug....
-                //      -- LGP 2021-11-22
-                // SEE  https://stroika.atlassian.net/browse/STK-749
             }
             {
                 static_assert (has_beginend_v<vector<int>>);
