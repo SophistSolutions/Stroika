@@ -416,6 +416,22 @@ c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.1
 
 #endif
 
+/*
+c:\sandbox\stroika\devroot\tests\52\test.cpp(766): error C2039: 'Contains': is not a member of 'std::set<int,std::less<int>,std::allocator<int>>'
+c:\sandbox\stroika\devroot\tests\52\test.cpp(1494): note: see declaration of 'std::set<int,std::less<int>,std::allocator<int>>'
+c:\sandbox\stroika\devroot\tests\52\test.cpp(796): note: see reference to function template instantiation 'void `anonymous-namespace'::Private_::CopyContainerByValue<CONTAINER>(CONTAINER,int)' being compiled
+*/
+#ifndef qCompilerAndStdLib_if_constexpr_annoyingly_evaluates_untaken_path_Buggy
+
+#if defined(_MSC_VER)
+#define qCompilerAndStdLib_if_constexpr_annoyingly_evaluates_untaken_path_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+#else
+#define qCompilerAndStdLib_if_constexpr_annoyingly_evaluates_untaken_path_Buggy 0
+#endif
+
+#endif
+
+
 /**
  *
  Sent email to MSFT - can reproduce with ASAN and -- https://developercommunity.visualstudio.com/t/initializer-list-lifetime-buggy-maybe-just-asan-is/1439352

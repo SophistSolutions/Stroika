@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Containers::Factory {
         sFactory_ = factory;
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
-    inline Mapping<KEY_TYPE, VALUE_TYPE> Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Default_ ([[maybe_unused]]const KEY_EQUALS_COMPARER& keyEqualsComparer)
+    inline Mapping<KEY_TYPE, VALUE_TYPE> Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Default_ ([[maybe_unused]] const KEY_EQUALS_COMPARER& keyEqualsComparer)
     {
         if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and Configuration::has_lt_v<KEY_TYPE>) {
             return Concrete::Mapping_stdmap<KEY_TYPE, VALUE_TYPE>{}; // OK to omit comparer, because we have less-than defined and using default equal_to<>
