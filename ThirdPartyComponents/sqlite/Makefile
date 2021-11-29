@@ -119,6 +119,7 @@ ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPED
 	@rm -rf $@/sqlite-amalgamation-*
 	@touch $@
 
+
 # trick of using word 1 is to get this triggered just once
 $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
