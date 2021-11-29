@@ -35,7 +35,6 @@ namespace {
     void RunTests_ (CONCRETE_CONTAINER_FACTORY factory)
     {
         Debug::TraceContextBumper ctx{L"{}::RunTests_"};
-        using T = typename CONCRETE_CONTAINER::value_type;
         CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> (
             factory,
             [] ([[maybe_unused]] const typename CONCRETE_CONTAINER::ArchetypeContainerType& c) {});
