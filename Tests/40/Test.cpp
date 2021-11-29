@@ -1164,7 +1164,7 @@ namespace {
         // This helgrind bug ONLY happens when we run this at the end. If we run this as the only test it works fine.
         // Most likely some sort of memory corruption, and given notes in https://stroika.atlassian.net/browse/STK-632 - seems
         // most likely helgrind bug - hopefully fixed soon.
-        // 
+        //
         // This appears still broken in Ununtu 2004 and near end of Stroika 2.1b14 --LGP 2021-11-29
         //
         bool hasBug632AndRunningHelgrind = kRunningValgrind_; // not easy to check
