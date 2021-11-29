@@ -14,14 +14,11 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-#VERSION=3370000
-VERSION=3360000
+VERSION=3370000
+#VERSION=3360000
 #VERSION=3350500
 #VERSION=3340100
 #VERSION=3340000
-
-# because we list multiple targets in PRODUCED_OUTPUT_ARTIFACTS, all of which are built with the same script
-.NOTPARALLEL:
 
 #
 # Download of SQLITE from www.sqlite.org mysteriously started failing on the macos machines only for travisci
@@ -53,10 +50,10 @@ PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Buil
 #lose trailing / on PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ because on macos make THATDIR doesn't work with trailing slash (old WEIRD_MACOS_MAKEFILE_DIR_BUG -  MacOS XCode 10 - GNU Make 3.81)
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/sqlite)
 
+OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
 .PHONY:	all clean clobber check
-
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 SQLITE3LIB=libsqlite.a
@@ -122,20 +119,21 @@ ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPED
 	@rm -rf $@/sqlite-amalgamation-*
 	@touch $@
 
-
-$(PRODUCED_OUTPUT_ARTIFACTS):
+# trick of using word 1 is to get this triggered just once
+$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
-	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "sqlite $(VERSION) - Build ..."
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite
-	@cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/sqlite3.h $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite/sqlite3.h
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib
-	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(Objs)
-	@$(call DEFAULT_LIBRARY_GEN_LINE, $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB), $(LibObjs))
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)bin
+	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT && touch  $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT
+	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "sqlite $(VERSION) - Build (See $(OUTPUT_WORKDIR_PRETTYNAME)BUILD.OUT) ..."
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT
+	@cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/sqlite3.h $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite/sqlite3.h >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT
+	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(Objs) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT
+	@$(call DEFAULT_LIBRARY_GEN_LINE, $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB), $(LibObjs)) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)bin >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  '$(call DEFAULT_LINK_LINE,$@)';\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  '$(call DEFAULT_LINK_LINE,$(TARGETEXE))';\
 	fi
-	@$(call DEFAULT_LINK_LINE,$@)
+	@$(call DEFAULT_LINK_LINE,$(TARGETEXE)) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD.OUT
 
 
 ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
