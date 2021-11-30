@@ -72,8 +72,8 @@
 #if (__clang_major__ < 6) || (__clang_major__ == 6 && (__clang_minor__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to clang++ 6 (non-apple); note that Stroika v2.0 supports clang3.9, clang4, and clang5"
 #endif
-#if (__clang_major__ > 12) || (__clang_major__ == 12 && (__clang_minor__ > 0))
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - (>12.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#if (__clang_major__ > 13) || (__clang_major__ == 13 && (__clang_minor__ > 0))
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - (>13.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #endif
@@ -1534,7 +1534,7 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 #define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
 // according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
-#define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+#define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #else
 #define qCompilerAndStdLib_to_chars_FP_Buggy 0
 #endif
@@ -1605,7 +1605,7 @@ int main ()
 // Appears broken on XCode 13
 #define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #else
 #define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy 0
 #endif
@@ -1694,7 +1694,7 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // still broken in clang++-10
 // still broken in clang++-11
 // still broken in clang++-12
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(_MSC_VER)
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
@@ -1749,7 +1749,7 @@ Test.cpp:173:31: error: template template argument has different template parame
 // verified still broken in clang++-10
 // verified still broken in clang++-11
 // verified still broken in clang++-12
-#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #else
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy 0
 #endif
@@ -1783,7 +1783,8 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 // Broken in _LIBCPP_VERSION  10000
 // Broken in _LIBCPP_VERSION  11000
 // Broken in _LIBCPP_VERSION  12000
-#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 12000))
+// Broken in _LIBCPP_VERSION  13000
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 13000))
 #else
 #define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy 0
 #endif
