@@ -1412,6 +1412,7 @@ clang says:
 // First noted in C++20 mode on clang++-10
 // broken in clang++-11
 // broken in clang++-12
+// appears fixed in clang++-13
 #define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
 #else
 #define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy 0
@@ -1504,6 +1505,7 @@ In file included from ../Characters/String.h:18,
 #elif defined(__clang__) && !defined(__APPLE__)
 // First noted in C++20 mode on clang++-12
 // https://en.cppreference.com/w/cpp/20 says maybe fixed in clang++13 or 14
+// appears fixed in clang++-13
 #define qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
 #elif defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC 11
@@ -1534,6 +1536,7 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 #define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
 // according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
+// appears still broken in clang++13 (maybe should depend on stdlib version not compiler version)
 #define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #else
 #define qCompilerAndStdLib_to_chars_FP_Buggy 0
@@ -1605,6 +1608,7 @@ int main ()
 // Appears broken on XCode 13
 #define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
+// appears still broken in clang++-13
 #define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #else
 #define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy 0
@@ -1694,6 +1698,7 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // still broken in clang++-10
 // still broken in clang++-11
 // still broken in clang++-12
+// still broken in clang++-13
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(_MSC_VER)
 // still broken in _MS_VS_2k17_15Pt1_
@@ -1749,6 +1754,7 @@ Test.cpp:173:31: error: template template argument has different template parame
 // verified still broken in clang++-10
 // verified still broken in clang++-11
 // verified still broken in clang++-12
+// verified still broken in clang++-13
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #else
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy 0
