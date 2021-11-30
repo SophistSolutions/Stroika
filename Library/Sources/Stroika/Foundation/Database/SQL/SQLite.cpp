@@ -125,7 +125,6 @@ namespace {
 
 namespace {
     // See https://stroika.atlassian.net/browse/STK-632
-    SQLITE_VERSION_NUMBER 3037000
     constexpr bool kThreadBug_632_BWA_ = (SQLITE_VERSION_NUMBER == 3037000);
 }
 
