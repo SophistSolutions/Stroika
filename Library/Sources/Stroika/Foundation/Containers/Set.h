@@ -454,7 +454,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  // @todo ADD THIS FUNCTIONALITY - useful cuz can be applied to Remove() API
          */
-        nonvirtual Iterator<value_type> find (ArgByValueType<value_type> item);
+        nonvirtual Iterator<value_type> find (ArgByValueType<value_type> item) const;
 
     public:
         /**

@@ -448,7 +448,7 @@ namespace Stroika::Foundation::Containers {
         RemoveAll ();
     }
     template <typename T>
-    inline auto Set<T>::find (ArgByValueType<value_type> item) -> Iterator<value_type>
+    inline auto Set<T>::find (ArgByValueType<value_type> item) const -> Iterator<value_type>
     {
         Iterator<value_type> r{nullptr};
         _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (item, nullptr, &r);
