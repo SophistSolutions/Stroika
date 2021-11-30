@@ -123,6 +123,12 @@ namespace {
     } sVerifyFlags_;
 }
 
+namespace {
+    // See https://stroika.atlassian.net/browse/STK-632
+    SQLITE_VERSION_NUMBER 3037000
+    constexpr bool kThreadBug_632_BWA_ = (SQLITE_VERSION_NUMBER == 3037000);
+}
+
 /*
  ********************************************************************************
  *************************** SQLite::Connection::Rep_ ***************************
@@ -141,7 +147,12 @@ struct Connection::Rep_ final : IRep {
                 case Options::ThreadingMode::eMultiThread:
                     Require (CompiledOptions::kThe.THREADSAFE);
                     Require (::sqlite3_threadsafe ());
-                    flags += SQLITE_OPEN_NOMUTEX;
+                    if constexpr (kThreadBug_632_BWA_) {
+                        flags += SQLITE_OPEN_FULLMUTEX;
+                    }
+                    else {
+                        flags += SQLITE_OPEN_NOMUTEX;
+                    }
                     break;
                 case Options::ThreadingMode::eSerialized:
                     Require (CompiledOptions::kThe.THREADSAFE);
