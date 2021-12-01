@@ -16,22 +16,16 @@ RUN apt-get install -y g++-8 g++-9 g++-10 g++-11
 # For some reason not installed on ubuntu 21.04 otherwise
 RUN apt-get install -y libz.a
 
+# For reasons which elude me, installing libc++-N removes all the other
+# https://askubuntu.com/questions/1227092/how-can-i-install-multiple-versions-of-llvm-libc-on-the-same-computer-at-the-s
+
 #install the latest (C++17 compat) clang compilers (and libs)
-# Note - start at clang++10 because 9 has some issue with std::filesystem, not worth investigating, since covered on earlier ubuntu containers
 RUN apt-get install -y clang++-10
-RUN apt-get install -y clang++-11
-RUN apt-get install -y clang++-12
+RUN apt-get install -y clang++-11 && apt-get install -y libc++-11-dev
+RUN apt-get install -y clang++-12 && apt-get install -y libc++-12-dev
 
 # note libunwind-13-dev dependend on by clang++13, it appears
-RUN apt-get install -y clang++-13 libunwind-13-dev
-# For reasons which elude me, installing libc++-N removes all the other
-# libc++ versions! There can be only one, so just test the most recent
-# https://askubuntu.com/questions/1227092/how-can-i-install-multiple-versions-of-llvm-libc-on-the-same-computer-at-the-s
-RUN apt-get install -y libc++-13-dev libc++abi-13-dev
-
-# for testing configuration 'only-zlib-system-third-party-component'
-# retest - seems to fail installing (--LGP 2021-04-23)
-#RUN  apt-get install zlib1g-dev
+RUN apt-get install -y clang++-13  && apt-get install -y libunwind-13-dev  && apt-get install -y  libc++-13-dev libc++abi-13-dev
 
 #Only needed to run with valgrind regtests
 RUN apt-get install -y valgrind
