@@ -107,7 +107,7 @@ my $runtimeStackProtectorFlag = DEFAULT_BOOL_OPTIONS;
 my $sanitizerFlagsIsDefined = false;		#sadly perl arrays cannot be 'undefined'
 my $sanitizerFlagsNoneSet = false;
 my @sanitizerFlags = ();
-my $noSanitizerFlags = "";
+my @noSanitizerFlags = ();
 
 my $HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = DEFAULT_BOOL_OPTIONS;
 
@@ -270,7 +270,7 @@ sub	DoHelp_
 		print("	    --sanitize {none|thread|address|undefined|leak} /* if arg none, reset to none, else adds arg to sanitized feature (gcc/clang only) -\n");
 		print("	                                                       any arg you can pass to -fsanitize=XXXX */\n");
 		print("	                                                    /* see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf (search -fsanitize=; eg. --sanitize address,undefined */\n");
-		print("	    --no-sanitize {thread|vptr|etc...}              /* any from --sanitize or all */\n");
+		print("	    --no-sanitize {thread|vptr|etc...}              /* any from --sanitize or all; option maybe used to remove a sub-category of tests (like vptr) from larger category like address */\n");
 		print("\n");
 		print("Configure's behavior is also influenced by the following environment variables:\n");
 		print("	    CC, CXX, PLATFORM, TARGET_PLATFORMS, ARCH, AS, AR, RANLIB, STRIP; these just simpulate adding the obvoius associated argument to configure\n");
@@ -860,11 +860,9 @@ sub	SetDefaultForCompilerDriver_
 					### verified still broken in XCode 10 (or cannot find other workaround without this)
 					$test2Suppress = "vptr";
 				}
-				if ($noSanitizerFlags eq "") {
-					$noSanitizerFlags = $test2Suppress;
-				}
-				else {
-					$noSanitizerFlags = $test2Suppress . "," . $noSanitizerFlags;
+				my %already = map { $_ => 1 } @noSanitizerFlags;
+				if(!exists($already{$test2Suppress})) {
+					push @noSanitizerFlags, $test2Suppress;
 				}
 				$sanitizerFlagsIsDefined = true;
 			}
@@ -1719,14 +1717,18 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-no-sanitize") or (lc ($var) eq "--no-sanitize")) {
 			$i++;
 			$var = $args[$i];
-			if ($var eq "none") {
-				$noSanitizerFlags = "";
-			}
-			else {
-				if (not ($noSanitizerFlags eq "")) {
-					$noSanitizerFlags  .= ",";
+			my @splitSanFlags = split(/,/, $var);
+			foreach my $ii (0 .. $#splitSanFlags) {
+				my $flag = $splitSanFlags[$ii];
+				if ($flag eq "none") {
+					@noSanitizerFlags = ();
 				}
-				$noSanitizerFlags .= $var;
+				else {
+					my %already = map { $_ => 1 } @noSanitizerFlags;
+					if(!exists($already{$flag})) {
+						push @noSanitizerFlags, $flag;
+					}
+				}
 			}
 		}
 		elsif ((lc ($var) eq "-only-if-has-compiler") or (lc ($var) eq "--only-if-has-compiler")) {
@@ -2084,12 +2086,15 @@ sub PostProcessOptions_ ()
 	}
 	if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1)) {
 		{
+			my %inNoSanitizeList = map { $_ => 1 } @noSanitizerFlags;
 			my $crap2Add2CZZFlags = "";
 			$crap2Add2CZZFlags .= " -fsanitize=";
 			foreach my $i (0 .. $#sanitizerFlags) {
-				$crap2Add2CZZFlags .= $sanitizerFlags[$i];
-				if ($i < $#sanitizerFlags) {
-					$crap2Add2CZZFlags .= ",";
+				if(!exists($inNoSanitizeList{$sanitizerFlags[$i]})) {
+					$crap2Add2CZZFlags .= $sanitizerFlags[$i];
+					if ($i < $#sanitizerFlags) {
+						$crap2Add2CZZFlags .= ",";
+					}
 				}
 			}
 			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) or IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
@@ -2129,12 +2134,16 @@ sub PostProcessOptions_ ()
 			}
 		}
 	}
-	if (not ($noSanitizerFlags eq "")) {
-		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) or IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
-			$EXTRA_PREFIX_LINKER_ARGS .= " -fno-sanitize=" . $noSanitizerFlags;
+	if ($#noSanitizerFlags > 0) {
+		my $s = "";
+		foreach my $i (0 .. $#noSanitizerFlags) {
+			if (not ($s eq "")) {
+				$s .= ", ";
+			}
+			$s .= $noSanitizerFlags[$i];
 		}
-		push @CFLAGS, " -fno-sanitize=" . $noSanitizerFlags;
-		push @CXXFLAGS, " -fno-sanitize=" . $noSanitizerFlags;
+		push @CFLAGS, " -fno-sanitize=" . $s;
+		push @CXXFLAGS, " -fno-sanitize=" . $s;
 	}
 	if ($FEATUREFLAG_OpenSSL eq "") {
 		$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
