@@ -233,7 +233,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     // remap addresses - copying to a temporary buffer, so we can nul-terminate string passed to strtod (etc)
                     size_t len = end - start;
                     tmp.GrowToSize (len + 1);
+                    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow=\"");
                     (void)::memcpy (tmp.begin (), start, len * sizeof (wchar_t));
+                    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow=\"");
                     cst      = tmp.begin ();
                     tmp[len] = '\0';
                 }
