@@ -1403,6 +1403,15 @@ clang says:
 
 #endif
 
+/*
+In file included from Namespace.cpp:10:
+./Namespace.h:36:14: warning: explicitly defaulted three-way comparison operator is implicitly deleted [-Wdefaulted-function-deleted]
+        auto operator<=> (const NamespaceDefinition& rhs) const = default;
+             ^
+./Namespace.h:29:17: note: defaulted 'operator<=>' is implicitly deleted because there is no viable three-way comparison function for member 'fURI'
+        wstring fURI;    // required non-null
+                ^
+*/
 #ifndef qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
@@ -1411,8 +1420,8 @@ clang says:
 // First noted in C++20 mode on clang++-10
 // broken in clang++-11
 // broken in clang++-12
-// appears fixed in clang++-13
-#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+// broken in clang++-13
+#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #else
 #define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy 0
 #endif
