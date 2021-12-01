@@ -432,7 +432,6 @@ c:\sandbox\stroika\devroot\tests\52\test.cpp(796): note: see reference to functi
 
 #endif
 
-
 /**
  *
  Sent email to MSFT - can reproduce with ASAN and -- https://developercommunity.visualstudio.com/t/initializer-list-lifetime-buggy-maybe-just-asan-is/1439352
