@@ -17,8 +17,8 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 # because we list multiple targets in PRODUCED_OUTPUT_ARTIFACTS, all of which are built with the same script
 .NOTPARALLEL:
 
-VERSION=3370000
-#VERSION=3360000
+#VERSION=3370000		# WORKS MOSTLY BUT TSAN/HELGRIND FAILURES - https://stroika.atlassian.net/browse/STK-753
+VERSION=3360000
 #VERSION=3350500
 #VERSION=3340100
 #VERSION=3340000
