@@ -108,6 +108,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'ConfigTags'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<SanitizerFlags>");
+		if (defined $pps) {
+			$configuration {'SanitizerFlags'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<Linker>");
 		if (defined $pps) {
 			$configuration {'Linker'} = $pps;

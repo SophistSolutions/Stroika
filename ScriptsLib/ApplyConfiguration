@@ -59,7 +59,6 @@ my $RANLIB = undef;
 my $EXTRA_COMPILER_ARGS = "";
 my $EXTRA_PREFIX_LINKER_ARGS = "";
 my $EXTRA_SUFFIX_LINKER_ARGS = "";
-my $CFLAGS = "";
 my $CPPFLAGS = "";
 my $CXXFLAGS = "";
 
@@ -124,7 +123,6 @@ sub	ReadConfiguration_
 	$AR = GetConfigurationParameter($activeConfiguration, "AR");
 	$LIBTOOL = GetConfigurationParameter($activeConfiguration, "LIBTOOL");
 	$RANLIB = GetConfigurationParameter($activeConfiguration, "RANLIB");
-	$CFLAGS = GetConfigurationParameter($activeConfiguration, "CFLAGS");
 	$CPPFLAGS = GetConfigurationParameter($activeConfiguration, "CPPFLAGS");
 	$CXXFLAGS = GetConfigurationParameter($activeConfiguration, "CXXFLAGS");
 	$EXTRA_COMPILER_ARGS = GetConfigurationParameter($activeConfiguration, "EXTRA_COMPILER_ARGS");
@@ -282,6 +280,8 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_Xerces");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ZLib");
 	
+	WriteStroikaConfigMakeHeader_CachedLineItem_("ConfigTags");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("SanitizerFlags");
 
 	print (OUT "\n\n");
 	print (OUT "#Configured Command Line Arguments (-make-define)\n");

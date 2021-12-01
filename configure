@@ -2550,6 +2550,13 @@ sub	WriteConfigFile_
 		}
 	print (OUT "</CXXFLAGS>\n");
 
+	print (OUT "    <SanitizerFlags>");
+		foreach my $var (@sanitizerFlags)
+		{
+			print (OUT "$var ");
+		}
+	print (OUT "</SanitizerFlags>\n");
+
 	if ($runtimeStackProtectorFlag == true) {
 		unshift(@CFLAGS, '-fstack-protector-all');
 		unshift(@CXXFLAGS, '-fstack-protector-all');
