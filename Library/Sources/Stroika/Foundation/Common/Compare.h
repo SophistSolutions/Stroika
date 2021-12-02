@@ -13,6 +13,7 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <type_traits>
 
 #include "../Configuration/Common.h"
 #include "../Configuration/Concepts.h"
@@ -38,11 +39,6 @@ namespace std {
 #endif
 
 namespace Stroika::Foundation::Common {
-
-    namespace Private_ {
-        STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (ThreeWayComparer, (typename X::ThreeWayComparer{}(x, x)));
-        STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (ThreeWayComparerTemplate, (typename X::template ThreeWayComparer<>{}(x, x)));
-    }
 
     /**
      *  In C++, you can only use strong_ordering, strong_ordering::less, strong_ordering::equal, strong_ordering::greater if 
@@ -137,9 +133,12 @@ namespace Stroika::Foundation::Common {
      */
     template <typename T, typename TCOMPARER = ThreeWayComparer<T, T>>
     struct OptionalThreeWayComparer {
+        constexpr OptionalThreeWayComparer (TCOMPARER&& tComparer);
         constexpr OptionalThreeWayComparer (const TCOMPARER& tComparer);
         constexpr strong_ordering operator() (const optional<T>& lhs, const optional<T>& rhs) const;
-        TCOMPARER                 fTComparer_;
+
+    private:
+        [[NO_UNIQUE_ADDRESS_ATTR]] TCOMPARER fTComparer_;
     };
 
     /**
@@ -312,13 +311,13 @@ namespace Stroika::Foundation::Common {
      */
     template <ComparisonRelationType KIND, typename ACTUAL_COMPARER = void>
     struct ComparisonRelationDeclaration {
+        static_assert (not is_reference_v<ACTUAL_COMPARER>);
         static constexpr inline ComparisonRelationType kComparisonRelationKind{KIND}; // accessed by ExtractComparisonTraits<>
-        ACTUAL_COMPARER                                fActualComparer;
+        [[NO_UNIQUE_ADDRESS_ATTR]] ACTUAL_COMPARER     fActualComparer;
 
         /**
          */
         constexpr ComparisonRelationDeclaration () = default;
-        constexpr ComparisonRelationDeclaration (nullptr_t);
         constexpr ComparisonRelationDeclaration (const ACTUAL_COMPARER& actualComparer);
         constexpr ComparisonRelationDeclaration (ACTUAL_COMPARER&& actualComparer);
         constexpr ComparisonRelationDeclaration (const ComparisonRelationDeclaration& src) = default;
@@ -346,8 +345,6 @@ namespace Stroika::Foundation::Common {
      *        Whereas InOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
      */
     template <typename FUNCTOR>
-    constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> DeclareEqualsComparer (const FUNCTOR& f);
-    template <typename FUNCTOR>
     constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> DeclareEqualsComparer (FUNCTOR&& f);
 
     /**
@@ -362,8 +359,6 @@ namespace Stroika::Foundation::Common {
      *  \note similar to InOrderComparerAdapter(), except this function ignores the TYEP of 'f' and just marks it as an InOrder comparer
      *        Whereas InOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
      */
-    template <typename FUNCTOR>
-    constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> DeclareInOrderComparer (const FUNCTOR& f);
     template <typename FUNCTOR>
     constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> DeclareInOrderComparer (FUNCTOR&& f);
 
@@ -385,7 +380,7 @@ namespace Stroika::Foundation::Common {
         constexpr bool operator() (const T& lhs, const T& rhs) const;
 
     private:
-        BASE_COMPARER fBASE_COMPARER_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] BASE_COMPARER fBASE_COMPARER_;
     };
 
     /**
@@ -406,7 +401,7 @@ namespace Stroika::Foundation::Common {
         constexpr bool operator() (const T& lhs, const T& rhs) const;
 
     private:
-        BASE_COMPARER fBASE_COMPARER_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] BASE_COMPARER fBASE_COMPARER_;
     };
 
     /**
@@ -427,7 +422,7 @@ namespace Stroika::Foundation::Common {
         constexpr strong_ordering operator() (const T& lhs, const T& rhs) const;
 
     private:
-        BASE_COMPARER fBASE_COMPARER_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] BASE_COMPARER fBASE_COMPARER_;
     };
 
 }

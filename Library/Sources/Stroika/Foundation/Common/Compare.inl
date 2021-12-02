@@ -30,6 +30,11 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename T, typename TCOMPARER>
+    constexpr OptionalThreeWayComparer<T, TCOMPARER>::OptionalThreeWayComparer (TCOMPARER&& comparer)
+        : fTComparer_{move (comparer)}
+    {
+    }
+    template <typename T, typename TCOMPARER>
     constexpr OptionalThreeWayComparer<T, TCOMPARER>::OptionalThreeWayComparer (const TCOMPARER& comparer)
         : fTComparer_{comparer}
     {
@@ -121,11 +126,6 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
-    inline constexpr ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::ComparisonRelationDeclaration (nullptr_t)
-        : fActualComparer{nullptr}
-    {
-    }
-    template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
     inline constexpr ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::ComparisonRelationDeclaration (const ACTUAL_COMPARER& actualComparer)
         : fActualComparer{actualComparer}
     {
@@ -148,14 +148,10 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename FUNCTOR>
-    constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> DeclareEqualsComparer (const FUNCTOR& f)
-    {
-        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR>{f};
-    }
-    template <typename FUNCTOR>
     constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> DeclareEqualsComparer (FUNCTOR&& f)
     {
-        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR>{move (f)};
+        //static_assert (IsPotentiallyComparerRelation<FUNCTOR> ());    // should static assert but hard to get 'T'
+        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR>{std::forward<FUNCTOR> (f)};
     }
 
     /*
@@ -164,14 +160,10 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename FUNCTOR>
-    constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> DeclareInOrderComparer (const FUNCTOR& f)
-    {
-        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR>{f};
-    }
-    template <typename FUNCTOR>
     constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> DeclareInOrderComparer (FUNCTOR&& f)
     {
-        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR>{move (f)};
+        //static_assert (IsPotentiallyComparerRelation<FUNCTOR> ());    // should static assert but hard to get 'T'
+        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR>{std::forward<FUNCTOR> (f)};
     }
 
     /*
