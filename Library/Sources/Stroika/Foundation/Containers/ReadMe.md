@@ -42,7 +42,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
      - Sequence can change representation from linked list to vector, to sparse array
 
       ```
-      Mapping<int,int> m = Mapping_Array<int,int> ();  // good while small
+      Mapping<int,int> m = Mapping_Array<int,int>{};  // good while small
       ... while constructing map
       if (m.size () > 100) {
         m = Mapping_stdmap<int,int>{m);
@@ -168,7 +168,16 @@ Each container Archetype has its own set of arguments that make sense for its co
     CONTAINER (const CONTAINER& src) noexcept = default;
     ~~~
 
-- initializer_list<value_type> constructor provided so you can use a direct list of elements (e.g. COLLECTION{1, 2, 3}).
+  - Note about **containers after move from** - they CANNOT be used/accessed.
+    ~~~
+    7.6.5.15 [lib.types.movedfrom]
+
+    Objects of types defined in the C++ standard library may be moved from (12.8). Move operations may be explicitly specified or implicitly generated. Unless otherwise specified, such moved-from objects shall be placed in a valid but unspecified state
+    ~~~
+
+    This strongly suggests that each container - after the move, should continue to support operations like size() and Append, etc, but with largely undefined behavior. This isn't terribly useful, and IS quite costly. So in Stroika, we simply choose to assert-out if you perform operations on a container (other than destructor) - after it's been moved from. Pragmatically, I've never seen this to cause any problems.
+
+- initializer_list<value_type> constructor provided so you can use a direct list of elements (e.g. CONTAINER{1, 2, 3}).
     ~~~
     CONTAINER (const initializer_list<value_type>& src);
     ~~~
@@ -188,32 +197,32 @@ Each container Archetype has its own set of arguments that make sense for its co
     CONTAINER (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
     ~~~
 
-- Construct from an underlying rep smart pointer.
-    ~~~
-    protected:
-        explicit CONTAINER (_IRepSharedPtr&& src) noexcept;
-        explicit CONTAINER (const _IRepSharedPtr& src) noexcept;
-    ~~~
+- Construct from an underlying rep smart pointer. This is principally (exclusively?) used in constructing concrete container types.
+  ~~~
+  protected:
+      explicit CONTAINER (_IRepSharedPtr&& src) noexcept;
+      explicit CONTAINER (const _IRepSharedPtr& src) noexcept;
+  ~~~
 
 - CONTAINERS can generally be move copied/assigned, just generically manipulating by the base class Iterable<> implementation - really just done by SharedByValue used in Iterable<>.
-    ~~~
-    public:
-        nonvirtual CONTAINER& operator= (CONTAINER&& rhs) = default;
-        nonvirtual CONTAINER& operator= (const CONTAINER& rhs) = default;
-    ~~~
+  ~~~
+  public:
+      nonvirtual CONTAINER& operator= (CONTAINER&& rhs) = default;
+      nonvirtual CONTAINER& operator= (const CONTAINER& rhs) = default;
+  ~~~
 
 ### ArchTypes additional required data
 
 Often ArchTypes will have additional required data, like an Extractor function, or InOrderComparer. Support for these parameters will generally multiply several of the above overloads allowing those parameters to be specified. Those functions will generally be checked with 'concept-like' SFINAE type checkers to avoid constructor ambiguity.
 
-  ~~~
-  template <typename CONTAINER_OF_ADDABLE,
-            typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
-            typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
-            enable_if_t<
-                Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
-  KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
-  ~~~
+~~~
+template <typename CONTAINER_OF_ADDABLE,
+          typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
+          typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
+          enable_if_t<
+              Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
+~~~
 
 ## Other Modules
   - [Adapters/](Adapters/ReadMe.md)
