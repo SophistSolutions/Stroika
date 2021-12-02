@@ -2134,7 +2134,7 @@ sub PostProcessOptions_ ()
 			}
 		}
 	}
-	if ($#noSanitizerFlags > 0) {
+	if ($#noSanitizerFlags >= 0) {
 		my $s = "";
 		foreach my $i (0 .. $#noSanitizerFlags) {
 			if (not ($s eq "")) {
