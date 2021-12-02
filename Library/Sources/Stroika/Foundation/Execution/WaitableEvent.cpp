@@ -91,7 +91,7 @@ WaitableEvent::~WaitableEvent ()
 void WaitableEvent::Set ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("WaitableEvent::Set");
+    Debug::TraceContextBumper ctx{"WaitableEvent::Set"};
 #endif
     fWE_.Set ();
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
