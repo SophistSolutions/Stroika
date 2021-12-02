@@ -238,6 +238,8 @@ namespace Stroika::Foundation::Common {
      */
     template <typename COMPARE_FUNCTION>
     struct ExtractComparisonTraits {
+        // @todo fix this with SFINAE (has_XX) so it gives a good explanation
+        // static_assert (has_kComparisonRelationKind filed);
         static constexpr ComparisonRelationType kComparisonRelationKind = COMPARE_FUNCTION::kComparisonRelationKind;
     };
     template <typename T>
@@ -279,6 +281,8 @@ namespace Stroika::Foundation::Common {
      */
     template <typename COMPARER>
     constexpr bool IsEqualsComparer ();
+    template <typename COMPARER, typename ARG_T>
+    constexpr bool IsEqualsComparer ();
     template <typename COMPARER>
     constexpr bool IsEqualsComparer (const COMPARER&);
 
@@ -289,6 +293,8 @@ namespace Stroika::Foundation::Common {
      *  \note @see ComparisonRelationDeclaration<> to construct an InOrder comparer from an arbitrary std::function...
      */
     template <typename COMPARER>
+    constexpr bool IsStrictInOrderComparer ();
+    template <typename COMPARER, typename ARG_T>
     constexpr bool IsStrictInOrderComparer ();
     template <typename COMPARER>
     constexpr bool IsStrictInOrderComparer (const COMPARER&);
