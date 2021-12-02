@@ -16,9 +16,6 @@
  *
  *
  *  TODO:
- *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
- *              concepts and that it USES that for the appropriate overloaded constructors.
- *
  *      @todo   Support Iterable<>::Where overload?
  *
  *      @todo   CRITICAL - need version where you can pass in a lambda to compare two things for <, so
@@ -106,6 +103,7 @@ namespace Stroika::Foundation::Containers {
         SortedSet ();
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
         explicit SortedSet (INORDER_COMPARER&& inorderComparer);
+        SortedSet (SortedSet&& src) noexcept      = default;
         SortedSet (const SortedSet& src) noexcept = default;
         SortedSet (const initializer_list<T>& src);
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
@@ -120,12 +118,13 @@ namespace Stroika::Foundation::Containers {
         SortedSet (INORDER_COMPARER&& inOrderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit SortedSet (const _IRepSharedPtr& src) noexcept;
         explicit SortedSet (_IRepSharedPtr&& src) noexcept;
+        explicit SortedSet (const _IRepSharedPtr& src) noexcept;
 
     public:
         /**
          */
+        nonvirtual SortedSet& operator= (SortedSet&& rhs) = default;
         nonvirtual SortedSet& operator= (const SortedSet& rhs) = default;
 
     public:

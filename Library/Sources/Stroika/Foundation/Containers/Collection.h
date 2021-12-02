@@ -18,9 +18,6 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
- *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
- *              concepts and that it USES that for the appropriate overloaded constructors.
- *
  *      @todo   Where(hide iterable one) and probably other things should use new EmptyClone() strategy - so cheaper and
  *              returns something of same underlying data structure  type.
  *
@@ -166,6 +163,7 @@ namespace Stroika::Foundation::Containers {
          *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */
         Collection ();
+        Collection (Collection&& src) noexcept      = default;
         Collection (const Collection& src) noexcept = default;
         Collection (const initializer_list<value_type>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Collection<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
@@ -174,10 +172,11 @@ namespace Stroika::Foundation::Containers {
         Collection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit Collection (const _IRepSharedPtr& src) noexcept;
         explicit Collection (_IRepSharedPtr&& src) noexcept;
+        explicit Collection (const _IRepSharedPtr& src) noexcept;
 
     public:
+        nonvirtual Collection& operator= (Collection&& rhs) = default;
         nonvirtual Collection& operator= (const Collection& rhs) = default;
 
     public:

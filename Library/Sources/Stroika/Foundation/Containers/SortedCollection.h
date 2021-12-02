@@ -117,6 +117,7 @@ namespace Stroika::Foundation::Containers {
         SortedCollection ();
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
         explicit SortedCollection (INORDER_COMPARER&& inorderComparer);
+        SortedCollection (SortedCollection&& src) noexcept      = default;
         SortedCollection (const SortedCollection& src) noexcept = default;
         SortedCollection (const initializer_list<T>& src);
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
@@ -131,8 +132,8 @@ namespace Stroika::Foundation::Containers {
         SortedCollection (INORDER_COMPARER&& inOrderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit SortedCollection (const _IRepSharedPtr& src) noexcept;
         explicit SortedCollection (_IRepSharedPtr&& src) noexcept;
+        explicit SortedCollection (const _IRepSharedPtr& src) noexcept;
 
     public:
         /**

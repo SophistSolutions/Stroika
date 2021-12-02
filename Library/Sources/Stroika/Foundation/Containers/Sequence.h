@@ -32,9 +32,6 @@
  *      @todo       Provide Slice () overload to mask inherited one from Iterable, but more efficient, and return
  *                  sequence. Mention alias 'SubSequence' from older todo.
  *
- *      @todo       Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
- *                  concepts and that it USES that for the appropriate overloaded constructors.
- *
  *      @todo       Stroika v1 had REVERSE_ITERATORS - and so does STL. At least for sequences, we need reverse iterators!
  *                  NOTE - this is NOT a special TYPE of itearator (unlike STL). Its just iterator returned from rbegin(), rend().
  *
@@ -278,6 +275,7 @@ namespace Stroika::Foundation::Containers {
          *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */
         Sequence ();
+        Sequence (Sequence&& src) noexcept      = default;
         Sequence (const Sequence& src) noexcept = default;
         Sequence (const initializer_list<value_type>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
@@ -286,12 +284,13 @@ namespace Stroika::Foundation::Containers {
         Sequence (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit Sequence (const _IRepSharedPtr& rep) noexcept;
         explicit Sequence (_IRepSharedPtr&& rep) noexcept;
+        explicit Sequence (const _IRepSharedPtr& rep) noexcept;
 
     public:
         /**
          */
+        nonvirtual Sequence& operator= (Sequence&& rhs) = default;
         nonvirtual Sequence& operator= (const Sequence& rhs) = default;
 
     public:

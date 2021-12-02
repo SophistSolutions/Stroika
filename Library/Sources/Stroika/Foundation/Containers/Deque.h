@@ -15,11 +15,6 @@
  *
  *  TODO:
  *
- *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
- *              concepts and that it USES that for the appropriate overloaded constructors.
- *
- *      @todo   Add CTOR(Iterator<T>) after next release....
- *
  *      @todo   Consider  using the words front/back and push_front/pop_back etc - like with STL
  *
  */
@@ -103,6 +98,7 @@ namespace Stroika::Foundation::Containers {
          *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */
         Deque ();
+        Deque (Deque&& src) noexcept      = default;
         Deque (const Deque& src) noexcept = default;
         Deque (const initializer_list<value_type>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Deque<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
@@ -113,12 +109,13 @@ namespace Stroika::Foundation::Containers {
     protected:
         /**
          */
-        explicit Deque (const _IRepSharedPtr& src) noexcept;
         explicit Deque (_IRepSharedPtr&& src) noexcept;
+        explicit Deque (const _IRepSharedPtr& src) noexcept;
 
     public:
         /**
          */
+        nonvirtual Deque& operator= (Deque&& rhs) = default;
         nonvirtual Deque& operator= (const Deque& rhs) = default;
 
     public:

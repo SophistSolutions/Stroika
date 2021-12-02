@@ -184,8 +184,8 @@ namespace Stroika::Foundation::Containers {
         explicit Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer);
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> ()>* = nullptr>
         explicit Bijection (InjectivityViolationPolicy injectivityCheckPolicy, DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer);
-        Bijection (const Bijection& src) noexcept = default;
         Bijection (Bijection&& src) noexcept      = default;
+        Bijection (const Bijection& src) noexcept = default;
         Bijection (const initializer_list<value_type>& src);
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> ()>* = nullptr>
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const initializer_list<value_type>& src);
@@ -199,14 +199,14 @@ namespace Stroika::Foundation::Containers {
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end);
 
     protected:
-        explicit Bijection (const _IRepSharedPtr& src) noexcept;
         explicit Bijection (_IRepSharedPtr&& src) noexcept;
+        explicit Bijection (const _IRepSharedPtr& src) noexcept;
 
     public:
         /**
          */
-        nonvirtual Bijection& operator= (const Bijection& rhs) = default;
         nonvirtual Bijection& operator= (Bijection&& rhs) = default;
+        nonvirtual Bijection& operator= (const Bijection& rhs) = default;
 
     public:
         /**

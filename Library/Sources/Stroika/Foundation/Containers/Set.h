@@ -16,11 +16,7 @@
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- *
  *  TODO:
- *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
- *              concepts and that it USES that for the appropriate overloaded constructors.
- *
  *      @todo   EachWith() and probably other things should use new EmptyClone() strategy - so cheaper and
  *              returns something of same underlying data structure  type.
  *
@@ -191,6 +187,7 @@ namespace Stroika::Foundation::Containers {
         Set ();
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
         explicit Set (EQUALS_COMPARER&& equalsComparer);
+        Set (Set&& src) noexcept      = default;
         Set (const Set& src) noexcept = default;
         Set (const initializer_list<value_type>& src);
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
@@ -205,12 +202,13 @@ namespace Stroika::Foundation::Containers {
         Set (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit Set (const _IRepSharedPtr& rep) noexcept;
         explicit Set (_IRepSharedPtr&& rep) noexcept;
+        explicit Set (const _IRepSharedPtr& rep) noexcept;
 
     public:
         /**
          */
+        nonvirtual Set& operator= (Set&& rhs) = default;
         nonvirtual Set& operator= (const Set& rhs) = default;
 
     public:

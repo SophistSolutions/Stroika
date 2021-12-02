@@ -31,9 +31,6 @@
  *              TRAITS object. Then use throughout.... Not sure this is worth parameterizing, but
  *              COULD help address unifying the EQUALS support!
  *
- *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
- *              concepts and that it USES that for the appropriate overloaded constructors.
- *
  *      @todo   IMPORTANT - FIX TRAITS support like I did for Mapping/Set<> - Sorted...
  *              see git commit # 3c5bf0ecd686af850ff77761cf94142a33f48588
  *
@@ -200,6 +197,7 @@ namespace Stroika::Foundation::Containers {
         MultiSet ();
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
         explicit MultiSet (EQUALS_COMPARER&& equalsComparer);
+        MultiSet (MultiSet&& src) noexcept      = default;
         MultiSet (const MultiSet& src) noexcept = default;
         MultiSet (const initializer_list<T>& src);
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
@@ -217,10 +215,11 @@ namespace Stroika::Foundation::Containers {
         MultiSet (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit MultiSet (const _IRepSharedPtr& rep) noexcept;
         explicit MultiSet (_IRepSharedPtr&& rep) noexcept;
+        explicit MultiSet (const _IRepSharedPtr& rep) noexcept;
 
     public:
+        nonvirtual MultiSet& operator= (MultiSet&& rhs) = default;
         nonvirtual MultiSet& operator= (const MultiSet& rhs) = default;
 
     public:

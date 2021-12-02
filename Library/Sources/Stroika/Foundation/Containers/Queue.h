@@ -18,9 +18,6 @@
  *
  *
  *  TODO:
- *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
- *              concepts and that it USES that for the appropriate overloaded constructors.
- *
  *      @todo   Consider adding 'max-size' feature to Q. With this set, attempt to add item past
  *              max size would throw. This can be handy with stuff like blocking q? and probably
  *              other cases as well (when you don't want q to grow indefinitely).
@@ -137,6 +134,7 @@ namespace Stroika::Foundation::Containers {
          *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */
         Queue ();
+        Queue (Queue&& src) noexcept      = default;
         Queue (const Queue& src) noexcept = default;
         Queue (const initializer_list<value_type>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
@@ -145,12 +143,13 @@ namespace Stroika::Foundation::Containers {
         Queue (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit Queue (const _IRepSharedPtr& rep) noexcept;
         explicit Queue (_IRepSharedPtr&& rep) noexcept;
+        explicit Queue (const _IRepSharedPtr& rep) noexcept;
 
     public:
         /**
          */
+        nonvirtual Queue& operator= (Queue&& rhs) = default;
         nonvirtual Queue& operator= (const Queue& rhs) = default;
 
     public:

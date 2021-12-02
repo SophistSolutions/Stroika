@@ -16,10 +16,6 @@
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- *  TODO:
- *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
- *              concepts and that it USES that for the appropriate overloaded constructors.
- *
  *
  */
 
@@ -101,6 +97,7 @@ namespace Stroika::Foundation::Containers {
         SortedMultiSet ();
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
         explicit SortedMultiSet (INORDER_COMPARER&& inorderComparer);
+        SortedMultiSet (SortedMultiSet&& src) noexcept      = default;
         SortedMultiSet (const SortedMultiSet& src) noexcept = default;
         SortedMultiSet (const initializer_list<T>& src);
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
@@ -118,12 +115,13 @@ namespace Stroika::Foundation::Containers {
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit SortedMultiSet (const _IRepSharedPtr& src) noexcept;
         explicit SortedMultiSet (_IRepSharedPtr&& src) noexcept;
+        explicit SortedMultiSet (const _IRepSharedPtr& src) noexcept;
 
     public:
         /**
          */
+        nonvirtual SortedMultiSet& operator= (SortedMultiSet&& rhs) = default;
         nonvirtual SortedMultiSet& operator= (const SortedMultiSet& rhs) = default;
 
     public:

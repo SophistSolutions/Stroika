@@ -112,6 +112,7 @@ namespace Stroika::Foundation::Containers {
         SortedMapping ();
         template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> ()>* = nullptr>
         explicit SortedMapping (KEY_INORDER_COMPARER&& inorderComparer);
+        SortedMapping (SortedMapping&& src) noexcept      = default;
         SortedMapping (const SortedMapping& src) noexcept = default;
         SortedMapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> ()>* = nullptr>
@@ -129,12 +130,13 @@ namespace Stroika::Foundation::Containers {
         SortedMapping (KEY_INORDER_COMPARER&& inorderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit SortedMapping (const _IRepSharedPtr& src) noexcept;
         explicit SortedMapping (_IRepSharedPtr&& src) noexcept;
+        explicit SortedMapping (const _IRepSharedPtr& src) noexcept;
 
     public:
         /**
          */
+        nonvirtual SortedMapping& operator= (SortedMapping&& rhs) = default;
         nonvirtual SortedMapping& operator= (const SortedMapping& rhs) = default;
 
     public:

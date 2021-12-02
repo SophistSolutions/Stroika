@@ -218,12 +218,13 @@ namespace Stroika::Foundation::Containers {
                   enable_if_t<
                       Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
         KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
+        KeyedCollection (KeyedCollection&& src) noexcept      = default;
+        KeyedCollection (const KeyedCollection& src) noexcept = default;
         template <typename KEY_EXTRACTOR,
                   typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   enable_if_t<
                       Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
         KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
-        KeyedCollection (const KeyedCollection& src) noexcept = default;
         template <typename CONTAINER_OF_ADDABLE,
                   typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
                   typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
@@ -258,12 +259,13 @@ namespace Stroika::Foundation::Containers {
         KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit KeyedCollection (const _IRepSharedPtr& rep) noexcept;
         explicit KeyedCollection (_IRepSharedPtr&& rep) noexcept;
+        explicit KeyedCollection (const _IRepSharedPtr& rep) noexcept;
 
     public:
         /**
          */
+        nonvirtual KeyedCollection& operator= (KeyedCollection&& rhs) = default;
         nonvirtual KeyedCollection& operator= (const KeyedCollection& rhs) = default;
 
     public:

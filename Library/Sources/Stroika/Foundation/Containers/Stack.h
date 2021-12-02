@@ -123,6 +123,7 @@ namespace Stroika::Foundation::Containers {
          *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */
         Stack ();
+        Stack (Stack&& src) noexcept      = default;
         Stack (const Stack& src) noexcept = default;
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Stack<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit Stack (CONTAINER_OF_ADDABLE&& src);
@@ -130,12 +131,13 @@ namespace Stroika::Foundation::Containers {
         Stack (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit Stack (const _IRepSharedPtr& src) noexcept;
         explicit Stack (_IRepSharedPtr&& src) noexcept;
+        explicit Stack (const _IRepSharedPtr& src) noexcept;
 
     public:
         /**
          */
+        nonvirtual Stack& operator= (Stack&& rhs) = default;
         nonvirtual Stack& operator= (const Stack& rhs) = default;
 
     public:
@@ -186,7 +188,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * simply indirect to @Sequence<>::operator (only defined if ???comparethreeway?<T> is defined)
+         * simply indirect to @Stack<>::operator (only defined if ???comparethreeway?<T> is defined)
          */
         nonvirtual auto operator<=> (const Stack& rhs) const;
 #endif

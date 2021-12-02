@@ -19,9 +19,6 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
- *              concepts and that it USES that for the appropriate overloaded constructors.
- *
  *      @todo   Support more backends
  *              Especially HashTable, RedBlackTree, and stlhashmap
  *
@@ -178,6 +175,7 @@ namespace Stroika::Foundation::Containers {
         Mapping ();
         template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>* = nullptr>
         explicit Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer);
+        Mapping (Mapping&& src) noexcept      = default;
         Mapping (const Mapping& src) noexcept = default;
         Mapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>* = nullptr>
@@ -195,12 +193,13 @@ namespace Stroika::Foundation::Containers {
         Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit Mapping (const _IRepSharedPtr& rep) noexcept;
         explicit Mapping (_IRepSharedPtr&& rep) noexcept;
+        explicit Mapping (const _IRepSharedPtr& rep) noexcept;
 
     public:
         /**
          */
+        nonvirtual Mapping& operator= (Mapping&& rhs) = default;
         nonvirtual Mapping& operator= (const Mapping& rhs) = default;
 
     public:

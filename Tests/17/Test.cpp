@@ -146,7 +146,8 @@ namespace {
             // https://stroika.atlassian.net/browse/STK-541
             Mapping<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
             Mapping<int, int> mm{move (m)};
-            m.clear ();
+            // SEE https://stroika.atlassian.net/browse/STK-541  - this call to clear is ILLEGAL - after m has been moved from
+            //m.clear ();
         }
     }
 }
