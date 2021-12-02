@@ -80,7 +80,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 
 - Internal thread safety checks, (generally) assure threadsafe access (see Debug::AssertExternallySyncrhonized)
 
-## Supported Containers Archtypes
+## Supported Containers Archetypes
 ---
 
 - [Association\<KEY_TYPE, VALUE_TYPE>](Association.h)
@@ -91,7 +91,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - Supported backends: LinkedList
 - [Collection\<T>](Collection.h)
   - a container to manage an un-ordered collection of items, without equality defined for T
-  - Supported backends: Array, LinkedList, std::fowrad_list
+  - Supported backends: Array, LinkedList, std::fowrad_list, std::multiset
 - [DataHyperRectange\< T, ... INDEXES>](DataHyperRectange.h)
   - a multi-dimensional Sequence\<T>
   - Aliases: Data-Cube, Date Cube, Hyper-Cube, Hypercube
@@ -117,7 +117,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - Supported backends: Array, DoublyLinkedList
 - [Sequence\<T>](Sequence.h)
   - A generalization of a vector: a container whose elements are keyed by the natural numbers.
-  - Supported backends: Array, DoublyLinkedList, LinkedList
+  - Supported backends: Array, DoublyLinkedList, LinkedList, std::vector
 - [Set\<T>](Set.h)
   - a container of T, where once an item is added, additionally adds () do nothing.
   - Supported backends: LinkedList, std::set
@@ -132,7 +132,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - NYI
 - [SortedCollection\<T>](SortedCollection.h)
   - See Collection; but adds parameter saying how T items sorted
-  - Supported backends: LinkedList
+  - Supported backends: LinkedList. std::multiset
 - [SortedKeyedCollection\<T, KEY_TYPE, TRAITS>](SortedKeyedCollection.h)
   - See KeyedCollection; but adds parameter saying how T items sorted (by key)
   - Supported backends: std::set
@@ -155,7 +155,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 
 ## Container Constructors
 
-Each container Archtype has its own set of arguments that make sense for its constructor, but here are the general guidelines the apply to all of them.
+Each container Archetype has its own set of arguments that make sense for its constructor, but here are the general guidelines the apply to all of them.
 
 - Default constructor - this is generally supported where possible, though sometimes there are required items (like comparers or extractors) needed for a container. Sometimes these can be automatically inferred from the type 'T' - in which case you still have something like this.
   ~~~
