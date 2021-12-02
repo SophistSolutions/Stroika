@@ -36,16 +36,6 @@ namespace Stroika::Foundation::Containers {
     {
         _AssertRepValidType ();
     }
-#if 0
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>&& src)
-        : inherited{move (src)}
-    {
-        auto&& srcRepAccessor  = _SafeReadWriteRepAccessor<_IRep>{&src};
-        auto&& thisRepAccessor = _SafeReadRepAccessor<_IRep>{this};
-        srcRepAccessor._UpdateRep (thisRepAccessor._ConstGetRep ().CloneEmpty (&src));
-    }
-#endif
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
         : Mapping{}

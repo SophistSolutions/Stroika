@@ -35,9 +35,7 @@ namespace Stroika::Foundation::Containers {
     {
         _AssertRepValidType ();
     }
-
     template <typename T, typename KEY_TYPE, typename TRAITS>
-
     template <typename CONTAINER_OF_ADDABLE,
               typename KEY_EXTRACTOR,
               typename KEY_INORDER_COMPARER,
