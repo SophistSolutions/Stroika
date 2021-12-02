@@ -2610,8 +2610,8 @@ if ($onlyGenerateIfCompilerExists) {
 		$generate = false;
 		$generateBecause = "compiler $COMPILER_DRIVER_CPlusPlus not present";
 	}
-	# if flag to use libc++ - check if right version is available
-	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && ($STDCXXLIB eq 'libc++')) {
+	# if flag to use libc++ - check if right version is available (but not on XCode)
+	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && ($STDCXXLIB eq 'libc++') && index ($TARGET_PLATFORMS, "MacOS") == -1) {
 		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '7.0') {
 			if (! -e ('/usr/lib/llvm-6/include/c++/v1/cstddef')) {
 				$generate = false;
