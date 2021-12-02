@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Configuration {
         /**
          *  \brief Number of arguments
          */
-        enum { arity = sizeof...(Args) };
+        static inline constexpr size_t kArity = sizeof...(Args);
 
         /**
          */

@@ -189,6 +189,7 @@ namespace {
             {
                 auto                                        lambda = [] (int i) { return long (i * 10); };
                 typedef function_traits<decltype (lambda)> traits;
+                static_assert (traits::kArity == 1);
                 static_assert (std::is_same<long, traits::result_type>::value, "err");
                 static_assert (std::is_same<int, traits::arg<0>::type>::value, "err");
             }
