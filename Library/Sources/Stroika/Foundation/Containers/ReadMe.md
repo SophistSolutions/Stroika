@@ -153,6 +153,68 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - Standard LIFO (Last in first out) Stack. See Sedgewick, 30-31. Iteration proceeds from the top to the bottom of the stack. Top is the FIRST IN (also first out).
   - Supported backends: LinkedList
 
+## Container Constructors
+
+Each container Archtype has its own set of arguments that make sense for its constructor, but here are the general guidelines the apply to all of them.
+
+- Default constructor - this is generally supported where possible, though sometimes there are required items (like comparers or extractors) needed for a container. Sometimes these can be automatically inferred from the type 'T' - in which case you still have something like this.
+  ~~~
+  CONTAINER ();
+  ~~~
+
+- Move and Copy constructors, defaulted/noexcept, since they all just propagate this to their underlying base class (Iterable<>) and this just increments or adjusts reference counts as appopriate.
+    ~~~
+    CONTAINER (CONTAINER&& src) noexcept      = default;
+    CONTAINER (const CONTAINER& src) noexcept = default;
+    ~~~
+
+- initializer_list<value_type> constructor provided so you can use a direct list of elements (e.g. COLLECTION{1, 2, 3}).
+    ~~~
+    CONTAINER (const initializer_list<value_type>& src);
+    ~~~
+
+- Copy other container (soon REDO using IsAddable). This allows for converting nearly anything sensible into a CONTAINER, and the constraints (TBD) on what can be converted will soon change but use the IsAddable template.
+
+  Note, the reason for the not_is_base_of<> magic is to avoid ambiguity with copy constructor (not SURE this is needed but it was needed in some cases - maybe due to bugs - maybe can lose - I recall docs on C++ suggest NOT needed).
+
+    ~~~
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<CONTAINER<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+    CONTAINER (CONTAINER_OF_ADDABLE&& src);
+    ~~~
+
+- Construct the CONTAINER using an iterable (TODO ADD CHECK ON ISADDABLE); This typically just constructs the container by default and calls AddItems(start, end)
+    ~~~
+    template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+    CONTAINER (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+    ~~~
+
+- Construct from an underlying rep smart pointer.
+    ~~~
+    protected:
+        explicit CONTAINER (_IRepSharedPtr&& src) noexcept;
+        explicit CONTAINER (const _IRepSharedPtr& src) noexcept;
+    ~~~
+
+- CONTAINERS can generally be move copied/assigned, just generically manipulating by the base class Iterable<> implementation - really just done by SharedByValue used in Iterable<>.
+    ~~~
+    public:
+        nonvirtual CONTAINER& operator= (CONTAINER&& rhs) = default;
+        nonvirtual CONTAINER& operator= (const CONTAINER& rhs) = default;
+    ~~~
+
+### ArchTypes additional required data
+
+Often ArchTypes will have additional required data, like an Extractor function, or InOrderComparer. Support for these parameters will generally multiply several of the above overloads allowing those parameters to be specified. Those functions will generally be checked with 'concept-like' SFINAE type checkers to avoid constructor ambiguity.
+
+  ~~~
+  template <typename CONTAINER_OF_ADDABLE,
+            typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
+            typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
+            enable_if_t<
+                Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+  KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
+  ~~~
+
 ## Other Modules
   - [Adapters/](Adapters/ReadMe.md)
   - [Concrete/](Concrete/ReadMe.md)
