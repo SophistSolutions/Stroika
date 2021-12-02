@@ -128,6 +128,7 @@ namespace Stroika::Foundation::Configuration {
 
     // handy to have remove_cvref/remove_cvref_t definition around, even if using pre-c++20
     // Put in our namespace, and when we switch to C++20, we can deprecate our local namespace copy
+    // NOTE: can also use std::decay_t which does this and more in c++17
 #if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_20
     template <class T>
     struct remove_cvref {
@@ -141,6 +142,51 @@ namespace Stroika::Foundation::Configuration {
     template <class T>
     using remove_cvref_t = std::remove_cvref_t<T>;
 #endif
+
+    /**
+     *  \brief Extract the number of arguments, return type, and each individual argument type from a lambda or function object.
+     *
+     *  CREDITS:
+     *      From https://stackoverflow.com/questions/7943525/is-it-possible-to-figure-out-the-parameter-type-and-return-type-of-a-lambda
+     *           https://stackoverflow.com/users/224671/kennytm
+     * 
+     *  \par Example Usage
+     *      \code
+     *          auto lambda = [](int i) { return long(i*10); };
+     *
+     *          typedef function_traits<decltype(lambda)> traits;
+     *
+     *          static_assert(std::is_same<long, traits::result_type>::value, "err");
+     *          static_assert(std::is_same<int, traits::arg<0>::type>::value, "err");
+     *      \endcode
+     */
+    template <typename T>
+    struct function_traits : public function_traits<decltype (&T::operator())> {
+    };
+    // For generic types, directly use the result of the signature of its 'operator()'
+    template <typename ClassType, typename ReturnType, typename... Args>
+    struct function_traits<ReturnType (ClassType::*) (Args...) const>
+    // we specialize for pointers to member function
+    {
+        /**
+         *  \brief Number of arguments
+         */
+        enum { arity = sizeof...(Args) };
+
+        /**
+         */
+        typedef ReturnType result_type;
+
+        /**
+         *  type of the ith 'arg'
+         */
+        template <size_t i>
+        struct arg {
+            typedef typename std::tuple_element<i, std::tuple<Args...>>::type type;
+            // the i-th argument is equivalent to the i-th tuple element of a tuple
+            // composed of those arguments.
+        };
+    };
 
     /**
      *  \brief check if the given type T can be compared with operator==, and result is convertible to bool
@@ -299,7 +345,7 @@ namespace Stroika::Foundation::Configuration {
     constexpr bool IsIterable_v = has_beginend_v<ITERABLE>;
 
     /**
-     *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>)
+     *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>), and if result of *begin () is convertible to T.
      */
     template <typename ITERABLE_OF_T, typename T>
     constexpr bool IsIterableOfT_v = Private_::IsIterableOfT_t<ITERABLE_OF_T, T>::value;

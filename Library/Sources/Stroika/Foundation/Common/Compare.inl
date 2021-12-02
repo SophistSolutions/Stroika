@@ -150,7 +150,7 @@ namespace Stroika::Foundation::Common {
     template <typename FUNCTOR>
     constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> DeclareEqualsComparer (FUNCTOR&& f)
     {
-        //static_assert (IsPotentiallyComparerRelation<FUNCTOR> ());    // should static assert but hard to get 'T'
+        static_assert (IsPotentiallyComparerRelation<typename Configuration::function_traits<FUNCTOR>::template arg<0>::type, FUNCTOR> ());
         return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR>{std::forward<FUNCTOR> (f)};
     }
 
@@ -162,7 +162,7 @@ namespace Stroika::Foundation::Common {
     template <typename FUNCTOR>
     constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> DeclareInOrderComparer (FUNCTOR&& f)
     {
-        //static_assert (IsPotentiallyComparerRelation<FUNCTOR> ());    // should static assert but hard to get 'T'
+        static_assert (IsPotentiallyComparerRelation<typename Configuration::function_traits<FUNCTOR>::template arg<0>::type, FUNCTOR> ());
         return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR>{std::forward<FUNCTOR> (f)};
     }
 
