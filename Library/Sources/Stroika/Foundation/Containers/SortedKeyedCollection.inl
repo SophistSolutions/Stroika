@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Containers {
               typename KEY_EXTRACTOR,
               typename KEY_INORDER_COMPARER,
               enable_if_t<
-                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedKeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
+                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedKeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<CONTAINER_OF_ADDABLE>> and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (CONTAINER_OF_ADDABLE&& src)
         : SortedKeyedCollection{KEY_EXTRACTOR{}, KEY_INORDER_COMPARER{}}
     {
@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Containers {
               typename KEY_EXTRACTOR,
               typename KEY_INORDER_COMPARER,
               enable_if_t<
-                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedKeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
+                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedKeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<CONTAINER_OF_ADDABLE>> and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (KEY_INORDER_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src)
     {
         this->AddAll (src);

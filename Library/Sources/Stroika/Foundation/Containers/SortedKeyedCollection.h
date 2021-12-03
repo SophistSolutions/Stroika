@@ -129,13 +129,13 @@ namespace Stroika::Foundation::Containers {
                   typename KEY_EXTRACTOR        = typename TraitsType::DefaultKeyExtractor,
                   typename KEY_INORDER_COMPARER = equal_to<KEY_TYPE>,
                   enable_if_t<
-                      Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedKeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+                      Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedKeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<CONTAINER_OF_ADDABLE>> and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
         SortedKeyedCollection (CONTAINER_OF_ADDABLE&& src);
         template <typename CONTAINER_OF_ADDABLE,
                   typename KEY_EXTRACTOR        = typename TraitsType::DefaultKeyExtractor,
                   typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
                   enable_if_t<
-                      Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedKeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+                      Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedKeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<CONTAINER_OF_ADDABLE>> and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
         SortedKeyedCollection (KEY_INORDER_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
         template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER, typename CONTAINER_OF_ADDABLE,
                   enable_if_t<

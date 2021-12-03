@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedMultiSet<T, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedMultiSet<T, TRAITS>, decay_t<CONTAINER_OF_ADDABLE>>>*>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet (CONTAINER_OF_ADDABLE&& src)
         : SortedMultiSet{}
     {

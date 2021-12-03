@@ -203,7 +203,7 @@ namespace Stroika::Foundation::Containers::Concrete {
               typename KEY_EXTRACTOR,
               typename KEY_EQUALS_COMPARER,
               enable_if_t<
-                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
+                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>, decay_t<CONTAINER_OF_ADDABLE>> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
     inline KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::KeyedCollection_LinkedList (CONTAINER_OF_ADDABLE&& src)
         : KeyedCollection_LinkedList{typename TRAITS::DefaultKeyExtractor{}, equal_to<KEY_TYPE>{}}
     {
@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Containers::Concrete {
               typename KEY_EXTRACTOR,
               typename KEY_EQUALS_COMPARER,
               enable_if_t<
-                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
+                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>, decay_t<CONTAINER_OF_ADDABLE>> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
     inline KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::KeyedCollection_LinkedList (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src)
         : KeyedCollection_LinkedList{typename TRAITS::DefaultKeyExtractor{}, forward<KEY_EQUALS_COMPARER> (keyComparer)}
     {

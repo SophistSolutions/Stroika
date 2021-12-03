@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Sequence_DoublyLinkedList ();
         Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList& src) = default;
         Sequence_DoublyLinkedList (const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence_DoublyLinkedList<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence_DoublyLinkedList<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Sequence_DoublyLinkedList (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_T>
         explicit Sequence_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);

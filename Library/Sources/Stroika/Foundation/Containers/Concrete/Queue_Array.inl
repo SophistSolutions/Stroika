@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue_Array<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue_Array<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
     inline Queue_Array<T>::Queue_Array (CONTAINER_OF_ADDABLE&& src)
         : Queue_Array{}
     {

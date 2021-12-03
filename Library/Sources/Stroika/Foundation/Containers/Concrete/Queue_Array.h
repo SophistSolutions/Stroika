@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         Queue_Array ();
         Queue_Array (const Queue_Array& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue_Array<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue_Array<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Queue_Array (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_T>
         explicit Queue_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);

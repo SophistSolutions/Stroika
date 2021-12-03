@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedSet_stdset (SortedSet_stdset&& src) noexcept      = default;
         SortedSet_stdset (const initializer_list<value_type>& src);
         SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         SortedSet_stdset (CONTAINER_OF_ADDABLE&& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
         SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, CONTAINER_OF_ADDABLE&& src);

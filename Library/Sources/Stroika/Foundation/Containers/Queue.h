@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Containers {
         Queue (Queue&& src) noexcept      = default;
         Queue (const Queue& src) noexcept = default;
         Queue (const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit Queue (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         Queue (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);

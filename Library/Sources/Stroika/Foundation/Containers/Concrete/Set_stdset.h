@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Set_stdset (const Set_stdset& src) = default;
         Set_stdset (const initializer_list<value_type>& src);
         Set_stdset (const ElementEqualityComparerType& equalsComparer, const initializer_list<T>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_base_of_v<Set_stdset<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_base_of_v<Set_stdset<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Set_stdset (CONTAINER_OF_ADDABLE&& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>* = nullptr>
         Set_stdset (const ElementEqualityComparerType& equalsComparer, CONTAINER_OF_ADDABLE&& src);

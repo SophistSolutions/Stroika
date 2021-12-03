@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Containers {
         Set (const initializer_list<value_type>& src);
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
         Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit Set (CONTAINER_OF_ADDABLE&& src);
         template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
         Set (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src);

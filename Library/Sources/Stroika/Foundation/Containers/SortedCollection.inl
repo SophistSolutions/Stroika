@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedCollection<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedCollection<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
     inline SortedCollection<T>::SortedCollection (CONTAINER_OF_ADDABLE&& src)
         : SortedCollection{}
     {

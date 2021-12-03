@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, Configuration::remove_cvref_t<CONTAINER_OF_SINGLEVALUE_ADD_ARGS>>>*>
+    template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<CONTAINER_OF_SINGLEVALUE_ADD_ARGS>>>*>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src)
         : Bijection{}
     {

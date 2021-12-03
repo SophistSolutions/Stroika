@@ -187,7 +187,7 @@ Each container Archetype has its own set of arguments that make sense for its co
   - Note, the reason for the not_is_base_of<> magic is to avoid ambiguity with copy constructor (not SURE WHY this is needed but it was needed in some cases - maybe due to bugs - maybe can lose - I recall docs on C++ suggest NOT needed). https://stackoverflow.com/questions/4419375/templated-constructor-vs-templated-copy-constructor seems to suggest it is needed (not authoritative). But I seem to recall reading (https://stackoverflow.com/questions/23244665/c-overloading-takes-precedence-over-specialization) that explictly defined copy constructors take precedence over template defined ones. So confused by this, but it appears still needed (2021-12-03).
 
     ~~~
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<CONTAINER<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<CONTAINER<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
     CONTAINER (CONTAINER_OF_ADDABLE&& src);
     ~~~
 
@@ -220,7 +220,7 @@ template <typename CONTAINER_OF_ADDABLE,
           typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
           typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
           enable_if_t<
-              Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsEqualsComparer<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+              Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<CONTAINER_OF_ADDABLE>> and Common::IsEqualsComparer<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
 KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
 ~~~
 

@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         explicit Collection_stdmultiset (const INORDER_COMPARER& inorderComparer);
         Collection_stdmultiset (const Collection_stdmultiset& src) noexcept = default;
         Collection_stdmultiset (Collection_stdmultiset&& src) noexcept      = default;
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Collection<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Collection<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Collection_stdmultiset (CONTAINER_OF_ADDABLE&& src);
 
     public:

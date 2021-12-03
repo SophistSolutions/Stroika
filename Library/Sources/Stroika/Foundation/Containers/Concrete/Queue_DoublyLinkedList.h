@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         Queue_DoublyLinkedList ();
         Queue_DoublyLinkedList (const Queue_DoublyLinkedList& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue_DoublyLinkedList<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue_DoublyLinkedList<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Queue_DoublyLinkedList (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_T>
         explicit Queue_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);

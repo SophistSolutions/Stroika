@@ -234,7 +234,7 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_base_of_v<Iterable<T>, Configuration::remove_cvref_t<CONTAINER_OF_T>>>*>
+    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_base_of_v<Iterable<T>, decay_t<CONTAINER_OF_T>>>*>
     Iterable<T>::Iterable (CONTAINER_OF_T&& from)
         : _fRep{mk_ (forward<CONTAINER_OF_T> (from))._fRep}
     {
@@ -259,6 +259,9 @@ namespace Stroika::Foundation::Traversal {
     Iterable<T> Iterable<T>::mk_ (CONTAINER_OF_T&& from)
     {
         // @todo consider if this should use forward_list<> and stroika blockallocator? Just have to be more careful on the indexing (using iterator carefully)
+        // Or even better, maybe just capture 'from' itself (without references) in a shared_context(make_shared) and then do a regular iterator pointing
+        // to that. THat should work fine, and be much cheaper
+        // -- LGP 2021-12-03
         vector<T>                tmp{from.begin (), from.end ()}; // Somewhat simplistic / inefficient implementation
         size_t                   idx{0};
         function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
@@ -304,6 +307,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
     bool Iterable<T>::SetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer)
     {
+        // @todo OPTIMIZATION - check if contexpr EQUALS_COMPARE == equal_to and if less<> defined - and if so - construct a std::set<> to lookup/compare (do on shorter side)
         /*
          *  An extremely inefficient but space-constant implementation. N^2 and check
          *  a contains b and b contains a

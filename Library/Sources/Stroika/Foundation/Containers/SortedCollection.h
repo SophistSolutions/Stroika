@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Containers {
         SortedCollection (const initializer_list<T>& src);
         template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
         SortedCollection (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedCollection<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedCollection<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit SortedCollection (CONTAINER_OF_ADDABLE&& src);
         template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
         SortedCollection (INORDER_COMPARER&& inOrderComparer, CONTAINER_OF_ADDABLE&& src);
