@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_INORDER_COMPARER,
               typename KEY_EXTRACTOR,
               enable_if_t<
-                  Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
+                  Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
     inline KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer)
         : KeyedCollection_stdset{KEY_EXTRACTOR{}, forward<KEY_INORDER_COMPARER> (keyComparer)}
     {
@@ -225,7 +225,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_EXTRACTOR,
               typename KEY_INORDER_COMPARER,
               enable_if_t<
-                  Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
+                  Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
     KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdset (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer)
         : inherited{inherited::template MakeSmartPtr<Rep_<Configuration::remove_cvref_t<KEY_EXTRACTOR>, Configuration::remove_cvref_t<KEY_INORDER_COMPARER>>> (forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_INORDER_COMPARER> (keyComparer))}
     {
@@ -236,7 +236,7 @@ namespace Stroika::Foundation::Containers::Concrete {
               typename KEY_EXTRACTOR,
               typename KEY_INORDER_COMPARER,
               enable_if_t<
-                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection_stdset<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
+                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection_stdset<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
     inline KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdset (CONTAINER_OF_ADDABLE&& src)
     {
         this->AddAll (src);
@@ -247,7 +247,7 @@ namespace Stroika::Foundation::Containers::Concrete {
               typename KEY_EXTRACTOR,
               typename KEY_INORDER_COMPARER,
               enable_if_t<
-                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection_stdset<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
+                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection_stdset<T, KEY_TYPE, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>> and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
     inline KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src)
     {
         this->AddAll (src);
@@ -256,7 +256,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER, typename CONTAINER_OF_ADDABLE,
               enable_if_t<
-                  KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
+                  KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
     inline KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdset (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src)
         : KeyedCollection_stdset{forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_INORDER_COMPARER> (keyComparer)}
     {
@@ -268,7 +268,7 @@ namespace Stroika::Foundation::Containers::Concrete {
               typename KEY_EXTRACTOR,
               typename KEY_INORDER_COMPARER,
               enable_if_t<
-                  Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER, KEY_TYPE> ()>*>
+                  Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>*>
     inline KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdset (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
         : KeyedCollection_stdset{KEY_EXTRACTOR{}, KEY_INORDER_COMPARER{}}
     {
@@ -280,7 +280,7 @@ namespace Stroika::Foundation::Containers::Concrete {
               typename KEY_EXTRACTOR,
               typename KEY_INORDER_COMPARER,
               enable_if_t<
-                  Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER, KEY_TYPE> ()>*>
+                  Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>*>
     inline KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
         : KeyedCollection_stdset{KEY_EXTRACTOR{}, forward<KEY_INORDER_COMPARER> (keyComparer)}
     {
@@ -290,7 +290,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE,
               enable_if_t<
-                  KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
+                  KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
     inline KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdset (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
         : KeyedCollection_stdset{forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_INORDER_COMPARER> (keyComparer)}
     {

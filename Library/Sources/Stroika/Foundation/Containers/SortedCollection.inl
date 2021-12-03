@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER, T> ()>*>
+    template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
     inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inorderComparer)
         : inherited{Factory::SortedCollection_Factory<T, INORDER_COMPARER>{forward<INORDER_COMPARER> (inorderComparer)}()}
     {
@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER, T> ()>*>
+    template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
     inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src)
         : SortedCollection{forward<INORDER_COMPARER> (inOrderComparer)}
     {
@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER, T> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
+    template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
     inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, CONTAINER_OF_ADDABLE&& src)
         : SortedCollection{forward<INORDER_COMPARER> (inOrderComparer)}
     {
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER, T> ()>*>
+    template <typename INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
     inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
         : SortedCollection{forward<INORDER_COMPARER> (inOrderComparer)}
     {

@@ -560,6 +560,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note   \em Thread-Safety   The argument function (lambda) may
          *              directly (or indirectly) access the Iterable<> being iterated over.
+         *
          *  \par Example Usage
          *      \code
          *          bool IsAllWhitespace (String s) const
