@@ -184,7 +184,7 @@ Each container Archetype has its own set of arguments that make sense for its co
 
 - Copy other container (soon REDO using IsAddable). This allows for converting nearly anything sensible into a CONTAINER, and the constraints (TBD) on what can be converted will soon change but use the IsAddable template.
 
-  Note, the reason for the not_is_base_of<> magic is to avoid ambiguity with copy constructor (not SURE this is needed but it was needed in some cases - maybe due to bugs - maybe can lose - I recall docs on C++ suggest NOT needed).
+  - Note, the reason for the not_is_base_of<> magic is to avoid ambiguity with copy constructor (not SURE WHY this is needed but it was needed in some cases - maybe due to bugs - maybe can lose - I recall docs on C++ suggest NOT needed). https://stackoverflow.com/questions/4419375/templated-constructor-vs-templated-copy-constructor seems to suggest it is needed (not authoritative). But I seem to recall reading (https://stackoverflow.com/questions/23244665/c-overloading-takes-precedence-over-specialization) that explictly defined copy constructors take precedence over template defined ones. So confused by this, but it appears still needed (2021-12-03).
 
     ~~~
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<CONTAINER<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>

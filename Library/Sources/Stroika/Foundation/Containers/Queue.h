@@ -124,12 +124,7 @@ namespace Stroika::Foundation::Containers {
          *  start to end, adding the items to the tail of the Queue, so the resulting Queue will be in the same order (when iterated or dequeued)
          *  as the order of the items its created from.
          * 
-         *  \note Implementation note:
-         *        Reason for the not is_base_of_v<> restriction on CTOR/1(CONTAINER_OF_ADDABLE&&) is to prevent compiler from
-         *        instantiating that constructor template for argument subclasses of this container type, and having those take precedence over the
-         *        default X(const X&) CTOR.
-         * 
-         *        And also careful not to apply to non-iterables.
+         *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          *
          *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */

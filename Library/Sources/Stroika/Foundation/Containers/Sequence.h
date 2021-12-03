@@ -250,6 +250,8 @@ namespace Stroika::Foundation::Containers {
          *  For the CTOR overload with CONTAINER_OF_ADDABLE, its anything that supports c.begin(), c.end () to find
          *  all the elements.
          *
+         *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
+         *
          *  \par Example Usage
          *      \code
          *        Collection<int> c;
@@ -264,13 +266,6 @@ namespace Stroika::Foundation::Containers {
          *        Sequence<int> s7  { v.begin (), v.end () };
          *        Sequence<int> s8  { move (s1) };
          *      \endcode
-         *
-         *  \note Implementation note:
-         *        Reason for the not is_base_of_v<> restriction on CTOR/1(CONTAINER_OF_ADDABLE&&) is to prevent compiler from
-         *        instantiating that constructor template for argument subclasses of this container type, and having those take precedence over the
-         *        default X(const X&) CTOR.
-         * 
-         *        And also careful not to apply to non-iterables.
          *
          *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */

@@ -153,12 +153,7 @@ namespace Stroika::Foundation::Containers {
          *          This is because converting to a Set or Sequence has some semantics, and the programmer should be clear on this. But a Collection<>
          *          acts just like an interable (except that its modifyable). So allow this case to be non-explicit.
          * 
-         *  \note Implementation note:
-         *        Reason for the not is_base_of_v<> restriction on CTOR/1(CONTAINER_OF_ADDABLE&&) is to prevent compiler from
-         *        instantiating that constructor template for argument subclasses of this container type, and having those take precedence over the
-         *        default X(const X&) CTOR.
-         * 
-         *        And also careful not to apply to non-iterables.
+         *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          *
          *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */
