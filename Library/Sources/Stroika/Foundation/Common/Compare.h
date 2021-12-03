@@ -152,13 +152,20 @@ namespace Stroika::Foundation::Common {
      *  \brief return true if argument is a function like object (callable) taking 2 arguments (FUNCTOR_ARG) and
      *         returning a bool or integer.
      *
+     *  \note - the one-typed version of IsPotentiallyComparerRelation may not be able to deduce the FUNCTOR_ARG of the arguments in all cases.
+     *
      *  \note - this just checks if its a callable (not necessarily valid argument to ExtractComparisonTraits). Its just used to filter which templates get into the overload set.
+     *
+     *  \note Prior to Stroika 2.1b14, this routine took template arguments reversed, but switched to this way because FUNCTOR_ARG can be deduced from FUNCTOR and that can be handy
+     * 
+     *  \see IsEqualsComparer
      */
     template <typename FUNCTOR, typename FUNCTOR_ARG>
     constexpr bool IsPotentiallyComparerRelation ();
     template <typename FUNCTOR>
     constexpr bool IsPotentiallyComparerRelation ();
-
+    template <typename FUNCTOR>
+    constexpr bool IsPotentiallyComparerRelation (const FUNCTOR& functor);
 
     /**
      *
@@ -187,7 +194,7 @@ namespace Stroika::Foundation::Common {
      *
      *  std-c++ favors a handful of these predefined functions
      *      >   less
-     *      >   equal_to ( to a lesser degree)
+     *      >   equal_to (to a lesser degree)
      *  but also provides
      *      >   greater
      *      >   less_equal
@@ -281,6 +288,8 @@ namespace Stroika::Foundation::Common {
      *         if one of the items equal to the other (e.g. std::equals).
      *
      *  \note @see ComparisonRelationDeclaration<> to construct an Equals comparer from an arbitrary std::function...
+     *  \note @see IsStrictInOrderComparer
+     *  \note @see IsPotentiallyComparerRelation
      */
     template <typename COMPARER>
     constexpr bool IsEqualsComparer ();
@@ -294,6 +303,8 @@ namespace Stroika::Foundation::Common {
      *         if one of the items is STRICTLY in-order with respect to the other - e.g. std::less, or std::greater, but but notably NOT std::equal_to, or std::less_equal.
      *
      *  \note @see ComparisonRelationDeclaration<> to construct an InOrder comparer from an arbitrary std::function...
+     *  \note @see IsEqualsComparer
+     *  \note @see IsPotentiallyComparerRelation
      */
     template <typename COMPARER>
     constexpr bool IsStrictInOrderComparer ();
@@ -433,17 +444,6 @@ namespace Stroika::Foundation::Common {
     private:
         [[NO_UNIQUE_ADDRESS_ATTR]] BASE_COMPARER fBASE_COMPARER_;
     };
-
-    // MARK DEPRECATED SOON ONCE NO LONGER USING
-    template <typename FUNCTOR_ARG, typename FUNCTOR>
-    constexpr bool IsPotentiallyComparerRelation_Old ()
-    {
-        // @TODO LOSE THIS VERSION AND RENAME 2 => this!!!
-        if constexpr (is_invocable_v<FUNCTOR, FUNCTOR_ARG, FUNCTOR_ARG>) {
-            return std::is_convertible_v<std::invoke_result_t<FUNCTOR, FUNCTOR_ARG, FUNCTOR_ARG>, bool>;
-        }
-        return false;
-    }
 
 }
 

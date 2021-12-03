@@ -91,11 +91,18 @@ namespace Stroika::Foundation::Common {
     constexpr bool IsPotentiallyComparerRelation ()
     {
         if constexpr (Configuration::function_traits<FUNCTOR>::kArity == 2) {
-            return IsPotentiallyComparerRelation<FUNCTOR, typename Configuration::function_traits<FUNCTOR>::template arg<0>::type> ();
+            using TRAITS = typename Configuration::function_traits<FUNCTOR>;
+            return is_same_v<TRAITS::template arg<0>::type, TRAITS::template arg<1>::type> and
+                   IsPotentiallyComparerRelation<FUNCTOR, typename Configuration::function_traits<FUNCTOR>::template arg<0>::type> ();
         }
         else {
             return false;
         }
+    }
+    template <typename FUNCTOR>
+    constexpr bool IsPotentiallyComparerRelation (const FUNCTOR& f)
+    {
+        return IsPotentiallyComparerRelation<FUNCTOR> ();
     }
 
     /*
@@ -180,7 +187,7 @@ namespace Stroika::Foundation::Common {
     template <typename FUNCTOR>
     constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> DeclareEqualsComparer (FUNCTOR&& f)
     {
-        static_assert (IsPotentiallyComparerRelation<FUNCTOR, typename Configuration::function_traits<FUNCTOR>::template arg<0>::type > ());
+        static_assert (IsPotentiallyComparerRelation<FUNCTOR, typename Configuration::function_traits<FUNCTOR>::template arg<0>::type> ());
         return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR>{std::forward<FUNCTOR> (f)};
     }
 

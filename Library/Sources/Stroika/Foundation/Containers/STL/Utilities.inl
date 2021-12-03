@@ -13,7 +13,7 @@
 
 namespace Stroika::Foundation::Containers::STL {
 
-    template <typename ITERABLE_OF_T, typename T, typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation_Old<T, EQUALS_COMPARER> ()>*>
+    template <typename ITERABLE_OF_T, typename T, typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>*>
     bool equal (const ITERABLE_OF_T& lhs, const ITERABLE_OF_T& rhs, EQUALS_COMPARER&& equalsComparer)
     {
         return lhs.size () == rhs.size () and equal (lhs.begin (), lhs.end (), rhs.begin (), equalsComparer);

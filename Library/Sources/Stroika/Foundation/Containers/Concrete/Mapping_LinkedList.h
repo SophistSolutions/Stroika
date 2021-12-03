@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */
         Mapping_LinkedList ();
-        template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation_Old<KEY_TYPE, KEY_EQUALS_COMPARER> ()>* = nullptr>
+        template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
         explicit Mapping_LinkedList (const KEY_EQUALS_COMPARER& keyEqualsComparer);
         Mapping_LinkedList (const Mapping_LinkedList& src) = default;
         Mapping_LinkedList (Mapping_LinkedList&& src)      = default;

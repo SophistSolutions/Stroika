@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         Mapping_stdmap ();
         Mapping_stdmap (STDMAP<>&& src);
-        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation_Old<KEY_TYPE, KEY_INORDER_COMPARER> ()>* = nullptr>
+        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
         explicit Mapping_stdmap (const KEY_INORDER_COMPARER& inorderComparer);
         Mapping_stdmap (const Mapping_stdmap& src) = default;
         Mapping_stdmap (Mapping_stdmap&& src)      = default;

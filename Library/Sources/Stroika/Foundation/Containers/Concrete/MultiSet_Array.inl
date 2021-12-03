@@ -288,7 +288,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation_Old<T, EQUALS_COMPARER> ()>*>
+    template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>*>
     inline MultiSet_Array<T, TRAITS>::MultiSet_Array (const EQUALS_COMPARER& equalsComparer)
         : inherited{inherited::template MakeSmartPtr<Rep_<EQUALS_COMPARER>> (equalsComparer)}
     {
