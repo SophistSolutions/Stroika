@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    bool Collection<T>::Contains (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer) const
+    inline bool Collection<T>::Contains (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer) const
     {
         return this->Find (item, equalsComparer) != nullptr;
     }
