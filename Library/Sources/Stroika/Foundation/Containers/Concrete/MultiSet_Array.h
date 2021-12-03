@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */
         MultiSet_Array ();
-        template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
+        template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation_Old<T, EQUALS_COMPARER> ()>* = nullptr>
         explicit MultiSet_Array (const EQUALS_COMPARER& equalsComparer);
         MultiSet_Array (const MultiSet_Array& src) = default;
         MultiSet_Array (MultiSet_Array&& src)      = default;

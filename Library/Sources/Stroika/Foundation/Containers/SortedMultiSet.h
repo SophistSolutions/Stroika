@@ -95,23 +95,23 @@ namespace Stroika::Foundation::Containers {
          *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */
         SortedMultiSet ();
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation_Old<T, INORDER_COMPARER> ()>* = nullptr>
         explicit SortedMultiSet (INORDER_COMPARER&& inorderComparer);
         SortedMultiSet (SortedMultiSet&& src) noexcept      = default;
         SortedMultiSet (const SortedMultiSet& src) noexcept = default;
         SortedMultiSet (const initializer_list<T>& src);
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation_Old<T, INORDER_COMPARER> ()>* = nullptr>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<T>& src);
         SortedMultiSet (const initializer_list<value_type>& src);
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation_Old<T, INORDER_COMPARER> ()>* = nullptr>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedMultiSet<T, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit SortedMultiSet (CONTAINER_OF_ADDABLE&& src);
-        template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
+        template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation_Old<T, INORDER_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>* = nullptr>
         SortedMultiSet (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-        template <typename INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>* = nullptr>
+        template <typename INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation_Old<T, INORDER_COMPARER> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>* = nullptr>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     protected:

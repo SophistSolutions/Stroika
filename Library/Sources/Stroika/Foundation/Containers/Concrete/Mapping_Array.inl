@@ -217,7 +217,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>*>
+    template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation_Old<KEY_TYPE, KEY_EQUALS_COMPARER> ()>*>
     Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (const KEY_EQUALS_COMPARER& keyEqualsComparer)
         : inherited{inherited::template MakeSmartPtr<Rep_<KEY_EQUALS_COMPARER>> (keyEqualsComparer)}
     {

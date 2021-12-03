@@ -988,7 +988,7 @@ namespace Stroika::Foundation::Traversal {
         return _SafeReadRepAccessor<>{this}._ConstGetRep ().Find (that);
     }
     template <typename T>
-    template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
+    template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>*>
     inline Iterator<T> Iterable<T>::Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer) const
     {
         if constexpr (is_same_v<Configuration::remove_cvref_t<EQUALS_COMPARER>, equal_to<T>> and Configuration::HasUsableEqualToOptimization<T> ()) {
@@ -1011,7 +1011,7 @@ namespace Stroika::Foundation::Traversal {
         return end ();
     }
     template <typename T>
-    template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
+    template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>*>
     Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer) const
     {
         for (Iterator<T> i = startAt; i != end (); ++i) {

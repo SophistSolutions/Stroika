@@ -154,8 +154,11 @@ namespace Stroika::Foundation::Common {
      *
      *  \note - this just checks if its a callable (not necessarily valid argument to ExtractComparisonTraits). Its just used to filter which templates get into the overload set.
      */
-    template <typename FUNCTOR_ARG, typename FUNCTOR>
+    template <typename FUNCTOR, typename FUNCTOR_ARG>
     constexpr bool IsPotentiallyComparerRelation ();
+    template <typename FUNCTOR>
+    constexpr bool IsPotentiallyComparerRelation ();
+
 
     /**
      *
@@ -430,6 +433,17 @@ namespace Stroika::Foundation::Common {
     private:
         [[NO_UNIQUE_ADDRESS_ATTR]] BASE_COMPARER fBASE_COMPARER_;
     };
+
+    // MARK DEPRECATED SOON ONCE NO LONGER USING
+    template <typename FUNCTOR_ARG, typename FUNCTOR>
+    constexpr bool IsPotentiallyComparerRelation_Old ()
+    {
+        // @TODO LOSE THIS VERSION AND RENAME 2 => this!!!
+        if constexpr (is_invocable_v<FUNCTOR, FUNCTOR_ARG, FUNCTOR_ARG>) {
+            return std::is_convertible_v<std::invoke_result_t<FUNCTOR, FUNCTOR_ARG, FUNCTOR_ARG>, bool>;
+        }
+        return false;
+    }
 
 }
 

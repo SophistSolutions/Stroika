@@ -261,7 +261,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> ()>*>
+    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsPotentiallyComparerRelation<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>*>
     inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
         : Bijection_LinkedList{InjectivityViolationPolicy::eDEFAULT, domainEqualsComparer, rangeEqualsComparer}
     {

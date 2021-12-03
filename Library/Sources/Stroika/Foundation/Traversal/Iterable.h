@@ -576,11 +576,11 @@ namespace Stroika::Foundation::Traversal {
          */
         template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>* = nullptr>
         nonvirtual Iterator<T> Find (THAT_FUNCTION&& that) const;
-        template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
+        template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>* = nullptr>
         nonvirtual Iterator<T> Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {}) const;
         template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>* = nullptr>
         nonvirtual Iterator<T> Find (const Iterator<T>& startAt, THAT_FUNCTION&& that) const;
-        template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
+        template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>* = nullptr>
         nonvirtual Iterator<T> Find (const Iterator<T>& startAt, Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {}) const;
 
     public:

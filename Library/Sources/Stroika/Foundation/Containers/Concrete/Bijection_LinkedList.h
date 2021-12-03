@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */
         Bijection_LinkedList ();
-        template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> ()>* = nullptr>
+        template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsPotentiallyComparerRelation<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>* = nullptr>
         explicit Bijection_LinkedList (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer);
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Configuration::is_callable_v<DOMAIN_EQUALS_COMPARER> and Configuration::is_callable_v<RANGE_EQUALS_COMPARER>>* = nullptr>
         explicit Bijection_LinkedList (InjectivityViolationPolicy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer);
