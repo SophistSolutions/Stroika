@@ -574,6 +574,9 @@ namespace Stroika::Foundation::Traversal {
          * 
          *  \note THAT_FUNTION type used to be hardwired to function<bool (ArgByValueType<T> item)>&, but now use template argument
          *     and (SOON concept) but for now enable_if_t
+         * 
+         *  \note desipte the name EQUALS_COMPARER, we allow EQUALS_COMPARER to just be IsPotentiallyComparerRelation<> and don't require
+         *        IsEqualsComparer, just to simplify use, and because we cannot anticipate any real ambiguity or confusion resulting from this loose restriction.
          */
         template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>* = nullptr>
         nonvirtual Iterator<T> Find (THAT_FUNCTION&& that) const;
