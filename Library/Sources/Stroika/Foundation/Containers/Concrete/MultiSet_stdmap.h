@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */
         MultiSet_stdmap ();
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER, T> ()>* = nullptr>
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
         explicit MultiSet_stdmap (const INORDER_COMPARER& inorderComparer);
         template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const MultiSet_stdmap<T>*>>* = nullptr>
         MultiSet_stdmap (const CONTAINER_OF_T& src);

@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Set_LinkedList<T>::Set_LinkedList (const EQUALS_COMPARER& equalsComparer)
         : inherited{inherited::template MakeSmartPtr<Rep_<EQUALS_COMPARER>> (equalsComparer)}
     {
-        static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Equals comparer required with Set_LinkedList");
+        static_assert (Common::IsEqualsComparer<EQUALS_COMPARER, T> (), "Equals comparer required with Set_LinkedList");
         AssertRepValidType_ ();
     }
     template <typename T>

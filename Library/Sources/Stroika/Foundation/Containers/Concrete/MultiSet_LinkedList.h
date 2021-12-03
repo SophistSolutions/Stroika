@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */
         MultiSet_LinkedList ();
-        template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>* = nullptr>
+        template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
         explicit MultiSet_LinkedList (const EQUALS_COMPARER& equalsComparer);
         MultiSet_LinkedList (const MultiSet<T, TRAITS>& src);
         MultiSet_LinkedList (const MultiSet_LinkedList<T, TRAITS>& src);

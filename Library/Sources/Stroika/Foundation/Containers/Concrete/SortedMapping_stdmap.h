@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */
         SortedMapping_stdmap ();
-        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
         explicit SortedMapping_stdmap (const KEY_INORDER_COMPARER& inorderComparer);
         SortedMapping_stdmap (const SortedMapping_stdmap& src) = default;
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
