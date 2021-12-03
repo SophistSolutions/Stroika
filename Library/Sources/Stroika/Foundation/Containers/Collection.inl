@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename PREDICATE>
-    nonvirtual bool Collection<T>::RemoveIf (const PREDICATE& p)
+    bool Collection<T>::RemoveIf (const PREDICATE& p)
     {
         if (auto i = this->Find (p)) {
             Remove (i);
