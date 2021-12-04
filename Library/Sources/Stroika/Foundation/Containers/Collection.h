@@ -137,6 +137,13 @@ namespace Stroika::Foundation::Containers {
          */
         template <typename POTENTIALLY_ADDABLE_T>
         static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
+        //template <typename POTENTIALLY_ADDABLE_T>
+        //class IsAddable_t : public is_convertible<POTENTIALLY_ADDABLE_T, value_type> {
+        //};
+        //template <typename POTENTIALLY_ADDABLE_T>
+        //using IsAddable_t = is_convertible<POTENTIALLY_ADDABLE_T, value_type>;
+        //static_assert (Configuration::IsIterableOfPredicateOfT_v<Collection<T>,  IsAddable_t>);
+        //static_assert (Configuration::IsIterableOfPredicateOfT_v<Collection<T>,  CONTAINER<T>:: IsAddable_t>);
 
     public:
         /**

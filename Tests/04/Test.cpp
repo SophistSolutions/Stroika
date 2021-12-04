@@ -139,6 +139,20 @@ namespace {
 
 namespace {
     namespace Test5_SFINAE_Concepts_ {
+        namespace Private_ {
+            template <typename T>
+            struct CONTAINER {
+                using value_type = T;
+                template <typename POTENTIALLY_ADDABLE_T>
+                class IsAddable_t : public is_convertible<POTENTIALLY_ADDABLE_T, value_type> {
+                };
+            };
+            template <typename TT>
+            void TEST ()
+            {
+                static_assert (Configuration::IsIterableOfPredicateOfT_v<vector<TT>, Private_::CONTAINER<TT>::IsAddable_t>);
+            }
+        }
         void DoAll ()
         {
             Debug::TraceContextBumper ctx{L"{}::Test5_SFINAE_Concepts_"};
@@ -192,6 +206,11 @@ namespace {
                 static_assert (traits::kArity == 1);
                 static_assert (std::is_same<long, traits::result_type>::value, "err");
                 static_assert (std::is_same<int, traits::arg<0>::type>::value, "err");
+            }
+            {
+                static_assert (Configuration::IsIterableOfPredicateOfT_v<vector<int>, Private_::CONTAINER<int>::IsAddable_t>);
+                static_assert (not Configuration::IsIterableOfPredicateOfT_v<vector<char*>, Private_::CONTAINER<int>::IsAddable_t>);
+                Private_::TEST<int> ();
             }
         }
     }

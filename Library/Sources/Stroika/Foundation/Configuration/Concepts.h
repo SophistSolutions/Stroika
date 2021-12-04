@@ -60,6 +60,22 @@ namespace Stroika::Foundation::Configuration {
         template <typename ITERABLE_OF_T, typename T>
         using IsIterableOfT_t = integral_constant<bool, not is_same<typename IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
 
+        // Would be nice to simplify, but my current version of is_detected_v only takes one template parameter, and the std::experimental version not included in VS2k19
+        template <typename ITERABLE_OF_T, template <typename> typename CHECKER_PREDICATE>
+        struct IsIterableOfPredicateOfT_Impl2_ {
+            template <typename X, typename USE_ITERABLE = ITERABLE_OF_T, bool ITER_RESULT_CONVERTIBLE_TO_T = CHECKER_PREDICATE<decltype (*begin (declval<USE_ITERABLE&> ()))>::value>
+            static auto check (const X& x) -> conditional_t<
+                is_detected_v<has_beginend_t, ITERABLE_OF_T> and
+                    ITER_RESULT_CONVERTIBLE_TO_T,
+                substitution_succeeded<int>,
+                substitution_failure>;
+            static substitution_failure check (...);
+            using type = decltype (check (declval<int> ()));
+        };
+        // STILL NOT WORKING -- but trying...
+        template <typename ITERABLE_OF_T, template <typename> typename CHECKER_PREDICATE>
+        using IsIterableOfPredicateOfT_t = integral_constant<bool, not is_same<typename IsIterableOfPredicateOfT_Impl2_<ITERABLE_OF_T, CHECKER_PREDICATE>::type, substitution_failure>::value>;
+
         /*
          * FROM http://stackoverflow.com/questions/16893992/check-if-type-can-be-explicitly-converted
          */
@@ -349,6 +365,12 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename ITERABLE_OF_T, typename T>
     constexpr bool IsIterableOfT_v = Private_::IsIterableOfT_t<ITERABLE_OF_T, T>::value;
+
+    /**
+     *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>), and if result of *begin () is convertible to T.
+     */
+    template <typename ITERABLE_OF_T, template <typename> typename CHECKER_PREDICATE>
+    constexpr bool IsIterableOfPredicateOfT_v = Private_::IsIterableOfPredicateOfT_t<ITERABLE_OF_T, CHECKER_PREDICATE>::value;
 
     /**
      *  See http://en.cppreference.com/w/cpp/concept/EqualityComparable
