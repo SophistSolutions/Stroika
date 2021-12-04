@@ -84,9 +84,9 @@ namespace Stroika::Foundation::Configuration {
         };
 
         /**
-     *  Check T is an interator, but checking if it has iterator_traits...
-     *  from https://stackoverflow.com/questions/12032771/how-to-check-if-an-arbitrary-type-is-an-iterator
-     */
+         *  Check T is an interator, but checking if it has iterator_traits...
+         *  from https://stackoverflow.com/questions/12032771/how-to-check-if-an-arbitrary-type-is-an-iterator
+         */
         template <typename T, typename = void>
         struct is_iterator {
             static constexpr bool value = false;
