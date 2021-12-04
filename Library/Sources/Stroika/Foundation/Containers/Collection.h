@@ -49,6 +49,19 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterable;
     using Traversal::Iterator;
 
+    namespace Private_ {
+        /**
+         *  Work around bug with VS2k19 compiler (too painful to use ifdefs - at least for now)
+         *  When I fix/find better way, just use IsAddable_v from Collection itself.
+         */
+        template <typename T>
+        struct Collection_Support {
+            using value_type = T;
+            template <typename POTENTIALLY_ADDABLE_T>
+            static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
+        };
+    }
+
     /**
      *  \brief  A Collection<T> is a container to manage an un-ordered collection of items, without equality defined for T
      *
@@ -136,14 +149,7 @@ namespace Stroika::Foundation::Containers {
          *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
-        //template <typename POTENTIALLY_ADDABLE_T>
-        //class IsAddable_t : public is_convertible<POTENTIALLY_ADDABLE_T, value_type> {
-        //};
-        //template <typename POTENTIALLY_ADDABLE_T>
-        //using IsAddable_t = is_convertible<POTENTIALLY_ADDABLE_T, value_type>;
-        //static_assert (Configuration::IsIterableOfPredicateOfT_v<Collection<T>,  IsAddable_t>);
-        //static_assert (Configuration::IsIterableOfPredicateOfT_v<Collection<T>,  CONTAINER<T>:: IsAddable_t>);
+        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
 
     public:
         /**
@@ -177,7 +183,7 @@ namespace Stroika::Foundation::Containers {
         Collection (Collection&& src) noexcept      = default;
         Collection (const Collection& src) noexcept = default;
         Collection (const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Collection<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and Private_::Collection_Support<T>::template IsAddable_v<Configuration::ExtractValueType_t<CONTAINER_OF_ADDABLE>> and not is_base_of_v<Collection<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Collection (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         Collection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
