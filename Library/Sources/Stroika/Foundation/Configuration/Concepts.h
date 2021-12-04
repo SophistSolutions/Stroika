@@ -478,7 +478,7 @@ namespace Stroika::Foundation::Configuration {
      * returns void if T has no value_type
      */
     template <typename T>
-    using ExtractValueType_t = typename ExtractValueType<T>::type;
+    using ExtractValueType_t = typename ExtractValueType<decay_t<T>>::type;
 
     /// DEPRECATED CALLS ////////////////////
 

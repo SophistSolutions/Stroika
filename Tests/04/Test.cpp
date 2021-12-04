@@ -218,6 +218,9 @@ namespace {
                 static_assert (is_same_v<Configuration::ExtractValueType_t<int>, void>);
                 static_assert (is_same_v<Configuration::ExtractValueType_t<Containers::Collection<char>>, char>);
                 static_assert (is_same_v<Configuration::ExtractValueType_t<Traversal::Iterator<string>>, string>);
+                static_assert (is_same_v<Configuration::ExtractValueType_t<vector<int>&>, int>);
+                static_assert (is_same_v<Configuration::ExtractValueType_t<const vector<int>&>, int>);
+                static_assert (is_same_v<Configuration::ExtractValueType_t<vector<int>&&>, int>);
             }
         }
     }
