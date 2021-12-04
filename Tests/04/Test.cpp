@@ -150,7 +150,7 @@ namespace {
             template <typename TT>
             void TEST ()
             {
-                static_assert (Configuration::IsIterableOfPredicateOfT_v<vector<TT>, Private_::CONTAINER<TT>::IsAddable_t>);
+                static_assert (Configuration::IsIterableOfPredicateOfT_v<vector<TT>, Private_::CONTAINER<TT>::template IsAddable_t>);
             }
         }
         void DoAll ()
