@@ -28,6 +28,8 @@ namespace Stroika::Foundation::Configuration {
 
     namespace Private_ {
         template <typename T>
+        using has_value_type_t = typename T::value_type;
+        template <typename T>
         using has_eq_t = decltype (static_cast<bool> (std::declval<T> () == std::declval<T> ()));
         template <typename T>
         using has_neq_t = decltype (static_cast<bool> (std::declval<T> () != std::declval<T> ()));
@@ -203,6 +205,21 @@ namespace Stroika::Foundation::Configuration {
             // composed of those arguments.
         };
     };
+
+    /**
+     *  \brief check if the given type T can be compared with operator==, and result is convertible to bool
+     * 
+     *  \par Example Usage
+     *      \code
+     *          if constexpr (has_value_type_v<T>) {
+     *              typename T::value_type x;
+     *          }
+     *      \endcode
+     * 
+     *  Issue is that it cannot be usefully defined (as nearly as I can tell in C++17).
+     */
+    template <typename T>
+    constexpr inline bool has_value_type_v = is_detected_v<Private_::has_value_type_t, T>;
 
     /**
      *  \brief check if the given type T can be compared with operator==, and result is convertible to bool
@@ -442,6 +459,26 @@ namespace Stroika::Foundation::Configuration {
         }
         return false;
     }
+
+    /**
+     *  \brief Extract the type of elements in a container, or returned by an iterator (value_type) or void it there is no value_type
+     * 
+     *  When we support C++20, use iter_value_t
+     */
+    template <typename T, typename = void>
+    struct ExtractValueType {
+        using type = void;
+    };
+    template <typename T>
+    struct ExtractValueType<T, enable_if_t<has_value_type_v<T>>> {
+        using type = typename T::value_type;
+    };
+
+    /**
+     * returns void if T has no value_type
+     */
+    template <typename T>
+    using ExtractValueType_t = typename ExtractValueType<T>::type;
 
     /// DEPRECATED CALLS ////////////////////
 
