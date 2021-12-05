@@ -46,6 +46,12 @@
 namespace Stroika::Foundation::Containers {
 
     using Configuration::ArgByValueType;
+    template <typename ITERABLE_OF_T, typename T>
+    constexpr bool IsIterableOfT_v = Configuration::IsIterableOfT_v<ITERABLE_OF_T, T>;
+    template <typename T>
+    constexpr bool IsIterable_v = Configuration::IsIterable_v<T>;
+    template <typename T>
+    using ExtractValueType_t = Configuration::ExtractValueType_t<T>;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -183,7 +189,7 @@ namespace Stroika::Foundation::Containers {
         Collection (Collection&& src) noexcept      = default;
         Collection (const Collection& src) noexcept = default;
         Collection (const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and Private_::Collection_Support<T>::template IsAddable_v<Configuration::ExtractValueType_t<CONTAINER_OF_ADDABLE>> and not is_base_of_v<Collection<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<IsIterable_v<CONTAINER_OF_ADDABLE> and Private_::Collection_Support<T>::template IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>> and not is_base_of_v<Collection<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Collection (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         Collection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
@@ -220,7 +226,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
         nonvirtual void AddAll (CONTAINER_OF_ADDABLE&& items);
 
     public:
@@ -285,7 +291,7 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void RemoveAll ();
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual size_t RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, const EQUALS_COMPARER& equalsComparer = {});
-        template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
         nonvirtual size_t RemoveAll (const CONTAINER_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer = {});
         template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>* = nullptr>
         nonvirtual size_t RemoveAll (const PREDICATE& p);
