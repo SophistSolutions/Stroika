@@ -473,6 +473,14 @@ namespace Stroika::Foundation::Configuration {
     struct ExtractValueType<T, enable_if_t<has_value_type_v<T>>> {
         using type = typename T::value_type;
     };
+    template <typename T>
+    struct ExtractValueType<const T*, void> {
+        using type = T;
+    };
+    template <typename T>
+    struct ExtractValueType<T*, void> {
+        using type = T;
+    };
 
     /**
      * returns void if T has no value_type

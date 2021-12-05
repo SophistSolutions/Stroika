@@ -221,6 +221,8 @@ namespace {
                 static_assert (is_same_v<Configuration::ExtractValueType_t<vector<int>&>, int>);
                 static_assert (is_same_v<Configuration::ExtractValueType_t<const vector<int>&>, int>);
                 static_assert (is_same_v<Configuration::ExtractValueType_t<vector<int>&&>, int>);
+                static_assert (is_same_v<Configuration::ExtractValueType_t<int*>, int>);
+                static_assert (is_same_v<Configuration::ExtractValueType_t<const int*>, int>);
             }
         }
     }
