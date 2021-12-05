@@ -177,6 +177,9 @@ namespace Stroika::Foundation::Containers {
          *          Collection<int> c8  { move (c1) };
          *      \endcode
          *
+         *  \req    static_assert (IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>);  // except done with enable_if_t to avoid bad overload of CTOR
+         *  \req    static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);
+         *
          *  \note   Most other containers (e.g. Set<>, Sequence<>) have the 'CONTAINER_OF_ADDABLE&& src' CTOR be explicit, whereas Collection does not.
          *          This is because converting to a Set or Sequence has some semantics, and the programmer should be clear on this. But a Collection<>
          *          acts just like an interable (except that its modifyable). So allow this case to be non-explicit.
@@ -221,6 +224,9 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \note   AddAll/2 is alias for .net AddRange ()
+         * 
+         *  \req IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>
+         *  \req IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>
          *
          *  \note mutates container
          */
