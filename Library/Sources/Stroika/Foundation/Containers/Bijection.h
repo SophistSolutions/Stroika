@@ -162,7 +162,7 @@ namespace Stroika::Foundation::Containers {
          *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
+        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type> or is_convertible_v<POTENTIALLY_ADDABLE_T, KeyValuePair<DomainType, RangeType>>;
 
     public:
         /**
@@ -372,9 +372,8 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         nonvirtual void Add (ArgByValueType<DomainType> key, ArgByValueType<RangeType> newElt);
-        nonvirtual void Add (const pair<DomainType, RangeType>& p);
-        template <typename KEYVALUEPAIR, enable_if_t<not is_convertible_v<KEYVALUEPAIR, pair<DOMAIN_TYPE, RANGE_TYPE>>>* = nullptr>
-        nonvirtual void Add (KEYVALUEPAIR p);
+        template <typename ADDABLE_T>
+        nonvirtual void Add (ADDABLE_T&& p);
 
     public:
         /**

@@ -290,21 +290,23 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (key, newElt);
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::Add (const pair<DomainType, RangeType>& p)
+    template <typename ADDABLE_T>
+    inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::Add (ADDABLE_T&& p)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.first, p.second);
-    }
-    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename KEYVALUEPAIR, enable_if_t<not is_convertible_v<KEYVALUEPAIR, pair<DOMAIN_TYPE, RANGE_TYPE>>>*>
-    inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::Add (KEYVALUEPAIR p)
-    {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue);
+        static_assert (IsAddable_v<ADDABLE_T>);
+        if constexpr (is_convertible_v<decay_t<ADDABLE_T>, value_type>) {
+            _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.first, p.second);
+        }
+        else {
+            static_assert (is_convertible_v<ADDABLE_T, KeyValuePair<DomainType, RangeType>>);
+            _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue);
+        }
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <typename COPY_FROM_ITERATOR_KEYVALUE>
     void Bijection<DOMAIN_TYPE, RANGE_TYPE>::AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
     {
-        // TODO GET THIS WORKING - static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_KEYVALUE>>);
+        static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_KEYVALUE>>);
         for (auto i = start; i != end; ++i) {
             Add (*i);
         }
@@ -313,7 +315,7 @@ namespace Stroika::Foundation::Containers {
     template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>*>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::AddAll (const CONTAINER_OF_KEYVALUE& items)
     {
-        // todo get this working - static_assert (IsAddable_v<ExtractValueType_t<CONTAINER_OF_KEYVALUE>>);
+        static_assert (IsAddable_v<ExtractValueType_t<CONTAINER_OF_KEYVALUE>>);
         // see https://stroika.atlassian.net/browse/STK-645
         /*
          *  Note - unlike some other containers - we don't need to check for this != &s because if we
