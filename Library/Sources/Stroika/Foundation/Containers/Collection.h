@@ -21,8 +21,6 @@
  *      @todo   Where(hide iterable one) and probably other things should use new EmptyClone() strategy - so cheaper and
  *              returns something of same underlying data structure  type.
  *
- *      @todo   Do CTOR () that takes ITERATOR<T> - but not til after next release....
- *
  *      @todo   Have Difference/Union/Interesection??? methods/?? Do research....
  *
  *      @todo   Consider adding RetainAll (Set<T>) API - like in Collection.h, and Java. Key diff is was force
@@ -54,19 +52,6 @@ namespace Stroika::Foundation::Containers {
     using ExtractValueType_t = Configuration::ExtractValueType_t<T>;
     using Traversal::Iterable;
     using Traversal::Iterator;
-
-    namespace Private_ {
-        /**
-         *  Work around bug with VS2k19 compiler (too painful to use ifdefs - at least for now)
-         *  When I fix/find better way, just use IsAddable_v from Collection itself.
-         */
-        template <typename T>
-        struct Collection_Support {
-            using value_type = T;
-            template <typename POTENTIALLY_ADDABLE_T>
-            static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
-        };
-    }
 
     /**
      *  \brief  A Collection<T> is a container to manage an un-ordered collection of items, without equality defined for T
@@ -192,7 +177,13 @@ namespace Stroika::Foundation::Containers {
         Collection (Collection&& src) noexcept      = default;
         Collection (const Collection& src) noexcept = default;
         Collection (const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<IsIterable_v<CONTAINER_OF_ADDABLE> and Private_::Collection_Support<T>::template IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>> and not is_base_of_v<Collection<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<IsIterable_v<CONTAINER_OF_ADDABLE>
+#if qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy
+                                                             and is_convertible_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>, T>
+#else
+                                                             and Collection<T>::template IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>
+#endif
+                                                             and not is_base_of_v<Collection<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Collection (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         Collection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);

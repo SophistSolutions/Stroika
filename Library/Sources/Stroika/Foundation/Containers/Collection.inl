@@ -57,7 +57,13 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<IsIterable_v<CONTAINER_OF_ADDABLE> and Private_::Collection_Support<T>::template IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>> and not is_base_of_v<Collection<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
+    template <typename CONTAINER_OF_ADDABLE, enable_if_t<IsIterable_v<CONTAINER_OF_ADDABLE>
+#if qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy
+                                                         and is_convertible_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>, T>
+#else
+                                                         and Collection<T>::template IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>
+#endif
+                                                         and not is_base_of_v<Collection<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
     inline Collection<T>::Collection (CONTAINER_OF_ADDABLE&& src)
         : Collection{}
     {
