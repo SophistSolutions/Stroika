@@ -304,6 +304,7 @@ namespace Stroika::Foundation::Containers {
     template <typename COPY_FROM_ITERATOR_KEYVALUE>
     void Bijection<DOMAIN_TYPE, RANGE_TYPE>::AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
     {
+        // TODO GET THIS WORKING - static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_KEYVALUE>>);
         for (auto i = start; i != end; ++i) {
             Add (*i);
         }
@@ -312,6 +313,7 @@ namespace Stroika::Foundation::Containers {
     template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>*>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::AddAll (const CONTAINER_OF_KEYVALUE& items)
     {
+        // todo get this working - static_assert (IsAddable_v<ExtractValueType_t<CONTAINER_OF_KEYVALUE>>);
         // see https://stroika.atlassian.net/browse/STK-645
         /*
          *  Note - unlike some other containers - we don't need to check for this != &s because if we

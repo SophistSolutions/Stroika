@@ -38,6 +38,7 @@
 namespace Stroika::Foundation::Containers {
 
     using Configuration::ArgByValueType;
+    using Configuration::ExtractValueType_t;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -161,7 +162,7 @@ namespace Stroika::Foundation::Containers {
          *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
+        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
 
     public:
         /**
