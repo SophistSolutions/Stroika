@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Containers {
     inline void Collection<T>::Remove (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer)
     {
         auto i = this->Find (item, equalsComparer);
-        Require (i != this->end ());    // use remove-if if the item might not exist
+        Require (i != this->end ()); // use remove-if if the item might not exist
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i, nullptr);
     }
     template <typename T>
