@@ -788,7 +788,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename ENUM_TYPE>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap)
     {
-        return MakeCommonSerializer_NamedEnumerations (Containers::Bijection<ENUM_TYPE, String> (nameMap));
+        return MakeCommonSerializer_NamedEnumerations (Containers::Bijection<ENUM_TYPE, String>{nameMap});
     }
     template <typename ENUM_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_EnumAsInt ()
