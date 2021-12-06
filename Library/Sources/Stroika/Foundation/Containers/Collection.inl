@@ -59,13 +59,13 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename ITERABLE_OF_ADDABLE, enable_if_t<
                                                 Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>
-        #if 0
+#if 0
 #if qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy
                                                  and is_convertible_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>, T>
 #else
                                                  and Collection<T>::template IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
 #endif
-        #endif
+#endif
                                                 and not is_base_of_v<Collection<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline Collection<T>::Collection (ITERABLE_OF_ADDABLE&& src)
         : Collection{}
