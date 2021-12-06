@@ -188,8 +188,8 @@ namespace Stroika::Foundation::Containers {
         Bijection (const initializer_list<value_type>& src);
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>* = nullptr>
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<CONTAINER_OF_SINGLEVALUE_ADD_ARGS>>>* = nullptr>
-        explicit Bijection (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Bijection (ITERABLE_OF_ADDABLE&& src);
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> () and Configuration::IsIterableOfT_v<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>>* = nullptr>
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src);
         template <typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>>* = nullptr>
@@ -369,6 +369,8 @@ namespace Stroika::Foundation::Containers {
          *  Also - we guarantee that even if the association is different, if the key has not changed,
          *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
          *
+         *  \req  IsAddable_v<ExtractValueType_t<ADDABLE_T>>;   // ADDABLE_T overload
+         *
          *  \note mutates container
          */
         nonvirtual void Add (ArgByValueType<DomainType> key, ArgByValueType<RangeType> newElt);
@@ -379,9 +381,14 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \note   AddAll/2 is alias for .net AddRange ()
          *
+         * 
+         *  \req  IsAddable_v<ExtractValueType_t<CONTAINER_OF_KEYVALUE>>;                       // CONTAINER_OF_KEYVALUE overload
+         *  \req  Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>                            //  ditto
+         *  \req  static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_KEYVALUE>>); // COPY_FROM_ITERATOR_KEYVALUE overload
+
          *  \note mutates container
          */
-        template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>* = nullptr>
+        template <typename CONTAINER_OF_KEYVALUE>
         nonvirtual void AddAll (const CONTAINER_OF_KEYVALUE& items);
         template <typename COPY_FROM_ITERATOR_KEYVALUE>
         nonvirtual void AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);

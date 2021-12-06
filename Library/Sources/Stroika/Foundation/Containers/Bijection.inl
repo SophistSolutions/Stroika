@@ -67,11 +67,12 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<CONTAINER_OF_SINGLEVALUE_ADD_ARGS>>>*>
-    inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (ITERABLE_OF_ADDABLE&& src)
         : Bijection{}
     {
-        AddAll (src);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
@@ -87,6 +88,7 @@ namespace Stroika::Foundation::Containers {
     Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end)
         : Bijection{}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>>);
         AddAll (start, end);
         _AssertRepValidType ();
     }
@@ -95,6 +97,7 @@ namespace Stroika::Foundation::Containers {
     Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end)
         : Bijection{forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer)}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>>);
         AddAll (start, end);
         _AssertRepValidType ();
     }
@@ -312,10 +315,11 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>*>
+    template <typename CONTAINER_OF_KEYVALUE>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::AddAll (const CONTAINER_OF_KEYVALUE& items)
     {
         static_assert (IsAddable_v<ExtractValueType_t<CONTAINER_OF_KEYVALUE>>);
+        static_assert (Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>);
         // see https://stroika.atlassian.net/browse/STK-645
         /*
          *  Note - unlike some other containers - we don't need to check for this != &s because if we
