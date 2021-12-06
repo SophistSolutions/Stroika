@@ -658,7 +658,7 @@ In file included from ./../../Containers/Factory/../Concrete/../Collection.h:411
 #ifndef qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy
 
 #if defined(_MSC_VER)
-#define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt10_)
+#define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt0_)
 #elif defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
