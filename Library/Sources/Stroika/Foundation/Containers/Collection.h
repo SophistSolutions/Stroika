@@ -172,15 +172,17 @@ namespace Stroika::Foundation::Containers {
         Collection (Collection&& src) noexcept      = default;
         Collection (const Collection& src) noexcept = default;
         Collection (const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<
-                                                     Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<
+                                                    Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>
+#if 0
 #if qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy
-                                                     and is_convertible_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>, T>
+                                                     and is_convertible_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>, T>
 #else
-                                                     and Collection<T>::template IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>
+                                                     and Collection<T>::template IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
 #endif
-                                                     and not is_base_of_v<Collection<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        Collection (CONTAINER_OF_ADDABLE&& src);
+#endif
+                                                    and not is_base_of_v<Collection<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        Collection (ITERABLE_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         Collection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
