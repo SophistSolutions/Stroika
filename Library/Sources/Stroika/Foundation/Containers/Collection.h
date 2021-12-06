@@ -219,7 +219,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE>
         nonvirtual void AddAll (CONTAINER_OF_ADDABLE&& items);
 
     public:
@@ -279,12 +279,14 @@ namespace Stroika::Foundation::Containers {
          * 
          *  The overload with Iterator<T> arguments (start/end) must be iterators from this container.
          *
+         *  \req    for CONTAINER_OF_ADDABLE overload: static_assert (IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>);
+         *
          *  \note mutates container
          */
         nonvirtual void RemoveAll ();
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual size_t RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, const EQUALS_COMPARER& equalsComparer = {});
-        template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
+        template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>* = nullptr>
         nonvirtual size_t RemoveAll (const CONTAINER_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer = {});
         template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>* = nullptr>
         nonvirtual size_t RemoveAll (const PREDICATE& p);

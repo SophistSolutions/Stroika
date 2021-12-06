@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
+    template <typename CONTAINER_OF_ADDABLE>
     inline void Collection<T>::AddAll (CONTAINER_OF_ADDABLE&& items)
     {
         static_assert (IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>);
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Containers {
     inline void Collection<T>::Remove (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer)
     {
         auto i = this->Find (item, equalsComparer);
-        Require (i != this->end ());
+        Require (i != this->end ());    // use remove-if if the item might not exist
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i, nullptr);
     }
     template <typename T>
@@ -172,9 +172,10 @@ namespace Stroika::Foundation::Containers {
         return cnt;
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
+    template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
     inline size_t Collection<T>::RemoveAll (const CONTAINER_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer)
     {
+        static_assert (IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>);
         if (static_cast<const void*> (this) == static_cast<const void*> (addressof (c))) {
             return RemoveAll (equalsComparer);
         }
