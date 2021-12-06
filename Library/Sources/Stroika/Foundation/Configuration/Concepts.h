@@ -371,13 +371,6 @@ namespace Stroika::Foundation::Configuration {
     constexpr inline bool has_beginend_v = is_detected_v<Private_::has_beginend_t, T>;
 
     /**
-     *  Check if ITERABLE has begin/end methods, and the begin/end stuff looks like they return an iterator.
-     *  This does NOT check for subclassing Traversal::Iterable<> (so works with an array, or stl vector etc).
-     */
-    template <typename ITERABLE>
-    constexpr bool IsIterable_v = has_beginend_v<ITERABLE>;
-
-    /**
      *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>), and if result of *begin () is convertible to T.
      */
     template <typename ITERABLE_OF_T, typename T>
@@ -463,7 +456,7 @@ namespace Stroika::Foundation::Configuration {
     /**
      *  \brief Extract the type of elements in a container, or returned by an iterator (value_type) or void it there is no value_type
      * 
-     *  When we support C++20, use iter_value_t
+     *  When we support C++20, use iter_value_t, or range_value_t
      */
     template <typename T, typename = void>
     struct ExtractValueType {
@@ -487,6 +480,17 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename T>
     using ExtractValueType_t = typename ExtractValueType<decay_t<T>>::type;
+
+    /**
+     *  Check if ITERABLE has begin/end methods, and the begin/end stuff looks like they return an iterator.
+     *  This does NOT check for subclassing Traversal::Iterable<> (so works with an array, or stl vector etc).
+     * 
+     *  \note Since Stroika 2.1b14, this also checks that there is a legitimate value_type
+     * 
+     *  \note may in the future ALSO check if return value of begin/end appear to be 'iterators' and of the same type.
+     */
+    template <typename ITERABLE>
+    constexpr bool IsIterable_v = has_beginend_v<ITERABLE> and not is_same_v<ExtractValueType_t<ITERABLE>, void>;
 
     /// DEPRECATED CALLS ////////////////////
 
