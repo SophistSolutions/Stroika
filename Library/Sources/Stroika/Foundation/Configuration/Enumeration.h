@@ -156,6 +156,12 @@ namespace Stroika::Foundation::Configuration {
         using BasicArrayInitializer = array<EnumName<ENUM_TYPE>, static_cast<size_t> (ENUM_TYPE::eCOUNT)>;
 
     public:
+        using const_iterator = typename EnumNamesHolderType_::const_iterator;
+
+    public:
+        using value_type = typename EnumNamesHolderType_::value_type;
+
+    public:
         /**
          */
 #if qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_
@@ -189,9 +195,6 @@ namespace Stroika::Foundation::Configuration {
         /**
          */
         explicit operator initializer_list<EnumName<ENUM_TYPE>> () const;
-
-    public:
-        using const_iterator = typename EnumNamesHolderType_::const_iterator;
 
     public:
         /**
