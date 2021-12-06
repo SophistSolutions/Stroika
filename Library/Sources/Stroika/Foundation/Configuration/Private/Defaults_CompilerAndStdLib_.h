@@ -644,12 +644,26 @@ On Vs2k19:
 1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): note: 'Stroika::Foundation::Containers::Collection<T>::Collection(COPY_FROM_ITERATOR_OF_ADDABLE,COPY_FROM_ITERATOR_OF_ADDABLE)'
 
 
-
+CLANG:
+         Compiling Library/Sources/Stroika/Foundation/Characters/String.cpp ... 
+In file included from CipherAlgorithm.cpp:14:
+In file included from ./../../Memory/Optional.h:16:
+In file included from ./../../Debug/../Characters/../Memory/../Containers/Adapters/Adder.h:13:
+In file included from ./../../Containers/Factory/../Concrete/../Collection.h:411:
+./../../Containers/Collection.inl:68:27: error: out-of-line definition of 'Collection<T>' does not match any declaration in 'Collection<T>'
+    inline Collection<T>::Collection (CONTAINER_OF_ADDABLE&& src)
+                          ^~~~~~~~~~
+         Compiling Library/Sources/Stroika/Foundation/Characters/String2Int.cpp ... 
  */
 #ifndef qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy
 
 #if defined(_MSC_VER)
 #define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt10_)
+#elif defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+#elif defined(__clang__) && !defined(__APPLE__)
+// broken in clang++-13
+#define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #else
 #define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy 0
 #endif
