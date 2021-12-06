@@ -44,6 +44,7 @@
 namespace Stroika::Foundation::Containers {
 
     using Configuration::ArgByValueType;
+    using Configuration::ExtractValueType_t;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -174,9 +175,9 @@ namespace Stroika::Foundation::Containers {
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<
                                                      Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>
 #if qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy
-                                                     and is_convertible_v<Configuration::ExtractValueType_t<CONTAINER_OF_ADDABLE>, T>
+                                                     and is_convertible_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>, T>
 #else
-                                                     and Collection<T>::template IsAddable_v<Configuration::ExtractValueType_t<CONTAINER_OF_ADDABLE>>
+                                                     and Collection<T>::template IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>
 #endif
                                                      and not is_base_of_v<Collection<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Collection (CONTAINER_OF_ADDABLE&& src);

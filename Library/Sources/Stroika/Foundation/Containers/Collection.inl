@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Containers {
     inline Collection<T>::Collection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
         : Collection{}
     {
-        static_assert (IsAddable_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);
+        static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);
         AddAll (start, end);
         _AssertRepValidType ();
     }
@@ -60,15 +60,15 @@ namespace Stroika::Foundation::Containers {
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<
                                                  Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>
 #if qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy
-                                                 and is_convertible_v<Configuration::ExtractValueType_t<CONTAINER_OF_ADDABLE>, T>
+                                                 and is_convertible_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>, T>
 #else
-                                                 and Collection<T>::template IsAddable_v<Configuration::ExtractValueType_t<CONTAINER_OF_ADDABLE>>
+                                                 and Collection<T>::template IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>
 #endif
                                                  and not is_base_of_v<Collection<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
     inline Collection<T>::Collection (CONTAINER_OF_ADDABLE&& src)
         : Collection{}
     {
-        static_assert (IsAddable_v<Configuration::ExtractValueType_t<CONTAINER_OF_ADDABLE>>); // redundant (enable_if_t) but for doc purpose
+        static_assert (IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>); // redundant (enable_if_t) but for doc purpose
         AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Containers {
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
     void Collection<T>::AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
     {
-        static_assert (IsAddable_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);
+        static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         for (auto i = start; i != end; ++i) {
             tmp._GetWriteableRep ().Add (*i);
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Containers {
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
     inline void Collection<T>::AddAll (CONTAINER_OF_ADDABLE&& items)
     {
-        static_assert (IsAddable_v<Configuration::ExtractValueType_t<CONTAINER_OF_ADDABLE>>);
+        static_assert (IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>);
         if constexpr (std::is_convertible_v<decay_t<CONTAINER_OF_ADDABLE>*, Collection<value_type>*>) {
             // very rare corner case
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[UNLIKELY_ATTR]] {
