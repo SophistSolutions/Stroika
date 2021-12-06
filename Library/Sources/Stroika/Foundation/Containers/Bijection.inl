@@ -298,7 +298,7 @@ namespace Stroika::Foundation::Containers {
             _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.first, p.second);
         }
         else {
-            static_assert (is_convertible_v<ADDABLE_T, KeyValuePair<DomainType, RangeType>>);
+            static_assert (is_convertible_v<ADDABLE_T, Common::KeyValuePair<DomainType, RangeType>>);
             _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue);
         }
     }
