@@ -154,16 +154,16 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add ()
-         *
-         *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
+         * 
+         *  NOTE - you can only Add a T/value_type, not a KEY_TYPE, but 'lookup-style' operations can operate on KEY_TYPE.
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
+        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
 
     public:
         /**
-         *  For the CTOR overload with CONTAINER_OF_ADDABLE, its anything that supports c.begin(), c.end () to find
-         *  all the elements.
+         *  For the CTOR overload with ITERABLE_OF_ADDABLE, its anything that supports c.begin(), c.end () to find
+         *  all the elements and for which the result of c.begin () IsAddable_v().
          *
          *  All constructors either copy their source comparer (copy/move CTOR), or use the provided argument comparer
          *  (which in turn defaults to equal_to<T>).
@@ -220,38 +220,38 @@ namespace Stroika::Foundation::Containers {
                   enable_if_t<
                       Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
         KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
-        template <typename CONTAINER_OF_ADDABLE,
+        template <typename ITERABLE_OF_ADDABLE,
                   typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
                   typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   enable_if_t<
-                      Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<CONTAINER_OF_ADDABLE>> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
-        KeyedCollection (CONTAINER_OF_ADDABLE&& src);
-        template <typename CONTAINER_OF_ADDABLE,
+                      Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+        KeyedCollection (ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERABLE_OF_ADDABLE,
                   typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
                   typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   enable_if_t<
-                      Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<CONTAINER_OF_ADDABLE>> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
-        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
-        template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE,
+                      Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
+        template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE,
                   enable_if_t<
-                      KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
-        KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE,
+                      KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE,
                   typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
                   typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   enable_if_t<
-                      Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
-        KeyedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE,
+                      Configuration::is_iterator_v<ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        KeyedCollection (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename ITERATOR_OF_ADDABLE,
                   typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
                   typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   enable_if_t<
-                      Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
-        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-        template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE,
+                      Configuration::is_iterator_v<ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE,
                   enable_if_t<
-                      KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>* = nullptr>
-        KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+                      KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::is_iterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     protected:
         explicit KeyedCollection (_IRepSharedPtr&& rep) noexcept;
@@ -359,13 +359,15 @@ namespace Stroika::Foundation::Containers {
          *
          *  Returns the number if items actually added (not necessarily same as end-start)
          * 
+         *  \req IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>
+         *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
+         * 
          *  \note mutates container
          */
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        nonvirtual unsigned int AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
-        nonvirtual unsigned int AddAll (CONTAINER_OF_ADDABLE&& items);
-        nonvirtual unsigned int AddAll (const KeyedCollection& items);
+        template <typename ITERATOR_OF_ADDABLE>
+        nonvirtual unsigned int AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        nonvirtual unsigned int AddAll (ITERABLE_OF_ADDABLE&& items);
 
     public:
         /**
@@ -412,10 +414,10 @@ namespace Stroika::Foundation::Containers {
          * 
          *  \note mutates container
          */
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        nonvirtual size_t RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-        template <typename CONTAINER_OF_ADDABLE>
-        nonvirtual size_t RemoveAll (const CONTAINER_OF_ADDABLE& s);
+        template <typename ITERATOR_OF_ADDABLE>
+        nonvirtual size_t RemoveAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename ITERABLE_OF_ADDABLE>
+        nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& s);
         nonvirtual void   RemoveAll ();
         template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>* = nullptr>
         nonvirtual size_t RemoveAll (const PREDICATE& p);
