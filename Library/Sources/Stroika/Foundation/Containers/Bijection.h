@@ -91,11 +91,8 @@ namespace Stroika::Foundation::Containers {
      *  \em Factory:
      *      @see Concrete::Bijection_Factory<> to see default implementations.
      *
-     *  \note Note About Iterators
-     *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
-     *
-     *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
-     *          the iterators are automatically updated internally to behave sensibly.
+     *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
+     *          constructors, iterators, etc)
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *      o   operator== and operator!= are supported
@@ -188,10 +185,12 @@ namespace Stroika::Foundation::Containers {
         Bijection (const initializer_list<value_type>& src);
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>* = nullptr>
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const initializer_list<value_type>& src);
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<
+            Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> 
+            and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Bijection (ITERABLE_OF_ADDABLE&& src);
-        template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> () and Configuration::IsIterableOfT_v<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>>* = nullptr>
-        Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src);
+        template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> () and Configuration::IsIterableOfT_v<ITERABLE_OF_ADDABLE, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>>* = nullptr>
+        Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const ITERABLE_OF_ADDABLE& src);
         template <typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>>* = nullptr>
         Bijection (COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end);
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>>* = nullptr>
@@ -493,16 +492,16 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS>
-        nonvirtual Bijection& operator+= (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& items);
+        template <typename ITERABLE_OF_ADDABLE>
+        nonvirtual Bijection& operator+= (const ITERABLE_OF_ADDABLE& items);
 
     public:
         /**
          *
          *  \note mutates container
          */
-        template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS>
-        nonvirtual Bijection& operator-= (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& items);
+        template <typename ITERABLE_OF_ADDABLE>
+        nonvirtual Bijection& operator-= (const ITERABLE_OF_ADDABLE& items);
 
     protected:
         /**

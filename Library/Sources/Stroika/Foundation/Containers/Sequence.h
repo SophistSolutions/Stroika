@@ -195,14 +195,8 @@ namespace Stroika::Foundation::Containers {
      *      So now (as of v2.0a20) - we just have the EQUALS_COMPARER be a templated param to the
      *      methods that need it.
      * 
-     *  \note Move constructor/assignment
-     *      This maps to copy due to COW - see description of Iterable<T> for details.
-     *
-     *  \note Note About Iterators
-     *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
-     *
-     *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
-     *          the iterators are automatically updated internally to behave sensibly.
+     *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
+     *          constructors, iterators, etc)
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison equality (==, <=> etc) - IFF equal_to (for ==/!=) and three_way_comparer<> (for the rest are defined

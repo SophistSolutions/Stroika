@@ -77,14 +77,8 @@ namespace Stroika::Foundation::Containers {
      *
      *      Similarly for std::initalizer_list.
      *
-     *  \note Move constructor/assignment
-     *      This maps to copy due to COW - see description of Iterable<T> for details.
-     *
-     *  \note Note About Iterators
-     *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
-     *
-     *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
-     *          the iterators are automatically updated internally to behave sensibly.
+     *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
+     *          constructors, iterators, etc)
      *
      *  \note Note About Update method
      *      We intentionally omit the Update () method since update given an iterator would do the same thing

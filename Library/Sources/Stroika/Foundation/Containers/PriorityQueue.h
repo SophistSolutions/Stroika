@@ -75,11 +75,9 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
-     *  \note Note About Iterators
-     *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
+     *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
+     *          constructors, iterators, etc)
      *
-     *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
-     *          the iterators are automatically updated internally to behave sensibly.
      *
      */
     template <typename T>

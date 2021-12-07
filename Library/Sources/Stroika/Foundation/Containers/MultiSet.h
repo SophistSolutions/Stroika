@@ -84,6 +84,9 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Aliases         Tally (Stroika 1.0), Bag (from SmallTalk-80)
      *
+     *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
+     *          constructors, iterators, etc)
+     *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison equality (==, !=) support
      *
@@ -98,15 +101,6 @@ namespace Stroika::Foundation::Containers {
      *
      *          ThreeWayComparer support is NOT provided for Multisets, because there is no intrinsic ordering among the elements
      *          of the multiset (keys) - even if there was some way to compare the T elements.
-     *
-     *  \note Move constructor/assignment
-     *      This maps to copy due to COW - see description of Iterable<T> for details.
-     *
-     *  \note Note About Iterators
-     *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
-     *
-     *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
-     *          the iterators are automatically updated internally to behave sensibly.
      *
      */
     template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>

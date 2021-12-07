@@ -654,6 +654,16 @@ In file included from ./../../Containers/Factory/../Concrete/../Collection.h:411
     inline Collection<T>::Collection (CONTAINER_OF_ADDABLE&& src)
                           ^~~~~~~~~~
          Compiling Library/Sources/Stroika/Foundation/Characters/String2Int.cpp ... 
+
+
+WORKAROUND IF NEEDED
+in enable_if_t's, but may not need this anymore
+#if qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy
+                                                     and is_convertible_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>, T>
+#else
+                                                     and Collection<T>::template IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
+#endif
+
  */
 #ifndef qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy
 

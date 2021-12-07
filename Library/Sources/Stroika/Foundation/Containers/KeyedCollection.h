@@ -85,11 +85,8 @@ namespace Stroika::Foundation::Containers {
      *                  This might appear slightly more loosy goosy - but no more so than having differnt comparers for Set<T>. And its more
      *                  convenient in use/practice.
      *
-     *  \note Note About Iterators
-     *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
-     *
-     *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
-     *          the iterators are automatically updated internally to behave sensibly.
+     *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
+     *          constructors, iterators, etc)
      *
      *  TODO:
      *      @todo   Consider adding methods from Set<T>, like Union, Interection, Difference etc. Or way to create

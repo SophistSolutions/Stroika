@@ -163,6 +163,7 @@ Each container Archetype has its own set of arguments that make sense for its co
   ~~~
 
 - Move and Copy constructors, defaulted/noexcept, since they all just propagate this to their underlying base class (Iterable<>) and this just increments or adjusts reference counts as appopriate.
+
     ~~~
     CONTAINER (CONTAINER&& src) noexcept      = default;
     CONTAINER (const CONTAINER& src) noexcept = default;
@@ -223,6 +224,13 @@ template <typename CONTAINER_OF_ADDABLE,
               Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<CONTAINER_OF_ADDABLE>> and Common::IsEqualsComparer<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
 KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
 ~~~
+
+## Note About Iterators
+
+- Stroika container iterators must have shorter lifetime than the container they are iterating over.
+
+- Stroika container iterators are all automatically patched, so that if you change the underlying container
+  the iterators are automatically updated internally to behave sensibly.
 
 ## Other Modules
   - [Adapters/](Adapters/ReadMe.md)

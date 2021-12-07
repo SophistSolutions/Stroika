@@ -67,7 +67,9 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<
+        Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> 
+        and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (ITERABLE_OF_ADDABLE&& src)
         : Bijection{}
     {
@@ -76,8 +78,8 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> () and Configuration::IsIterableOfT_v<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>>*>
-    inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src)
+    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> () and Configuration::IsIterableOfT_v<ITERABLE_OF_ADDABLE, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>>*>
+    inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const ITERABLE_OF_ADDABLE& src)
         : Bijection{forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer)}
     {
         AddAll (src);
@@ -398,15 +400,15 @@ namespace Stroika::Foundation::Containers {
         return nextI;
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS>
-    inline Bijection<DOMAIN_TYPE, RANGE_TYPE>& Bijection<DOMAIN_TYPE, RANGE_TYPE>::operator+= (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& items)
+    template <typename ITERABLE_OF_ADDABLE>
+    inline Bijection<DOMAIN_TYPE, RANGE_TYPE>& Bijection<DOMAIN_TYPE, RANGE_TYPE>::operator+= (const ITERABLE_OF_ADDABLE& items)
     {
         AddAll (items);
         return *this;
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS>
-    inline Bijection<DOMAIN_TYPE, RANGE_TYPE>& Bijection<DOMAIN_TYPE, RANGE_TYPE>::operator-= (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& items)
+    template <typename ITERABLE_OF_ADDABLE>
+    inline Bijection<DOMAIN_TYPE, RANGE_TYPE>& Bijection<DOMAIN_TYPE, RANGE_TYPE>::operator-= (const ITERABLE_OF_ADDABLE& items)
     {
         RemoveAll (items);
         return *this;

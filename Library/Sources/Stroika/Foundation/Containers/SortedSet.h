@@ -17,13 +17,6 @@
  *
  *  TODO:
  *      @todo   Support Iterable<>::Where overload?
- *
- *      @todo   CRITICAL - need version where you can pass in a lambda to compare two things for <, so
- *              easy to construct a sorted set with your own sorter function!!!
- *
- *              This applies equally to other Stroika sorted types
- *
- *
  */
 
 namespace Stroika::Foundation::Containers {
@@ -40,14 +33,8 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
-     *  \note Move constructor/assignment
-     *      This maps to copy due to COW - see description of Iterable<T> for details.
-     *
-     *  \note Note About Iterators
-     *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
-     *
-     *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
-     *          the iterators are automatically updated internally to behave sensibly.
+     *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
+     *          constructors, iterators, etc)
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *        o Set (base class) are already intrinsically equals-comparable.

@@ -72,6 +72,9 @@ namespace Stroika::Foundation::Containers {
      *      case (n^2) and this worst case is the relatively common case of identical
      *      bags.
      *
+     *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
+     *          constructors, iterators, etc)
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note   Shake
@@ -87,15 +90,6 @@ namespace Stroika::Foundation::Containers {
      *
      *          The caller may use the inherited (from Iterable<>) SetEquals, MultiSetEquals, or SequenceEquals()
      *          as appropriate. Methods that require and equals comparer, take one as argument with appropriate defaulting.
-     *
-     *  \note Move constructor/assignment
-     *      This maps to copy due to COW - see description of Iterable<T> for details.
-     *
-     *  \note Note About Iterators
-     *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
-     *
-     *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
-     *          the iterators are automatically updated internally to behave sensibly.
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *      o   No comparisons are provided, because there is no intrinsic way to compare collections for equality, less etc.
@@ -174,13 +168,6 @@ namespace Stroika::Foundation::Containers {
         Collection (const initializer_list<value_type>& src);
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<
                                                     Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>
-#if 0
-#if qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy
-                                                     and is_convertible_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>, T>
-#else
-                                                     and Collection<T>::template IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
-#endif
-#endif
                                                     and not is_base_of_v<Collection<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         Collection (ITERABLE_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
