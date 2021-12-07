@@ -52,11 +52,11 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    inline Queue<T>::Queue (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename ITERATOR_OF_ADDABLE>
+    inline Queue<T>::Queue (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : Queue{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAllToTail (start, end);
         _AssertRepValidType ();
     }
@@ -108,10 +108,10 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    inline void Queue<T>::AddAllToTail (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename ITERATOR_OF_ADDABLE>
+    inline void Queue<T>::AddAllToTail (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
     {
-        static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         for (auto i = start; i != end; ++i) {
             tmp._GetWriteableRep ().AddTail (*i);

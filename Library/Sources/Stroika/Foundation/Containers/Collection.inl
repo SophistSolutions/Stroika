@@ -28,11 +28,11 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    inline Collection<T>::Collection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename ITERATOR_OF_ADDABLE>
+    inline Collection<T>::Collection (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : Collection{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (start, end);
         _AssertRepValidType ();
     }
@@ -72,21 +72,21 @@ namespace Stroika::Foundation::Containers {
         return this->Find (item, equalsComparer) != nullptr;
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    void Collection<T>::AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename ITERATOR_OF_ADDABLE>
+    void Collection<T>::AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
     {
-        static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         for (auto i = start; i != end; ++i) {
             tmp._GetWriteableRep ().Add (*i);
         }
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE>
-    inline void Collection<T>::AddAll (CONTAINER_OF_ADDABLE&& items)
+    template <typename ITERABLE_OF_ADDABLE>
+    inline void Collection<T>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
-        static_assert (IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>);
-        if constexpr (std::is_convertible_v<decay_t<CONTAINER_OF_ADDABLE>*, Collection<value_type>*>) {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, Collection<value_type>*>) {
             // very rare corner case
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[UNLIKELY_ATTR]] {
                 vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
@@ -165,10 +165,10 @@ namespace Stroika::Foundation::Containers {
         return cnt;
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
-    inline size_t Collection<T>::RemoveAll (const CONTAINER_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer)
+    template <typename ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline size_t Collection<T>::RemoveAll (const ITERABLE_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer)
     {
-        static_assert (IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         if (static_cast<const void*> (this) == static_cast<const void*> (addressof (c))) {
             return RemoveAll (equalsComparer);
         }

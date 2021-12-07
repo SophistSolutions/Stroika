@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  For the CTOR overload with CONTAINER_OF_ADDABLE, its anything that supports c.begin(), c.end () to find
+         *  For the CTOR overload with ITERABLE_OF_ADDABLE, its anything that supports c.begin(), c.end () to find
          *  all the elements, and which has elements (iterated) convertable to T.
          *
          *  \par Example Usage
@@ -149,10 +149,10 @@ namespace Stroika::Foundation::Containers {
          *          Collection<int> c8  { move (c1) };
          *      \endcode
          *
-         *  \req    static_assert (IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>);  // except done with enable_if_t to avoid bad overload of CTOR
-         *  \req    static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);
+         *  \req    static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);  // except done with enable_if_t to avoid bad overload of CTOR
+         *  \req    static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
          *
-         *  \note   Most other containers (e.g. Set<>, Sequence<>) have the 'CONTAINER_OF_ADDABLE&& src' CTOR be explicit, whereas Collection does not.
+         *  \note   Most other containers (e.g. Set<>, Sequence<>) have the 'ITERABLE_OF_ADDABLE&& src' CTOR be explicit, whereas Collection does not.
          *          This is because converting to a Set or Sequence has some semantics, and the programmer should be clear on this. But a Collection<>
          *          acts just like an interable (except that its modifyable). So allow this case to be non-explicit.
          * 
@@ -165,8 +165,8 @@ namespace Stroika::Foundation::Containers {
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<
                                                     Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         Collection (ITERABLE_OF_ADDABLE&& src);
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        Collection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename ITERATOR_OF_ADDABLE>
+        Collection (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     protected:
         explicit Collection (_IRepSharedPtr&& src) noexcept;
@@ -196,15 +196,15 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \note   AddAll/2 is alias for .net AddRange ()
          * 
-         *  \req IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>
-         *  \req IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>
+         *  \req IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>
+         *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
          *
          *  \note mutates container
          */
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-        template <typename CONTAINER_OF_ADDABLE>
-        nonvirtual void AddAll (CONTAINER_OF_ADDABLE&& items);
+        template <typename ITERATOR_OF_ADDABLE>
+        nonvirtual void AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename ITERABLE_OF_ADDABLE>
+        nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 
     public:
         /**
@@ -263,15 +263,15 @@ namespace Stroika::Foundation::Containers {
          * 
          *  The overload with Iterator<T> arguments (start/end) must be iterators from this container.
          *
-         *  \req    for CONTAINER_OF_ADDABLE overload: static_assert (IsAddable_v<ExtractValueType_t<CONTAINER_OF_ADDABLE>>);
+         *  \req    for ITERABLE_OF_ADDABLE overload: static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
          *
          *  \note mutates container
          */
         nonvirtual void RemoveAll ();
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual size_t RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, const EQUALS_COMPARER& equalsComparer = {});
-        template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>* = nullptr>
-        nonvirtual size_t RemoveAll (const CONTAINER_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer = {});
+        template <typename ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer = {});
         template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>* = nullptr>
         nonvirtual size_t RemoveAll (const PREDICATE& p);
 

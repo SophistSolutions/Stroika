@@ -127,8 +127,8 @@ namespace Stroika::Foundation::Containers {
         Queue (const initializer_list<value_type>& src);
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Queue<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Queue (ITERABLE_OF_ADDABLE&& src);
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        Queue (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename ITERATOR_OF_ADDABLE>
+        Queue (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     protected:
         explicit Queue (_IRepSharedPtr&& rep) noexcept;
@@ -196,16 +196,16 @@ namespace Stroika::Foundation::Containers {
          *
          *  This also implies that ordering will be preserved in iterating over the Queue, or in Dequeing those elements.
          *
-         *  \req  IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>;                             // ITERABLE_OF_ADDABLE overload
-         *  \req  Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>                                  //  ditto
-         *  \req  static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);   // COPY_FROM_ITERATOR_OF_ADDABLE overload
+         *  \req  IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>;                   // ITERABLE_OF_ADDABLE overload
+         *  \req  Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>                        //  ditto
+         *  \req  static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);   // ITERATOR_OF_ADDABLE overload
          *
          *  \note mutates container
          */
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         nonvirtual void AddAllToTail (ITERABLE_OF_ADDABLE&& s);
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        nonvirtual void AddAllToTail (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename ITERATOR_OF_ADDABLE>
+        nonvirtual void AddAllToTail (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
