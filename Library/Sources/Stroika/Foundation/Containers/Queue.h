@@ -118,8 +118,6 @@ namespace Stroika::Foundation::Containers {
          *  as the order of the items its created from.
          * 
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
-         *
-         *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */
         Queue ();
         Queue (Queue&& src) noexcept      = default;

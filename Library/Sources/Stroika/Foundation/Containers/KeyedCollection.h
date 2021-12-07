@@ -206,8 +206,6 @@ namespace Stroika::Foundation::Containers {
          *      \endcode
          *
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
-         *
-         *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */
         template <typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,

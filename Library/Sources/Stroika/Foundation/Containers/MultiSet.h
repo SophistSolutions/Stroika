@@ -40,23 +40,9 @@
  *              Also likewise key for MultiSet_stdmap<> - cuz now you cannot assign MultiSet_stdmap<> to
  *              MultiSet<T>!!!!
  *
- *      @todo   Fix MultiSet<> CTOR overload taking pointers (sb iterators) - overload so both cases -
- *              Iterator<T> and Iterator<CountedValue<T>>. Ise enableOf(isconvertible....)
- *
  *      @todo   Consider rewriting all MultiSet<> concrete types using Mapping<T,counttype> concrete impl?
  *              Might not work easily but document why... (Add () semantics - but maybe).
  *
- *      @todo   AddAll() and CTOR for MultiSet (and SortedMultiSet and concrete types) is confused by having
- *              overload taking T* and CountedValue<T>*. Issue is that we cannot do templated iterator
- *              and templated objhect CTOR while these are iteratored (without mcuh better partial
- *              template specializaiton - I THINK????). Maybe use different method for one or the other
- *              to distinguish?
- *
- *              USE SFINAE stuff we used in Mapping<> etc. Simplify AddAll and do the magic in Add.
- *
- *      @todo   Current DOCS for MultiSet::Remove() say that for variant T, count, the value MUST be present.
- *              But I think this is not in the spirit we've used elsewhere, due to multithreading.
- *              Better to allow them to not be present, else hard to synchonize (check and remove)
  *
  */
 
@@ -64,6 +50,7 @@ namespace Stroika::Foundation::Containers {
 
     using Common::CountedValue;
     using Configuration::ArgByValueType;
+    using Configuration::ExtractValueType_t;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -155,6 +142,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add ()
+         */
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
+
+    public:
+        /**
          *  All constructors either copy their source comparer (copy/move CTOR), or use the provided argument comparer
          *  (which in turn defaults to equal_to<T>).
          *
@@ -180,8 +174,6 @@ namespace Stroika::Foundation::Containers {
          *          MultiSet<int> s8  { move (s1) };
          *          MultiSet<int> s9  { Common::mkEqualsComparer([](int l, int r) { return l == r; }), c};
          *      \endcode
-         *
-         *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */
         MultiSet ();
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
@@ -194,14 +186,14 @@ namespace Stroika::Foundation::Containers {
         MultiSet (const initializer_list<value_type>& src);
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
         MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<MultiSet<T, TRAITS>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        explicit MultiSet (CONTAINER_OF_ADDABLE&& src);
-        template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
-        MultiSet (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src);
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>* = nullptr>
-        MultiSet (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-        template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>* = nullptr>
-        MultiSet (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<MultiSet<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit MultiSet (ITERABLE_OF_ADDABLE&& src);
+        template <typename EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        MultiSet (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        MultiSet (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::is_iterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        MultiSet (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     protected:
         explicit MultiSet (_IRepSharedPtr&& rep) noexcept;
@@ -231,12 +223,15 @@ namespace Stroika::Foundation::Containers {
          *  \note   AddAll/2 is alias for .net AddRange ()
          *          and AddAll/2 - the iterator can be Iterator<T> or Iterator<CountedValue<T>>
          *
+         *  \req IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>
+         *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
+         *
          *  \note mutates container
          */
-        template <typename COPY_FROM_ITERATOR>
-        nonvirtual void AddAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>* = nullptr>
-        nonvirtual void AddAll (CONTAINER_OF_ADDABLE&& items);
+        template <typename ITERATOR_OF_ADDABLE>
+        nonvirtual void AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 
     public:
         /**

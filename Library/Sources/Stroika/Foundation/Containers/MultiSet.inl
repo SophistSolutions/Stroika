@@ -272,19 +272,21 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<MultiSet<T, TRAITS>, decay_t<CONTAINER_OF_ADDABLE>>>*>
-    inline MultiSet<T, TRAITS>::MultiSet (CONTAINER_OF_ADDABLE&& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<MultiSet<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline MultiSet<T, TRAITS>::MultiSet (ITERABLE_OF_ADDABLE&& src)
         : MultiSet{}
     {
-        AddAll (forward<CONTAINER_OF_ADDABLE> (src));
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
-    inline MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src)
+    template <typename EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
         : MultiSet{forward<EQUALS_COMPARER> (equalsComparer)}
     {
-        AddAll (src);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
@@ -330,18 +332,20 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
-    MultiSet<T, TRAITS>::MultiSet (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<ITERATOR_OF_ADDABLE>>*>
+    MultiSet<T, TRAITS>::MultiSet (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : MultiSet{}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (start, end);
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
-    MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::is_iterator_v<ITERATOR_OF_ADDABLE>>*>
+    MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : MultiSet{forward<EQUALS_COMPARER> (equalsComparer)}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (start, end);
         _AssertRepValidType ();
     }
@@ -429,22 +433,24 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item.fValue, item.fCount);
     }
     template <typename T, typename TRAITS>
-    template <typename COPY_FROM_ITERATOR>
-    void MultiSet<T, TRAITS>::AddAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+    template <typename ITERATOR_OF_ADDABLE>
+    void MultiSet<T, TRAITS>::AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
     {
-        for (COPY_FROM_ITERATOR i = start; i != end; ++i) {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        for (ITERATOR_OF_ADDABLE i = start; i != end; ++i) {
             Add (*i);
         }
     }
     template <typename T, typename TRAITS>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
-    void MultiSet<T, TRAITS>::AddAll (CONTAINER_OF_ADDABLE&& items)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    void MultiSet<T, TRAITS>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         // see https://stroika.atlassian.net/browse/STK-645
-        if constexpr (std::is_convertible_v<decay_t<CONTAINER_OF_ADDABLE>*, const MultiSet<T, TRAITS>*>) {
+        if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, const MultiSet<T, TRAITS>*>) {
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[UNLIKELY_ATTR]] {
                 // very rare corner case
-                vector<typename decay_t<CONTAINER_OF_ADDABLE>::value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
+                vector<typename decay_t<ITERABLE_OF_ADDABLE>::value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
                 for (auto&& i : copy) {
                     Add (i);
                 }

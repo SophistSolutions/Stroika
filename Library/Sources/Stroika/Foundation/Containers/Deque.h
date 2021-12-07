@@ -81,8 +81,6 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
-         *
-         *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */
         Deque ();
         Deque (Deque&& src) noexcept      = default;
