@@ -162,8 +162,7 @@ namespace Stroika::Foundation::Containers {
         Collection (Collection&& src) noexcept      = default;
         Collection (const Collection& src) noexcept = default;
         Collection (const initializer_list<value_type>& src);
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<
-                                                    Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         Collection (ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>
         Collection (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);

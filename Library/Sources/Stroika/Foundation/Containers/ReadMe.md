@@ -183,19 +183,25 @@ Each container Archetype has its own set of arguments that make sense for its co
     CONTAINER (const initializer_list<value_type>& src);
     ~~~
 
-- Copy other container (soon REDO using IsAddable). This allows for converting nearly anything sensible into a CONTAINER, and the constraints (TBD) on what can be converted will soon change but use the IsAddable template.
+- Copy other container. This allows for converting nearly anything sensible (iterable with IsAddable_v constrained applied to its iterable value_type) into a CONTAINER.
 
   - Note, the reason for the not_is_base_of<> magic is to avoid ambiguity with copy constructor (not SURE WHY this is needed but it was needed in some cases - maybe due to bugs - maybe can lose - I recall docs on C++ suggest NOT needed). https://stackoverflow.com/questions/4419375/templated-constructor-vs-templated-copy-constructor seems to suggest it is needed (not authoritative). But I seem to recall reading (https://stackoverflow.com/questions/23244665/c-overloading-takes-precedence-over-specialization) that explictly defined copy constructors take precedence over template defined ones. So confused by this, but it appears still needed (2021-12-03).
 
     ~~~
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<CONTAINER<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-    CONTAINER (CONTAINER_OF_ADDABLE&& src);
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<CONTAINER<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+    CONTAINER (ITERABLE_OF_ADDABLE&& src)
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        something-like-AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+        // and more to initialize container
+    }
     ~~~
 
-- Construct the CONTAINER using an iterable (TODO ADD CHECK ON ISADDABLE); This typically just constructs the container by default and calls AddItems(start, end)
+- Construct the CONTAINER using an iterable; This typically just constructs the container by default and calls AddItems(start, end)
     ~~~
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    CONTAINER (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+    template <typename ITERATOR_OF_ADDABLE>
+    CONTAINER (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+    // and in definition static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
     ~~~
 
 - Construct from an underlying rep smart pointer. This is principally (exclusively?) used in constructing concrete container types.
