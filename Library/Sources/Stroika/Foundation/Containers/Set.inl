@@ -46,18 +46,20 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
-    inline Set<T>::Set (CONTAINER_OF_ADDABLE&& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Set<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Set<T>::Set (ITERABLE_OF_ADDABLE&& src)
         : Set{}
     {
-        AddAll (forward<CONTAINER_OF_ADDABLE> (src));
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
-    inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src)
+    template <typename EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, const ITERABLE_OF_ADDABLE& src)
         : Set{forward<EQUALS_COMPARER> (equalsComparer)}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         AddAll (src);
         _AssertRepValidType ();
     }
@@ -74,18 +76,20 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
-    inline Set<T>::Set (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<ITERATOR_OF_ADDABLE>>*>
+    inline Set<T>::Set (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : Set{}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (start, end);
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
-    inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::is_iterator_v<ITERATOR_OF_ADDABLE>>*>
+    inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : Set{forward<EQUALS_COMPARER> (equalsComparer)}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (start, end);
         _AssertRepValidType ();
     }
@@ -168,19 +172,21 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    void Set<T>::AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename ITERATOR_OF_ADDABLE>
+    void Set<T>::AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         for (auto i = start; i != end; ++i) {
             tmp._GetWriteableRep ().Add (*i);
         }
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
-    inline void Set<T>::AddAll (CONTAINER_OF_ADDABLE&& items)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline void Set<T>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
-        if constexpr (std::is_convertible_v<decay_t<CONTAINER_OF_ADDABLE>*, const Iterable<value_type>*>) {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, const Iterable<value_type>*>) {
             // very rare corner case
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[UNLIKELY_ATTR]] {
                 vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
@@ -208,9 +214,10 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveIf (item);
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    inline size_t Set<T>::RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename ITERATOR_OF_ADDABLE>
+    inline size_t Set<T>::RemoveAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         size_t cnt{};
         for (auto i = start; i != end; ++i) {
             ++cnt;
@@ -219,9 +226,10 @@ namespace Stroika::Foundation::Containers {
         return cnt;
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE>
-    inline size_t Set<T>::RemoveAll (const CONTAINER_OF_ADDABLE& s)
+    template <typename ITERABLE_OF_ADDABLE>
+    inline size_t Set<T>::RemoveAll (const ITERABLE_OF_ADDABLE& s)
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         return RemoveAll (std::begin (s), std::end (s));
     }
     template <typename T>

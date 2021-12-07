@@ -36,11 +36,16 @@
  *      @todo   Consider if Union/Difference etc methods should delegate to virtual reps? Or other better
  *              performance approaches? One closely related issue is the backend type returned. Now we use
  *              default but maybe should use left or right side type?
+ * 
+ *      @todo   https://stroika.atlassian.net/browse/STK-754 - Add (REP METHOD) should return bool if really added (if size changed) to make a few things 
+ *              like addif cheaper. But think through carefully semantics of object - we actually change what is there, but it maybe just pading
+ *              soemthing - so DOES have affect but doesnt change if its present or not.
  */
 
 namespace Stroika::Foundation::Containers {
 
     using Configuration::ArgByValueType;
+    using Configuration::ExtractValueType_t;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -133,15 +138,13 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add ()
-         *
-         *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
+        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
 
     public:
         /**
-         *  For the CTOR overload with CONTAINER_OF_ADDABLE, its anything that supports c.begin(), c.end () to find
+         *  For the CTOR overload with ITERABLE_OF_ADDABLE, its anything that supports c.begin(), c.end () to find
          *  all the elements.
          *
          *  All constructors either copy their source comparer (copy/move CTOR), or use the provided argument comparer
@@ -170,8 +173,6 @@ namespace Stroika::Foundation::Containers {
          *        Set<int> s9  { 1, 2, 3 };
          *        Set<int> s10 { Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }), c };
          *      \endcode
-         * 
-         *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */
         Set ();
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
@@ -181,14 +182,14 @@ namespace Stroika::Foundation::Containers {
         Set (const initializer_list<value_type>& src);
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
         Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        explicit Set (CONTAINER_OF_ADDABLE&& src);
-        template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
-        Set (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src);
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>* = nullptr>
-        Set (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-        template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>* = nullptr>
-        Set (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Set<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Set (ITERABLE_OF_ADDABLE&& src);
+        template <typename EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        Set (EQUALS_COMPARER&& equalsComparer, const ITERABLE_OF_ADDABLE& src);
+        template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        Set (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::is_iterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        Set (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     protected:
         explicit Set (_IRepSharedPtr&& rep) noexcept;
@@ -278,10 +279,10 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
-        nonvirtual void AddAll (CONTAINER_OF_ADDABLE&& items);
+        template <typename ITERATOR_OF_ADDABLE>
+        nonvirtual void AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 
     public:
         /**
@@ -328,10 +329,10 @@ namespace Stroika::Foundation::Containers {
          * 
          *  \note mutates container
          */
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        nonvirtual size_t RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-        template <typename CONTAINER_OF_ADDABLE>
-        nonvirtual size_t RemoveAll (const CONTAINER_OF_ADDABLE& s);
+        template <typename ITERATOR_OF_ADDABLE>
+        nonvirtual size_t RemoveAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename ITERABLE_OF_ADDABLE>
+        nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& s);
         nonvirtual void   RemoveAll ();
         template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>* = nullptr>
         nonvirtual size_t RemoveAll (const PREDICATE& p);
