@@ -57,12 +57,11 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename ITERABLE_OF_ADDABLE, enable_if_t<
-                                                Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline Collection<T>::Collection (ITERABLE_OF_ADDABLE&& src)
         : Collection{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>); // redundant (enable_if_t) but for doc purpose
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }

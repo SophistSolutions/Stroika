@@ -106,11 +106,9 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add (Enqueue)
-         *
-         *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
+        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
 
     public:
         /**
@@ -126,8 +124,8 @@ namespace Stroika::Foundation::Containers {
         Queue (Queue&& src) noexcept      = default;
         Queue (const Queue& src) noexcept = default;
         Queue (const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        explicit Queue (CONTAINER_OF_ADDABLE&& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Queue<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Queue (ITERABLE_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         Queue (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
@@ -197,10 +195,14 @@ namespace Stroika::Foundation::Containers {
          *
          *  This also implies that ordering will be preserved in iterating over the Queue, or in Dequeing those elements.
          *
+         *  \req  IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>;                             // ITERABLE_OF_ADDABLE overload
+         *  \req  Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>                                  //  ditto
+         *  \req  static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);   // COPY_FROM_ITERATOR_OF_ADDABLE overload
+         *
          *  \note mutates container
          */
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>* = nullptr>
-        nonvirtual void AddAllToTail (CONTAINER_OF_ADDABLE&& s);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        nonvirtual void AddAllToTail (ITERABLE_OF_ADDABLE&& s);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         nonvirtual void AddAllToTail (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 

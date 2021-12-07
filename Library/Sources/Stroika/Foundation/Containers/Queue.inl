@@ -30,12 +30,12 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
-    inline Queue<T>::Queue (CONTAINER_OF_ADDABLE&& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Queue<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Queue<T>::Queue (ITERABLE_OF_ADDABLE&& src)
         : Queue{}
     {
-        AssertNotImplemented ();
-        AddAllToTail (forward<CONTAINER_OF_ADDABLE> (src));
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T>
@@ -56,6 +56,7 @@ namespace Stroika::Foundation::Containers {
     inline Queue<T>::Queue (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
         : Queue{}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);
         AddAllToTail (start, end);
         _AssertRepValidType ();
     }
@@ -97,9 +98,10 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveHead ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
-    inline void Queue<T>::AddAllToTail (CONTAINER_OF_ADDABLE&& s)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline void Queue<T>::AddAllToTail (ITERABLE_OF_ADDABLE&& s)
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         for (auto i : s) {
             tmp._GetWriteableRep ().AddTail (i);
@@ -109,6 +111,7 @@ namespace Stroika::Foundation::Containers {
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
     inline void Queue<T>::AddAllToTail (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
     {
+        static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         for (auto i = start; i != end; ++i) {
             tmp._GetWriteableRep ().AddTail (*i);

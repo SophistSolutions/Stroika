@@ -28,11 +28,12 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Deque<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
-    inline Deque<T>::Deque (CONTAINER_OF_ADDABLE&& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Deque<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Deque<T>::Deque (ITERABLE_OF_ADDABLE&& src)
         : Deque{}
     {
-        this->AddAllToTail (forward<CONTAINER_OF_ADDABLE> (src));
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        this->AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T>
@@ -52,6 +53,7 @@ namespace Stroika::Foundation::Containers {
     inline Deque<T>::Deque (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
         : Deque{}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);
         this->AddAllToTail (start, end);
         _AssertRepValidType ();
     }
