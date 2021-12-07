@@ -97,13 +97,13 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (const _IRepSharedPtr& src) noexcept
-        : inherited{(RequireNotNull (src),src)}
+        : inherited{(RequireNotNull (src), src)}
     {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (_IRepSharedPtr&& src) noexcept
-        : inherited{(RequireNotNull (src),move (src))}
+        : inherited{(RequireNotNull (src), move (src))}
     {
         _AssertRepValidType ();
     }
