@@ -67,9 +67,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename ITERABLE_OF_ADDABLE, enable_if_t<
-        Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> 
-        and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (ITERABLE_OF_ADDABLE&& src)
         : Bijection{}
     {
@@ -78,28 +76,29 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> () and Configuration::IsIterableOfT_v<ITERABLE_OF_ADDABLE, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>>*>
+    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const ITERABLE_OF_ADDABLE& src)
         : Bijection{forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer)}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         AddAll (src);
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>>*>
-    Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end)
+    template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
+    Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
         : Bijection{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>>);
+        static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);
         AddAll (start, end);
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>>*>
-    Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end)
+    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
+    Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
         : Bijection{forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>>);
+        static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_OF_ADDABLE>>);
         AddAll (start, end);
         _AssertRepValidType ();
     }

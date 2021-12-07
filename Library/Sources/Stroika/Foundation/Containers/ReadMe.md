@@ -246,6 +246,12 @@ KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
 - Due to use of COW, const methods of reps need no locking (just use Debug::AssertExternallySyncrhonized).
 - Due to use of COW, non-const methods of reps ALSO don't need loocking, since the COW code assures there is only one reference at a time (and therefore one Envelope class, which itself asserts externally synchronized)
 
+- Generally have body functions of overloads have static_assert(TYPE REQUIREMENT) instead of using
+  enable_if_t, just because enable_if_t tends to require more compiler bug workarounds, and produce
+  inferior warnings. When I convert to using concepts, we may reverse this. Either way, the requirement
+  is still there: the difference is just in the error message and POSSIBLY RARELY in confusing selection
+  of an overload. This probably just happens with Constructors, and maybe not at all.
+
 ## Rejected Ideas
 
 ---
