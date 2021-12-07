@@ -65,6 +65,13 @@ namespace Stroika::Foundation::Containers {
          */
         using value_type = typename inherited::value_type;
 
+    public:
+        /**
+         *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add (Enqueue)
+         */
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
+
     protected:
         class _IRep;
 
