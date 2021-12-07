@@ -108,11 +108,12 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
-    inline Sequence<T>::Sequence (CONTAINER_OF_ADDABLE&& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Sequence<T>::Sequence (ITERABLE_OF_ADDABLE&& src)
         : Sequence{}
     {
-        AppendAll (forward<CONTAINER_OF_ADDABLE> (src));
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AppendAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T>
@@ -128,10 +129,11 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    inline Sequence<T>::Sequence (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename ITERATOR_OF_ADDABLE>
+    inline Sequence<T>::Sequence (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : Sequence{}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AppendAll (start, end);
         _AssertRepValidType ();
     }
@@ -250,9 +252,10 @@ namespace Stroika::Foundation::Containers {
         return accessor._GetWriteableRep ().Insert (idx, &item, &item + 1);
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    void Sequence<T>::InsertAll (size_t i, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename ITERATOR_OF_ADDABLE>
+    void Sequence<T>::InsertAll (size_t i, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         Require (i <= this->GetLength ());
         size_t insertAt = i;
         for (auto ii = start; ii != end; ++ii) {
@@ -260,9 +263,10 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
-    inline void Sequence<T>::InsertAll (size_t i, CONTAINER_OF_ADDABLE&& s)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline void Sequence<T>::InsertAll (size_t i, ITERABLE_OF_ADDABLE&& s)
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         Require (i <= this->GetLength ());
         InsertAll (i, s.begin (), s.end ());
     }
@@ -272,15 +276,17 @@ namespace Stroika::Foundation::Containers {
         Insert (0, item);
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
-    inline void Sequence<T>::PrependAll (CONTAINER_OF_ADDABLE&& s)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline void Sequence<T>::PrependAll (ITERABLE_OF_ADDABLE&& s)
     {
-        InsertAll (0, forward<CONTAINER_OF_ADDABLE> (s));
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        InsertAll (0, forward<ITERABLE_OF_ADDABLE> (s));
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    inline void Sequence<T>::PrependAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename ITERATOR_OF_ADDABLE>
+    inline void Sequence<T>::PrependAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         InsertAll (0, start, end);
     }
     template <typename T>
@@ -289,15 +295,17 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Insert (_IRep::_kSentinalLastItemIndex, &item, &item + 1);
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
-    inline void Sequence<T>::AppendAll (CONTAINER_OF_ADDABLE&& s)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline void Sequence<T>::AppendAll (ITERABLE_OF_ADDABLE&& s)
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         AppendAll (s.begin (), s.end ());
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    inline void Sequence<T>::AppendAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename ITERATOR_OF_ADDABLE>
+    inline void Sequence<T>::AppendAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         _SafeReadWriteRepAccessor<_IRep> accessor = {this};
         for (auto i = start; i != end; ++i) {
             const T& tmp = *i;
@@ -334,14 +342,14 @@ namespace Stroika::Foundation::Containers {
     template <typename CONTAINER_OF_ADDABLE>
     inline CONTAINER_OF_ADDABLE Sequence<T>::As () const
     {
-        return CONTAINER_OF_ADDABLE (this->begin (), this->end ());
+        return CONTAINER_OF_ADDABLE{this->begin (), this->end ()};
     }
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE>
     inline void Sequence<T>::As (CONTAINER_OF_ADDABLE* into) const
     {
         RequireNotNull (into);
-        *into = CONTAINER_OF_ADDABLE (this->begin (), this->end ());
+        *into = CONTAINER_OF_ADDABLE{this->begin (), this->end ()};
     }
     template <typename T>
     inline auto Sequence<T>::First () const -> optional<value_type>

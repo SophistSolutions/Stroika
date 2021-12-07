@@ -42,7 +42,7 @@
  *
  *      @todo       Add insert(Iterator<T>,T) overload (so works with Mapping<..>::As<...> ()
  *
- *      @todo       Must support Iterator<T>::operator-(Itertoar<T>) or some-such so that SequenceIterator must work with qsort().
+ *      @todo       Must support Iterator<T>::operator-(Iterator<T>) or some-such so that SequenceIterator must work with qsort().
  *                  In other words, must act as random-access iterator so it can be used in algorithjms that use STL
  *                  random-access iterators. (FOLLOW RULES OF RANDOM ACCESS ITERAOTRS)
  *
@@ -79,6 +79,7 @@
 namespace Stroika::Foundation::Containers {
 
     using Configuration::ArgByValueType;
+    using Configuration::ExtractValueType_t;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -233,15 +234,13 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add (prepend/append)
-         *
-         *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, T>;
+        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, T>;
 
     public:
         /**
-         *  For the CTOR overload with CONTAINER_OF_ADDABLE, its anything that supports c.begin(), c.end () to find
+         *  For the CTOR overload with ITERABLE_OF_ADDABLE, its anything that supports c.begin(), c.end () to find
          *  all the elements.
          *
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
@@ -260,17 +259,15 @@ namespace Stroika::Foundation::Containers {
          *        Sequence<int> s7  { v.begin (), v.end () };
          *        Sequence<int> s8  { move (s1) };
          *      \endcode
-         *
-         *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
          */
         Sequence ();
         Sequence (Sequence&& src) noexcept      = default;
         Sequence (const Sequence& src) noexcept = default;
         Sequence (const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        explicit Sequence (CONTAINER_OF_ADDABLE&& src);
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        Sequence (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Sequence (ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE>
+        Sequence (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     protected:
         explicit Sequence (_IRepSharedPtr&& rep) noexcept;
@@ -463,11 +460,14 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \brief Insert all the given items into this sequence, starting at offset 'i'.
+         *
+         *  \req IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>
+         *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
          */
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        nonvirtual void InsertAll (size_t i, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
-        nonvirtual void InsertAll (size_t i, CONTAINER_OF_ADDABLE&& s);
+        template <typename ITERATOR_OF_ADDABLE>
+        nonvirtual void InsertAll (size_t i, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        nonvirtual void InsertAll (size_t i, ITERABLE_OF_ADDABLE&& s);
 
     public:
         /**
@@ -477,12 +477,15 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \req IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>
+         *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
+         *
          *  \note mutates container
          */
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
-        nonvirtual void PrependAll (CONTAINER_OF_ADDABLE&& s);
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        nonvirtual void PrependAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        nonvirtual void PrependAll (ITERABLE_OF_ADDABLE&& s);
+        template <typename ITERATOR_OF_ADDABLE>
+        nonvirtual void PrependAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
@@ -500,12 +503,15 @@ namespace Stroika::Foundation::Containers {
          *  the appended items wont necesarily all get appended at once, since other threads could make
          *  changes in between.
          *
+         *  \req IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>
+         *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
+         *
          *  \note mutates container
          */
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
-        nonvirtual void AppendAll (CONTAINER_OF_ADDABLE&& s);
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        nonvirtual void AppendAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        nonvirtual void AppendAll (ITERABLE_OF_ADDABLE&& s);
+        template <typename ITERATOR_OF_ADDABLE>
+        nonvirtual void AppendAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
