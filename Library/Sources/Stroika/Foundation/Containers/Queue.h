@@ -43,6 +43,7 @@
 namespace Stroika::Foundation::Containers {
 
     using Configuration::ArgByValueType;
+    using Configuration::ExtractValueType_t;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
