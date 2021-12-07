@@ -35,6 +35,7 @@ namespace Stroika::Foundation::Containers {
 
     using Common::KeyValuePair;
     using Configuration::ArgByValueType;
+    using Configuration::ExtractValueType_t;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -136,11 +137,9 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add ()
-         *
-         *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
+        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
 
     public:
         /**
@@ -181,14 +180,14 @@ namespace Stroika::Foundation::Containers {
         Mapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
         Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> and not is_base_of_v<Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        explicit Mapping (CONTAINER_OF_ADDABLE&& src);
-        template <typename KEY_EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>>* = nullptr>
-        Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, const CONTAINER_OF_ADDABLE& src);
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>* = nullptr>
-        Mapping (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-        template <typename KEY_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>* = nullptr>
-        Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Mapping (ITERABLE_OF_ADDABLE&& src);
+        template <typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        Mapping (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::is_iterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     protected:
         explicit Mapping (_IRepSharedPtr&& rep) noexcept;
@@ -365,12 +364,15 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note   AddAll/2 is alias for .net AddRange ()
          *
+         *  \req IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>
+         *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
+         *
          *  \note mutates container
          */
-        template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>* = nullptr>
-        nonvirtual unsigned int AddAll (CONTAINER_OF_KEYVALUE&& items, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        nonvirtual unsigned int AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        nonvirtual unsigned int AddAll (ITERABLE_OF_ADDABLE&& items, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
+        template <typename ITERATOR_OF_ADDABLE>
+        nonvirtual unsigned int AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
 
     public:
         /**
@@ -400,15 +402,16 @@ namespace Stroika::Foundation::Containers {
          * 
          *  The no-arg overload removes all (quickly).
          * 
-         *  The overloads that remove some subset of the items returns the number of items so removed.
+         *  The overloads that remove some subset of the items returns the number of items so removed, and use RemoveIf() so that the
+         *  argument items designated to be removed MAY not be present.
          * 
          *  \note mutates container
          */
         nonvirtual void RemoveAll ();
-        template <typename CONTAINER_OF_ADDABLE>
-        nonvirtual size_t RemoveAll (const CONTAINER_OF_ADDABLE& items);
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        nonvirtual size_t RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename ITERABLE_OF_KEY_OR_ADDABLE>
+        nonvirtual size_t RemoveAll (const ITERABLE_OF_KEY_OR_ADDABLE& items);
+        template <typename ITERATOR_OF_KEY_OR_ADDABLE>
+        nonvirtual size_t RemoveAll (ITERATOR_OF_KEY_OR_ADDABLE start, ITERATOR_OF_KEY_OR_ADDABLE end);
         template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>, PREDICATE> ()>* = nullptr>
         nonvirtual size_t RemoveAll (const PREDICATE& p);
 
@@ -446,8 +449,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <typename CONTAINER_OF_KEY_TYPE>
-        nonvirtual void RetainAll (const CONTAINER_OF_KEY_TYPE& items);
+        template <typename ITERABLE_OF_KEY_TYPE>
+        nonvirtual void RetainAll (const ITERABLE_OF_KEY_TYPE& items);
 
     public:
         /**
@@ -565,20 +568,20 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        template <typename CONTAINER_OF_ADDABLE>
-        nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> operator+ (const CONTAINER_OF_ADDABLE& items) const;
+        template <typename ITERABLE_OF_ADDABLE>
+        nonvirtual Mapping operator+ (const ITERABLE_OF_ADDABLE& items) const;
 
     public:
         /**
          */
-        template <typename CONTAINER_OF_ADDABLE>
-        nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& operator+= (const CONTAINER_OF_ADDABLE& items);
+        template <typename ITERABLE_OF_ADDABLE>
+        nonvirtual Mapping& operator+= (const ITERABLE_OF_ADDABLE& items);
 
     public:
         /**
          */
-        template <typename CONTAINER_OF_ADDABLE>
-        nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& operator-= (const CONTAINER_OF_ADDABLE& items);
+        template <typename ITERABLE_OF_KEY_OR_ADDABLE>
+        nonvirtual Mapping& operator-= (const ITERABLE_OF_KEY_OR_ADDABLE& items);
 
     protected:
         /**

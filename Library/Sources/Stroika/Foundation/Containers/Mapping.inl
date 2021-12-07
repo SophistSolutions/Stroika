@@ -67,34 +67,38 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> and not is_base_of_v<Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<CONTAINER_OF_ADDABLE>>>*>
-    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (CONTAINER_OF_ADDABLE&& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (ITERABLE_OF_ADDABLE&& src)
         : Mapping{}
     {
-        AddAll (forward<CONTAINER_OF_ADDABLE> (src));
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename KEY_EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>>*>
-    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, const CONTAINER_OF_ADDABLE& src)
+    template <typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src)
         : Mapping{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
-        AddAll (src);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
-    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<ITERATOR_OF_ADDABLE>>*>
+    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : Mapping{}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (start, end);
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename KEY_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
-    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::is_iterator_v<ITERATOR_OF_ADDABLE>>*>
+    Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : Mapping{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (start, end);
         _AssertRepValidType ();
     }
@@ -201,9 +205,10 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue, addReplaceMode);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    unsigned int Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, AddReplaceMode addReplaceMode)
+    template <typename ITERATOR_OF_ADDABLE>
+    unsigned int Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end, AddReplaceMode addReplaceMode)
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         unsigned int cntAdded{};
         for (auto i = start; i != end; ++i) {
             if (Add (*i, addReplaceMode)) {
@@ -213,10 +218,10 @@ namespace Stroika::Foundation::Containers {
         return cntAdded;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>*>
-    inline unsigned int Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (CONTAINER_OF_KEYVALUE&& items, AddReplaceMode addReplaceMode)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline unsigned int Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERABLE_OF_ADDABLE&& items, AddReplaceMode addReplaceMode)
     {
-        if constexpr (std::is_convertible_v<decay_t<CONTAINER_OF_KEYVALUE>*, Iterable<value_type>*>) {
+        if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, Iterable<value_type>*>) {
             // very rare corner case
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[UNLIKELY_ATTR]] {
                 vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
@@ -251,31 +256,46 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_ADDABLE>
-    size_t Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (const CONTAINER_OF_ADDABLE& items)
+    template <typename ITERABLE_OF_KEY_OR_ADDABLE>
+    size_t Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (const ITERABLE_OF_KEY_OR_ADDABLE& items)
     {
+        using ITEM_T = ExtractValueType_t<ITERABLE_OF_KEY_OR_ADDABLE>;
+        static_assert (is_convertible_v<ITEM_T, key_type> or is_convertible_v<ITEM_T, pair<key_type, mapped_type>> or is_convertible_v<ITEM_T, Common::KeyValuePair<key_type, mapped_type>>);
         if (this == &items) { // avoid modifying container while iterating over it
             size_t result = this->size ();
             RemoveAll ();
             return result;
         }
         else {
-            size_t cnt{};
-            for (const auto& i : items) {
-                ++cnt;
-                Remove (i.first);
-            }
-            return cnt;
+            return RemoveAll (begin (items), end (items));
         }
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    inline size_t Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename ITERATOR_OF_KEY_OR_ADDABLE>
+    inline size_t Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (ITERATOR_OF_KEY_OR_ADDABLE start, ITERATOR_OF_KEY_OR_ADDABLE end)
     {
+        using ITEM_T = ExtractValueType_t<ITERATOR_OF_KEY_OR_ADDABLE>;
+        static_assert (is_convertible_v<ITEM_T, key_type> or is_convertible_v<ITEM_T, pair<key_type, mapped_type>> or is_convertible_v<ITEM_T, Common::KeyValuePair<key_type, mapped_type>>);
         size_t cnt{};
         for (auto i = start; i != end; ++i) {
-            ++cnt;
-            Remove (i->first);
+            if constexpr (is_convertible_v<ITEM_T, key_type>) {
+                if (RemoveIf (*i)) {
+                    ++cnt;
+                }
+            }
+            else if constexpr (is_convertible_v<ITEM_T, pair<key_type, mapped_type>>) {
+                if (RemoveIf (i->first)) {
+                    ++cnt;
+                }
+            }
+            else if constexpr (is_convertible_v<ITEM_T, Common::KeyValuePair<key_type, mapped_type>>) {
+                if (RemoveIf (i->fKey)) {
+                    ++cnt;
+                }
+            }
+            else {
+                AssertNotReached ();
+            }
         }
         return cnt;
     }
@@ -303,9 +323,10 @@ namespace Stroika::Foundation::Containers {
         writerRep->Update (patchedIterator, newValue, nextI);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_KEY_TYPE>
-    void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RetainAll (const CONTAINER_OF_KEY_TYPE& items)
+    template <typename ITERABLE_OF_KEY_TYPE>
+    void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RetainAll (const ITERABLE_OF_KEY_TYPE& items)
     {
+        static_assert (is_convertible_v<ExtractValueType_t<ITERABLE_OF_KEY_TYPE>, key_type>);
         // @see https://stroika.atlassian.net/browse/STK-539
 #if 0
                 Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>   result = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> { _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().CloneEmpty () };
@@ -403,23 +424,23 @@ namespace Stroika::Foundation::Containers {
         RemoveAll ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_ADDABLE>
-    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+ (const CONTAINER_OF_ADDABLE& items) const
+    template <typename ITERABLE_OF_ADDABLE>
+    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+ (const ITERABLE_OF_ADDABLE& items) const
     {
         Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> result = *this;
         result.AddAll (items);
         return result;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_ADDABLE>
-    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+= (const CONTAINER_OF_ADDABLE& items)
+    template <typename ITERABLE_OF_ADDABLE>
+    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+= (const ITERABLE_OF_ADDABLE& items)
     {
         AddAll (items);
         return *this;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_ADDABLE>
-    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator-= (const CONTAINER_OF_ADDABLE& items)
+    template <typename ITERABLE_OF_KEY_OR_ADDABLE>
+    inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator-= (const ITERABLE_OF_KEY_OR_ADDABLE& items)
     {
         RemoveAll (items);
         return *this;
