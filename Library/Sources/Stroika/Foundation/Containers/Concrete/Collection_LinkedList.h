@@ -32,18 +32,25 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Collection<T>;
 
     public:
-        using value_type = typename inherited::value_type;
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
+        using value_type                  = typename inherited::value_type;
 
     public:
         /**
+         *  \see docs on Collection<T> constructor
          */
         Collection_LinkedList ();
-        Collection_LinkedList (const T* start, const T* end);
-        Collection_LinkedList (const Traversal::Iterable<T>& src);
-        Collection_LinkedList (const Collection_LinkedList& src) noexcept = default;
         Collection_LinkedList (Collection_LinkedList&& src) noexcept      = default;
+        Collection_LinkedList (const Collection_LinkedList& src) noexcept = default;
+        Collection_LinkedList (const initializer_list<value_type>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        Collection_LinkedList (ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE>
+        Collection_LinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
+        nonvirtual Collection_LinkedList& operator= (Collection_LinkedList&& rhs) = default;
         nonvirtual Collection_LinkedList& operator= (const Collection_LinkedList& rhs) = default;
 
     protected:

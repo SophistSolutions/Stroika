@@ -156,18 +156,35 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     template <typename INORDER_COMPARER>
-    inline Collection_stdmultiset<T>::Collection_stdmultiset (const INORDER_COMPARER& inorderComparer)
-        : inherited{inherited::template MakeSmartPtr<Rep_<INORDER_COMPARER>> (inorderComparer)}
+    inline Collection_stdmultiset<T>::Collection_stdmultiset (INORDER_COMPARER&& inorderComparer)
+        : inherited{inherited::template MakeSmartPtr<Rep_<INORDER_COMPARER>> (forward<INORDER_COMPARER> (inorderComparer))}
     {
-        static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with Collection");
+        static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with Collection_stdmultiset");
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Collection<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
-    Collection_stdmultiset<T>::Collection_stdmultiset (CONTAINER_OF_ADDABLE&& src)
+    template <typename ITERATOR_OF_ADDABLE>
+    inline Collection_stdmultiset<T>::Collection_stdmultiset (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : Collection_stdmultiset{}
     {
-        this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        this->AddAll (start, end);
+        AssertRepValidType_ ();
+    }
+    template <typename T>
+    inline Collection_stdmultiset<T>::Collection_stdmultiset (const initializer_list<value_type>& src)
+        : Collection_stdmultiset{}
+    {
+        this->AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename T>
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection_stdmultiset<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Collection_stdmultiset<T>::Collection_stdmultiset (ITERABLE_OF_ADDABLE&& src)
+        : Collection_stdmultiset{}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>

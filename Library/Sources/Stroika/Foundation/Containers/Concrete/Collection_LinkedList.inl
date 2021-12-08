@@ -148,18 +148,28 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    Collection_LinkedList<T>::Collection_LinkedList (const T* start, const T* end)
+    template <typename ITERATOR_OF_ADDABLE>
+    inline Collection_LinkedList<T>::Collection_LinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : Collection_LinkedList{}
     {
-        Require ((start == end) or (start != nullptr and end != nullptr));
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         this->AddAll (start, end);
         AssertRepValidType_ ();
     }
     template <typename T>
-    Collection_LinkedList<T>::Collection_LinkedList (const Traversal::Iterable<T>& src)
+    inline Collection_LinkedList<T>::Collection_LinkedList (const initializer_list<value_type>& src)
         : Collection_LinkedList{}
     {
         this->AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename T>
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Collection_LinkedList<T>::Collection_LinkedList (ITERABLE_OF_ADDABLE&& src)
+        : Collection_LinkedList{}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>

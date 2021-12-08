@@ -33,7 +33,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Collection<T>;
 
     public:
-        using value_type = typename inherited::value_type;
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
+        using value_type                  = typename inherited::value_type;
 
     public:
         /**
@@ -43,13 +45,19 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
+         *  \see docs on Collection<T> constructor
          */
         Collection_stdforward_list ();
-        Collection_stdforward_list (const T* start, const T* end);
-        Collection_stdforward_list (const Collection<T>& src);
-        Collection_stdforward_list (const Collection_stdforward_list& src) noexcept = default;
         Collection_stdforward_list (Collection_stdforward_list&& src) noexcept      = default;
+        Collection_stdforward_list (const Collection_stdforward_list& src) noexcept = default;
+        Collection_stdforward_list (const initializer_list<value_type>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection_stdforward_list<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        Collection_stdforward_list (ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE>
+        Collection_stdforward_list (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
+    public:
+        nonvirtual Collection_stdforward_list& operator= (Collection_stdforward_list&& rhs) = default;
         nonvirtual Collection_stdforward_list& operator= (const Collection_stdforward_list& rhs) = default;
 
     protected:
@@ -62,6 +70,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         nonvirtual void AssertRepValidType_ () const;
     };
+
 }
 
 /*

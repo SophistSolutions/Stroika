@@ -37,7 +37,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Collection<T>;
 
     public:
-        using value_type = typename inherited::value_type;
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
+        using value_type                  = typename inherited::value_type;
 
     public:
         /**
@@ -47,19 +49,23 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
-         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+         *  \see docs on Collection<T> constructor
          */
         Collection_stdmultiset ();
         template <typename INORDER_COMPARER>
-        explicit Collection_stdmultiset (const INORDER_COMPARER& inorderComparer);
-        Collection_stdmultiset (const Collection_stdmultiset& src) noexcept = default;
+        explicit Collection_stdmultiset (INORDER_COMPARER&& inorderComparer);
         Collection_stdmultiset (Collection_stdmultiset&& src) noexcept      = default;
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Collection<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        Collection_stdmultiset (CONTAINER_OF_ADDABLE&& src);
+        Collection_stdmultiset (const Collection_stdmultiset& src) noexcept = default;
+        Collection_stdmultiset (const initializer_list<value_type>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection_stdmultiset<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        Collection_stdmultiset (ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE>
+        Collection_stdmultiset (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
          */
+        nonvirtual Collection_stdmultiset& operator= (Collection_stdmultiset& rhs) = default;
         nonvirtual Collection_stdmultiset& operator= (const Collection_stdmultiset& rhs) = default;
 
     protected:

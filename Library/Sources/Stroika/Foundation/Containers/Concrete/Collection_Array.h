@@ -36,18 +36,25 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Collection<T>;
 
     public:
-        using value_type = typename inherited::value_type;
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
+        using value_type                  = typename inherited::value_type;
 
     public:
         /**
+         *  \see docs on Collection<T> constructor
          */
         Collection_Array ();
-        Collection_Array (const Collection<T>& src);
-        Collection_Array (const Collection_Array& src) noexcept = default;
         Collection_Array (Collection_Array&& src) noexcept      = default;
-        Collection_Array (const T* start, const T* end);
+        Collection_Array (const Collection_Array& src) noexcept = default;
+        Collection_Array (const initializer_list<value_type>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection_Array<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        Collection_Array (ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE>
+        Collection_Array (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
+        nonvirtual Collection_Array& operator= (Collection_Array&& rhs) = default;
         nonvirtual Collection_Array& operator= (const Collection_Array& rhs) = default;
 
     public:
