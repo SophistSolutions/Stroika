@@ -33,6 +33,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v  = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
         using TraitsType                  = typename inherited::TraitsType;
         using CounterType                 = typename inherited::CounterType;
         using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
@@ -47,20 +49,30 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
-         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+         *  \see docs on MultiSet<> constructor; except replace EQUALS_COMPARER with INORDER_COMPARER
          */
         MultiSet_stdmap ();
         template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
-        explicit MultiSet_stdmap (const INORDER_COMPARER& inorderComparer);
-        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const MultiSet_stdmap<T>*>>* = nullptr>
-        MultiSet_stdmap (const CONTAINER_OF_T& src);
-        MultiSet_stdmap (const MultiSet_stdmap& src) = default;
+        explicit MultiSet_stdmap (INORDER_COMPARER&& comparer);
+        MultiSet_stdmap (MultiSet_stdmap&& src) noexcept      = default;
+        MultiSet_stdmap (const MultiSet_stdmap& src) noexcept = default;
         MultiSet_stdmap (const initializer_list<T>& src);
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        MultiSet_stdmap (INORDER_COMPARER&& comparer, const initializer_list<T>& src);
         MultiSet_stdmap (const initializer_list<value_type>& src);
-        template <typename COPY_FROM_ITERATOR>
-        MultiSet_stdmap (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        MultiSet_stdmap (INORDER_COMPARER&& comparer, const initializer_list<value_type>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<MultiSet_stdmap<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit MultiSet_stdmap (ITERABLE_OF_ADDABLE&& src);
+        template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        MultiSet_stdmap (INORDER_COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        MultiSet_stdmap (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        MultiSet_stdmap (INORDER_COMPARER&& comparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
+        nonvirtual MultiSet_stdmap& operator= (MultiSet_stdmap&& rhs) = default;
         nonvirtual MultiSet_stdmap& operator= (const MultiSet_stdmap& rhs) = default;
 
     protected:

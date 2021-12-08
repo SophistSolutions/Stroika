@@ -42,6 +42,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = IImplRepBase_;
 
     public:
+        static_assert (not is_reference_v<EQUALS_COMPARER>);
+
+    public:
         Rep_ (const EQUALS_COMPARER& equalsComparer)
             : fEqualsComparer_{equalsComparer}
         {
@@ -282,48 +285,101 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    inline MultiSet_Array<T, TRAITS>::MultiSet_Array ()
+    MultiSet_Array<T, TRAITS>::MultiSet_Array ()
         : MultiSet_Array{equal_to<T>{}}
     {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>*>
-    inline MultiSet_Array<T, TRAITS>::MultiSet_Array (const EQUALS_COMPARER& equalsComparer)
-        : inherited{inherited::template MakeSmartPtr<Rep_<EQUALS_COMPARER>> (equalsComparer)}
+    inline MultiSet_Array<T, TRAITS>::MultiSet_Array (EQUALS_COMPARER&& equalsComparer)
+        : inherited{inherited::template MakeSmartPtr<Rep_<Configuration::remove_cvref_t<EQUALS_COMPARER>>> (forward<EQUALS_COMPARER> (equalsComparer))}
     {
-        static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Equals comparer required with MultiSet_Array");
+        static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "MultiSet_Array constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <typename COPY_FROM_ITERATOR>
-    MultiSet_Array<T, TRAITS>::MultiSet_Array (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<MultiSet_Array<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline MultiSet_Array<T, TRAITS>::MultiSet_Array (ITERABLE_OF_ADDABLE&& src)
         : MultiSet_Array{}
     {
-        SetCapacity (end - start);
-        this->AddAll (start, end);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
+            SetCapacity (src.size ());
+        }
+        AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    inline MultiSet_Array<T, TRAITS>::MultiSet_Array (const MultiSet<T, TRAITS>& src)
-        : MultiSet_Array{}
+    template <typename EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline MultiSet_Array<T, TRAITS>::MultiSet_Array (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
+        : MultiSet_Array{forward<EQUALS_COMPARER> (equalsComparer)}
     {
-        SetCapacity (src.GetLength ());
-        this->AddAll (src);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        SetCapacity (src.size ());
+        AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
     MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<T>& src)
         : MultiSet_Array{}
     {
-        this->AddAll (src);
+        SetCapacity (src.size ());
+        AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename T, typename TRAITS>
+    template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>*>
+    MultiSet_Array<T, TRAITS>::MultiSet_Array (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src)
+        : MultiSet_Array{forward<EQUALS_COMPARER> (equalsComparer)}
+    {
+        SetCapacity (src.size ());
+        AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
     MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<value_type>& src)
         : MultiSet_Array{}
     {
-        this->AddAll (src);
+        SetCapacity (src.size ());
+        AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename T, typename TRAITS>
+    template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>*>
+    MultiSet_Array<T, TRAITS>::MultiSet_Array (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src)
+        : MultiSet_Array{forward<EQUALS_COMPARER> (equalsComparer)}
+    {
+        SetCapacity (src.size ());
+        AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename T, typename TRAITS>
+    template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    MultiSet_Array<T, TRAITS>::MultiSet_Array (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : MultiSet_Array{}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
+            if (start != end) {
+                SetCapacity (end - start);
+            }
+        }
+        AddAll (start, end);
+        AssertRepValidType_ ();
+    }
+    template <typename T, typename TRAITS>
+    template <typename EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    MultiSet_Array<T, TRAITS>::MultiSet_Array (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : MultiSet_Array{forward<EQUALS_COMPARER> (equalsComparer)}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
+            if (start != end) {
+                SetCapacity (end - start);
+            }
+        }
+        AddAll (start, end);
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>

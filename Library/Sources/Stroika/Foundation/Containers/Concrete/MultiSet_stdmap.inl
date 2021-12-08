@@ -40,6 +40,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = IImplRepBase_;
 
     public:
+        static_assert (not is_reference_v<INORDER_COMPARER>);
+
+    public:
         Rep_ (const INORDER_COMPARER& inorderComparer)
             : fData_{inorderComparer}
         {
@@ -228,46 +231,83 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    inline MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap ()
+    MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap ()
         : MultiSet_stdmap{less<T>{}}
     {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
     template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
-    inline MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const INORDER_COMPARER& inorderComparer)
-        : inherited{inherited::template MakeSmartPtr<Rep_<INORDER_COMPARER>> (inorderComparer)}
+    inline MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (INORDER_COMPARER&& comparer)
+        : inherited{inherited::template MakeSmartPtr<Rep_<Configuration::remove_cvref_t<INORDER_COMPARER>>> (forward<INORDER_COMPARER> (comparer))}
     {
+        static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "MultiSet_stdmap constructor with INORDER_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const MultiSet_stdmap<T>*>>*>
-    inline MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const CONTAINER_OF_T& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<MultiSet_stdmap<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (ITERABLE_OF_ADDABLE&& src)
         : MultiSet_stdmap{}
     {
-        this->AddAll (src);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+        AssertRepValidType_ ();
+    }
+    template <typename T, typename TRAITS>
+    template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (INORDER_COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src)
+        : MultiSet_stdmap{forward<INORDER_COMPARER> (comparer)}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
     MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const initializer_list<T>& src)
         : MultiSet_stdmap{}
     {
-        this->AddAll (src);
+        AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename T, typename TRAITS>
+    template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (INORDER_COMPARER&& comparer, const initializer_list<T>& src)
+        : MultiSet_stdmap{forward<INORDER_COMPARER> (comparer)}
+    {
+        AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
     MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const initializer_list<value_type>& src)
         : MultiSet_stdmap{}
     {
-        this->AddAll (src);
+        AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <typename COPY_FROM_ITERATOR>
-    MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+    template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (INORDER_COMPARER&& comparer, const initializer_list<value_type>& src)
+        : MultiSet_stdmap{forward<INORDER_COMPARER> (comparer)}
+    {
+        AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename T, typename TRAITS>
+    template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : MultiSet_stdmap{}
     {
-        this->AddAll (start, end);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        AddAll (start, end);
+        AssertRepValidType_ ();
+    }
+    template <typename T, typename TRAITS>
+    template <typename INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (INORDER_COMPARER&& comparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : MultiSet_stdmap{forward<INORDER_COMPARER> (comparer)}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        AddAll (start, end);
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>

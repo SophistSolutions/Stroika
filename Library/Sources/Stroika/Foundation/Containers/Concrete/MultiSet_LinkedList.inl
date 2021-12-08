@@ -38,6 +38,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = IImplRepBase_;
 
     public:
+        static_assert (not is_reference_v<EQUALS_COMPARER>);
+
+    public:
         Rep_ (const EQUALS_COMPARER& equalsComparer)
             : fEqualsComparer_{equalsComparer}
         {
@@ -245,51 +248,83 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList ()
+    MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList ()
         : MultiSet_LinkedList{equal_to<T>{}}
     {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>*>
-    inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const EQUALS_COMPARER& equalsComparer)
-        : inherited{inherited::template MakeSmartPtr<Rep_<EQUALS_COMPARER>> (equalsComparer)}
+    inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer)
+        : inherited{inherited::template MakeSmartPtr<Rep_<Configuration::remove_cvref_t<EQUALS_COMPARER>>> (forward<EQUALS_COMPARER> (equalsComparer))}
     {
+        static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "MultiSet_LinkedList constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <typename COPY_FROM_ITERATOR>
-    inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<MultiSet_LinkedList<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (ITERABLE_OF_ADDABLE&& src)
         : MultiSet_LinkedList{}
     {
-        this->AddAll (start, end);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const MultiSet<T, TRAITS>& src)
+    template <typename EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
+        : MultiSet_LinkedList{forward<EQUALS_COMPARER> (equalsComparer)}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+        AssertRepValidType_ ();
+    }
+    template <typename T, typename TRAITS>
+    MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<T>& src)
         : MultiSet_LinkedList{}
     {
-        this->AddAll (src);
+        AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const MultiSet_LinkedList<T, TRAITS>& src)
-        : inherited{src}
+    template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>*>
+    MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src)
+        : MultiSet_LinkedList{forward<EQUALS_COMPARER> (equalsComparer)}
     {
+        AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<T>& src)
+    MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<value_type>& src)
         : MultiSet_LinkedList{}
     {
-        this->AddAll (src);
+        AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<CountedValue<T>>& src)
+    template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>*>
+    MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src)
+        : MultiSet_LinkedList{forward<EQUALS_COMPARER> (equalsComparer)}
+    {
+        AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename T, typename TRAITS>
+    template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : MultiSet_LinkedList{}
     {
-        this->AddAll (src);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        AddAll (start, end);
+        AssertRepValidType_ ();
+    }
+    template <typename T, typename TRAITS>
+    template <typename EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : MultiSet_LinkedList{forward<EQUALS_COMPARER> (equalsComparer)}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        AddAll (start, end);
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
