@@ -181,7 +181,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE>
     inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
-        : Deque{}
+        : Deque_DoublyLinkedList{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         this->AddAllToTail (start, end);
