@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Memory {
         SmallStackBuffer (const SmallStackBuffer<T, FROM_BUF_SIZE>& from);
         SmallStackBuffer (const SmallStackBuffer& from);
         SmallStackBuffer (SmallStackBuffer&&) = delete;
-        template <typename ITERATOR_OF_T, enable_if_t<Configuration::is_iterator_v<ITERATOR_OF_T>, char>* = nullptr>
+        template <typename ITERATOR_OF_T, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_T>, char>* = nullptr>
         SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end);
         ~SmallStackBuffer ();
 

@@ -433,7 +433,7 @@ namespace Stroika::Foundation::Configuration {
      *  Check T is an interator, but checking if it has iterator_traits...
      */
     template <typename T>
-    constexpr bool is_iterator_v = Private_::is_iterator<T>::value;
+    constexpr bool IsIterator_v = Private_::is_iterator<T>::value;
 
     /**
      */
