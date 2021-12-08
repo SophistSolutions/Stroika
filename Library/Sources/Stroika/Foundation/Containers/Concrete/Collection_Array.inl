@@ -165,6 +165,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Collection_Array<T>::Collection_Array (const initializer_list<value_type>& src)
         : Collection_Array{}
     {
+        SetCapacity (src.size ());
         this->AddAll (src);
         AssertRepValidType_ ();
     }
@@ -174,6 +175,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         : Collection_Array{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        SetCapacity (src.size ());
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
