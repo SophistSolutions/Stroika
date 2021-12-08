@@ -26,7 +26,7 @@ namespace CommonTests {
 #if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
                     &i;
 #endif
-                    cnt++;
+                    ++cnt;
                 }
                 VerifyTestResult (cnt == l);
             }

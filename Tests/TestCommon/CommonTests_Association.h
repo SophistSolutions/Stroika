@@ -97,7 +97,7 @@ namespace CommonTests {
                 m.Add (3, 4);
                 unsigned int cnt = 0;
                 for (auto i : m) {
-                    cnt++;
+                    ++cnt;
                     if (cnt == 1) {
                         VerifyTestResult (equal_to<KeyType>{}(i.fKey, KeyType{1}));
                     }
@@ -246,7 +246,7 @@ namespace CommonTests {
                 m.Add (3, 4);
                 unsigned int cnt = 0;
                 for (auto i : m) {
-                    cnt++;
+                    ++cnt;
                     if (cnt == 1) {
                         VerifyTestResult (KeyEqualsCompareFunctionType{} (i.fKey, KeyType{ 1 }));
                         VerifyTestResult (ValueEqualsCompareFunctionType{} (i.fValue, 2));

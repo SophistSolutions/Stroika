@@ -902,7 +902,7 @@ namespace {
                             Execution::ReThrow ();
                         }
                         catch (const Thread::InterruptException&) {
-                            interruptCnt++;
+                            ++interruptCnt;
                         }
                         we.Set ();
                     }

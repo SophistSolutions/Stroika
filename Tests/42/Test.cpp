@@ -118,7 +118,7 @@ namespace {
                         [&cnt] () noexcept {
                             cnt--;
                         });
-                    cnt++;
+                    ++cnt;
                 }
                 VerifyTestResult (cnt == 0);
             }

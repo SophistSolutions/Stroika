@@ -74,7 +74,7 @@ namespace {
         m.Add (3, 4);
         unsigned int cnt = 0;
         for (auto i : m) {
-            cnt++;
+            ++cnt;
             if (cnt == 1) {
                 VerifyTestResult (i.first == 1);
                 VerifyTestResult (i.second == 2);

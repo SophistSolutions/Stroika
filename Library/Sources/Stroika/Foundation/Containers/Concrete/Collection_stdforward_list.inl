@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             size_t                                                      cnt = 0;
-            for (auto i = fData_.begin (); i != fData_.end (); ++i, cnt++)
+            for (auto i = fData_.begin (); i != fData_.end (); ++i, ++cnt)
                 ;
             return cnt;
         }
