@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping ()
-        : inherited{Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE>{}()}
+        : Mapping{equal_to<KEY_TYPE>{}}
     {
         _AssertRepValidType ();
     }
