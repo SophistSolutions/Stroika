@@ -23,6 +23,10 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
+    public:
+        virtual void   shrink_to_fit ()                  = 0;
+        virtual size_t GetCapacity () const              = 0;
+        virtual void   SetCapacity (size_t slotsAlloced) = 0;
     };
 
     /*
@@ -35,6 +39,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     class Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EQUALS_COMPARER>> {
     private:
         using inherited = IImplRepBase_;
+
+    public:
+        static_assert (not is_reference_v<KEY_EQUALS_COMPARER>);
 
     public:
         Rep_ (const KEY_EQUALS_COMPARER& keyEqualsComparer)
@@ -196,6 +203,24 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
         }
 
+        // IImplRepBase_ overrides
+    public:
+        virtual void shrink_to_fit ()
+        {
+            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
+            fData_.shrink_to_fit ();
+        }
+        virtual size_t GetCapacity () const
+        {
+            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            return fData_.GetCapacity ();
+        }
+        virtual void SetCapacity (size_t slotsAlloced)
+        {
+            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
+            fData_.SetCapacity (slotsAlloced);
+        }
+
     private:
         using DataStructureImplType_ = DataStructures::Array<value_type>;
         using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
@@ -218,50 +243,112 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>*>
-    Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (const KEY_EQUALS_COMPARER& keyEqualsComparer)
-        : inherited{inherited::template MakeSmartPtr<Rep_<KEY_EQUALS_COMPARER>> (keyEqualsComparer)}
+    inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer)
+        : inherited{inherited::template MakeSmartPtr<Rep_<Configuration::remove_cvref_t<KEY_EQUALS_COMPARER>>> (keyEqualsComparer)}
     {
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>*>>*>
-    Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (const CONTAINER_OF_ADDABLE& src)
+    inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
         : Mapping_Array{}
     {
+        SetCapacity (src.size ());
         this->AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename COPY_FROM_ITERATOR_KEYVALUE>
-    Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
+    template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>*>
+    inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+        : Mapping_Array{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
+    {
+        SetCapacity (src.size ());
+        this->AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
         : Mapping_Array{}
     {
+        SetCapacity (src.size ());
+        this->AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>*>
+    inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+        : Mapping_Array{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
+    {
+        SetCapacity (src.size ());
+        this->AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (ITERABLE_OF_ADDABLE&& src)
+        : Mapping_Array{}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
+            SetCapacity (src.size ());
+        }
+        this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+        AssertRepValidType_ ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src)
+        : Mapping_Array{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        SetCapacity (src.size ());
+        this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+        AssertRepValidType_ ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : Mapping_Array{}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
+            if (start != end) {
+                SetCapacity (end - start);
+            }
+        }
+        this->AddAll (start, end);
+        AssertRepValidType_ ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : Mapping_Array{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
+            if (start != end) {
+                SetCapacity (end - start);
+            }
+        }
         this->AddAll (start, end);
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::shrink_to_fit ()
     {
-        using _SafeReadWriteRepAccessor = typename Iterable<value_type>::template _SafeReadWriteRepAccessor<Rep_>;
-        _SafeReadWriteRepAccessor                                   accessor{this};
-        shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{accessor._ConstGetRep ().fData_};
-        accessor._GetWriteableRep ().fData_.shrink_to_fit ();
+        using _SafeReadWriteRepAccessor = typename Iterable<value_type>::template _SafeReadWriteRepAccessor<IImplRepBase_>;
+        _SafeReadWriteRepAccessor{this}._GetWriteableRep ().shrink_to_fit ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline size_t Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::GetCapacity () const
     {
-        using _SafeReadRepAccessor = typename Iterable<value_type>::template _SafeReadRepAccessor<Rep_>;
-        _SafeReadRepAccessor                                        accessor{this};
-        shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{accessor._ConstGetRep ().fData_};
-        return accessor._ConstGetRep ().fData_.GetCapacity ();
+        using _SafeReadRepAccessor = typename Iterable<value_type>::template _SafeReadRepAccessor<IImplRepBase_>;
+        return _SafeReadRepAccessor{this}._ConstGetRep ().GetCapacity ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::SetCapacity (size_t slotsAlloced)
     {
-        using _SafeReadWriteRepAccessor = typename Iterable<value_type>::template _SafeReadWriteRepAccessor<Rep_>;
-        _SafeReadWriteRepAccessor                                   accessor{this};
-        shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{accessor._ConstGetRep ().fData_};
-        accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
+        using _SafeReadWriteRepAccessor = typename Iterable<value_type>::template _SafeReadWriteRepAccessor<IImplRepBase_>;
+        _SafeReadWriteRepAccessor{this}._GetWriteableRep ().SetCapacity (slotsAlloced);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline size_t Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::capacity () const

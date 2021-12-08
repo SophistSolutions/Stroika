@@ -31,25 +31,38 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
     public:
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v  = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
         using KeyEqualsCompareFunctionType = typename inherited::KeyEqualsCompareFunctionType;
         using value_type                   = typename inherited::value_type;
         using mapped_type                  = typename inherited::mapped_type;
 
     public:
         /**
-         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+         *  \see docs on Mapping<> constructor
          */
         Mapping_LinkedList ();
         template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
-        explicit Mapping_LinkedList (const KEY_EQUALS_COMPARER& keyEqualsComparer);
-        Mapping_LinkedList (const Mapping_LinkedList& src) = default;
-        Mapping_LinkedList (Mapping_LinkedList&& src)      = default;
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
-        explicit Mapping_LinkedList (const CONTAINER_OF_ADDABLE& src);
-        template <typename COPY_FROM_ITERATOR_KEYVALUE>
-        explicit Mapping_LinkedList (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
+        explicit Mapping_LinkedList (KEY_EQUALS_COMPARER&& keyEqualsComparer);
+        Mapping_LinkedList (Mapping_LinkedList&& src) noexcept      = default;
+        Mapping_LinkedList (const Mapping_LinkedList& src) noexcept = default;
+        Mapping_LinkedList (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        Mapping_LinkedList (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        Mapping_LinkedList (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        Mapping_LinkedList (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Mapping_LinkedList (ITERABLE_OF_ADDABLE&& src);
+        template <typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        Mapping_LinkedList (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        Mapping_LinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        Mapping_LinkedList (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
+        nonvirtual Mapping_LinkedList& operator= (Mapping_LinkedList&& rhs) = default;
         nonvirtual Mapping_LinkedList& operator= (const Mapping_LinkedList& rhs) = default;
 
     protected:
