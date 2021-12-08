@@ -31,20 +31,25 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Deque<T>;
 
     public:
-        using value_type = typename inherited::value_type;
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
+        using value_type                  = typename inherited::value_type;
 
     public:
         /**
          *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archetype base class
          */
         Deque_DoublyLinkedList ();
-        Deque_DoublyLinkedList (const Deque_DoublyLinkedList& src);
-        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Deque_DoublyLinkedList<T>*>>* = nullptr>
-        explicit Deque_DoublyLinkedList (const CONTAINER_OF_T& src);
-        template <typename COPY_FROM_ITERATOR_OF_T>
-        explicit Deque_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+        Deque_DoublyLinkedList (Deque_DoublyLinkedList&& src) noexcept      = default;
+        Deque_DoublyLinkedList (const Deque_DoublyLinkedList& src) noexcept = default;
+        Deque_DoublyLinkedList (const initializer_list<value_type>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Deque_DoublyLinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Deque_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE>
+        Deque_DoublyLinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
+        nonvirtual Deque_DoublyLinkedList<T>& operator= (Deque_DoublyLinkedList<T>&& rhs) = default;
         nonvirtual Deque_DoublyLinkedList<T>& operator= (const Deque_DoublyLinkedList<T>& rhs) = default;
 
     protected:

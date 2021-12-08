@@ -163,25 +163,28 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (const Deque_DoublyLinkedList& src)
-        : inherited{src}
+    inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (const initializer_list<value_type>& src)
+        : Deque_DoublyLinkedList{}
     {
+        this->AddAllToTail (src);
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Deque_DoublyLinkedList<T>*>>*>
-    inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (const CONTAINER_OF_T& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Deque_DoublyLinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src)
         : Deque_DoublyLinkedList{}
     {
-        this->InsertAll (0, src);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        this->AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_T>
-    inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-        : Deque_DoublyLinkedList{}
+    template <typename ITERATOR_OF_ADDABLE>
+    inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : Deque{}
     {
-        this->Append (start, end);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        this->AddAllToTail (start, end);
         AssertRepValidType_ ();
     }
     template <typename T>
@@ -191,6 +194,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber
 #endif
     }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Concrete_Deque_DoublyLinkedList_inl_ */
