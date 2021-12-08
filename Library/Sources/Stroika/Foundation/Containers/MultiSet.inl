@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T, typename TRAITS>
     struct MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ {
-        ElementsIteratorHelperContext_ (const typename Iterable<value_type>::_IterableRepSharedPtr& tally, const Iterator<value_type>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, optional<T> saved2Return = optional<T> ())
+        ElementsIteratorHelperContext_ (const typename Iterable<value_type>::_IterableRepSharedPtr& tally, const Iterator<value_type>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, optional<T> saved2Return = optional<T>{})
             : fMultiSet{tally}
             , fMultiSetIterator{delegateTo}
             , fCountMoreTimesToGoBeforeAdvance{countMoreTimesToGoBeforeAdvance}

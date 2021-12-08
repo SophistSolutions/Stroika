@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             if (fData_.IsEmpty ()) {
-                return optional<T> ();
+                return optional<T>{};
             }
             T item = fData_.GetFirst ();
             fData_.RemoveFirst ();
