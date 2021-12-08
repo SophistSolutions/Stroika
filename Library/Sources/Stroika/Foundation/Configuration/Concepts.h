@@ -46,6 +46,8 @@ namespace Stroika::Foundation::Configuration {
         // Subtle - but begin () doesn't work with rvalues, so must use declval<T&> -- LGP 2021-11-26
         template <typename T>
         using has_beginend_t = decltype (static_cast<bool> (begin (declval<T&> ()) != end (declval<T&> ())));
+        template <typename T>
+        using has_size_t = decltype (static_cast<size_t> (declval<T&> ().size ()));
 
         // Would be nice to simplify, but my current version of is_detected_v only takes one template parameter, and the std::experimental version not included in VS2k19
         template <typename ITERABLE_OF_T, typename T>
@@ -353,6 +355,20 @@ namespace Stroika::Foundation::Configuration {
     template <typename... Ts>
     constexpr inline bool has_spaceship_v<std::tuple<Ts...>> = (has_spaceship_v<Ts> and ...);
 #endif
+
+    /**
+     *  \brief check if the given type T has a const size() method which can be called to return a size_t.
+     * 
+     *  \par Example Usage
+     *      \code
+     *          if constexpr (has_size_v<T>) {
+     *              T a{};
+     *              return a.size ();
+     *          }
+     *      \endcode
+     */
+    template <typename T>
+    constexpr inline bool has_size_v = is_detected_v<Private_::has_size_t, T>;
 
     /**
      *  \brief check if the given type T can have std::begin()/std::end () applied, and they can be compared and that compare converted to bool
