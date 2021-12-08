@@ -4,6 +4,8 @@
 #ifndef _Stroika_Foundation_Containers_Stack_inl_
 #define _Stroika_Foundation_Containers_Stack_inl_
 
+#include <vector>
+
 #include "../Configuration/Concepts.h"
 #include "../Debug/Assertions.h"
 #include "Factory/Stack_Factory.h"
@@ -23,12 +25,20 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Stack<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
-    inline Stack<T>::Stack (CONTAINER_OF_ADDABLE&& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Stack<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Stack<T>::Stack (ITERABLE_OF_ADDABLE&& src)
         : Stack{}
     {
-        AssertNotImplemented ();
-        //                AddAll (s);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        // sadly intrinsically expensive to copy an interable using the stack API
+        // @todo find a more efficient way - for example - if there is a way to get a reverse-iterator from 'src' this can be much cheaper!
+        vector<T> tmp;
+        for (auto si : src) {
+            tmp.push_back (si);
+        }
+        for (auto si : tmp) {
+            Push (si);
+        }
     }
     template <typename T>
     inline Stack<T>::Stack (const _IRepSharedPtr& src) noexcept
@@ -44,12 +54,20 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    inline Stack<T>::Stack (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    template <typename ITERATOR_OF_ADDABLE>
+    inline Stack<T>::Stack (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : Stack{}
     {
-        AssertNotImplemented ();
-        //                AddAll (start, end);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        // sadly intrinsically expensive to copy an interable using the stack API
+        // @todo find a more efficient way - for example - if there is a way to get a reverse-iterator from 'src' this can be much cheaper!
+        vector<T> tmp;
+        for (auto i = start; i != end; ++i) {
+            tmp.push_back (*i);
+        }
+        for (auto si : tmp) {
+            Push (si);
+        }
     }
     template <typename T>
     inline void Stack<T>::Push (ArgByValueType<value_type> item)

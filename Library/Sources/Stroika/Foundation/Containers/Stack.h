@@ -19,17 +19,7 @@
  *
  *
  *  TODO:
- *      @todo   Add AddAll()  for now - that creates a temporary stack to revserse. But then use
- *              enable_if_t - to check if you can create reverse iterator, and then use that to go backwards?
- *
- *      @todo   Actual implmeentaitons incomplete - especially cuz CTOR with params arg ambiguious -
- *              clarify... and implement copy
- *
- *              >>> I THINK DEFINITION TO USE FOR ITERATOR ORDER/CTOR IS:
- *              >>>     >   Iterates from TOP OF STACK to LAST (so natural order data structured organinized for)
- *              >>>     >   CTOR order is TOP of STACK to LAST (same) so easy to pass in regular iterators
- *              >>>     BUT! THen implementing CTOR of REPS is tricky cuz they must be responsible to effectively 'reverse'
- *              >>>     OR DO ADDS THEMESELVES
+ *      @todo   Improve performance of CTOR's using reverse-iterator (?)
  *
  *      @todo   Embellish test cases (regression tests), and fix/make sure copying works.
  *
@@ -42,13 +32,15 @@
 namespace Stroika::Foundation::Containers {
 
     using Configuration::ArgByValueType;
+    using Configuration::ExtractValueType_t;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
     /**
      *      Standard LIFO (Last in first out) Stack. See Sedgewick, 30-31.
-     *      Iteration proceeds from the top to the bottom of the stack. Top
-     *      is the FIRST IN (also first out).
+     *      
+     *  \note   Iteration proceeds from the top (last in & first out) to the bottom of the stack (first in & last out). Top
+     *          is the LAST IN (also first out).
      *
      *  *Design Note*:
      *      We considered NOT having Stack<T> inherit from Iterable<T>, but that made copying of
@@ -96,16 +88,16 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add (Push)
-         *
-         *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, T>;
+        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, T>;
 
     public:
         /**
          *  @todo   MUST WORK OUT DETAILS OF SEMANTICS FOR ITERATOR ADD cuz naive interpreation of above
          *          rules would lead to having a copy reverse the stack (SEE FILE-TODO-NOTE)
+         * 
+         *  \note When copying an Iterable<>, the order of items is REVERSED before pushing into the stack.
          *
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          *
@@ -114,10 +106,10 @@ namespace Stroika::Foundation::Containers {
         Stack ();
         Stack (Stack&& src) noexcept      = default;
         Stack (const Stack& src) noexcept = default;
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Stack<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        explicit Stack (CONTAINER_OF_ADDABLE&& src);
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        Stack (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Stack<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Stack (ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE>
+        Stack (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     protected:
         explicit Stack (_IRepSharedPtr&& src) noexcept;
