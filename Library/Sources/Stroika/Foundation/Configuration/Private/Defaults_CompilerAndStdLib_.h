@@ -413,7 +413,6 @@ Please choose the Technical Support command on the Visual C++
 
 #endif
 
-
 /*
 Building Stroika Foundation Objs:
       Compiling Library/Sources/Stroika/Foundation/IO/Network/HTTP/CacheControl.cpp ... 
