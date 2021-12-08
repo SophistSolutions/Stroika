@@ -391,6 +391,30 @@ Please choose the Technical Support command on the Visual C++
 #endif
 
 /*
+>   Compiling Library/Sources/Stroika/Frameworks/WebServer/Request.cpp ...
+2>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\concepts.h(467): error C2385: ambiguous access of 'value_type'
+2>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\concepts.h(467): note: could be the 'value_type' in base 'Stroika::Foundation::Common::ReadOnlyProperty<Stroika::Foundation::Characters::String>'
+2>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\concepts.h(467): note: or could be the 'value_type' in base 'Stroika::Foundation::Common::WriteOnlyProperty<Stroika::Foundation::Characters::String>'
+2>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\concepts.h(493): note: see reference to class template instantiation 'Stroika::Foundation::Configuration::ExtractValueType<Stroika::Foundation::Common::Property<Stroika::Foundation::Characters::String>,void>' being compiled
+2>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\concepts.h(493): note: see reference to alias template instantiation 'Stroika::Foundation::Configuration::ExtractValueType_t<Stroika::Foundation::Common::Property<Stroika::Foundation::Characters::String>>' being compiled
+2>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\concepts.h(467): note: see reference to variable template 'const bool IsIterable_v<Stroika::Foundation::Common::Property<Stroika::Foundation::Characters::String> >' being compiled
+2>c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\type_traits(16707566): note: see reference to function template instantiation 'auto Stroika::Frameworks::WebServer::Request::<lambda_50f8cdc935c03d80f9b5052785b593ec>::operator ()<Stroika::Foundation::Common::ReadOnlyProperty<bool>>(const Stroika::Foundation::Common::ReadOnlyProperty<bool> *) const' being compiled
+2>c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\type_traits(1871): note: see reference to alias template instantiation 'std::_Is_invocable_r_<bool,Stroika::Frameworks::WebServer::Request::<lambda_50f8cdc935c03d80f9b5052785b593ec>&,const Stroika::Foundation::Common::ReadOnlyProperty<bool>*>' being compiled
+2>c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\functional(1279): note: see reference to class template instantiation 'std::_Is_invocable_r<_Ret,_Fx,const Stroika::Foundation::Common::ReadOnlyProperty<bool> *>' being compiled
+2>        with
+2>*/
+#ifndef qCompilerAndStdLib_template_value_type_ambiguous_confusion_Buggy
+
+#if defined(_MSC_VER)
+#define qCompilerAndStdLib_template_value_type_ambiguous_confusion_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+#else
+#define qCompilerAndStdLib_template_value_type_ambiguous_confusion_Buggy 0
+#endif
+
+#endif
+
+
+/*
 Building Stroika Foundation Objs:
       Compiling Library/Sources/Stroika/Foundation/IO/Network/HTTP/CacheControl.cpp ... 
 c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\enumeration.inl(210): fatal error C1001: An internal error has occurred in the compiler.

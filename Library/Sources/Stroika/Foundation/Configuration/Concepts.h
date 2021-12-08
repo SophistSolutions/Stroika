@@ -490,7 +490,11 @@ namespace Stroika::Foundation::Configuration {
      *  \note may in the future ALSO check if return value of begin/end appear to be 'iterators' and of the same type.
      */
     template <typename ITERABLE>
-    constexpr bool IsIterable_v = has_beginend_v<ITERABLE> and not is_same_v<ExtractValueType_t<ITERABLE>, void>;
+    constexpr bool IsIterable_v = has_beginend_v<ITERABLE> 
+		#if not qCompilerAndStdLib_template_value_type_ambiguous_confusion_Buggy
+		and not is_same_v<ExtractValueType_t<ITERABLE>, void>
+		#endif
+		;
 
     /// DEPRECATED CALLS ////////////////////
 
