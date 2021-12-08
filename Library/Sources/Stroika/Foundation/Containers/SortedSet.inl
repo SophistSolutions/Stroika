@@ -58,20 +58,20 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedSet<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
-    inline SortedSet<T>::SortedSet (const ITERABLE_OF_ADDABLE& src)
+    inline SortedSet<T>::SortedSet (ITERABLE_OF_ADDABLE&& src)
         : SortedSet{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
-        this->AddAll (src);
+        this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T>
     template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
-    inline SortedSet<T>::SortedSet (INORDER_COMPARER&& inOrderComparer, const ITERABLE_OF_ADDABLE& src)
+    inline SortedSet<T>::SortedSet (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedSet (forward<INORDER_COMPARER> (inOrderComparer))
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
-        this->AddAll (src);
+        this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T>

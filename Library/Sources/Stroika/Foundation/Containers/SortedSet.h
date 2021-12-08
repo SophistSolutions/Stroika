@@ -96,9 +96,9 @@ namespace Stroika::Foundation::Containers {
         template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
         SortedSet (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedSet<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
-        explicit SortedSet (const ITERABLE_OF_ADDABLE& src);
+        explicit SortedSet (ITERABLE_OF_ADDABLE&& src);
         template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
-        SortedSet (INORDER_COMPARER&& inOrderComparer, const ITERABLE_OF_ADDABLE& src);
+        SortedSet (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
         SortedSet (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
         template <typename INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
