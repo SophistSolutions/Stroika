@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
-         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archetype base class
+         *  \see docs on Deque<T> constructor
          */
         Deque_DoublyLinkedList ();
         Deque_DoublyLinkedList (Deque_DoublyLinkedList&& src) noexcept      = default;
