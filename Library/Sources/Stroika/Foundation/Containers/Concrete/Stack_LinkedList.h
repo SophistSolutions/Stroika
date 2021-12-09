@@ -42,14 +42,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v  = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
-        using value_type = typename inherited::value_type;
+        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
+        using value_type                  = typename inherited::value_type;
 
     public:
         /**
          */
         Stack_LinkedList ();
-        Stack_LinkedList (Stack_LinkedList&& src) noexcept = default;
+        Stack_LinkedList (Stack_LinkedList&& src) noexcept      = default;
         Stack_LinkedList (const Stack_LinkedList& src) noexcept = default;
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Stack_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Stack_LinkedList (ITERABLE_OF_ADDABLE&& src);
@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Stack_LinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
-        nonvirtual Stack_LinkedList& operator= ( Stack_LinkedList&& rhs) = default;
+        nonvirtual Stack_LinkedList& operator= (Stack_LinkedList&& rhs) = default;
         nonvirtual Stack_LinkedList& operator= (const Stack_LinkedList& rhs) = default;
 
     protected:

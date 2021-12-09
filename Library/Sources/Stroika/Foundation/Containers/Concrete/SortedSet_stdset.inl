@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
     inline SortedSet_stdset<T>::SortedSet_stdset (INORDER_COMPARER&& inorderComparer)
-        : inherited{inherited::template MakeSmartPtr < Rep_<Configuration::remove_cv_t<INORDER_COMPARER>>> (forward<INORDER_COMPARER> (inorderComparer))}
+        : inherited{inherited::template MakeSmartPtr<Rep_<decay_t<INORDER_COMPARER>>> (forward<INORDER_COMPARER> (inorderComparer))}
     {
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER, T> (), "StrictInOrder comparer required with SortedSet_stdset");
         AssertRepValidType_ ();

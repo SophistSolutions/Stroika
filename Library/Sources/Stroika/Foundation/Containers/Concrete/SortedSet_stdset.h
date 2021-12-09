@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v  = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
+        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
         using ElementEqualityComparerType = typename Set<T>::ElementEqualityComparerType;
         using ElementInOrderComparerType  = typename inherited::ElementInOrderComparerType;
         using value_type                  = typename inherited::value_type;
@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedSet_stdset ();
         template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
         explicit SortedSet_stdset (INORDER_COMPARER&& inorderComparer);
-        SortedSet_stdset (SortedSet_stdset&& src) noexcept = default;
+        SortedSet_stdset (SortedSet_stdset&& src) noexcept      = default;
         SortedSet_stdset (const SortedSet_stdset& src) noexcept = default;
         SortedSet_stdset (const initializer_list<T>& src);
         template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual SortedSet_stdset& operator= ( SortedSet_stdset&& rhs) = default;
+        nonvirtual SortedSet_stdset& operator= (SortedSet_stdset&& rhs) = default;
         nonvirtual SortedSet_stdset& operator= (const SortedSet_stdset& rhs) = default;
 
     protected:
