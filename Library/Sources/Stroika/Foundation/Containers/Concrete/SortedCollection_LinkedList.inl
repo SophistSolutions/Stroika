@@ -38,6 +38,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = IImplRepBase_;
 
     public:
+        static_assert (not is_reference_v<INORDER_COMPARER>);
+
+    public:
         Rep_ (const INORDER_COMPARER& inorderComparer)
             : fInorderComparer_{inorderComparer}
         {
@@ -207,26 +210,62 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename INORDER_COMPARER>
-    inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (const INORDER_COMPARER& inorderComparer)
-        : inherited{inherited::template MakeSmartPtr<Rep_<INORDER_COMPARER>> (inorderComparer)}
+    template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (INORDER_COMPARER&& inorderComparer)
+        : inherited{inherited::template MakeSmartPtr<Rep_<Configuration::remove_cvref_t<INORDER_COMPARER>>> (inorderComparer)}
     {
-        static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedCollection");
+        static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedCollection_LinkedList");
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (const T* start, const T* end)
+    inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (const initializer_list<T>& src)
         : SortedCollection_LinkedList{}
     {
-        Require ((start == end) or (start != nullptr and end != nullptr));
+        this->AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename T>
+    template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src)
+        : SortedCollection_LinkedList{forward<INORDER_COMPARER> (inOrderComparer)}
+    {
+        this->AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename T>
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedCollection_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (ITERABLE_OF_ADDABLE&& src)
+        : SortedCollection_LinkedList{}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+        AssertRepValidType_ ();
+    }
+    template <typename T>
+    template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src)
+        : SortedCollection_LinkedList{forward<INORDER_COMPARER> (inOrderComparer)}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+        AssertRepValidType_ ();
+    }
+    template <typename T>
+    template <typename ITERATOR_OF_ADDABLE>
+    inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : SortedCollection_LinkedList{}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         this->AddAll (start, end);
         AssertRepValidType_ ();
     }
     template <typename T>
-    SortedCollection_LinkedList<T>::SortedCollection_LinkedList (const SortedCollection<T>& src)
-        : SortedCollection_LinkedList{}
+    template <typename INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : SortedCollection_LinkedList{forward<INORDER_COMPARER> (inOrderComparer)}
     {
-        this->AddAll (src);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        this->AddAll (start, end);
         AssertRepValidType_ ();
     }
     template <typename T>

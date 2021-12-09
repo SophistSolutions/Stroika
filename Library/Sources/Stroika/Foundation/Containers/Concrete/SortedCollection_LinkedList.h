@@ -41,19 +41,29 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
-         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+         *  \see docs on SortedCollection<> constructor
          */
         SortedCollection_LinkedList ();
-        template <typename INORDER_COMPARER>
-        explicit SortedCollection_LinkedList (const INORDER_COMPARER& inorderComparer);
-        SortedCollection_LinkedList (const T* start, const T* end);
-        SortedCollection_LinkedList (const SortedCollection<T>& src);
-        SortedCollection_LinkedList (const SortedCollection_LinkedList& src) noexcept = default;
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        explicit SortedCollection_LinkedList (INORDER_COMPARER&& inorderComparer);
         SortedCollection_LinkedList (SortedCollection_LinkedList&& src) noexcept      = default;
+        SortedCollection_LinkedList (const SortedCollection_LinkedList& src) noexcept = default;
+        SortedCollection_LinkedList (const initializer_list<T>& src);
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedCollection_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit SortedCollection_LinkedList (ITERABLE_OF_ADDABLE&& src);
+        template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE>
+        SortedCollection_LinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
          */
+        nonvirtual SortedCollection_LinkedList& operator= (SortedCollection_LinkedList&& rhs) = default;
         nonvirtual SortedCollection_LinkedList& operator= (const SortedCollection_LinkedList& rhs) = default;
 
     protected:

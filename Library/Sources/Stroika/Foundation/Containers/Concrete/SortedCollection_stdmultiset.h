@@ -46,27 +46,29 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
-         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+         *  \see docs on SortedCollection<> constructor
          */
         SortedCollection_stdmultiset ();
-        template <typename INORDER_COMPARER>
-        explicit SortedCollection_stdmultiset (const INORDER_COMPARER& inorderComparer);
-        SortedCollection_stdmultiset (const SortedCollection_stdmultiset& src) noexcept = default;
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        explicit SortedCollection_stdmultiset (INORDER_COMPARER&& inorderComparer);
         SortedCollection_stdmultiset (SortedCollection_stdmultiset&& src) noexcept      = default;
-        SortedCollection_stdmultiset (const initializer_list<value_type>& src);
-        SortedCollection_stdmultiset (const InOrderComparerType& inOrderComparer, const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Collection<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        SortedCollection_stdmultiset (CONTAINER_OF_ADDABLE&& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
-        SortedCollection_stdmultiset (const InOrderComparerType& inOrderComparer, CONTAINER_OF_ADDABLE&& src);
-        template <typename COPY_FROM_ITERATOR_OF_T>
-        SortedCollection_stdmultiset (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-        template <typename COPY_FROM_ITERATOR_OF_T>
-        SortedCollection_stdmultiset (const InOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+        SortedCollection_stdmultiset (const SortedCollection_stdmultiset& src) noexcept = default;
+        SortedCollection_stdmultiset (const initializer_list<T>& src);
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        SortedCollection_stdmultiset (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedCollection_stdmultiset<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit SortedCollection_stdmultiset (ITERABLE_OF_ADDABLE&& src);
+        template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        SortedCollection_stdmultiset (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE>
+        SortedCollection_stdmultiset (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        SortedCollection_stdmultiset (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
          */
+        nonvirtual SortedCollection_stdmultiset& operator= (SortedCollection_stdmultiset&& rhs) = default;
         nonvirtual SortedCollection_stdmultiset& operator= (const SortedCollection_stdmultiset& rhs) = default;
 
     protected:
