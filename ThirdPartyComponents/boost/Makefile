@@ -33,7 +33,8 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
-VERSION=1_78_0_b1
+VERSION=1_78_0
+#VERSION=1_78_0_b1
 #VERSION=1_77_0
 #VERSION=1_76_0
 #VERSION=1_75_0
@@ -78,9 +79,9 @@ endif
 
 ### Haven't found any backup/mirrors and this only stores the last few versions. @todo - find a better backup! 
 FETCHURLS=
-FETCHURLS+=https://boostorg.jfrog.io/artifactory/main/beta/$(VERSION_WITH_2DOTS).beta1/source/boost_$(VERSION).tar.gz
 FETCHURLS+=https://boostorg.jfrog.io/artifactory/main/release/$(VERSION_WITH_DOTS)/source/boost_$(VERSION).tar.gz
 FETCHURLS+=https://sourceforge.net/projects/boost/files/boost/$(VERSION_WITH_DOTS)/boost_$(VERSION).tar.gz/download
+FETCHURLS+=https://boostorg.jfrog.io/artifactory/main/beta/$(VERSION_WITH_2DOTS).beta1/source/boost_$(VERSION).tar.gz
 #FETCHURLS+=ftp://ftp.sophists.com/Pub/Mirror/boost_$(VERSION).tar.gz
 #(reasonable but breaks github 100mb limit)FETCHURLS+=file:///../Mirror/boost_$(VERSION).tar.gz
 ### the github.com/boostorg/boost/archive appear not fully compatible/real mirror of above - very different size and my build scripts dont work
