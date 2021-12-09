@@ -46,14 +46,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          *  \see docs on Sequence<> constructor
          */
-        Sequence_DoublyLinkedList ();
-        Sequence_DoublyLinkedList (Sequence_DoublyLinkedList&& src) noexcept      = default;
-        Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList& src) noexcept = default;
-        Sequence_DoublyLinkedList (const initializer_list<value_type>& src);
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence_DoublyLinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
-        explicit Sequence_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src);
+        Sequence_LinkedList ();
+        Sequence_LinkedList (Sequence_LinkedList&& src) noexcept                  = default;
+        Sequence_LinkedList (const Sequence_LinkedList& src) noexcept = default;
+        Sequence_LinkedList (const initializer_list<value_type>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Sequence_LinkedList (ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>
-        Sequence_DoublyLinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        Sequence_LinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
