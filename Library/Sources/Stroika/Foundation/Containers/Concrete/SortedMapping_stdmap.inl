@@ -40,6 +40,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = IImplRepBase_;
 
     public:
+        static_assert (not is_reference_v<KEY_INORDER_COMPARER>);
+
+    public:
         Rep_ (const KEY_INORDER_COMPARER& inorderComparer)
             : fData_{inorderComparer}
         {
@@ -221,24 +224,76 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>*>
-    inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (const KEY_INORDER_COMPARER& inorderComparer)
-        : inherited{inherited::template MakeSmartPtr<Rep_<KEY_INORDER_COMPARER>> (inorderComparer)}
+    inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer)
+        : inherited{inherited::template MakeSmartPtr<Rep_<Configuration::remove_cvref_t<KEY_INORDER_COMPARER>>> (forward<KEY_INORDER_COMPARER> (inorderComparer))}
     {
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>*>>*>
-    inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (const CONTAINER_OF_ADDABLE& src)
+    inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
         : SortedMapping_stdmap{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename COPY_FROM_ITERATOR_KEYVALUE>
-    inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
+    template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>*>
+    inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+        : SortedMapping_stdmap{forward<KEY_INORDER_COMPARER> (inorderComparer)}
+    {
+        this->AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
         : SortedMapping_stdmap{}
     {
+        this->AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>*>
+    inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+        : SortedMapping_stdmap{forward<KEY_INORDER_COMPARER> (inorderComparer)}
+    {
+        this->AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (ITERABLE_OF_ADDABLE&& src)
+        : SortedMapping_stdmap{}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AssertRepValidType_ ();
+        this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+        AssertRepValidType_ ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename KEY_INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src)
+        : SortedMapping_stdmap{forward<KEY_INORDER_COMPARER> (inorderComparer)}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AssertRepValidType_ ();
+        this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+        AssertRepValidType_ ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : SortedMapping_stdmap{}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        this->AddAll (start, end);
+        AssertRepValidType_ ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename KEY_INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : SortedMapping_stdmap{forward<KEY_INORDER_COMPARER> (inorderComparer)}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         this->AddAll (start, end);
         AssertRepValidType_ ();
     }

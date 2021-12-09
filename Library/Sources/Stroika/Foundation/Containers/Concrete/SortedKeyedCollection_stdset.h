@@ -37,13 +37,13 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         template <typename POTENTIALLY_ADDABLE_T>
         static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
-        using TraitsType                = typename inherited::TraitsType;
-        using KeyExtractorType          = typename inherited::KeyExtractorType;
-        using KeyEqualityComparerType   = typename inherited::KeyEqualityComparerType;
-        using KeyInOrderKeyComparerType = typename inherited::KeyInOrderKeyComparerType;
-        using KeyType                   = typename inherited::KeyType;
-        using key_type                  = typename inherited::key_type;
-        using value_type                = typename inherited::value_type;
+        using TraitsType                  = typename inherited::TraitsType;
+        using KeyExtractorType            = typename inherited::KeyExtractorType;
+        using KeyEqualityComparerType     = typename inherited::KeyEqualityComparerType;
+        using KeyInOrderKeyComparerType   = typename inherited::KeyInOrderKeyComparerType;
+        using KeyType                     = typename inherited::KeyType;
+        using key_type                    = typename inherited::key_type;
+        using value_type                  = typename inherited::value_type;
 
     public:
         /**
@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                   enable_if_t<
                       Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
         SortedKeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{});
-        SortedKeyedCollection_stdset (SortedKeyedCollection_stdset&& src) noexcept = default;
+        SortedKeyedCollection_stdset (SortedKeyedCollection_stdset&& src) noexcept      = default;
         SortedKeyedCollection_stdset (const SortedKeyedCollection_stdset& src) noexcept = default;
         template <typename KEY_EXTRACTOR,
                   typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual SortedKeyedCollection_stdset& operator= ( SortedKeyedCollection_stdset&& rhs) = default;
+        nonvirtual SortedKeyedCollection_stdset& operator= (SortedKeyedCollection_stdset&& rhs) = default;
         nonvirtual SortedKeyedCollection_stdset& operator= (const SortedKeyedCollection_stdset& rhs) = default;
 
     protected:

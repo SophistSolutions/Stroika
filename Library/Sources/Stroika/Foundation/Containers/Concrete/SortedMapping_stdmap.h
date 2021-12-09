@@ -35,6 +35,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
     public:
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v  = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
         using KeyEqualsCompareFunctionType = typename inherited::KeyEqualsCompareFunctionType;
         using KeyInOrderKeyComparerType    = typename inherited::KeyInOrderKeyComparerType;
         using value_type                   = typename inherited::value_type;
@@ -50,20 +52,32 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
-         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+         *  \see docs on SortedMapping<> constructor
          */
         SortedMapping_stdmap ();
         template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
-        explicit SortedMapping_stdmap (const KEY_INORDER_COMPARER& inorderComparer);
-        SortedMapping_stdmap (const SortedMapping_stdmap& src) = default;
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
-        SortedMapping_stdmap (const CONTAINER_OF_ADDABLE& src);
-        template <typename COPY_FROM_ITERATOR_KEYVALUE>
-        SortedMapping_stdmap (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
+        explicit SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer);
+        SortedMapping_stdmap (SortedMapping_stdmap&& src) noexcept      = default;
+        SortedMapping_stdmap (const SortedMapping_stdmap& src) noexcept = default;
+        SortedMapping_stdmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        SortedMapping_stdmap (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit SortedMapping_stdmap (ITERABLE_OF_ADDABLE&& src);
+        template <typename KEY_INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        SortedMapping_stdmap (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename KEY_INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
          */
+        nonvirtual SortedMapping_stdmap& operator= (SortedMapping_stdmap&& rhs) = default;
         nonvirtual SortedMapping_stdmap& operator= (const SortedMapping_stdmap& rhs) = default;
 
     protected:
