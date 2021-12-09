@@ -205,17 +205,17 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // IImplRepBase_ overrides
     public:
-        virtual void shrink_to_fit ()
+        virtual void shrink_to_fit () override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             fData_.shrink_to_fit ();
         }
-        virtual size_t GetCapacity () const
+        virtual size_t GetCapacity () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return fData_.GetCapacity ();
         }
-        virtual void SetCapacity (size_t slotsAlloced)
+        virtual void SetCapacity (size_t slotsAlloced) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             fData_.SetCapacity (slotsAlloced);
