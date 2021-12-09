@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v  = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
+        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
         using TraitsType                  = typename inherited::TraitsType;
         using CounterType                 = typename inherited::CounterType;
         using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedMultiSet_stdmap ();
         template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
         explicit SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer);
-        SortedMultiSet_stdmap (SortedMultiSet_stdmap&& src) noexcept = default;
+        SortedMultiSet_stdmap (SortedMultiSet_stdmap&& src) noexcept      = default;
         SortedMultiSet_stdmap (const SortedMultiSet_stdmap& src) noexcept = default;
         SortedMultiSet_stdmap (const initializer_list<T>& src);
         template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual SortedMultiSet_stdmap& operator= ( SortedMultiSet_stdmap&& rhs) = default;
+        nonvirtual SortedMultiSet_stdmap& operator= (SortedMultiSet_stdmap&& rhs) = default;
         nonvirtual SortedMultiSet_stdmap& operator= (const SortedMultiSet_stdmap& rhs) = default;
 
     protected:
