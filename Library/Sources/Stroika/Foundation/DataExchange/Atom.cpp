@@ -5,6 +5,7 @@
 
 #include "../Characters/String.h"
 #include "../Containers/Mapping.h"
+#include "../Containers/Concrete/Mapping_stdmap.h"
 #include "../Containers/Sequence.h"
 #include "../Execution/Common.h"
 #include "../Execution/SpinLock.h"
@@ -40,7 +41,7 @@ namespace {
          * Use SpinLock since locks very short lived. COULD use shared_mutex because much more reads than writes. But since locks so short, little point.
          */
         Execution::SpinLock                                    fCritSec; // lock needed here to keep map and sequence in sync
-        Mapping<String, AtomManager_Default::AtomInternalType> fMap{String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}};
+        Mapping<String, AtomManager_Default::AtomInternalType> fMap{Concrete::Mapping_stdmap<String, AtomManager_Default::AtomInternalType>{String::LessComparer{Characters::CompareOptions::eCaseInsensitive}}};
         Sequence<String>                                       fSeq;
     };
     inline AtomManager_CaseInsensitive_Rep_& GetAtomManager_CaseInsensitive_Rep_ ()
