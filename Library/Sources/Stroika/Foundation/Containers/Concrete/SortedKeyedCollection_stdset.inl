@@ -242,68 +242,75 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename CONTAINER_OF_ADDABLE,
+    template <typename ITERABLE_OF_ADDABLE,
               typename KEY_EXTRACTOR,
               typename KEY_INORDER_COMPARER,
               enable_if_t<
-                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>, decay_t<CONTAINER_OF_ADDABLE>> and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
-    inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (CONTAINER_OF_ADDABLE&& src)
-    {
-        this->AddAll (src);
-        AssertRepValidType_ ();
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename CONTAINER_OF_ADDABLE,
-              typename KEY_EXTRACTOR,
-              typename KEY_INORDER_COMPARER,
-              enable_if_t<
-                  Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>, decay_t<CONTAINER_OF_ADDABLE>> and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
-    inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src)
-    {
-        this->AddAll (src);
-        AssertRepValidType_ ();
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER, typename CONTAINER_OF_ADDABLE,
-              enable_if_t<
-                  KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
-    inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src)
-        : SortedKeyedCollection_stdset{forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_INORDER_COMPARER> (keyComparer)}
-    {
-        AssertRepValidType_ ();
-        this->AddAll (src);
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE,
-              typename KEY_EXTRACTOR,
-              typename KEY_INORDER_COMPARER,
-              enable_if_t<
-                  Configuration::IsIterator_v<COPY_FROM_ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>*>
-    inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+                  Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
+    inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (ITERABLE_OF_ADDABLE&& src)
         : SortedKeyedCollection_stdset{KEY_EXTRACTOR{}, KEY_INORDER_COMPARER{}}
     {
-        this->AddAll (start, end);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        this->AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename COPY_FROM_ITERATOR_OF_ADDABLE,
+    template <typename ITERABLE_OF_ADDABLE,
               typename KEY_EXTRACTOR,
               typename KEY_INORDER_COMPARER,
               enable_if_t<
-                  Configuration::IsIterator_v<COPY_FROM_ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>*>
-    inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-        : SortedKeyedCollection_stdset{KEY_EXTRACTOR{}, forward<KEY_INORDER_COMPARER> (keyComparer)}
+                  Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
+    inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        this->AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER, typename ITERABLE_OF_ADDABLE,
+              enable_if_t<
+                  KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
+        : SortedKeyedCollection_stdset{forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_INORDER_COMPARER> (keyComparer)}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        this->AddAll (src);
+        AssertRepValidType_ ();
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    template <typename ITERATOR_OF_ADDABLE,
+              typename KEY_EXTRACTOR,
+              typename KEY_INORDER_COMPARER,
+              enable_if_t<
+                  Configuration::IsIterator_v<ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>*>
+    inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : SortedKeyedCollection_stdset{KEY_EXTRACTOR{}, KEY_INORDER_COMPARER{}}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         this->AddAll (start, end);
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE,
+    template <typename ITERATOR_OF_ADDABLE,
+              typename KEY_EXTRACTOR,
+              typename KEY_INORDER_COMPARER,
               enable_if_t<
-                  KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
-    inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+                  Configuration::IsIterator_v<ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>*>
+    inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : SortedKeyedCollection_stdset{KEY_EXTRACTOR{}, forward<KEY_INORDER_COMPARER> (keyComparer)}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        this->AddAll (start, end);
+        AssertRepValidType_ ();
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER, typename ITERATOR_OF_ADDABLE,
+              enable_if_t<
+                  KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : SortedKeyedCollection_stdset{forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_INORDER_COMPARER> (keyComparer)}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         this->AddAll (start, end);
         AssertRepValidType_ ();
     }
