@@ -136,26 +136,28 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (const Queue_DoublyLinkedList& src)
-        : inherited{src}
+    inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (const initializer_list<value_type>& src)
+        : Queue_DoublyLinkedList{}
     {
+        AddAllToTail (src);
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue_DoublyLinkedList<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
-    inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (CONTAINER_OF_ADDABLE&& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Queue_DoublyLinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src)
         : Queue_DoublyLinkedList{}
     {
-        AssertNotImplemented (); // @todo - use new EnqueueAll()
-        //InsertAll (0, s);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_T>
-    inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+    template <typename ITERATOR_OF_ADDABLE>
+    inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : Queue_DoublyLinkedList{}
     {
-        Append (start, end);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        AddAllToTail (start, end);
         AssertRepValidType_ ();
     }
     template <typename T>

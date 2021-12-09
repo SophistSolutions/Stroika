@@ -197,6 +197,9 @@ namespace Stroika::Foundation::Containers {
          *  \req  IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>;                   // ITERABLE_OF_ADDABLE overload
          *  \req  Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>                        //  ditto
          *  \req  static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);   // ITERATOR_OF_ADDABLE overload
+         * 
+         *  \note This works efficiently because a Queue<> iterates from head to tail, and thats the order in which you would want to
+         *        add them to copy the Queue (unlike with Stack).
          *
          *  \note mutates container
          */

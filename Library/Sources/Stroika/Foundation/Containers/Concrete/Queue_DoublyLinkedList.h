@@ -31,19 +31,25 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Queue<T>;
 
     public:
-        using value_type = typename inherited::value_type;
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
+        using value_type                  = typename inherited::value_type;
 
     public:
         /**
+         *  \see docs on Queue<T> constructor
          */
         Queue_DoublyLinkedList ();
-        Queue_DoublyLinkedList (const Queue_DoublyLinkedList& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue_DoublyLinkedList<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        Queue_DoublyLinkedList (CONTAINER_OF_ADDABLE&& src);
-        template <typename COPY_FROM_ITERATOR_OF_T>
-        explicit Queue_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+        Queue_DoublyLinkedList (Queue_DoublyLinkedList&& src) noexcept      = default;
+        Queue_DoublyLinkedList (const Queue_DoublyLinkedList& src) noexcept = default;
+        Queue_DoublyLinkedList (const initializer_list<value_type>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Queue_DoublyLinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Queue_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE>
+        Queue_DoublyLinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
+        nonvirtual Queue_DoublyLinkedList& operator= (Queue_DoublyLinkedList&& rhs) = default;
         nonvirtual Queue_DoublyLinkedList& operator= (const Queue_DoublyLinkedList& rhs) = default;
 
     protected:

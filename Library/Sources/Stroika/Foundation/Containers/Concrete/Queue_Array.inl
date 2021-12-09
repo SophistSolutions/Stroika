@@ -137,26 +137,37 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline Queue_Array<T>::Queue_Array (const Queue_Array& src)
-        : inherited{src}
+    inline Queue_Array<T>::Queue_Array (const initializer_list<value_type>& src)
+        : Queue_Array{}
     {
+        SetCapacity (src.size ());
+        AddAllToTail (src);
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue_Array<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
-    inline Queue_Array<T>::Queue_Array (CONTAINER_OF_ADDABLE&& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Queue_Array<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Queue_Array<T>::Queue_Array (ITERABLE_OF_ADDABLE&& src)
         : Queue_Array{}
     {
-        AssertNotImplemented (); // @todo - use new EnqueueAll()
-        //InsertAll (0, s);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
+            SetCapacity (src.size ());
+        }
+        AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_T>
-    inline Queue_Array<T>::Queue_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+    template <typename ITERATOR_OF_ADDABLE>
+    inline Queue_Array<T>::Queue_Array (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : Queue_Array{}
     {
-        Append (start, end);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
+            if (start != end) {
+                SetCapacity (end - start);
+            }
+        }
+        AddAllToTail (start, end);
         AssertRepValidType_ ();
     }
     template <typename T>

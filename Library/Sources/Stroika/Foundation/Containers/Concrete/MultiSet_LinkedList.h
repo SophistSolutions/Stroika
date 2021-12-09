@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v  = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
+        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
         using CounterType                 = typename inherited::CounterType;
         using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
         using value_type                  = typename inherited::value_type;
