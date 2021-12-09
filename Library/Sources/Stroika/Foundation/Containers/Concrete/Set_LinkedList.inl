@@ -175,62 +175,67 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     inline Set_LinkedList<T>::Set_LinkedList ()
-        : Set_LinkedList{equal_to<T>{}}
+        : Set_LinkedList{equal_to<value_type>{}}
     {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename EQUALS_COMPARER>
-    inline Set_LinkedList<T>::Set_LinkedList (const EQUALS_COMPARER& equalsComparer)
-        : inherited{inherited::template MakeSmartPtr<Rep_<EQUALS_COMPARER>> (equalsComparer)}
+    template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>*>
+    inline Set_LinkedList<T>::Set_LinkedList (EQUALS_COMPARER&& equalsComparer)
+        : inherited{inherited::template MakeSmartPtr<Rep_<Configuration::remove_cvref_t<EQUALS_COMPARER>>> (forward<EQUALS_COMPARER> (equalsComparer))}
     {
-        static_assert (Common::IsEqualsComparer<EQUALS_COMPARER, T> (), "Equals comparer required with Set_LinkedList");
+        static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Set_LinkedList constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline Set_LinkedList<T>::Set_LinkedList (const initializer_list<T>& src)
+    inline Set_LinkedList<T>::Set_LinkedList (const initializer_list<value_type>& src)
         : Set_LinkedList{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline Set_LinkedList<T>::Set_LinkedList (const ElementEqualityComparerType& equalsComparer, const initializer_list<T>& src)
-        : Set_LinkedList{equalsComparer}
+    template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>*>
+    inline Set_LinkedList<T>::Set_LinkedList (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src)
+        : Set_LinkedList{forward<EQUALS_COMPARER> (equalsComparer)}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set_LinkedList<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
-    inline Set_LinkedList<T>::Set_LinkedList (CONTAINER_OF_ADDABLE&& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Set_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Set_LinkedList<T>::Set_LinkedList (ITERABLE_OF_ADDABLE&& src)
         : Set_LinkedList{}
     {
-        this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
-    inline Set_LinkedList<T>::Set_LinkedList (const ElementEqualityComparerType& equalsComparer, CONTAINER_OF_ADDABLE&& src)
-        : Set_LinkedList{equalsComparer}
+    template <typename EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline Set_LinkedList<T>::Set_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
+        : Set_LinkedList{forward<EQUALS_COMPARER> (equalsComparer)}
     {
-        this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_T>
-    inline Set_LinkedList<T>::Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+    template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    inline Set_LinkedList<T>::Set_LinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : Set_LinkedList{}
     {
-        AddAll (start, end);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        this->AddAll (start, end);
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_T>
-    inline Set_LinkedList<T>::Set_LinkedList (const ElementEqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-        : Set_LinkedList (equalsComparer)
+    template <typename EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    inline Set_LinkedList<T>::Set_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : Set_LinkedList{forward<EQUALS_COMPARER> (equalsComparer)}
     {
-        AddAll (start, end);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        this->AddAll (start, end);
         AssertRepValidType_ ();
     }
     template <typename T>

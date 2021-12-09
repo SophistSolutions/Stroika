@@ -35,31 +35,36 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Set<T>;
 
     public:
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
         using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
         using value_type                  = typename inherited::value_type;
 
     public:
         /**
-         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+         *  \see docs on Set<> constructor
          */
         Set_LinkedList ();
-        template <typename EQUALS_COMPARER>
-        explicit Set_LinkedList (const EQUALS_COMPARER& equalsComparer);
-        Set_LinkedList (const Set_LinkedList& src) = default;
-        Set_LinkedList (const initializer_list<T>& src);
-        Set_LinkedList (const ElementEqualityComparerType& equalsComparer, const initializer_list<T>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set_LinkedList<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        Set_LinkedList (CONTAINER_OF_ADDABLE&& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
-        Set_LinkedList (const ElementEqualityComparerType& equalsComparer, CONTAINER_OF_ADDABLE&& src);
-        template <typename COPY_FROM_ITERATOR_OF_T>
-        Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-        template <typename COPY_FROM_ITERATOR_OF_T>
-        Set_LinkedList (const ElementEqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+        template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
+        explicit Set_LinkedList (EQUALS_COMPARER&& equalsComparer);
+        Set_LinkedList (Set_LinkedList&& src) noexcept      = default;
+        Set_LinkedList (const Set_LinkedList& src) noexcept = default;
+        Set_LinkedList (const initializer_list<value_type>& src);
+        template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
+        Set_LinkedList (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Set_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Set_LinkedList (ITERABLE_OF_ADDABLE&& src);
+        template <typename EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        Set_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        Set_LinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        Set_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
          */
+        nonvirtual Set_LinkedList& operator= (Set_LinkedList&& rhs) = default;
         nonvirtual Set_LinkedList& operator= (const Set_LinkedList& rhs) = default;
 
     protected:

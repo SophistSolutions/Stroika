@@ -39,6 +39,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Set<T>;
 
     public:
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
         using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
         using value_type                  = typename inherited::value_type;
 
@@ -50,26 +52,29 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
-         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+         *  \see docs on Set<> constructor, but repalce EQUALS_COMPARER with INORDER_COMPARER
          */
         Set_stdset ();
-        template <typename INORDER_COMPARER>
-        explicit Set_stdset (const INORDER_COMPARER& inorderComparer);
-        Set_stdset (const Set_stdset& src) = default;
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        explicit Set_stdset (INORDER_COMPARER&& inorderComparer);
+        Set_stdset (Set_stdset&& src) noexcept      = default;
+        Set_stdset (const Set_stdset& src) noexcept = default;
         Set_stdset (const initializer_list<value_type>& src);
-        Set_stdset (const ElementEqualityComparerType& equalsComparer, const initializer_list<T>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_base_of_v<Set_stdset<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        Set_stdset (CONTAINER_OF_ADDABLE&& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>* = nullptr>
-        Set_stdset (const ElementEqualityComparerType& equalsComparer, CONTAINER_OF_ADDABLE&& src);
-        template <typename COPY_FROM_ITERATOR_T>
-        Set_stdset (COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end);
-        template <typename COPY_FROM_ITERATOR_T>
-        Set_stdset (const ElementEqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end);
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        Set_stdset (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Set_stdset<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Set_stdset (ITERABLE_OF_ADDABLE&& src);
+        template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        Set_stdset (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        Set_stdset (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        Set_stdset (INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
          */
+        nonvirtual Set_stdset& operator= (Set_stdset&& rhs) = default;
         nonvirtual Set_stdset& operator= (const Set_stdset& rhs) = default;
 
     protected:
