@@ -170,6 +170,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         DataStructureImplType_                                          fData_;
         [[NO_UNIQUE_ADDRESS_ATTR]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
+
+    private:
+        friend class Sequence_stdvector;
     };
 
     /*
