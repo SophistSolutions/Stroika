@@ -4,8 +4,8 @@
 #include "../StroikaPreComp.h"
 
 #include "../Characters/String.h"
-#include "../Containers/Mapping.h"
 #include "../Containers/Concrete/Mapping_stdmap.h"
+#include "../Containers/Mapping.h"
 #include "../Containers/Sequence.h"
 #include "../Execution/Common.h"
 #include "../Execution/SpinLock.h"

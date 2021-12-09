@@ -43,6 +43,27 @@ namespace Stroika::Foundation::Containers {
     /**
      *  \note its OK if DEFAULT_KEY_EXTRACTOR is invalid, it just means you must specify the default-key-extractor in the 
      *        constructor for KeyedCollection<>
+     * 
+     *  \par Example Usage
+     *      \code
+     *          struct Device_Key_Extractor_ {
+     *              GUID operator() (const DiscoveryInfo_& t) const { return t.fGUID; };
+     *          };
+     *          using DiscoveryDeviceCollection_ = KeyedCollection<DiscoveryInfo_, GUID, KeyedCollection_DefaultTraits<DiscoveryInfo_, GUID, Device_Key_Extractor_>>;
+     *          
+     *          // one way
+     *          DiscoveryDeviceCollection_ sDiscoveredDevices_;
+     *          sDiscoveredDevices_.Add (DiscoveryInfo_ {...});
+     * 
+     *          // another way
+     *          namespace Stroika::Foundation::Containers {
+     *              template <>
+     *              struct KeyedCollection_DefaultTraits<DiscoveryInfo_, GUID, void> : DiscoveryDeviceCollection_ {
+     *              };
+     *           }
+     *          KeyedCollection<DiscoveryInfo_, GUID> sDiscoveredDevices2_;
+     *          sDiscoveredDevices_.Add (DiscoveryInfo_ {...});
+     *      \endcode
      */
     template <typename T, typename KEY_TYPE, typename DEFAULT_KEY_EXTRACTOR = void>
     struct KeyedCollection_DefaultTraits {
