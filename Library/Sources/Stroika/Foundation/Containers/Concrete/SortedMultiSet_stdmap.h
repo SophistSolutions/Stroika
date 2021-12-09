@@ -37,8 +37,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = SortedMultiSet<T, TRAITS>;
 
     public:
-        /**
-         */
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v  = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
         using TraitsType                  = typename inherited::TraitsType;
         using CounterType                 = typename inherited::CounterType;
         using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
@@ -54,22 +54,31 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
-         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
          */
         SortedMultiSet_stdmap ();
         template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
-        explicit SortedMultiSet_stdmap (const INORDER_COMPARER& inorderComparer);
-        SortedMultiSet_stdmap (const SortedMultiSet_stdmap& src) = default;
+        explicit SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer);
+        SortedMultiSet_stdmap (SortedMultiSet_stdmap&& src) noexcept = default;
+        SortedMultiSet_stdmap (const SortedMultiSet_stdmap& src) noexcept = default;
         SortedMultiSet_stdmap (const initializer_list<T>& src);
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, const initializer_list<T>& src);
         SortedMultiSet_stdmap (const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const SortedMultiSet_stdmap<T, TRAITS>*>>* = nullptr>
-        SortedMultiSet_stdmap (const CONTAINER_OF_T& src);
-        template <typename COPY_FROM_ITERATOR_OF_T>
-        SortedMultiSet_stdmap (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedMultiSet_stdmap<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit SortedMultiSet_stdmap (ITERABLE_OF_ADDABLE&& src);
+        template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        SortedMultiSet_stdmap (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
          */
+        nonvirtual SortedMultiSet_stdmap& operator= ( SortedMultiSet_stdmap&& rhs) = default;
         nonvirtual SortedMultiSet_stdmap& operator= (const SortedMultiSet_stdmap& rhs) = default;
 
     protected:
