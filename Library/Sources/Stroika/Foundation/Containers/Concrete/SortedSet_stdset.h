@@ -40,6 +40,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v  = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
         using ElementEqualityComparerType = typename Set<T>::ElementEqualityComparerType;
         using ElementInOrderComparerType  = typename inherited::ElementInOrderComparerType;
         using value_type                  = typename inherited::value_type;
@@ -52,28 +54,30 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
-         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archetype base class
+         *  \see docs on SortedSet<> constructor
          *  \req IsStrictInOrderComparer<INORDER_COMPARER> ()
          */
         SortedSet_stdset ();
-        template <typename INORDER_COMPARER>
-        explicit SortedSet_stdset (const INORDER_COMPARER& inorderComparer);
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        explicit SortedSet_stdset (INORDER_COMPARER&& inorderComparer);
+        SortedSet_stdset (SortedSet_stdset&& src) noexcept = default;
         SortedSet_stdset (const SortedSet_stdset& src) noexcept = default;
-        SortedSet_stdset (SortedSet_stdset&& src) noexcept      = default;
-        SortedSet_stdset (const initializer_list<value_type>& src);
-        SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        SortedSet_stdset (CONTAINER_OF_ADDABLE&& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>* = nullptr>
-        SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, CONTAINER_OF_ADDABLE&& src);
-        template <typename COPY_FROM_ITERATOR_OF_T>
-        SortedSet_stdset (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-        template <typename COPY_FROM_ITERATOR_OF_T>
-        SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+        SortedSet_stdset (const initializer_list<T>& src);
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        SortedSet_stdset (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedSet_stdset<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit SortedSet_stdset (ITERABLE_OF_ADDABLE&& src);
+        template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        SortedSet_stdset (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        SortedSet_stdset (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        SortedSet_stdset (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
          */
+        nonvirtual SortedSet_stdset& operator= ( SortedSet_stdset&& rhs) = default;
         nonvirtual SortedSet_stdset& operator= (const SortedSet_stdset& rhs) = default;
 
     protected:

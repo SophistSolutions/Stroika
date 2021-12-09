@@ -39,6 +39,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = IImplRepBase_;
 
     public:
+        static_assert (not is_reference_v<INORDER_COMPARER>);
+
+    public:
         Rep_ (const INORDER_COMPARER& inorderComparer)
             : fData_{inorderComparer}
         {
@@ -185,61 +188,59 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     inline SortedSet_stdset<T>::SortedSet_stdset ()
-        : SortedSet_stdset{less<value_type>{}}
+        : SortedSet_stdset{less<T>{}}
     {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename INORDER_COMPARER>
-    inline SortedSet_stdset<T>::SortedSet_stdset (const INORDER_COMPARER& inorderComparer)
-        : inherited{inherited::template MakeSmartPtr<Rep_<INORDER_COMPARER>> (inorderComparer)}
+    template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    inline SortedSet_stdset<T>::SortedSet_stdset (INORDER_COMPARER&& inorderComparer)
+        : inherited{inherited::template MakeSmartPtr < Rep_<Configuration::remove_cv_t<INORDER_COMPARER>>> (forward<INORDER_COMPARER> (inorderComparer))}
     {
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER, T> (), "StrictInOrder comparer required with SortedSet_stdset");
         AssertRepValidType_ ();
     }
     template <typename T>
-    SortedSet_stdset<T>::SortedSet_stdset (const initializer_list<value_type>& src)
-        : SortedSet_stdset{}
+    template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    inline SortedSet_stdset<T>::SortedSet_stdset (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src)
+        : SortedSet_stdset{forward<INORDER_COMPARER> (inOrderComparer)}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T>
-    SortedSet_stdset<T>::SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, const initializer_list<value_type>& src)
-        : SortedSet_stdset{inOrderComparer}
-    {
-        this->AddAll (src);
-        AssertRepValidType_ ();
-    }
-    template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
-    SortedSet_stdset<T>::SortedSet_stdset (CONTAINER_OF_ADDABLE&& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedSet_stdset<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline SortedSet_stdset<T>::SortedSet_stdset (ITERABLE_OF_ADDABLE&& src)
         : SortedSet_stdset{}
     {
-        this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
-    SortedSet_stdset<T>::SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, CONTAINER_OF_ADDABLE&& src)
-        : SortedSet_stdset{inOrderComparer}
+    template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline SortedSet_stdset<T>::SortedSet_stdset (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src)
+        : SortedSet_stdset (forward<INORDER_COMPARER> (inOrderComparer))
     {
-        this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_T>
-    inline SortedSet_stdset<T>::SortedSet_stdset (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+    template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    inline SortedSet_stdset<T>::SortedSet_stdset (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : SortedSet_stdset{}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         this->AddAll (start, end);
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_T>
-    inline SortedSet_stdset<T>::SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-        : SortedSet_stdset (inOrderComparer)
+    template <typename INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    inline SortedSet_stdset<T>::SortedSet_stdset (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : SortedSet_stdset (forward<INORDER_COMPARER> (inOrderComparer))
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         this->AddAll (start, end);
         AssertRepValidType_ ();
     }

@@ -111,14 +111,46 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     *********************************** Stack_LinkedList<T> ************************
+     ******************************** Stack_LinkedList<T> ***************************
      ********************************************************************************
      */
     template <typename T>
-    Stack_LinkedList<T>::Stack_LinkedList ()
+    inline Stack_LinkedList<T>::Stack_LinkedList ()
         : inherited{inherited::template MakeSmartPtr<Rep_> ()}
     {
         AssertRepValidType_ ();
+    }
+    template <typename T>
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Stack_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Stack_LinkedList<T>::Stack_LinkedList (ITERABLE_OF_ADDABLE&& src)
+        : Stack_LinkedList{}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        // sadly intrinsically expensive to copy an interable using the stack API
+        // @todo find a more efficient way - for example - if there is a way to get a reverse-iterator from 'src' this can be much cheaper! - or at least copy ptrs
+        vector<T> tmp;
+        for (auto si : src) {
+            tmp.push_back (si);
+        }
+        for (auto si : tmp) {
+            Push (si);
+        }
+    }
+    template <typename T>
+    template <typename ITERATOR_OF_ADDABLE>
+    inline Stack_LinkedList<T>::Stack_LinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : Stack_LinkedList{}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        // sadly intrinsically expensive to copy an interable using the stack API
+        // @todo find a more efficient way - for example - if there is a way to get a reverse-iterator from 'src' this can be much cheaper! - or at least copy PTRS
+        vector<T> tmp;
+        for (auto i = start; i != end; ++i) {
+            tmp.push_back (*i);
+        }
+        for (auto si : tmp) {
+            Push (si);
+        }
     }
     template <typename T>
     inline void Stack_LinkedList<T>::AssertRepValidType_ () const
