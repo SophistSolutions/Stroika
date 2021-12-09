@@ -44,19 +44,22 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
+         *  \see docs on Sequence<> constructor
          */
         Sequence_stdvector ();
-        Sequence_stdvector (const Sequence_stdvector& src) = default;
-        Sequence_stdvector (vector<value_type>&& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence_stdvector<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        Sequence_stdvector (CONTAINER_OF_ADDABLE&& src);
-        template <typename COPY_FROM_ITERATOR_OF_T>
-        explicit Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+        Sequence_stdvector (Sequence_stdvector&& src) noexcept      = default;
+        Sequence_stdvector (const Sequence_stdvector& src) noexcept = default;
+        Sequence_stdvector (const initializer_list<value_type>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence_stdvector<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Sequence_stdvector (ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE>
+        Sequence_stdvector (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
          */
-        nonvirtual Sequence_stdvector& operator= (const Sequence_stdvector& rhs);
+        nonvirtual Sequence_stdvector& operator= (Sequence_stdvector&& rhs) = default;
+        nonvirtual Sequence_stdvector& operator= (const Sequence_stdvector& rhs) = default;
 
     public:
         /**
@@ -100,6 +103,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         nonvirtual void AssertRepValidType_ () const;
     };
+
 }
 
 /*

@@ -223,18 +223,20 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence_DoublyLinkedList<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
-    inline Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (CONTAINER_OF_ADDABLE&& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence_DoublyLinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src)
         : Sequence_DoublyLinkedList{}
     {
-        this->AppendAll (forward<CONTAINER_OF_ADDABLE> (src));
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        this->AppendAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_T>
-    inline Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+    template <typename ITERATOR_OF_ADDABLE>
+    inline Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : Sequence_DoublyLinkedList{}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         this->AppendAll (start, end);
         AssertRepValidType_ ();
     }

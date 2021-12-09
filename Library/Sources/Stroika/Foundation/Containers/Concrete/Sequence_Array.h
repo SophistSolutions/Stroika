@@ -33,24 +33,28 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Sequence<T>;
 
     public:
-        using value_type = typename inherited::value_type;
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
+        using value_type                  = typename inherited::value_type;
 
     public:
         /**
+         *  \see docs on Sequence<> constructor
          */
         Sequence_Array ();
-        Sequence_Array (const Sequence_Array& src) = default;
+        Sequence_Array (Sequence_Array&& src) noexcept      = default;
+        Sequence_Array (const Sequence_Array& src) noexcept = default;
         Sequence_Array (const initializer_list<value_type>& src);
-        Sequence_Array (const vector<value_type>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence_Array<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        Sequence_Array (CONTAINER_OF_ADDABLE&& src);
-        template <typename COPY_FROM_ITERATOR_OF_T>
-        explicit Sequence_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence_Array<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Sequence_Array (ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE>
+        Sequence_Array (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
          */
-        nonvirtual Sequence_Array& operator= (const Sequence_Array& s) = default;
+        nonvirtual Sequence_Array& operator= (Sequence_Array&& rhs) = default;
+        nonvirtual Sequence_Array& operator= (const Sequence_Array& rhs) = default;
 
     public:
         /**

@@ -34,21 +34,28 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Sequence<T>;
 
     public:
-        using value_type = typename inherited::value_type;
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
+        using value_type                  = typename inherited::value_type;
 
     public:
+        /**
+         *  \see docs on Sequence<> constructor
+         */
         Sequence_DoublyLinkedList ();
-        Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList& src) = default;
+        Sequence_DoublyLinkedList (Sequence_DoublyLinkedList&& src) noexcept      = default;
+        Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList& src) noexcept = default;
         Sequence_DoublyLinkedList (const initializer_list<value_type>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence_DoublyLinkedList<T>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        Sequence_DoublyLinkedList (CONTAINER_OF_ADDABLE&& src);
-        template <typename COPY_FROM_ITERATOR_OF_T>
-        explicit Sequence_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence_DoublyLinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Sequence_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE>
+        Sequence_DoublyLinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
          */
-        nonvirtual Sequence_DoublyLinkedList<T>& operator= (const Sequence_DoublyLinkedList<T>& rhs) = default;
+        nonvirtual Sequence_DoublyLinkedList& operator= (Sequence_DoublyLinkedList&& rhs) = default;
+        nonvirtual Sequence_DoublyLinkedList& operator= (const Sequence_DoublyLinkedList& rhs) = default;
 
     protected:
         using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;

@@ -239,29 +239,33 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Sequence_Array<T>::Sequence_Array (const initializer_list<value_type>& src)
         : Sequence_Array{}
     {
+        SetCapacity (src.size ());
         this->AppendAll (src);
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline Sequence_Array<T>::Sequence_Array (const vector<value_type>& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence_Array<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Sequence_Array<T>::Sequence_Array (ITERABLE_OF_ADDABLE&& src)
         : Sequence_Array{}
     {
-        this->AppendAll (src);
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
+            SetCapacity (src.size ());
+        }
+        this->AppendAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence_Array<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
-    Sequence_Array<T>::Sequence_Array (CONTAINER_OF_ADDABLE&& src)
+    template <typename ITERATOR_OF_ADDABLE>
+    inline Sequence_Array<T>::Sequence_Array (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : Sequence_Array{}
     {
-        this->AppendAll (forward<CONTAINER_OF_ADDABLE> (src));
-        AssertRepValidType_ ();
-    }
-    template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_T>
-    inline Sequence_Array<T>::Sequence_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-        : Sequence_Array{}
-    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
+            if (start != end) {
+                SetCapacity (end - start);
+            }
+        }
         this->AppendAll (start, end);
         AssertRepValidType_ ();
     }

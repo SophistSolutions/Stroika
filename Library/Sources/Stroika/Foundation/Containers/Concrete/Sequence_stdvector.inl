@@ -184,34 +184,38 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline Sequence_stdvector<T>::Sequence_stdvector (vector<value_type>&& src)
-        : inherited{inherited::template MakeSmartPtr<Rep_> (move (src))}
+    inline Sequence_stdvector<T>::Sequence_stdvector (const initializer_list<value_type>& src)
+        : Sequence_stdvector{}
     {
+        SetCapacity (src.size ());
+        this->AppendAll (src);
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence_stdvector<T>, decay_t<CONTAINER_OF_ADDABLE>>>*>
-    inline Sequence_stdvector<T>::Sequence_stdvector (CONTAINER_OF_ADDABLE&& src)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence_stdvector<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Sequence_stdvector<T>::Sequence_stdvector (ITERABLE_OF_ADDABLE&& src)
         : Sequence_stdvector{}
     {
-        this->AppendAll (forward<CONTAINER_OF_ADDABLE> (src));
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
+            SetCapacity (src.size ());
+        }
+        this->AppendAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename COPY_FROM_ITERATOR_OF_T>
-    inline Sequence_stdvector<T>::Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+    template <typename ITERATOR_OF_ADDABLE>
+    inline Sequence_stdvector<T>::Sequence_stdvector (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
         : Sequence_stdvector{}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
+            if (start != end) {
+                SetCapacity (end - start);
+            }
+        }
         this->AppendAll (start, end);
         AssertRepValidType_ ();
-    }
-    template <typename T>
-    inline auto Sequence_stdvector<T>::operator= (const Sequence_stdvector& rhs) -> Sequence_stdvector&
-    {
-        AssertRepValidType_ ();
-        inherited::operator= (rhs);
-        AssertRepValidType_ ();
-        return *this;
     }
     template <typename T>
     inline void Sequence_stdvector<T>::shrink_to_fit ()
