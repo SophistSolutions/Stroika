@@ -142,8 +142,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         CookieList (const Collection<Cookie>& cookieDetails);
 
     public:
-        nonvirtual CookieList& operator= (CookieList&& rhs) = default;
-        nonvirtual CookieList& operator= (const CookieList& rhs) = default;
+        nonvirtual CookieList& operator= (CookieList&& rhs);
+        nonvirtual CookieList& operator= (const CookieList& rhs);
 
     public:
         /**
