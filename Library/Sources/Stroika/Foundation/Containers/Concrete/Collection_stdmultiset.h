@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual Collection_stdmultiset& operator= (Collection_stdmultiset& rhs) = default;
+        nonvirtual Collection_stdmultiset& operator= (Collection_stdmultiset&& rhs) = default;
         nonvirtual Collection_stdmultiset& operator= (const Collection_stdmultiset& rhs) = default;
 
     protected:
