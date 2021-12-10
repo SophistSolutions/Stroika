@@ -561,11 +561,13 @@ namespace {
                 unsigned int                  nFailures{};
                 MultiSet<String>              failingCiphers;
                 [[maybe_unused]] const size_t totalDigestAlgorithms = OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().GetLength ();
-                for (BLOB passphrase : kPassphrases_) {
-                    for (BLOB inputMessage : kTestMessages_) {
-                        for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ()) {
-                            for (DigestAlgorithm di : OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ()) {
-                                nCipherTests++;
+                for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ()) {
+                    for (DigestAlgorithm di : OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ()) {
+                        size_t nFailsForThisCipherDigestCombo{};
+                        for (BLOB passphrase : kPassphrases_) {
+                            for (BLOB inputMessage : kTestMessages_) {
+                                ++nFailsForThisCipherDigestCombo;
+                                ++nCipherTests;
                                 try {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                                     Debug::TraceContextBumper ctx{L"roundtriptesting", L"ci=%s, di=%s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str ()};
@@ -579,6 +581,10 @@ namespace {
                                     DbgTrace (L"For Test (%s, %s): Ignorning exception: %s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str (), Characters::ToString (current_exception ()).c_str ());
                                 }
                             }
+                        }
+                        if (nFailsForThisCipherDigestCombo != 0 and nFailsForThisCipherDigestCombo != NEltsOf(kPassphrases_) * NEltsOf (kTestMessages_)) {
+                            // maybe this cipher/digest combo fails only on some inputs
+                            Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Cipher %s, Digest %s failed %d times (not %d)", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str (), nFailsForThisCipherDigestCombo, NEltsOf (kPassphrases_) * NEltsOf (kTestMessages_)).c_str ());
                         }
                     }
                 }
