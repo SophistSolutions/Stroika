@@ -72,11 +72,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     {
         fCookieDetails_ = cookieDetails;
     }
-    inline CookieList& CookieList::operator= (const CookieList& rhs)
-    {
-        this->fCookieDetails_ = rhs.fCookieDetails_;
-        return *this;
-    }
     inline String HTTP::CookieList::ToString () const
     {
         return EncodeForCookieHeader ();
