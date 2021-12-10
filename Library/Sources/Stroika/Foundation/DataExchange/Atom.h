@@ -144,7 +144,7 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          */
-        nonvirtual Atom& operator= ( Atom&& rhs) = default;
+        nonvirtual Atom& operator= (Atom&& rhs) = default;
         nonvirtual Atom& operator= (const Atom& rhs) = default;
 
     public:

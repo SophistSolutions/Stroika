@@ -51,7 +51,7 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          */
-        nonvirtual CIDR& operator= ( CIDR&& rhs) = default;
+        nonvirtual CIDR& operator= (CIDR&& rhs) = default;
         nonvirtual CIDR& operator= (const CIDR& rhs) = default;
 
     public:
