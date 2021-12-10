@@ -134,6 +134,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     class CookieList {
     public:
         /**
+         *  \note Cannot use default-ed CTOR due to use of properties.
          */
         CookieList ();
         CookieList (const CookieList& src);
@@ -142,6 +143,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         CookieList (const Collection<Cookie>& cookieDetails);
 
     public:
+        /**
+         *  \note Cannot use defaulted-op= due to use of properties.
+         */
         nonvirtual CookieList& operator= (CookieList&& rhs);
         nonvirtual CookieList& operator= (const CookieList& rhs);
 

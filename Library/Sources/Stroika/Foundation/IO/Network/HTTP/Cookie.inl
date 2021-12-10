@@ -72,6 +72,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     {
         fCookieDetails_ = cookieDetails;
     }
+    inline CookieList& CookieList::operator= (CookieList&& rhs)
+    {
+        this->fCookieDetails_ = move (rhs.fCookieDetails_);
+        return *this;
+    }
     inline CookieList& CookieList::operator= (const CookieList& rhs)
     {
         this->fCookieDetails_ = rhs.fCookieDetails_;
