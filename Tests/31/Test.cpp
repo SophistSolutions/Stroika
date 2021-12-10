@@ -582,7 +582,7 @@ namespace {
                                 }
                             }
                         }
-                        if (nFailsForThisCipherDigestCombo != 0 and nFailsForThisCipherDigestCombo != NEltsOf(kPassphrases_) * NEltsOf (kTestMessages_)) {
+                        if (nFailsForThisCipherDigestCombo != 0 and nFailsForThisCipherDigestCombo != NEltsOf (kPassphrases_) * NEltsOf (kTestMessages_)) {
                             // maybe this cipher/digest combo fails only on some inputs
                             Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Cipher %s, Digest %s failed %d times (not %d)", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str (), nFailsForThisCipherDigestCombo, NEltsOf (kPassphrases_) * NEltsOf (kTestMessages_)).c_str ());
                         }
