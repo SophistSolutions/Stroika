@@ -597,9 +597,9 @@ namespace {
                         L"ARIA-192-GCM",
                         L"ARIA-256-CCM",
                         L"ARIA-256-GCM",
-
+// It appears these failures ONLY happen on X86 and x64 systems --LGP 2021-12-10
 // no idea why these work on windows, but fail on Unix... --LGP 2021-09-14
-#if qPlatform_POSIX
+#if qPlatform_POSIX && (defined(_M_IX86) || defined(_M_X64))
                         L"AES-256-CBC-HMAC-SHA256",
                         L"AES-256-CBC-HMAC-SHA1",
                         L"AES-128-CBC-HMAC-SHA256",
