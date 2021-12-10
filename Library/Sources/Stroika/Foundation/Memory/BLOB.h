@@ -94,6 +94,26 @@ namespace Stroika::Foundation::Memory {
      *          global ::operator new/malloc/free/delete
      */
     class BLOB : private Debug::AssertExternallySynchronizedMutex {
+    protected:
+        struct _IRep;
+
+    protected:
+        /**
+         */
+        template <typename T>
+        using _SharedRepImpl = conditional_t<kBLOBUsesStroikaSharedPtr, Memory::SharedPtr<T>, shared_ptr<T>>;
+
+    protected:
+        /**
+         */
+        using _SharedIRep = _SharedRepImpl<_IRep>;
+
+    protected:
+        /**
+         */
+        template <typename T, typename... ARGS_TYPE>
+        static _SharedRepImpl<T> _MakeSharedPtr (ARGS_TYPE&&... args);
+
     public:
         /**
          *  \par Example Usage
@@ -102,9 +122,8 @@ namespace Stroika::Foundation::Memory {
          *      \endcode
          */
         BLOB ();
-        BLOB (const BLOB& src) = default;
-        BLOB (BLOB&& src)
-        noexcept;
+        BLOB (const BLOB& src) noexcept = default;
+        BLOB (BLOB&& src) noexcept = default;
         template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)>* = nullptr>
         BLOB (const CONTAINER_OF_BYTE& data);
         BLOB (const byte* start, const byte* end);
@@ -113,6 +132,19 @@ namespace Stroika::Foundation::Memory {
         BLOB (const initializer_list<BLOB>& list2Concatenate);
         BLOB (const initializer_list<byte>& bytes);
         BLOB (const initializer_list<uint8_t>& bytes);
+
+    protected:
+        /**
+         * Subclass BLOB, and provider your own 'rep' type, to create more efficient storage.
+         */
+        explicit BLOB (const _SharedIRep& rep);
+        explicit BLOB (_SharedIRep&& rep);
+
+    public:
+        /**
+         */
+        nonvirtual BLOB& operator= (BLOB&& rhs) = default;
+        nonvirtual BLOB& operator= (const BLOB& rhs) = default;
 
     public:
         /**
@@ -156,38 +188,6 @@ namespace Stroika::Foundation::Memory {
         static BLOB Raw (const basic_string<T>& s);
         template <typename T, enable_if_t<is_trivially_copyable_v<T>>* = nullptr>
         static BLOB Raw (const T& s);
-
-    protected:
-        struct _IRep;
-
-    protected:
-        /**
-         */
-        template <typename T>
-        using _SharedRepImpl = conditional_t<kBLOBUsesStroikaSharedPtr, Memory::SharedPtr<T>, shared_ptr<T>>;
-
-    protected:
-        /**
-         */
-        using _SharedIRep = _SharedRepImpl<_IRep>;
-
-    protected:
-        /**
-         */
-        template <typename T, typename... ARGS_TYPE>
-        static _SharedRepImpl<T> _MakeSharedPtr (ARGS_TYPE&&... args);
-
-    protected:
-        /**
-         * Subclass BLOB, and provider your own 'rep' type, to create more efficient storage.
-         */
-        explicit BLOB (const _SharedIRep& rep);
-        explicit BLOB (_SharedIRep&& rep);
-
-    public:
-        /**
-         */
-        nonvirtual BLOB& operator= (const BLOB& rhs) = default;
 
     public:
         /*

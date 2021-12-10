@@ -83,11 +83,6 @@ namespace Stroika::Foundation::DataExchange {
         *this = VariantValue{val};
         return *this;
     }
-    inline VariantValue& VariantValue::operator= (VariantValue&& rhs) noexcept
-    {
-        fVal_ = move (rhs.fVal_);
-        return *this;
-    }
     inline VariantValue::Type VariantValue::GetType () const
     {
         if (fVal_ == nullptr) {

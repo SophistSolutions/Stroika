@@ -96,10 +96,6 @@ namespace Stroika::Foundation::Memory {
         : fRep_{_MakeSharedPtr<ZeroRep_> ()}
     {
     }
-    inline BLOB::BLOB (BLOB&& src) noexcept
-        : fRep_{move (src.fRep_)}
-    {
-    }
     template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)>*>
     inline BLOB::BLOB (const CONTAINER_OF_BYTE& data)
         : fRep_{(std::begin (data) == std::end (data)) ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (data.begin (), data.end ()))}

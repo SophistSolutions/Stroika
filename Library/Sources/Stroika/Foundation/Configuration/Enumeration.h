@@ -189,6 +189,7 @@ namespace Stroika::Foundation::Configuration {
     public:
         /**
          */
+        nonvirtual EnumNames& operator= (EnumNames&& rhs) = default;
         nonvirtual EnumNames& operator= (const EnumNames& rhs) = default;
 
     public:

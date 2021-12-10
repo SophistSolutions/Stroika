@@ -165,6 +165,7 @@ namespace Stroika::Foundation::DataExchange {
         InternetMediaTypeRegistry (const InternetMediaTypeRegistry& src) = default;
 
     public:
+        nonvirtual InternetMediaTypeRegistry& operator= ( InternetMediaTypeRegistry&& rhs) = default;
         nonvirtual InternetMediaTypeRegistry& operator= (const InternetMediaTypeRegistry& rhs) = default;
 
     public:

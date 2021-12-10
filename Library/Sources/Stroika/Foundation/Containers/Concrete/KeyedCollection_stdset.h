@@ -137,6 +137,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
+        nonvirtual KeyedCollection_stdset& operator= (KeyedCollection_stdset&& rhs) = default;
         nonvirtual KeyedCollection_stdset& operator= (const KeyedCollection_stdset& rhs) = default;
 
     protected:

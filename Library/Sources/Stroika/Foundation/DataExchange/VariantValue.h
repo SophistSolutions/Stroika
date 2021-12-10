@@ -243,13 +243,13 @@ namespace Stroika::Foundation::DataExchange {
          *  parameters here, so at least you can easily assign to a VariantValue with those types
          *  even if you cannot easily CONSTRUCT with those types.
          */
+        nonvirtual VariantValue& operator= ( VariantValue&& rhs) = default;
         nonvirtual VariantValue& operator= (const VariantValue& rhs) = default;
         nonvirtual VariantValue& operator                            = (const map<wstring, VariantValue>& val);
         nonvirtual VariantValue& operator                            = (const Mapping<String, VariantValue>& val);
         nonvirtual VariantValue& operator                            = (const vector<VariantValue>& val);
         nonvirtual VariantValue& operator                            = (const Sequence<VariantValue>& val);
         nonvirtual VariantValue& operator                            = (const Traversal::Iterable<VariantValue>& val);
-        nonvirtual VariantValue& operator                            = (VariantValue&& rhs) noexcept;
 
     public:
         /**

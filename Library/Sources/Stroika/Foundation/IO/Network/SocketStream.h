@@ -98,6 +98,7 @@ namespace Stroika::Foundation::IO::Network {
         Ptr (const shared_ptr<Rep_>& from);
 
     public:
+        nonvirtual Ptr& operator= ( Ptr&& rhs) = default;
         nonvirtual Ptr& operator= (const Ptr& rhs) = default;
 
     private:
