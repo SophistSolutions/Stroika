@@ -601,21 +601,6 @@ sub	SetInitialDefaults_
 	}
 	if ("$^O" eq "cygwin") {
 
-		## FOR NOW - try vs2k19 before vs2k22 - since vs2k22 not fully working - LGP 2021-10-22
-
-		# try vs 2k19
-		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2019/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
-			}
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2019/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
-			}
-		}
 		# try vs 2k22
 		if ($PROJECTPLATFORMSUBDIR eq "") {
 			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
@@ -627,6 +612,19 @@ sub	SetInitialDefaults_
 			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2022/*/VC >/dev/null 2> /dev/null');
 			if ($? == 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
+			}
+		}
+		# try vs 2k19
+		if ($PROJECTPLATFORMSUBDIR eq "") {
+			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
+			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2019/*/VC >/dev/null 2> /dev/null');
+			if ($? == 0) {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
+			}
+			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2019/*/VC >/dev/null 2> /dev/null');
+			if ($? == 0) {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
 			}
 		}
 		# try vs 2k17
@@ -824,11 +822,6 @@ sub	SetDefaultForCompilerDriver_
 			if ($runtimeStackProtectorFlag == DEFAULT_BOOL_OPTIONS) {
 				$runtimeStackProtectorFlag = true;
 			}
-			#### DEPRECATED - DONT SUPPORT OLD WSL
-			# if (trim (`uname -r`) eq "4.4.0-43-Microsoft" || trim (`uname -r`) eq "4.4.0-17134-Microsoft") {
-			# 	#LEAVE empty default, cuz for this version of WSL, asan doesn't work - insufficient procfs support
-			# 	### NOTE - this is FIXED in 4.4.0-17763-Microsoft
-			# }
 			if (!$sanitizerFlagsNoneSet) {
 				my %already = map { $_ => 1 } @sanitizerFlags;
 				if(!exists($already{'address'})) {
