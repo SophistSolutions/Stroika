@@ -105,6 +105,8 @@ namespace {
         RunTests_<Collection_stdmultiset<SimpleClassWithoutComparisonOperators>> ([] () { return Collection_stdmultiset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_ ()); });
 
         ExampleCTORS_Test_2_::DoTest ();
+
+        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 

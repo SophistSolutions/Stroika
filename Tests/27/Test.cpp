@@ -73,6 +73,8 @@ namespace {
             DoTestForConcreteContainer_<SortedMultiSet_stdmap<SimpleClassWithoutComparisonOperators>> (
                 CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithLess_, decltype (msFactory)> (msFactory));
         }
+
+        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 

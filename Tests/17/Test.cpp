@@ -244,6 +244,8 @@ namespace {
         ClearBug_Test_8_::DoAll ();
         AddVsAddIf_Test_9_::DoAll ();
         CTORWithComparerAndContainer_Test_10_::DoAll ();
+
+        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 

@@ -66,6 +66,8 @@ namespace {
         SimpleQueueTest_All_For_Type<Queue_DoublyLinkedList<SimpleClass>, COMPARE_SimpleClass> ();
         SimpleQueueTest_All_NotRequiringEquals_For_Type<Queue_DoublyLinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
         SimpleQueueTest_All_For_Type<Queue_DoublyLinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+
+        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 

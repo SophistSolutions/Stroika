@@ -887,6 +887,8 @@ namespace {
         ExampleCompare_Test_18_::DoTest ();
         ExampleOrderBy_Test19_::DoTest ();
         BugWithWhereCallingAdd_Test20_::DoTest ();
+
+        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 

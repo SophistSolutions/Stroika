@@ -138,6 +138,8 @@ namespace {
 
         Where_Test_3_::DoAll ();
         EqualsTests_Test_4_::DoAll ();
+
+        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 

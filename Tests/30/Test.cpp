@@ -32,6 +32,8 @@ namespace {
     void DoRegressionTests_ ()
     {
         Test01_Concatenate_::DoTest ();
+
+        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 

@@ -156,6 +156,8 @@ namespace {
         Tests_All_For_Type_<Stack_LinkedList<SimpleClass>, COMPARE_SimpleClass> ();
         Tests_All_For_Type_WhichDontRequireComparer_For_Type_<Stack_LinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
         Tests_All_For_Type_<Stack_LinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+
+        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 

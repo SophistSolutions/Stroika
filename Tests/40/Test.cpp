@@ -115,12 +115,12 @@ namespace {
 
             sRegTest3Event_T1_.Reset ();
             sRegTest3Event_T2_.Reset ();
-            int         updaterValue = 0;
+            int updaterValue = 0;
 
             //https://stroika.atlassian.net/browse/STK-717
             if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
-                Thread::Ptr thread1      = Thread::New (bind (&FRED1::DoIt, &updaterValue));
-                Thread::Ptr thread2      = Thread::New (bind (&FRED2::DoIt, &updaterValue));
+                Thread::Ptr thread1 = Thread::New (bind (&FRED1::DoIt, &updaterValue));
+                Thread::Ptr thread2 = Thread::New (bind (&FRED2::DoIt, &updaterValue));
                 Thread::Start ({thread1, thread2});
                 // Both threads start out waiting - until we get things rolling telling one to start.
                 // Then they pingpong back and forther
@@ -168,11 +168,11 @@ namespace {
 
             sRegTest3Event_T1_.Reset ();
             sRegTest3Event_T2_.Reset ();
-            int         updaterValue = 0;
+            int updaterValue = 0;
             //https://stroika.atlassian.net/browse/STK-717
             if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
-                Thread::Ptr thread1      = Thread::New (bind (&FRED1::DoIt, &updaterValue));
-                Thread::Ptr thread2      = Thread::New (bind (&FRED2::DoIt, &updaterValue));
+                Thread::Ptr thread1 = Thread::New (bind (&FRED1::DoIt, &updaterValue));
+                Thread::Ptr thread2 = Thread::New (bind (&FRED2::DoIt, &updaterValue));
                 Thread::Start ({thread1, thread2});
                 // Both threads start out waiting - until we get things rolling telling one to start.
                 // Then they pingpong back and forther
@@ -1017,7 +1017,7 @@ namespace {
                 DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
                 return;
             }
-            static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+            static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 
             // https://stroika.atlassian.net/browse/STK-632
             // Most likely some sort of memory corruption, and given notes in https://stroika.atlassian.net/browse/STK-632 - seems

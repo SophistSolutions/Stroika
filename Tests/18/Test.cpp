@@ -110,6 +110,8 @@ namespace {
         }
 
         ExampleCTORS_Test_2_::DoTest ();
+
+        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 

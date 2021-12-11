@@ -327,10 +327,10 @@ namespace CommonTests {
                 applyToContainer (b);
 
                 {
-                    static size_t count;
-                    static T      sum = 0;
-                    count             = 0;
-                    b.Apply ([] (const T& i) {
+                    size_t count;
+                    T      sum = 0;
+                    count      = 0;
+                    b.Apply ([&] (const T& i) {
                         count++;
                         sum = sum + i;
                     });

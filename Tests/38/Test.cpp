@@ -136,13 +136,13 @@ namespace {
         void DoTests ()
         {
             Debug::TraceContextBumper ctx{L"LargeDataSentThroughPipeBackground_Test6_::DoTests"};
-            #if 0
+#if 0
             if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
                 // workaround TSAN HERE - but valgrind issue in RegressionTests script -  https://stroika.atlassian.net/browse/STK-717
                 DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed, and conditional variables broken checking on ubuntu 20.10 g++10");
                 return;
             }
-            #endif
+#endif
             Private_::SingleProcessLargeDataSend_ ();
         }
     }

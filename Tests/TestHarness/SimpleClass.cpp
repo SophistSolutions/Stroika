@@ -18,57 +18,77 @@ using namespace Stroika;
  ********************************** SimpleClass *********************************
  ********************************************************************************
  */
-static const int kFunnyValue = 1234;
-
-size_t SimpleClass::sTotalLiveObjects = 0;
-
-SimpleClass::SimpleClass (size_t v)
-    : fValue (v)
-    , fConstructed (kFunnyValue)
-{
-    sTotalLiveObjects++;
+namespace {
+    constexpr int kKnownGoodBitPatternValue_ = 0x0BADBEEF;
 }
 
-SimpleClass::SimpleClass (const SimpleClass& f)
-    : fValue (f.fValue)
-    , fConstructed (kFunnyValue)
+size_t SimpleClass::sTotalLiveObjects_ = 0;
+
+SimpleClass::SimpleClass (size_t v)
+    : fValue_ (v)
+    , fConstructed_{kKnownGoodBitPatternValue_}
 {
-    sTotalLiveObjects++;
-    VerifyTestResult (f.fConstructed == kFunnyValue);
+    ++sTotalLiveObjects_;
+}
+
+SimpleClass::SimpleClass (SimpleClass&& src) noexcept
+    : fValue_ (src.fValue_)
+    , fConstructed_{kKnownGoodBitPatternValue_}
+{
+    ++sTotalLiveObjects_;
+    VerifyTestResult (src.fConstructed_ == kKnownGoodBitPatternValue_);
+}
+
+SimpleClass::SimpleClass (const SimpleClass& src) noexcept
+    : fValue_ (src.fValue_)
+    , fConstructed_{kKnownGoodBitPatternValue_}
+{
+    ++sTotalLiveObjects_;
+    VerifyTestResult (src.fConstructed_ == kKnownGoodBitPatternValue_);
 }
 
 SimpleClass::~SimpleClass ()
 {
-    VerifyTestResult (fConstructed == kFunnyValue);
-    VerifyTestResult (sTotalLiveObjects != 0);
-    sTotalLiveObjects--;
-    fConstructed = 0;
-    VerifyTestResult (fConstructed != kFunnyValue);
+    VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
+    VerifyTestResult (sTotalLiveObjects_ != 0);
+    --sTotalLiveObjects_;
+    fConstructed_ = ~kKnownGoodBitPatternValue_;
+    VerifyTestResult (fConstructed_ != kKnownGoodBitPatternValue_);
 }
 
 size_t SimpleClass::GetValue () const
 {
-    VerifyTestResult (fConstructed == kFunnyValue);
-    return (fValue);
+    VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
+    return (fValue_);
 }
 
 size_t SimpleClass::GetTotalLiveCount ()
 {
-    return (sTotalLiveObjects);
+    return sTotalLiveObjects_;
+}
+
+SimpleClass SimpleClass::operator+ (const SimpleClass& rhs) const
+{
+    return SimpleClass (fValue_ + rhs.fValue_);
+}
+
+SimpleClass::operator size_t () const
+{
+    return fValue_;
 }
 
 bool SimpleClass::operator== (const SimpleClass& rhs) const
 {
-    VerifyTestResult (fConstructed == kFunnyValue);
-    VerifyTestResult (rhs.fConstructed == kFunnyValue);
-    return (bool (fValue == rhs.fValue));
+    VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
+    VerifyTestResult (rhs.fConstructed_ == kKnownGoodBitPatternValue_);
+    return fValue_ == rhs.fValue_;
 }
 
 bool SimpleClass::operator< (const SimpleClass& rhs) const
 {
-    VerifyTestResult (fConstructed == kFunnyValue);
-    VerifyTestResult (rhs.fConstructed == kFunnyValue);
-    return (bool (fValue < rhs.fValue));
+    VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
+    VerifyTestResult (rhs.fConstructed_ == kKnownGoodBitPatternValue_);
+    return fValue_ < rhs.fValue_;
 }
 
 /*
@@ -76,39 +96,52 @@ bool SimpleClass::operator< (const SimpleClass& rhs) const
  ******************* SimpleClassWithoutComparisonOperators **********************
  ********************************************************************************
  */
-size_t SimpleClassWithoutComparisonOperators::sTotalLiveObjects = 0;
+size_t SimpleClassWithoutComparisonOperators::sTotalLiveObjects_ = 0;
 
 SimpleClassWithoutComparisonOperators::SimpleClassWithoutComparisonOperators (size_t v)
-    : fValue (v)
-    , fConstructed (kFunnyValue)
+    : fValue_{v}
+    , fConstructed_{kKnownGoodBitPatternValue_}
 {
-    sTotalLiveObjects++;
+    ++sTotalLiveObjects_;
 }
 
-SimpleClassWithoutComparisonOperators::SimpleClassWithoutComparisonOperators (const SimpleClassWithoutComparisonOperators& f)
-    : fValue (f.fValue)
-    , fConstructed (kFunnyValue)
+SimpleClassWithoutComparisonOperators::SimpleClassWithoutComparisonOperators (SimpleClassWithoutComparisonOperators&& src) noexcept
+    : fValue_{src.fValue_}
+    , fConstructed_{kKnownGoodBitPatternValue_}
 {
-    sTotalLiveObjects++;
-    VerifyTestResult (f.fConstructed == kFunnyValue);
+    ++sTotalLiveObjects_;
+    VerifyTestResult (src.fConstructed_ == kKnownGoodBitPatternValue_);
+}
+
+SimpleClassWithoutComparisonOperators::SimpleClassWithoutComparisonOperators (const SimpleClassWithoutComparisonOperators& src) noexcept
+    : fValue_{src.fValue_}
+    , fConstructed_{kKnownGoodBitPatternValue_}
+{
+    ++sTotalLiveObjects_;
+    VerifyTestResult (src.fConstructed_ == kKnownGoodBitPatternValue_);
 }
 
 SimpleClassWithoutComparisonOperators::~SimpleClassWithoutComparisonOperators ()
 {
-    VerifyTestResult (fConstructed == kFunnyValue);
-    VerifyTestResult (sTotalLiveObjects != 0);
-    sTotalLiveObjects--;
-    fConstructed = 0;
-    VerifyTestResult (fConstructed != kFunnyValue);
+    VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
+    VerifyTestResult (sTotalLiveObjects_ != 0);
+    --sTotalLiveObjects_;
+    fConstructed_ = ~kKnownGoodBitPatternValue_;
+    VerifyTestResult (fConstructed_ != kKnownGoodBitPatternValue_);
 }
 
 size_t SimpleClassWithoutComparisonOperators::GetValue () const
 {
-    VerifyTestResult (fConstructed == kFunnyValue);
-    return (fValue);
+    VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
+    return fValue_;
 }
 
 size_t SimpleClassWithoutComparisonOperators::GetTotalLiveCount ()
 {
-    return (sTotalLiveObjects);
+    return sTotalLiveObjects_;
+}
+
+SimpleClassWithoutComparisonOperators SimpleClassWithoutComparisonOperators::operator+ (const SimpleClassWithoutComparisonOperators& rhs) const
+{
+    return SimpleClassWithoutComparisonOperators{fValue_ + rhs.fValue_};
 }

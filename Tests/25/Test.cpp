@@ -32,6 +32,8 @@ namespace {
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return SortedKeyedCollection<T1, int, T1_Traits>{}; },
             [] (auto) {});
+
+        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 
