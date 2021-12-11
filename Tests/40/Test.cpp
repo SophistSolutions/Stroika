@@ -116,16 +116,20 @@ namespace {
             sRegTest3Event_T1_.Reset ();
             sRegTest3Event_T2_.Reset ();
             int         updaterValue = 0;
-            Thread::Ptr thread1      = Thread::New (bind (&FRED1::DoIt, &updaterValue));
-            Thread::Ptr thread2      = Thread::New (bind (&FRED2::DoIt, &updaterValue));
-            Thread::Start ({thread1, thread2});
-            // Both threads start out waiting - until we get things rolling telling one to start.
-            // Then they pingpong back and forther
-            sRegTest3Event_T1_.Set ();
-            Thread::WaitForDone ({thread1, thread2});
-            //DbgTrace ("Test3 - updaterValue = %d", updaterValue);
-            // If there was a race - its unlikely you'd end up with exact 20 as your result
-            VerifyTestResult (updaterValue == 2 * 10);
+
+            //https://stroika.atlassian.net/browse/STK-717
+            if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
+                Thread::Ptr thread1      = Thread::New (bind (&FRED1::DoIt, &updaterValue));
+                Thread::Ptr thread2      = Thread::New (bind (&FRED2::DoIt, &updaterValue));
+                Thread::Start ({thread1, thread2});
+                // Both threads start out waiting - until we get things rolling telling one to start.
+                // Then they pingpong back and forther
+                sRegTest3Event_T1_.Set ();
+                Thread::WaitForDone ({thread1, thread2});
+                //DbgTrace ("Test3 - updaterValue = %d", updaterValue);
+                // If there was a race - its unlikely you'd end up with exact 20 as your result
+                VerifyTestResult (updaterValue == 2 * 10);
+            }
         }
         void PingBackAndForthWithSimpleTimeouts_ ()
         {
@@ -165,17 +169,20 @@ namespace {
             sRegTest3Event_T1_.Reset ();
             sRegTest3Event_T2_.Reset ();
             int         updaterValue = 0;
-            Thread::Ptr thread1      = Thread::New (bind (&FRED1::DoIt, &updaterValue));
-            Thread::Ptr thread2      = Thread::New (bind (&FRED2::DoIt, &updaterValue));
-            Thread::Start ({thread1, thread2});
-            // Both threads start out waiting - until we get things rolling telling one to start.
-            // Then they pingpong back and forther
-            sRegTest3Event_T1_.Set ();
-            thread1.WaitForDone ();
-            thread2.WaitForDone ();
-            //DbgTrace ("Test3 - updaterValue = %d", updaterValue);
-            // If there was a race - its unlikely you'd end up with exact 20 as your result
-            VerifyTestResult (updaterValue == 2 * 10);
+            //https://stroika.atlassian.net/browse/STK-717
+            if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
+                Thread::Ptr thread1      = Thread::New (bind (&FRED1::DoIt, &updaterValue));
+                Thread::Ptr thread2      = Thread::New (bind (&FRED2::DoIt, &updaterValue));
+                Thread::Start ({thread1, thread2});
+                // Both threads start out waiting - until we get things rolling telling one to start.
+                // Then they pingpong back and forther
+                sRegTest3Event_T1_.Set ();
+                thread1.WaitForDone ();
+                thread2.WaitForDone ();
+                //DbgTrace ("Test3 - updaterValue = %d", updaterValue);
+                // If there was a race - its unlikely you'd end up with exact 20 as your result
+                VerifyTestResult (updaterValue == 2 * 10);
+            }
         }
         void TEST_TIMEOUT_EXECPETIONS_ ()
         {
@@ -541,27 +548,30 @@ namespace {
             }
         };
 
-        // Normal usage
-        {
-            Thread::Ptr thread = Thread::New (&FRED::DoIt);
-            thread.Start ();
-            thread.WaitForDone ();
-        }
+        //https://stroika.atlassian.net/browse/STK-717
+        if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
+            // Normal usage
+            {
+                Thread::Ptr thread = Thread::New (&FRED::DoIt);
+                thread.Start ();
+                thread.WaitForDone ();
+            }
 
-        // OK to never wait
-        for (int i = 0; i < 100; ++i) {
-            Thread::Ptr thread = Thread::New (&FRED::DoIt);
-            thread.Start ();
-        }
+            // OK to never wait
+            for (int i = 0; i < 100; ++i) {
+                Thread::Ptr thread = Thread::New (&FRED::DoIt);
+                thread.Start ();
+            }
 
-        // OK to wait and wait
-        {
-            Thread::Ptr thread = Thread::New (&FRED::DoIt);
-            thread.Start ();
-            thread.WaitForDone ();
-            thread.WaitForDone (1.0); // doesn't matter how long cuz its already DONE
-            thread.WaitForDone ();
-            thread.WaitForDone ();
+            // OK to wait and wait
+            {
+                Thread::Ptr thread = Thread::New (&FRED::DoIt);
+                thread.Start ();
+                thread.WaitForDone ();
+                thread.WaitForDone (1.0); // doesn't matter how long cuz its already DONE
+                thread.WaitForDone ();
+                thread.WaitForDone ();
+            }
         }
     }
 }
@@ -570,11 +580,13 @@ namespace {
     void RegressionTest7_SimpleThreadPool_ ()
     {
         Debug::TraceContextBumper traceCtx{"RegressionTest7_SimpleThreadPool_"};
-        {
+        if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
+            //https://stroika.atlassian.net/browse/STK-717
             ThreadPool p;
             p.SetPoolSize (1);
         }
-        {
+        if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
+            //https://stroika.atlassian.net/browse/STK-717
             ThreadPool p;
             p.SetPoolSize (1);
             int                  intVal = 3;
@@ -603,17 +615,19 @@ namespace {
                 *argP = tmp + 1;
             }
         };
-        for (unsigned int threadPoolSize = 1; threadPoolSize < 10; ++threadPoolSize) {
-            ThreadPool p;
-            p.SetPoolSize (threadPoolSize);
-            int                  updaterValue = 0;
-            ThreadPool::TaskType task1{[&updaterValue, &doIt] () { doIt (&updaterValue); }};
-            ThreadPool::TaskType task2{[&updaterValue, &doIt] () { doIt (&updaterValue); }};
-            p.AddTask (task1);
-            p.AddTask (task2);
-            p.WaitForTask (task1);
-            p.WaitForTask (task2);
-            VerifyTestResult (updaterValue == 2 * 10);
+        if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
+            for (unsigned int threadPoolSize = 1; threadPoolSize < 10; ++threadPoolSize) {
+                ThreadPool p;
+                p.SetPoolSize (threadPoolSize);
+                int                  updaterValue = 0;
+                ThreadPool::TaskType task1{[&updaterValue, &doIt] () { doIt (&updaterValue); }};
+                ThreadPool::TaskType task2{[&updaterValue, &doIt] () { doIt (&updaterValue); }};
+                p.AddTask (task1);
+                p.AddTask (task2);
+                p.WaitForTask (task1);
+                p.WaitForTask (task2);
+                VerifyTestResult (updaterValue == 2 * 10);
+            }
         }
     }
 }
@@ -998,6 +1012,11 @@ namespace {
         void DoIt ()
         {
             Debug::TraceContextBumper ctx{"RegressionTest18_RWSynchronized_"};
+            if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
+                // workaround TSAN HERE - but valgrind issue in RegressionTests script -  https://stroika.atlassian.net/browse/STK-717
+                DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
+                return;
+            }
             static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 
             // https://stroika.atlassian.net/browse/STK-632
@@ -1072,6 +1091,11 @@ namespace {
         void DoIt ()
         {
             Debug::TraceContextBumper ctx{"RegressionTest19_ThreadPoolAndBlockingQueue_"};
+            if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
+                // workaround TSAN HERE - but valgrind issue in RegressionTests script -  https://stroika.atlassian.net/browse/STK-717
+                DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
+                return;
+            }
             Private_::TEST_ ();
         }
     }
@@ -1158,6 +1182,11 @@ namespace {
          */
         Debug::TraceContextBumper ctx{"RegressionTest22_SycnhonizedUpgradeLock_"};
 
+        if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
+            // workaround TSAN HERE - but valgrind issue in RegressionTests script -  https://stroika.atlassian.net/browse/STK-717
+            DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
+            return;
+        }
         static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 
         // https://stroika.atlassian.net/browse/STK-632
@@ -1348,11 +1377,7 @@ namespace {
                 VerifyTestResult (runningThreads.size () == 0);
             });
 #endif
-        if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
-            // workaround TSAN HERE - but valgrind issue in RegressionTests script -  https://stroika.atlassian.net/browse/STK-717
-            DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
-            return;
-        }
+
         RegressionTest1_ ();
         RegressionTest2_ ();
         RegressionTest3_WaitableEvents_ ();

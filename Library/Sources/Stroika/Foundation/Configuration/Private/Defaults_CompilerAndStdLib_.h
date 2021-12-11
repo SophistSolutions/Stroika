@@ -2135,6 +2135,16 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 ==3198448==    by 0x3CEE4B: void std::thread::_Invoker<std::tuple<Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}> >::_M_invoke<0ul>(std::_Index_tuple<0ul>) (thread:264)
 ==3198448==    by 0x3CEE1F: std::thread::_Invoker<std::tuple<Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}> >::operator()() (thread:271)
 ==3198448== 
+
+
+==================
+WARNING: ThreadSanitizer: double lock of a mutex (pid=2575509)
+    #0 pthread_mutex_lock <null> (Test36+0x27e0328)
+    #1 __gthread_mutex_lock /usr/include/x86_64-linux-gnu/c++/11/bits/gthr-default.h:749 (Test36+0x2fc31a7)
+    #2 std::mutex::lock() /usr/include/c++/11/bits/std_mutex.h:100 (Test36+0x2fc4aee)
+    #3 std::lock_guard<std::mutex>::lock_guard(std::mutex&) /usr/include/c++/11/bits/std_mutex.h:229 (Test36+0x2fc59d1)
+    #4 Stroika::Foundation::Execution::WaitableEvent::WE_::Set() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2110_x86_64/Library/Sources/Stroika/Foundation/Execution/WaitableEvent.inl:52 (Test36+0x3241833)
+
 */
 // NOTE: I think underlying issue is probably with the tsan/helgrind (probably now common) instrumentation in
 // lib std c++. which is why I use same bug define for tsan and valgrind

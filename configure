@@ -992,9 +992,9 @@ sub	SetDefaultForCompilerDriver_
 		$qCompiler_HasNoMisleadingIndentation_Flag = true;
 	}
 	
-	if (trim (`lsb_release -rs 2>/dev/null`) == "20.10" or trim (`lsb_release -rs 2>/dev/null`) == "21.04") {
+	if (trim (`lsb_release -rs 2>/dev/null`) == "20.10" or trim (`lsb_release -rs 2>/dev/null`) == "21.04" or trim (`lsb_release -rs 2>/dev/null`) == "21.10") {
 		# so far only seen on ubuntu 20.10, clang++11, and g++10 - https://stroika.atlassian.net/browse/STK-717
-		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (10.0 <= GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 11.0)) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (10.0 <= GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0)) {
 			$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true;
 		}
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (11.0 <= GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 12.0)) {
