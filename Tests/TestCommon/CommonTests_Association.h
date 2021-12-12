@@ -69,8 +69,8 @@ namespace CommonTests {
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
                     VerifyTestResult (m.size () == 1);
-                    Verify (m.Lookup (1, nullptr));
-                    Verify (not m.Lookup (2, nullptr));
+                    Verify (m.Lookup (1));
+                    Verify (not m.Lookup (2));
                     m.Add (1, 2);
                     VerifyTestResult (m.size () == 2);
                     IterableTests::SimpleIterableTest_All_For_Type<ConcreteContainerType> (m);

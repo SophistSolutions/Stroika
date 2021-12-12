@@ -131,37 +131,12 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().MappedValues ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key, mapped_type* item) const
-    {
-        if (item == nullptr) {
-            return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
-        }
-        else {
-            optional<mapped_type> tmp;
-            if (_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &tmp)) {
-                *item = *tmp;
-                return true;
-            }
-            return false;
-        }
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key, optional<mapped_type>* item) const
-    {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, item);
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline optional<MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key) const
     {
         optional<MAPPED_VALUE_TYPE> r;
         [[maybe_unused]] bool       result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
         Ensure (result == r.has_value ());
         return r;
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key, nullptr_t) const
-    {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename THROW_IF_MISSING>

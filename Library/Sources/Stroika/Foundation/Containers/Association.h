@@ -258,10 +258,8 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \brief Return an (optional) Iterable<mapped_type> of all the associated items. This iterable is a snapshot at the time of call (but maybe lazy COW copied snapshot so still cheap)
          */
+        // STILL TODO REDO THIS LARGELY
         nonvirtual optional<mapped_type> Lookup (ArgByValueType<key_type> key) const;
-        nonvirtual bool                  Lookup (ArgByValueType<key_type> key, optional<mapped_type>* item) const;
-        nonvirtual bool                  Lookup (ArgByValueType<key_type> key, mapped_type* item) const;
-        nonvirtual bool                  Lookup (ArgByValueType<key_type> key, nullptr_t) const;
 
     public:
         /**
