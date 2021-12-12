@@ -258,6 +258,22 @@ namespace Stroika::Foundation::Traversal {
     template <typename CONTAINER_OF_T>
     Iterable<T> Iterable<T>::mk_ (CONTAINER_OF_T&& from)
     {
+#if 1
+        using DECAYED_CONTAINER = decay_t<CONTAINER_OF_T>;
+        // Most containers are safe to use copy-by-value, except not initializer_list<> - not sure how to check for that generically...
+        using USE_CONTAINER_TYPE                             = conditional_t<is_copy_constructible_v<DECAYED_CONTAINER> and not is_same_v<DECAYED_CONTAINER, initializer_list<T>>, DECAYED_CONTAINER, vector<T>>;
+        shared_ptr<USE_CONTAINER_TYPE> sharedCopyOfContainer = make_shared<USE_CONTAINER_TYPE> (forward<CONTAINER_OF_T> (from));
+        auto                           currentI              = sharedCopyOfContainer->begin ();
+        function<optional<T> ()>       getNext               = [sharedCopyOfContainer, currentI] () mutable -> optional<T> {
+            // Capture a SHARED reference to the container (so if this container is copied, we still refer to that same data
+            // And capture a by-value refrence to the iterator so if it gets updated and copied we are referring to that point in the original iterable
+            if (currentI != sharedCopyOfContainer->end ()) {
+                return *currentI++; // intentionally increment AFTER returning value
+            }
+            return nullopt;
+        };
+        return CreateGenerator (getNext);
+#else
         // @todo consider if this should use forward_list<> and stroika blockallocator? Just have to be more careful on the indexing (using iterator carefully)
         // Or even better, maybe just capture 'from' itself (without references) in a shared_context(make_shared) and then do a regular iterator pointing
         // to that. THat should work fine, and be much cheaper
@@ -273,6 +289,7 @@ namespace Stroika::Foundation::Traversal {
             }
         };
         return CreateGenerator (getNext);
+#endif
     }
     template <typename T>
     inline Memory::SharedByValue_State Iterable<T>::_GetSharingState () const
