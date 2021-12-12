@@ -1,6 +1,6 @@
 /*
-* Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
-*/
+ * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ */
 #include "../../StroikaPreComp.h"
 
 #include "../Association.h"
@@ -9,21 +9,21 @@
 #define _Stroika_Foundation_Containers_Concrete_Association_Array_h_
 
 /**
-*  \file
-*
-*  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Early</a>
-***VERY ROUGH UNUSABLE DRAFT*
-*  TODO:
-*              THEN - MAYBE - try todo better, but at least do this as starter
-*/
+ *  \file
+ *
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *
+ */
 
 namespace Stroika::Foundation::Containers::Concrete {
 
     /**
      *  \brief   Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an Array-based concrete implementation of the Association<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::AssociationTraitsType> container pattern.
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     * \note Performance Notes:
+     *      o   GetLength () is O(N)
      *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class Association_Array : public Association<KEY_TYPE, MAPPED_VALUE_TYPE> {
@@ -31,20 +31,38 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Association<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
     public:
-        using value_type = typename inherited::value_type;
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v  = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
+        using KeyEqualsCompareFunctionType = typename inherited::KeyEqualsCompareFunctionType;
+        using value_type                   = typename inherited::value_type;
+        using mapped_type                  = typename inherited::mapped_type;
 
     public:
         /**
-         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+         *  \see docs on Association<> constructor
          */
         Association_Array ();
-        Association_Array (const Association_Array& src) = default;
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_base_of_v<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        Association_Array (CONTAINER_OF_ADDABLE&& src);
-        template <typename COPY_FROM_ITERATOR_KEY_T>
-        Association_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+        template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        explicit Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer);
+        Association_Array (Association_Array&& src) noexcept      = default;
+        Association_Array (const Association_Array& src) noexcept = default;
+        Association_Array (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        Association_Array (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Association_Array (ITERABLE_OF_ADDABLE&& src);
+        template <typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        Association_Array (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
+        nonvirtual Association_Array& operator= (Association_Array&& rhs) = default;
         nonvirtual Association_Array& operator= (const Association_Array& rhs) = default;
 
     public:
@@ -77,21 +95,24 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     protected:
         using _IterableRepSharedPtr    = typename inherited::_IterableRepSharedPtr;
-        using _AssociationRepSharedPtr = typename inherited::_AssociationRepSharedPtr;
+        using _AssociationRepSharedPtr = typename inherited::_IRepSharedPtr;
 
     private:
+        class IImplRepBase_;
+        template <typename KEY_EQUALS_COMPARER>
         class Rep_;
 
     private:
         nonvirtual void AssertRepValidType_ () const;
     };
+
 }
 
 /*
-********************************************************************************
-******************************* Implementation Details *************************
-********************************************************************************
-*/
+ ********************************************************************************
+ ******************************* Implementation Details *************************
+ ********************************************************************************
+ */
 
 #include "Association_Array.inl"
 

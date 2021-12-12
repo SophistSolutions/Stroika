@@ -11,9 +11,6 @@
 /**
  *  \file
  *
- **  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Early</a>
- ***VERY ROUGH UNUSABLE DRAFT*
- *
  *  TODO:
  *      @todo   Extend this metaphor to have different kinds of factories, like mkSortedAssociation_Fastest,
  *              mkSortedAssociation_Smallest, mkSortedAssociationWithHash_Fastest etc...
@@ -21,43 +18,45 @@
  */
 
 namespace Stroika::Foundation::Containers {
-
     template <typename KEY_TYPE, typename VALUE_TYPE>
     class SortedAssociation;
 }
+
 namespace Stroika::Foundation::Containers::Factory {
 
-    /**
-     *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedAssociation<> container
-     *
-     *  Note - you can override the underlying factory dynamically by calling SortedAssociation_Factory<T,TRAITS>::Register (), or
-     *  replace it statically by template-specializing SortedAssociation_Factory<T,TRAITS>::New () - though the later is trickier.
-     *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-     */
-    template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = false_type>
+    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>>
     class SortedAssociation_Factory {
     private:
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-        static atomic<SortedAssociation<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_;
+        static atomic<SortedAssociation<KEY_TYPE, VALUE_TYPE> (*) (const KEY_INORDER_COMPARER&)> sFactory_;
 #else
-        static inline atomic<SortedAssociation<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_{nullptr};
+        static inline atomic<SortedAssociation<KEY_TYPE, VALUE_TYPE> (*) (const KEY_INORDER_COMPARER&)> sFactory_{nullptr};
 #endif
 
     public:
+        static_assert (not is_reference_v<KEY_TYPE> and not is_reference_v<VALUE_TYPE> and not is_reference_v<KEY_INORDER_COMPARER>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<>(), or remove_cvref_t");
+        static_assert (Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER> (), "StrictInOrder comparer required with SortedAssociation");
+
+    public:
+        SortedAssociation_Factory (const KEY_INORDER_COMPARER& keyInOrderComparer = {});
+
+    public:
         /**
-         *  You can call this directly, but there is no need, as the SortedAssociation<T,TRAITS> CTOR does so automatically.
+         *  You can call this directly, but there is no need, as the Association<T,TRAITS> CTOR does so automatically.
          */
         nonvirtual SortedAssociation<KEY_TYPE, VALUE_TYPE> operator() () const;
 
     public:
         /**
-         *  Register a replacement creator/factory for the given SortedAssociation<T,TRAITS>. Note this is a global change.
+         *  Register a replacement creator/factory for the given Association<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
          */
-        static void Register (SortedAssociation<KEY_TYPE, VALUE_TYPE> (*factory) () = nullptr);
+        static void Register (SortedAssociation<KEY_TYPE, VALUE_TYPE> (*factory) (const KEY_INORDER_COMPARER&) = nullptr);
 
     private:
-        static SortedAssociation<KEY_TYPE, VALUE_TYPE> Default_ ();
+        [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_INORDER_COMPARER fInOrderComparer_;
+
+    private:
+        static SortedAssociation<KEY_TYPE, VALUE_TYPE> Default_ (const KEY_INORDER_COMPARER&);
     };
 }
 

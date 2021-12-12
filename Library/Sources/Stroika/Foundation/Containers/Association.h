@@ -1,6 +1,6 @@
 /*
-* Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
-*/
+ * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ */
 #ifndef _Stroika_Foundation_Containers_Association_h_
 #define _Stroika_Foundation_Containers_Association_h_ 1
 
@@ -10,19 +10,24 @@
 #include "../Common/KeyValuePair.h"
 #include "../Configuration/Common.h"
 #include "../Configuration/Concepts.h"
-#include "../Execution/Synchronized.h"
 #include "../Traversal/Iterable.h"
 #include "Common.h"
 
 /*
  *  \file
  *
- **  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Early</a>
- ***VERY ROUGH UNUSABLE DRAFT*
- *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
+ *      @todo   Support more backends
+ *              Especially HashTable, RedBlackTree, and stlhashmap
  *
+ *      @todo   Not sure where this note goes - but eventually add "Database-Based" implementation of mapping
+ *              and/or extenral file. Maybe also map to DynamoDB, MongoDB, etc... (but not here under Mapping,
+ *              other db module would inherit from mapping).
+ *
+ *      @todo   Keys() method should probably return Set<key_type> - instead of Iterable<key_type>, but concerned about
+ *              creating container type interdependencies
  *
  */
 
@@ -30,14 +35,28 @@ namespace Stroika::Foundation::Containers {
 
     using Common::KeyValuePair;
     using Configuration::ArgByValueType;
+    using Configuration::ExtractValueType_t;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
     /**
-     *      Allows for the association of two elements, and key and one or more values.
+     *  @todo consider moving this elesewhere in containers code (Containers/Common.h) as this maybe useful elsewhere
+     */
+    enum class AddReplaceMode {
+        eAddIfMissing,
+        eAddReplaces
+    };
+
+    /**
+     *  \brief An Assocation pairs key values with (possibly multiple or none) mapped_value values. Like Mapping<>, but allowing multiple items associated with 'key'
+     * 
+     *      Association which allows for the association of two elements: a key and
+     *  a value. Unlike a Mapping<>, this assocation may not be unique..
      *
      *  @see    SortedAssociation<Key,T>
      *
+     *  \note   The term 'KEY' usually implies a UNIQUE mapping to the associated value, but DOES NOT do so in this container ArcheType.
+     * 
      *  \note   Design Note:
      *      \note   We used Iterable<KeyValuePair<Key,T>> instead of Iterable<pair<Key,T>> because it makes for
      *              more readable usage (foo.fKey versus foo.first, and foo.fValue verus foo.second).
@@ -57,21 +76,25 @@ namespace Stroika::Foundation::Containers {
      *      with map<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental converisons. But
      *      if you declare an API with Association<KEY_TYPE,MAPPED_VALUE_TYPE> arguments, its important STL sources passing in map<> work transparently.
      *
-     *      Similarly for initalizer_list.
+     *      Similarly for std::initalizer_list.
      *
-     *  \note   Design Note:
-     *      Defined operator[](KEY_TYPE) const - to return MAPPED_VALUE_TYPE, instead of optional<MAPPED_VALUE_TYPE> because
-     *      this adds no value - you can always use Lookup or LookupValue. The reason to use operator[] is
-     *      as convenient syntactic sugar. But if you have to check (the elt not necessarily present) - then you
-     *      may as well use Lookup () - cuz the code's going to look ugly anyhow.
+     *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
+     *          constructors, iterators, etc)
      *
-     *  \note Note About Iterators
-     *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *      o   Standard Stroika Comparison equality (==, !=) support
      *
-     *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
-     *          the iterators are automatically updated internally to behave sensibly.
+     *          Two Associations are considered equal if they contain the same elements (keys) and each key is associated
+     *          with the same value. There is no need for the items to appear in the same order for the two Associations to
+     *          be equal. There is no need for the backends to be of the same underlying representation either (stlmap
+     *          vers linkedlist).
      *
-     *  \todo   @todo https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
+     *          \req lhs and rhs arguments must have the same (or equivilent) EqualsComparers.
+     *
+     *          @todo - document computational complexity
+     *
+     *          ThreeWayComparer support is NOT provided for Association, because there is no intrinsic ordering among the elements
+     *          of the Association (keys) - even if there was some way to compare the values.
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class Association : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> {
@@ -82,13 +105,19 @@ namespace Stroika::Foundation::Containers {
         class _IRep;
 
     protected:
-        using _AssociationRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 
     public:
         /**
          *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
          */
         using ArchetypeContainerType = Association<KEY_TYPE, MAPPED_VALUE_TYPE>;
+
+    public:
+        /**
+         *  @see inherited::value_type
+         */
+        using value_type = typename inherited::value_type;
 
     public:
         /**
@@ -104,16 +133,17 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  @see inherited::value_type
-         */
-        using value_type = typename inherited::value_type;
-
-    public:
-        /**
          *  This is the type returned by GetKeyEqualsComparer () and CAN be used as the argument to a Association<> as KeyEqualityComparer, but
          *  we allow any template in the Association<> CTOR for a keyEqualityComparer that follows the Common::IsEqualsComparer () concept (need better name).
          */
         using KeyEqualsCompareFunctionType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (key_type, key_type)>>;
+
+    public:
+        /**
+         *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add ()
+         */
+        template <typename POTENTIALLY_ADDABLE_T>
+        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
 
     public:
         /**
@@ -125,118 +155,125 @@ namespace Stroika::Foundation::Containers {
          *
          *  \par Example Usage
          *      \code
-         *        Collection<pair<int,int>> c;
-         *        std::map<int,int> m;
+         *          Collection<pair<int,int>> c;
+         *          std::map<int,int> m;
          *
-         *        Association<int,int> m1  = {pair<int, int>{1, 1}, pair<int, int>{2, 2}, pair<int, int>{3, 2}};
-         *        Association<int,int> m2  = m1;
-         *        Association<int,int> m3  { m1 };
-         *        Association<int,int> m4  { m1.begin (), m1.end () };
-         *        Association<int,int> m5  { c };
-         *        Association<int,int> m6  { m };
-         *        Association<int,int> m7  { m.begin (), m.end () };
-         *        Association<int,int> m8  { move (m1) };
+         *          Association<int,int> m1  = {pair<int, int>{1, 1}, pair<int, int>{2, 2}, pair<int, int>{3, 2}};
+         *          Association<int,int> m2  = m1;
+         *          Association<int,int> m3  { m1 };
+         *          Association<int,int> m4  { m1.begin (), m1.end () };
+         *          Association<int,int> m5  { c };
+         *          Association<int,int> m6  { m };
+         *          Association<int,int> m7  { m.begin (), m.end () };
+         *          Association<int,int> m8  { move (m1) };
+         *          Association<int,int> m9  { Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }) };
          *      \endcode
+         * 
+         *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         Association ();
+        template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        explicit Association (KEY_EQUALS_COMPARER&& keyEqualsComparer);
+        Association (Association&& src) noexcept      = default;
         Association (const Association& src) noexcept = default;
-#if 1
-        // I think this casuses crash in IO::Transfer regression test - not sure how - only on UNIX - retest...
-        // reproduced (not carefully) 2018-04-04
-        Association (Association&& src) noexcept = default; //  https://stroika.atlassian.net/browse/STK-541  (assume OK here)
-#endif
         Association (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         Association (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
-        Association (const CONTAINER_OF_ADDABLE& src);
-        template <typename COPY_FROM_ITERATOR_KEY_T>
-        Association (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+        template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Association<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        explicit Association (ITERABLE_OF_ADDABLE&& src);
+        template <typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src);
+        template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        Association (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        template <typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     protected:
-        explicit Association (const _AssociationRepSharedPtr& rep) noexcept;
-        explicit Association (_AssociationRepSharedPtr&& rep) noexcept;
+        explicit Association (_IRepSharedPtr&& rep) noexcept;
+        explicit Association (const _IRepSharedPtr& rep) noexcept;
 
     public:
         /**
          */
-        nonvirtual Association& operator= (const Association& rhs) = default;
         nonvirtual Association& operator= (Association&& rhs) = default;
-
-    public:
-        nonvirtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const
-        {
-            // tmphack
-            return KeyEqualsCompareFunctionType{equal_to<key_type>{}};
-        }
+        nonvirtual Association& operator= (const Association& rhs) = default;
 
     public:
         /**
-        *  Keys () returns an Iterable object with just the key part of the Association.
-        *
-        *  \note   Keys () will return a an Iterable producing (iterating) elements in
-        *          the same order as the collection it is created from.
-        *
-        *          It is equivilent to copying the underlying collection and 'projecting' the
-        *          key fields.
-        *
-        *  \em Design Note:
-        *      The analagous method in C#.net - Dictionary<TKey, TValue>.KeyCollection
-        *      (http://msdn.microsoft.com/en-us/library/yt2fy5zk(v=vs.110).aspx) returns a live reference
-        *      to the underlying keys. We could have (fairly easily) done that, but I didn't see the point.
-        *
-        *      In .net, the typical model is that you have a pointer to an object, and pass around that
-        *      pointer (so by reference semantics) - so this returning a live reference makes more sense there.
-        *
-        *      Since Stroika containers are logically copy-by-value (even though lazy-copied), it made more
-        *      sense to apply that lazy-copy (copy-on-write) paradigm here, and make the returned set of
-        *      keys a logical copy at the point 'keys' is called.
-        *
-        *  See:
-        *      @see MappedValues ()
-        */
+         */
+        nonvirtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const;
+
+    public:
+        /**
+         *  Keys () returns an Iterable object with just the key part of the Association.
+         *
+         *  \note   Keys () will return a an Iterable producing (iterating) elements in
+         *          the same order as the collection it is created from.
+         *
+         *          It is equivilent to copying the underlying collection and 'projecting' the
+         *          key fields.
+         *
+         *  \em Design Note:
+         *      The analagous method in C#.net - Dictionary<TKey, TValue>.KeyCollection
+         *      (http://msdn.microsoft.com/en-us/library/yt2fy5zk(v=vs.110).aspx) returns a live reference
+         *      to the underlying keys. We could have (fairly easily) done that, but I didn't see the point.
+         *
+         *      In .net, the typical model is that you have a pointer to an object, and pass around that
+         *      pointer (so by reference semantics) - so this returning a live reference makes more sense there.
+         *
+         *      Since Stroika containers are logically copy-by-value (even though lazy-copied), it made more
+         *      sense to apply that lazy-copy (copy-on-write) paradigm here, and make the returned set of
+         *      keys a logical copy at the point 'keys' is called.
+         *
+         *  See:
+         *      @see MappedValues ()
+         */
         nonvirtual Iterable<key_type> Keys () const;
 
     public:
         /**
-        *  MappedValues () returns an Iterable object with just the value part of the Association.
-        *
-        *  \note   MappedValues () will return a an Iterable producing (iterating) elements in
-        *          the same order as the collection it is created from.
-        *
-        *          It is equivilent to copying the underlying collection and 'projecting' the
-        *          value fields.
-        *
-        *  \em Design Note:
-        *      The analagous method in C#.net - Dictionary<TKey, TValue>.ValueCollection
-        *      (https://msdn.microsoft.com/en-us/library/x8bctb9c%28v=vs.110%29.aspx).aspx) returns a live reference
-        *      to the underlying keys. We could have (fairly easily) done that, but I didn't see the point.
-        *
-        *      In .net, the typical model is that you have a pointer to an object, and pass around that
-        *      pointer (so by reference semantics) - so this returning a live reference makes more sense there.
-        *
-        *      Since Stroika containers are logically copy-by-value (even though lazy-copied), it made more
-        *      sense to apply that lazy-copy (copy-on-write) paradigm here, and make the returned set of
-        *      keys a logical copy at the point 'keys' is called.
-        *
-        *  \note   Alias - this could also have been called Image ()
-        *
-        *  See:
-        *      @see Keys ()
-        */
+         *  MappedValues () returns an Iterable object with just the value part of the Association.
+         *
+         *  \note   MappedValues () will return a an Iterable producing (iterating) elements in
+         *          the same order as the collection it is created from.
+         *
+         *          It is equivilent to copying the underlying collection and 'projecting' the
+         *          value fields.
+         *
+         *  \em Design Note:
+         *      The analagous method in C#.net - Dictionary<TKey, TValue>.ValueCollection
+         *      (https://msdn.microsoft.com/en-us/library/x8bctb9c%28v=vs.110%29.aspx).aspx) returns a live reference
+         *      to the underlying keys. We could have (fairly easily) done that, but I didn't see the point.
+         *
+         *      In .net, the typical model is that you have a pointer to an object, and pass around that
+         *      pointer (so by reference semantics) - so this returning a live reference makes more sense there.
+         *
+         *      Since Stroika containers are logically copy-by-value (even though lazy-copied), it made more
+         *      sense to apply that lazy-copy (copy-on-write) paradigm here, and make the returned set of
+         *      keys a logical copy at the point 'keys' is called.
+         *
+         *  \note   Alias - this could also have been called Image ()
+         *
+         *  See:
+         *      @see Keys ()
+         */
         nonvirtual Iterable<mapped_type> MappedValues () const;
 
     public:
         /**
-        *  Note - as since Lookup/1 returns an optional<T> - it can be used very easily to provide
-        *  a default value on Lookup (so for case where not present) - as in:
-        *      returm m.Lookup (key).Value (putDefaultValueHere);
-        *
-        *  Note - for both overloads taking an item pointer, the pointer may be nullptr (in which case not assigned to).
-        *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
-        *      \req    Ensure (item == nullptr or returnValue == item->has_value());
-        *
-        *  \note   Alias - Lookup (key, mapped_type* value) - is equivilent to .Net TryGetValue ()
-        */
+         *  Note - as since Lookup/1 returns an optional<T> - it can be used very easily to provide
+         *  a default value on Lookup (so for case where not present) - as in:
+         *      returm m.Lookup (key).Value (putDefaultValueHere);
+         *
+         *  Note - for both overloads taking an item pointer, the pointer may be nullptr (in which case not assigned to).
+         *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
+         *      \req    Ensure (item == nullptr or returnValue == item->has_value());
+         *
+         *  \note   Alias - Lookup (key, mapped_type* value) - is equivilent to .Net TryGetValue ()
+         */
         nonvirtual optional<mapped_type> Lookup (ArgByValueType<key_type> key) const;
         nonvirtual bool                  Lookup (ArgByValueType<key_type> key, optional<mapped_type>* item) const;
         nonvirtual bool                  Lookup (ArgByValueType<key_type> key, mapped_type* item) const;
@@ -244,24 +281,40 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-        *  \note Alias LookupOrException
-        */
+         *  \note Alias LookupOrException
+         */
         template <typename THROW_IF_MISSING>
         nonvirtual mapped_type LookupChecked (ArgByValueType<key_type> key, const THROW_IF_MISSING& throwIfMissing) const;
 
     public:
         /**
-        *  Always safe to call. If result of Lookup () '!has_value', returns argument 'default' or 'sentinal' value.
-        *
-        *  \note Alias LookupOrDefault
-        */
-        nonvirtual mapped_type LookupValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue = mapped_type ()) const;
+         *  Always safe to call. If result of Lookup () !has_value, returns argument 'default' or 'sentinal' value.
+         *
+         *  \note Alias LookupOrDefault
+         */
+        nonvirtual mapped_type LookupValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue = mapped_type{}) const;
 
     public:
         /**
-        *  \req ContainsKey (key);
-        */
-        nonvirtual mapped_type operator[] (ArgByValueType<key_type> key) const;
+         *  \req ContainsKey (key);
+         *
+         *  \note   Design Note:
+         *      Defined operator[](KEY_TYPE) const - to return const MAPPED_VALUE_TYPE, instead of optional<MAPPED_VALUE_TYPE> because
+         *      this adds no value - you can always use Lookup or LookupValue. The reason to use operator[] is
+         *      as convenient syntactic sugar. But if you have to check (the elt not necessarily present) - then you
+         *      may as well use Lookup () - cuz the code's going to look ugly anyhow.
+         *
+         *      Defined operator[](KEY_TYPE) const - to return MAPPED_VALUE_TYPE instead of MAPPED_VALUE_TYPE& because we then couldn't control
+         *      the lifetime of that reference, and it would be unsafe as the underlying object was changed.
+         *
+         *      And therefore we return CONST of that type so that code like m["xx"].a = 3 won't compile (and wont just assign to a temporary that disappears
+         *      leading to confusion).
+         *
+         *  \note In the future, it may make sense to have operator[] return a PROXY OBJECT, so that it MIGHT be assignable. But that wouldn't work with
+         *        cases like Association<String,OBJ> where you wanted to access OBJs fields as in m["xx"].a = 3
+         *
+         */
+        nonvirtual add_const_t<mapped_type> operator[] (ArgByValueType<key_type> key) const;
 
     public:
         /**
@@ -271,115 +324,171 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-        *  Likely inefficeint for a map, but perhaps helpful. Walks entire list of entires
-        *  and applies VALUE_EQUALS_COMPARER (defaults to operator==) on each value, and returns
-        *  true if contained. Perhpas not very useful but symetric to ContainsKey().
-        */
+         *  Likely inefficeint for a map, but perhaps helpful. Walks entire list of entires
+         *  and applies VALUE_EQUALS_COMPARER (defaults to operator==) on each value, and returns
+         *  true if contained. Perhpas not very useful but symetric to ContainsKey().
+         */
         template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
         nonvirtual bool ContainsMappedValue (ArgByValueType<mapped_type> v, const VALUE_EQUALS_COMPARER& valueEqualsComparer = {}) const;
 
     public:
         /**
-        *  Add the association between key and newElt. If key was already associated with something
-        *  else, the association is silently updated, and the size of the iterable does not change.
-        *  Also - we guarantee that even if the association is different, if the key has not changed,
-        *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
-        *
-        *  \note This behavior when the entry already exists differs from the behavior of std::map::insert (@see http://en.cppreference.com/w/cpp/container/map/insert)
-        *        "Inserts element(s) into the container, if the container doesn't already contain an element with an equivalent key".
-        *        This behavior is analagous to the new std-c++17 std::map::insert_or_assign () - @see http://en.cppreference.com/w/cpp/container/map/insert_or_assign
-        */
-        nonvirtual void Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt);
-        nonvirtual void Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p);
+         *  Add the association between key and newElt. 
+         *
+         *  If key was already associated with something, consult argument addReplaceMode (defaults to AddReplaceMode::eAddReplaces).
+         *  if 'replaces' then replace, and if 'addif' then do nothing on Add ()
+         *
+         *  \returns bool: The (generally ignored) return value boolean indicates if a new item was added (so size of iterable increased).
+         *  This value returned is FALSE for the case of when the value remains unchanged or even if the value is updated (overwriting the previous association).
+         *
+         *  Also - we guarantee that even if the association is different, if the key has not changed,
+         *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
+         *
+         *  \note This behavior when the entry already exists differs from the behavior of std::map::insert (@see http://en.cppreference.com/w/cpp/container/map/insert)
+         *        "Inserts element(s) into the container, if the container doesn't already contain an element with an equivalent key".
+         *        This behavior is analagous to the new std-c++17 std::map::insert_or_assign () - @see http://en.cppreference.com/w/cpp/container/map/insert_or_assign
+         *
+         *  \note mutates container
+         *
+         *  \note - this returns true if a CLEAR change happened. But Associations dont have a VALUE_COMPARER by default. So no way
+         *          to return if the Association ITSELF changed. @todo - CONSIDER adding optional VALUE_COMPARER to AddIf, so it can return
+         *          true if the Association CHANGES (mapped to value changes). May need a different name (meaning maybe we've picked a bad name here)
+         *
+         *  \note Similar to Set<>::AddIf() - but here there is the ambiguity about whether to change what is mapped to (which we do differntly
+         *        between Add and AddIf) and no such issue exists with Set<>::AddIf. But return true if they make a change.
+         */
+        nonvirtual bool Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
+        nonvirtual bool Add (ArgByValueType<value_type> p, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
 
     public:
         /**
-        *  \note   AddAll/2 is alias for .net AddRange ()
-        */
-        template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>* = nullptr>
-        nonvirtual void AddAll (const CONTAINER_OF_KEYVALUE& items);
-        template <typename COPY_FROM_ITERATOR_KEYVALUE>
-        nonvirtual void AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
+         *  \summary Add all the argument (container or bound range of iterators) elements; if replaceExistingAssociation true (default) force replace on each. Return count of added items (not count of updated items)
+         *
+         *  \note   AddAll/2 is alias for .net AddRange ()
+         *
+         *  \req IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>
+         *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
+         *
+         *  \note mutates container
+         */
+        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        nonvirtual unsigned int AddAll (ITERABLE_OF_ADDABLE&& items, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
+        template <typename ITERATOR_OF_ADDABLE>
+        nonvirtual unsigned int AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
 
     public:
         /**
-        *  NOTE- calling Remove(Key) when the key is not found is perfectly legal.
-        *
-        *  @todo CONSIDER:::
-        *      TBD in the case of Remove() on in iterator???? Probably should have consistent
-        *      answers but review Remove()for other containers as well.
-        */
+         * \brief Remove the given item (which must exist).
+         * 
+         * \note - for the argument 'key' overload, this is a change in Stroika 2.1b14: before it was legal and silently ignored if you removed an item that didn't exist.
+         * 
+         *  Remove with iterator returns the adjusted iterator value, now pointing to the next value to use (as in save that iterator value, ++i) and remove the
+         *  i iterator value).
+         *
+         *  \note mutates container
+         */
         nonvirtual void Remove (ArgByValueType<key_type> key);
-        nonvirtual void Remove (const Iterator<value_type>& i);
+        nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
 
     public:
         /**
-        */
+         * \brief Remove the given item, if it exists. Return true if found and removed.
+         * 
+         *  \note mutates container
+         */
+        nonvirtual bool RemoveIf (ArgByValueType<key_type> key);
+
+    public:
+        /**
+         *  \brief RemoveAll removes all, or all matching (predicate, iterator range, equals comparer or whatever) items.
+         * 
+         *  The no-arg overload removes all (quickly).
+         * 
+         *  The overloads that remove some subset of the items returns the number of items so removed, and use RemoveIf() so that the
+         *  argument items designated to be removed MAY not be present.
+         * 
+         *  \note mutates container
+         */
         nonvirtual void RemoveAll ();
-        template <typename CONTAINER_OF_ADDABLE>
-        nonvirtual void RemoveAll (const CONTAINER_OF_ADDABLE& items);
-        template <typename COPY_FROM_ITERATOR_KEY_T>
-        nonvirtual void RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+        template <typename ITERABLE_OF_KEY_OR_ADDABLE>
+        nonvirtual size_t RemoveAll (const ITERABLE_OF_KEY_OR_ADDABLE& items);
+        template <typename ITERATOR_OF_KEY_OR_ADDABLE>
+        nonvirtual size_t RemoveAll (ITERATOR_OF_KEY_OR_ADDABLE start, ITERATOR_OF_KEY_OR_ADDABLE end);
+        template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>, PREDICATE> ()>* = nullptr>
+        nonvirtual size_t RemoveAll (const PREDICATE& p);
 
     public:
         /**
-        *  Remove all items from this container UNLESS they are in the argument set to RetainAll().
-        *
-        *  This restricts the 'Keys' list of Association to the argument data, but preserving
-        *  any associations.
-        *
-        *  \note   Java comparison
-        *          Association.keySet.retainAll (collection);
-        *
-        *  \par    Example Usage
-        *      \code
-        *          fStaticProcessStatsForThisSpill_.RetainAll (fDynamicProcessStatsForThisSpill_.Keys ());     // lose static data for processes no longer running
-        *      \endcode
-        *
-        * \note    Something of an alias for 'Subset()' or 'Intersects', as this - in-place computes the subset
-        *          of the Association<> that intersects with the argument keys.
-        *
-        * \todo    Consider having const function Intersects() - or Subset() - that produces a copy of the results of RetrainAll()
-        *          without modifying this object.
-        */
-        template <typename CONTAINER_OF_KEY_TYPE>
-        nonvirtual void RetainAll (const CONTAINER_OF_KEY_TYPE& items);
+         *  Update the value associated with the iterator 'i', without changing iteration order in any way (cuz the key not changed).
+         *  Note - if iterating, because this modifies the underlying container, the caller should pass 'i' in as a reference parameter to 'nextI'
+         *  to have it updated to safely continue iterating.
+         *
+         *  \note mutates container
+         *  \note As with ALL methods that modify the Association, this invalidates the iterator 'i', but if you pass nextI (can be same variable as i) - it will be updated with a valid iterator pointing to the same location.
+         */
+        nonvirtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI = nullptr);
 
     public:
         /**
-        *  Apply the function function to each element, and return a subset Association including just the ones for which it was true.
-        *
-        *  \note   Alias - this could have been called 'Subset' - as it constructs a subset Association (filtering on key or key-value pairs)
-        *
-        *  @see Iterable<T>::Where
-        *
-        *  \par Example Usage
-        *      \code
-        *           Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
-        *           VerifyTestResult ((m.Where ([](const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
-        *           VerifyTestResult ((m.Where ([](int key) { return Math::IsPrime (key); }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
-        *      \endcode
-        */
+         *  Remove all items from this container UNLESS they are in the argument set to RetainAll().
+         *
+         *  This restricts the 'Keys' list of Association to the argument data, but preserving
+         *  any associations.
+         *
+         *  \note   Java comparison
+         *          association.keySet.retainAll (collection);
+         *
+         *  \par    Example Usage
+         *      \code
+         *          fStaticProcessStatsForThisSpill_.RetainAll (fDynamicProcessStatsForThisSpill_.Keys ());     // lose static data for processes no longer running
+         *      \endcode
+         *
+         * \note    Something of an alias for 'Subset()' or 'Intersects', as this - in-place computes the subset
+         *          of the Association<> that intersects with the argument keys.
+         *
+         * \todo    Consider having const function Intersects() - or Subset() - that produces a copy of the results of RetrainAll()
+         *          without modifying this object.
+         *
+         *  \note mutates container
+         */
+        template <typename ITERABLE_OF_KEY_TYPE>
+        nonvirtual void RetainAll (const ITERABLE_OF_KEY_TYPE& items);
+
+    public:
+        /**
+         *  Apply the function function to each element, and return a subset Association including just the ones for which it was true.
+         *
+         *  \note   Alias - this could have been called 'Subset' - as it constructs a subset association (filtering on key or key-value pairs)
+         *
+         *  @see Iterable<T>::Where
+         *
+         *  \par Example Usage
+         *      \code
+         *           Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
+         *           VerifyTestResult ((m.Where ([](const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+         *           VerifyTestResult ((m.Where ([](int key) { return Math::IsPrime (key); }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+         *      \endcode
+         */
         nonvirtual ArchetypeContainerType Where (const function<bool (ArgByValueType<key_type>)>& includeIfTrue) const;
-        nonvirtual ArchetypeContainerType Where (const function<bool (ArgByValueType<KeyValuePair<key_type, mapped_type>>)>& includeIfTrue) const;
+        nonvirtual ArchetypeContainerType Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const;
 
     public:
         /**
-        *  Return a subset of this Association<> where the keys are included in the argument includeKeys set..
-        *
-        *  \note   Alias - this could have been called 'Subset' - as it constructs a subset Association (where the given keys intersect)
-        *
-        *  @see Iterable<T>::Where
-        *  @see Where
-        *
-        *  \note   CONCEPT - CONTAINER_OF_KEYS must support the 'Contains' API - not that set, and Iterable<> do this.
-        *
-        *  \par Example Usage
-        *      \code
-        *           Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
-        *           VerifyTestResult ((m.WithKeys (initializer_list<int> {2, 5}) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{5, 7}}));
-        *      \endcode
-        */
+         *  Return a subset of this Association<> where the keys are included in the argument includeKeys set..
+         *
+         *  \note   Alias - this could have been called 'Subset' - as it constructs a subset Association (where the given keys intersect)
+         *
+         *  @see Iterable<T>::Where
+         *  @see Where
+         *
+         *  \note   CONCEPT - CONTAINER_OF_KEYS must support the 'Contains' API - not that set, and Iterable<> do this.
+         *
+         *  \par Example Usage
+         *      \code
+         *           Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
+         *           VerifyTestResult ((m.WithKeys (initializer_list<int> {2, 5}) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{5, 7}}));
+         *      \endcode
+         */
         template <typename CONTAINER_OF_KEYS>
         nonvirtual ArchetypeContainerType WithKeys (const CONTAINER_OF_KEYS& includeKeys) const;
         nonvirtual ArchetypeContainerType WithKeys (const initializer_list<key_type>& includeKeys) const;
@@ -399,6 +508,21 @@ namespace Stroika::Foundation::Containers {
         template <typename CONTAINER_OF_Key_T>
         nonvirtual CONTAINER_OF_Key_T As () const;
 
+    protected:
+        /**
+         *  \brief Utility to get WRITABLE underlying shared_ptr (replacement for what we normally do - _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ())
+         *         but where we also handle the cloning/patching of the associated iterator
+         * 
+         *  When you have a non-const operation (such as Remove) with an argument of an Iterator<>, then due to COW,
+         *  you may end up cloning the container rep, and yet the Iterator<> contains a pointer to the earlier rep (and so maybe unusable).
+         * 
+         *  Prior to Stroika 2.1b14, this was handled elegantly, and automatically, by the iterator patching mechanism. But that was deprecated (due to cost, and
+         *  rarity of use), in favor of this more restricted feature, where we just patch the iterators on an as-needed basis.
+         * 
+         *  \todo @todo - could be smarter about moves and avoid some copies here - I think, and this maybe performance sensitive enough to look into that... (esp for COMMON case where no COW needed)
+         */
+        nonvirtual tuple<_IRep*, Iterator<value_type>> _GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i);
+
     private:
         template <typename CONTAINER_OF_Key_T>
         nonvirtual CONTAINER_OF_Key_T As_ (enable_if_t<is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesInsertPair = 0) const;
@@ -409,18 +533,33 @@ namespace Stroika::Foundation::Containers {
         template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
         struct EqualsComparer;
 
+#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
+         * simply indirect to @Association<>::EqualsComparer;
+         * only defined if there is a default equals comparer for mapped_type
+         */
+        nonvirtual bool operator== (const Association& rhs) const;
+#endif
+
+    public:
+        /**
+         * \brief like Add (key, newValue) - BUT newValue is COMBINED with the 'f' argument.
+         * 
+         *  The accumulator function combines the previous value associated with the new value given (using initialValue if key was not already present in the map).
          */
         nonvirtual void Accumulate (
-            ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue, const function<mapped_type (ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f = [] (ArgByValueType<mapped_type> l, ArgByValueType<mapped_type> r) -> mapped_type { return l + r; }, mapped_type initialValue = {});
+            ArgByValueType<key_type>                                                                key,
+            ArgByValueType<mapped_type>                                                             newValue,
+            const function<mapped_type (ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f            = [] (ArgByValueType<mapped_type> l, ArgByValueType<mapped_type> r) -> mapped_type { return l + r; },
+            mapped_type                                                                             initialValue = {});
 
     public:
         /**
          * \brief STL-ish alias for Remove ().
          */
         nonvirtual void erase (ArgByValueType<key_type> key);
-        nonvirtual void erase (const Iterator<value_type>& i);
+        nonvirtual Iterator<value_type> erase (const Iterator<value_type>& i);
 
     public:
         /**
@@ -430,31 +569,31 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-        */
-        template <typename CONTAINER_OF_ADDABLE>
-        nonvirtual Association<KEY_TYPE, MAPPED_VALUE_TYPE> operator+ (const CONTAINER_OF_ADDABLE& items) const;
+         */
+        template <typename ITERABLE_OF_ADDABLE>
+        nonvirtual Association operator+ (const ITERABLE_OF_ADDABLE& items) const;
 
     public:
         /**
-        */
-        template <typename CONTAINER_OF_ADDABLE>
-        nonvirtual Association<KEY_TYPE, MAPPED_VALUE_TYPE>& operator+= (const CONTAINER_OF_ADDABLE& items);
+         */
+        template <typename ITERABLE_OF_ADDABLE>
+        nonvirtual Association& operator+= (const ITERABLE_OF_ADDABLE& items);
 
     public:
         /**
-        */
-        template <typename CONTAINER_OF_ADDABLE>
-        nonvirtual Association<KEY_TYPE, MAPPED_VALUE_TYPE>& operator-= (const CONTAINER_OF_ADDABLE& items);
+         */
+        template <typename ITERABLE_OF_KEY_OR_ADDABLE>
+        nonvirtual Association& operator-= (const ITERABLE_OF_KEY_OR_ADDABLE& items);
 
     protected:
         /**
-        */
+         */
         template <typename T2>
         using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
 
     protected:
         /**
-        */
+         */
         template <typename T2>
         using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
@@ -477,7 +616,7 @@ namespace Stroika::Foundation::Containers {
 #endif
     {
     private:
-        using inherited = _IRep;
+        using inherited = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep;
 
     protected:
         _IRep () = default;
@@ -486,18 +625,23 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     protected:
-        using _AssociationRepSharedPtr = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_AssociationRepSharedPtr;
+        using _IRepSharedPtr = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRepSharedPtr;
 
     public:
-        virtual _AssociationRepSharedPtr CloneEmpty () const   = 0;
-        virtual Iterable<key_type>       Keys () const         = 0;
-        virtual Iterable<mapped_type>    MappedValues () const = 0;
+        virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const                         = 0;
+        virtual _IRepSharedPtr               CloneEmpty () const                                   = 0;
+        virtual _IRepSharedPtr               CloneAndPatchIterator (Iterator<value_type>* i) const = 0;
+        virtual Iterable<key_type>           Keys () const                                         = 0;
+        virtual Iterable<mapped_type>        MappedValues () const                                 = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<mapped_type>* item) const = 0;
-        virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt)   = 0;
-        virtual void Remove (ArgByValueType<KEY_TYPE> key)                                    = 0;
-        virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i)    = 0;
+        // return true if NEW Association added (container enlarged) - if replaceExistingAssociation we unconditionally update but can still return false
+        virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode) = 0;
+        virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key)                                                               = 0;
+        // if nextI is non-null, its filled in with the next item in iteration order after i (has been removed)
+        virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                       = 0;
+        virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) = 0;
 
     protected:
         nonvirtual Iterable<key_type> _Keys_Reference_Implementation () const;
@@ -507,34 +651,25 @@ namespace Stroika::Foundation::Containers {
     /**
      *  \brief Compare Associations<>s for equality. 
      *
-     *  Two Associations are considered equal if they contain the same elements (keys) and each key is associated
-     *  with the same value. There is no need for the items to appear in the same order for the two Associations to
-     *  be equal. There is no need for the backends to be of the same underlying representation either (stlmap
-     *  vers linkedlist).
-     *
-     *  EqualsComparer is commutative ().
-     *
-     *  \req lhs and rhs arguments must have the same (or equivilent) EqualsComparers.
-     *
-     *  @todo - document computational complexity
-     *
-     *  \note   Not to be confused with EqualityComparerType and GetEqualsComparer () which compares ELEMENTS of Associations<T> for equality.
+     *  \note   Not to be confused with GetKeyEqualsComparer () which compares KEY ELEMENTS of Association for equality.
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename VALUE_EQUALS_COMPARER>
     struct Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer = {});
-        nonvirtual bool       operator() (const Association& lhs, const Association& rhs) const;
-        VALUE_EQUALS_COMPARER fValueEqualsComparer;
+        nonvirtual bool                                  operator() (const Association& lhs, const Association& rhs) const;
+        [[NO_UNIQUE_ADDRESS_ATTR]] VALUE_EQUALS_COMPARER fValueEqualsComparer;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
-     *  Basic comparison operator overloads with the obvious meaning, and simply indirect to @Set<T>::EqualsComparer
+     *  Basic comparison operator overloads with the obvious meaning, and simply indirect to @Association<>::EqualsComparer
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     bool operator== (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs);
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     bool operator!= (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs);
+#endif
 
 }
 

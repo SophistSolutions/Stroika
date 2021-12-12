@@ -17,15 +17,20 @@ namespace Stroika::Foundation::Containers::Factory {
 
     /*
      ********************************************************************************
-     ************ SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS> ***********
+     ************ SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS> ***************
      ********************************************************************************
      */
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-    template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-    atomic<SortedAssociation<KEY_TYPE, VALUE_TYPE> (*) ()> SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (nullptr);
+    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
+    atomic<SortedAssociation<KEY_TYPE, VALUE_TYPE> (*) (const KEY_INORDER_COMPARER&)> SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::sFactory_ (nullptr);
 #endif
-    template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-    inline SortedAssociation<KEY_TYPE, VALUE_TYPE> SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::operator() () const
+    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
+    inline SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::SortedAssociation_Factory (const KEY_INORDER_COMPARER& keyInOrderComparer)
+        : fInOrderComparer_ (keyInOrderComparer)
+    {
+    }
+    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
+    inline SortedAssociation<KEY_TYPE, VALUE_TYPE> SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::operator() () const
     {
         /*
          *  Would have been more performant to just and assure always properly set, but to initialize
@@ -35,22 +40,23 @@ namespace Stroika::Foundation::Containers::Factory {
          *  This works more generally (and with hopefully modest enough performance impact).
          */
         if (auto f = sFactory_.load ()) {
-            return f ();
+            return f (fInOrderComparer_);
         }
         else {
-            return Default_ ();
+            return Default_ (fInOrderComparer_);
         }
     }
-    template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-    void SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Register (SortedAssociation<KEY_TYPE, VALUE_TYPE> (*factory) ())
+    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
+    void SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::Register (SortedAssociation<KEY_TYPE, VALUE_TYPE> (*factory) (const KEY_INORDER_COMPARER&))
     {
         sFactory_ = factory;
     }
-    template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-    inline SortedAssociation<KEY_TYPE, VALUE_TYPE> SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ ()
+    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
+    inline SortedAssociation<KEY_TYPE, VALUE_TYPE> SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::Default_ (const KEY_INORDER_COMPARER& inOrderComparer)
     {
-        return Concrete::SortedAssociation_stdmultimap<KEY_TYPE, VALUE_TYPE> ();
+        return Concrete::SortedAssociation_stdmap<KEY_TYPE, VALUE_TYPE>{inOrderComparer};
     }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Concrete_SortedAssociation_Factory_inl_ */

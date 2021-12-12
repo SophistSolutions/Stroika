@@ -12,6 +12,7 @@
 #include <set>
 
 #include "../Debug/Assertions.h"
+#include "../Debug/Cast.h"
 #include "../Traversal/Generator.h"
 #include "Factory/Association_Factory.h"
 
@@ -19,57 +20,105 @@ namespace Stroika::Foundation::Containers {
 
     /*
      ********************************************************************************
-     ******************** Association<KEY_TYPE, MAPPED_VALUE_TYPE> ******************
+     ******************** Association<KEY_TYPE, MAPPED_VALUE_TYPE> **********************
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association ()
-        : inherited (Factory::Association_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, false_type> () ())
+        : Association{equal_to<KEY_TYPE>{}}
+    {
+        _AssertRepValidType ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>*>
+    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (KEY_EQUALS_COMPARER&& keyEqualsComparer)
+        : inherited{Factory::Association_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_EQUALS_COMPARER>{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}()}
     {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-        : Association ()
+        : Association{}
+    {
+        AddAll (src);
+        _AssertRepValidType ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>*>
+    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+        : Association{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
         AddAll (src);
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-        : Association ()
+        : Association{}
     {
         AddAll (src);
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>*>>*>
-    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (const CONTAINER_OF_ADDABLE& src)
-        : Association ()
+    template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>*>
+    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+        : Association{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
         AddAll (src);
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename COPY_FROM_ITERATOR_KEY_T>
-    Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
-        : Association ()
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Association<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (ITERABLE_OF_ADDABLE&& src)
+        : Association{}
     {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+        _AssertRepValidType ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src)
+        : Association{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+        AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+        _AssertRepValidType ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : Association{}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (start, end);
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (const _AssociationRepSharedPtr& rep) noexcept
-        : inherited (rep)
+    template <typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+        : Association{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        AddAll (start, end);
+        _AssertRepValidType ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (const _IRepSharedPtr& rep) noexcept
+        : inherited{rep}
     {
         RequireNotNull (rep);
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (_AssociationRepSharedPtr&& rep) noexcept
-        : inherited ((RequireNotNull (rep), move (rep)))
+    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (_IRepSharedPtr&& rep) noexcept
+        : inherited{(RequireNotNull (rep), move (rep))}
     {
         _AssertRepValidType ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline auto Association<KEY_TYPE, MAPPED_VALUE_TYPE>::GetKeyEqualsComparer () const -> KeyEqualsCompareFunctionType
+    {
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetKeyEqualsComparer ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Iterable<KEY_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Keys () const
@@ -130,7 +179,7 @@ namespace Stroika::Foundation::Containers {
         return r.has_value () ? *r : defaultValue;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline MAPPED_VALUE_TYPE Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator[] (ArgByValueType<key_type> key) const
+    inline auto Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator[] (ArgByValueType<key_type> key) const -> add_const_t<mapped_type>
     {
         return *Lookup (key);
     }
@@ -143,51 +192,60 @@ namespace Stroika::Foundation::Containers {
     template <typename VALUE_EQUALS_COMPARER>
     inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::ContainsMappedValue (ArgByValueType<mapped_type> v, const VALUE_EQUALS_COMPARER& valueEqualsComparer) const
     {
-        for (MAPPED_VALUE_TYPE t : *this) {
-            if (valueEqualsComparer (t.fValue, v)) {
-                return true;
+        return this->Find ([&valueEqualsComparer, &v] (const auto& t) { return valueEqualsComparer (t.fValue, v); }) != nullptr;
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode)
+    {
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (key, newElt, addReplaceMode);
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Add (ArgByValueType<value_type> p, AddReplaceMode addReplaceMode)
+    {
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue, addReplaceMode);
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename ITERATOR_OF_ADDABLE>
+    unsigned int Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end, AddReplaceMode addReplaceMode)
+    {
+        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+        unsigned int cntAdded{};
+        for (auto i = start; i != end; ++i) {
+            if (Add (*i, addReplaceMode)) {
+                ++cntAdded;
             }
         }
-        return false;
+        return cntAdded;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt)
+    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    inline unsigned int Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERABLE_OF_ADDABLE&& items, AddReplaceMode addReplaceMode)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (key, newElt);
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p)
-    {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue);
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename COPY_FROM_ITERATOR_KEYVALUE>
-    void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
-    {
-        for (auto i = start; i != end; ++i) {
-            Add (*i);
+        if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, Iterable<value_type>*>) {
+            // very rare corner case
+            if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[UNLIKELY_ATTR]] {
+                vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
+                return AddAll (std::begin (copy), std::end (copy), addReplaceMode);
+            }
         }
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>*>
-    inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (const CONTAINER_OF_KEYVALUE& items)
-    {
-        /*
-         *  Note - unlike other containers - we don't need to check for this != &s because if we
-         *  attempt to add items that already exist, it would do nothing to our iteration
-         *  and therefore not lead to an infinite loop.
-         */
-        AddAll (std::begin (items), std::end (items));
+        return AddAll (std::begin (items), std::end (items), addReplaceMode);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Remove (ArgByValueType<key_type> key)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (key);
+        Verify (_SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveIf (key)); // use RemoveIf () if key may not exist
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Remove (const Iterator<value_type>& i)
+    inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
+        Require (not i.Done ());
+        auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
+        writerRep->Remove (patchedIterator, nextI);
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveIf (ArgByValueType<key_type> key)
+    {
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveIf (key);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll ()
@@ -198,40 +256,97 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_ADDABLE>
-    void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (const CONTAINER_OF_ADDABLE& items)
+    template <typename ITERABLE_OF_KEY_OR_ADDABLE>
+    size_t Association<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (const ITERABLE_OF_KEY_OR_ADDABLE& items)
     {
-        for (auto i : items) {
-            Remove (i.first);
+        using ITEM_T = ExtractValueType_t<ITERABLE_OF_KEY_OR_ADDABLE>;
+        static_assert (is_convertible_v<ITEM_T, key_type> or is_convertible_v<ITEM_T, pair<key_type, mapped_type>> or is_convertible_v<ITEM_T, Common::KeyValuePair<key_type, mapped_type>>);
+        if (this == &items) { // avoid modifying container while iterating over it
+            size_t result = this->size ();
+            RemoveAll ();
+            return result;
+        }
+        else {
+            return RemoveAll (begin (items), end (items));
         }
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename COPY_FROM_ITERATOR_KEY_T>
-    void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+    template <typename ITERATOR_OF_KEY_OR_ADDABLE>
+    inline size_t Association<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (ITERATOR_OF_KEY_OR_ADDABLE start, ITERATOR_OF_KEY_OR_ADDABLE end)
     {
+        using ITEM_T = ExtractValueType_t<ITERATOR_OF_KEY_OR_ADDABLE>;
+        static_assert (is_convertible_v<ITEM_T, key_type> or is_convertible_v<ITEM_T, pair<key_type, mapped_type>> or is_convertible_v<ITEM_T, Common::KeyValuePair<key_type, mapped_type>>);
+        size_t cnt{};
         for (auto i = start; i != end; ++i) {
-            Remove (i->first);
-        }
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_KEY_TYPE>
-    void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::RetainAll (const CONTAINER_OF_KEY_TYPE& items)
-    {
-        // @see https://stroika.atlassian.net/browse/STK-539
-#if 0
-        Association<KEY_TYPE, MAPPED_VALUE_TYPE>   result = Association<KEY_TYPE, MAPPED_VALUE_TYPE>{ _SafeReadRepAccessor<_IRep> { this }._ConstGetRep ().CloneEmpty () };
-        for (auto key2Keep : items) {
-            if (auto l = this->Lookup (key2Keep)) {
-                result.Add (key2Keep, *l);
+            if constexpr (is_convertible_v<ITEM_T, key_type>) {
+                if (RemoveIf (*i)) {
+                    ++cnt;
+                }
+            }
+            else if constexpr (is_convertible_v<ITEM_T, pair<key_type, mapped_type>>) {
+                if (RemoveIf (i->first)) {
+                    ++cnt;
+                }
+            }
+            else if constexpr (is_convertible_v<ITEM_T, Common::KeyValuePair<key_type, mapped_type>>) {
+                if (RemoveIf (i->fKey)) {
+                    ++cnt;
+                }
+            }
+            else {
+                AssertNotReached ();
             }
         }
-        *this = result;
+        return cnt;
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>, PREDICATE> ()>*>
+    size_t Association<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (const PREDICATE& p)
+    {
+        size_t nRemoved{};
+        for (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> i = this->begin (); i != this->end ();) {
+            if (p (*i)) {
+                Remove (i, &i);
+                ++nRemoved;
+            }
+            else {
+                ++i;
+            }
+        }
+        return nRemoved;
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI)
+    {
+        Require (not i.Done ());
+        auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
+        writerRep->Update (patchedIterator, newValue, nextI);
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename ITERABLE_OF_KEY_TYPE>
+    void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::RetainAll (const ITERABLE_OF_KEY_TYPE& items)
+    {
+        static_assert (is_convertible_v<ExtractValueType_t<ITERABLE_OF_KEY_TYPE>, key_type>);
+        // @see https://stroika.atlassian.net/browse/STK-539
+#if 0
+                Association<KEY_TYPE, MAPPED_VALUE_TYPE>   result = Association<KEY_TYPE, MAPPED_VALUE_TYPE> { _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().CloneEmpty () };
+                for (auto key2Keep : items) {
+                    if (auto l = this->Lookup (key2Keep)) {
+                        result.Add (key2Keep, *l);
+                    }
+                }
+                *this = result;
 #else
         // cannot easily use STL::less because our Association class only requires KeyEqualsCompareFunctionType - SO - should use Stroika Set<> But don't want cross-dependencies if not needed
         set<KEY_TYPE> tmp (items.begin (), items.end ()); // @todo - weak implementation because of 'comparison' function, and performance (if items already a set)
-        for (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> i = this->begin (); i != this->end (); ++i) {
+        for (Iterator<value_type> i = this->begin (); i != this->end ();) {
             if (tmp.find (i->fKey) == tmp.end ()) {
-                Remove (i);
+                [[maybe_unused]] size_t sz = this->size ();
+                i                          = this->erase (i);
+                Assert (this->size () == sz - 1u);
+            }
+            else {
+                ++i;
             }
         }
 #endif
@@ -242,7 +357,7 @@ namespace Stroika::Foundation::Containers {
         return inherited::Where ([=] (const ArgByValueType<KeyValuePair<key_type, mapped_type>>& kvp) { return includeIfTrue (kvp.fKey); }, ArchetypeContainerType{});
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    auto Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Where (const function<bool (ArgByValueType<KeyValuePair<key_type, mapped_type>>)>& includeIfTrue) const -> ArchetypeContainerType
+    auto Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const -> ArchetypeContainerType
     {
         return inherited::Where (includeIfTrue, ArchetypeContainerType{});
     }
@@ -256,7 +371,7 @@ namespace Stroika::Foundation::Containers {
     auto Association<KEY_TYPE, MAPPED_VALUE_TYPE>::WithKeys (const initializer_list<key_type>& includeKeys) const -> ArchetypeContainerType
     {
         Iterable<key_type> ik{includeKeys};
-        return inherited::Where ([=] (const ArgByValueType<KeyValuePair<key_type, mapped_type>>& kvp) { return ik.Contains (kvp.fKey); }, ArchetypeContainerType{});
+        return inherited::Where ([=] (const ArgByValueType<value_type>& kvp) { return ik.Contains (kvp.fKey); }, ArchetypeContainerType{});
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename CONTAINER_OF_Key_T>
@@ -266,12 +381,12 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename CONTAINER_OF_Key_T>
-    CONTAINER_OF_Key_T Association<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ (enable_if_t<is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesInsertPair) const
+    CONTAINER_OF_Key_T Association<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ ([[maybe_unused]] enable_if_t<is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesInsertPair) const
     {
         CONTAINER_OF_Key_T result;
-        for (auto i : *this) {
+        for (const auto& i : *this) {
             // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
-            result.insert (result.end (), pair<KEY_TYPE, MAPPED_VALUE_TYPE> (i.fKey, i.fValue));
+            result.insert (result.end (), pair<KEY_TYPE, MAPPED_VALUE_TYPE>{i.fKey, i.fValue});
         }
         return result;
     }
@@ -280,9 +395,9 @@ namespace Stroika::Foundation::Containers {
     CONTAINER_OF_Key_T Association<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ (enable_if_t<!is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int>) const
     {
         CONTAINER_OF_Key_T result;
-        for (auto i : *this) {
+        for (const auto& i : *this) {
             // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
-            result.insert (result.end (), KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE> (i.fKey, i.fValue));
+            result.insert (result.end (), value_type{i.fKey, i.fValue});
         }
         return result;
     }
@@ -297,9 +412,11 @@ namespace Stroika::Foundation::Containers {
         Remove (key);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::erase (const Iterator<value_type>& i)
+    inline auto Association<KEY_TYPE, MAPPED_VALUE_TYPE>::erase (const Iterator<value_type>& i) -> Iterator<value_type>
     {
-        Remove (i);
+        Iterator<value_type> nextI{nullptr};
+        Remove (i, &nextI);
+        return nextI;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::clear ()
@@ -307,53 +424,70 @@ namespace Stroika::Foundation::Containers {
         RemoveAll ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_ADDABLE>
-    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+ (const CONTAINER_OF_ADDABLE& items) const
+    template <typename ITERABLE_OF_ADDABLE>
+    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+ (const ITERABLE_OF_ADDABLE& items) const
     {
         Association<KEY_TYPE, MAPPED_VALUE_TYPE> result = *this;
         result.AddAll (items);
         return result;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_ADDABLE>
-    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>& Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+= (const CONTAINER_OF_ADDABLE& items)
+    template <typename ITERABLE_OF_ADDABLE>
+    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>& Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+= (const ITERABLE_OF_ADDABLE& items)
     {
         AddAll (items);
         return *this;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_ADDABLE>
-    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>& Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator-= (const CONTAINER_OF_ADDABLE& items)
+    template <typename ITERABLE_OF_KEY_OR_ADDABLE>
+    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>& Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator-= (const ITERABLE_OF_KEY_OR_ADDABLE& items)
     {
         RemoveAll (items);
         return *this;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    auto Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<_IRep*, Iterator<value_type>>
+    {
+        Require (not i.Done ());
+        using element_type                   = typename inherited::_SharedByValueRepType::element_type;
+        Iterator<value_type> patchedIterator = i;
+        element_type*        writableRep     = this->_fRep.rwget (
+            [&] (const element_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {
+                return Debug::UncheckedDynamicCast<const _IRep&> (prevRepPtr).CloneAndPatchIterator (&patchedIterator);
+            });
+        AssertNotNull (writableRep);
+        return make_tuple (Debug::UncheckedDynamicCast<_IRep*> (writableRep), patchedIterator);
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_AssertRepValidType () const
     {
 #if qDebug
-        _SafeReadRepAccessor<_IRep>{this};
+        [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
 #endif
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator== (const Association& rhs) const
+    {
+        return EqualsComparer<>{}(*this, rhs);
+    }
+#endif
 
     /*
-    ********************************************************************************
-    ************** Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep *****************
-    ********************************************************************************
-    */
+     ********************************************************************************
+     ****************** Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep *****************
+     ********************************************************************************
+     */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     Iterable<KEY_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep::_Keys_Reference_Implementation () const
     {
         struct MyIterable_ : Iterable<KEY_TYPE> {
             using MyAssociation_ = Association<KEY_TYPE, MAPPED_VALUE_TYPE>;
             struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-                using inherited             = typename Traversal::IterableFromIterator<KEY_TYPE>::_Rep;
                 using _IterableRepSharedPtr = typename Iterable<KEY_TYPE>::_IterableRepSharedPtr;
-
                 MyAssociation_ fAssociation_;
                 MyIterableRep_ (const MyAssociation_& map)
-                    : inherited ()
-                    , fAssociation_ (map)
+                    : fAssociation_{map}
                 {
                 }
                 virtual Iterator<KEY_TYPE> MakeIterator () const override
@@ -361,7 +495,7 @@ namespace Stroika::Foundation::Containers {
                     auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fAssociation_.MakeIterator ());
                     auto getNext   = [myContext] () -> optional<KEY_TYPE> {
                         if (myContext->Done ()) {
-                            return optional<KEY_TYPE> ();
+                            return nullopt;
                         }
                         else {
                             auto result = (*myContext)->fKey;
@@ -377,7 +511,7 @@ namespace Stroika::Foundation::Containers {
                 }
             };
             MyIterable_ (const MyAssociation_& m)
-                : Iterable<KEY_TYPE> (Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (m))
+                : Iterable<KEY_TYPE>{Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (m)}
             {
             }
         };
@@ -386,7 +520,7 @@ namespace Stroika::Foundation::Containers {
 #else
         auto rep = const_cast<typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep*> (this)->shared_from_this ();
 #endif
-        return MyIterable_ (Association<KEY_TYPE, MAPPED_VALUE_TYPE> (rep));
+        return MyIterable_{Association<KEY_TYPE, MAPPED_VALUE_TYPE> (rep)};
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     Iterable<MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep::_Values_Reference_Implementation () const
@@ -394,12 +528,10 @@ namespace Stroika::Foundation::Containers {
         struct MyIterable_ : Iterable<MAPPED_VALUE_TYPE> {
             using MyAssociation_ = Association<KEY_TYPE, MAPPED_VALUE_TYPE>;
             struct MyIterableRep_ : Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-                using inherited             = typename Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep;
                 using _IterableRepSharedPtr = typename Iterable<MAPPED_VALUE_TYPE>::_IterableRepSharedPtr;
                 MyAssociation_ fAssociation_;
                 MyIterableRep_ (const MyAssociation_& map)
-                    : inherited ()
-                    , fAssociation_ (map)
+                    : fAssociation_{map}
                 {
                 }
                 virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator () const override
@@ -407,7 +539,7 @@ namespace Stroika::Foundation::Containers {
                     auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fAssociation_.MakeIterator ());
                     auto getNext   = [myContext] () -> optional<MAPPED_VALUE_TYPE> {
                         if (myContext->Done ()) {
-                            return optional<MAPPED_VALUE_TYPE> ();
+                            return nullopt;
                         }
                         else {
                             auto result = (*myContext)->fValue;
@@ -419,12 +551,12 @@ namespace Stroika::Foundation::Containers {
                 }
                 virtual _IterableRepSharedPtr Clone () const override
                 {
-                    // For now - ignore forIterableEnvelope
                     return Iterable<MAPPED_VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
                 }
             };
+            // @todo debug if/why issue with using uninform initializaiton here - fails to compile on vs2k17 and gcc ASAN giving erorrs that maybe related???
             MyIterable_ (const MyAssociation_& m)
-                : Iterable<MAPPED_VALUE_TYPE> (Iterable<MAPPED_VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (m))
+                : Iterable<MAPPED_VALUE_TYPE>{Iterable<MAPPED_VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (m)}
             {
             }
         };
@@ -433,18 +565,18 @@ namespace Stroika::Foundation::Containers {
 #else
         auto rep = const_cast<typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep*> (this)->shared_from_this ();
 #endif
-        return MyIterable_ (Association<KEY_TYPE, MAPPED_VALUE_TYPE> (rep));
+        return MyIterable_{Association<KEY_TYPE, MAPPED_VALUE_TYPE>{rep}};
     }
 
     /*
      ********************************************************************************
-     ********** Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer ************
+     ********** Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer ****************
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename VALUE_EQUALS_COMPARER>
     constexpr Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer<VALUE_EQUALS_COMPARER>::EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer)
-        : fValueEqualsComparer (valueEqualsComparer)
+        : fValueEqualsComparer{valueEqualsComparer}
     {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -465,7 +597,7 @@ namespace Stroika::Foundation::Containers {
             return false;
         }
         /*
-         *  Two Mappings compare equal, if they have the same domain, and map each element of that domain to the same range.
+         *  Two Associations compare equal, if they have the same domain, and map each element of that domain to the same range.
          *  They need not be in the same order to compare equals. Still - they often are, and if they are, this algorithm is faster.
          *  If they miss, we need to fall back to a slower strategy.
          */
@@ -475,8 +607,12 @@ namespace Stroika::Foundation::Containers {
         while (not li.Done ()) {
             Assert (not ri.Done ()); // cuz move at same time and same size
             bool keysEqual = keyEqualsComparer (li->fKey, ri->fKey);
-            if (keysEqual and fValueEqualsComparer (li->fValue, ri->fValue)) {
-                // then this element matches
+            Require (keysEqual == rhs.GetKeyEqualsComparer () (li->fKey, ri->fKey)); // if fails, cuz rhs/lhs keys equals comparers disagree
+            if (keysEqual) {
+                // then we are doing in same order so can do quick impl
+                if (not fValueEqualsComparer (li->fValue, ri->fValue)) {
+                    return false;
+                }
             }
             else {
                 // check if li maps to right value in rhs
@@ -485,10 +621,8 @@ namespace Stroika::Foundation::Containers {
                     return false;
                 }
                 // if the keys were different, we must check the reverse direction too
-                if (not keysEqual) {
-                    if (not lhsR._ConstGetRep ().Lookup (ri->fKey, &o) or not fValueEqualsComparer (*o, ri->fValue)) {
-                        return false;
-                    }
+                if (not lhsR._ConstGetRep ().Lookup (ri->fKey, &o) or not fValueEqualsComparer (*o, ri->fValue)) {
+                    return false;
                 }
             }
             // if we got this far, all compared OK so far, so keep going
@@ -499,11 +633,12 @@ namespace Stroika::Foundation::Containers {
         return true;
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
-    ********************************************************************************
-    ************************** Association operators *******************************
-    ********************************************************************************
-    */
+     ********************************************************************************
+     ******************** Association comparison operators ******************************
+     ********************************************************************************
+     */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline bool operator== (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs)
     {
@@ -512,8 +647,10 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline bool operator!= (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs)
     {
-        return not typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::template EqualsComparer<>{}(lhs, rhs);
+        return not(lhs == rhs);
     }
+#endif
 
 }
+
 #endif /* _Stroika_Foundation_Containers_Association_inl_ */
