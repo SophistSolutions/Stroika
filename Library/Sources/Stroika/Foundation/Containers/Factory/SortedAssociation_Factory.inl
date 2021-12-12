@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Containers::Factory {
 #endif
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
     inline SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::SortedAssociation_Factory (const KEY_INORDER_COMPARER& keyInOrderComparer)
-        : fInOrderComparer_ (keyInOrderComparer)
+        : fInOrderComparer_{keyInOrderComparer}
     {
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
     inline SortedAssociation<KEY_TYPE, VALUE_TYPE> SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::Default_ (const KEY_INORDER_COMPARER& inOrderComparer)
     {
-        return Concrete::SortedAssociation_stdmap<KEY_TYPE, VALUE_TYPE>{inOrderComparer};
+        return Concrete::SortedAssociation_stdmultimap<KEY_TYPE, VALUE_TYPE>{inOrderComparer};
     }
 
 }

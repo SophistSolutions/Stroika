@@ -141,24 +141,13 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return true;
             }
         }
-        virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt, AddReplaceMode addReplaceMode) override
+        virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             fData_.Invariant ();
-            bool result{};
-            switch (addReplaceMode) {
-                case AddReplaceMode::eAddReplaces:
-                    result = fData_.insert_or_assign (key, newElt).second; // according to https://en.cppreference.com/w/cpp/container/map/insert_or_assign - no iterator references are invalidated
-                    break;
-                case AddReplaceMode::eAddIfMissing:
-                    result = fData_.insert ({key, newElt}).second; // according to https://en.cppreference.com/w/cpp/container/map/insert no iterator references are invalidated
-                    break;
-                default:
-                    AssertNotReached ();
-            }
+            (void)fData_.insert ({key, newElt});
             fChangeCounts_.PerformedChange ();
             fData_.Invariant ();
-            return result;
         }
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {

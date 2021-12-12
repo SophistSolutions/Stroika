@@ -145,26 +145,11 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return false;
         }
-        virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt, AddReplaceMode addReplaceMode) override
+        virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
-                if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
-                    switch (addReplaceMode) {
-                        case AddReplaceMode::eAddReplaces:
-                            fData_[it.CurrentIndex ()].fValue = newElt;
-                            break;
-                        case AddReplaceMode::eAddIfMissing:
-                            break;
-                        default:
-                            AssertNotReached ();
-                    }
-                    return false;
-                }
-            }
             fData_.InsertAt (fData_.GetLength (), value_type{key, newElt});
             fChangeCounts_.PerformedChange ();
-            return true;
         }
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {

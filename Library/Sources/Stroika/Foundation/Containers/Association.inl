@@ -195,40 +195,39 @@ namespace Stroika::Foundation::Containers {
         return this->Find ([&valueEqualsComparer, &v] (const auto& t) { return valueEqualsComparer (t.fValue, v); }) != nullptr;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode)
+    inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt)
     {
-        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (key, newElt, addReplaceMode);
+        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (key, newElt);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Add (ArgByValueType<value_type> p, AddReplaceMode addReplaceMode)
+    inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Add (ArgByValueType<value_type> p)
     {
-        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue, addReplaceMode);
+        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename ITERATOR_OF_ADDABLE>
-    unsigned int Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end, AddReplaceMode addReplaceMode)
+    unsigned int Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         unsigned int cntAdded{};
         for (auto i = start; i != end; ++i) {
-            if (Add (*i, addReplaceMode)) {
-                ++cntAdded;
-            }
+            Add (*i);
+            ++cntAdded;
         }
         return cntAdded;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
-    inline unsigned int Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERABLE_OF_ADDABLE&& items, AddReplaceMode addReplaceMode)
+    inline unsigned int Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
         if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, Iterable<value_type>*>) {
             // very rare corner case
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[UNLIKELY_ATTR]] {
                 vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
-                return AddAll (std::begin (copy), std::end (copy), addReplaceMode);
+                return AddAll (std::begin (copy), std::end (copy));
             }
         }
-        return AddAll (std::begin (items), std::end (items), addReplaceMode);
+        return AddAll (std::begin (items), std::end (items));
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Remove (ArgByValueType<key_type> key)
@@ -338,7 +337,7 @@ namespace Stroika::Foundation::Containers {
                 *this = result;
 #else
         // cannot easily use STL::less because our Association class only requires KeyEqualsCompareFunctionType - SO - should use Stroika Set<> But don't want cross-dependencies if not needed
-        set<KEY_TYPE> tmp (items.begin (), items.end ()); // @todo - weak implementation because of 'comparison' function, and performance (if items already a set)
+        set<KEY_TYPE> tmp{items.begin (), items.end ()}; // @todo - weak implementation because of 'comparison' function, and performance (if items already a set)
         for (Iterator<value_type> i = this->begin (); i != this->end ();) {
             if (tmp.find (i->fKey) == tmp.end ()) {
                 [[maybe_unused]] size_t sz = this->size ();

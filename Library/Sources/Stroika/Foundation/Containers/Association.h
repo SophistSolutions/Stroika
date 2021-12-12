@@ -40,14 +40,6 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterator;
 
     /**
-     *  @todo consider moving this elesewhere in containers code (Containers/Common.h) as this maybe useful elsewhere
-     */
-    enum class AddReplaceMode {
-        eAddIfMissing,
-        eAddReplaces
-    };
-
-    /**
      *  \brief An Assocation pairs key values with (possibly multiple or none) mapped_value values. Like Mapping<>, but allowing multiple items associated with 'key'
      * 
      *      Association which allows for the association of two elements: a key and
@@ -335,12 +327,6 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Add the association between key and newElt. 
          *
-         *  If key was already associated with something, consult argument addReplaceMode (defaults to AddReplaceMode::eAddReplaces).
-         *  if 'replaces' then replace, and if 'addif' then do nothing on Add ()
-         *
-         *  \returns bool: The (generally ignored) return value boolean indicates if a new item was added (so size of iterable increased).
-         *  This value returned is FALSE for the case of when the value remains unchanged or even if the value is updated (overwriting the previous association).
-         *
          *  Also - we guarantee that even if the association is different, if the key has not changed,
          *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
          *
@@ -357,8 +343,8 @@ namespace Stroika::Foundation::Containers {
          *  \note Similar to Set<>::AddIf() - but here there is the ambiguity about whether to change what is mapped to (which we do differntly
          *        between Add and AddIf) and no such issue exists with Set<>::AddIf. But return true if they make a change.
          */
-        nonvirtual bool Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
-        nonvirtual bool Add (ArgByValueType<value_type> p, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
+        nonvirtual void Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt);
+        nonvirtual void Add (ArgByValueType<value_type> p);
 
     public:
         /**
@@ -372,9 +358,9 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
-        nonvirtual unsigned int AddAll (ITERABLE_OF_ADDABLE&& items, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
+        nonvirtual unsigned int AddAll (ITERABLE_OF_ADDABLE&& items);
         template <typename ITERATOR_OF_ADDABLE>
-        nonvirtual unsigned int AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
+        nonvirtual unsigned int AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
@@ -636,9 +622,8 @@ namespace Stroika::Foundation::Containers {
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<mapped_type>* item) const = 0;
-        // return true if NEW Association added (container enlarged) - if replaceExistingAssociation we unconditionally update but can still return false
-        virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode) = 0;
-        virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key)                                                               = 0;
+        virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt)   = 0;
+        virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key)                                  = 0;
         // if nextI is non-null, its filled in with the next item in iteration order after i (has been removed)
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                       = 0;
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) = 0;
