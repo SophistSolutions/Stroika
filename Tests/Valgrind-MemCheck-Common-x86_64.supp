@@ -27,3 +27,9 @@
    fun:value_or<bool const&>
    fun:_ZN7Stroika10Foundation10Characters15FloatConversion*
 }
+{
+   https://stroika.atlassian.net/browse/STK-755
+   Memcheck:Addr32
+   fun:__wmemcmp_avx2_movbe
+   fun:_ZNSt11char_traitsIwE7compareEPKwS2_m
+}
