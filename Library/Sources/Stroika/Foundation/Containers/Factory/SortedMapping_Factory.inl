@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Containers::Factory {
 #endif
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
     inline SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::SortedMapping_Factory (const KEY_INORDER_COMPARER& keyInOrderComparer)
-        : fInOrderComparer_ (keyInOrderComparer)
+        : fInOrderComparer_{keyInOrderComparer}
     {
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
