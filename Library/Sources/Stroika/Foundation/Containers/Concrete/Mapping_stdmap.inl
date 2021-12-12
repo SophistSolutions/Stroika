@@ -151,10 +151,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             bool result{};
             switch (addReplaceMode) {
                 case AddReplaceMode::eAddReplaces:
-                    result = fData_.insert_or_assign (key, newElt).second; // according to https://en.cppreference.com/w/cpp/container/map/insert_or_assign - no iterator references are invalidated
+                    result = fData_.insert_or_assign (key, newElt).second;
                     break;
                 case AddReplaceMode::eAddIfMissing:
-                    result = fData_.insert ({key, newElt}).second; // according to https://en.cppreference.com/w/cpp/container/map/insert no iterator references are invalidated
+                    result = fData_.insert ({key, newElt}).second;
                     break;
                 default:
                     AssertNotReached ();
