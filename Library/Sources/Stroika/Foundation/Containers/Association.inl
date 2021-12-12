@@ -131,27 +131,31 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().MappedValues ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline optional<MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key) const
+    inline Traversal::Iterable<MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key) const
     {
         optional<MAPPED_VALUE_TYPE> r;
         [[maybe_unused]] bool       result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
         Ensure (result == r.has_value ());
-        return r;
+        return r ? Traversal::Iterable<MAPPED_VALUE_TYPE>{*r} : Traversal::Iterable<MAPPED_VALUE_TYPE>{};
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename THROW_IF_MISSING>
     inline MAPPED_VALUE_TYPE Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupOneChecked (ArgByValueType<key_type> key, const THROW_IF_MISSING& throwIfMissing) const
     {
-        if (optional<MAPPED_VALUE_TYPE> r{Lookup (key)}) [[LIKELY_ATTR]] {
-            return *r;
+        auto tmp = Lookup (key);
+        if (auto i = tmp.begin ()) [[LIKELY_ATTR]] {
+            return *i;
         }
         Execution::Throw (throwIfMissing);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline MAPPED_VALUE_TYPE Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupOneValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue) const
     {
-        optional<MAPPED_VALUE_TYPE> r{Lookup (key)};
-        return r.has_value () ? *r : defaultValue;
+        auto tmp = Lookup (key);
+        if (auto i = tmp.begin ()) [[LIKELY_ATTR]] {
+            return *i;
+        }
+        return defaultValue;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::ContainsKey (ArgByValueType<key_type> key) const
@@ -554,6 +558,7 @@ namespace Stroika::Foundation::Containers {
     {
         /*
          *    @todo   THIS CODE IS TOO COMPLICATED, and COULD USE CLEANUP/CODE REVIEW - LGP 2014-06-11
+         *      THIS CODE IS WRONG FOR ASSOCIATION - SO DO SOME WORK TO FIX
          */
         _SafeReadRepAccessor<_IRep> lhsR{&lhs};
         _SafeReadRepAccessor<_IRep> rhsR{&rhs};
@@ -585,12 +590,15 @@ namespace Stroika::Foundation::Containers {
             }
             else {
                 // check if li maps to right value in rhs
-                auto o = rhs.Lookup (li->fKey);
-                if (not o.has_value () or not fValueEqualsComparer (*o, li->fValue)) {
+                Iterable<mapped_type> o = rhs.Lookup (li->fKey);
+                Iterator<mapped_type> i = o.begin ();
+                if (i != o.end () or not fValueEqualsComparer (*i, li->fValue)) {
                     return false;
                 }
                 // if the keys were different, we must check the reverse direction too
-                if (not lhsR._ConstGetRep ().Lookup (ri->fKey, &o) or not fValueEqualsComparer (*o, ri->fValue)) {
+                o = lhs.Lookup (ri->fKey);
+                i = o.begin ();
+                if (i != o.end () or not fValueEqualsComparer (*i, ri->fValue)) {
                     return false;
                 }
             }

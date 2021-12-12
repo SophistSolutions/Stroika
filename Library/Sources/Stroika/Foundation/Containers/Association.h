@@ -256,10 +256,9 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief Return an (optional) Iterable<mapped_type> of all the associated items. This iterable is a snapshot at the time of call (but maybe lazy COW copied snapshot so still cheap)
+         *  \brief Return an Iterable<mapped_type> of all the associated items (can be empty if none). This iterable is a snapshot at the time of call (but maybe lazy COW copied snapshot so still cheap)
          */
-        // STILL TODO REDO THIS LARGELY
-        nonvirtual optional<mapped_type> Lookup (ArgByValueType<key_type> key) const;
+        nonvirtual Traversal::Iterable<mapped_type> Lookup (ArgByValueType<key_type> key) const;
 
     public:
         /**
