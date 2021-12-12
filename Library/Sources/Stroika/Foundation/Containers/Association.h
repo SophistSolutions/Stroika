@@ -256,15 +256,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Note - as since Lookup/1 returns an optional<T> - it can be used very easily to provide
-         *  a default value on Lookup (so for case where not present) - as in:
-         *      returm m.Lookup (key).Value (putDefaultValueHere);
-         *
-         *  Note - for both overloads taking an item pointer, the pointer may be nullptr (in which case not assigned to).
-         *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
-         *      \req    Ensure (item == nullptr or returnValue == item->has_value());
-         *
-         *  \note   Alias - Lookup (key, mapped_type* value) - is equivilent to .Net TryGetValue ()
+         *  \brief Return an (optional) Iterable<mapped_type> of all the associated items. This iterable is a snapshot at the time of call (but maybe lazy COW copied snapshot so still cheap)
          */
         nonvirtual optional<mapped_type> Lookup (ArgByValueType<key_type> key) const;
         nonvirtual bool                  Lookup (ArgByValueType<key_type> key, optional<mapped_type>* item) const;
@@ -273,40 +265,22 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \brief Lookup and return the sole value with this key, and throw otherwise
+         * 
          *  \note Alias LookupOrException
          */
         template <typename THROW_IF_MISSING>
-        nonvirtual mapped_type LookupChecked (ArgByValueType<key_type> key, const THROW_IF_MISSING& throwIfMissing) const;
+        nonvirtual mapped_type LookupOneChecked (ArgByValueType<key_type> key, const THROW_IF_MISSING& throwIfMissing) const;
 
     public:
         /**
+         *  \brief Lookup and return the first (arbitrary) value with this key, and otherwise return argument value as default.
+         * 
          *  Always safe to call. If result of Lookup () !has_value, returns argument 'default' or 'sentinal' value.
          *
-         *  \note Alias LookupOrDefault
+         *  \note Alias LookupOneOrDefault
          */
-        nonvirtual mapped_type LookupValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue = mapped_type{}) const;
-
-    public:
-        /**
-         *  \req ContainsKey (key);
-         *
-         *  \note   Design Note:
-         *      Defined operator[](KEY_TYPE) const - to return const MAPPED_VALUE_TYPE, instead of optional<MAPPED_VALUE_TYPE> because
-         *      this adds no value - you can always use Lookup or LookupValue. The reason to use operator[] is
-         *      as convenient syntactic sugar. But if you have to check (the elt not necessarily present) - then you
-         *      may as well use Lookup () - cuz the code's going to look ugly anyhow.
-         *
-         *      Defined operator[](KEY_TYPE) const - to return MAPPED_VALUE_TYPE instead of MAPPED_VALUE_TYPE& because we then couldn't control
-         *      the lifetime of that reference, and it would be unsafe as the underlying object was changed.
-         *
-         *      And therefore we return CONST of that type so that code like m["xx"].a = 3 won't compile (and wont just assign to a temporary that disappears
-         *      leading to confusion).
-         *
-         *  \note In the future, it may make sense to have operator[] return a PROXY OBJECT, so that it MIGHT be assignable. But that wouldn't work with
-         *        cases like Association<String,OBJ> where you wanted to access OBJs fields as in m["xx"].a = 3
-         *
-         */
-        nonvirtual add_const_t<mapped_type> operator[] (ArgByValueType<key_type> key) const;
+        nonvirtual mapped_type LookupOneValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue = mapped_type{}) const;
 
     public:
         /**

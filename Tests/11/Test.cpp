@@ -159,9 +159,9 @@ namespace {
             {
                 Association<int, int> m;
                 m.Add (1, 2);
+#if 0
                 VerifyTestResult (m[1] == 2);
 
-#if 0
                 m.Add (1, 3);
                 VerifyTestResult (m[1] == 3);
 #endif
