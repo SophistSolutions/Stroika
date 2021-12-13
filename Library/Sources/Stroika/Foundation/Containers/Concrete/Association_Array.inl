@@ -129,21 +129,16 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return this->_Values_Reference_Implementation ();
         }
-        virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<MAPPED_VALUE_TYPE>* item) const override
+        virtual Iterable<mapped_type> Lookup (ArgByValueType<KEY_TYPE> key) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            vector<mapped_type>                                         result;
             for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
                 if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
-                    if (item != nullptr) {
-                        *item = it.Current ().fValue;
-                    }
-                    return true;
+                    result.push_back (it.Current ().fValue);
                 }
             }
-            if (item != nullptr) {
-                *item = nullopt;
-            }
-            return false;
+            return Iterable<mapped_type>{move (result)};
         }
         virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
         {

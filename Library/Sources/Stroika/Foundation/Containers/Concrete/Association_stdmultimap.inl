@@ -127,22 +127,23 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return this->_Values_Reference_Implementation ();
         }
-        virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<MAPPED_VALUE_TYPE>* item) const override
+        virtual Iterable<mapped_type> Lookup (ArgByValueType<KEY_TYPE> key) const override
         {
+            // @todo consider doing custom class here, or using CreateGenerator
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             auto                                                        i = fData_.find (key);
-            if (i == fData_.end ()) {
-                if (item != nullptr) {
-                    *item = nullopt;
+            vector<mapped_type>                                         result;
+            if (i != fData_.end ()) {
+                Assert (GetKeyEqualsComparer () (key, i->first));
+                result.push_back (i->second);
+                // the items in a multimap are all in order so we know the current i->key is not less
+                Assert (not fData_.key_comp () (key, i->first));
+                Assert (not fData_.key_comp () (i->first, key));
+                for (++i; i != fData_.end () and not fData_.key_comp () (key, i->first); ++i) {
+                    result.push_back (i->second);
                 }
-                return false;
             }
-            else {
-                if (item != nullptr) {
-                    *item = i->second;
-                }
-                return true;
-            }
+            return Iterable<mapped_type>{move (result)};
         }
         virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
         {

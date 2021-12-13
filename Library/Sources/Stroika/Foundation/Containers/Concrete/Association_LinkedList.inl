@@ -119,28 +119,23 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return this->_Keys_Reference_Implementation ();
         }
-        virtual Iterable<MAPPED_VALUE_TYPE> MappedValues () const override
+        virtual Iterable<mapped_type> MappedValues () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return this->_Values_Reference_Implementation ();
         }
-        virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<MAPPED_VALUE_TYPE>* item) const override
+        virtual Iterable<mapped_type> Lookup (ArgByValueType<KEY_TYPE> key) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            for (typename DataStructures::LinkedList<value_type>::ForwardIterator it (&fData_); not it.Done (); ++it) {
+            vector<mapped_type>                                         result;
+            for (typename DataStructureImplType_::ForwardIterator it (&fData_); not it.Done (); ++it) {
                 if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
-                    if (item != nullptr) {
-                        *item = it.Current ().fValue;
-                    }
-                    return true;
+                    result.push_back (it.Current ().fValue);
                 }
             }
-            if (item != nullptr) {
-                *item = nullopt;
-            }
-            return false;
+            return Iterable<mapped_type>{move (result)};
         }
-        virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
+        virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             fData_.Prepend (value_type{key, newElt}); // cheaper to prepend, and order doesn't matter
@@ -198,7 +193,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     *************** Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE> ************
+     ************* Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE> **************
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>

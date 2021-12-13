@@ -113,13 +113,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  like std::map<>::key_type
+         *  like std::multimap<>::key_type
          */
         using key_type = KEY_TYPE;
 
     public:
         /**
-         *  like std::map<>::mapped_type
+         *  like std::multimap<>::mapped_type
          */
         using mapped_type = MAPPED_VALUE_TYPE;
 
@@ -262,7 +262,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief Lookup and return the sole value with this key, and throw otherwise
+         *  \brief Lookup and return the first (maybe arbitrarily chosen which is first) value with this key, and throw if there are none.
          * 
          *  \note Alias LookupOrException
          */
@@ -271,9 +271,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief Lookup and return the first (arbitrary) value with this key, and otherwise return argument value as default.
-         * 
-         *  Always safe to call. If result of Lookup () !has_value, returns argument 'default' or 'sentinal' value.
+         *  \brief Lookup and return the first (maybe arbitrarily chosen which is first) value with this key, and otherwise return argument value as default.
          *
          *  \note Alias LookupOneOrDefault
          */
@@ -287,7 +285,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Likely inefficeint for a map, but perhaps helpful. Walks entire list of entires
+         *  Likely inefficeint, but perhaps helpful. Walks entire list of entires
          *  and applies VALUE_EQUALS_COMPARER (defaults to operator==) on each value, and returns
          *  true if contained. Perhpas not very useful but symetric to ContainsKey().
          */
@@ -296,42 +294,30 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Add the association between key and newElt. 
-         *
-         *  Also - we guarantee that even if the association is different, if the key has not changed,
-         *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
-         *
-         *  \note This behavior when the entry already exists differs from the behavior of std::map::insert (@see http://en.cppreference.com/w/cpp/container/map/insert)
-         *        "Inserts element(s) into the container, if the container doesn't already contain an element with an equivalent key".
-         *        This behavior is analagous to the new std-c++17 std::map::insert_or_assign () - @see http://en.cppreference.com/w/cpp/container/map/insert_or_assign
+         *  Add the association between key and newElt. Note, this increases teh size of the container by one, even if key was already present in the association.
          *
          *  \note mutates container
-         *
-         *  \note - this returns true if a CLEAR change happened. But Associations dont have a VALUE_COMPARER by default. So no way
-         *          to return if the Association ITSELF changed. @todo - CONSIDER adding optional VALUE_COMPARER to AddIf, so it can return
-         *          true if the Association CHANGES (mapped to value changes). May need a different name (meaning maybe we've picked a bad name here)
-         *
-         *  \note Similar to Set<>::AddIf() - but here there is the ambiguity about whether to change what is mapped to (which we do differntly
-         *        between Add and AddIf) and no such issue exists with Set<>::AddIf. But return true if they make a change.
          */
         nonvirtual void Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt);
         nonvirtual void Add (ArgByValueType<value_type> p);
 
     public:
         /**
-         *  \summary Add all the argument (container or bound range of iterators) elements; if replaceExistingAssociation true (default) force replace on each. Return count of added items (not count of updated items)
+         *  \summary Add all the argument (container or bound range of iterators) elements.
          *
          *  \note   AddAll/2 is alias for .net AddRange ()
          *
          *  \req IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>
          *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
          *
+         *  \note AddAll () does not return the number of items added because all items are added (so the count can be made on the iterators/diff or items.size()
+         * 
          *  \note mutates container
          */
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
-        nonvirtual unsigned int AddAll (ITERABLE_OF_ADDABLE&& items);
+        nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
         template <typename ITERATOR_OF_ADDABLE>
-        nonvirtual unsigned int AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        nonvirtual void AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
 
     public:
         /**
@@ -592,9 +578,9 @@ namespace Stroika::Foundation::Containers {
         virtual Iterable<mapped_type>        MappedValues () const                                 = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
-        virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<mapped_type>* item) const = 0;
-        virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt)   = 0;
-        virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key)                                  = 0;
+        virtual Iterable<mapped_type> Lookup (ArgByValueType<KEY_TYPE> key) const                            = 0;
+        virtual void                  Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt) = 0;
+        virtual bool                  RemoveIf (ArgByValueType<KEY_TYPE> key)                                = 0;
         // if nextI is non-null, its filled in with the next item in iteration order after i (has been removed)
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                       = 0;
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) = 0;

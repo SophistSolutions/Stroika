@@ -131,12 +131,9 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().MappedValues ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline Traversal::Iterable<MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key) const
+    inline auto Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key) const -> Iterable<mapped_type>
     {
-        optional<MAPPED_VALUE_TYPE> r;
-        [[maybe_unused]] bool       result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
-        Ensure (result == r.has_value ());
-        return r ? Traversal::Iterable<MAPPED_VALUE_TYPE>{*r} : Traversal::Iterable<MAPPED_VALUE_TYPE>{};
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename THROW_IF_MISSING>
@@ -180,28 +177,26 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename ITERATOR_OF_ADDABLE>
-    unsigned int Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        unsigned int cntAdded{};
         for (auto i = start; i != end; ++i) {
             Add (*i);
-            ++cntAdded;
         }
-        return cntAdded;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
-    inline unsigned int Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERABLE_OF_ADDABLE&& items)
+    inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
         if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, Iterable<value_type>*>) {
             // very rare corner case
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[UNLIKELY_ATTR]] {
                 vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
-                return AddAll (std::begin (copy), std::end (copy));
+                AddAll (std::begin (copy), std::end (copy));
+                return;
             }
         }
-        return AddAll (std::begin (items), std::end (items));
+        AddAll (std::begin (items), std::end (items));
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Remove (ArgByValueType<key_type> key)
