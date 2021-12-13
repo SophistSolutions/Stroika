@@ -234,9 +234,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     size_t len = end - start;
                     tmp.GrowToSize (len + 1);
                     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wrestrict\""); //  /usr/include/x86_64-linux-gnu/bits/string_fortified.h:29:33: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' accessing 18446744073709551612 bytes at offsets 8 and 0 overlaps 9223372036854775801 bytes at offset -9223372036854775805 [-Wrestrict]
-                    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow=\"");
+                    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\"");
                     (void)::memcpy (tmp.begin (), start, len * sizeof (wchar_t));
-                    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow=\"");
+                    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
                     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wrestrict\"");
                     cst      = tmp.begin ();
                     tmp[len] = '\0';
