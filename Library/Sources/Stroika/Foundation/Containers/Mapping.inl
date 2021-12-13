@@ -156,7 +156,9 @@ namespace Stroika::Foundation::Containers {
         optional<MAPPED_VALUE_TYPE> r;
         [[maybe_unused]] bool       result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
         Ensure (result == r.has_value ());
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\""); //  warned by g++ on ubuntu 21.10 - obviously wrong cuz optional initializes
         return r;
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"");
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key, nullptr_t) const
