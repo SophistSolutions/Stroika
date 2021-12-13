@@ -2,11 +2,12 @@
 
 # EXAMPLE RUN:
 #       ./ScriptsLib/RunLocalWindowsDockerRegressionTests
+#       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 USE_TEST_BASENAME=Windows_VS2k19-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
 #       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 USE_TEST_BASENAME=Windows_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
 #       
-CONTAINER_IMAGE="${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19}"
+CONTAINER_IMAGE="${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22}"
 CONTAINER_NAME="${CONTAINER_NAME:-DockerWindowsStroikaRegressionTester1}"
-USE_TEST_BASENAME="${USE_TEST_BASENAME:-Windows_VS2k19-In-Docker}"
+USE_TEST_BASENAME="${USE_TEST_BASENAME:-Windows_VS2k22-In-Docker}"
 BRANCH="${BRANCH:-v2.1-Dev}"
 VERSION=`./ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 # not sure why cygwin path setup with broken docker, but this works around it, for now... LGP 2020-02-25
