@@ -106,8 +106,8 @@ namespace Stroika::Foundation::Memory {
      *                _SharedPtrIRep fStr; // effectively RO, since if anyone modifies, our copy will remain unchanged
      *                size_t         fCurIdx;
      *                MyIterRep_ (const _SharedPtrIRep& r, size_t idx = 0)
-     *                    : fStr (r)
-     *                    , fCurIdx (idx)
+     *                    : fStr{r}
+     *                    , fCurIdx{idx}
      *                {
      *                    Require (fCurIdx <= fStr->_GetLength ());
      *                }
