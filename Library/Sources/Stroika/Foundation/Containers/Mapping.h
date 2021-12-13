@@ -320,7 +320,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Likely inefficeint for a map, but perhaps helpful. Walks entire list of entires
+         *  Likely inefficient for a map, but perhaps helpful. Walks entire list of entires
          *  and applies VALUE_EQUALS_COMPARER (defaults to operator==) on each value, and returns
          *  true if contained. Perhpas not very useful but symetric to ContainsKey().
          */

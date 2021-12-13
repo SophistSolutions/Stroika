@@ -50,7 +50,7 @@ protected:
     }
 
 // at least on windows, fCharCoverter with utf8 converter appeared to not mutate the mbState. Just reconverting
-// whole thing worked, so try that for now... Slow/inefficeint, but at least it works
+// whole thing worked, so try that for now... Slow/inefficient, but at least it works
 // -- LGP 2017-06-10
 #ifndef qMaintainingMBShiftStateNotWorking_
 #define qMaintainingMBShiftStateNotWorking_ 1
