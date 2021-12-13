@@ -95,3 +95,98 @@
    ...
    fun:TemporarilyAddProvider
 }
+
+{
+   https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+   Helgrind:Misc
+   ...
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3SetEv
+   ...
+#   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+#   fun:_ZL20__gthread_mutex_lockP15pthread_mutex_t
+#   fun:_ZNSt5mutex4lockEv
+#   fun:_ZNSt10lock_guardISt5mutexEC1ERS0_
+#   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_3SetEv
+#   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3SetEv
+#   fun:_ZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_11ThreadMain_EPKSt10shared_ptrIS4_E
+#   fun:_ZZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS4_EENKUlvE_clEv
+#   fun:_ZSt13__invoke_implIvZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS5_EEUlvE_JEET_St14__invoke_otherOT0_DpOT1_
+#   fun:_ZSt8__invokeIZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS5_EEUlvE_JEENSt15__invoke_resultIT_JDpT0_EE4typeEOSC_DpOSD_
+#   fun:_ZNSt6thread8_InvokerISt5tupleIJZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS7_EEUlvE_EEE9_M_invokeIJLm0EEEEvSt12_Index_tupleIJXspT_EEE
+#   fun:_ZNSt6thread8_InvokerISt5tupleIJZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS7_EEUlvE_EEEclEv
+}
+{
+   https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+   Helgrind:Race
+   ...
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3SetEv
+   ...
+#   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_3SetEv
+#   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3SetEv
+#   fun:_ZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_11ThreadMain_EPKSt10shared_ptrIS4_E
+#   fun:_ZZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS4_EENKUlvE_clEv
+#   fun:_ZSt13__invoke_implIvZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS5_EEUlvE_JEET_St14__invoke_otherOT0_DpOT1_
+#   fun:_ZSt8__invokeIZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS5_EEUlvE_JEENSt15__invoke_resultIT_JDpT0_EE4typeEOSC_DpOSD_
+#   fun:_ZNSt6thread8_InvokerISt5tupleIJZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS7_EEUlvE_EEE9_M_invokeIJLm0EEEEvSt12_Index_tupleIJXspT_EEE
+#   fun:_ZNSt6thread8_InvokerISt5tupleIJZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS7_EEUlvE_EEEclEv
+#   fun:_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS8_EEUlvE_EEEEE6_M_runEv
+#   fun:execute_native_thread_routine
+#   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+#   fun:start_thread
+}
+{
+   https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+   Helgrind:UnlockForeign
+   ...
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3SetEv
+   ...
+   #obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   #fun:_ZL22__gthread_mutex_unlockP15pthread_mutex_t
+   #fun:_ZNSt5mutex6unlockEv
+   #fun:_ZNSt10lock_guardISt5mutexED1Ev
+   #fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_3SetEv
+   #fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3SetEv
+   #fun:_ZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_11ThreadMain_EPKSt10shared_ptrIS4_E
+   #fun:_ZZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS4_EENKUlvE_clEv
+   #fun:_ZSt13__invoke_implIvZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS5_EEUlvE_JEET_St14__invoke_otherOT0_DpOT1_
+   #fun:_ZSt8__invokeIZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS5_EEUlvE_JEENSt15__invoke_resultIT_JDpT0_EE4typeEOSC_DpOSD_
+   #fun:_ZNSt6thread8_InvokerISt5tupleIJZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS7_EEUlvE_EEE9_M_invokeIJLm0EEEEvSt12_Index_tupleIJXspT_EEE
+   #fun:_ZNSt6thread8_InvokerISt5tupleIJZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS7_EEUlvE_EEEclEv
+}
+{
+   https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+   Helgrind:Misc
+   ...
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEventD1Ev
+   ...
+   #obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   #fun:_ZN7Stroika10Foundation9Execution17ConditionVariableISt5mutexSt18condition_variableED1Ev
+   #fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_D1Ev
+   #fun:_ZN7Stroika10Foundation9Execution13WaitableEventD1Ev
+   #
+   #fun:_ZN12_GLOBAL__N_148RegressionTest2_sqlite_EmployeesDB_with_threads_8PRIVATE_11ThreadTest_ERKN7Stroika10Foundation8Database3SQL6SQLite7OptionsE
+   #fun:_ZN12_GLOBAL__N_148RegressionTest2_sqlite_EmployeesDB_with_threads_4DoItEv
+   #fun:_ZN12_GLOBAL__N_118DoRegressionTests_Ev
+   #fun:_ZN7Stroika11TestHarness15PrintPassOrFailEPFvvE
+   #fun:main
+}
+{
+   https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+   Helgrind:Race
+   ...
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
+   ...
+
+   #fun:_ZZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEdENKUlvE_clEv
+   #fun:_ZN7Stroika10Foundation9Execution17ConditionVariableISt5mutexSt18condition_variableE10wait_untilIZNS1_13WaitableEvent3WE_16WaitUntilQuietlyEdEUlvE_EEbRSt11unique_lockIS3_EdT_
+   #fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
+   #fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_9WaitUntilEd
+   #fun:_ZN7Stroika10Foundation9Execution13WaitableEvent4WaitEd
+   #fun:_ZN7Stroika10Foundation9Execution6Thread3Ptr4Rep_8DoCreateEPKSt10shared_ptrIS4_E
+   #fun:_ZNK7Stroika10Foundation9Execution6Thread3Ptr5StartEv
+   #fun:_ZN7Stroika10Foundation9Execution6Thread3NewERKSt8functionIFvvEENS2_13AutoStartFlagERKSt8optionalINS0_10Characters6StringEERKS9_INS2_13ConfigurationEE
+   #fun:_ZN7Stroika10Foundation9Execution21SignalHandlerRegistry18SafeSignalsManager4Rep_C1Ev
+   #fun:_ZN9__gnu_cxx13new_allocatorIN7Stroika10Foundation9Execution21SignalHandlerRegistry18SafeSignalsManager4Rep_EE9constructIS6_JEEEvPT_DpOT0_
+   #fun:_ZNSt16allocator_traitsISaIN7Stroika10Foundation9Execution21SignalHandlerRegistry18SafeSignalsManager4Rep_EEE9constructIS5_JEEEvRS6_PT_DpOT0_
+   #fun:_ZNSt23_Sp_counted_ptr_inplaceIN7Stroika10Foundation9Execution21SignalHandlerRegistry18SafeSignalsManager4Rep_ESaIS5_ELN9__gnu_cxx12_Lock_policyE2EEC1IJEEES6_DpOT_
+}
