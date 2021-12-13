@@ -48,6 +48,7 @@ namespace Stroika::Foundation::Containers {
      *  @see    SortedAssociation<Key,T>
      *
      *  \note   The term 'KEY' usually implies a UNIQUE mapping to the associated value, but DOES NOT do so in this container ArcheType.
+     *          Though databases generally use key to imply unique, https://en.cppreference.com/w/cpp/container/multimap, for example, does not.
      * 
      *  \note   Design Note:
      *      \note   We used Iterable<KeyValuePair<Key,T>> instead of Iterable<pair<Key,T>> because it makes for
@@ -64,9 +65,9 @@ namespace Stroika::Foundation::Containers {
      *      @see Concrete::Association_Factory<> to see default implementations.
      *
      *  \em Design Note:
-     *      Included <map> and have explicit CTOR for map<> so that Stroika Association can be used more interoperably
-     *      with map<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental converisons. But
-     *      if you declare an API with Association<KEY_TYPE,MAPPED_VALUE_TYPE> arguments, its important STL sources passing in map<> work transparently.
+     *      Included <map> and have explicit CTOR for multimap<> so that Stroika Association can be used more interoperably
+     *      with multimap<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental converisons. But
+     *      if you declare an API with Association<KEY_TYPE,MAPPED_VALUE_TYPE> arguments, its important STL sources passing in multimap<> work transparently.
      *
      *      Similarly for std::initalizer_list.
      *
@@ -592,6 +593,14 @@ namespace Stroika::Foundation::Containers {
 
     /**
      *  \brief Compare Associations<>s for equality. 
+     *
+     *  Two associations are equal, if they have the same domain, the same range, and each element in the domain
+     *  has the same elements in its range (though there is NO NEED for the domain elements or range elements or associated elements
+     *  to be in the same order).
+     * 
+     *  \note   This maybe expensive to compute, since all these different orderings are allowed when items still compare equal. However,
+     *          the code makes some effort to make sure the common cases where things are all in the same order are detected as equal
+     *          quickly.
      *
      *  \note   Not to be confused with GetKeyEqualsComparer () which compares KEY ELEMENTS of Association for equality.
      */

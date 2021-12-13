@@ -27,8 +27,8 @@ namespace CommonTests {
         template <typename CONCRETE_CONTAINER, typename FACTORY = DefaultFactory<CONCRETE_CONTAINER>, typename VALUE_EQUALS_COMPARER_TYPE = equal_to<typename CONCRETE_CONTAINER::mapped_type>>
         struct DEFAULT_TESTING_SCHEMA {
             constexpr inline DEFAULT_TESTING_SCHEMA (FACTORY factory = {}, VALUE_EQUALS_COMPARER_TYPE valueEqualsComparer = {})
-                : Factory (factory)
-                , fValueEqualsComparer (valueEqualsComparer)
+                : Factory{factory}
+                , fValueEqualsComparer{valueEqualsComparer}
             {
             }
             using ConcreteContainerType                                              = CONCRETE_CONTAINER;

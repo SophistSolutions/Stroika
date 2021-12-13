@@ -443,7 +443,7 @@ namespace Stroika::Foundation::Containers {
 
     /*
      ********************************************************************************
-     ****************** Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep *****************
+     ************** Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep *****************
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -538,7 +538,7 @@ namespace Stroika::Foundation::Containers {
 
     /*
      ********************************************************************************
-     ********** Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer ****************
+     ********** Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer ************
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -552,8 +552,7 @@ namespace Stroika::Foundation::Containers {
     bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer<VALUE_EQUALS_COMPARER>::operator() (const Association& lhs, const Association& rhs) const
     {
         /*
-         *    @todo   THIS CODE IS TOO COMPLICATED, and COULD USE CLEANUP/CODE REVIEW - LGP 2014-06-11
-         *      THIS CODE IS WRONG FOR ASSOCIATION - SO DO SOME WORK TO FIX
+         *    @todo   This code is not very efficient, except in the 'quickEqualsTest' case
          */
         _SafeReadRepAccessor<_IRep> lhsR{&lhs};
         _SafeReadRepAccessor<_IRep> rhsR{&rhs};
@@ -561,7 +560,7 @@ namespace Stroika::Foundation::Containers {
             // not such an unlikely test result since we use lazy copy, but this test is only an optimization and not logically required
             return true;
         }
-        // Check length, so we don't need to check both iterators for end/done
+        // Check length, so we don't need to check both iterators for end/done; length is often a quick computation and always quick compared to this comparison algorithm
         if (lhsR._ConstGetRep ().GetLength () != rhsR._ConstGetRep ().GetLength ()) {
             return false;
         }
@@ -570,39 +569,35 @@ namespace Stroika::Foundation::Containers {
          *  They need not be in the same order to compare equals. Still - they often are, and if they are, this algorithm is faster.
          *  If they miss, we need to fall back to a slower strategy.
          */
-        auto li                = lhsR._ConstGetRep ().MakeIterator ();
-        auto ri                = rhs.MakeIterator ();
-        auto keyEqualsComparer = lhs.GetKeyEqualsComparer (); // arbitrarily select left side key equals comparer
-        while (not li.Done ()) {
-            Assert (not ri.Done ()); // cuz move at same time and same size
-            bool keysEqual = keyEqualsComparer (li->fKey, ri->fKey);
-            Require (keysEqual == rhs.GetKeyEqualsComparer () (li->fKey, ri->fKey)); // if fails, cuz rhs/lhs keys equals comparers disagree
-            if (keysEqual) {
-                // then we are doing in same order so can do quick impl
-                if (not fValueEqualsComparer (li->fValue, ri->fValue)) {
+        auto quickEqualsTest = [&] () -> bool {
+            auto li                = lhsR._ConstGetRep ().MakeIterator ();
+            auto ri                = rhs.MakeIterator ();
+            auto keyEqualsComparer = lhs.GetKeyEqualsComparer (); // arbitrarily select left side key equals comparer
+            while (not li.Done ()) {
+                Assert (not ri.Done ()); // cuz move at same time and same size
+                bool keysEqual = keyEqualsComparer (li->fKey, ri->fKey);
+                Require (keysEqual == rhs.GetKeyEqualsComparer () (li->fKey, ri->fKey)); // if fails, cuz rhs/lhs keys equals comparers disagree
+                if (not keysEqual or not fValueEqualsComparer (li->fValue, ri->fValue)) {
                     return false;
                 }
+                // if we got this far, all compared OK so far, so keep going
+                ++li;
+                ++ri;
             }
-            else {
-                // check if li maps to right value in rhs
-                Iterable<mapped_type> o = rhs.Lookup (li->fKey);
-                Iterator<mapped_type> i = o.begin ();
-                if (i != o.end () or not fValueEqualsComparer (*i, li->fValue)) {
-                    return false;
-                }
-                // if the keys were different, we must check the reverse direction too
-                o = lhs.Lookup (ri->fKey);
-                i = o.begin ();
-                if (i != o.end () or not fValueEqualsComparer (*i, ri->fValue)) {
-                    return false;
-                }
-            }
-            // if we got this far, all compared OK so far, so keep going
-            ++li;
-            ++ri;
+            Assert (ri.Done ()); // cuz LHS done and both sides iterate at same pace, and we checked both same size
+            return true;
+        };
+        if (quickEqualsTest ()) {
+            return true;
         }
-        Assert (ri.Done ()); // cuz LHS done and both sides iterate at same pace, and we checked both same size
-        return true;
+        // OK, we failed the quick test, but the associations might still be 'equal' - just in a funny order
+        // note this is extremely expensive. We should find a better algorithm...
+        auto keyEqualsComparer = lhs.GetKeyEqualsComparer (); // arbitrarily select left side key equals comparer
+        return lhs.MultiSetEquals (
+            rhs,
+            Common::DeclareEqualsComparer ([&] (const value_type& lhs, const value_type& rhs) {
+                return keyEqualsComparer (lhs.fKey, rhs.fKey) and fValueEqualsComparer (lhs.fKey, rhs.fKey);
+            }));
     }
 
 #if __cpp_impl_three_way_comparison < 201907

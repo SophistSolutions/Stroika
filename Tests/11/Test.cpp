@@ -103,7 +103,7 @@ namespace {
             Debug::TraceContextBumper ctx{L"{}::ExampleCTORS_Test_5_"};
             // From Association<> CTOR docs
             Collection<pair<int, int>> c;
-            std::map<int, int>         m;
+            std::multimap<int, int>    m;
 
             Association<int, int> m1 = {pair<int, int>{1, 1}, pair<int, int>{2, 2}, pair<int, int>{3, 2}};
             Association<int, int> m2 = m1;
@@ -122,9 +122,23 @@ namespace {
     namespace Where_Test_6_ {
         void DoAll ()
         {
-            Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
-            VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
-            VerifyTestResult ((m.Where ([] (int key) { return Math::IsPrime (key); }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+            {
+                Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
+                VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+                VerifyTestResult ((m.Where ([] (int key) { return Math::IsPrime (key); }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+            }
+            {
+                // same but using pair<>
+                Association<int, int> m{pair<int, int>{1, 3}, pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{4, 5}, pair<int, int>{5, 7}};
+                VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Association<int, int>{pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
+                VerifyTestResult ((m.Where ([] (int key) { return Math::IsPrime (key); }) == Association<int, int>{pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
+            }
+            {
+                // simular but example has duplicates
+                Association<int, int> m{pair<int, int>{1, 3}, pair<int, int>{2, 3}, pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{4, 5}, pair<int, int>{5, 7}};
+                VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Association<int, int>{pair<int, int>{2, 3}, pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
+                VerifyTestResult ((m.Where ([] (int key) { return Math::IsPrime (key); }) == Association<int, int>{pair<int, int>{2, 3}, pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
+            }
         }
     }
 }
@@ -153,26 +167,25 @@ namespace {
 }
 
 namespace {
-    namespace AddVsAddIf_Test_9_ {
+    namespace BasicNewAssociationRules_Test_9_ {
         void DoAll ()
         {
             {
                 Association<int, int> m;
                 m.Add (1, 2);
-#if 0
-                VerifyTestResult (m[1] == 2);
-
+                m.Add (1, 2);
+                VerifyTestResult (m.size () == 2);
+                VerifyTestResult ((m.Lookup (1).MultiSetEquals (Traversal::Iterable<int>{2, 2})));
+                VerifyTestResult (m.Lookup (2).empty ());
                 m.Add (1, 3);
-                VerifyTestResult (m[1] == 3);
-#endif
+                VerifyTestResult ((m.Lookup (1).MultiSetEquals (Traversal::Iterable<int>{2, 3, 2})));
 
-// @todo fix for association (not mapping)
-#if 0
-                VerifyTestResult (not m.Add (1, 4, AddReplaceMode::eAddIfMissing));
-                VerifyTestResult (m[1] == 3);
-                VerifyTestResult (m.Add (2, 3, AddReplaceMode::eAddIfMissing));
-                VerifyTestResult (m[2] == 3);
-#endif
+                Association<int, int> m2;
+                m2.Add (1, 3);
+                m2.Add (1, 2);
+                VerifyTestResult (m != m2);
+                m2.Add (1, 2);
+                VerifyTestResult (m == m2);
             }
         }
     }
@@ -249,7 +262,7 @@ namespace {
         Where_Test_6_::DoAll ();
         WithKeys_Test_7_::DoAll ();
         ClearBug_Test_8_::DoAll ();
-        AddVsAddIf_Test_9_::DoAll ();
+        BasicNewAssociationRules_Test_9_::DoAll ();
         CTORWithComparerAndContainer_Test_10_::DoAll ();
 
         VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
