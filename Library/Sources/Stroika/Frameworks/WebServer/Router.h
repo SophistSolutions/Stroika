@@ -119,12 +119,13 @@ namespace Stroika::Frameworks::WebServer {
         /**
          */
         Router ()              = delete;
-        Router (const Router&) = default;
-        Router (Router&&)      = default;
+        Router (Router&&) noexcept      = default;
+        Router (const Router&) noexcept = default;
         Router (const Sequence<Route>& routes, const CORSOptions& corsOptions);
 
     public:
-        nonvirtual Router& operator= (Router&) = default;
+        nonvirtual Router& operator= (Router&&) noexcept = default;
+        nonvirtual Router& operator= (const Router&) = default;
 
     public:
         /**
