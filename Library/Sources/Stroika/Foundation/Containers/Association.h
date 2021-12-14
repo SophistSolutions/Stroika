@@ -281,8 +281,16 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  Synonym for Lookup (key).has_value ()
+         * 
+         *  \note same as OccurrencesOf (key) != 0
          */
         nonvirtual bool ContainsKey (ArgByValueType<key_type> key) const;
+
+    public:
+        /**
+         *  OccurrencesOf() returns the number of occurences of 'item' in the association.
+         */
+        nonvirtual size_t OccurrencesOf (ArgByValueType<key_type> item) const;
 
     public:
         /**

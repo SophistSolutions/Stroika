@@ -160,6 +160,11 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key).empty ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline size_t Association<KEY_TYPE, MAPPED_VALUE_TYPE>::OccurrencesOf (ArgByValueType<key_type> key) const
+    {
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key).size ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename VALUE_EQUALS_COMPARER>
     inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::ContainsMappedValue (ArgByValueType<mapped_type> v, const VALUE_EQUALS_COMPARER& valueEqualsComparer) const
     {
