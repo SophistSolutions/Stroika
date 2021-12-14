@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Containers {
 
     /*
      ********************************************************************************
-     ******************** Association<KEY_TYPE, MAPPED_VALUE_TYPE> **********************
+     **************** Association<KEY_TYPE, MAPPED_VALUE_TYPE> **********************
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
