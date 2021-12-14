@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename RANGE_TYPE>
     inline DisjointDiscreteRange<T, RANGE_TYPE>::FindHints::FindHints (value_type seedPosition, bool forwardFirst)
         : fSeedPosition{seedPosition}
-        , fForwardFirst {forwardFirst}
+        , fForwardFirst{forwardFirst}
     {
     }
 
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Traversal {
                 return;
             }
             else if (elt == i->GetLowerBound () - 1) {
-                srs.Update (i, DiscreteRange<value_type> {elt, i->GetUpperBound ()});
+                srs.Update (i, DiscreteRange<value_type>{elt, i->GetUpperBound ()});
                 // No need to check for merge adjacent cuz done by constructor
                 *this = move (THIS_CLASS_{srs});
                 return;
