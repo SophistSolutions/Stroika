@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         using value_type = typename inherited::value_type;
-        using RangeType = typename inherited::RangeType;
+        using RangeType  = typename inherited::RangeType;
 
     public:
         /**

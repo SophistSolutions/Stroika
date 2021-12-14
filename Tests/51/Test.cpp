@@ -667,7 +667,7 @@ namespace {
             auto roundTrip = [] (const Set<int>& s) {
                 DRT tmp{s};
                 VerifyTestResult (tmp.Elements ().size () == s.size ());
-                VerifyTestResult (Set<int> (tmp.Elements ()) == s);
+                VerifyTestResult (Set<int>{tmp.Elements ()} == s);
             };
             roundTrip (Set<int>{3, 4});
             roundTrip (Set<int>{1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 100});
