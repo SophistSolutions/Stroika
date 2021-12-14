@@ -9,6 +9,7 @@
 #include "../../../Characters/String.h"
 #include "../../../Common/Property.h"
 #include "../../../Configuration/Common.h"
+#include "../../../Containers/Association.h"
 #include "../../../Containers/Collection.h"
 #include "../../../Containers/Mapping.h"
 #include "../../../Containers/Set.h"
@@ -30,6 +31,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     using Characters::String;
     using Common::KeyValuePair;
+    using Containers::Association;
     using Containers::Collection;
     using Containers::Mapping;
     using Containers::Set;
@@ -77,12 +79,51 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     }
 
     /**
+     *  \note from https://www.ietf.org/rfc/rfc2616.txt
+     *      The field-names given are not limited to the set of standard
+     *      request-header fields defined by this specification. Field names are
+     *      case-insensitive.
      */
-    constexpr auto kHeaderNameEqualsComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
+    constexpr auto kHeaderNameEqualsComparer  = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
+    constexpr auto kHeaderNameInOrderComparer = String::LessComparer{Characters::CompareOptions::eCaseInsensitive};
 
     /**
-     * SB roughly equiv to Association<String,String> but thats not supported in Stroika yet.
-     * But for now mainly looking like Mapping<String,String> - since works in HF, and ..
+     * \brief roughly equivilent to Association<String,String>, except that the class is smart about certain
+     *        keys and will automatically fold them together.
+     * 
+     *  \note From https://www.rfc-editor.org/rfc/rfc7230#section-3.2.2
+     * 
+     *      The order in which header fields with differing field names are
+     *      received is not significant.  However, it is good practice to send
+     *      header fields that contain control data first, such as Host on
+     *      requests and Date on responses, so that implementations can decide
+     *      when not to handle a message as early as possible.  A server MUST NOT
+     *      apply a request to the target resource until the entire request
+     *      header section is received, since later header fields might include
+     *      conditionals, authentication credentials, or deliberately misleading
+     *      duplicate header fields that would impact request processing.
+     *
+     *      A sender MUST NOT generate multiple header fields with the same field
+     *      name in a message unless either the entire field value for that
+     *      header field is defined as a comma-separated list [i.e., #(values)]
+     *      or the header field is a well-known exception (as noted below).
+     *
+     *      A recipient MAY combine multiple header fields with the same field
+     *      name into one "field-name: field-value" pair, without changing the
+     *      semantics of the message, by appending each subsequent field value to
+     *      the combined field value in order, separated by a comma.  The order
+     *      in which header fields with the same field name are received is
+     *      therefore significant to the interpretation of the combined field
+     *      value; a proxy MUST NOT change the order of these field values when
+     *      forwarding a message.
+     *
+     *          Note: In practice, the "Set-Cookie" header field ([RFC6265]) often
+     *          appears multiple times in a response message and does not use the
+     *          list syntax, violating the above requirements on multiple header
+     *          fields with the same name.  Since it cannot be combined into a
+     *          single field-value, recipients ought to handle "Set-Cookie" as a
+     *          special case while processing header fields.  (See Appendix A.2.3
+     *          of [Kri2001] for details.)
      */
     class Headers : private Debug::AssertExternallySynchronizedMutex {
     public:
@@ -92,13 +133,14 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  by value, and copy that current value.
          */
         Headers ();
-        Headers (const Headers& src);
         Headers (Headers&& src);
+        Headers (const Headers& src);
+        explicit Headers (const Iterable<pair<String, String>>& src);
         explicit Headers (const Iterable<KeyValuePair<String, String>>& src);
 
     public:
-        nonvirtual Headers& operator= (const Headers& rhs);
         nonvirtual Headers& operator= (Headers&& rhs) noexcept;
+        nonvirtual Headers& operator= (const Headers& rhs);
 
 #if qDebug
     public:
@@ -129,6 +171,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  and these are appended. Use Set/Remove to avoid ambiguity.
          */
         nonvirtual void Add (const String& headerName, const String& value);
+        nonvirtual void Add (const KeyValuePair<String, String>& hrdAndValue);
         nonvirtual void Add (const pair<String, String>& hrdAndValue);
 
     public:
@@ -141,6 +184,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          */
         nonvirtual void operator+= (const pair<String, String>& hrdAndValue);
+        nonvirtual void operator+= (const KeyValuePair<String, String>& hrdAndValue);
         nonvirtual void operator+= (const Headers& headers);
 
     public:
@@ -359,7 +403,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  Returns the combined set of headers (list Key:Value pairs). Note this may not be returned in
          *  the same order and exactly losslessly identically to what was passed in.
          * 
+         *  \note - if Mapping<String,String> is the target type, and if setCookie headers are present, some maybe omitted in the
+         *          resulting Mapping<>
+         * 
          *  Supported T types:
+         *      o   Association<String,String>
          *      o   Mapping<String,String>
          *      o   Collection<KeyValuePair<String,String>>
          *      o   Iterable<KeyValuePair<String,String>>
@@ -411,6 +459,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         friend bool operator!= (const Headers& lhs, const Headers& rhs);
 #endif
     };
+    template <>
+    Association<String, String> Headers::As () const;
     template <>
     Mapping<String, String> Headers::As () const;
     template <>

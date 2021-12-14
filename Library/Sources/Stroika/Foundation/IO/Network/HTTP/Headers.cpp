@@ -309,6 +309,14 @@ Headers::Headers (Headers&& src)
     fETag_          = src.ETag ();
 }
 
+Headers::Headers (const Iterable<pair<String, String>>& src)
+    : Headers{}
+{
+    for (auto kv : src) {
+        Set (kv.first, kv.second);
+    }
+}
+
 Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
     : Headers{}
 {
@@ -656,8 +664,15 @@ void Headers::Set (const String& headerName, const optional<String>& value)
 }
 
 template <>
+Association<String, String> Headers::As () const
+{
+    return As<Collection<KeyValuePair<String, String>>> ().As<Association<String, String>> ();
+}
+
+template <>
 Mapping<String, String> Headers::As () const
 {
+    // NOTE - CAN be lossy conversion to Mapping, losing Set-Cookie's
     return As<Collection<KeyValuePair<String, String>>> ().As<Mapping<String, String>> ();
 }
 
@@ -704,5 +719,5 @@ Collection<KeyValuePair<String, String>> Headers::As () const
 
 String Headers::ToString () const
 {
-    return Characters::ToString (As<Mapping<String, String>> ());
+    return Characters::ToString (As<Association<String, String>> ());
 }

@@ -16,11 +16,19 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      ********************************* HTTP::Headers ********************************
      ********************************************************************************
      */
+    inline void Headers::Add (const KeyValuePair<String, String>& hrdAndValue)
+    {
+        Add (hrdAndValue.fKey, hrdAndValue.fValue);
+    }
     inline void Headers::Add (const pair<String, String>& hrdAndValue)
     {
         Add (hrdAndValue.first, hrdAndValue.second);
     }
     inline void Headers::operator+= (const pair<String, String>& hrdAndValue)
+    {
+        Add (hrdAndValue);
+    }
+    inline void Headers::operator+= (const KeyValuePair<String, String>& hrdAndValue)
     {
         Add (hrdAndValue);
     }
