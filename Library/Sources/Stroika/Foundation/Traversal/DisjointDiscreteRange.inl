@@ -40,17 +40,21 @@ namespace Stroika::Foundation::Traversal {
     DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from)
         : DisjointDiscreteRange{from.begin (), from.end ()}
     {
+        static_assert (is_convertible_v<Configuration::ExtractValueType_t<CONTAINER_OF_DISCRETERANGE_OF_T>, RangeType> or is_convertible_v<Configuration::ExtractValueType_t<CONTAINER_OF_DISCRETERANGE_OF_T>, value_type>);
     }
     template <typename T, typename RANGE_TYPE>
     template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-    DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, RangeType>, int>*)
+    DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, RangeType>, int>*)
         : inherited{start, end}
     {
+        static_assert (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, RangeType>);
     }
     template <typename T, typename RANGE_TYPE>
     template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-    DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, value_type>, int>*)
+    DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>, int>*)
     {
+        static_assert (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>);
+        static_assert (Configuration::IsIterator_v<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>);
         Containers::Sequence<RangeType>   srs{};
         Containers::SortedSet<value_type> ss{start, end};
         value_type                        startAt{};

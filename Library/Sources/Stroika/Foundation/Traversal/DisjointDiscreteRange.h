@@ -35,10 +35,8 @@ namespace Stroika::Foundation::Traversal {
         using THIS_CLASS_ = DisjointDiscreteRange<T, RANGE_TYPE>;
 
     public:
-        using value_type = typename DisjointRange<T, RANGE_TYPE>::value_type;
-
-    public:
-        using RangeType = typename DisjointRange<T, RANGE_TYPE>::RangeType;
+        using value_type = typename inherited::value_type;
+        using RangeType = typename inherited::RangeType;
 
     public:
         /**
@@ -52,9 +50,9 @@ namespace Stroika::Foundation::Traversal {
         template <typename CONTAINER_OF_DISCRETERANGE_OF_T>
         explicit DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from);
         template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-        explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, RangeType>, int>* = nullptr);
+        explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, RangeType>, int>* = nullptr);
         template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-        explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, value_type>, int>* = nullptr);
+        explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>, int>* = nullptr);
 
     public:
         nonvirtual DisjointDiscreteRange& operator= (const DisjointDiscreteRange& rhs) = default;
