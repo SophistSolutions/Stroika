@@ -465,7 +465,7 @@ void Headers::Add (const String& headerName, const String& value)
     if (UpdateBuiltin_ (AddOrSet::eAdd, headerName, value)) {
         return;
     }
-    fExtraHeaders_.Add (KeyValuePair<String, String>{headerName, value});
+    fExtraHeaders_.Add ({headerName, value});
 }
 
 void Headers::AddAll (const Headers& headers)
@@ -643,7 +643,7 @@ void Headers::SetExtras_ (const String& headerName, const optional<String>& valu
     lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
     fExtraHeaders_.RemoveIf ([=] (const auto& i) { return kHeaderNameEqualsComparer (i.fKey, headerName); });
     if (value) {
-        fExtraHeaders_.Add (KeyValuePair<String, String>{headerName, *value});
+        fExtraHeaders_.Add ({headerName, *value});
     }
 }
 
@@ -667,37 +667,37 @@ Collection<KeyValuePair<String, String>> Headers::As () const
     shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
     Collection<KeyValuePair<String, String>>             results = fExtraHeaders_;
     if (fCacheControl_) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kCacheControl, fCacheControl_->As<String> ()});
+        results.Add ({HeaderName::kCacheControl, fCacheControl_->As<String> ()});
     }
     if (auto cl = this->contentLength ()) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kContentLength, Characters::Format (L"%lld", static_cast<long long> (*cl))});
+        results.Add ({HeaderName::kContentLength, Characters::Format (L"%lld", static_cast<long long> (*cl))});
     }
     if (fContentType_) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kContentType, fContentType_->As<String> ()});
+        results.Add ({HeaderName::kContentType, fContentType_->As<String> ()});
     }
     if (fCookieList_) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kCookie, fCookieList_->EncodeForCookieHeader ()});
+        results.Add ({HeaderName::kCookie, fCookieList_->EncodeForCookieHeader ()});
     }
     if (fDate_) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kDate, fDate_->Format (Time::DateTime::kRFC1123Format)});
+        results.Add ({HeaderName::kDate, fDate_->Format (Time::DateTime::kRFC1123Format)});
     }
     if (auto et = ETag ()) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kETag, et->As<String> ()});
+        results.Add ({HeaderName::kETag, et->As<String> ()});
     }
     if (fIfNoneMatch_) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kIfNoneMatch, fIfNoneMatch_->As<String> ()});
+        results.Add ({HeaderName::kIfNoneMatch, fIfNoneMatch_->As<String> ()});
     }
     if (fSetCookieList_) {
         // fSetCookieList_ produces multiple set-headers
         for (auto i : fSetCookieList_->cookieDetails ()) {
-            results.Add (KeyValuePair<String, String>{HeaderName::kSetCookie, i.As<String> ()});
+            results.Add ({HeaderName::kSetCookie, i.As<String> ()});
         }
     }
     if (auto tc = this->transferEncoding ()) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kTransferEncoding, tc->As<String> ()});
+        results.Add ({HeaderName::kTransferEncoding, tc->As<String> ()});
     }
     if (fVary_) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kVary, String::Join (*fVary_)});
+        results.Add ({HeaderName::kVary, String::Join (*fVary_)});
     }
     return results;
 }
