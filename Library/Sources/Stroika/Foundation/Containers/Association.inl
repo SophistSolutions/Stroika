@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::ContainsKey (ArgByValueType<key_type> key) const
     {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key).empty ();
+        return not _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key).empty ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline size_t Association<KEY_TYPE, MAPPED_VALUE_TYPE>::OccurrencesOf (ArgByValueType<key_type> key) const
