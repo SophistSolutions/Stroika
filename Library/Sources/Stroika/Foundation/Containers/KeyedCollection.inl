@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Containers {
         : KeyedCollection{typename TRAITS::DefaultKeyExtractor{}, equal_to<KEY_TYPE>{}}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
-        AddAll (src);
+        AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
