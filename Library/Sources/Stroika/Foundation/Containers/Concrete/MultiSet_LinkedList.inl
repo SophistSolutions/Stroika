@@ -311,20 +311,20 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T, typename TRAITS>
     template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
-    MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet_LinkedList{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        AddAll (start, end);
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
     template <typename EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
-    MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet_LinkedList{forward<EQUALS_COMPARER> (equalsComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        AddAll (start, end);
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>

@@ -77,20 +77,20 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
-    inline Set<T>::Set (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    inline Set<T>::Set (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Set{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        AddAll (start, end);
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
     template <typename T>
     template <typename EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
-    inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Set{forward<EQUALS_COMPARER> (equalsComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        AddAll (start, end);
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
     template <typename T>
@@ -173,11 +173,11 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE>
-    void Set<T>::AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    void Set<T>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
-        for (auto i = start; i != end; ++i) {
+        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {
             tmp._GetWriteableRep ().Add (*i);
         }
     }
@@ -215,11 +215,11 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE>
-    inline size_t Set<T>::RemoveAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    inline size_t Set<T>::RemoveAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         size_t cnt{};
-        for (auto i = start; i != end; ++i) {
+        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {
             ++cnt;
             Remove (*i);
         }
@@ -490,7 +490,7 @@ namespace Stroika::Foundation::Containers {
                 return Debug::UncheckedDynamicCast<const _IRep&> (prevRepPtr).CloneAndPatchIterator (&patchedIterator);
             });
         AssertNotNull (writableRep);
-        return make_tuple (Debug::UncheckedDynamicCast<_IRep*> (writableRep), patchedIterator);
+        return make_tuple (Debug::UncheckedDynamicCast<_IRep*> (writableRep), move (patchedIterator));
     }
     template <typename T>
     inline void Set<T>::_AssertRepValidType () const

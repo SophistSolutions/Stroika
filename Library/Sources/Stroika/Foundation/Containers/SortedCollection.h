@@ -121,9 +121,9 @@ namespace Stroika::Foundation::Containers {
         template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         SortedCollection (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>
-        SortedCollection (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        SortedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
         template <typename INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
-        SortedCollection (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        SortedCollection (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
         explicit SortedCollection (_IRepSharedPtr&& src) noexcept;

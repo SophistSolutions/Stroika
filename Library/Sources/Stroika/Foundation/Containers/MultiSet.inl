@@ -333,20 +333,20 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
-    MultiSet<T, TRAITS>::MultiSet (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    MultiSet<T, TRAITS>::MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        AddAll (start, end);
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
     template <typename EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
-    MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet{forward<EQUALS_COMPARER> (equalsComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        AddAll (start, end);
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
@@ -434,10 +434,10 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     template <typename ITERATOR_OF_ADDABLE>
-    void MultiSet<T, TRAITS>::AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    void MultiSet<T, TRAITS>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        for (ITERATOR_OF_ADDABLE i = start; i != end; ++i) {
+        for (ITERATOR_OF_ADDABLE i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {
             Add (*i);
         }
     }
@@ -524,7 +524,7 @@ namespace Stroika::Foundation::Containers {
                 return Debug::UncheckedDynamicCast<const _IRep&> (prevRepPtr).CloneAndPatchIterator (&patchedIterator);
             });
         AssertNotNull (writableRep);
-        return make_tuple (Debug::UncheckedDynamicCast<_IRep*> (writableRep), patchedIterator);
+        return make_tuple (Debug::UncheckedDynamicCast<_IRep*> (writableRep), move (patchedIterator));
     }
     template <typename T, typename TRAITS>
     inline void MultiSet<T, TRAITS>::_AssertRepValidType () const

@@ -208,7 +208,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE>
-    inline Sequence_stdvector<T>::Sequence_stdvector (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    inline Sequence_stdvector<T>::Sequence_stdvector (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Sequence_stdvector{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
@@ -217,7 +217,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 SetCapacity (end - start);
             }
         }
-        this->AppendAll (start, end);
+        this->AppendAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
     template <typename T>

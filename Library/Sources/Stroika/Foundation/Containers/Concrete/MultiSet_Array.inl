@@ -351,12 +351,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         : MultiSet_Array{forward<EQUALS_COMPARER> (equalsComparer)}
     {
         SetCapacity (src.size ());
-        AddAll (src);
+        this->AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
     template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
-    MultiSet_Array<T, TRAITS>::MultiSet_Array (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    MultiSet_Array<T, TRAITS>::MultiSet_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet_Array{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
@@ -365,12 +365,12 @@ namespace Stroika::Foundation::Containers::Concrete {
                 SetCapacity (end - start);
             }
         }
-        AddAll (start, end);
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
     template <typename EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
-    MultiSet_Array<T, TRAITS>::MultiSet_Array (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    MultiSet_Array<T, TRAITS>::MultiSet_Array (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet_Array{forward<EQUALS_COMPARER> (equalsComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
@@ -379,7 +379,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 SetCapacity (end - start);
             }
         }
-        AddAll (start, end);
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>

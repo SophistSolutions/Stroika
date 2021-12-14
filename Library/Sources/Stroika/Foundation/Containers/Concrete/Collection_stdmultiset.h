@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection_stdmultiset<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         Collection_stdmultiset (ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>
-        Collection_stdmultiset (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        Collection_stdmultiset (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
         /**

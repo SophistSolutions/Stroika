@@ -261,17 +261,17 @@ namespace Stroika::Foundation::Containers {
                   typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   enable_if_t<
                       Configuration::IsIterator_v<ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
-        KeyedCollection (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        KeyedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
         template <typename ITERATOR_OF_ADDABLE,
                   typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
                   typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   enable_if_t<
                       Configuration::IsIterator_v<ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
-        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
         template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE,
                   enable_if_t<
                       KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
-        KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
         explicit KeyedCollection (_IRepSharedPtr&& rep) noexcept;
@@ -385,7 +385,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         template <typename ITERATOR_OF_ADDABLE>
-        nonvirtual unsigned int AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        nonvirtual unsigned int AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         nonvirtual unsigned int AddAll (ITERABLE_OF_ADDABLE&& items);
 
@@ -435,7 +435,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         template <typename ITERATOR_OF_ADDABLE>
-        nonvirtual size_t RemoveAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        nonvirtual size_t RemoveAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
         template <typename ITERABLE_OF_ADDABLE>
         nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& s);
         nonvirtual void   RemoveAll ();

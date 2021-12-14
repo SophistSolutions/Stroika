@@ -141,11 +141,11 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE>
-    inline Collection_stdforward_list<T>::Collection_stdforward_list (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    inline Collection_stdforward_list<T>::Collection_stdforward_list (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Collection_stdforward_list{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        this->AddAll (start, end);
+        this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
     template <typename T>

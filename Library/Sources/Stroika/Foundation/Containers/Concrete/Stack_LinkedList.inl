@@ -138,14 +138,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE>
-    inline Stack_LinkedList<T>::Stack_LinkedList (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    inline Stack_LinkedList<T>::Stack_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Stack_LinkedList{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         // sadly intrinsically expensive to copy an interable using the stack API
         // @todo find a more efficient way - for example - if there is a way to get a reverse-iterator from 'src' this can be much cheaper! - or at least copy PTRS
         vector<T> tmp;
-        for (auto i = start; i != end; ++i) {
+        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {
             tmp.push_back (*i);
         }
         for (auto si : tmp) {

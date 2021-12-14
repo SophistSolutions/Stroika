@@ -86,20 +86,20 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
-    Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Association{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        AddAll (start, end);
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
-    Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Association{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        AddAll (start, end);
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -182,10 +182,10 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename ITERATOR_OF_ADDABLE>
-    void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        for (auto i = start; i != end; ++i) {
+        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {
             Add (*i);
         }
     }
@@ -429,7 +429,7 @@ namespace Stroika::Foundation::Containers {
                 return Debug::UncheckedDynamicCast<const _IRep&> (prevRepPtr).CloneAndPatchIterator (&patchedIterator);
             });
         AssertNotNull (writableRep);
-        return make_tuple (Debug::UncheckedDynamicCast<_IRep*> (writableRep), patchedIterator);
+        return make_tuple (Debug::UncheckedDynamicCast<_IRep*> (writableRep), move (patchedIterator));
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_AssertRepValidType () const

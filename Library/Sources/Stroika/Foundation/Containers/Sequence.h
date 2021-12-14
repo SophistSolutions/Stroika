@@ -267,7 +267,7 @@ namespace Stroika::Foundation::Containers {
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Sequence (ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>
-        Sequence (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        Sequence (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
         explicit Sequence (_IRepSharedPtr&& rep) noexcept;
@@ -465,7 +465,7 @@ namespace Stroika::Foundation::Containers {
          *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
          */
         template <typename ITERATOR_OF_ADDABLE>
-        nonvirtual void InsertAll (size_t i, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        nonvirtual void InsertAll (size_t i, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         nonvirtual void InsertAll (size_t i, ITERABLE_OF_ADDABLE&& s);
 
@@ -485,7 +485,7 @@ namespace Stroika::Foundation::Containers {
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         nonvirtual void PrependAll (ITERABLE_OF_ADDABLE&& s);
         template <typename ITERATOR_OF_ADDABLE>
-        nonvirtual void PrependAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        nonvirtual void PrependAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
         /**
@@ -511,7 +511,7 @@ namespace Stroika::Foundation::Containers {
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         nonvirtual void AppendAll (ITERABLE_OF_ADDABLE&& s);
         template <typename ITERATOR_OF_ADDABLE>
-        nonvirtual void AppendAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        nonvirtual void AppendAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
         /**

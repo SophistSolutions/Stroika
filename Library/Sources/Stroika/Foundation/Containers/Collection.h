@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Containers {
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         Collection (ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>
-        Collection (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        Collection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
         explicit Collection (_IRepSharedPtr&& src) noexcept;
@@ -201,7 +201,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         template <typename ITERATOR_OF_ADDABLE>
-        nonvirtual void AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
         template <typename ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 

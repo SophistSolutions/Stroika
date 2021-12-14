@@ -130,11 +130,11 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE>
-    inline Sequence<T>::Sequence (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    inline Sequence<T>::Sequence (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Sequence{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        AppendAll (start, end);
+        AppendAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
     template <typename T>
@@ -253,12 +253,12 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE>
-    void Sequence<T>::InsertAll (size_t i, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    void Sequence<T>::InsertAll (size_t i, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         Require (i <= this->GetLength ());
         size_t insertAt = i;
-        for (auto ii = start; ii != end; ++ii) {
+        for (auto ii = forward<ITERATOR_OF_ADDABLE> (start); ii != end; ++ii) {
             Insert (insertAt++, *ii);
         }
     }
@@ -284,10 +284,10 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE>
-    inline void Sequence<T>::PrependAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    inline void Sequence<T>::PrependAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        InsertAll (0, start, end);
+        InsertAll (0, forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
     }
     template <typename T>
     inline void Sequence<T>::Append (ArgByValueType<value_type> item)
@@ -303,11 +303,11 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE>
-    inline void Sequence<T>::AppendAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    inline void Sequence<T>::AppendAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         _SafeReadWriteRepAccessor<_IRep> accessor = {this};
-        for (auto i = start; i != end; ++i) {
+        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {
             const T& tmp = *i;
             accessor._GetWriteableRep ().Insert (_IRep::_kSentinalLastItemIndex, &tmp, &tmp + 1);
         }
@@ -439,7 +439,7 @@ namespace Stroika::Foundation::Containers {
                 return Debug::UncheckedDynamicCast<const _IRep&> (prevRepPtr).CloneAndPatchIterator (&patchedIterator);
             });
         AssertNotNull (writableRep);
-        return make_tuple (Debug::UncheckedDynamicCast<_IRep*> (writableRep), patchedIterator);
+        return make_tuple (Debug::UncheckedDynamicCast<_IRep*> (writableRep), move (patchedIterator));
     }
     template <typename T>
     inline void Sequence<T>::_AssertRepValidType () const

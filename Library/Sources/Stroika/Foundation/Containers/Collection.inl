@@ -29,11 +29,11 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE>
-    inline Collection<T>::Collection (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    inline Collection<T>::Collection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Collection{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        AddAll (start, end);
+        AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
     template <typename T>
@@ -73,11 +73,11 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE>
-    void Collection<T>::AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    void Collection<T>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
-        for (auto i = start; i != end; ++i) {
+        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {
             tmp._GetWriteableRep ().Add (*i);
         }
     }
@@ -238,7 +238,7 @@ namespace Stroika::Foundation::Containers {
                 return Debug::UncheckedDynamicCast<const _IRep&> (prevRepPtr).CloneAndPatchIterator (&patchedIterator);
             });
         AssertNotNull (writableRep);
-        return make_tuple (Debug::UncheckedDynamicCast<_IRep*> (writableRep), patchedIterator);
+        return make_tuple (Debug::UncheckedDynamicCast<_IRep*> (writableRep), move (patchedIterator));
     }
     template <typename T>
     inline void Collection<T>::_AssertRepValidType () const

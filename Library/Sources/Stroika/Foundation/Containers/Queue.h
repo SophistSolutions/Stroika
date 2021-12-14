@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Containers {
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Queue<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Queue (ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>
-        Queue (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        Queue (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
         explicit Queue (_IRepSharedPtr&& rep) noexcept;
@@ -206,7 +206,7 @@ namespace Stroika::Foundation::Containers {
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         nonvirtual void AddAllToTail (ITERABLE_OF_ADDABLE&& s);
         template <typename ITERATOR_OF_ADDABLE>
-        nonvirtual void AddAllToTail (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        nonvirtual void AddAllToTail (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
         /**

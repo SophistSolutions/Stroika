@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Containers {
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Deque<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Deque (ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>
-        Deque (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        Deque (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
         /**

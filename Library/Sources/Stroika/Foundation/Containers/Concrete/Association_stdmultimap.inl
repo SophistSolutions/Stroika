@@ -278,20 +278,20 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
-    Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_stdmultimap (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_stdmultimap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Association_stdmultimap{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        this->AddAll (start, end);
+        this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
-    Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_stdmultimap (KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_stdmultimap (KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Association_stdmultimap{forward<KEY_INORDER_COMPARER> (keyComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        this->AddAll (start, end);
+        this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>

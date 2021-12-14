@@ -187,9 +187,9 @@ namespace Stroika::Foundation::Containers {
         template <typename EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         Set (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
-        Set (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        Set (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
         template <typename EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
-        Set (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        Set (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
         explicit Set (_IRepSharedPtr&& rep) noexcept;
@@ -280,7 +280,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         template <typename ITERATOR_OF_ADDABLE>
-        nonvirtual void AddAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 
@@ -330,7 +330,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         template <typename ITERATOR_OF_ADDABLE>
-        nonvirtual size_t RemoveAll (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+        nonvirtual size_t RemoveAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
         template <typename ITERABLE_OF_ADDABLE>
         nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& s);
         nonvirtual void   RemoveAll ();

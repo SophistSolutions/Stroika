@@ -50,11 +50,11 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE>
-    inline Deque<T>::Deque (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end)
+    inline Deque<T>::Deque (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Deque{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        this->AddAllToTail (start, end);
+        this->AddAllToTail (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
     template <typename T>

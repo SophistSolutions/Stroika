@@ -203,8 +203,9 @@ Each container Archetype has its own set of arguments that make sense for its co
 - Construct the CONTAINER using an iterable; This typically just constructs the container by default and calls AddItems(start, end)
     ~~~
     template <typename ITERATOR_OF_ADDABLE>
-    CONTAINER (ITERATOR_OF_ADDABLE start, ITERATOR_OF_ADDABLE end);
+    CONTAINER (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
     // and in definition static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
+    // note perfect forwarding on iterator tends to avoid a needless rep clone when assigned auto i = start to iterate
     ~~~
 
 - Construct from an underlying rep smart pointer. This is principally (exclusively?) used in constructing concrete container types.
