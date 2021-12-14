@@ -98,7 +98,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         nonvirtual Headers& operator= (const Headers& rhs);
-        nonvirtual Headers& operator= (Headers&& rhs);
+        nonvirtual Headers& operator= (Headers&& rhs) noexcept;
 
 #if qDebug
     public:

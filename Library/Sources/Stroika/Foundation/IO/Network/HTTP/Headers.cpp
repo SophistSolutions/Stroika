@@ -322,23 +322,23 @@ Headers& Headers::operator= (const Headers& rhs)
     shared_lock<const AssertExternallySynchronizedMutex> critSec1{rhs};
     lock_guard<const AssertExternallySynchronizedMutex>  critSec2{*this};
     if (this != &rhs) {
-        fExtraHeaders_     = move (rhs.fExtraHeaders_);
-        fCacheControl_     = move (rhs.fCacheControl_);
+        fExtraHeaders_     = rhs.fExtraHeaders_;
+        fCacheControl_     = rhs.fCacheControl_;
         fContentLength_    = rhs.fContentLength_;
-        fContentType_      = move (rhs.fContentType_);
-        fCookieList_       = move (rhs.fCookieList_);
-        fDate_             = move (rhs.fDate_);
+        fContentType_      = rhs.fContentType_;
+        fCookieList_       = rhs.fCookieList_;
+        fDate_             = rhs.fDate_;
         fETag_             = rhs.fETag_;
-        fHost_             = move (rhs.fHost_);
-        fIfNoneMatch_      = move (rhs.fIfNoneMatch_);
-        fSetCookieList_    = move (rhs.fSetCookieList_);
-        fTransferEncoding_ = move (rhs.fTransferEncoding_);
-        fVary_             = move (rhs.fVary_);
+        fHost_             = rhs.fHost_;
+        fIfNoneMatch_      = rhs.fIfNoneMatch_;
+        fSetCookieList_    = rhs.fSetCookieList_;
+        fTransferEncoding_ = rhs.fTransferEncoding_;
+        fVary_             = rhs.fVary_;
     }
     return *this;
 }
 
-Headers& Headers::operator= (Headers&& rhs)
+Headers& Headers::operator= (Headers&& rhs) noexcept
 {
     lock_guard<const AssertExternallySynchronizedMutex> critSec1{rhs};
     lock_guard<const AssertExternallySynchronizedMutex> critSec2{*this};
