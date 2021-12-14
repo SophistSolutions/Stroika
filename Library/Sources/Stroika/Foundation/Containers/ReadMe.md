@@ -78,6 +78,8 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 - A sensible taxonmy of containers based on access pattern, and for each, multiple backend data structures to implement them.
 - Linq-like rich variety of functional accessors, like Apply (), Find (), Where, Select (), Distinct (), OrderBy (), Accumulate (), Min/Max (), Any (), etc inherited from Iterable\<T>
 
+- Block-Allocation by default - even for STL-based containers. This helps make (much) use of Set_stdset\<T> faster than std::set\<T>, for example.
+
 - Internal thread safety checks, (generally) assure threadsafe access (see Debug::AssertExternallySyncrhonized)
 
 ## Supported Containers Archetypes
@@ -85,7 +87,8 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 
 - [Association\<KEY_TYPE, VALUE_TYPE>](Association.h)
   - Allows for the association of two elements, and key and one or more values
-  - NYI
+  - Similar to Mapping<> - except multi-valued (like std::multimap)
+  - Supported backends: Array, LinkedList, std::multimap
 - [Bijection\<DOMAIN_TYPE, RANGE_TYPE>](Bijection.h)
   - Bijection allows for the bijective (1-1) association of two elements
   - Supported backends: LinkedList
@@ -129,7 +132,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
     - Sets can also be implemented by hash-tables, etc.
 - [SortedAssociation\<KEY_TYPE, VALUE_TYPE>](SortedAssociation.h)
   - see Association.
-  - NYI
+  - Supported backends: std::multimap
 - [SortedCollection\<T>](SortedCollection.h)
   - See Collection; but adds parameter saying how T items sorted
   - Supported backends: LinkedList. std::multiset
