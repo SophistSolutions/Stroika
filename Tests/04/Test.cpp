@@ -185,6 +185,13 @@ namespace {
                 }
             }
             {
+                using Traversal::Iterator;
+                static_assert (Configuration::IsIterator_v<Iterator<int>>);
+                static_assert (Configuration::IsIterator_v<const Iterator<int>&>);
+                static_assert (Configuration::IsIterator_v<Iterator<int>&>);
+                static_assert (Configuration::IsIterator_v<Iterator<int>&&>);
+            }
+            {
                 static_assert (has_beginend_v<vector<int>>);
                 static_assert (not has_beginend_v<int>);
                 static_assert (not has_beginend_v<Traversal::Iterator<int>>);

@@ -446,10 +446,10 @@ namespace Stroika::Foundation::Configuration {
     constexpr inline bool is_explicitly_convertible_v = Private_::is_explicitly_convertible<From, To>::value;
 
     /**
-     *  Check T is an interator, but checking if it has iterator_traits...
+     *  Check T is an interator, but checking if it has iterator_traits...; note - this first decay's its 'T' argument
      */
     template <typename T>
-    constexpr bool IsIterator_v = Private_::is_iterator<T>::value;
+    constexpr bool IsIterator_v = Private_::is_iterator<decay_t<T>>::value;
 
     /**
      */
