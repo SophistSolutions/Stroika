@@ -16,7 +16,7 @@
 #include "../../Characters/String.h"
 #include "../../Common/Property.h"
 #include "../../Configuration/Common.h"
-#include "../../Containers/Mapping.h"
+#include "../../Containers/Association.h"
 #include "../../Containers/Set.h"
 #include "../../Debug/AssertExternallySynchronizedMutex.h"
 
@@ -25,9 +25,6 @@
 
 /**
  *  \file
- *
- *  TODO:
- *      @todo   Redo Mapping<> to count stuff using Association
  */
 
 #if qHasFeature_OpenSSL
@@ -76,6 +73,8 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
 
     public:
         /**
+         * \req the provider has been successfully loaded with LoadProvider, and the number of loads is greater than the number of
+         *      unloads before this.
          */
         nonvirtual void UnLoadProvider (const String& providerName);
 
@@ -109,7 +108,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
 
     private:
 #if OPENSSL_VERSION_MAJOR >= 3
-        Containers::Mapping<String, pair<::OSSL_PROVIDER*, unsigned int>> fLoadedProviders_;
+        Containers::Association<String, ::OSSL_PROVIDER*> fLoadedProviders_; // providers maybe listed multiple times here, if loaded multiple times by callers
 #endif
     };
 #if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy

@@ -209,8 +209,9 @@ LibraryContext ::~LibraryContext ()
 {
     lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
 #if OPENSSL_VERSION_MAJOR >= 3
-    for (auto i : fLoadedProviders_) {
-        Verify (::OSSL_PROVIDER_unload (i.fValue.first) == 1);
+    // reference counts dont matter here, just unload all the providers we loaded
+    for (auto i : fLoadedProviders_.MappedValues ()) {
+        Verify (::OSSL_PROVIDER_unload (i) == 1);
     }
 #endif
 }
@@ -220,17 +221,15 @@ void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
     Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OpenSSL::LibraryContext::LoadProvider", L"%s", providerName.c_str ())};
     lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
 #if OPENSSL_VERSION_MAJOR >= 3
-    if (auto l = fLoadedProviders_.Lookup (providerName)) {
-        ++l->second;
-        fLoadedProviders_.Add (providerName, *l);
-    }
-    else {
-        OSSL_PROVIDER*                                p = ::OSSL_PROVIDER_load (nullptr, providerName.AsNarrowSDKString ().c_str ());
+    auto p = fLoadedProviders_.LookupOneValue (providerName);
+    if (p == nullptr) {
+        // really load cuz not already loaded
+        DbgTrace (L"calling OSSL_PROVIDER_load");
+        p = ::OSSL_PROVIDER_load (nullptr, providerName.AsNarrowSDKString ().c_str ());
         static const Execution::RuntimeErrorException kErr_{L"No such SSL provider"sv};
         Execution::ThrowIfNull (p, kErr_);
-        fLoadedProviders_.Add (providerName, {p, 1});
-        DbgTrace (L"real load");
     }
+    fLoadedProviders_.Add (providerName, p); // add association (perhaps redundantly)
 #else
     Require (providerName == kDefaultProvider or providerName == kLegacyProvider);
 #endif
@@ -242,16 +241,10 @@ void LibraryContext ::UnLoadProvider ([[maybe_unused]] const String& providerNam
     lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
 #if OPENSSL_VERSION_MAJOR >= 3
     Require (fLoadedProviders_.ContainsKey (providerName));
-    auto l = fLoadedProviders_.Lookup (providerName);
-    Assert (l);
-    l->second--;
-    if (l->second == 0) {
-        fLoadedProviders_.Remove (providerName);
-        Verify (::OSSL_PROVIDER_unload (l->first) == 1);
-        DbgTrace (L"real unload");
-    }
-    else {
-        fLoadedProviders_.Add (providerName, *l);
+    fLoadedProviders_.Remove (providerName);
+    if (auto p = fLoadedProviders_.LookupOneValue (providerName)) {
+        DbgTrace (L"calling OSSL_PROVIDER_unload");
+        Verify (::OSSL_PROVIDER_unload (p) == 1);
     }
 #endif
 }
