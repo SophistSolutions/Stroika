@@ -47,6 +47,8 @@ namespace Stroika::Foundation::Containers {
      *
      *  @see    SortedAssociation<Key,T>
      *
+     *  \note   Alias MultiMap
+     * 
      *  \note   The term 'KEY' usually implies a UNIQUE mapping to the associated value, but DOES NOT do so in this container ArcheType.
      *          Though databases generally use key to imply unique, https://en.cppreference.com/w/cpp/container/multimap, for example, does not.
      * 
