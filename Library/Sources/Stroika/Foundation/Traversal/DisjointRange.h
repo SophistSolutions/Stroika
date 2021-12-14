@@ -49,11 +49,13 @@ namespace Stroika::Foundation::Traversal {
     class DisjointRange {
     public:
         /**
+         *  \brief a Disjoint range collection of (disjoint) ranges of this type.
          */
         using RangeType = RANGE_TYPE;
 
     public:
         /**
+         *  \brief Range::value_type is the type of the contained elements of the range (say range of integers, value_type=int)
          */
         using value_type = typename RangeType::value_type;
 

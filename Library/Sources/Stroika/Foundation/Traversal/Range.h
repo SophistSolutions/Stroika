@@ -300,6 +300,7 @@ namespace Stroika::Foundation::Traversal {
     class Range {
     public:
         /**
+         *  \brief Range::value_type is the type of the contained elements of the range (say range of integers, value_type=int)
          */
         using value_type = T;
 
