@@ -28,6 +28,18 @@
  *
  *      @todo   Keys() method should probably return Set<key_type> - instead of Iterable<key_type>, but concerned about
  *              creating container type interdependencies
+ * 
+ *      @todo   Maybe add optional (return value) arg to Remove()
+ *                      auto providerToMaybeRemove = fLoadedProviders_.LookupOneValue (providerName);
+ *                      fLoadedProviders_.Remove (providerName);
+ *                      if (not fLoadedProviders_.ContainsKey (providerName)) {
+ *                          DbgTrace (L"calling OSSL_PROVIDER_unload");
+ *                          Verify (::OSSL_PROVIDER_unload (providerToMaybeRemove) == 1);
+ *                      }
+ *              Above involves two lookups instead of one. Could have Remove () optinally return iterator pointing to next element?
+ *              But that only works for stdmap based impl… Could have optional return count of number of remaining with that key.
+ *              Maybe too specific to this situation? But at least no cost (pass nullptr by default – add size_t* = nullptr arg 
+ *              to rep code and for stl can find quickly and for others need to hunt).
  *
  */
 
