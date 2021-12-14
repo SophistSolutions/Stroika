@@ -241,10 +241,11 @@ void LibraryContext ::UnLoadProvider ([[maybe_unused]] const String& providerNam
     lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
 #if OPENSSL_VERSION_MAJOR >= 3
     Require (fLoadedProviders_.ContainsKey (providerName));
+    auto providerToMaybeRemove = fLoadedProviders_.LookupOneValue (providerName);
     fLoadedProviders_.Remove (providerName);
-    if (auto p = fLoadedProviders_.LookupOneValue (providerName)) {
+    if (not fLoadedProviders_.ContainsKey (providerName)) {
         DbgTrace (L"calling OSSL_PROVIDER_unload");
-        Verify (::OSSL_PROVIDER_unload (p) == 1);
+        Verify (::OSSL_PROVIDER_unload (providerToMaybeRemove) == 1);
     }
 #endif
 }
