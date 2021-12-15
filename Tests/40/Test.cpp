@@ -118,6 +118,7 @@ namespace {
             int updaterValue = 0;
 
             //https://stroika.atlassian.net/browse/STK-717
+            //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
             if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
                 Thread::Ptr thread1 = Thread::New (bind (&FRED1::DoIt, &updaterValue));
                 Thread::Ptr thread2 = Thread::New (bind (&FRED2::DoIt, &updaterValue));
@@ -170,6 +171,7 @@ namespace {
             sRegTest3Event_T2_.Reset ();
             int updaterValue = 0;
             //https://stroika.atlassian.net/browse/STK-717
+            //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
             if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
                 Thread::Ptr thread1 = Thread::New (bind (&FRED1::DoIt, &updaterValue));
                 Thread::Ptr thread2 = Thread::New (bind (&FRED2::DoIt, &updaterValue));
@@ -549,6 +551,7 @@ namespace {
         };
 
         //https://stroika.atlassian.net/browse/STK-717
+        //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
         if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
             // Normal usage
             {
@@ -580,13 +583,11 @@ namespace {
     void RegressionTest7_SimpleThreadPool_ ()
     {
         Debug::TraceContextBumper traceCtx{"RegressionTest7_SimpleThreadPool_"};
-        if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
-            //https://stroika.atlassian.net/browse/STK-717
+        {
             ThreadPool p;
             p.SetPoolSize (1);
         }
-        if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
-            //https://stroika.atlassian.net/browse/STK-717
+        {
             ThreadPool p;
             p.SetPoolSize (1);
             int                  intVal = 3;
@@ -615,6 +616,8 @@ namespace {
                 *argP = tmp + 1;
             }
         };
+        //https://stroika.atlassian.net/browse/STK-717
+        //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
         if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
             for (unsigned int threadPoolSize = 1; threadPoolSize < 10; ++threadPoolSize) {
                 ThreadPool p;
@@ -1012,12 +1015,13 @@ namespace {
         void DoIt ()
         {
             Debug::TraceContextBumper ctx{"RegressionTest18_RWSynchronized_"};
-            if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
-                // workaround TSAN HERE - but valgrind issue in RegressionTests script -  https://stroika.atlassian.net/browse/STK-717
-                DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
+            static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+
+            //https://stroika.atlassian.net/browse/STK-717
+            //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
+            if constexpr ( qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
                 return;
             }
-            static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 
             // https://stroika.atlassian.net/browse/STK-632
             // Most likely some sort of memory corruption, and given notes in https://stroika.atlassian.net/browse/STK-632 - seems
@@ -1091,9 +1095,9 @@ namespace {
         void DoIt ()
         {
             Debug::TraceContextBumper ctx{"RegressionTest19_ThreadPoolAndBlockingQueue_"};
-            if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
-                // workaround TSAN HERE - but valgrind issue in RegressionTests script -  https://stroika.atlassian.net/browse/STK-717
-                DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
+            //https://stroika.atlassian.net/browse/STK-717
+            //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
+            if constexpr ( qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
                 return;
             }
             Private_::TEST_ ();
@@ -1182,11 +1186,12 @@ namespace {
          */
         Debug::TraceContextBumper ctx{"RegressionTest22_SycnhonizedUpgradeLock_"};
 
-        if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
-            // workaround TSAN HERE - but valgrind issue in RegressionTests script -  https://stroika.atlassian.net/browse/STK-717
-            DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
+        //https://stroika.atlassian.net/browse/STK-717
+        //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
+        if constexpr ( qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
             return;
         }
+
         static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 
         // https://stroika.atlassian.net/browse/STK-632

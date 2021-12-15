@@ -257,12 +257,14 @@ namespace {
 
         void Tests_ ()
         {
+            #if 0
             if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
                 // workaround TSAN HERE - but valgrind issue in RegressionTests script -  https://stroika.atlassian.net/browse/STK-717
                 //  we get bogus lock inversion / deadlock warning because unlocks not recognized
                 DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
                 return;
             }
+            #endif
             Private_::T1_ ();
         }
     }

@@ -95,6 +95,13 @@
    ...
 }
 
+
+#
+#  https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+#     Basically same bug on valgrind/tsan (with ubuntu != LTS - 21.10 for now) - but workaround for valgrind is ONLY these suppressions
+#     and these are applied REGARDLESS of setting of qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy - must be commented out here to test
+#     if fixed.
+#
 {
    https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
    Helgrind:Misc
@@ -175,7 +182,6 @@
    ...
    fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
    ...
-
    #fun:_ZZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEdENKUlvE_clEv
    #fun:_ZN7Stroika10Foundation9Execution17ConditionVariableISt5mutexSt18condition_variableE10wait_untilIZNS1_13WaitableEvent3WE_16WaitUntilQuietlyEdEUlvE_EEbRSt11unique_lockIS3_EdT_
    #fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd

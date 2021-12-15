@@ -78,11 +78,6 @@ namespace {
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
-    if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
-        // workaround TSAN HERE - but valgrind issue in RegressionTests script -  https://stroika.atlassian.net/browse/STK-717
-        DbgTrace ("Skipping this test cuz just gives false positives");
-        return Stroika::TestHarness::PrintPassOrFail ([] () {});
-    }
     SignalHandlerRegistry::SafeSignalsManager safeSignals;
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
