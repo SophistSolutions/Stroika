@@ -33,21 +33,21 @@
    https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
    Helgrind:Race
    ...
-   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietly*
    ...
 }
 {
    <insert_a_suppression_name_here>
    Helgrind:Misc
    ...
-   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietly*
    ...
 }
 {
    <insert_a_suppression_name_here>
    Helgrind:UnlockForeign
    ...
-   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietly*
    ...
 }
 
@@ -77,7 +77,7 @@
    <insert_a_suppression_name_here>
    Helgrind:UnlockUnlocked
    ...
-   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietly*
 }
 
 {
