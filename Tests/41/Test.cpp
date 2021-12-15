@@ -625,7 +625,7 @@ namespace {
                 DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
                 return;
             }
-            int64_t                   cnt{};
+            int64_t cnt{};
             {
                 Debug::TraceContextBumper ctx1{"TestBasics_<vector<int>>"};
                 Private_::TestBasics_<vector<int>> (
@@ -749,8 +749,8 @@ namespace {
                 DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
                 return;
             }
-            static const bool         kRunningValgrind_           = Debug::IsRunningUnderValgrind ();
-            bool                      hasBug632AndRunningHelgrind = kRunningValgrind_; // not easy to check
+            static const bool kRunningValgrind_           = Debug::IsRunningUnderValgrind ();
+            bool              hasBug632AndRunningHelgrind = kRunningValgrind_; // not easy to check
             if (hasBug632AndRunningHelgrind) {
                 // https://stroika.atlassian.net/browse/STK-632 - this workaround WAS ONLY needed on ARM and HELGRIND (not memcheck) - but now fails on ubuntu 18.10 as well -- LGP 2019-08-26
                 // This appears still broken in Ununtu 2004 and near end of Stroika 2.1b14 --LGP 2021-11-29
