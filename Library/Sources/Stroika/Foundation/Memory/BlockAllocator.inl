@@ -142,10 +142,6 @@ namespace Stroika::Foundation::Memory {
          *      But this SEEMS to suggest I should call "HAPPENSBEFORE" before
          *      I change the location, and HAPPENSAFTER afterwards.
          *
-         *      Dont use Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated, deallocated,
-         *      since these cause false positive warnings about races (not sure - probably my misunderstanding
-         *      about these macros).
-         *
          *  Before doing this thoroughly we would occasionally get:
 
             )))- valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/g++-valgrind-debug-SSLPurify/Samples-WebServer/WebServer --quit-after 10...==2665543== ---Thread-Announcement------------------------------------------
@@ -194,6 +190,7 @@ namespace Stroika::Foundation::Memory {
         }
         void* result = p;
         AssertNotNull (result);
+        Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated (result, n);
         /*
          *  Treat this as a linked list, and make head point to next member.
          *
@@ -206,7 +203,6 @@ namespace Stroika::Foundation::Memory {
         Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE (&sHeadLink_);
         Verify (sHeadLink_.exchange (next, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
         Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER (&sHeadLink_);
-        //Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated (result, n);
         return result;
 #else
         [[maybe_unused]] auto&& critSec = lock_guard{Private_::GetLock_ ()};
@@ -262,7 +258,7 @@ namespace Stroika::Foundation::Memory {
         Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE (&sHeadLink_);
         Verify (sHeadLink_.exchange (newHead, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
         Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER (&sHeadLink_);
-        //Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated (p, SIZE);
+        Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated (p, SIZE);
 #else
         Private_::DoDeleteHandlingLocksExceptionsEtc_ (p, &sHeadLink_);
 #endif
