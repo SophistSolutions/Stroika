@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual SortedMultiSet_stdmap& operator= (SortedMultiSet_stdmap&& rhs) = default;
+        nonvirtual SortedMultiSet_stdmap& operator= (SortedMultiSet_stdmap&& rhs) noexcept = default;
         nonvirtual SortedMultiSet_stdmap& operator= (const SortedMultiSet_stdmap& rhs) = default;
 
     protected:

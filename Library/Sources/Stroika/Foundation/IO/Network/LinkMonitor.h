@@ -78,10 +78,11 @@ namespace Stroika::Foundation::IO::Network {
      */
     struct LinkMonitor {
         LinkMonitor ();
-        LinkMonitor (LinkMonitor&& rhs) noexcept;
-        LinkMonitor (const LinkMonitor&) = delete;
+        LinkMonitor (LinkMonitor&& rhs) noexcept = default;
+        LinkMonitor (const LinkMonitor&)         = delete;
+
+        LinkMonitor& operator= (LinkMonitor&& rhs) noexcept = default;
         LinkMonitor& operator= (const LinkMonitor&) = delete;
-        LinkMonitor& operator                       = (const LinkMonitor&& rhs) noexcept;
 
         enum class LinkChange {
             eAdded,

@@ -155,16 +155,16 @@ namespace Stroika::Foundation::Streams {
         /**
          *  defaults to nullptr
          */
-        Ptr ()           = default;
-        Ptr (const Ptr&) = default;
-        Ptr (Ptr&&)      = default;
-        Ptr (nullptr_t);
+        Ptr () noexcept           = default;
+        Ptr (const Ptr&) noexcept = default;
+        Ptr (Ptr&&) noexcept      = default;
+        Ptr (nullptr_t) noexcept;
 
     public:
         /**
          */
         nonvirtual Ptr& operator= (const Ptr&) = default;
-        nonvirtual Ptr& operator= (Ptr&&) = default;
+        nonvirtual Ptr& operator= (Ptr&&) noexcept = default;
 
     protected:
         /**
@@ -172,7 +172,7 @@ namespace Stroika::Foundation::Streams {
          *
          *  \req rep != nullptr (use other constructor)
          */
-        explicit Ptr (const _SharedIRep& rep);
+        explicit Ptr (const _SharedIRep& rep) noexcept;
 
     public:
         /**

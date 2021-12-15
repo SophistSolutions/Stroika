@@ -332,8 +332,8 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          */
-        nonvirtual Iterable& operator= (const Iterable& rhs) noexcept = default;
         nonvirtual Iterable& operator= (Iterable&& rhs) noexcept = default;
+        nonvirtual Iterable& operator= (const Iterable& rhs) noexcept = default;
 
     public:
         /**

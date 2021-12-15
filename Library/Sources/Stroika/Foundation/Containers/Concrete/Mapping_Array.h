@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Mapping_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Mapping_Array& operator= (Mapping_Array&& rhs) = default;
+        nonvirtual Mapping_Array& operator= (Mapping_Array&& rhs) noexcept = default;
         nonvirtual Mapping_Array& operator= (const Mapping_Array& rhs) = default;
 
     public:

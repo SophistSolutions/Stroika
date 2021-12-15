@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Collection_LinkedList& operator= (Collection_LinkedList&& rhs) = default;
+        nonvirtual Collection_LinkedList& operator= (Collection_LinkedList&& rhs) noexcept = default;
         nonvirtual Collection_LinkedList& operator= (const Collection_LinkedList& rhs) = default;
 
     protected:

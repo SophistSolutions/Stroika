@@ -200,7 +200,7 @@ namespace Stroika::Foundation::Containers {
         explicit MultiSet (const _IRepSharedPtr& rep) noexcept;
 
     public:
-        nonvirtual MultiSet& operator= (MultiSet&& rhs) = default;
+        nonvirtual MultiSet& operator= (MultiSet&& rhs) noexcept = default;
         nonvirtual MultiSet& operator= (const MultiSet& rhs) = default;
 
     public:

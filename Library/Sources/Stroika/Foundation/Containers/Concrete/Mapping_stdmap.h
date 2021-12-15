@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual Mapping_stdmap& operator= (Mapping_stdmap&& rhs) = default;
+        nonvirtual Mapping_stdmap& operator= (Mapping_stdmap&& rhs) noexcept = default;
         nonvirtual Mapping_stdmap& operator= (const Mapping_stdmap& rhs) = default;
 
     protected:

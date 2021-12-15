@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         KeyedCollection_LinkedList (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual KeyedCollection_LinkedList& operator= (KeyedCollection_LinkedList&& rhs) = default;
+        nonvirtual KeyedCollection_LinkedList& operator= (KeyedCollection_LinkedList&& rhs) noexcept = default;
         nonvirtual KeyedCollection_LinkedList& operator= (const KeyedCollection_LinkedList& rhs) = default;
 
     protected:

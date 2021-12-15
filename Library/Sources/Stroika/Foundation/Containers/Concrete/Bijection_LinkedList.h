@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Bijection_LinkedList (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Bijection_LinkedList& operator= (Bijection_LinkedList&& rhs) = default;
+        nonvirtual Bijection_LinkedList& operator= (Bijection_LinkedList&& rhs) noexcept = default;
         nonvirtual Bijection_LinkedList& operator= (const Bijection_LinkedList& rhs) = default;
 
     protected:

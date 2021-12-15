@@ -276,7 +276,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Sequence& operator= (Sequence&& rhs) = default;
+        nonvirtual Sequence& operator= (Sequence&& rhs) noexcept = default;
         nonvirtual Sequence& operator= (const Sequence& rhs) = default;
 
     public:

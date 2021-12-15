@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual MultiSet_Array& operator= (MultiSet_Array&& rhs) = default;
+        nonvirtual MultiSet_Array& operator= (MultiSet_Array&& rhs) noexcept = default;
         nonvirtual MultiSet_Array& operator= (const MultiSet_Array& rhs) = default;
 
     public:

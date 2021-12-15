@@ -180,8 +180,8 @@ namespace Stroika::Foundation::Streams {
          */
         Ptr () = default;
         Ptr (nullptr_t);
-        Ptr (const Ptr&) = default;
-        Ptr (Ptr&&)      = default;
+        Ptr (const Ptr&)     = default;
+        Ptr (Ptr&&) noexcept = default;
 
     protected:
         /**
@@ -194,8 +194,8 @@ namespace Stroika::Foundation::Streams {
     public:
         /**
          */
+        nonvirtual Ptr& operator= (Ptr&&) noexcept = default;
         nonvirtual Ptr& operator= (const Ptr&) = default;
-        nonvirtual Ptr& operator= (Ptr&&) = default;
 
     public:
         /**

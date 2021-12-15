@@ -69,10 +69,11 @@ namespace Stroika::Foundation::Cache {
          *      \endcode
          */
         Memoizer (const function<RESULT (ARGS...)>& f, CACHE<tuple<ARGS...>, RESULT>&& cache = CACHE<tuple<ARGS...>, RESULT>{});
-        Memoizer (const Memoizer& from) = default;
+        Memoizer (Memoizer&& from) noexcept = default;
+        Memoizer (const Memoizer& from)     = default;
 
     public:
-        nonvirtual Memoizer& operator= (Memoizer&& rhs) = default;
+        nonvirtual Memoizer& operator= (Memoizer&& rhs) noexcept = default;
         nonvirtual Memoizer& operator= (const Memoizer& rhs) = default;
 
     public:

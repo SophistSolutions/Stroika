@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual SortedCollection_LinkedList& operator= (SortedCollection_LinkedList&& rhs) = default;
+        nonvirtual SortedCollection_LinkedList& operator= (SortedCollection_LinkedList&& rhs) noexcept = default;
         nonvirtual SortedCollection_LinkedList& operator= (const SortedCollection_LinkedList& rhs) = default;
 
     protected:

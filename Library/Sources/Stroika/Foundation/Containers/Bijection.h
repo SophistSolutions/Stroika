@@ -197,7 +197,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Bijection& operator= (Bijection&& rhs) = default;
+        nonvirtual Bijection& operator= (Bijection&& rhs) noexcept = default;
         nonvirtual Bijection& operator= (const Bijection& rhs) = default;
 
     public:

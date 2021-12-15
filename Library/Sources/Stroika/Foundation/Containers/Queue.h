@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Queue& operator= (Queue&& rhs) = default;
+        nonvirtual Queue& operator= (Queue&& rhs) noexcept = default;
         nonvirtual Queue& operator= (const Queue& rhs) = default;
 
     public:

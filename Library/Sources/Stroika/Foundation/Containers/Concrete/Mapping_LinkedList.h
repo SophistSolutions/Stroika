@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Mapping_LinkedList (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Mapping_LinkedList& operator= (Mapping_LinkedList&& rhs) = default;
+        nonvirtual Mapping_LinkedList& operator= (Mapping_LinkedList&& rhs) noexcept = default;
         nonvirtual Mapping_LinkedList& operator= (const Mapping_LinkedList& rhs) = default;
 
     protected:

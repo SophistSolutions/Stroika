@@ -81,14 +81,15 @@ namespace Stroika::Foundation::Time {
          *  \req minute < 60
          *  \req seconds < 60
          */
-        constexpr TimeOfDay (const TimeOfDay&) = default;
-        constexpr TimeOfDay (TimeOfDay&& src)  = default;
+        constexpr TimeOfDay (TimeOfDay&& src) noexcept = default;
+        constexpr TimeOfDay (const TimeOfDay&)         = default;
         constexpr explicit TimeOfDay (uint32_t t);
         explicit constexpr TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds);
 
     public:
         /**
          */
+        nonvirtual TimeOfDay& operator= (TimeOfDay&&) noexcept = default;
         nonvirtual TimeOfDay& operator= (const TimeOfDay&) = default;
 
     public:

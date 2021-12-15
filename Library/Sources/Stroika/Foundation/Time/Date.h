@@ -243,16 +243,16 @@ namespace Stroika::Foundation::Time {
          *
          *  \req kMinJulianRep <= julianRep <= kMaxJulianRep OR julianRep == kEmptyJulianRep
          */
-        constexpr Date (const Date& src) = default;
-        constexpr Date (Date&& src)      = default;
+        constexpr Date (Date&& src) noexcept = default;
+        constexpr Date (const Date& src)     = default;
         explicit constexpr Date (JulianRepType julianRep);
         constexpr explicit Date (Year year, MonthOfYear month, DayOfMonth day);
 
     public:
         /**
-        */
+         */
+        nonvirtual Date& operator= (Date&& rhs) noexcept = default;
         nonvirtual Date& operator= (const Date& rhs) = default;
-        nonvirtual Date& operator= (Date&& rhs) = default;
 
     public:
         /**

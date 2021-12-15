@@ -122,14 +122,14 @@ namespace Stroika::Foundation::Time {
          */
         Timezone () = delete;
         constexpr Timezone (BiasInMinutesFromUTCType biasInMinutesFromUTC);
-        constexpr Timezone (const Timezone& src) = default;
-        constexpr Timezone (Timezone&& src)      = default;
+        constexpr Timezone (const Timezone& src)     = default;
+        constexpr Timezone (Timezone&& src) noexcept = default;
 
     public:
         /**
          */
+        nonvirtual Timezone& operator= (Timezone&& rhs) noexcept = default;
         nonvirtual Timezone& operator= (const Timezone& rhs) = default;
-        nonvirtual Timezone& operator= (Timezone&& rhs) = default;
 
     public:
         /**

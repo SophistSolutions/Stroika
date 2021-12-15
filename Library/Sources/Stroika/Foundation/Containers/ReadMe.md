@@ -23,9 +23,9 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
  x.push_back (3);
  Assert (x.length () == 4);
  Assert (x[1] == 3);
- x = Sequence_LinkedList<int> (x);      // convert x to use a linked-list representation
+ x = Sequence_LinkedList<int>{x};       // convert x to use a linked-list representation
  Assert (x[1] == 3);                    // all data same as before
- x = Sequence_stdvector<int> (x);       // convert x to use a std::vector representation
+ x = Sequence_stdvector<int>{x};        // convert x to use a std::vector representation
  Assert (x.length () == 4);             // all data same as before
  std::list<int> y = x.As<list<int>> (); // convert to STL types
 ```
@@ -131,7 +131,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
     - If you have a less<T> already defined, like std::set<T>, this will be used by default to construct a tree-based set.
     - Sets can also be implemented by hash-tables, etc.
 - [SortedAssociation\<KEY_TYPE, VALUE_TYPE>](SortedAssociation.h)
-  - see Association.
+  - see Association; but adds parameter saying how KEY items sorted
   - Supported backends: std::multimap
 - [SortedCollection\<T>](SortedCollection.h)
   - See Collection; but adds parameter saying how T items sorted

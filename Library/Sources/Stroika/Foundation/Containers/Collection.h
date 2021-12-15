@@ -172,7 +172,7 @@ namespace Stroika::Foundation::Containers {
         explicit Collection (const _IRepSharedPtr& src) noexcept;
 
     public:
-        nonvirtual Collection& operator= (Collection&& rhs) = default;
+        nonvirtual Collection& operator= (Collection&& rhs) noexcept = default;
         nonvirtual Collection& operator= (const Collection& rhs) = default;
 
     public:

@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual Association_stdmultimap& operator= (Association_stdmultimap&& rhs) = default;
+        nonvirtual Association_stdmultimap& operator= (Association_stdmultimap&& rhs) noexcept = default;
         nonvirtual Association_stdmultimap& operator= (const Association_stdmultimap& rhs) = default;
 
     protected:

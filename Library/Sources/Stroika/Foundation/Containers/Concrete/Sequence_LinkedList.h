@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual Sequence_LinkedList& operator= (Sequence_LinkedList&& rhs) = default;
+        nonvirtual Sequence_LinkedList& operator= (Sequence_LinkedList&& rhs) noexcept = default;
         nonvirtual Sequence_LinkedList& operator= (const Sequence_LinkedList& rhs) = default;
 
     protected:

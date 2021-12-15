@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_stdforward_list (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Collection_stdforward_list& operator= (Collection_stdforward_list&& rhs) = default;
+        nonvirtual Collection_stdforward_list& operator= (Collection_stdforward_list&& rhs) noexcept = default;
         nonvirtual Collection_stdforward_list& operator= (const Collection_stdforward_list& rhs) = default;
 
     protected:

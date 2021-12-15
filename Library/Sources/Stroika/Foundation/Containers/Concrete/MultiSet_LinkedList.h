@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual MultiSet_LinkedList& operator= (MultiSet_LinkedList&& rhs) = default;
+        nonvirtual MultiSet_LinkedList& operator= (MultiSet_LinkedList&& rhs) noexcept = default;
         nonvirtual MultiSet_LinkedList& operator= (const MultiSet_LinkedList& rhs) = default;
 
     protected:

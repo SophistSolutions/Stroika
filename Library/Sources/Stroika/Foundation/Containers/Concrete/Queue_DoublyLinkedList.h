@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Queue_DoublyLinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Queue_DoublyLinkedList& operator= (Queue_DoublyLinkedList&& rhs) = default;
+        nonvirtual Queue_DoublyLinkedList& operator= (Queue_DoublyLinkedList&& rhs) noexcept = default;
         nonvirtual Queue_DoublyLinkedList& operator= (const Queue_DoublyLinkedList& rhs) = default;
 
     protected:

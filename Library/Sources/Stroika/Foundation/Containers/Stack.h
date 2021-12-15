@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Stack& operator= (Stack&& rhs) = default;
+        nonvirtual Stack& operator= (Stack&& rhs) noexcept = default;
         nonvirtual Stack& operator= (const Stack& rhs) = default;
 
     public:

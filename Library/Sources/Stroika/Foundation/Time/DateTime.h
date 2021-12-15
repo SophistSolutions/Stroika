@@ -116,8 +116,8 @@ namespace Stroika::Foundation::Time {
          *
          *  \note TimeOfDay arguments *must* not be 'empty' - instead use optional<TimeOfDay> {nullopt} overload (since Stroika 2.1d4)
          */
-        constexpr DateTime (const DateTime& src) = default;
-        constexpr DateTime (DateTime&& src)      = default;
+        constexpr DateTime (DateTime&& src) noexcept = default;
+        constexpr DateTime (const DateTime& src)     = default;
         constexpr DateTime (const Date& d) noexcept;
         constexpr DateTime (const DateTime& dt, const Date& updateDate) noexcept;
         constexpr DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
@@ -136,8 +136,8 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          */
+        nonvirtual DateTime& operator= (DateTime&& rhs) noexcept = default;
         nonvirtual DateTime& operator= (const DateTime& rhs) = default;
-        nonvirtual DateTime& operator= (DateTime&& rhs) = default;
 
     public:
         /**

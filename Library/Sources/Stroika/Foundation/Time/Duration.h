@@ -142,8 +142,8 @@ namespace Stroika::Foundation::Time {
          *  \note for numeric overloads, require (not isnan (src)) - but allow isinf()
          */
         constexpr Duration ();
-        Duration (const Duration& src);
         Duration (Duration&& src) noexcept;
+        Duration (const Duration& src);
         explicit Duration (const string& durationStr);
         explicit Duration (const Characters::String& durationStr);
         constexpr explicit Duration (int duration);
@@ -159,8 +159,8 @@ namespace Stroika::Foundation::Time {
         ~Duration ();
 
     public:
-        nonvirtual Duration& operator= (const Duration& rhs);
         nonvirtual Duration& operator= (Duration&& rhs) noexcept;
+        nonvirtual Duration& operator= (const Duration& rhs);
 
     private:
         using InternalNumericFormatType_ = inherited::rep;

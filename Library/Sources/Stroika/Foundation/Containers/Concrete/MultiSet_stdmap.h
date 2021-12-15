@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         MultiSet_stdmap (INORDER_COMPARER&& comparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual MultiSet_stdmap& operator= (MultiSet_stdmap&& rhs) = default;
+        nonvirtual MultiSet_stdmap& operator= (MultiSet_stdmap&& rhs) noexcept = default;
         nonvirtual MultiSet_stdmap& operator= (const MultiSet_stdmap& rhs) = default;
 
     protected:

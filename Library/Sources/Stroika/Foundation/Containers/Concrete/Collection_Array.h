@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Collection_Array& operator= (Collection_Array&& rhs) = default;
+        nonvirtual Collection_Array& operator= (Collection_Array&& rhs) noexcept = default;
         nonvirtual Collection_Array& operator= (const Collection_Array& rhs) = default;
 
     public:

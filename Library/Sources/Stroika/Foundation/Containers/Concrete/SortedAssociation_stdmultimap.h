@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual SortedAssociation_stdmultimap& operator= (SortedAssociation_stdmultimap&& rhs) = default;
+        nonvirtual SortedAssociation_stdmultimap& operator= (SortedAssociation_stdmultimap&& rhs) noexcept = default;
         nonvirtual SortedAssociation_stdmultimap& operator= (const SortedAssociation_stdmultimap& rhs) = default;
 
     protected:

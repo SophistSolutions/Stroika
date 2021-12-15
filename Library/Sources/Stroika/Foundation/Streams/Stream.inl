@@ -18,14 +18,14 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline Stream<ELEMENT_TYPE>::Ptr::Ptr (const _SharedIRep& rep)
+    inline Stream<ELEMENT_TYPE>::Ptr::Ptr (const _SharedIRep& rep) noexcept
         : fRep_{(RequireNotNull (rep), rep)}
         , fSeekable_{rep->IsSeekable ()}
     {
         RequireNotNull (rep);
     }
     template <typename ELEMENT_TYPE>
-    inline Stream<ELEMENT_TYPE>::Ptr::Ptr (nullptr_t)
+    inline Stream<ELEMENT_TYPE>::Ptr::Ptr (nullptr_t) noexcept
     {
     }
     template <typename ELEMENT_TYPE>

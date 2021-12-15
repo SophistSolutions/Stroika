@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Association_Array& operator= (Association_Array&& rhs) = default;
+        nonvirtual Association_Array& operator= (Association_Array&& rhs) noexcept = default;
         nonvirtual Association_Array& operator= (const Association_Array& rhs) = default;
 
     public:

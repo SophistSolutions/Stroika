@@ -100,15 +100,21 @@ namespace Stroika::Foundation::Cache {
         /**
          *  \note the overloads taking pair<KEY,VALUE> as the first argument are just tricks to allow deduction guides to work (because
          *        you cannot specify some template parameters and then have deduction guides take effect).
+         * 
+         *  Note cannot move easily because this contains internal pointers (fCachedElts_First_)
          */
         LRUCache (size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {}, size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{});
         LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {}, size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{});
         LRUCache (size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{});
         LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{});
+        LRUCache (LRUCache&& from) = delete;
         LRUCache (const LRUCache& from);
 
     public:
-        nonvirtual const LRUCache& operator= (const LRUCache& rhs);
+        /**
+         */
+        nonvirtual const LRUCache& operator= (LRUCache&& rhs) noexcept = delete;
+        nonvirtual const LRUCache& operator                            = (const LRUCache& rhs);
 
     public:
         /**

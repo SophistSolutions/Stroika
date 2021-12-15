@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual SortedSet_stdset& operator= (SortedSet_stdset&& rhs) = default;
+        nonvirtual SortedSet_stdset& operator= (SortedSet_stdset&& rhs) noexcept = default;
         nonvirtual SortedSet_stdset& operator= (const SortedSet_stdset& rhs) = default;
 
     protected:

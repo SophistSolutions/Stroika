@@ -227,7 +227,8 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
-        WaitForIOReady (const WaitForIOReady&) = default;
+        WaitForIOReady (WaitForIOReady&&) noexcept = default;
+        WaitForIOReady (const WaitForIOReady&)     = default;
         WaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds, optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup = nullopt);
         WaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor, optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup = nullopt);
         WaitForIOReady (T fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor, optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup = nullopt);
@@ -236,6 +237,7 @@ namespace Stroika::Foundation::Execution {
         ~WaitForIOReady () = default;
 
     public:
+        nonvirtual WaitForIOReady& operator= (WaitForIOReady&&) noexcept = default;
         nonvirtual WaitForIOReady& operator= (const WaitForIOReady&) = default;
 
     public:

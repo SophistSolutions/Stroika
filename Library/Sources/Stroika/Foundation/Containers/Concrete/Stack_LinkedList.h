@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Stack_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
-        nonvirtual Stack_LinkedList& operator= (Stack_LinkedList&& rhs) = default;
+        nonvirtual Stack_LinkedList& operator= (Stack_LinkedList&& rhs) noexcept = default;
         nonvirtual Stack_LinkedList& operator= (const Stack_LinkedList& rhs) = default;
 
     protected:

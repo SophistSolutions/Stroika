@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        nonvirtual SortedMapping_stdmap& operator= (SortedMapping_stdmap&& rhs) = default;
+        nonvirtual SortedMapping_stdmap& operator= (SortedMapping_stdmap&& rhs) noexcept = default;
         nonvirtual SortedMapping_stdmap& operator= (const SortedMapping_stdmap& rhs) = default;
 
     protected:

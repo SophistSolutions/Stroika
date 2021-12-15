@@ -170,8 +170,8 @@ namespace Stroika::Foundation::Configuration {
         EnumNames () = delete;
 #endif
 
-        constexpr EnumNames (const EnumNames& src) = default;
         constexpr EnumNames (EnumNames&& src)      = default;
+        constexpr EnumNames (const EnumNames& src) = default;
         constexpr EnumNames (const BasicArrayInitializer& init);
 #if 0
         // https://stackoverflow.com/questions/6893700/how-to-construct-stdarray-object-with-initializer-list 
