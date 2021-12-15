@@ -667,6 +667,12 @@ namespace {
     void RegressionTest10_BlockingQueue_ ()
     {
         Debug::TraceContextBumper ctx{"RegressionTest10_BlockingQueue_"};
+        //https://stroika.atlassian.net/browse/STK-717
+        //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
+        if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
+            DbgTrace ("Skipping RegressionTest10_BlockingQueue_ due to qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer");
+            return;
+        }
         enum { START = 0,
                END   = 100 };
         int                              expectedValue = (START + END) * (END - START + 1) / 2;
@@ -683,7 +689,7 @@ namespace {
                 q.EndOfInput ();
             },
             Thread::eAutoStart,
-            String{L"Producer"});
+            L"Producer");
         Thread::Ptr consumerThread = Thread::New (
             [&q] () {
                 // Since we call EndOfInput () - the RemoveHead () will eventually timeout
@@ -693,7 +699,7 @@ namespace {
                 }
             },
             Thread::eAutoStart,
-            String{L"Consumer"});
+            L"Consumer");
         // producer already set to run off the end...
         // consumer will end due to exception reading from end
         Thread::WaitForDone ({producerThread, consumerThread});
@@ -1133,7 +1139,7 @@ namespace {
                 }
             },
             Thread::eAutoStart,
-            String{L"Consumer"});
+            L"Consumer");
         Execution::Sleep (0.1); // so consume gets a chance to fail removehead at least once...
         Thread::Ptr producerThread = Thread::New (
             [&q, &counter] () {
@@ -1146,7 +1152,7 @@ namespace {
                 q.EndOfInput ();
             },
             Thread::eAutoStart,
-            String{L"Producer"});
+            L"Producer");
         // producer already set to run off the end...
         // consumer will end due to exception reading from end
         Thread::WaitForDone ({producerThread, consumerThread});
@@ -1169,7 +1175,7 @@ namespace {
                 }
             },
             Thread::eAutoStart,
-            String{L"Consumer"});
+            L"Consumer");
         Execution::Sleep (0.5);
         // make sure we can interrupt a blocking read on the BlockingQueue
         consumerThread.AbortAndWaitForDone ();
