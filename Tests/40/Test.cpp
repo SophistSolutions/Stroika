@@ -686,13 +686,13 @@ namespace {
                 for (int incBy = START; incBy <= END; ++incBy) {
                     q.AddTail ([&counter, incBy] () { counter += incBy; });
                 }
-                q.EndOfInput ();
+                q.SignalEndOfInput ();
             },
             Thread::eAutoStart,
             L"Producer");
         Thread::Ptr consumerThread = Thread::New (
             [&q] () {
-                // Since we call EndOfInput () - the RemoveHead () will eventually timeout
+                // Since we call SignalEndOfInput () - the RemoveHead () will eventually timeout
                 while (true) {
                     function<void ()> f = q.RemoveHead ();
                     f ();
@@ -1090,7 +1090,7 @@ namespace {
 
                 // wait for all producers to be done, and then mark the input Q with EOF
                 producerThreadPool.WaitForTasksDone ();
-                q.EndOfInput ();
+                q.SignalEndOfInput ();
 
                 // Wait for consumers to finish, and validate their side-effect - count - is correct.
                 consumerThreadPool.WaitForTasksDone ();
@@ -1149,7 +1149,7 @@ namespace {
                         Execution::Sleep (100ms); // illogical in real app, but give time for consumer to catch up to help check no race
                     }
                 }
-                q.EndOfInput ();
+                q.SignalEndOfInput ();
             },
             Thread::eAutoStart,
             L"Producer");

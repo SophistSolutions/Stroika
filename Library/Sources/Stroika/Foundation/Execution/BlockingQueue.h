@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Execution {
      *                  for (int incBy = START; incBy <= END; ++incBy) {
      *                      q.AddTail ([&counter, incBy] () { counter += incBy; });
      *                  }
-     *                  q.EndOfInput ();
+     *                  q.SignalEndOfInput ();
      *              },
      *              Thread::eAutoStart,
      *              L"Producer"_k
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Execution {
          *  Analagous to the java BlockingQueue<T>::put(e) and similar to the java
          *  BlockingQueue<T>::offer() or BlockingQueue<T>::add () method.
          *
-         *  \note this is illegal to call (assertion error) if EndOfInput () has been called on this BlockingQueue.
+         *  \note this is illegal to call (assertion error) if SignalEndOfInput () has been called on this BlockingQueue.
          */
         nonvirtual void AddTail (const T& e, Time::DurationSecondsType timeout = Time::kInfinite);
 
@@ -143,11 +143,11 @@ namespace Stroika::Foundation::Execution {
          *  \note This doesn't delete the current entries in the blocking queue, so they will still get consumed. This just prevents
          *        the Q from blocking while its being emptied out. This is like adding the special value 'EOF' to the end of Q.
          */
-        nonvirtual void EndOfInput ();
+        nonvirtual void SignalEndOfInput ();
 
     public:
         /**
-         *  This returns true iff EndOfInput () has been called. It does NOT imply the BlockingQueue is empty.
+         *  This returns true iff SignalEndOfInput () has been called. It does NOT imply the BlockingQueue is empty.
          *
          *  This routine exist because there is no other non-blocking way to check (peek) at see if you are at end of input.
          */
@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  This returns true iff EndOfInput () has been called and the BlockingQueue is empty.
+         *  This returns true iff SignalEndOfInput () has been called and the BlockingQueue is empty.
          *
          *  \note Equivalent to EndOfInputHasBeenQueued () and empty ()
          *
@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  If there are currently no items in the Q, this may wait indefinitely (up to timeout provided).
          *
-         *  If there are no available entries, and EndOfInput () has been called, this will throw a timeout exception
+         *  If there are no available entries, and SignalEndOfInput () has been called, this will throw a timeout exception
          *  no matter what the timeout value given.
          *
          *  Similar to the java BlockingQueue<T>::take() or BlockingQueue<T>::poll (time) method.
@@ -225,6 +225,12 @@ namespace Stroika::Foundation::Execution {
         /**
          */
         nonvirtual void clear ();
+
+    public:
+        [[deprecated ("Since Stroika 2.1b14, use SignalEndOfInput")]] void EndOfInput ()
+        {
+            SignalEndOfInput ();
+        }
 
     private:
         mutable ConditionVariable<> fCondtionVariable_;

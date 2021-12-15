@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Execution {
         fCondtionVariable_.MutateDataNotifyAll ([&, this] () { Require (not fEndOfInput_);  fQueue_.AddTail (e); });
     }
     template <typename T>
-    inline void BlockingQueue<T>::EndOfInput ()
+    inline void BlockingQueue<T>::SignalEndOfInput ()
     {
         fCondtionVariable_.MutateDataNotifyAll ([this] () { fEndOfInput_ = true; });
     }
