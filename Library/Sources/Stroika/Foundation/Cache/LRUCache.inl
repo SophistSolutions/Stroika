@@ -115,6 +115,11 @@ namespace Stroika::Foundation::Cache {
     {
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
+    LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (LRUCache&& from)
+        : LRUCache{from}    // Do COPY (note lack of move()) since somewhat tricky to implement move here (could do someday but we retain internal pointers)
+    {
+    }
+    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (const LRUCache& from)
         : LRUCache{from.GetMaxCacheSize (), from.GetKeyEqualsCompareFunction (), from.GetHashTableSize (), from.GetKeyHashFunction ()}
     {
