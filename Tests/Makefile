@@ -54,6 +54,9 @@ DEFAULT_VALGRIND_SUPPRESSIONS_=Valgrind-Helgrind-Common.supp
 ifneq (,$(wildcard Valgrind-Helgrind-Common-$(ARCH).supp))
 DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-Helgrind-Common-$(ARCH).supp
 endif
+ifeq (1,$(qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy))
+DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-Helgrind-qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp
+endif
 VALGRIND_SUPPRESSIONS?= $(DEFAULT_VALGRIND_SUPPRESSIONS_) $(EXTRA_VALGRIND_SUPPRESSIONS)
 endif
 

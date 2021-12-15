@@ -1,0 +1,127 @@
+#
+#  https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+#     Basically same bug on valgrind/tsan (with ubuntu != LTS - 21.10 for now) - but workaround for valgrind is ONLY these suppressions
+#     and these are applied REGARDLESS of setting of qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy - must be commented out here to test
+#     if fixed.
+#
+{
+   https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+   Helgrind:Misc
+   ...
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3SetEv
+}
+{
+   https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+   Helgrind:Race
+   ...
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3SetEv
+}
+{
+   https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+   Helgrind:UnlockForeign
+   ...
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3SetEv
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+   Helgrind:Misc
+   ...
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEventD1Ev
+}
+{
+   https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+   Helgrind:Race
+   ...
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   ...
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Helgrind:UnlockForeign
+   ...
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
+   ...
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Race
+   ...
+   fun:*WAITABLE_EVENTS_11NOTIMEOUTS_*
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Race
+   ...
+   fun:*PingBackAndForthWithSimpleTimeouts*
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Race
+   ...
+   fun:_ZZN12_GLOBAL__N_144RegressionTest19_ThreadPoolAndBlockingQueue_8Private_5TEST_EvENKUlvE_clEv
+}
+
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:UnlockUnlocked
+   ...
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Race
+   ...
+   fun:*RegressionTest19_ThreadPoolAndBlockingQueue_*
+}
+{
+   <insert_a_suppression_name_here>
+   Helgrind:UnlockForeign
+   ...
+   fun:*RegressionTest19_ThreadPoolAndBlockingQueue_*
+}
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   ...
+   fun:*RegressionTest19_ThreadPoolAndBlockingQueue_*
+}
+{
+   <insert_a_suppression_name_here>
+   Helgrind:UnlockUnlocked
+   ...
+   fun:*RegressionTest19_ThreadPoolAndBlockingQueue_*
+}
+
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   ...
+   fun:*RegressionTest21_BlockingQueueAbortWhileBlockedWaiting*
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Race
+   ...
+   fun:*RegressionTest22_SycnhonizedUpgradeLock_*
+}
+{
+   <insert_a_suppression_name_here>
+   Helgrind:UnlockForeign
+   ...
+   fun:*RegressionTest22_SycnhonizedUpgradeLock_*
+}
