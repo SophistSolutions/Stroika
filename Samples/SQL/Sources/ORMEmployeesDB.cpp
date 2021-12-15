@@ -43,6 +43,9 @@ namespace {
 
         static const ConstantProperty<ObjectVariantMapper> kMapper;
     };
+    /*
+     *  Define mapping to VariantValues (think JSON)
+     */
     const ConstantProperty<ObjectVariantMapper> Employee::kMapper{[] () {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<optional<int>> ();
@@ -65,6 +68,9 @@ namespace {
 
         static const ConstantProperty<ObjectVariantMapper> kMapper;
     };
+    /*
+     *  Define mapping to VariantValues (think JSON)
+     */
     const ConstantProperty<ObjectVariantMapper> Paycheck::kMapper{[] () {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<optional<int>> ();
