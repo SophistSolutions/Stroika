@@ -239,8 +239,7 @@ KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
 
 - Stroika container iterators must have shorter lifetime than the container they are iterating over.
 
-- Stroika container iterators are all automatically patched, so that if you change the underlying container
-  the iterators are automatically updated internally to behave sensibly.
+- Stroika container iterators become invalidated when their underlying container has changed. In debug builds, use of an iterator (other than destroying it) results in an assertion failure. This is in SHARP CONTRAST to the (safe iterator patching) Stroika used todo before 2.1b14.
 
 ## Other Modules
   - [Adapters/](Adapters/ReadMe.md)
@@ -287,10 +286,11 @@ KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
     We decided against that for Stroika v2 because
     1.  We COULD always add it back.
     2.  Its just a class of optimziations which makes sense for some backends. But other
-        optimizations make snese for other classes of backends. You can always retain a smartptr
+        optimizations make sense for other classes of backends. You can always retain a smartptr
         with OUR type of backend! So really can be added just for \_Array<> impls. Note - this
         rationale doesn't work perfectly due to copy-by-values semantics with 'casts' but still
         OK.
+    3.  Note that shrink_to_fit() etc are common methods in concrete containers like Sequence_Array, etc...
 
 - Iterator Patching
   Before Stroika 2.1b14, updates to containers used to automatically update all existing running iterators. This was a nice, elegant feature. But it cost
@@ -329,7 +329,7 @@ KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
 
     Note also, a good practice would be to do this instead:
     ```
-      s.RemoveAllIf ([] (view* v) { return v->visible; });  // NYI, but also @todo
+      s.RemoveAll ([] (view* v) { return v->visible; });
     ```
 
 - [Bag\<T>](Bag.h)
