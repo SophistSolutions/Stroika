@@ -398,12 +398,12 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 			echo "Running valgrind helgrind test because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS"
 			echo "$PREFIX_OUT_LABEL" "Running valgrind helgrind test because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
 			for o in ${LOCAL_VALGRIND_CONFIGS[@]} ; do
-				if [[ `ScriptsLib/GetConfigurationParameter $o qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy` -eq 1 ]] ; then
-					NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN - 1))
-					echo "skipping configuration: $o due to qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy">>$TEST_OUT_FILE 2>&1
-				else
+				# if [[ `ScriptsLib/GetConfigurationParameter $o qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy` -eq 1 ]] ; then
+				# 	NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN - 1))
+				# 	echo "skipping configuration: $o due to qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy">>$TEST_OUT_FILE 2>&1
+				# else
 					RunLocalValgrind_ helgrind $o ""
-				fi
+				# fi
 			done
 		else
 			echo "Skipping helgrind regression tests because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS and NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS"
@@ -489,10 +489,10 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 		#HELGRIND ON a few sample apps
 		if [[ ("$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0) && ("$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS" -ne 0 ) ]] ; then
 			for cfg in ${LOCAL_VALGRIND_CONFIGS} ; do
-				if [[ `ScriptsLib/GetConfigurationParameter $cfg qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy` -eq 1 ]] ; then
-					echo "skipping configuration: $cfg due to qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy">>$TEST_OUT_FILE 2>&1
-					continue;
-				fi
+				# if [[ `ScriptsLib/GetConfigurationParameter $cfg qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy` -eq 1 ]] ; then
+				# 	echo "skipping configuration: $cfg due to qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy">>$TEST_OUT_FILE 2>&1
+				# 	continue;
+				# fi
 				for app in "${SAMPLE_APPS_2_TEST[@]}" ; do
 					echo -n "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/$cfg/$app ..."
 					echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/$cfg/$app..." >>$TEST_OUT_FILE 2>&1
