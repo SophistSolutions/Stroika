@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Cache {
         : LRUCache{maxCacheSize, hashTableSize, hashFunction}
     {
     }
-            #if qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy
+#if qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (LRUCache&& from) noexcept
         // This is really the same as a copy, because moving is hard. This data structure contains lots of internal pointers.
@@ -147,10 +147,10 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::operator= (LRUCache&& rhs) noexcept -> LRUCache&
     {
-        IgnoreExceptionsForCall (return operator= (rhs));   //  same as assign, cuz hard to move - see move constructor
+        IgnoreExceptionsForCall (return operator= (rhs)); //  same as assign, cuz hard to move - see move constructor
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::operator= (const LRUCache& rhs) ->  LRUCache&
+    auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::operator= (const LRUCache& rhs) -> LRUCache&
     {
         lock_guard<AssertExternallySynchronizedMutex> critSec{*this};
         if (this != &rhs) {
