@@ -26,6 +26,7 @@
  *              Maybe find a way to re-use the stream inserters from iostream (vector to them?)
  *
  *      @todo   Add InsertAt() methods - like from String class (before I deprecate them).
+ *              https://stroika.atlassian.net/browse/STK-34
  *
  *      @todo   Use ExternallySynchronizedLock when copying from src.
  *

@@ -158,6 +158,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void Array<T>::SetCapacity (size_t slotsAlloced)
     {
+        /*
+         *  @todo NOTE - https://stroika.atlassian.net/browse/STK-757 - use realloc sometimes - if constexpr
+         */
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         Require (GetLength () <= slotsAlloced);
         Invariant ();

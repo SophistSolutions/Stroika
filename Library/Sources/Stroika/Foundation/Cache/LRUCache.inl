@@ -115,6 +115,14 @@ namespace Stroika::Foundation::Cache {
     {
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
+    inline LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (LRUCache&& from)
+        // This is really the same as a copy, because moving is hard. This data structure contains lots of internal pointers.
+        // @todo it would make sense to do a move here. Much of the memory could be just shuffled over in many cases - but
+        // all the internal pointers would need to be patched. NOTE - important to not wrap from in move() for forward, cuz we want the lvalue version
+        : LRUCache{from}
+    {
+    }
+    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (const LRUCache& from)
         : LRUCache{from.GetMaxCacheSize (), from.GetKeyEqualsCompareFunction (), from.GetHashTableSize (), from.GetKeyHashFunction ()}
     {
@@ -126,7 +134,12 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::operator= (const LRUCache& rhs) -> const LRUCache&
+    inline auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::operator= (LRUCache&& rhs) noexcept -> LRUCache&
+    {
+        IgnoreExceptionsForCall (return operator= (rhs));   //  same as assign, cuz hard to move - see move constructor
+    }
+    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
+    auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::operator= (const LRUCache& rhs) ->  LRUCache&
     {
         lock_guard<AssertExternallySynchronizedMutex> critSec{*this};
         if (this != &rhs) {

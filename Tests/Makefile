@@ -55,6 +55,7 @@ ifneq (,$(wildcard Valgrind-Helgrind-Common-$(ARCH).supp))
 DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-Helgrind-Common-$(ARCH).supp
 endif
 ifeq (1,$(qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy))
+#https://stroika.atlassian.net/browse/STK-717
 DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-Helgrind-qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp
 endif
 VALGRIND_SUPPRESSIONS?= $(DEFAULT_VALGRIND_SUPPRESSIONS_) $(EXTRA_VALGRIND_SUPPRESSIONS)

@@ -77,7 +77,6 @@ namespace Stroika::Foundation::Execution {
                  *  this timeout value (or any return code) - cuz we re-examine tickcount at the top of the loop.
                  */
                 {
-                    // TEST POSSIBLE FIX/WORKAROUND FOR https://stroika.atlassian.net/browse/STK-629
                     Time::DurationSecondsType stillRemaining = timeoutAt - Time::GetTickCount ();
                     if (stillRemaining < 0) {
                         return cv_status::timeout;
