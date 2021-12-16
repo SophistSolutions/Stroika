@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Cache {
         LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {}, size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{});
         LRUCache (size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{});
         LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{});
-        LRUCache (LRUCache&& from);
+        LRUCache (LRUCache&& from) = delete;
         LRUCache (const LRUCache& from);
 
     public:
