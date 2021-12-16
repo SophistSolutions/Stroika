@@ -703,6 +703,39 @@ in enable_if_t's, but may not need this anymore
 
 #endif
 
+
+
+
+/*
+      Compiling Tests/52/Test.cpp ... 
+In file included from Test.cpp:12:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Cache/Memoizer.h:72:9: error: exception specification of explicitly defaulted move constructor does not match the calculated
+      one
+        Memoizer (Memoizer&& from) noexcept = default;
+        ^
+Test.cpp:241:78: note: in instantiation of template class 'Stroika::Foundation::Cache::Memoizer<int, MemoizerSupport::DEFAULT_CACHE_BWA_, int, int>' requested here
+                Memoizer<int, MemoizerSupport::DEFAULT_CACHE_BWA_, int, int> memoizer{[&totalCallsCount] (int a, int b) { totalCallsCount++;  return a + b; }};
+                                                                             ^
+1 error generated.
+/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:19: recipe for target '/Sandbox/Stroika-Dev/IntermediateFiles/clang++-6-release-libstdc++/Tests/01/Test.o' failed
+make[3]: *** [/Sandbox/Str
+*/
+#ifndef qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy
+
+#if defined(_MSC_VER)
+#define qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt0_)
+#elif defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+#elif defined(__clang__) && !defined(__APPLE__)
+// broken in clang++-13
+#define qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
+#else
+#define qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy 0
+#endif
+
+#endif
+
+
 /*
     http://stackoverflow.com/questions/15438968/vswprintf-fails-for-certain-unicode-codepoints-under-mac-os-x
     http://stackoverflow.com/questions/11713745/why-does-the-printf-family-of-functions-care-about-locale

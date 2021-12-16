@@ -114,6 +114,16 @@ namespace Stroika::Foundation::Cache {
         : LRUCache{maxCacheSize, hashTableSize, hashFunction}
     {
     }
+            #if qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy
+    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
+    inline LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (LRUCache&& from) noexcept
+        // This is really the same as a copy, because moving is hard. This data structure contains lots of internal pointers.
+        // @todo it would make sense to do a move here. Much of the memory could be just shuffled over in many cases - but
+        // all the internal pointers would need to be patched. NOTE - important to not wrap from in move() for forward, cuz we want the lvalue version
+        : LRUCache{from}
+    {
+    }
+#else
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (LRUCache&& from)
         // This is really the same as a copy, because moving is hard. This data structure contains lots of internal pointers.
@@ -122,6 +132,7 @@ namespace Stroika::Foundation::Cache {
         : LRUCache{from}
     {
     }
+#endif
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (const LRUCache& from)
         : LRUCache{from.GetMaxCacheSize (), from.GetKeyEqualsCompareFunction (), from.GetHashTableSize (), from.GetKeyHashFunction ()}
