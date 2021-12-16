@@ -703,9 +703,6 @@ in enable_if_t's, but may not need this anymore
 
 #endif
 
-
-
-
 /*
       Compiling Tests/52/Test.cpp ... 
 In file included from Test.cpp:12:
@@ -734,7 +731,6 @@ make[3]: *** [/Sandbox/Str
 #endif
 
 #endif
-
 
 /*
     http://stackoverflow.com/questions/15438968/vswprintf-fails-for-certain-unicode-codepoints-under-mac-os-x

@@ -108,11 +108,11 @@ namespace Stroika::Foundation::Cache {
         LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {}, size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{});
         LRUCache (size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{});
         LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{});
-        #if qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy
+#if qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy
         LRUCache (LRUCache&& from) noexcept;
-        #else
+#else
         LRUCache (LRUCache&& from);
-        #endif
+#endif
         LRUCache (const LRUCache& from);
 
     public:
