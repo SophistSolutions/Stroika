@@ -88,17 +88,16 @@ namespace {
     namespace HTTPHeaders_Test03_ {
         void RunAll ()
         {
-            using KVP = KeyValuePair<String, String>;
             {
                 IO::Network::HTTP::Headers h;
                 h.contentLength        = 3;
-                const auto kReference_ = Mapping<String, String>{{KVP{L"Content-Length", L"3"}}};
+                const auto kReference_ = Mapping<String, String>{{L"Content-Length", L"3"}};
                 VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
             }
             {
                 IO::Network::HTTP::Headers h;
                 h.ETag                 = ETag{L"1-2-3-4"};
-                const auto kReference_ = Mapping<String, String>{{KVP{L"ETag", L"\"1-2-3-4\""}}};
+                const auto kReference_ = Mapping<String, String>{{L"ETag", L"\"1-2-3-4\""}};
                 VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
                 h = IO::Network::HTTP::Headers{kReference_};
                 VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
@@ -107,14 +106,14 @@ namespace {
                 IO::Network::HTTP::Headers h;
                 h.contentLength        = 3;
                 h.cacheControl         = CacheControl{CacheControl::eNoCache};
-                const auto kReference_ = Mapping<String, String>{{KVP{L"Cache-Control", L"no-cache"},
-                                                                  KVP{L"Content-Length", L"3"}}};
+                const auto kReference_ = Mapping<String, String>{{L"Cache-Control", L"no-cache"},
+                                                                 {L"Content-Length", L"3"}};
                 VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
             }
             {
-                const auto                 kReference_ = Mapping<String, String>{{KVP{L"Cache-Control", L"no-cache"},
-                                                                  KVP{L"blah-blah", L"unknown-header"},
-                                                                  KVP{L"Content-Length", L"3"}}};
+                const auto                 kReference_ = Mapping<String, String>{{L"Cache-Control", L"no-cache"},
+                                                                 {L"blah-blah", L"unknown-header"},
+                                                                 {L"Content-Length", L"3"}};
                 IO::Network::HTTP::Headers h{kReference_};
                 VerifyTestResult (h.contentLength () == 3);
                 VerifyTestResult (h.cacheControl () == CacheControl{CacheControl::eNoCache});

@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Containers {
          *          Collection<pair<int,int>> c;
          *          std::map<int,int> m;
          *
-         *          Association<int,int> m1  = {pair<int, int>{1, 1}, pair<int, int>{2, 2}, pair<int, int>{3, 2}};
+         *          Association<int,int> m1  = {{1, 1}, {2, 2}, {3, 2}};
          *          Association<int,int> m2  = m1;
          *          Association<int,int> m3  { m1 };
          *          Association<int,int> m4  { m1.begin (), m1.end () };
@@ -176,6 +176,9 @@ namespace Stroika::Foundation::Containers {
          *          Association<int,int> m9  { Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }) };
          *      \endcode
          * 
+         *  \note   Even though the initializer_list<> is of KeyValuePair, you can pass along pair<> objects just
+         *          as well.
+         *
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         Association ();
@@ -186,9 +189,6 @@ namespace Stroika::Foundation::Containers {
         Association (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
         Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        Association (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
-        Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Association<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Association (ITERABLE_OF_ADDABLE&& src);
         template <typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>

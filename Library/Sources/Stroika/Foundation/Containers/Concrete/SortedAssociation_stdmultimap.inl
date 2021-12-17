@@ -220,30 +220,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_stdmultimap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-        : SortedAssociation_stdmultimap{}
-    {
-        this->AddAll (src);
-        AssertRepValidType_ ();
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>*>
     inline SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_stdmultimap (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-        : SortedAssociation_stdmultimap{forward<KEY_INORDER_COMPARER> (inorderComparer)}
-    {
-        this->AddAll (src);
-        AssertRepValidType_ ();
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_stdmultimap (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-        : SortedAssociation_stdmultimap{}
-    {
-        this->AddAll (src);
-        AssertRepValidType_ ();
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>*>
-    inline SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_stdmultimap (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
         : SortedAssociation_stdmultimap{forward<KEY_INORDER_COMPARER> (inorderComparer)}
     {
         this->AddAll (src);

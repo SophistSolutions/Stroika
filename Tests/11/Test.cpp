@@ -105,7 +105,7 @@ namespace {
             Collection<pair<int, int>> c;
             std::multimap<int, int>    m;
 
-            Association<int, int> m1 = {pair<int, int>{1, 1}, pair<int, int>{2, 2}, pair<int, int>{3, 2}};
+            Association<int, int> m1 = {{1, 1}, {2, 2}, {3, 2}};
             Association<int, int> m2 = m1;
             Association<int, int> m3{m1};
             Association<int, int> m4{m1.begin (), m1.end ()};
