@@ -704,8 +704,10 @@ in enable_if_t's, but may not need this anymore
 #endif
 
 /*
-      Compiling Tests/52/Test.cpp ... 
-In file included from Test.cpp:12:
+      SEE 
+            https://stackoverflow.com/questions/29483120/program-with-noexcept-constructor-accepted-by-gcc-rejected-by-clang
+
+    ===
 /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Cache/Memoizer.h:72:9: error: exception specification of explicitly defaulted move constructor does not match the calculated
       one
         Memoizer (Memoizer&& from) noexcept = default;

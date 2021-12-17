@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Traversal {
      *  Openness is used to define whether an end of a range is open or closed. Open means
      *  not containing the endpoint, and closed means containing the endpoint.
      * 
-     *  \note   no support for the concepts of open and closed or neigher open nor closed
+     *  \note   no support for the concepts of open and closed or neither open nor closed
      *
      *  \note   Configuration::DefaultNames<> supported
      */
