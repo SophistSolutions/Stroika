@@ -106,9 +106,9 @@ namespace Stroika::Foundation::Memory {
         SmallStackBuffer (size_t nElements);
         SmallStackBuffer (UninitializedConstructorFlag, size_t nElements);
         template <size_t FROM_BUF_SIZE>
-        SmallStackBuffer (const SmallStackBuffer<T, FROM_BUF_SIZE>& from);
-        SmallStackBuffer (const SmallStackBuffer& from);
-        SmallStackBuffer (SmallStackBuffer&&) = delete;
+        SmallStackBuffer (const SmallStackBuffer<T, FROM_BUF_SIZE>& src);
+        SmallStackBuffer (const SmallStackBuffer& src);
+        SmallStackBuffer (SmallStackBuffer&& src);
         template <typename ITERATOR_OF_T, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_T>, char>* = nullptr>
         SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end);
         ~SmallStackBuffer ();
@@ -296,6 +296,9 @@ namespace Stroika::Foundation::Memory {
         byte fGuard2_[sizeof (kGuard2_)];
 #endif
         T* fLiveData_{};
+
+    private:
+        nonvirtual bool UsingInlinePreallocatedBuffer_ () const;
 
     public:
         nonvirtual void Invariant () const noexcept;

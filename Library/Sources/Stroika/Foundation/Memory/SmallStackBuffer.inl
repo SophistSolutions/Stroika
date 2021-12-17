@@ -29,6 +29,7 @@ namespace Stroika::Foundation::Memory {
         : fLiveData_{BufferAsT_ ()}
     {
 #if qDebug
+        Assert (UsingInlinePreallocatedBuffer_ ()); // cuz empty size so always fits
         (void)::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
         (void)::memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_));
 #endif
@@ -54,6 +55,7 @@ namespace Stroika::Foundation::Memory {
     SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end)
         : SmallStackBuffer{}
     {
+        static_assert (is_convertible_v<Configuration::ExtractValueType_t<ITERATOR_OF_T>, T>);
         auto sz = static_cast<size_t> (distance (start, end));
         ReserveAtLeast (sz); // reserve not resize() so we can do uninitialized_copy (avoid constructing empty objects to be assigned over)
 #if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
@@ -66,21 +68,54 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T, size_t BUF_SIZE>
     template <size_t FROM_BUF_SIZE>
-    inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer<T, FROM_BUF_SIZE>& from)
-        : SmallStackBuffer{from.begin (), from.end ()}
+    inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer<T, FROM_BUF_SIZE>& src)
+        : SmallStackBuffer{src.begin (), src.end ()}
     {
     }
     template <typename T, size_t BUF_SIZE>
-    inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer& from)
-        : SmallStackBuffer{from.begin (), from.end ()}
+    inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer& src)
+        : SmallStackBuffer{src.begin (), src.end ()}
     {
+    }
+    template <typename T, size_t BUF_SIZE>
+    inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (SmallStackBuffer&& src)
+        : SmallStackBuffer{}
+    {
+#if qDebug
+        size_t origSize     = src.size ();
+        size_t origCapacity = src.capacity ();
+#endif
+        if (src.UsingInlinePreallocatedBuffer_ ()) {
+            // then little to be saved from a move, and technically we really cannot do much, except that we can 'move' the data elements
+            // NYI - and would only help for things where that was a big deal (e.g. non-POD expensive copy objects)
+            // @todo uninitialized_move call?
+            reserve (src.capacity ());
+            size_t sz = src.size ();
+#if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
+            Configuration::uninitialized_copy_MSFT_BWA (std::make_move_iterator (src.begin ()), std::make_move_iterator (src.begin () + sz), this->begin ());
+#else
+            uninitialized_copy (std::make_move_iterator (src.begin ()), std::make_move_iterator (src.begin () + sz), this->begin ());
+#endif
+            fSize_ = sz;
+        }
+        else {
+            // OK - we can do some trickery here to steal the underlying pointers
+            this->fLiveData_ = src.LiveDataAsAllocatedBytes_ ();
+            src.fLiveData_   = src.BufferAsT_ ();
+            this->fSize_     = src.fSize_;
+            src.fSize_       = 0;
+            Ensure (src.fSize_ == 0);
+            Ensure (src.capacity () == BUF_SIZE);
+        }
+        Ensure (this->size () == origSize);
+        Ensure (this->capacity () == origCapacity);
     }
     template <typename T, size_t BUF_SIZE>
     inline SmallStackBuffer<T, BUF_SIZE>::~SmallStackBuffer ()
     {
         Invariant ();
         DestroyElts_ (this->begin (), this->end ());
-        if (fLiveData_ != BufferAsT_ ()) [[UNLIKELY_ATTR]] {
+        if (not UsingInlinePreallocatedBuffer_ ()) [[UNLIKELY_ATTR]] {
             // we must have used the heap...
             Deallocate_ (LiveDataAsAllocatedBytes_ ());
         }
@@ -126,8 +161,8 @@ namespace Stroika::Foundation::Memory {
     inline SmallStackBuffer<T, BUF_SIZE>& SmallStackBuffer<T, BUF_SIZE>::operator= (SmallStackBuffer&& rhs)
     {
         Invariant ();
-        // @todo this simple implementation could be more efficient
-        operator= (rhs); // call copy assign for now
+        WeakAssertNotImplemented (); // @todo this simple implementation could be more efficient (sb pretty easy based on existing move CTOR code...
+        operator= (rhs);             // call copy assign for now
         return *this;
     }
     template <typename T, size_t BUF_SIZE>
@@ -223,7 +258,7 @@ namespace Stroika::Foundation::Memory {
 
                 // free old memory if needed
                 if (not oldInPlaceBuffer) {
-                    Assert (fLiveData_ != BufferAsT_ ());
+                    Assert (not UsingInlinePreallocatedBuffer_ ());
                     Deallocate_ (LiveDataAsAllocatedBytes_ ());
                 }
 
@@ -259,7 +294,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline size_t SmallStackBuffer<T, BUF_SIZE>::capacity () const
     {
-        return (fLiveData_ == BufferAsT_ ()) ? BUF_SIZE : fCapacityOfFreeStoreAllocation_; // @see class Design Note
+        return UsingInlinePreallocatedBuffer_ () ? BUF_SIZE : fCapacityOfFreeStoreAllocation_; // @see class Design Note
     }
     template <typename T, size_t BUF_SIZE>
     inline void SmallStackBuffer<T, BUF_SIZE>::reserve (size_t newCapacity)
@@ -378,7 +413,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline byte* SmallStackBuffer<T, BUF_SIZE>::LiveDataAsAllocatedBytes_ ()
     {
-        Require (fLiveData_ != BufferAsT_ ());
+        Require (not UsingInlinePreallocatedBuffer_ ());
         return reinterpret_cast<byte*> (fLiveData_);
     }
     template <typename T, size_t BUF_SIZE>
@@ -396,6 +431,11 @@ namespace Stroika::Foundation::Memory {
         if (bytes != nullptr) {
             ::free (bytes);
         }
+    }
+    template <typename T, size_t BUF_SIZE>
+    inline bool SmallStackBuffer<T, BUF_SIZE>::UsingInlinePreallocatedBuffer_ () const
+    {
+        return (fLiveData_ == BufferAsT_ ());
     }
 
 }
