@@ -87,8 +87,7 @@ namespace Stroika::Foundation::Memory {
 #endif
         if (src.UsingInlinePreallocatedBuffer_ ()) {
             // then little to be saved from a move, and technically we really cannot do much, except that we can 'move' the data elements
-            // NYI - and would only help for things where that was a big deal (e.g. non-POD expensive copy objects)
-            // @todo uninitialized_move call?
+            // This 'moving' is done via make_move_iterator () - rather that magically makes the uninitialized_copy really move instead of copying
             reserve (src.capacity ());
             size_t sz = src.size ();
 #if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
