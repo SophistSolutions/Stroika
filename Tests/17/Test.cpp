@@ -126,7 +126,7 @@ namespace {
                 const auto kReference3a_ = Mapping<String, String>{{{L"Content-Length", L"3"}}};
                 VerifyTestResult (kReference3a_.size () == 1);
                 using Characters::operator""_k;
-                const auto        kReference3b_ = Mapping<String, String>{{{L"Content-Length"_k, L"3"_k}, {L"x"_k, L"3"_k}}};   // need _k on some compilers to avoid error due to invoke explicit String/2 (g++10) - not sure if bug or not but easy to avoid ambiguity
+                const auto        kReference3b_ = Mapping<String, String>{{{L"Content-Length"_k, L"3"_k}, {L"x"_k, L"3"_k}}}; // need _k on some compilers to avoid error due to invoke explicit String/2 (g++10) - not sure if bug or not but easy to avoid ambiguity
                 VerifyTestResult (kReference3b_.size () == 2);
                 const auto kReference3c_ = Mapping<String, String>{{L"Content-Length", L"3"}, {L"x", L"3"}};
                 VerifyTestResult (kReference3c_.size () == 2);
