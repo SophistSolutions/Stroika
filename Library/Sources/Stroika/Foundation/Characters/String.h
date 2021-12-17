@@ -320,12 +320,12 @@ namespace Stroika::Foundation::Characters {
         String (const char32_t* cString);
         String (const wchar_t* cString);
 #if __cpp_char8_t >= 201811L
-        String (const char8_t* from, const char8_t* to);
+        explicit String (const char8_t* from, const char8_t* to);
 #endif
-        String (const char16_t* from, const char16_t* to);
-        String (const char32_t* from, const char32_t* to);
-        String (const wchar_t* from, const wchar_t* to);
-        String (const Character* from, const Character* to);
+        explicit String (const char16_t* from, const char16_t* to);
+        explicit String (const char32_t* from, const char32_t* to);
+        explicit String (const wchar_t* from, const wchar_t* to);
+        explicit String (const Character* from, const Character* to);
         String (const basic_string_view<wchar_t>& str);
         String (const wstring& r);
         String (const u16string& r);
