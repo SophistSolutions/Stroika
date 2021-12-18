@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     // ALSO - on windoze - use _expand() if avaialble...
                     T* newV = (T*)new char[sizeof (T) * slotsAlloced];
                     try {
-                        size_t n2Copy = min (fSlotsAllocated_, slotsAlloced);
+                        size_t n2Copy = fLength_;
 #if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
                         Configuration::uninitialized_copy_n_MSFT_BWA (&fItems_[0], n2Copy, newV);
 #else
