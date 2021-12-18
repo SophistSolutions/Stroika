@@ -13,6 +13,7 @@
 #include <cstring>
 #include <type_traits>
 
+#include "../Containers/Support/ReserveTweaks.h"
 #include "../Debug/Assertions.h"
 #include "../Execution/Throw.h"
 #include "Common.h"
@@ -188,9 +189,9 @@ namespace Stroika::Foundation::Memory {
             // Growing
             if (nElements > capacity ()) {
                 /*
-                 *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
+                 *   tweak grow rate to avoid needless copy/realloc
                  */
-                reserve (max (nElements, capacity () * 2));
+                reserve (Foundation::Containers::Support::ReserveTweaks::GetScaledUpCapacity (nElements, sizeof (T)));
             }
             Assert (this->begin () + fSize_ == this->end ()); // docs/clarity
             auto newEnd = this->begin () + nElements;

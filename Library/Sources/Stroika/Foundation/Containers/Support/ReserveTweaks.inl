@@ -21,9 +21,27 @@ namespace Stroika::Foundation::Containers::Support::ReserveTweaks {
      ********************************* GetScaledUpCapacity **************************
      ********************************************************************************
      */
-    constexpr inline size_t GetScaledUpCapacity (size_t targetSize, [[maybe_unused]] size_t eltSize, size_t minChunk)
+    constexpr inline size_t GetScaledUpCapacity (size_t targetSize, [[maybe_unused]] size_t eltSizeInBytes, size_t minChunk)
     {
+        /*
+         *      Rounding up works well at small scales - total memory
+         *  waste is small (bounded). It is simple, and it helps speed up
+         *  loops like while condition { append (); } considerably.
+         *
+         *      Scaling up (multiplicatively) has the advantage that for large n, we get
+         *  log(n) reallocs (rather than n/IncSize in the roundup case).
+         *  This is much better long-term large-size performance.
+         *  The only trouble with this approach is that in order to keep
+         *  memory waste small, we must scale by a small number (here 20%)
+         *  and so we need array sizes > 100 before we start seeing any real
+         *  benefit at all. Such cases do happen, but we want to be able to
+         *  optimize the much more common, small array cases too.
+         *
+         *      So the compromise is to use a roundup-like strategy for
+         *  small n, and a scaling approach as n gets larger.
+         */
         size_t capacity{targetSize};
+        // if small, grow quicky
         if (capacity <= 2 * minChunk) {
             capacity *= 4;
         }
@@ -31,10 +49,12 @@ namespace Stroika::Foundation::Containers::Support::ReserveTweaks {
             capacity *= 2;
         }
         else {
-            capacity *= 6;
-            capacity /= 5;
+            // if already large, then  Grow by 20%
+            capacity = (capacity * 6) / 5;
         }
+        // then adjust up to minimum chunk size
         capacity = Math::RoundUpTo (capacity, minChunk);
+        Ensure (capacity >= targetSize);
         return capacity;
     }
 

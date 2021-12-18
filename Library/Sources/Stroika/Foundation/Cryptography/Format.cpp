@@ -15,7 +15,7 @@ string Cryptography::Private_::mkArrayFmt_ (const uint8_t* start, const uint8_t*
 {
     string result;
     size_t N = end - start;
-    result.reserve (2 * N);
+    result.reserve (2 * N + 1); // think need to leave space for NUL-terminator?
     for (const uint8_t* i = start; i != end; ++i) {
         char b[10];
         b[0] = '\0';

@@ -156,6 +156,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          *  \note Complexity:
+         *      Always: constant
+         */
+        nonvirtual size_t size () const;
+
+    public:
+        /**
+         *  \note Complexity:
          *      Worst Case: O(N)
          *      Typical Case: ?? for small changes often constant, but if enuf change of size O(N) growing. Less shrinking.
          */

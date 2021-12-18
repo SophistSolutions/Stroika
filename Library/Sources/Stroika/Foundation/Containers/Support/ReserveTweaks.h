@@ -20,11 +20,15 @@ namespace Stroika::Foundation::Containers::Support::ReserveTweaks {
      *
      *  Adjust the given target (required) capacity to grow in geometric rate (so ln N reallocs), and use the argument chunkSize to
      *  make sure the number of entries is a multiple of that chunk size.
+     * 
+     *  \ens capacityResult >= targetSize;
+     *
+     *  \note the targetSize, minChunk and returned capacity are in units of elements, not bytes. eltSizeInBytes is measured in bytes.
      */
-    constexpr size_t GetScaledUpCapacity (size_t targetSize, size_t eltSize, size_t minChunk = kDefaultMinChunkSize);
+    constexpr size_t GetScaledUpCapacity (size_t targetSize, size_t eltSizeInBytes = 1, size_t minChunk = kDefaultMinChunkSize);
 
     /**
-     *  \brief Comupute the best 'capacity' to use for the given container adding N elements to its given size .
+     *  \brief Comupute the best 'capacity' (using GetScaledUpCapacity) to use for the given container adding N elements to its given size .
      *
      * @see GetScaledUpCapacity
      */

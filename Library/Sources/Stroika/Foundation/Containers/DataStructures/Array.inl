@@ -8,6 +8,8 @@
 
 #include "../../Debug/Assertions.h"
 
+#include "../Support/ReserveTweaks.h"
+
 namespace Stroika::Foundation::Containers::DataStructures {
 
 // Would like to leave on by default but we just added and cannot afford to have debug builds get that slow
@@ -280,36 +282,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
              * realloc which could cause lots of memory copying. There are two
              * plausible strategies for bumping up memory in big chunks-
              * rounding up, and scaling up.
-             *
-             *      Rounding up works well at small scales - total memory
-             *  waste is small (bounded). It is simple, and it helps speed up
-             *  loops like while condition { append (); } considerably.
-             *
-             *      Scaling up has the advantage that for large n, we get
-             *  logn reallocs (rather than n/IncSize in the roundup case).
-             *  This is much better long-term large-size performance.
-             *  The only trouble with this approach is that in order to keep
-             *  memory waste small, we must scale by a small number (here 1.1)
-             *  and so we need array sizes > 100 before we start seeing any real
-             *  benefit at all. Such cases do happen, but we want to be able to
-             *  optimize the much more common, small array cases too.
-             *
-             *      So the compromise is to use a roundup-like strategy for
-             *  small n, and a scaling approach as n gets larger.
-             *
-             *      Also, we really should be more careful about overflow here...
-             *
-             *      Some math:
-             *          k*n = n + 64/sizeof (T) and so
-             *          n = (64/sizeof (T))/(k-1)
-             *      If we assume k = 1.1 and sizeof(T) = 4 then n = 160. This is
-             *  the value for length where we start scaling up by 10% as opposed to
-             *  our arithmetic + 16.
-             *
              */
-            //reserve (Max (newLength+(64/sizeof (T)), size_t (newLength*1.1)));
-            // Based on the above arithmatic, we can take a shortcut...
-            reserve ((newLength > 160) ? size_t (newLength * 1.1) : (newLength + (64 / sizeof (T))));
+            reserve (Support::ReserveTweaks::GetScaledUpCapacity (newLength, sizeof (T)));
         }
         T* cur = &fItems_[fLength_];  // point 1 past first guy
         T* end = &fItems_[newLength]; // point 1 past last guy
@@ -397,6 +371,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     inline size_t Array<T>::GetLength () const
+    {
+        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        return fLength_;
+    }
+    template <typename T>
+    inline size_t Array<T>::size () const
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         return fLength_;

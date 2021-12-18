@@ -16,6 +16,7 @@
 
 #include "../DataStructures/STLContainerWrapper.h"
 #include "../Private/IteratorImplHelper.h"
+#include "../Support/ReserveTweaks.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 
@@ -152,6 +153,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (at == _kSentinalLastItemIndex) {
                 at = fData_.size ();
             }
+            Support::ReserveTweaks::Reserve4AddN (fData_, to - from);
             fData_.insert (fData_.begin () + at, from, to);
             fChangeCounts_.PerformedChange ();
         }

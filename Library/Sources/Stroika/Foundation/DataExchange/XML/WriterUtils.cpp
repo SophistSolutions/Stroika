@@ -25,9 +25,8 @@ using namespace Stroika::Foundation::DataExchange::XML;
 string XML::QuoteForXMLAttribute (const string& s)
 {
     string r;
-    r.reserve (s.size () * 6 / 5); // wild guess about good estimate
+    r.reserve (Containers::Support::ReserveTweaks::GetScaledUpCapacity (6 * s.size () / 5)); // most chars just written as character, but some take 5 characters, so WAG about percentage
     for (auto i = s.begin (); i != s.end (); ++i) {
-        Containers::Support::ReserveTweaks::Reserve4Add1 (r);
         switch (*i) {
             case '&':
                 r += "&amp;";
@@ -55,9 +54,8 @@ string XML::QuoteForXMLAttribute (const string& s)
 string XML::QuoteForXMLAttribute (const wstring& s)
 {
     string r;
-    r.reserve (s.size () * 7 / 5); // wild guess about good estimate
+    r.reserve (Containers::Support::ReserveTweaks::GetScaledUpCapacity (6 * s.size () / 5)); // most chars just written as character, but some take 5 characters, so WAG about percentage
     for (auto i = s.begin (); i != s.end (); ++i) {
-        Containers::Support::ReserveTweaks::Reserve4Add1 (r);
         switch (*i) {
             case '&':
                 r += "&amp;";
@@ -117,7 +115,6 @@ string XML::QuoteForXML (const string& s)
     string r;
     r.reserve (s.size () * 6 / 5); // wild guess about good estimate
     for (auto i = s.begin (); i != s.end (); ++i) {
-        Containers::Support::ReserveTweaks::Reserve4Add1 (r);
         switch (*i) {
             case '&':
                 r += "&amp;";
@@ -153,9 +150,8 @@ string XML::QuoteForXML (const string& s)
 string XML::QuoteForXML (const wstring& s)
 {
     string r;
-    r.reserve (s.size () * 7 / 5); // wild guess about good estimate
+    r.reserve (Containers::Support::ReserveTweaks::GetScaledUpCapacity (6 * s.size () / 5)); // most chars just written as character, but some take 5 characters, so WAG about percentage
     for (auto i = s.begin (); i != s.end (); ++i) {
-        Containers::Support::ReserveTweaks::Reserve4Add1 (r);
         switch (*i) {
             case '&':
                 r += "&amp;";
