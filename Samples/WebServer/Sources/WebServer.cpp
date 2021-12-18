@@ -88,40 +88,31 @@ namespace {
         const Sequence<Route> kRoutes_;
 
         /**
-         *  The connectionMgr specifies parameters that govener the procedural behavior of your webserver.
+         *  The connectionMgr specifies parameters that govenern the procedural behavior of your webserver.
          *  For example, caching settings go here, thread pool settings, network bindings, and so on.
          */
         ConnectionManager fConnectionMgr_;
 
         MyWebServer_ (uint16_t portNumber)
-            : kRoutes_
-        {
+            // clang-format off
+            : kRoutes_{
             Route{L""_RegEx, DefaultPage_},
                 Route{HTTP::MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
                 Route{L"FRED"_RegEx, [] (Request*, Response* response) {
-                          response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-                          response->write (L"FRED");
-                      }},
-                Route
-            {
-                L"Files/.*"_RegEx, FileSystemRequestHandler { Execution::GetEXEDir () / L"html", kFileSystemRouterOptions_ }
+                    response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                    response->write (L"FRED");
+                }},
+                Route{L"Files/.*"_RegEx, FileSystemRequestHandler { Execution::GetEXEDir () / L"html", kFileSystemRouterOptions_ }}
             }
-        }
+            , fConnectionMgr_ {
+                SocketAddresses (InternetAddresses_Any (), portNumber),
+                kRoutes_,
 #if __cpp_designated_initializers
-        , fConnectionMgr_
-        {
-            SocketAddresses (InternetAddresses_Any (), portNumber),
-                kRoutes_,
-                ConnectionManager::Options { .fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_ }
-        }
+                ConnectionManager::Options { .fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_ }}
 #else
-        , fConnectionMgr_
-        {
-            SocketAddresses (InternetAddresses_Any (), portNumber),
-                kRoutes_,
-                ConnectionManager::Options { nullopt, nullopt, Socket::BindFlags{}, kDefaultResponseHeaders_ }
-        }
+                ConnectionManager::Options { nullopt, nullopt, Socket::BindFlags{}, kDefaultResponseHeaders_ }}
 #endif
+        // clang-format on
         {
         }
         // Can declare arguments as Request*,Response*

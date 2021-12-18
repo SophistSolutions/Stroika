@@ -125,7 +125,7 @@ namespace {
             bool newEnabled = true;
             tmp.fEnabled    = newEnabled;
             tmp.fThisPHRsIDToSharedContactID.Add (L"A", L"B");
-            tmp.fLastSynchronizedAt = DateTime (Time::Date (Time::Year (1998), Time::MonthOfYear::eApril, Time::DayOfMonth::e11), Time::TimeOfDay::Parse (L"3pm", locale::classic ()));
+            tmp.fLastSynchronizedAt = DateTime {Time::Date {Time::Year (1998), Time::MonthOfYear::eApril, Time::DayOfMonth::e11), Time::TimeOfDay::Parse (L"3pm", locale::classic ()}};
         }
 
         /// Map that object to a VariantValue
