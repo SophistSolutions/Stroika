@@ -163,6 +163,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  \note index may == GetLength() - in which case, we are appending.
+         *
          *  \note Complexity:
          *      Worst Case: O(N)
          *      Typical: depends on i, and Capacity - if need to change capacity O(N), and if near start of array O(N), and if near end of the array (append) can be cheap
@@ -211,10 +213,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * Memory savings/optimization methods.  Use this to tune useage
          * of arrays so that they don't waste time in Realloc's.
          */
-        nonvirtual size_t GetCapacity () const;
+        nonvirtual size_t capacity () const;
 
     public:
-        nonvirtual void SetCapacity (size_t slotsAlloced);
+        nonvirtual void reserve (size_t slotsAlloced);
 
     public:
         nonvirtual void shrink_to_fit ();

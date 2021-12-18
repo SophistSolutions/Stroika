@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     Array<T>::Array (const Array& from)
     {
         from.Invariant ();
-        SetCapacity (from.GetLength ());
+        reserve (from.GetLength ());
 
         /*
          *  Construct the new items in-place into the new memory.
@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return last - start;
     }
     template <typename T>
-    void Array<T>::SetCapacity (size_t slotsAlloced)
+    void Array<T>::reserve (size_t slotsAlloced)
     {
         /*
          *  @todo NOTE - https://stroika.atlassian.net/browse/STK-757 - use realloc sometimes - if constexpr
@@ -224,7 +224,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  but must be sure we are big enuf. Do this before we store any pointers
          *  cuz it could invalidate them.
          */
-        SetCapacity (max (GetCapacity (), newLength));
+        reserve (max (capacity (), newLength));
 
         /*
          * Copy array elements where both sides where constructed.
@@ -307,9 +307,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
              *  our arithmetic + 16.
              *
              */
-            //SetCapacity (Max (newLength+(64/sizeof (T)), size_t (newLength*1.1)));
+            //reserve (Max (newLength+(64/sizeof (T)), size_t (newLength*1.1)));
             // Based on the above arithmatic, we can take a shortcut...
-            SetCapacity ((newLength > 160) ? size_t (newLength * 1.1) : (newLength + (64 / sizeof (T))));
+            reserve ((newLength > 160) ? size_t (newLength * 1.1) : (newLength + (64 / sizeof (T))));
         }
         T* cur = &fItems_[fLength_];  // point 1 past first guy
         T* end = &fItems_[newLength]; // point 1 past last guy
@@ -402,7 +402,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fLength_;
     }
     template <typename T>
-    inline size_t Array<T>::GetCapacity () const
+    inline size_t Array<T>::capacity () const
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         return fSlotsAllocated_;
@@ -411,7 +411,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void Array<T>::shrink_to_fit ()
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
-        SetCapacity (GetLength ());
+        reserve (GetLength ());
     }
     template <typename T>
     inline void Array<T>::RemoveAt (const ForwardIterator& i)

@@ -190,7 +190,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Sequence_stdvector<T>::Sequence_stdvector (const initializer_list<value_type>& src)
         : Sequence_stdvector{}
     {
-        SetCapacity (src.size ());
+        reserve (src.size ());
         this->AppendAll (src);
         AssertRepValidType_ ();
     }
@@ -201,7 +201,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
-            SetCapacity (src.size ());
+            reserve (src.size ());
         }
         this->AppendAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -214,7 +214,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
-                SetCapacity (end - start);
+                reserve (end - start);
             }
         }
         this->AppendAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
@@ -230,7 +230,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         accessor._GetWriteableRep ().fChangeCounts_.PerformedChange ();
     }
     template <typename T>
-    inline size_t Sequence_stdvector<T>::GetCapacity () const
+    inline size_t Sequence_stdvector<T>::capacity () const
     {
         using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<Rep_>;
         _SafeReadRepAccessor                                        accessor{this};
@@ -238,7 +238,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         return accessor._ConstGetRep ().fData_.capacity ();
     }
     template <typename T>
-    void Sequence_stdvector<T>::SetCapacity (size_t slotsAlloced)
+    void Sequence_stdvector<T>::reserve (size_t slotsAlloced)
     {
         Require (slotsAlloced >= this->GetLength ());
         using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
@@ -253,16 +253,6 @@ namespace Stroika::Foundation::Containers::Concrete {
             accessor._GetWriteableRep ().fData_.reserve (slotsAlloced);
             accessor._GetWriteableRep ().fChangeCounts_.PerformedChange ();
         }
-    }
-    template <typename T>
-    inline size_t Sequence_stdvector<T>::capacity () const
-    {
-        return GetCapacity ();
-    }
-    template <typename T>
-    inline void Sequence_stdvector<T>::reserve (size_t slotsAlloced)
-    {
-        SetCapacity (slotsAlloced);
     }
     template <typename T>
     inline void Sequence_stdvector<T>::AssertRepValidType_ () const

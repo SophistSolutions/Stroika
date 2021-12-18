@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
-                SetCapacity (end - start);
+                reserve (end - start);
             }
         }
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Collection_Array<T>::Collection_Array (const initializer_list<value_type>& src)
         : Collection_Array{}
     {
-        SetCapacity (src.size ());
+        reserve (src.size ());
         this->AddAll (src);
         AssertRepValidType_ ();
     }
@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         : Collection_Array{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
-        SetCapacity (src.size ());
+        reserve (src.size ());
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
@@ -186,26 +186,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         _SafeReadWriteRepAccessor{this}._GetWriteableRep ().fData_.shrink_to_fit ();
     }
     template <typename T>
-    inline size_t Collection_Array<T>::GetCapacity () const
-    {
-        using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<Rep_>;
-        return _SafeReadRepAccessor{this}._ConstGetRep ().fData_.GetCapacity ();
-    }
-    template <typename T>
-    inline void Collection_Array<T>::SetCapacity (size_t slotsAlloced)
-    {
-        using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
-        _SafeReadWriteRepAccessor{this}._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
-    }
-    template <typename T>
     inline size_t Collection_Array<T>::capacity () const
     {
-        return GetCapacity ();
+        using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<Rep_>;
+        return _SafeReadRepAccessor{this}._ConstGetRep ().fData_.capacity ();
     }
     template <typename T>
     inline void Collection_Array<T>::reserve (size_t slotsAlloced)
     {
-        SetCapacity (slotsAlloced);
+        using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
+        _SafeReadWriteRepAccessor{this}._GetWriteableRep ().fData_.reserve (slotsAlloced);
     }
     template <typename T>
     inline void Collection_Array<T>::AssertRepValidType_ () const

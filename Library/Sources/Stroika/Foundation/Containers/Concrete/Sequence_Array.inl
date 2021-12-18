@@ -24,9 +24,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     class Sequence_Array<T>::IImplRep_ : public Sequence<T>::_IRep {
     public:
-        virtual void   shrink_to_fit ()                  = 0;
-        virtual size_t GetCapacity () const              = 0;
-        virtual void   SetCapacity (size_t slotsAlloced) = 0;
+        virtual void   shrink_to_fit ()              = 0;
+        virtual size_t capacity () const             = 0;
+        virtual void   reserve (size_t slotsAlloced) = 0;
     };
 
     /**
@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             // when we fix names
             {
                 size_t curLen = fData_.GetLength ();
-                size_t curCap = fData_.GetCapacity ();
+                size_t curCap = fData_.capacity ();
                 size_t newLen = curLen + (to - from);
                 if (newLen > curCap) {
                     newLen *= 6;
@@ -173,13 +173,13 @@ namespace Stroika::Foundation::Containers::Concrete {
                     if constexpr (sizeof (T) < 100) {
                         newLen = Stroika::Foundation::Math::RoundUpTo (newLen, static_cast<size_t> (64)); //?
                     }
-                    fData_.SetCapacity (newLen);
+                    fData_.reserve (newLen);
                 }
             }
 #if 0
             size_t  desiredCapacity     =   fData_.GetLength () + (to - from);
-            desiredCapacity = max (desiredCapacity, fData_.GetCapacity ());
-            fData_.SetCapacity (desiredCapacity);
+            desiredCapacity = max (desiredCapacity, fData_.capacity ());
+            fData_.reserve (desiredCapacity);
 #endif
             for (auto i = from; i != to; ++i) {
                 fData_.InsertAt (at++, *i);
@@ -204,14 +204,14 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.shrink_to_fit ();
             fChangeCounts_.PerformedChange ();
         }
-        virtual size_t GetCapacity () const override
+        virtual size_t capacity () const override
         {
-            return fData_.GetCapacity ();
+            return fData_.capacity ();
         }
-        virtual void SetCapacity (size_t slotsAlloced) override
+        virtual void reserve (size_t slotsAlloced) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
-            fData_.SetCapacity (slotsAlloced);
+            fData_.reserve (slotsAlloced);
             fChangeCounts_.PerformedChange ();
         }
 
@@ -239,7 +239,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Sequence_Array<T>::Sequence_Array (const initializer_list<value_type>& src)
         : Sequence_Array{}
     {
-        SetCapacity (src.size ());
+        reserve (src.size ());
         this->AppendAll (src);
         AssertRepValidType_ ();
     }
@@ -250,7 +250,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
-            SetCapacity (src.size ());
+            reserve (src.size ());
         }
         this->AppendAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -263,7 +263,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
-                SetCapacity (end - start);
+                reserve (end - start);
             }
         }
         this->AppendAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
@@ -275,24 +275,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadWriteRepAccessor<IImplRep_>{this}._GetWriteableRep ().shrink_to_fit ();
     }
     template <typename T>
-    inline size_t Sequence_Array<T>::GetCapacity () const
-    {
-        return typename inherited::template _SafeReadRepAccessor<IImplRep_>{this}._ConstGetRep ().GetCapacity ();
-    }
-    template <typename T>
-    inline void Sequence_Array<T>::SetCapacity (size_t slotsAlloced)
-    {
-        typename inherited::template _SafeReadWriteRepAccessor<IImplRep_>{this}._GetWriteableRep ().SetCapacity (slotsAlloced);
-    }
-    template <typename T>
     inline size_t Sequence_Array<T>::capacity () const
     {
-        return GetCapacity ();
+        return typename inherited::template _SafeReadRepAccessor<IImplRep_>{this}._ConstGetRep ().capacity ();
     }
     template <typename T>
     inline void Sequence_Array<T>::reserve (size_t slotsAlloced)
     {
-        SetCapacity (slotsAlloced);
+        typename inherited::template _SafeReadWriteRepAccessor<IImplRep_>{this}._GetWriteableRep ().reserve (slotsAlloced);
     }
     template <typename T>
     inline void Sequence_Array<T>::AssertRepValidType_ () const

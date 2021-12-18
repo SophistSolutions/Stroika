@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Queue_Array<T>::Queue_Array (const initializer_list<value_type>& src)
         : Queue_Array{}
     {
-        SetCapacity (src.size ());
+        reserve (src.size ());
         AddAllToTail (src);
         AssertRepValidType_ ();
     }
@@ -151,7 +151,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
-            SetCapacity (src.size ());
+            reserve (src.size ());
         }
         AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -164,7 +164,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
-                SetCapacity (end - start);
+                reserve (end - start);
             }
         }
         AddAllToTail (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
@@ -178,28 +178,18 @@ namespace Stroika::Foundation::Containers::Concrete {
         accessor._GetWriteableRep ().fData_.shrink_to_fit ();
     }
     template <typename T>
-    inline size_t Queue_Array<T>::GetCapacity () const
+    inline size_t Queue_Array<T>::capacity () const
     {
         using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<Rep_>;
         _SafeReadRepAccessor accessor{this};
-        return accessor._ConstGetRep ().fData_.GetCapacity ();
-    }
-    template <typename T>
-    inline void Queue_Array<T>::SetCapacity (size_t slotsAlloced)
-    {
-        using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
-        _SafeReadWriteRepAccessor accessor{this};
-        accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
-    }
-    template <typename T>
-    inline size_t Queue_Array<T>::capacity () const
-    {
-        return GetCapacity ();
+        return accessor._ConstGetRep ().fData_.capacity ();
     }
     template <typename T>
     inline void Queue_Array<T>::reserve (size_t slotsAlloced)
     {
-        SetCapacity (slotsAlloced);
+        using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
+        _SafeReadWriteRepAccessor accessor{this};
+        accessor._GetWriteableRep ().fData_.reserve (slotsAlloced);
     }
     template <typename T>
     inline void Queue_Array<T>::AssertRepValidType_ () const

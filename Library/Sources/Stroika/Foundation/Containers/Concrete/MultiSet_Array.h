@@ -67,23 +67,29 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual MultiSet_Array& operator= (const MultiSet_Array& rhs) = default;
 
     public:
-        nonvirtual size_t GetCapacity () const;
-        nonvirtual void   SetCapacity (size_t slotsAlloced);
-
-    public:
-        nonvirtual void shrink_to_fit ();
-
-    public:
-        /**
-         *  STL-ish alias for GetCapacity ();
+        /*
+         *  \brief Return the number of allocated vector/array elements.
+         * 
+         * This optional API allows pre-reserving space as an optimization.
+         * 
+         *  \note alias GetCapacity ();
          */
         nonvirtual size_t capacity () const;
 
     public:
         /**
-         *  STL-ish alias for SetCapacity ();
+         * This optional API allows pre-reserving space as an optimization.
+         * 
+         *  \note Alias SetCapacity ();
+         * 
+         *  \note Note that this does not affect the semantics of the MultiSet.
+         * 
+         *  \req slotsAllocated >= size ()
          */
         nonvirtual void reserve (size_t slotsAlloced);
+
+    public:
+        nonvirtual void shrink_to_fit ();
 
     protected:
         using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;

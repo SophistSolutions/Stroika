@@ -57,6 +57,28 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Sequence_Array& operator= (const Sequence_Array& rhs) = default;
 
     public:
+        /*
+         *  \brief Return the number of allocated vector/array elements.
+         * 
+         * This optional API allows pre-reserving space as an optimization.
+         * 
+         *  \note alias GetCapacity ();
+         */
+        nonvirtual size_t capacity () const;
+
+    public:
+        /**
+         * This optional API allows pre-reserving space as an optimization.
+         * 
+         *  \note Alias SetCapacity ();
+         * 
+         *  \note Note that this does not affect the semantics of the Sequence.
+         * 
+         *  \req slotsAllocated >= size ()
+         */
+        nonvirtual void reserve (size_t slotsAlloced);
+
+    public:
         /**
          *  \brief  Reduce the space used to store the Sequence<T> contents.
          *
@@ -64,30 +86,6 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  the concrete sequence, calling this may save memory.
          */
         nonvirtual void shrink_to_fit ();
-
-    public:
-        /**
-         * Return the number of allocated vector/array elements.
-         */
-        nonvirtual size_t GetCapacity () const;
-
-    public:
-        /**
-         * This optional API allows pre-reserving space as an optimization.
-         */
-        nonvirtual void SetCapacity (size_t slotsAlloced);
-
-    public:
-        /**
-         *  STL-ish alias for GetCapacity ();
-         */
-        nonvirtual size_t capacity () const;
-
-    public:
-        /**
-         *  STL-ish alias for SetCapacity ();
-         */
-        nonvirtual void reserve (size_t slotsAlloced);
 
     protected:
         using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;

@@ -25,9 +25,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename TRAITS>
     class MultiSet_Array<T, TRAITS>::IImplRepBase_ : public MultiSet<T, TRAITS>::_IRep {
     public:
-        virtual size_t GetCapacity () const              = 0;
-        virtual void   SetCapacity (size_t slotsAlloced) = 0;
-        virtual void   shrink_to_fit ()                  = 0;
+        virtual size_t capacity () const             = 0;
+        virtual void   reserve (size_t slotsAlloced) = 0;
+        virtual void   shrink_to_fit ()              = 0;
     };
 
     /*
@@ -233,15 +233,15 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // MultiSet_Array<T, TRAITS>::_IRep overrides
     public:
-        virtual size_t GetCapacity () const override
+        virtual size_t capacity () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return fData_.GetCapacity ();
+            return fData_.capacity ();
         }
-        virtual void SetCapacity (size_t slotsAlloced) override
+        virtual void reserve (size_t slotsAlloced) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
-            fData_.SetCapacity (slotsAlloced);
+            fData_.reserve (slotsAlloced);
             fChangeCounts_.PerformedChange ();
         }
         virtual void shrink_to_fit () override
@@ -305,7 +305,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
-            SetCapacity (src.size ());
+            reserve (src.size ());
         }
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -316,7 +316,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         : MultiSet_Array{forward<EQUALS_COMPARER> (equalsComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
-        SetCapacity (src.size ());
+        reserve (src.size ());
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
@@ -324,7 +324,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<T>& src)
         : MultiSet_Array{}
     {
-        SetCapacity (src.size ());
+        reserve (src.size ());
         AddAll (src);
         AssertRepValidType_ ();
     }
@@ -333,7 +333,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     MultiSet_Array<T, TRAITS>::MultiSet_Array (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src)
         : MultiSet_Array{forward<EQUALS_COMPARER> (equalsComparer)}
     {
-        SetCapacity (src.size ());
+        reserve (src.size ());
         AddAll (src);
         AssertRepValidType_ ();
     }
@@ -341,7 +341,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<value_type>& src)
         : MultiSet_Array{}
     {
-        SetCapacity (src.size ());
+        reserve (src.size ());
         AddAll (src);
         AssertRepValidType_ ();
     }
@@ -350,7 +350,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     MultiSet_Array<T, TRAITS>::MultiSet_Array (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src)
         : MultiSet_Array{forward<EQUALS_COMPARER> (equalsComparer)}
     {
-        SetCapacity (src.size ());
+        reserve (src.size ());
         this->AddAll (src);
         AssertRepValidType_ ();
     }
@@ -362,7 +362,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
-                SetCapacity (end - start);
+                reserve (end - start);
             }
         }
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
@@ -376,25 +376,25 @@ namespace Stroika::Foundation::Containers::Concrete {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
-                SetCapacity (end - start);
+                reserve (end - start);
             }
         }
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    inline size_t MultiSet_Array<T, TRAITS>::GetCapacity () const
+    inline size_t MultiSet_Array<T, TRAITS>::capacity () const
     {
         using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<IImplRepBase_>;
         _SafeReadRepAccessor accessor{this};
-        return accessor._ConstGetRep ().GetCapacity ();
+        return accessor._ConstGetRep ().capacity ();
     }
     template <typename T, typename TRAITS>
-    inline void MultiSet_Array<T, TRAITS>::SetCapacity (size_t slotsAlloced)
+    inline void MultiSet_Array<T, TRAITS>::reserve (size_t slotsAlloced)
     {
         using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<IImplRepBase_>;
         _SafeReadWriteRepAccessor accessor{this};
-        accessor._GetWriteableRep ().SetCapacity (slotsAlloced);
+        accessor._GetWriteableRep ().reserve (slotsAlloced);
     }
     template <typename T, typename TRAITS>
     inline void MultiSet_Array<T, TRAITS>::shrink_to_fit ()
@@ -402,16 +402,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<IImplRepBase_>;
         _SafeReadWriteRepAccessor accessor{this};
         accessor._GetWriteableRep ().shrink_to_fit ();
-    }
-    template <typename T, typename TRAITS>
-    inline size_t MultiSet_Array<T, TRAITS>::capacity () const
-    {
-        return GetCapacity ();
-    }
-    template <typename T, typename TRAITS>
-    inline void MultiSet_Array<T, TRAITS>::reserve (size_t slotsAlloced)
-    {
-        SetCapacity (slotsAlloced);
     }
     template <typename T, typename TRAITS>
     inline void MultiSet_Array<T, TRAITS>::AssertRepValidType_ () const

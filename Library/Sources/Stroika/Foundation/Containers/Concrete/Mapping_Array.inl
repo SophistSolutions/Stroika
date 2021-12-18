@@ -24,9 +24,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
     public:
-        virtual void   shrink_to_fit ()                  = 0;
-        virtual size_t GetCapacity () const              = 0;
-        virtual void   SetCapacity (size_t slotsAlloced) = 0;
+        virtual void   shrink_to_fit ()              = 0;
+        virtual size_t capacity () const             = 0;
+        virtual void   reserve (size_t slotsAlloced) = 0;
     };
 
     /*
@@ -210,15 +210,15 @@ namespace Stroika::Foundation::Containers::Concrete {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             fData_.shrink_to_fit ();
         }
-        virtual size_t GetCapacity () const override
+        virtual size_t capacity () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return fData_.GetCapacity ();
+            return fData_.capacity ();
         }
-        virtual void SetCapacity (size_t slotsAlloced) override
+        virtual void reserve (size_t slotsAlloced) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
-            fData_.SetCapacity (slotsAlloced);
+            fData_.reserve (slotsAlloced);
         }
 
     private:
@@ -252,7 +252,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
         : Mapping_Array{}
     {
-        SetCapacity (src.size ());
+        reserve (src.size ());
         this->AddAll (src);
         AssertRepValidType_ ();
     }
@@ -261,7 +261,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
         : Mapping_Array{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
-        SetCapacity (src.size ());
+        reserve (src.size ());
         this->AddAll (src);
         AssertRepValidType_ ();
     }
@@ -272,7 +272,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
-            SetCapacity (src.size ());
+            reserve (src.size ());
         }
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -283,7 +283,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         : Mapping_Array{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
-        SetCapacity (src.size ());
+        reserve (src.size ());
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
@@ -295,7 +295,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
-                SetCapacity (end - start);
+                reserve (end - start);
             }
         }
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
@@ -309,7 +309,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
-                SetCapacity (end - start);
+                reserve (end - start);
             }
         }
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
@@ -322,26 +322,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         _SafeReadWriteRepAccessor{this}._GetWriteableRep ().shrink_to_fit ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline size_t Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::GetCapacity () const
-    {
-        using _SafeReadRepAccessor = typename Iterable<value_type>::template _SafeReadRepAccessor<IImplRepBase_>;
-        return _SafeReadRepAccessor{this}._ConstGetRep ().GetCapacity ();
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline void Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::SetCapacity (size_t slotsAlloced)
-    {
-        using _SafeReadWriteRepAccessor = typename Iterable<value_type>::template _SafeReadWriteRepAccessor<IImplRepBase_>;
-        _SafeReadWriteRepAccessor{this}._GetWriteableRep ().SetCapacity (slotsAlloced);
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline size_t Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::capacity () const
     {
-        return GetCapacity ();
+        using _SafeReadRepAccessor = typename Iterable<value_type>::template _SafeReadRepAccessor<IImplRepBase_>;
+        return _SafeReadRepAccessor{this}._ConstGetRep ().capacity ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::reserve (size_t slotsAlloced)
     {
-        SetCapacity (slotsAlloced);
+        using _SafeReadWriteRepAccessor = typename Iterable<value_type>::template _SafeReadWriteRepAccessor<IImplRepBase_>;
+        _SafeReadWriteRepAccessor{this}._GetWriteableRep ().reserve (slotsAlloced);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::AssertRepValidType_ () const
