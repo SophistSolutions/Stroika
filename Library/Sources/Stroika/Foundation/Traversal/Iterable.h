@@ -377,10 +377,12 @@ namespace Stroika::Foundation::Traversal {
         /**
          * \brief Returns true iff size() == 0
          *
+         *  \note Alias IsEmpty () - called IsEmpty () in Stroika 2.1b13 and prior
+         *
          *  \em Performance:
-         *      The performance of IsEmpty() may vary wildly (@see size) but will nearly always be O(1).
+         *      The performance of empty() may vary wildly (@see size) but will nearly always be O(1).
          */
-        nonvirtual bool IsEmpty () const;
+        nonvirtual bool empty () const;
 
     public:
         /**
@@ -1153,17 +1155,15 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         * \brief STL-ish alias for IsEmpty()
-         */
-        nonvirtual bool empty () const;
-
-    public:
-        /**
          * \brief STL-ish alias for size() - really in STL only used in string, I think, but still makes sense as an alias.
          */
         nonvirtual size_t length () const;
 
     public:
+        [[deprecated ("Since Stroika 2.1b14, use empty () not IsEmpty ()")]] bool IsEmpty () const
+        {
+            return empty ();
+        }
         using _APPLY_ARGTYPE [[deprecated ("Since Stroika 2.1b14, use const function<void (ArgByValueType<T> item)>")]]      = const function<void (ArgByValueType<T> item)>&;
         using _APPLYUNTIL_ARGTYPE [[deprecated ("Since Stroika 2.1b14, use const function<bool (ArgByValueType<T> item)>")]] = const function<bool (ArgByValueType<T> item)>&;
         [[deprecated ("Since Stroika 2.1b12, use First<RESULTT>")]] optional<T> First (const function<bool (ArgByValueType<T>)>& that) const;
@@ -1386,7 +1386,7 @@ namespace Stroika::Foundation::Traversal {
          */
         virtual Iterator<value_type> MakeIterator () const                                                    = 0;
         virtual size_t               size () const                                                            = 0;
-        virtual bool                 IsEmpty () const                                                         = 0;
+        virtual bool                 empty () const                                                         = 0;
         virtual void                 Apply (const function<void (ArgByValueType<T> item)>& doToElement) const = 0;
         virtual Iterator<value_type> Find (const function<bool (ArgByValueType<T> item)>& that) const         = 0;
         /**

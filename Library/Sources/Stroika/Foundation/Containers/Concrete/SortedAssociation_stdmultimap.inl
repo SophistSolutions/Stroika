@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.Invariant ();
             return fData_.size ();
         }
-        virtual bool IsEmpty () const override
+        virtual bool empty () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             fData_.Invariant ();

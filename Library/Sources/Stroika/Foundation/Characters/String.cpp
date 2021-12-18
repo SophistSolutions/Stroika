@@ -175,7 +175,7 @@ size_t String::_IRep::size () const
     return _fEnd - _fStart;
 }
 
-bool String::_IRep::IsEmpty () const
+bool String::_IRep::empty () const
 {
     Assert (_fStart <= _fEnd);
     return _fEnd == _fStart;

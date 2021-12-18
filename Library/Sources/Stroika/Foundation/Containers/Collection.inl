@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Containers {
     inline void Collection<T>::Add (ArgByValueType<value_type> item)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item);
-        Ensure (not this->IsEmpty ());
+        Ensure (not this->empty ());
     }
     template <typename T>
     inline void Collection<T>::Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI)
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Containers {
     inline void Collection<T>::RemoveAll ()
     {
         _SafeReadRepAccessor<_IRep> tmp{this}; // important to use READ not WRITE accessor, because write accessor would have already cloned the data
-        if (not tmp._ConstGetRep ().IsEmpty ()) {
+        if (not tmp._ConstGetRep ().empty ()) {
             this->_fRep = tmp._ConstGetRep ().CloneEmpty ();
         }
     }

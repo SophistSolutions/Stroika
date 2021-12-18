@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Returns true if the Q contains no items. Equivalent to PeekHead ().IsEmpty ()
+         *  Returns true if the Q contains no items. Equivalent to PeekHead ().empty ()
          */
         nonvirtual bool empty () const;
 

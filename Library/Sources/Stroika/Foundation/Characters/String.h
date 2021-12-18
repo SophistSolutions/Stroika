@@ -1413,7 +1413,7 @@ namespace Stroika::Foundation::Characters {
     public:
         virtual Traversal::Iterator<value_type> MakeIterator () const override;
         virtual size_t                          size () const override;
-        virtual bool                            IsEmpty () const override;
+        virtual bool                            empty () const override;
         virtual void                            Apply (const function<void (Configuration::ArgByValueType<value_type> item)>& doToElement) const override;
         virtual Traversal::Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const override;
         virtual Traversal::Iterator<value_type> Find_equal_to (const Configuration::ArgByValueType<value_type>& v) const override

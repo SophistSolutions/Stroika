@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return fData_.size ();
         }
-        virtual bool IsEmpty () const override
+        virtual bool empty () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return fData_.empty ();
@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual value_type GetAt (size_t i) const override
         {
-            Require (not IsEmpty ());
+            Require (not empty ());
             Require (i == _kSentinalLastItemIndex or i < size ());
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             if (i == _kSentinalLastItemIndex) {

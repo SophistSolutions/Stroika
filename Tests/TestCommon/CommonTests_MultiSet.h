@@ -117,7 +117,7 @@ namespace CommonTests {
                                 VerifyTestResult (not s.Contains (i - 1));
                             }
 #endif
-                            VerifyTestResult (s.IsEmpty ());
+                            VerifyTestResult (s.empty ());
                             VerifyTestResult (s.size () == 0);
                         }
 
@@ -132,7 +132,7 @@ namespace CommonTests {
                                 it = s.erase (it);
                                 applyToContainer (s);
                             }
-                            VerifyTestResult (s.IsEmpty ());
+                            VerifyTestResult (s.empty ());
                             VerifyTestResult (s.size () == 0);
                         }
 
@@ -201,7 +201,7 @@ namespace CommonTests {
 
                     static const size_t K = qDebug ? (Debug::IsRunningUnderValgrind () ? 50 : 250) : 500;
 
-                    VerifyTestResult (s.IsEmpty ());
+                    VerifyTestResult (s.empty ());
                     s.Add (three);
                     VerifyTestResult (s.size () == 1);
                     s += three;
@@ -214,9 +214,9 @@ namespace CommonTests {
                     VerifyTestResult (s.Contains (three));
                     VerifyTestResult (s.OccurrencesOf (three) == 1);
                     s.Remove (three);
-                    VerifyTestResult (s.IsEmpty ());
+                    VerifyTestResult (s.empty ());
                     s.RemoveAll ();
-                    VerifyTestResult (s.IsEmpty ());
+                    VerifyTestResult (s.empty ());
                     for (size_t i = 1; i <= K; i++) {
                         s.Add (i);
                         applyToContainer (s);
@@ -236,7 +236,7 @@ namespace CommonTests {
                     }
 
                     s.RemoveAll ();
-                    VerifyTestResult (s.IsEmpty ());
+                    VerifyTestResult (s.empty ());
                     for (size_t i = 1; i <= K / 50; i++) {
                         s.Add (i);
                     }
@@ -320,7 +320,7 @@ namespace CommonTests {
                             applyToContainer (s);
                         }
                     }
-                    VerifyTestResult (s.IsEmpty ());
+                    VerifyTestResult (s.empty ());
                     VerifyTestResult (s.size () == 0);
 
                     for (auto it1 = s.begin (); it1 != s.end (); ++it1) {
@@ -328,7 +328,7 @@ namespace CommonTests {
                             VerifyTestResult (false);
                         }
                     }
-                    VerifyTestResult (s.IsEmpty ());
+                    VerifyTestResult (s.empty ());
 
                     for (size_t i = 1; i <= K; i++) {
                         s.Add (i);
@@ -341,7 +341,7 @@ namespace CommonTests {
                         VerifyTestResult (not s.Contains (i));
                         VerifyTestResult (s.size () == (i - 1));
                     }
-                    VerifyTestResult (s.IsEmpty ());
+                    VerifyTestResult (s.empty ());
 
                     for (size_t i = 1; i <= K / 2; i++) {
                         s += 1;
@@ -452,7 +452,7 @@ namespace CommonTests {
                     CONCRETE_CONTAINER s     = testingSchema.Factory ();
                     const size_t       K     = 500;
                     s.RemoveAll ();
-                    VerifyTestResult (s.IsEmpty ());
+                    VerifyTestResult (s.empty ());
                     for (size_t i = 1; i <= K / 50; i++) {
                         s.Add (i);
                     }

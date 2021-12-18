@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         pi->fData_    = this;
     }
     template <typename T>
-    inline bool LinkedList<T>::IsEmpty () const
+    inline bool LinkedList<T>::empty () const
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         return fHead_ == nullptr;
@@ -154,7 +154,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline T LinkedList<T>::GetFirst () const
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
-        Require (not IsEmpty ());
+        Require (not empty ());
         AssertNotNull (fHead_);
         return fHead_->fItem;
     }
@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void LinkedList<T>::RemoveFirst ()
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
-        Require (not IsEmpty ());
+        Require (not empty ());
         AssertNotNull (fHead_);
         Invariant ();
         Link* victim = fHead_;
@@ -360,7 +360,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         fHead_ = nullptr;
         Invariant ();
-        Ensure (IsEmpty ());
+        Ensure (empty ());
     }
     template <typename T>
     T LinkedList<T>::GetAt (size_t i) const

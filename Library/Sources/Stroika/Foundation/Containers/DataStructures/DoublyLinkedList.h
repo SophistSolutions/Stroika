@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Always: constant
          */
-        nonvirtual bool IsEmpty () const;
+        nonvirtual bool empty () const;
 
     public:
         /**
@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Always: constant
          *
-         *  \req not IsEmpty ()
+         *  \req not empty ()
          */
         nonvirtual T GetFirst () const;
 
@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Always: constant
          *
          *
-         *  \req not IsEmpty ()
+         *  \req not empty ()
          */
         nonvirtual T GetLast () const;
 
@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Always: constant
          *
-         *  \req not IsEmpty ()
+         *  \req not empty ()
          */
         nonvirtual void RemoveFirst ();
 
@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Always: constant
          *
-         *  \req not IsEmpty ()
+         *  \req not empty ()
          */
         nonvirtual void RemoveLast ();
 

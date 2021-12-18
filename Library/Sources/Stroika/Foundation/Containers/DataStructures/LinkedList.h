@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Always: constant
          */
-        nonvirtual bool IsEmpty () const;
+        nonvirtual bool empty () const;
 
     public:
         /**

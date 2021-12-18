@@ -41,6 +41,14 @@ namespace {
             Assert (p.fKey == -p.fValue);
         }
 #endif
+        if (m.Lookup (5)) {
+            AssertNotReached ();    // better not find it
+        }
+        if (auto v = m.Lookup (3)) {
+            Assert (v == -3);
+        }
+        Assert (m.LookupValue (3) == -3);
+        Assert (m.LookupValue (5, -1) == -1);       // since 5 not found, default used
     }
 }
 

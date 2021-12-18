@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
     }
     template <typename T>
-    inline bool DoublyLinkedList<T>::IsEmpty () const
+    inline bool DoublyLinkedList<T>::empty () const
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         return fHead_ == nullptr;

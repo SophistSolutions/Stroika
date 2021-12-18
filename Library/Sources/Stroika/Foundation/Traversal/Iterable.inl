@@ -307,9 +307,9 @@ namespace Stroika::Foundation::Traversal {
         return _SafeReadRepAccessor<>{this}._ConstGetRep ().size ();
     }
     template <typename T>
-    inline bool Iterable<T>::IsEmpty () const
+    inline bool Iterable<T>::empty () const
     {
-        return _SafeReadRepAccessor<>{this}._ConstGetRep ().IsEmpty ();
+        return _SafeReadRepAccessor<>{this}._ConstGetRep ().empty ();
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
@@ -960,19 +960,14 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    inline bool Iterable<T>::empty () const
-    {
-        return IsEmpty ();
-    }
-    template <typename T>
     inline bool Iterable<T>::Any () const
     {
-        return not IsEmpty ();
+        return not empty ();
     }
     template <typename T>
     inline bool Iterable<T>::Any (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
     {
-        return not Where (includeIfTrue).IsEmpty ();
+        return not Where (includeIfTrue).empty ();
     }
     template <typename T>
     inline size_t Iterable<T>::length () const

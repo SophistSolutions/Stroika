@@ -274,7 +274,7 @@ namespace Stroika::Foundation::Containers {
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveAll ()
     {
         _SafeReadRepAccessor<_IRep> tmp{this}; // important to use READ not WRITE accessor, because write accessor would have already cloned the data
-        if (not tmp._ConstGetRep ().IsEmpty ()) {
+        if (not tmp._ConstGetRep ().empty ()) {
             this->_fRep = tmp._ConstGetRep ().CloneEmpty ();
         }
     }

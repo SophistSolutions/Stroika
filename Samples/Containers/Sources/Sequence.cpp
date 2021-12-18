@@ -30,6 +30,9 @@ namespace {
          *  Think of it as a SortedMapping<int,T> where the int is the index. Or maybe a bit
          *  like vector<T>, except that the 'vector' might be implemented with a different data structure, and have
          *  very different performance characteristics.
+         * 
+         *  For example, use Sequence_DoublyLinkedList, if you want to keep a sequential order, but don't use indexing, and care that
+         *  you never need to 'pause for realloc'.
          */
         Sequence<int> s;
         s.Append (3);

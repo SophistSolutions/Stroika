@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Traversal {
                     return 1 + DiscreteRange{fStart, fEnd}.GetDistanceSpanned ();
                 }
             }
-            virtual bool IsEmpty () const override
+            virtual bool empty () const override
             {
                 if (fForcedEnd) {
                     return true;

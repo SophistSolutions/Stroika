@@ -52,10 +52,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return fData_.size ();
         }
-        virtual bool IsEmpty () const override
+        virtual bool empty () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return fData_.IsEmpty ();
+            return fData_.empty ();
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual optional<value_type> RemoveHeadIf () override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
-            if (fData_.IsEmpty ()) {
+            if (fData_.empty ()) {
                 return optional<T>{};
             }
             T item = fData_.GetFirst ();
@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual optional<value_type> HeadIf () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            if (fData_.IsEmpty ()) {
+            if (fData_.empty ()) {
                 return optional<T>{};
             }
             return fData_.GetFirst ();

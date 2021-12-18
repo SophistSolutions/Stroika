@@ -108,7 +108,7 @@ namespace CommonTests {
                     }
                 }
                 s.RemoveAll ();
-                VerifyTestResult (s.IsEmpty ());
+                VerifyTestResult (s.empty ());
                 VerifyTestResult (s.size () == 0);
 
                 for ([[maybe_unused]] auto&& it1 : s) {
@@ -146,19 +146,19 @@ namespace CommonTests {
 
                 size_t i;
 
-                VerifyTestResult (s.IsEmpty ());
+                VerifyTestResult (s.empty ());
                 s.Add (three);
                 VerifyTestResult (s.size () == 1);
                 s += three;
                 VerifyTestResult (s.size () == 2);
                 s.RemoveAll ();
-                VerifyTestResult (s.IsEmpty ());
+                VerifyTestResult (s.empty ());
 
                 for (i = 1; i <= K; ++i) {
                     s.Add (i);
                 }
                 CollectionTimings_ (s);
-                VerifyTestResult (s.IsEmpty ());
+                VerifyTestResult (s.empty ());
 
 #if qPrintTimings
                 Time t = GetCurrentTime ();
@@ -215,7 +215,7 @@ namespace CommonTests {
 #endif
                 size_t i;
 
-                VerifyTestResult (s.IsEmpty ());
+                VerifyTestResult (s.empty ());
                 s.Add (three);
                 VerifyTestResult (s.size () == 1);
                 s += three;
@@ -224,7 +224,7 @@ namespace CommonTests {
                 s.Remove (three);
                 VerifyTestResult (s.size () == 1);
                 s.RemoveAll ();
-                VerifyTestResult (s.IsEmpty ());
+                VerifyTestResult (s.empty ());
 
                 for (i = 1; i <= K; i++) {
                     s.Add (i);
@@ -233,7 +233,7 @@ namespace CommonTests {
                 applyToContainer (s);
                 CollectionTimings_ (s);
                 applyToContainer (s);
-                VerifyTestResult (s.IsEmpty ());
+                VerifyTestResult (s.empty ());
 
 #if qPrintTimings
                 Time t = GetCurrentTime ();
@@ -269,7 +269,7 @@ namespace CommonTests {
                 [[maybe_unused]] typename CONCRETE_CONTAINER::value_type t1         = 1;
                 [[maybe_unused]] typename CONCRETE_CONTAINER::value_type t2         = 2;
                 [[maybe_unused]] typename CONCRETE_CONTAINER::value_type t3         = 3;
-                VerifyTestResult (collection.IsEmpty ());
+                VerifyTestResult (collection.empty ());
                 collection.Add (t1);
                 collection.Add (t1);
 #if 0

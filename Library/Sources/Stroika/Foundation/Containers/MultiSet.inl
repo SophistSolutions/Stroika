@@ -119,9 +119,9 @@ namespace Stroika::Foundation::Containers {
                 }
                 return n;
             }
-            virtual bool IsEmpty () const override
+            virtual bool empty () const override
             {
-                return this->_fContextForEachIterator.fMultiSet->IsEmpty ();
+                return this->_fContextForEachIterator.fMultiSet->empty ();
             }
             virtual typename Iterable<T>::_IterableRepSharedPtr Clone () const override
             {
@@ -203,9 +203,9 @@ namespace Stroika::Foundation::Containers {
             {
                 return this->_fContextForEachIterator.fMultiSet->size ();
             }
-            virtual bool IsEmpty () const override
+            virtual bool empty () const override
             {
-                return this->_fContextForEachIterator.fMultiSet->IsEmpty ();
+                return this->_fContextForEachIterator.fMultiSet->empty ();
             }
             virtual typename Iterable<T>::_IterableRepSharedPtr Clone () const override
             {
@@ -408,7 +408,7 @@ namespace Stroika::Foundation::Containers {
     inline void MultiSet<T, TRAITS>::RemoveAll ()
     {
         _SafeReadRepAccessor<_IRep> tmp{this}; // important to use READ not WRITE accessor, because write accessor would have already cloned the data
-        if (not tmp._ConstGetRep ().IsEmpty ()) {
+        if (not tmp._ConstGetRep ().empty ()) {
             this->_fRep = tmp._ConstGetRep ().CloneEmpty ();
         }
     }
