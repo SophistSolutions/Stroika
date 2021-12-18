@@ -728,13 +728,13 @@ namespace {
             VerifyTestResult (c.Where ([] (int i) { return i % 2 == 1; }).SequentialEquals (Iterable<int>{1, 3, 5}));
             {
                 Iterable<int> w = c.Where ([] (int i) { return i % 2 == 0; });
-                VerifyTestResult (w.SequentialEquals (Iterable<int>{2, 4, 6}));
-                VerifyTestResult (w.SequentialEquals (Iterable<int>{2, 4, 6}));
+                VerifyTestResult (w.SequentialEquals ({2, 4, 6}));
+                VerifyTestResult (w.SequentialEquals ({2, 4, 6}));
             }
         }
         {
             Iterable<int> c{1, 2, 2, 5, 9, 4, 5, 6};
-            VerifyTestResult (c.Distinct ().SetEquals (Iterable<int>{1, 2, 4, 5, 6, 9}));
+            VerifyTestResult (c.Distinct ().SetEquals ({1, 2, 4, 5, 6, 9}));
             auto resultsEqualMod5 = c.Distinct ([] (int l, int r) { return l % 5 == r % 5; });
             DbgTrace (L"x=%s", Characters::ToString (resultsEqualMod5).c_str ());
             VerifyTestResult (resultsEqualMod5.size () == 4);
@@ -762,7 +762,7 @@ namespace {
         }
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};
-            VerifyTestResult (c.Skip (3).SequentialEquals (Iterable<int>{4, 5, 6}));
+            VerifyTestResult (c.Skip (3).SequentialEquals ({4, 5, 6}));
         }
         {
             using Containers::Sequence;
@@ -777,14 +777,14 @@ namespace {
         }
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};
-            VerifyTestResult (c.Slice (3, 5).SequentialEquals (Iterable<int>{4, 5}));
-            VerifyTestResult (c.Slice (3, 9999).SequentialEquals (Iterable<int>{4, 5, 6}));
+            VerifyTestResult (c.Slice (3, 5).SequentialEquals ({4, 5}));
+            VerifyTestResult (c.Slice (3, 9999).SequentialEquals ({4, 5, 6}));
         }
         {
             Iterable<int> c{3, 5, 9, 38, 3, 5};
-            VerifyTestResult (c.OrderBy ().SequentialEquals (Iterable<int>{3, 3, 5, 5, 9, 38}));
-            VerifyTestResult (c.OrderBy ([] (int lhs, int rhs) -> bool { return lhs < rhs; }).SequentialEquals (Iterable<int>{3, 3, 5, 5, 9, 38}));
-            VerifyTestResult (c.OrderBy ([] (int lhs, int rhs) -> bool { return lhs > rhs; }).SequentialEquals (Iterable<int>{38, 9, 5, 5, 3, 3}));
+            VerifyTestResult (c.OrderBy ().SequentialEquals ({3, 3, 5, 5, 9, 38}));
+            VerifyTestResult (c.OrderBy ([] (int lhs, int rhs) -> bool { return lhs < rhs; }).SequentialEquals ({3, 3, 5, 5, 9, 38}));
+            VerifyTestResult (c.OrderBy ([] (int lhs, int rhs) -> bool { return lhs > rhs; }).SequentialEquals ({38, 9, 5, 5, 3, 3}));
         }
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};

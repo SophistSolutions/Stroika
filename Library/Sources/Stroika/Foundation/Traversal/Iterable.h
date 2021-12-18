@@ -421,7 +421,7 @@ namespace Stroika::Foundation::Traversal {
          */
         template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
         static bool SetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{});
-        template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
+        template <typename RHS_CONTAINER_TYPE = initializer_list<T>, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
         nonvirtual bool SetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
@@ -435,7 +435,7 @@ namespace Stroika::Foundation::Traversal {
          */
         template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
         static bool MultiSetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{});
-        template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
+        template <typename RHS_CONTAINER_TYPE = initializer_list<T>, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
         nonvirtual bool MultiSetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
@@ -455,7 +455,7 @@ namespace Stroika::Foundation::Traversal {
          */
         template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> /*and Common::IsEqualsComparer<EQUALS_COMPARER> ()*/>* = nullptr>
         static bool SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}, bool useIterableSize = false);
-        template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
+        template <typename RHS_CONTAINER_TYPE = initializer_list<T>, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
         nonvirtual bool SequentialEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}, bool useIterableSize = false) const;
 
     public:
@@ -773,7 +773,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  This returns an Iterable<T> with a subset of data after skipping the argument number of items.
@@ -793,7 +792,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  This returns an Iterable<T> with up to nItems taken from the front of this starting iterable. If this Iterable
@@ -819,7 +817,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          VerifyTestResult (c.Slice (3, 5).SequentialEquals (Iterable<int> { 4, 5 }));
+         *          VerifyTestResult (c.Slice (3, 5).SequentialEquals ({ 4, 5 }));
          *      \endcode
          *
          *  \req from <= to
@@ -832,7 +830,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  @todo FOR NOW VERY LIMITED API. Linq has params to let you select just the KEY to use in compare. Could add overloads
@@ -840,13 +837,13 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *          VerifyTestResult (c.OrderBy ().SequentialEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
+         *          VerifyTestResult (c.OrderBy ().SequentialEquals ({ 3, 3, 5, 5, 9, 38 }));
          *      \endcode
          *
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *          VerifyTestResult (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }).SequentialEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
+         *          VerifyTestResult (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }).SequentialEquals ({ 3, 3, 5, 5, 9, 38 }));
          *      \endcode
          *
          *  \note This performs a stable sort (preserving the relative order of items that compare equal).
@@ -1135,7 +1132,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c{1};
-         *          VerifyTestResult (c.Repeat (5).SequentialEquals (Iterable<int>{1, 1, 1, 1, 1}));
+         *          VerifyTestResult (c.Repeat (5).SequentialEquals ({1, 1, 1, 1, 1}));
          *      \endcode
          */
         nonvirtual Iterable<T> Repeat (size_t count) const;
@@ -1386,7 +1383,7 @@ namespace Stroika::Foundation::Traversal {
          */
         virtual Iterator<value_type> MakeIterator () const                                                    = 0;
         virtual size_t               size () const                                                            = 0;
-        virtual bool                 empty () const                                                         = 0;
+        virtual bool                 empty () const                                                           = 0;
         virtual void                 Apply (const function<void (ArgByValueType<T> item)>& doToElement) const = 0;
         virtual Iterator<value_type> Find (const function<bool (ArgByValueType<T> item)>& that) const         = 0;
         /**
