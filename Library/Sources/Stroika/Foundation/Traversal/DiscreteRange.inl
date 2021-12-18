@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Traversal {
                     return Iterator<T>{Iterator<T>::template MakeSmartPtr<DiscreteRange::MyIteratorRep_> (fStart, fEnd)};
                 }
             }
-            virtual size_t GetLength () const override
+            virtual size_t size () const override
             {
                 using SignedDifferenceType = typename TRAITS::SignedDifferenceType;
                 if (fForcedEnd) {

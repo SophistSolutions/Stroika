@@ -40,5 +40,5 @@ loop (yielder)
     			generator (std:function<void(std::function<void(T)> yielder)>);
     	};
 
-    	Plus - we need a better way to handle GetLength () - like 'not supported' - or maybe lose it as a common method of iterable?
+    	Plus - we need a better way to handle size () - like 'not supported' - or maybe lose it as a common method of iterable?
     	we could just iterate (make new useless iterator). That maybe OK. But not for things that genrate  infinite sequne.

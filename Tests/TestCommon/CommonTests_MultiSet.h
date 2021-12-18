@@ -60,7 +60,7 @@ namespace CommonTests {
                     using T                  = typename CONCRETE_CONTAINER::MultiSetOfElementType;
                     const size_t kTestSize   = 6;
 
-                    VerifyTestResult (s.GetLength () == 0);
+                    VerifyTestResult (s.size () == 0);
                     applyToContainer (s);
 
 #if qCompilerAndStdLib_attributes_before_template_in_Template_Buggy
@@ -92,7 +92,7 @@ namespace CommonTests {
                         }
                         applyToContainer (s);
 
-                        VerifyTestResult (s.GetLength () == kTestSize);
+                        VerifyTestResult (s.size () == kTestSize);
 
                         {
 #if qCompilerAndStdLib_attributes_before_template_in_Template_Buggy
@@ -100,7 +100,7 @@ namespace CommonTests {
                             }
                             for (size_t i = 1; i <= kTestSize; i++) {
                                 VerifyTestResult (s.Contains (i));
-                                VerifyTestResult (s.GetLength () == kTestSize - i + 1);
+                                VerifyTestResult (s.size () == kTestSize - i + 1);
                                 s.Remove (i);
                                 VerifyTestResult (not s.Contains (i - 1));
                             }
@@ -112,13 +112,13 @@ namespace CommonTests {
                             }
                             for (size_t i = 1; i <= kTestSize; i++) {
                                 VerifyTestResult (s.Contains (i));
-                                VerifyTestResult (s.GetLength () == kTestSize - i + 1);
+                                VerifyTestResult (s.size () == kTestSize - i + 1);
                                 s.Remove (i);
                                 VerifyTestResult (not s.Contains (i - 1));
                             }
 #endif
                             VerifyTestResult (s.IsEmpty ());
-                            VerifyTestResult (s.GetLength () == 0);
+                            VerifyTestResult (s.size () == 0);
                         }
 
                         for (size_t i = 1; i <= kTestSize; i++) {
@@ -126,28 +126,28 @@ namespace CommonTests {
                             applyToContainer (s);
                         }
                         applyToContainer (s);
-                        VerifyTestResult (s.GetLength () == kTestSize);
+                        VerifyTestResult (s.size () == kTestSize);
                         {
                             for (auto it = s.begin (); it != s.end ();) {
                                 it = s.erase (it);
                                 applyToContainer (s);
                             }
                             VerifyTestResult (s.IsEmpty ());
-                            VerifyTestResult (s.GetLength () == 0);
+                            VerifyTestResult (s.size () == 0);
                         }
 
                         for (size_t i = 1; i <= kTestSize; i++) {
                             s.Add (i);
                             applyToContainer (s);
                         }
-                        VerifyTestResult (s.GetLength () == kTestSize);
+                        VerifyTestResult (s.size () == kTestSize);
                         for (auto it2 = s.begin (); it2 != s.end ();) {
                             auto current = it2.Current ().fValue;
                             it2          = s.end (); // cannot keep live iterator during remove
                             s.Remove (current);
                             it2 = s.begin ();
                         }
-                        VerifyTestResult (s.GetLength () == 0);
+                        VerifyTestResult (s.size () == 0);
                     }
 
                     /*
@@ -156,14 +156,14 @@ namespace CommonTests {
                     {
                         s.RemoveAll ();
                         applyToContainer (s);
-                        VerifyTestResult (s.GetLength () == 0);
+                        VerifyTestResult (s.size () == 0);
                         for (size_t i = 1; i <= kTestSize; i++) {
                             s.Add (i);
                             applyToContainer (s);
                         }
-                        VerifyTestResult (s.GetLength () == kTestSize);
+                        VerifyTestResult (s.size () == kTestSize);
                         for (auto it3 = s.begin (); it3 != s.end ();) {
-                            if (s.GetLength () != 0) {
+                            if (s.size () != 0) {
                                 applyToContainer (s);
                                 s.UpdateCount (it3, 3, &it3);
                                 applyToContainer (s);
@@ -203,14 +203,14 @@ namespace CommonTests {
 
                     VerifyTestResult (s.IsEmpty ());
                     s.Add (three);
-                    VerifyTestResult (s.GetLength () == 1);
+                    VerifyTestResult (s.size () == 1);
                     s += three;
-                    VerifyTestResult (s.GetLength () == 1);
+                    VerifyTestResult (s.size () == 1);
                     VerifyTestResult (s.Contains (three));
                     VerifyTestResult (s.OccurrencesOf (three) == 2);
                     s.Remove (three);
                     applyToContainer (s);
-                    VerifyTestResult (s.GetLength () == 1);
+                    VerifyTestResult (s.size () == 1);
                     VerifyTestResult (s.Contains (three));
                     VerifyTestResult (s.OccurrencesOf (three) == 1);
                     s.Remove (three);
@@ -222,12 +222,12 @@ namespace CommonTests {
                         applyToContainer (s);
                     }
 
-                    for (size_t i = 1; i <= s.GetLength (); i++) {
+                    for (size_t i = 1; i <= s.size (); i++) {
                         VerifyTestResult (s.Contains (i));
                         VerifyTestResult (not s.Contains (0));
                     }
 
-                    for (size_t i = 1; i <= s.GetLength (); i++) {
+                    for (size_t i = 1; i <= s.size (); i++) {
                         for (auto it = s.begin (); it != s.end (); ++it) {
                             if (testingSchema.fEqualsComparer (it.Current ().fValue, i)) {
                                 break;
@@ -321,7 +321,7 @@ namespace CommonTests {
                         }
                     }
                     VerifyTestResult (s.IsEmpty ());
-                    VerifyTestResult (s.GetLength () == 0);
+                    VerifyTestResult (s.size () == 0);
 
                     for (auto it1 = s.begin (); it1 != s.end (); ++it1) {
                         for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
@@ -334,12 +334,12 @@ namespace CommonTests {
                         s.Add (i);
                         VerifyTestResult (s.Contains (i));
                         VerifyTestResult (s.OccurrencesOf (i) == 1);
-                        VerifyTestResult (s.GetLength () == i);
+                        VerifyTestResult (s.size () == i);
                     }
                     for (size_t i = K; i > 0; --i) {
                         s.Remove (i);
                         VerifyTestResult (not s.Contains (i));
-                        VerifyTestResult (s.GetLength () == (i - 1));
+                        VerifyTestResult (s.size () == (i - 1));
                     }
                     VerifyTestResult (s.IsEmpty ());
 
@@ -347,12 +347,12 @@ namespace CommonTests {
                         s += 1;
                         VerifyTestResult (s.OccurrencesOf (1) == i);
                     }
-                    size_t oldLength = s.GetLength ();
+                    size_t oldLength = s.size ();
                     size_t oldTotal  = s.TotalOccurrences ();
                     applyToContainer (s);
                     s += s;
                     applyToContainer (s);
-                    VerifyTestResult (s.GetLength () == oldLength);
+                    VerifyTestResult (s.size () == oldLength);
                     VerifyTestResult (s.TotalOccurrences () == oldTotal * 2);
                 }
 

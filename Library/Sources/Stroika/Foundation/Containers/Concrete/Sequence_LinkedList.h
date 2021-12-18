@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      *      Suitable for short lists, low memory overhead, where you can new entries, and remove from the start
      *      (or if array indexing is rare). To keep the order, but not use it much.
      * 
-     *      o   GetLength () is constant
+     *      o   size () is constant
      *      o   Append () is O(N)
      *      o   Prepend () is constant
      *      o   Indexing (GetAt/SetAt,operator[]) are O(N)

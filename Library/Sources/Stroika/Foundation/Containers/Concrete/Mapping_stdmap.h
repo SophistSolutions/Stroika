@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      *          There maybe another (better) way, but this works.
      *
      * \note Performance Notes:
-     *      o   GetLength () is constant
+     *      o   size () is constant
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

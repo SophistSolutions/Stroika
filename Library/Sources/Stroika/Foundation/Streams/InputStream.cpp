@@ -118,7 +118,7 @@ String InputStream<Character>::Ptr::ReadAll (size_t upTo) const
         }
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Returning %llu characters", static_cast<unsigned long long> (result.GetLength ()));
+    DbgTrace (L"Returning %llu characters", static_cast<unsigned long long> (result.size ()));
 #endif
     return result.str ();
 }

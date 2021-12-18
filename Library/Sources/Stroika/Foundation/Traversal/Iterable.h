@@ -153,9 +153,9 @@ namespace Stroika::Foundation::Traversal {
      *      almost the same, but will make a copy of the data, and not allow it to change without preserve COW semantics.
      *
      *  *Design Note*:
-     *      Why does Iterable<T> contain a GetLength () method?
+     *      Why does Iterable<T> contain a size () method?
      *
-     *          o   It’s always well defined what GetLength() means (what you would get if you called
+     *          o   It’s always well defined what size() means (what you would get if you called
      *              MakeIterable() and iterated a bunch of times til the end).
      *
      *          o   Its almost always (and trivial) to perform that computation more efficiently than the
@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Traversal {
      *          an Iterable<T>, if it was defined as a method, you can access the trivial implemeantion,
      *          and if it was not defined, you would be forced into the costly implementation.
      *
-     *      Adding GetLength () adds no conceptual cost – because its already so well and clearly defined
+     *      Adding size () adds no conceptual cost – because its already so well and clearly defined
      *      in terms of its basic operation (iteration). And it provides value (maybe just modest value).
      *
      *  *Design Note*:
@@ -354,7 +354,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          * \brief Returns the number of items contained.
          *
-         * GetLength () returns the number of elements in this 'Iterable' object. Its defined to be
+         * size () returns the number of elements in this 'Iterable' object. Its defined to be
          * the same number of elements you would visit if you created an iterator (MakeIterator())
          * and visited all items. In practice, as the actual number might vary as the underlying
          * iterable could change while being iterated over.
@@ -362,21 +362,23 @@ namespace Stroika::Foundation::Traversal {
          *  For example, a filesystem directory iterable could return a different length each time it was
          *  called, as files are added and removed from the filesystem.
          *
-         *  Also note that GetLength () can return a ridiculous number - like numeric_limits<size_t>::max () -
+         *  Also note that size () can return a ridiculous number - like numeric_limits<size_t>::max () -
          *  for logically infinite sequences... like a sequence of random numbers.
          *
+         *  \note Alias GetLength () - in fact in Stroika before 2.1b14, this was called GetLength ()
+         *
          *  \em Performance:
-         *      The performance of GetLength() may vary wildly. It could be anywhere from O(1) to O(N)
+         *      The performance of size() may vary wildly. It could be anywhere from O(1) to O(N)
          *      depending on the underlying type of Iterable<T>.
          */
-        nonvirtual size_t GetLength () const;
+        nonvirtual size_t size () const;
 
     public:
         /**
-         * \brief Returns true iff GetLength() == 0
+         * \brief Returns true iff size() == 0
          *
          *  \em Performance:
-         *      The performance of IsEmpty() may vary wildly (@see GetLength) but will nearly always be O(1).
+         *      The performance of IsEmpty() may vary wildly (@see size) but will nearly always be O(1).
          */
         nonvirtual bool IsEmpty () const;
 
@@ -1157,15 +1159,9 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         * \brief STL-ish alias for GetLength()
+         * \brief STL-ish alias for size() - really in STL only used in string, I think, but still makes sense as an alias.
          */
         nonvirtual size_t length () const;
-
-    public:
-        /**
-         * \brief STL-ish alias for GetLength()
-         */
-        nonvirtual size_t size () const;
 
     public:
         using _APPLY_ARGTYPE [[deprecated ("Since Stroika 2.1b14, use const function<void (ArgByValueType<T> item)>")]]      = const function<void (ArgByValueType<T> item)>&;
@@ -1183,6 +1179,10 @@ namespace Stroika::Foundation::Traversal {
         [[deprecated ("Since Stroika 2.1b14 use Find ()")]] Iterator<T> FindFirstThat (const Iterator<T>& startAt, const function<bool (ArgByValueType<T> item)>& that) const
         {
             return Find (startAt, that);
+        }
+        [[deprecated ("Since Stroika 2.1b14, use size () not GetLength ()")]] size_t GetLength () const
+        {
+            return this->size ();
         }
 
     protected:
@@ -1385,7 +1385,7 @@ namespace Stroika::Foundation::Traversal {
         /*
          */
         virtual Iterator<value_type> MakeIterator () const                                                    = 0;
-        virtual size_t               GetLength () const                                                       = 0;
+        virtual size_t               size () const                                                            = 0;
         virtual bool                 IsEmpty () const                                                         = 0;
         virtual void                 Apply (const function<void (ArgByValueType<T> item)>& doToElement) const = 0;
         virtual Iterator<value_type> Find (const function<bool (ArgByValueType<T> item)>& that) const         = 0;

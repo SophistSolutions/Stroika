@@ -35,10 +35,10 @@ namespace CommonTests {
                 VerifyTestResult (coll.empty ());
                 testFunction (coll);
                 coll.Add (T1{1, 101});
-                VerifyTestResult (coll.GetLength () == 1);
+                VerifyTestResult (coll.size () == 1);
                 VerifyTestResult (coll.Lookup (1)->value == 101);
                 coll.Add (T1{1, 201});
-                VerifyTestResult (coll.GetLength () == 1);
+                VerifyTestResult (coll.size () == 1);
                 VerifyTestResult (coll.Contains (1));
                 VerifyTestResult (coll.Lookup (1)->value == 201);
                 VerifyTestResult (not coll.Contains (2));
@@ -47,12 +47,12 @@ namespace CommonTests {
                 coll.Add (T1{2, 102});
                 VerifyTestResult (prevValue != coll);
                 VerifyTestResult (coll.Contains (2));
-                VerifyTestResult (coll.GetLength () == 2);
+                VerifyTestResult (coll.size () == 2);
                 VerifyTestResult ((coll.Keys () == Set<int>{1, 2}));
                 VerifyTestResult (not coll.RemoveIf (99));
-                VerifyTestResult (coll.GetLength () == 2);
+                VerifyTestResult (coll.size () == 2);
                 coll.Remove (1);
-                VerifyTestResult (coll.GetLength () == 1);
+                VerifyTestResult (coll.size () == 1);
                 testFunction (coll);
             };
         }

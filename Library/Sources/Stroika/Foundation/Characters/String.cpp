@@ -169,7 +169,7 @@ Traversal::Iterator<Character> String::_IRep::MakeIterator () const
     return Iterator<Character>{Iterator<Character>::MakeSmartPtr<MyIterRep_> (sharedContainerRep)};
 }
 
-size_t String::_IRep::GetLength () const
+size_t String::_IRep::size () const
 {
     Assert (_fStart <= _fEnd);
     return _fEnd - _fStart;
@@ -479,10 +479,10 @@ void String::SetCharAt (Character c, size_t i)
     // @Todo - redo with check if char is acttually chanigng and if so use
     // mk/4 4 arg string maker instead.??? Or some such...
     Require (i >= 0);
-    Require (i < GetLength ());
+    Require (i < size ());
     // Expensive, but you can use StringBuilder directly to avoid the performance costs
     StringBuilder sb{*this};
-    Require (i < GetLength ());
+    Require (i < size ());
     sb.SetAt (c, i);
     *this = sb.str ();
 }
@@ -490,7 +490,7 @@ void String::SetCharAt (Character c, size_t i)
 String String::InsertAt (const Character* from, const Character* to, size_t at) const
 {
     Require (at >= 0);
-    Require (at <= GetLength ());
+    Require (at <= size ());
     Require (from <= to);
     Require (from != nullptr or from == to);
     Require (to != nullptr or from == to);
@@ -507,7 +507,7 @@ String String::InsertAt (const Character* from, const Character* to, size_t at) 
 String String::RemoveAt (size_t from, size_t to) const
 {
     Require (from <= to);
-    Require (to <= GetLength ());
+    Require (to <= size ());
     if (from == to) {
         return *this;
     }
@@ -567,7 +567,7 @@ optional<size_t> String::Find (const String& subString, size_t startAt, CompareO
     _SafeReadRepAccessor accessor{this};
     Require (startAt <= accessor._ConstGetRep ()._GetLength ());
 
-    size_t subStrLen = subString.GetLength ();
+    size_t subStrLen = subString.size ();
     if (subStrLen == 0) {
         return (accessor._ConstGetRep ()._GetLength () == 0) ? optional<size_t>{} : 0;
     }
@@ -605,7 +605,7 @@ optional<size_t> String::Find (const String& subString, size_t startAt, CompareO
 
 optional<pair<size_t, size_t>> String::Find (const RegularExpression& regEx, size_t startAt) const
 {
-    Require (startAt <= GetLength ());
+    Require (startAt <= size ());
     wstring tmp = As<wstring> ();
     Require (startAt < tmp.size ());
     tmp = tmp.substr (startAt);
@@ -718,12 +718,12 @@ optional<size_t> String::RFind (const String& subString) const
     /*
      * Do quickie implementation, and don't worry about efficiency...
      */
-    size_t subStrLen = subString.GetLength ();
+    size_t subStrLen = subString.size ();
     if (subStrLen == 0) {
-        return ((GetLength () == 0) ? optional<size_t>{} : GetLength () - 1);
+        return ((size () == 0) ? optional<size_t>{} : size () - 1);
     }
 
-    size_t limit = GetLength () - subStrLen + 1;
+    size_t limit = size () - subStrLen + 1;
     for (size_t i = limit; i > 0; --i) {
         if (SubString (i - 1, i - 1 + subStrLen) == subString) {
             return i - 1;
@@ -736,7 +736,7 @@ String String::Replace (size_t from, size_t to, const String& replacement) const
 {
     [[maybe_unused]] auto [thisStart, thisEnd] = this->GetData<wchar_t> ();
     Require (from <= to);
-    Require (to <= this->GetLength ());
+    Require (to <= this->size ());
     Assert (to + thisStart < thisEnd);
     StringBuilder sb{thisStart, thisStart + from};
     sb.Append (replacement);
@@ -757,12 +757,12 @@ bool String::StartsWith (const Character& c, CompareOptions co) const
 bool String::StartsWith (const String& subString, CompareOptions co) const
 {
     _SafeReadRepAccessor accessor{this};
-    size_t               subStrLen = subString.GetLength ();
+    size_t               subStrLen = subString.size ();
     if (subStrLen > accessor._ConstGetRep ()._GetLength ()) {
         return false;
     }
 #if qDebug
-    bool referenceResult = ThreeWayComparer{co}(SubString (0, subString.GetLength ()), subString) == 0;
+    bool referenceResult = ThreeWayComparer{co}(SubString (0, subString.size ()), subString) == 0;
 #endif
     const Character*                         subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
     pair<const Character*, const Character*> thisData    = accessor._ConstGetRep ().GetData ();
@@ -786,7 +786,7 @@ bool String::EndsWith (const String& subString, CompareOptions co) const
 {
     _SafeReadRepAccessor accessor{this};
     size_t               thisStrLen = accessor._ConstGetRep ()._GetLength ();
-    size_t               subStrLen  = subString.GetLength ();
+    size_t               subStrLen  = subString.size ();
     if (subStrLen > thisStrLen) {
         return false;
     }
@@ -922,7 +922,7 @@ String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t this
 {
     Require (from <= to);
     Require (to <= thisLen);
-    Require (thisLen == this->GetLength ());
+    Require (thisLen == this->size ());
     const wchar_t* start = reinterpret_cast<const wchar_t*> (thisAccessor._ConstGetRep ()._Peek ()) + from;
     size_t         len   = to - from;
     const wchar_t* end   = start + len;
@@ -1020,7 +1020,7 @@ String String::StripAll (bool (*removeCharIf) (Character)) const
     //
     // Walk string and find first character we need to remove
     String result{*this};
-    size_t n = result.GetLength ();
+    size_t n = result.size ();
     for (size_t i = 0; i < n; ++i) {
         Character c = result[i];
         if (removeCharIf (c)) {
@@ -1051,7 +1051,7 @@ String String::Join (const Iterable<String>& list, const String& separator)
         return result.str ();
     }
     else {
-        return result.str ().SubString (0, -static_cast<int> (separator.GetLength ()));
+        return result.str ().SubString (0, -static_cast<int> (separator.size ()));
     }
 }
 
@@ -1293,7 +1293,7 @@ bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, M
 
 void String::erase (size_t from)
 {
-    *this = RemoveAt (from, GetLength ());
+    *this = RemoveAt (from, size ());
 }
 
 void String::erase (size_t from, size_t count)
@@ -1303,7 +1303,7 @@ void String::erase (size_t from, size_t count)
     // MUST ACQUIRE ACCESSOR HERE - not just that RemoteAt threadsafe - but must SYNC at this point - need AssureExternallySycnonized stuff here!!!
     //
     // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
-    size_t max2Erase = static_cast<size_t> (max (static_cast<ptrdiff_t> (0), static_cast<ptrdiff_t> (GetLength ()) - static_cast<ptrdiff_t> (from)));
+    size_t max2Erase = static_cast<size_t> (max (static_cast<ptrdiff_t> (0), static_cast<ptrdiff_t> (size ()) - static_cast<ptrdiff_t> (from)));
     *this            = RemoveAt (from, from + min (count, max2Erase));
 }
 

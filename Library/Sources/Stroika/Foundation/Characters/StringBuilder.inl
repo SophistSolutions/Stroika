@@ -208,7 +208,7 @@ namespace Stroika::Foundation::Characters {
         fData_[fLength_] = c.GetCharacterCode ();
         ++fLength_;
     }
-    inline size_t StringBuilder::GetLength () const
+    inline size_t StringBuilder::size () const
     {
         return fLength_;
     }
@@ -277,11 +277,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline size_t StringBuilder::length () const
     {
-        return GetLength ();
-    }
-    inline size_t StringBuilder::size () const
-    {
-        return GetLength ();
+        return size ();
     }
     inline const wchar_t* StringBuilder::begin ()
     {

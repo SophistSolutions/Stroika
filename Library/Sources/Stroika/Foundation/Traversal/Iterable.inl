@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     inline bool Iterable<T>::_IRep::_IsEmpty () const
     {
-        return GetLength () == 0;
+        return size () == 0;
     }
     template <typename T>
     inline void Iterable<T>::_IRep::_Apply (const function<void (ArgByValueType<T> item)>& doToElement) const
@@ -302,9 +302,9 @@ namespace Stroika::Foundation::Traversal {
         return _SafeReadRepAccessor<>{this}._ConstGetRep ().MakeIterator ();
     }
     template <typename T>
-    inline size_t Iterable<T>::GetLength () const
+    inline size_t Iterable<T>::size () const
     {
-        return _SafeReadRepAccessor<>{this}._ConstGetRep ().GetLength ();
+        return _SafeReadRepAccessor<>{this}._ConstGetRep ().size ();
     }
     template <typename T>
     inline bool Iterable<T>::IsEmpty () const
@@ -412,14 +412,14 @@ namespace Stroika::Foundation::Traversal {
 #if qDebug
             auto re{rhs.end ()};
 #endif
-            Assert ((li != le) == (ri != re)); // cuz same length, and this requires GetLength cannot change during call
+            Assert ((li != le) == (ri != re)); // cuz same length, and this requires size cannot change during call
             while (li != le) {
                 if (not equalsComparer (*li, *ri)) {
                     return false;
                 }
                 ++li;
                 ++ri;
-                Assert ((li != le) == (ri != re)); // cuz same length, and this requires GetLength cannot change during call
+                Assert ((li != le) == (ri != re)); // cuz same length, and this requires size cannot change during call
             }
             Assert (li == le and ri == re);
             return true;
@@ -977,12 +977,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     inline size_t Iterable<T>::length () const
     {
-        return GetLength ();
-    }
-    template <typename T>
-    inline size_t Iterable<T>::size () const
-    {
-        return GetLength ();
+        return size ();
     }
     template <typename T>
     inline Iterator<T> Iterable<T>::begin () const

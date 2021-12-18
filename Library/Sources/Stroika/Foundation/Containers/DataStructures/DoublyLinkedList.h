@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Always: O(N)
          */
-        nonvirtual size_t GetLength () const;
+        nonvirtual size_t size () const;
 
     public:
         /**

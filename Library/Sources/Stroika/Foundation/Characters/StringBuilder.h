@@ -113,11 +113,11 @@ namespace Stroika::Foundation::Characters {
         nonvirtual void push_back (Character c);
 
     public:
-        nonvirtual size_t GetLength () const;
+        nonvirtual size_t size () const;
 
     public:
         /**
-         *  Returns true if this is an empty string (aka iff GetLength () == 0);
+         *  Returns true if this is an empty string (aka iff size () == 0);
          */
         nonvirtual bool empty () const;
 
@@ -167,15 +167,9 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  STL-ish alias for GetLength ()
+         *  STL-ish alias for size ()
          */
         nonvirtual size_t length () const;
-
-    public:
-        /**
-         *  STL-ish alias for GetLength ()
-         */
-        nonvirtual size_t size () const;
 
     public:
         /**
@@ -206,7 +200,7 @@ namespace Stroika::Foundation::Characters {
 
     private:
         mutable Memory::SmallStackBuffer<wchar_t> fData_{0};   // maybe nul-terminated
-        size_t                                    fLength_{0}; // seperate from SmallStackBuffer<>::GetLength ()
+        size_t                                    fLength_{0}; // seperate from SmallStackBuffer<>::size ()
     };
 
 }

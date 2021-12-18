@@ -28,7 +28,7 @@ namespace {
         const size_t                       kBigSize = 1001;
 
         Assert (kBigSize > 100);
-        VerifyTestResult (someLL.GetLength () == 0);
+        VerifyTestResult (someLL.size () == 0);
         {
             for (size_t i = 1; i <= kBigSize; i++) {
                 someLL.Prepend (0);
@@ -52,7 +52,7 @@ namespace {
             }
         }
 
-        VerifyTestResult (someLL.GetLength () == kBigSize);
+        VerifyTestResult (someLL.size () == kBigSize);
         someLL.SetAt (55, 55);                      //  someLL [55] = 55;
         VerifyTestResult (someLL.GetAt (55) == 55); //  VerifyTestResult(someArray [55] == 55);
         VerifyTestResult (someLL.GetAt (55) != 56); //  VerifyTestResult(someArray [55] != 56);
@@ -67,7 +67,7 @@ namespace {
             }
         } //   someLL.InsertAt(1, 100);
 
-        VerifyTestResult (someLL.GetLength () == kBigSize + 1);
+        VerifyTestResult (someLL.size () == kBigSize + 1);
         VerifyTestResult (someLL.GetAt (100) == 1); //  VerifyTestResult(someArray [100] == 1);
 
         someLL.SetAt (someLL.GetAt (100) + 5, 101);
@@ -82,10 +82,10 @@ namespace {
         DataStructures::LinkedList<SimpleClass> someLL;
         const size_t                            kBigSize = 1000;
 
-        VerifyTestResult (someLL.GetLength () == 0);
+        VerifyTestResult (someLL.size () == 0);
 
         Assert (kBigSize > 10);
-        VerifyTestResult (someLL.GetLength () == 0);
+        VerifyTestResult (someLL.size () == 0);
         {
             for (size_t i = 1; i <= kBigSize; i++) {
                 someLL.Prepend (0);
@@ -109,14 +109,14 @@ namespace {
             }
         }
 
-        VerifyTestResult (someLL.GetLength () == kBigSize);
+        VerifyTestResult (someLL.size () == kBigSize);
 
         someLL.SetAt (55, 55); //  someLL [55] = 55;
         VerifyTestResult (someLL.GetAt (55) == 55);
         VerifyTestResult (not(someLL.GetAt (55) == 56));
 
         someLL.RemoveAll ();
-        VerifyTestResult (someLL.GetLength () == 0);
+        VerifyTestResult (someLL.size () == 0);
 
         for (size_t i = kBigSize; i >= 1; --i) {
             VerifyTestResult (someLL.Lookup (i) == nullptr);
@@ -129,7 +129,7 @@ namespace {
             someLL.RemoveFirst ();
             VerifyTestResult (someLL.Lookup (i) == nullptr);
         }
-        VerifyTestResult (someLL.GetLength () == 0);
+        VerifyTestResult (someLL.size () == 0);
 
         for (size_t i = kBigSize; i >= 1; --i) {
             someLL.Prepend (i);

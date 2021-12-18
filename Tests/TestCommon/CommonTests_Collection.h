@@ -31,7 +31,7 @@ namespace CommonTests {
 
                 const size_t kTestSize = 100;
 
-                VerifyTestResult (s.GetLength () == 0);
+                VerifyTestResult (s.size () == 0);
                 /*
                 * Try removes while iterating forward.
                 */
@@ -39,11 +39,11 @@ namespace CommonTests {
                     for (size_t i = 1; i <= kTestSize; i++) {
                         s.Add (i);
                     }
-                    VerifyTestResult (s.GetLength () == kTestSize);
+                    VerifyTestResult (s.size () == kTestSize);
 
                     IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s);
 
-                    VerifyTestResult (s.GetLength () == kTestSize);
+                    VerifyTestResult (s.size () == kTestSize);
                     s.RemoveAll ();
                     VerifyTestResult (s.size () == 0);
                     for (size_t i = 1; i <= kTestSize; i++) {
@@ -55,28 +55,28 @@ namespace CommonTests {
                     for (size_t i = 1; i <= kTestSize; i++) {
                         s.Add (T (i));
                     }
-                    VerifyTestResult (s.GetLength () == kTestSize);
+                    VerifyTestResult (s.size () == kTestSize);
 
                     s.clear ();
 
                     for (size_t i = 1; i <= kTestSize; i++) {
                         s.Add (T (i));
                     }
-                    VerifyTestResult (s.GetLength () == kTestSize);
+                    VerifyTestResult (s.size () == kTestSize);
 
                     s.clear ();
-                    VerifyTestResult (s.GetLength () == 0);
+                    VerifyTestResult (s.size () == 0);
                 }
                 /*
                 * Try removes multiple iterators present.
                 */
                 {
                     s.RemoveAll ();
-                    VerifyTestResult (s.GetLength () == 0);
+                    VerifyTestResult (s.size () == 0);
                     for (size_t i = 1; i <= kTestSize; i++) {
                         s.Add (i);
                     }
-                    VerifyTestResult (s.GetLength () == kTestSize);
+                    VerifyTestResult (s.size () == kTestSize);
                 }
 
                 s.RemoveAll ();
@@ -87,10 +87,10 @@ namespace CommonTests {
             {
 #if qPrintTimings
                 Time t = GetCurrentTime ();
-                cout << tab << "testing Collection<size_t> of length " << s.GetLength () << endl;
+                cout << tab << "testing Collection<size_t> of length " << s.size () << endl;
 #endif
 
-                for (size_t i = 1; i <= s.GetLength (); i++) {
+                for (size_t i = 1; i <= s.size (); i++) {
                     for ([[maybe_unused]] auto&& it : s) {
 #if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
                         &it;
@@ -109,7 +109,7 @@ namespace CommonTests {
                 }
                 s.RemoveAll ();
                 VerifyTestResult (s.IsEmpty ());
-                VerifyTestResult (s.GetLength () == 0);
+                VerifyTestResult (s.size () == 0);
 
                 for ([[maybe_unused]] auto&& it1 : s) {
 #if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
@@ -148,9 +148,9 @@ namespace CommonTests {
 
                 VerifyTestResult (s.IsEmpty ());
                 s.Add (three);
-                VerifyTestResult (s.GetLength () == 1);
+                VerifyTestResult (s.size () == 1);
                 s += three;
-                VerifyTestResult (s.GetLength () == 2);
+                VerifyTestResult (s.size () == 2);
                 s.RemoveAll ();
                 VerifyTestResult (s.IsEmpty ());
 
@@ -167,7 +167,7 @@ namespace CommonTests {
 
                 for (i = 1; i <= K; ++i) {
                     s.Add (i);
-                    VerifyTestResult (s.GetLength () == i);
+                    VerifyTestResult (s.size () == i);
                 }
 #if qPrintTimings
                 t = GetCurrentTime () - t;
@@ -217,12 +217,12 @@ namespace CommonTests {
 
                 VerifyTestResult (s.IsEmpty ());
                 s.Add (three);
-                VerifyTestResult (s.GetLength () == 1);
+                VerifyTestResult (s.size () == 1);
                 s += three;
-                VerifyTestResult (s.GetLength () == 2);
+                VerifyTestResult (s.size () == 2);
                 VerifyTestResult (s.Contains (three));
                 s.Remove (three);
-                VerifyTestResult (s.GetLength () == 1);
+                VerifyTestResult (s.size () == 1);
                 s.RemoveAll ();
                 VerifyTestResult (s.IsEmpty ());
 
@@ -243,7 +243,7 @@ namespace CommonTests {
                 for (i = 1; i <= K; i++) {
                     s.Add (i);
                     VerifyTestResult (s.Contains (i));
-                    VerifyTestResult (s.GetLength () == i);
+                    VerifyTestResult (s.size () == i);
                 }
 #if qPrintTimings
                 t = GetCurrentTime () - t;

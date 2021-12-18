@@ -514,7 +514,7 @@ namespace {
                 Thread::Ptr t3 = Thread::New (
                     [&tmp] () {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
-                            if (tmp.GetLength () == 1000) {
+                            if (tmp.size () == 1000) {
                                 VerifyTestResult (tmp.IndexOf (6) == 5u);
                                 VerifyTestResult (*tmp.First () == 1);
                                 VerifyTestResult (*tmp.Last () == 1000);
@@ -638,7 +638,7 @@ namespace {
                 Debug::TraceContextBumper ctx1{"...TestBasics_<Sequence<int>>"};
                 Private_::TestBasics_<Sequence<int>> (
                     [] (Sequence<int>* c, int i) { c->Append (i); },
-                    [] (Sequence<int>* c, [[maybe_unused]] int i) { size_t n = c->GetLength (); if (n != 0) c->Remove (n / 2); },
+                    [] (Sequence<int>* c, [[maybe_unused]] int i) { size_t n = c->size (); if (n != 0) c->Remove (n / 2); },
                     [] (const Sequence<int>* c) { [[maybe_unused]] size_t n = Memory::NullCoalesce (c->IndexOf (3)); },
                     [&cnt] (int v) { cnt += v; });
             }

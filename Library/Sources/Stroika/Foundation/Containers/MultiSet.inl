@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Containers {
                 : inherited{context}
             {
             }
-            virtual size_t GetLength () const override
+            virtual size_t size () const override
             {
                 size_t n = 0;
                 for (Iterator<CountedValue<T>> i = this->_fContextForEachIterator.fMultiSet->MakeIterator (); not i.Done (); ++i) {
@@ -199,9 +199,9 @@ namespace Stroika::Foundation::Containers {
                 : inherited{context}
             {
             }
-            virtual size_t GetLength () const override
+            virtual size_t size () const override
             {
-                return this->_fContextForEachIterator.fMultiSet->GetLength ();
+                return this->_fContextForEachIterator.fMultiSet->size ();
             }
             virtual bool IsEmpty () const override
             {
@@ -229,7 +229,7 @@ namespace Stroika::Foundation::Containers {
         if (this == &rhs) {
             return true;
         }
-        if (this->GetLength () != rhs.GetLength ()) {
+        if (this->size () != rhs.size ()) {
             return false;
         }
         for (auto i = this->MakeIterator (); not i.Done (); ++i) {

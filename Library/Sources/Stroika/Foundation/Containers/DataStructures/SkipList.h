@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void RemoveAll ();
 
     public:
-        nonvirtual size_t GetLength () const; // always equal to total Add minus total Remove
+        nonvirtual size_t size () const; // always equal to total Add minus total Remove
 
     public:
         class ForwardIterator;

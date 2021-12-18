@@ -339,7 +339,7 @@ namespace {
             }
             Sequence<uint32_t> s = Sequence<uint32_t> (FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t>{1, 100}.Elements ()).Filter<uint32_t> (isPrimeCheck));
             VerifyTestResult (s == Sequence<uint32_t> (begin (kRefCheck_), end (kRefCheck_)));
-            VerifyTestResult (Memory::NEltsOf (kRefCheck_) == FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t>{1, 100}.Elements ()).Filter<uint32_t> (isPrimeCheck).GetLength ());
+            VerifyTestResult (Memory::NEltsOf (kRefCheck_) == FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t>{1, 100}.Elements ()).Filter<uint32_t> (isPrimeCheck).size ());
         }
     }
 }
@@ -966,9 +966,9 @@ namespace {
         {
             using IO::Network::InternetAddress;
             Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
-            VerifyTestResult (c.Repeat (0).GetLength () == 0);
+            VerifyTestResult (c.Repeat (0).size () == 0);
             VerifyTestResult (c.Repeat (1).SequentialEquals (c));
-            VerifyTestResult (c.Repeat (10).GetLength () == 20);
+            VerifyTestResult (c.Repeat (10).size () == 20);
         }
     }
 }

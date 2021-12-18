@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      * \note Performance Notes:
      *      Collection_stdmultiset<T> is a good implementation of Collections, so long as you have an in-order comparison function to provide
      *
-     *      o   GetLength () is O(log N)
+     *      o   size () is O(log N)
      *      o   Uses Memory::UseBlockAllocationIfAppropriate
      *      o   Additions and Removals are O(log N)
      *

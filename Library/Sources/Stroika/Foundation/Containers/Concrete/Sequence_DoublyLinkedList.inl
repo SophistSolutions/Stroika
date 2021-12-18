@@ -45,11 +45,11 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
-        virtual size_t GetLength () const override
+        virtual size_t size () const override
         {
             // NOTE: O(N), but could easily be made faster caching the length
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return fData_.GetLength ();
+            return fData_.size ();
         }
         virtual bool IsEmpty () const override
         {
@@ -94,16 +94,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual value_type GetAt (size_t i) const override
         {
             Require (not IsEmpty ());
-            Require (i == _kSentinalLastItemIndex or i < GetLength ());
+            Require (i == _kSentinalLastItemIndex or i < size ());
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             if (i == _kSentinalLastItemIndex) {
-                i = GetLength () - 1;
+                i = size () - 1;
             }
             return fData_.GetAt (i);
         }
         virtual void SetAt (size_t i, ArgByValueType<value_type> item) override
         {
-            Require (i < GetLength ());
+            Require (i < size ());
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             fData_.SetAt (i, item);
             fChangeCounts_.PerformedChange ();
@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Insert (size_t at, const value_type* from, const value_type* to) override
         {
-            Require (at == _kSentinalLastItemIndex or at <= GetLength ());
+            Require (at == _kSentinalLastItemIndex or at <= size ());
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             if (at == _kSentinalLastItemIndex) {
                 for (const T* p = from; p != to; ++p) {
@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                     fData_.Prepend (from[i - 1]);
                 }
             }
-            else if (at == fData_.GetLength ()) {
+            else if (at == fData_.size ()) {
                 for (const T* p = from; p != to; ++p) {
                     fData_.Append (*p);
                 }

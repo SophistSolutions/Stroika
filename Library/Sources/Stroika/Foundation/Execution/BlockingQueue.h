@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Execution {
      *          int counter =   0;
      *          BlockingQueue<function<void()>> q;
      *
-     *          Verify (q.GetLength () == 0);
+     *          Verify (q.size () == 0);
      *
      *          Thread::Ptr  producerThread = Thread::New (
      *              [&q, &counter] () {
@@ -213,11 +213,11 @@ namespace Stroika::Foundation::Execution {
         /**
          *  Returns the number of elements in the blocking queue (zero if empty).
          */
-        nonvirtual size_t GetLength () const;
+        nonvirtual size_t size () const;
 
     public:
         /**
-         *  Alias for GetLength()
+         *  Alias for size()
          */
         nonvirtual size_t length () const;
 

@@ -527,7 +527,7 @@ namespace Stroika::Foundation::Containers {
             return true;
         }
         if (kCanUseGetLengthAsOptimizationCheck_) {
-            if (this->GetLength () != rhs.GetLength ()) {
+            if (this->size () != rhs.size ()) {
                 return false;
             }
         }
@@ -540,7 +540,7 @@ namespace Stroika::Foundation::Containers {
             ++rhsSize;
         }
         if (not kCanUseGetLengthAsOptimizationCheck_) {
-            return rhsSize == this->GetLength ();
+            return rhsSize == this->size ();
         }
         return true;
     }

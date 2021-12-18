@@ -69,15 +69,15 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
         }
-        virtual size_t GetLength () const override
+        virtual size_t size () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return fData_.GetLength ();
+            return fData_.size ();
         }
         virtual bool IsEmpty () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return fData_.GetLength () == 0;
+            return fData_.size () == 0;
         }
         virtual Iterator<value_type> MakeIterator () const override
         {
@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             size_t                                                      i = fData_.Find (that);
-            if (i == fData_.GetLength ()) {
+            if (i == fData_.size ()) {
                 return nullptr;
             }
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, i)};
@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             value_type                                            tmp{item, count};
             size_t                                                index = Find_ (tmp);
             if (index == kNotFound_) {
-                fData_.InsertAt (fData_.GetLength (), tmp);
+                fData_.InsertAt (fData_.size (), tmp);
             }
             else {
                 tmp.fCount += count;
@@ -152,7 +152,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             value_type                                            tmp (item);
             size_t                                                index = Find_ (tmp);
             if (index != kNotFound_) {
-                Assert (index < fData_.GetLength ());
+                Assert (index < fData_.size ());
                 size_t result; // intentionally uninitialized
                 if (tmp.fCount > count) {
                     tmp.fCount -= count;
@@ -217,7 +217,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return 0;
             }
             Assert (index >= 0);
-            Assert (index < fData_.GetLength ());
+            Assert (index < fData_.size ());
             return fData_[index].fCount;
         }
         virtual Iterable<T> Elements (const typename MultiSet<T, TRAITS>::_IRepSharedPtr& rep) const override
@@ -265,7 +265,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual size_t Find_ (value_type& item) const
         {
             // this code assumes locking done by callers
-            size_t length = fData_.GetLength ();
+            size_t length = fData_.size ();
             for (size_t i = 0; i < length; ++i) {
                 if (fEqualsComparer_ (fData_.GetAt (i).fValue, item.fValue)) {
                     item = fData_.GetAt (i);

@@ -560,7 +560,7 @@ namespace {
                 unsigned int                  nCipherTests{};
                 unsigned int                  nFailures{};
                 MultiSet<String>              failingCiphers;
-                [[maybe_unused]] const size_t totalDigestAlgorithms = OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().GetLength ();
+                [[maybe_unused]] const size_t totalDigestAlgorithms = OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().size ();
                 for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ()) {
                     for (DigestAlgorithm di : OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ()) {
                         size_t nFailsForThisCipherDigestCombo{};

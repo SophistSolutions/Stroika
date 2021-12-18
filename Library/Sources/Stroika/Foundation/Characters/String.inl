@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Characters {
     inline Character String::_IRep::GetAt (size_t index) const
     {
         Assert (_fStart <= _fEnd);
-        Require (index < GetLength ());
+        Require (index < size ());
         return _fStart[index];
     }
 #if 0
@@ -242,7 +242,7 @@ namespace Stroika::Foundation::Characters {
         Require (bufFrom + accessor._ConstGetRep ()._GetLength () >= bufTo);
         accessor._ConstGetRep ().CopyTo (bufFrom, bufTo);
     }
-    inline size_t String::GetLength () const
+    inline size_t String::size () const
     {
         return _SafeReadRepAccessor{this}._ConstGetRep ()._GetLength ();
     }
@@ -452,7 +452,7 @@ namespace Stroika::Foundation::Characters {
     inline const Character String::operator[] (size_t i) const
     {
         Require (i >= 0);
-        Require (i < GetLength ());
+        Require (i < size ());
         return GetCharAt (i);
     }
     template <>
@@ -579,11 +579,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline size_t String::length () const
     {
-        return GetLength ();
-    }
-    inline size_t String::size () const
-    {
-        return GetLength ();
+        return size ();
     }
     inline const wchar_t* String::data () const
     {
@@ -593,7 +589,7 @@ namespace Stroika::Foundation::Characters {
     {
         const wchar_t* result = _SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
         EnsureNotNull (result);
-        Ensure (result[GetLength ()] == '\0');
+        Ensure (result[size ()] == '\0');
         return result;
     }
     inline size_t String::find (wchar_t c, size_t startAt) const
@@ -707,7 +703,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline bool String::EqualsComparer::operator() (const String& lhs, const String& rhs) const
     {
-        if (lhs.GetLength () != rhs.GetLength ()) {
+        if (lhs.size () != rhs.size ()) {
             return false; // performance tweak
         }
         return Cmp_ (lhs, rhs);

@@ -46,15 +46,15 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
-        virtual size_t GetLength () const override
+        virtual size_t size () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return fData_.GetLength ();
+            return fData_.size ();
         }
         virtual bool IsEmpty () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return fData_.GetLength () == 0;
+            return fData_.size () == 0;
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             size_t                                                      i = fData_.Find (that);
-            if (i == fData_.GetLength ()) {
+            if (i == fData_.size ()) {
                 return nullptr;
             }
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, i)};
@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             // Appending is fastest
-            fData_.InsertAt (fData_.GetLength (), item);
+            fData_.InsertAt (fData_.size (), item);
             fChangeCounts_.PerformedChange ();
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override

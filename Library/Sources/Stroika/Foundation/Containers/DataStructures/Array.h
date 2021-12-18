@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *      This class is the main core of the implementation. It provides
      *  an array abstraction, where the size can be set dynamically, and
      *  extra sluff is maintained off the end to reduce copying from reallocs.
-     *  Only items 0..GetLength ()-1 are kept constructed. The rest (GetLength()+1
+     *  Only items 0..size ()-1 are kept constructed. The rest (size()+1
      *  ..fSlotsAlloced) are uninitialized memory. This is important because
      *  it means you can count on DTORs of your T being called when you
      *  remove them from contains, not when the caches happen to empty.
@@ -151,13 +151,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Complexity:
          *      Always: constant
          */
-        nonvirtual size_t GetLength () const;
-
-    public:
-        /**
-         *  \note Complexity:
-         *      Always: constant
-         */
         nonvirtual size_t size () const;
 
     public:
@@ -170,7 +163,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note index may == GetLength() - in which case, we are appending.
+         *  \note index may == size() - in which case, we are appending.
          *
          *  \note Complexity:
          *      Worst Case: O(N)
@@ -301,7 +294,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual T Current () const; //  Error to call if Done (), otherwise OK
 
     public:
-        nonvirtual size_t CurrentIndex () const; //  NB: This can be called if we are done - if so, it returns GetLength() + 1.
+        nonvirtual size_t CurrentIndex () const; //  NB: This can be called if we are done - if so, it returns size() + 1.
 
     public:
         nonvirtual void SetIndex (size_t i);

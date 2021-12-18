@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Traversal {
      *      \endcode
      *
      *      Note _Rep is an abstract class, and you MUST provide your own Clone () method, and often will
-     *  want to override to provide a more efficeint IsEmpty () and GetLength () implementation.
+     *  want to override to provide a more efficeint IsEmpty () and size () implementation.
      *
      *  @see MakeIterableFromIterator
      *
@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Traversal {
 
         public:
             virtual Iterator<T>          MakeIterator () const override;
-            virtual size_t               GetLength () const override;
+            virtual size_t               size () const override;
             virtual bool                 IsEmpty () const override;
             virtual void                 Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override;
             virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override;

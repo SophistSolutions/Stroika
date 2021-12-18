@@ -68,14 +68,14 @@ Sequence<String> Execution::ParseCommandLine (const String& cmdLine)
                 curToken += c;
             }
             else {
-                if (curToken.GetLength () != 0) {
+                if (curToken.size () != 0) {
                     result.Append (curToken.str ());
                     curToken.clear ();
                 }
             }
         }
     }
-    if (curToken.GetLength () != 0) {
+    if (curToken.size () != 0) {
         result.Append (curToken.str ());
     }
     return result;
@@ -138,7 +138,7 @@ bool Execution::MatchesCommandLineArgument (const Iterable<String>& argList, con
 
 optional<String> Execution::MatchesCommandLineArgumentWithValue ([[maybe_unused]] const String& actualArg, [[maybe_unused]] const String& matchesArgPattern)
 {
-    Require (matchesArgPattern.GetLength () > 0 and matchesArgPattern[matchesArgPattern.GetLength () - 1] == '=');
+    Require (matchesArgPattern.size () > 0 and matchesArgPattern[matchesArgPattern.size () - 1] == '=');
     AssertNotImplemented ();
     // must first strip everything after the '=' in the actualarg, and then similar to first overload...
     return nullopt;

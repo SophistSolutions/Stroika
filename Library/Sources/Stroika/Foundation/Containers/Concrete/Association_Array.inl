@@ -68,15 +68,15 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
-        virtual size_t GetLength () const override
+        virtual size_t size () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return fData_.GetLength ();
+            return fData_.size ();
         }
         virtual bool IsEmpty () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return fData_.GetLength () == 0;
+            return fData_.size () == 0;
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             size_t                                                      i = fData_.Find (that);
-            if (i == fData_.GetLength ()) {
+            if (i == fData_.size ()) {
                 return nullptr;
             }
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, i)};
@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
-            fData_.InsertAt (fData_.GetLength (), value_type{key, newElt});
+            fData_.InsertAt (fData_.size (), value_type{key, newElt});
             fChangeCounts_.PerformedChange ();
         }
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override

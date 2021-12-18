@@ -56,7 +56,7 @@ namespace CommonTests {
                     IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s);
                     IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s2);
                     USING_BASESET_CONTAINER s3 = mk_ (factory, initializer_list<int>{1, 3, 4, 2});
-                    VerifyTestResult (s3.GetLength () == 4);
+                    VerifyTestResult (s3.size () == 4);
                     VerifyTestResult (s3.Contains (1));
                     VerifyTestResult (s3.Contains (2));
                     VerifyTestResult (s3.Contains (3));
@@ -98,10 +98,10 @@ namespace CommonTests {
                 {
                     s.Add (3);
                     s.Add (99);
-                    size_t oldLength = s.GetLength ();
+                    size_t oldLength = s.size ();
                     s += s;
                     applyToContainer (s);
-                    VerifyTestResult (s.GetLength () == oldLength);
+                    VerifyTestResult (s.size () == oldLength);
                 }
 
                 s.RemoveAll ();

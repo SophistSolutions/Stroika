@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    size_t IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::GetLength () const
+    size_t IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::size () const
     {
         size_t n = 0;
         for (auto i = this->MakeIterator (); not i.Done (); ++i) {

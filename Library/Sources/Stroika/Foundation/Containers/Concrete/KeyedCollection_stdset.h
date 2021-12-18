@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      * \see DeclareInOrderComparer
      * 
      * \note Performance Notes:
-     *      o   GetLength () is constant
+     *      o   size () is constant
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

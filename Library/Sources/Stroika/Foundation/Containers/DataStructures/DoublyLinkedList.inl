@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
         RemoveAll ();
         Invariant ();
-        Ensure (GetLength () == 0);
+        Ensure (size () == 0);
         Ensure (fHead_ == nullptr);
         Ensure (fTail_ == nullptr);
     }
@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fHead_ == nullptr;
     }
     template <typename T>
-    inline size_t DoublyLinkedList<T>::GetLength () const
+    inline size_t DoublyLinkedList<T>::size () const
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         size_t                                               n = 0;
@@ -301,7 +301,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         Require (i >= 0);
-        Require (i < GetLength ());
+        Require (i < size ());
         const Link* cur = fHead_;
         for (; i != 0; cur = cur->fNext, --i) {
             AssertNotNull (cur); // cuz i <= fLength
@@ -314,7 +314,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         Require (i >= 0);
-        Require (i < GetLength ());
+        Require (i < size ());
         Link* cur = fHead_;
         for (; i != 0; cur = cur->fNext, --i) {
             AssertNotNull (cur); // cuz i <= fLength

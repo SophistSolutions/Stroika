@@ -104,7 +104,7 @@ namespace {
                 String_ExternalMemoryOwnership_ApplicationLifetime a (L"a");
                 for (size_t i = 0; i <= kLoopEnd; ++i) {
                     big += a;
-                    VerifyTestResult ((big.GetLength () - 1) == i);
+                    VerifyTestResult ((big.size () - 1) == i);
                     VerifyTestResult (big[i] == 'a');
                 }
                 big.clear ();
@@ -113,7 +113,7 @@ namespace {
             String s1 = L"test strings";
             for (int i = 1; i <= kLoopEnd; ++i) {
                 big += s1;
-                VerifyTestResult (big.GetLength () == s1.GetLength () * i);
+                VerifyTestResult (big.size () == s1.size () * i);
             }
         }
         void StressTest2_ (String big)
@@ -121,9 +121,9 @@ namespace {
             String s1 = L"test strings";
             for (int i = 1; i <= kLoopEnd; ++i) {
                 big = big + s1;
-                VerifyTestResult (big.GetLength () == s1.GetLength () * i);
+                VerifyTestResult (big.size () == s1.size () * i);
 #if 0
-                for (int j = 0; j < big.GetLength (); ++j) {
+                for (int j = 0; j < big.size (); ++j) {
                     Character c = big[j];
                     int breahere = 1;
                 }
@@ -194,22 +194,22 @@ namespace {
 namespace {
     void Test2_Helper_ (String& s1, String& s2)
     {
-        VerifyTestResult (s1.GetLength () == 12);
-        VerifyTestResult (String (s1).GetLength () == 12);
+        VerifyTestResult (s1.size () == 12);
+        VerifyTestResult (String (s1).size () == 12);
         VerifyTestResult (s1 == s2);
         VerifyTestResult (!(s1 != s2));
         VerifyTestResult (s1 + s1 == s2 + s2);
-        VerifyTestResult ((s1 + s1).GetLength () == s1.GetLength () * 2);
+        VerifyTestResult ((s1 + s1).size () == s1.size () * 2);
         VerifyTestResult (s1[2] == 's');
         VerifyTestResult ('s' == s1[2].GetCharacterCode ());
-        VerifyTestResult (s1.GetLength () == 12);
+        VerifyTestResult (s1.size () == 12);
 
         String s3;
         s3 += s1;
         s3 += s2;
 
         s1 += L"\n";
-        VerifyTestResult (s1.GetLength () == 13);
+        VerifyTestResult (s1.size () == 13);
     }
 
     void Test1_ ()
@@ -220,7 +220,7 @@ namespace {
          */
         {
             VerifyTestResult (String (L"a").length () == 1);
-            VerifyTestResult (String (String (L"fred") + String (L"joe")).GetLength () == 7);
+            VerifyTestResult (String (String (L"fred") + String (L"joe")).size () == 7);
 
             VerifyTestResult (String (L"fred") + String (L"joe") == String (L"fredjoe"));
 
@@ -294,9 +294,9 @@ namespace {
         VerifyTestResult (String (L"Fred Flintstone") != t2);
         VerifyTestResult (t2 != String (L"Fred Flintstone"));
 
-        VerifyTestResult (t1.GetLength () == 15);
+        VerifyTestResult (t1.size () == 15);
         t1.erase (4);
-        VerifyTestResult (t1.GetLength () == 4);
+        VerifyTestResult (t1.size () == 4);
         VerifyTestResult (t1 == L"Fred");
 
         VerifyTestResult (t1[0] == 'F');
@@ -510,10 +510,10 @@ namespace {
         VerifyTestResult (s[0] == 'f');
         s.erase (3);
         VerifyTestResult (s[0] == 'f');
-        VerifyTestResult (s.GetLength () == 3);
+        VerifyTestResult (s.size () == 3);
         VerifyTestResult (s == L"fre");
         s += L"x";
-        VerifyTestResult (s.GetLength () == 4);
+        VerifyTestResult (s.size () == 4);
         VerifyTestResult (s[3] == 'x');
         VerifyTestResult (s == L"frex");
         s = s.InsertAt ('x', 2);
@@ -536,9 +536,9 @@ namespace {
         VerifyTestResult (s[0] == 'f');
         s.erase (3);
         VerifyTestResult (s[0] == 'f');
-        VerifyTestResult (s.GetLength () == 3);
+        VerifyTestResult (s.size () == 3);
         s += L"x";
-        VerifyTestResult (s.GetLength () == 4);
+        VerifyTestResult (s.size () == 4);
         VerifyTestResult (s[3] == 'x');
         VerifyTestResult (s == L"frex");
         s = s.InsertAt ('x', 2);
@@ -632,9 +632,9 @@ namespace {
             VerifyTestResult (s[0] == 'f');
             s.erase (3);
             VerifyTestResult (s[0] == 'f');
-            VerifyTestResult (s.GetLength () == 3);
+            VerifyTestResult (s.size () == 3);
             s += L"x";
-            VerifyTestResult (s.GetLength () == 4);
+            VerifyTestResult (s.size () == 4);
             VerifyTestResult (s[3] == 'x');
         }
         VerifyTestResult (::wcscmp (buf, L"fred") == 0);
@@ -648,9 +648,9 @@ namespace {
             VerifyTestResult (s[0] == 'f');
             s.erase (3);
             VerifyTestResult (s[0] == 'f');
-            VerifyTestResult (s.GetLength () == 3);
+            VerifyTestResult (s.size () == 3);
             s += L"x";
-            VerifyTestResult (s.GetLength () == 4);
+            VerifyTestResult (s.size () == 4);
             VerifyTestResult (s[3] == 'x');
         }
         VerifyTestResult (::wcscmp (buf, L"fred") == 0);

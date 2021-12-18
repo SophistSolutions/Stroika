@@ -551,7 +551,7 @@ namespace Stroika::Foundation::Containers {
             return true;
         }
         // Check length, so we don't need to check both iterators for end/done; length is often a quick computation and always quick compared to this comparison algorithm
-        if (lhsR._ConstGetRep ().GetLength () != rhsR._ConstGetRep ().GetLength ()) {
+        if (lhsR._ConstGetRep ().size () != rhsR._ConstGetRep ().size ()) {
             return false;
         }
         /*

@@ -42,15 +42,15 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
-        virtual size_t GetLength () const override
+        virtual size_t size () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return fData_.GetLength ();
+            return fData_.size ();
         }
         virtual bool IsEmpty () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return fData_.GetLength () == 0;
+            return fData_.size () == 0;
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             size_t                                                      i = fData_.Find (that);
-            if (i == fData_.GetLength ()) {
+            if (i == fData_.size ()) {
                 return nullptr;
             }
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, i)};
@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void AddTail (ArgByValueType<value_type> item) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
-            fData_.InsertAt (fData_.GetLength (), item);
+            fData_.InsertAt (fData_.size (), item);
             fChangeCounts_.PerformedChange ();
         }
         virtual value_type RemoveHead () override
@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual optional<value_type> RemoveHeadIf () override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
-            if (fData_.GetLength () == 0) {
+            if (fData_.size () == 0) {
                 return optional<value_type>{};
             }
             T item = fData_.GetAt (0);
@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual optional<value_type> HeadIf () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            if (fData_.GetLength () == 0) {
+            if (fData_.size () == 0) {
                 return optional<value_type>{};
             }
             return fData_.GetAt (0);

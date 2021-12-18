@@ -69,7 +69,7 @@ auto AtomManager_Default::Intern (const String& s) -> AtomInternalType
         if (i.has_value ()) {
             return *i;
         }
-        v = mgr.fSeq.GetLength ();
+        v = mgr.fSeq.size ();
         mgr.fSeq.Append (s);
         mgr.fMap.Add (s, v);
     }
@@ -105,7 +105,7 @@ auto AtomManager_CaseInsensitive::Intern (const String& s) -> AtomInternalType
         if (i.has_value ()) {
             return *i;
         }
-        v = mgr.fSeq.GetLength ();
+        v = mgr.fSeq.size ();
         mgr.fSeq.Append (s);
         mgr.fMap.Add (s, v);
     }

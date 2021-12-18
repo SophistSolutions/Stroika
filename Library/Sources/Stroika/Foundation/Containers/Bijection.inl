@@ -546,7 +546,7 @@ namespace Stroika::Foundation::Containers {
             return true;
         }
         // If sizes differ, the Bijections differ
-        if (this->GetLength () != rhs.GetLength ()) {
+        if (this->size () != rhs.size ()) {
             return false;
         }
         // Since both sides are the same size, we can iterate over one, and make sure the key/values in the first

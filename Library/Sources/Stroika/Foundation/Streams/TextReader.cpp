@@ -428,7 +428,7 @@ protected:
     {
         Require (IsOpenRead ());
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-        size_t                                              sourceLen = fSource_.GetLength ();
+        size_t                                              sourceLen = fSource_.size ();
         SeekOffsetType                                      newOffset{};
         switch (whence) {
             case Whence::eFromStart: {
@@ -451,7 +451,7 @@ protected:
                 newOffset = static_cast<SeekOffsetType> (tmpOffset);
             } break;
             case Whence::eFromEnd: {
-                Streams::SignedSeekOffsetType tmpOffset = fSource_.GetLength () + offset;
+                Streams::SignedSeekOffsetType tmpOffset = fSource_.size () + offset;
                 if (tmpOffset < 0) [[UNLIKELY_ATTR]] {
                     Execution::Throw (range_error{"seek"});
                 }

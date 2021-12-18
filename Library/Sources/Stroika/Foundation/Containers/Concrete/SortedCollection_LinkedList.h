@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      *      SortedCollection_LinkedList<T> is a compact, and reasonable implementation of Collections, so long as the Collection remains quite small
      *      (empty or just a few entires).
      *
-     *      o   GetLength () is O(N)
+     *      o   size () is O(N)
      *      o   Uses Memory::UseBlockAllocationIfAppropriate
      *      o   Additions and Removals are O(N)
      *

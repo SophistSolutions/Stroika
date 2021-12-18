@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Containers {
 
     /**
      *  A DenseDataHyperRectangle<> is a DataHyperRectangle where you specify the max value for each dimension, and it is
-     *  a programming (assertion) error to check/add items outside that range. And when iterating (e.g. GetLength ()) you always
+     *  a programming (assertion) error to check/add items outside that range. And when iterating (e.g. size ()) you always
      *  find all items.
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:

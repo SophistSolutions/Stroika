@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     SkipList<KEY, VALUE, TRAITS>& SkipList<KEY, VALUE, TRAITS>::operator= (const SkipList& t)
     {
         RemoveAll ();
-        if (t.GetLength () != 0) {
+        if (t.size () != 0) {
             Node* prev = nullptr;
             Node* n    = (t.fHead.size () == 0) ? nullptr : t.fHead[0];
             while (n != nullptr) {
@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return 25;
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    inline size_t SkipList<KEY, VALUE, TRAITS>::GetLength () const
+    inline size_t SkipList<KEY, VALUE, TRAITS>::size () const
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fLength;
@@ -270,7 +270,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fHead[0] = nullptr;
         fLength  = 0;
 
-        Ensure (GetLength () == 0);
+        Ensure (size () == 0);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     typename SkipList<KEY, VALUE, TRAITS>::Node* SkipList<KEY, VALUE, TRAITS>::FindNearest (KeyType key, vector<Node*>& links) const
@@ -395,7 +395,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY, typename VALUE, typename TRAITS>
     void SkipList<KEY, VALUE, TRAITS>::ReBalance ()
     {
-        if (GetLength () == 0)
+        if (size () == 0)
             return;
 
         // precompute table of indices height
@@ -407,7 +407,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         for (size_t i = 0; i < sizeof (height) / sizeof (size_t); ++i) {
             height[i] = size_t (pow (indexBase, double (i)));
 
-            if (height[i] == 0 or height[i] > GetLength ()) {
+            if (height[i] == 0 or height[i] > size ()) {
                 Assert (i > 0); // else have no valid heights
                 break;
             }
@@ -450,7 +450,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             ++index;
             node = next;
         }
-        Assert (index == GetLength () + 1);
+        Assert (index == size () + 1);
 
         ShrinkHeadLinksIfNeeded ();
     }

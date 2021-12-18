@@ -476,8 +476,10 @@ namespace Stroika::Foundation::Characters {
          *  Returns the number of characters in the String. Note that this may not be the same as bytes,
          *  does not include NUL termination, and doesn't in any way respect NUL termination (meaning
          *  a nul-character is allowed in a Stroika string.
+         * 
+         * \note Alias GetLength ()
          */
-        nonvirtual size_t GetLength () const;
+        nonvirtual size_t size () const;
 
     public:
         /**
@@ -554,9 +556,9 @@ namespace Stroika::Foundation::Characters {
          *          }
          *      \endcode
          *
-         *  \req (charAt < GetLength ())
+         *  \req (charAt < size ())
          *  \req (from <= to)
-         *  \req (to <= GetLength ())
+         *  \req (to <= size ())
          *
          *  \em Note that this is quite inefficent: consider using StringBuilder
          */
@@ -587,7 +589,7 @@ namespace Stroika::Foundation::Characters {
          *  substr (0, N) - because then the count and end are the same.
          *
          *  \req  (from <= to);
-         *  \req  (to <= GetLength ());     // for 2-arg variant
+         *  \req  (to <= size ());     // for 2-arg variant
          *
          *  \par Example Usage
          *      \code
@@ -610,14 +612,14 @@ namespace Stroika::Foundation::Characters {
          *  This is like SubString() except that if from/to are negative, they are treated as relative to the end
          *  of the String.
          *
-         *  So for example, SubString (0, -1) is equivalent to SubString (0, GetLength () - 1) - and so is an
+         *  So for example, SubString (0, -1) is equivalent to SubString (0, size () - 1) - and so is an
          *  error if the string is empty.
          *
-         *  Similarly, SubString (-5) is equivalent to SubString (GetLength ()-5, GetLength ()) - so can be used
+         *  Similarly, SubString (-5) is equivalent to SubString (size ()-5, size ()) - so can be used
          *  to grab the end of a string.
          *
          *  \req  (adjustedFrom <= adjustedTo);
-         *  \req  (adjustedTo <= GetLength ());     // for 2-arg variant
+         *  \req  (adjustedTo <= size ());     // for 2-arg variant
          *
          *  \note \em Design Note
          *      We chose not to overload SubString() with this functionality because it would have been to easy
@@ -790,7 +792,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \note   Alias - could have been called IndexOf ()
          *
-         *  \req (startAt <= GetLength ());
+         *  \req (startAt <= size ());
          *
          *  \par Example Usage
          *      \code
@@ -1056,7 +1058,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  CopyTo () copies the contents of this string to the target buffer.
          *  CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom)
-         *  is >= this->GetLength ()
+         *  is >= this->size ()
          */
         nonvirtual void CopyTo (Character* bufFrom, Character* bufTo) const;
         nonvirtual void CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
@@ -1114,7 +1116,7 @@ namespace Stroika::Foundation::Characters {
         /**
          * Convert String losslessly into a standard C++ type u16string.
          *
-         *  \note - the resulting string may have a different length than this->GetLength() due to surrogates
+         *  \note - the resulting string may have a different length than this->size() due to surrogates
          */
         nonvirtual u16string AsUTF16 () const;
         nonvirtual void      AsUTF16 (u16string* into) const;
@@ -1123,9 +1125,9 @@ namespace Stroika::Foundation::Characters {
         /**
          * Convert String losslessly into a standard C++ type u32string.
          *
-         *  \note - As of Stroika 2.1d23 - the resulting string may have a different length than this->GetLength() due to surrogates,
+         *  \note - As of Stroika 2.1d23 - the resulting string may have a different length than this->size() due to surrogates,
          *          but eventually the intent is to fix Stroika's string class so this is not true, and it returns the length of the string
-         *          in GetLength () with surrogates removed (in other words uses ucs32 represenation). But not there yet.
+         *          in size () with surrogates removed (in other words uses ucs32 represenation). But not there yet.
          */
         nonvirtual u32string AsUTF32 () const;
         nonvirtual void      AsUTF32 (u32string* into) const;
@@ -1226,13 +1228,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  basic_string alias: size = GetLength
-         */
-        nonvirtual size_t size () const;
-
-    public:
-        /**
-         *  basic_string alias: length = GetLength
+         *  basic_string alias: length = size
          */
         nonvirtual size_t length () const;
 
@@ -1416,7 +1412,7 @@ namespace Stroika::Foundation::Characters {
         // Overrides for Iterable<Character>
     public:
         virtual Traversal::Iterator<value_type> MakeIterator () const override;
-        virtual size_t                          GetLength () const override;
+        virtual size_t                          size () const override;
         virtual bool                            IsEmpty () const override;
         virtual void                            Apply (const function<void (Configuration::ArgByValueType<value_type> item)>& doToElement) const override;
         virtual Traversal::Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const override;
@@ -1446,7 +1442,7 @@ namespace Stroika::Foundation::Characters {
     public:
         /*
          *  CopyTo () copies the contents of this string to the target buffer.
-         *  CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom) is >= this->GetLength ()
+         *  CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom) is >= this->size ()
          */
         nonvirtual void CopyTo (Character* bufFrom, Character* bufTo) const;
         nonvirtual void CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;

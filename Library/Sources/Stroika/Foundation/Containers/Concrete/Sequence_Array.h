@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      * \note Performance Notes:
      *      o   Append/Prepend should perform well (typically constant time, but occasionally O(N))
      *      o   it is FAST to array index a Sequence_Array.
-     *      o   GetLength () is constant
+     *      o   size () is constant
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

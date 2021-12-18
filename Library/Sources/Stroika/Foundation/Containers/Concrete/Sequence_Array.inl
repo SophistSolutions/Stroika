@@ -59,15 +59,15 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
-        virtual size_t GetLength () const override
+        virtual size_t size () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return fData_.GetLength ();
+            return fData_.size ();
         }
         virtual bool IsEmpty () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return fData_.GetLength () == 0;
+            return fData_.size () == 0;
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             size_t                                                      i = fData_.Find (that);
-            if (i == fData_.GetLength ()) {
+            if (i == fData_.size ()) {
                 return nullptr;
             }
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, i)};
@@ -106,16 +106,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual value_type GetAt (size_t i) const override
         {
             Require (not IsEmpty ());
-            Require (i == _kSentinalLastItemIndex or i < GetLength ());
+            Require (i == _kSentinalLastItemIndex or i < size ());
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             if (i == _kSentinalLastItemIndex) {
-                i = fData_.GetLength () - 1;
+                i = fData_.size () - 1;
             }
             return fData_.GetAt (i);
         }
         virtual void SetAt (size_t i, ArgByValueType<value_type> item) override
         {
-            Require (i < GetLength ());
+            Require (i < size ());
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             fData_.SetAt (i, item);
             fChangeCounts_.PerformedChange ();
@@ -156,10 +156,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Insert (size_t at, const value_type* from, const value_type* to) override
         {
-            Require (at == _kSentinalLastItemIndex or at <= GetLength ());
+            Require (at == _kSentinalLastItemIndex or at <= size ());
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             if (at == _kSentinalLastItemIndex) {
-                at = fData_.GetLength ();
+                at = fData_.size ();
             }
             Support::ReserveTweaks::Reserve4AddN (fData_, to - from);
             for (auto i = from; i != to; ++i) {

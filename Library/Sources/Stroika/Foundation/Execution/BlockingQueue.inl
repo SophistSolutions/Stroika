@@ -99,15 +99,15 @@ namespace Stroika::Foundation::Execution {
         return fQueue_.empty ();
     }
     template <typename T>
-    inline size_t BlockingQueue<T>::GetLength () const
+    inline size_t BlockingQueue<T>::size () const
     {
         typename ConditionVariable<>::QuickLockType critSection{fCondtionVariable_.fMutex};
-        return fQueue_.GetLength ();
+        return fQueue_.size ();
     }
     template <typename T>
     inline size_t BlockingQueue<T>::length () const
     {
-        return GetLength ();
+        return size ();
     }
     template <typename T>
     inline void BlockingQueue<T>::clear ()

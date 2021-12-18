@@ -679,7 +679,7 @@ namespace {
         int                              counter       = 0;
         BlockingQueue<function<void ()>> q;
 
-        Verify (q.GetLength () == 0);
+        Verify (q.size () == 0);
 
         Thread::Ptr producerThread = Thread::New (
             [&q, &counter] () {
@@ -1066,7 +1066,7 @@ namespace {
                 atomic<uint64_t>                 counter{};
                 BlockingQueue<function<void ()>> q;
 
-                Verify (q.GetLength () == 0);
+                Verify (q.size () == 0);
 
                 static const size_t kTaskCounts_ = kRunningValgrind_ ? (kThreadPoolSize_ * 5) : (kThreadPoolSize_ * 10);
 
@@ -1124,7 +1124,7 @@ namespace {
         int                              counter       = 0;
         BlockingQueue<function<void ()>> q;
 
-        Verify (q.GetLength () == 0);
+        Verify (q.size () == 0);
 
         Thread::Ptr consumerThread = Thread::New (
             [&q] () {
@@ -1166,7 +1166,7 @@ namespace {
         // For fixed bug - https://stroika.atlassian.net/browse/STK-622
         Debug::TraceContextBumper        ctx{"RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_"};
         BlockingQueue<function<void ()>> q;
-        Verify (q.GetLength () == 0);
+        Verify (q.size () == 0);
         Thread::Ptr consumerThread = Thread::New (
             [&q] () {
                 while (true) {

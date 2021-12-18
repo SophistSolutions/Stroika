@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers::Factory {
             return Concrete::Collection_stdmultiset<T>{};
         }
         else {
-            // This generally performs well, so long as you don't call 'GetLength'
+            // This generally performs well, so long as you don't call 'size'
             return Concrete::Collection_LinkedList<T>{};
         }
     }

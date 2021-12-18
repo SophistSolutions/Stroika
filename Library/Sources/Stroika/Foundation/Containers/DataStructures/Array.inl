@@ -33,12 +33,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     Array<T>::Array (const Array& from)
     {
         from.Invariant ();
-        reserve (from.GetLength ());
+        reserve (from.size ());
 
         /*
          *  Construct the new items in-place into the new memory.
          */
-        size_t newLength = from.GetLength ();
+        size_t newLength = from.size ();
         if (newLength > 0) {
             T*       lhs = &fItems_[0];
             const T* rhs = &from.fItems_[0];
@@ -164,7 +164,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  @todo NOTE - https://stroika.atlassian.net/browse/STK-757 - use realloc sometimes - if constexpr
          */
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
-        Require (GetLength () <= slotsAlloced);
+        Require (size () <= slotsAlloced);
         Invariant ();
         if (fSlotsAllocated_ != slotsAlloced) {
             if (slotsAlloced == 0) {
@@ -219,7 +219,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         Invariant ();
-        size_t newLength = list.GetLength ();
+        size_t newLength = list.size ();
 
         /*
          *      In case user already set this, we should not unset,
@@ -325,7 +325,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         RequireNotNull (pi);
         RequireNotNull (movedFrom);
-        Require (pi->CurrentIndex () <= this->GetLength ());
+        Require (pi->CurrentIndex () <= this->size ());
         Require (pi->fData_ == movedFrom);
         pi->fData_ = this;
     }
@@ -370,12 +370,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fItems_[i];
     }
     template <typename T>
-    inline size_t Array<T>::GetLength () const
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
-        return fLength_;
-    }
-    template <typename T>
     inline size_t Array<T>::size () const
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
@@ -391,7 +385,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void Array<T>::shrink_to_fit ()
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
-        reserve (GetLength ());
+        reserve (size ());
     }
     template <typename T>
     inline void Array<T>::RemoveAt (const ForwardIterator& i)
@@ -481,7 +475,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};
         /*
-         * NB: This can be called if we are done - if so, it returns GetLength().
+         * NB: This can be called if we are done - if so, it returns size().
          */
         Invariant ();
         return fCurrentIdx_;
@@ -506,7 +500,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};
         /*
-         * NB: This can be called if we are done - if so, it returns GetLength().
+         * NB: This can be called if we are done - if so, it returns size().
          */
         Invariant ();
         return fCurrentIdx_;
@@ -591,7 +585,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     inline Array<T>::BackwardIterator::BackwardIterator (const Array* data)
-        : BackwardIterator{data->GetLength () == 0 ? data->GetLength () : data->GetLength () - 1} // start on last item or at magic (at end) value
+        : BackwardIterator{data->size () == 0 ? data->size () : data->size () - 1} // start on last item or at magic (at end) value
     {
     }
     template <typename T>

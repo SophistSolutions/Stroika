@@ -489,7 +489,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  This is roughly Insert (GetLength(), item), except that there is a race after you call GetLength, and before
+         *  This is roughly Insert (size(), item), except that there is a race after you call size, and before
          *  Insert, which calling Append () avoids.
          *
          *  \note mutates container
@@ -498,7 +498,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  This is roughly AppendAll (GetLength(), s), except that there is a race after you call GetLength,
+         *  This is roughly AppendAll (size(), s), except that there is a race after you call size,
          *  and before Insert, which calling Append () avoids. Also note - if used in a multithreaded enivonment,
          *  the appended items wont necesarily all get appended at once, since other threads could make
          *  changes in between.

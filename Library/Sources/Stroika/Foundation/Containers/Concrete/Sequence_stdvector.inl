@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
-        virtual size_t GetLength () const override
+        virtual size_t size () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             return fData_.size ();
@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual value_type GetAt (size_t i) const override
         {
             Require (not IsEmpty ());
-            Require (i == _kSentinalLastItemIndex or i < GetLength ());
+            Require (i == _kSentinalLastItemIndex or i < size ());
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
             if (i == _kSentinalLastItemIndex) {
                 i = fData_.size () - 1;
@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void SetAt (size_t i, ArgByValueType<value_type> item) override
         {
-            Require (i < GetLength ());
+            Require (i < size ());
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             fData_[i] = item;
             fChangeCounts_.PerformedChange ();
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Insert (size_t at, const value_type* from, const value_type* to) override
         {
-            Require (at == _kSentinalLastItemIndex or at <= GetLength ());
+            Require (at == _kSentinalLastItemIndex or at <= size ());
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             if (at == _kSentinalLastItemIndex) {
                 at = fData_.size ();
@@ -159,7 +159,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (size_t from, size_t to) override
         {
-            Require ((from <= to) and (to <= this->GetLength ()));
+            Require ((from <= to) and (to <= this->size ()));
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             fData_.erase (fData_.begin () + from, fData_.begin () + to);
             fChangeCounts_.PerformedChange ();
@@ -242,7 +242,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     void Sequence_stdvector<T>::reserve (size_t slotsAlloced)
     {
-        Require (slotsAlloced >= this->GetLength ());
+        Require (slotsAlloced >= this->size ());
         using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
         _SafeReadWriteRepAccessor                                  accessor{this};
         lock_guard<const Debug::AssertExternallySynchronizedMutex> writeLock{accessor._ConstGetRep ().fData_};

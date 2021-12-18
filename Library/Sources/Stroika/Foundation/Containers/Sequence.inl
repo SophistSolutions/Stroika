@@ -187,21 +187,21 @@ namespace Stroika::Foundation::Containers {
     inline auto Sequence<T>::GetAt (size_t i) const -> value_type
     {
         _SafeReadRepAccessor<_IRep> accessor{this};
-        Require (i < accessor._ConstGetRep ().GetLength ());
+        Require (i < accessor._ConstGetRep ().size ());
         return accessor._ConstGetRep ().GetAt (i);
     }
     template <typename T>
     inline void Sequence<T>::SetAt (size_t i, ArgByValueType<value_type> item)
     {
         _SafeReadWriteRepAccessor<_IRep> accessor{this};
-        Require (i < accessor._ConstGetRep ().GetLength ());
+        Require (i < accessor._ConstGetRep ().size ());
         accessor._GetWriteableRep ().SetAt (i, item);
     }
     template <typename T>
     inline auto Sequence<T>::operator[] (size_t i) const -> value_type
     {
         _SafeReadRepAccessor<_IRep> accessor{this};
-        Require (i < accessor._ConstGetRep ().GetLength ());
+        Require (i < accessor._ConstGetRep ().size ());
         return accessor._ConstGetRep ().GetAt (i);
     }
 #if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
@@ -240,7 +240,7 @@ namespace Stroika::Foundation::Containers {
     inline void Sequence<T>::Insert (size_t i, ArgByValueType<value_type> item)
     {
         _SafeReadWriteRepAccessor<_IRep> accessor{this};
-        Require (i <= accessor._ConstGetRep ().GetLength ());
+        Require (i <= accessor._ConstGetRep ().size ());
         return accessor._GetWriteableRep ().Insert (i, &item, &item + 1);
     }
     template <typename T>
@@ -248,7 +248,7 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadWriteRepAccessor<_IRep> accessor{this};
         size_t                           idx = accessor._ConstGetRep ().IndexOf (i);
-        Require (idx <= accessor._ConstGetRep ().GetLength ()); //  if equals end, we append
+        Require (idx <= accessor._ConstGetRep ().size ()); //  if equals end, we append
         return accessor._GetWriteableRep ().Insert (idx, &item, &item + 1);
     }
     template <typename T>
@@ -256,7 +256,7 @@ namespace Stroika::Foundation::Containers {
     void Sequence<T>::InsertAll (size_t i, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        Require (i <= this->GetLength ());
+        Require (i <= this->size ());
         size_t insertAt = i;
         for (auto ii = forward<ITERATOR_OF_ADDABLE> (start); ii != end; ++ii) {
             Insert (insertAt++, *ii);
@@ -267,7 +267,7 @@ namespace Stroika::Foundation::Containers {
     inline void Sequence<T>::InsertAll (size_t i, ITERABLE_OF_ADDABLE&& s)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
-        Require (i <= this->GetLength ());
+        Require (i <= this->size ());
         InsertAll (i, s.begin (), s.end ());
     }
     template <typename T>
@@ -322,13 +322,13 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Sequence<T>::Remove (size_t i)
     {
-        Require (i < this->GetLength ());
+        Require (i < this->size ());
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i, i + 1);
     }
     template <typename T>
     inline void Sequence<T>::Remove (size_t start, size_t end)
     {
-        Require (start <= end and end <= this->GetLength ());
+        Require (start <= end and end <= this->size ());
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (start, end);
     }
     template <typename T>

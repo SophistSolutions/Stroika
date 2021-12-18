@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \brief Collection_stdforward_list<T> is an std::forward_list (singly linked list)-based concrete implementation of the Collection<T> container pattern.
      *
      * \note Performance Notes:
-     *      o   GetLength () is O(N)
+     *      o   size () is O(N)
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

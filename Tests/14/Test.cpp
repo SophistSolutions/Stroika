@@ -108,7 +108,7 @@ namespace {
             VerifyTestResult (tmp.GetAt (2, 2) == 0);
             tmp.SetAt (2, 2, 4);
             VerifyTestResult (tmp.GetAt (2, 2) == 4);
-            Verify (tmp.GetLength () == 1);
+            Verify (tmp.size () == 1);
             for ([[maybe_unused]] auto t : tmp) {
             }
         }

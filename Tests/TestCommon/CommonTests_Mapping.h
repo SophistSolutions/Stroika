@@ -80,29 +80,29 @@ namespace CommonTests {
                     {
                         m.Add (1, 2);
                         m.Add (3, 66);
-                        size_t oldLength = m.GetLength ();
+                        size_t oldLength = m.size ();
                         m += m;
                         testingSchema.ApplyToContainerExtraTest (m);
-                        VerifyTestResult (m.GetLength () == oldLength);
+                        VerifyTestResult (m.size () == oldLength);
                     }
 
                     {
                         m.RemoveAll ();
                         m.Add (1, 2);
                         m.Add (3, 66);
-                        VerifyTestResult (m.GetLength () == 2);
+                        VerifyTestResult (m.size () == 2);
                         m.erase (1);
-                        VerifyTestResult (m.GetLength () == 1);
+                        VerifyTestResult (m.size () == 1);
                         auto i = m.erase (m.begin ());
                         //
                         VerifyTestResult (m.size () == 0);
                         m.Add (1, 2);
                         m.Add (3, 66);
                         m.Add (5, 66);
-                        VerifyTestResult (m.GetLength () == 3);
+                        VerifyTestResult (m.size () == 3);
                         i = m.begin ();
                         i = m.erase (i);
-                        VerifyTestResult (m.GetLength () == 2);
+                        VerifyTestResult (m.size () == 2);
                     }
 
                     m.RemoveAll ();

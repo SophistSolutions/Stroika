@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      * \note Performance Notes:
      *      Very good low overhead implementation
      *
-     *      o   GetLength () is constant
+     *      o   size () is constant
      *      o   Uses Memory::BlockAllocatorOrStdAllocatorAsAppropriate
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
