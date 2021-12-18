@@ -92,12 +92,7 @@ namespace Stroika::Foundation::Characters::Concrete::Private {
             nonvirtual void SetLength_ (size_t newLength);
 
         public:
-            nonvirtual size_t size () const;
-
-        private:
-            /**
-             */
-            static size_t ReserveAtLeastTargetCapacity_ (size_t targetNewSize, size_t existingCapacity);
+            virtual size_t size () const override;
 
         private:
             /**

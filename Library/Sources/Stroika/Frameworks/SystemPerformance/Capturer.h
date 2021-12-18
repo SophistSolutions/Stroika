@@ -111,7 +111,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *          optional<uint64_t> workingOrResidentSetSize;
      *          optional<double>   combinedIORate;
      *          if (auto om = sCapturer_.fProcessInstrument.MeasurementAs<Instruments::Process::Info> (measurements)) {
-     *              Assert (om->GetLength () == 1);
+     *              Assert (om->size () == 1);
      *              Instruments::Process::ProcessType thisProcess = (*om)[Execution::GetCurrentProcessID ()];
      *              if (auto o = thisProcess.fProcessStartedAt) {
      *                  processUptime = now - *o;

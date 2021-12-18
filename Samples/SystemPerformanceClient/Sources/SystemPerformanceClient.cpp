@@ -192,8 +192,8 @@ namespace {
             optional<double>   thisProcCombinedIORate;
             if (auto om = sCapturer_.fProcessInstrument.MeasurementAs<Instruments::Process::Info> (measurements)) {
                 // It might not be found for some instruments (not implemented?)
-                Assert (om->GetLength () <= 1);
-                if (om->GetLength () == 1) {
+                Assert (om->size () <= 1);
+                if (om->size () == 1) {
                     Instruments::Process::ProcessType thisProcess = (*om)[Execution::GetCurrentProcessID ()];
                     if (auto o = thisProcess.fProcessStartedAt) {
                         thisProcUptime = now - *o;
