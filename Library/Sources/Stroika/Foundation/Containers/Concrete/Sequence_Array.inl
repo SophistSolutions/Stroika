@@ -16,7 +16,6 @@
 
 #include "../DataStructures/Array.h"
 #include "../Private/IteratorImplHelper.h"
-#include "../Support/ReserveTweaks.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 
@@ -161,7 +160,27 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (at == _kSentinalLastItemIndex) {
                 at = fData_.GetLength ();
             }
-            Support::ReserveTweaks::Reserve4AddN (fData_, to - from);
+            // quickie poor impl
+            // @todo use                        ReserveSpeedTweekAddN (fData_, (to - from));
+            // when we fix names
+            {
+                size_t curLen = fData_.GetLength ();
+                size_t curCap = fData_.capacity ();
+                size_t newLen = curLen + (to - from);
+                if (newLen > curCap) {
+                    newLen *= 6;
+                    newLen /= 5;
+                    if constexpr (sizeof (T) < 100) {
+                        newLen = Stroika::Foundation::Math::RoundUpTo (newLen, static_cast<size_t> (64)); //?
+                    }
+                    fData_.reserve (newLen);
+                }
+            }
+#if 0
+            size_t  desiredCapacity     =   fData_.GetLength () + (to - from);
+            desiredCapacity = max (desiredCapacity, fData_.capacity ());
+            fData_.reserve (desiredCapacity);
+#endif
             for (auto i = from; i != to; ++i) {
                 fData_.InsertAt (at++, *i);
             }
