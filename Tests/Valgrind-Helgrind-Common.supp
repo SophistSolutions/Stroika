@@ -86,11 +86,10 @@
    fun:*ConstantProperty*
 }
 {
-   https://stroika.atlassian.net/browse/STK-644 - fails on Ubuntu 21.10, valgrind -q --gen-suppressions=yes --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp  Builds/valgrind-release-SSLPurify-NoBlockAlloc/Tests/Test31
+   https://stroika.atlassian.net/browse/STK-644 - fails on Ubuntu 18.04 and 21.10, valgrind -q --gen-suppressions=yes --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp  Builds/valgrind-release-SSLPurify-NoBlockAlloc/Tests/Test31 OR valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp Builds/valgrind-debug-SSLPurify-NoBlockAlloc/Tests/Test31
    Helgrind:Misc
-   obj:/usr/lib/x86_64-linux-gnu/valgrind/vgpreload_helgrind-amd64-linux.so
+   ...
    fun:CRYPTO_THREAD_lock_free
    ...
    fun:OSSL_PROVIDER_load
-   ...
 }
