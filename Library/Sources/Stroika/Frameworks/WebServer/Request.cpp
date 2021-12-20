@@ -104,6 +104,7 @@ Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
              */
             fBodyInputStream_ = MemoryStream<byte>::New ();
         }
+        // @todo See https://stroika.atlassian.net/browse/STK-758 - zip compression support
     }
     return fBodyInputStream_;
 }

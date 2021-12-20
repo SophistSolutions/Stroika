@@ -265,6 +265,7 @@ void Response::Flush ()
 #endif
     lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
 
+    // @todo See https://stroika.atlassian.net/browse/STK-758 - zip compression support
     if (fState_ == State::ePreparingHeaders or fState_ == State::ePreparingBodyBeforeHeadersSent) {
         {
             auto    curStatusInfo = this->statusAndOverrideReason ();
@@ -380,7 +381,7 @@ void Response::write (const byte* s, const byte* e)
                 fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (n)), reinterpret_cast<const byte*> (Containers::End (n)));
                 fUseOutStream_.Write (s, e);
                 const char kCRLF[] = "\r\n";
-                fUseOutStream_.Write (reinterpret_cast<const byte*> (kCRLF), reinterpret_cast<const byte*> (kCRLF + 2));
+                fUseOutStream_.Write (reinterpret_cast<const byte*> (kCRLF), reinterpret_cast<const byte*> (kCRLF + NEltsOf (kCRLF)));
             }
         }
         else {
