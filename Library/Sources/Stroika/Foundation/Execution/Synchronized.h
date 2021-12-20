@@ -34,9 +34,8 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Deadlock from two threads doing UpgradeAtomically is easily detectable, so in DEBUG builds translate that to an
- *              assert erorr? Or maybe always detect and raise an exception in that case. (probably assert better cuz overhead
- *              in detection would be paid by correct code)
+ *      @todo   Deadlock from two threads doing UpgradeLockNonAtomically(quietly) is ??? detectable, so in DEBUG builds translate that to an
+ *              assert erorr?
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-613 - Synchronized<>::ReadableReference and WritableReference could be more efficent if not subclassing each other
  *
@@ -490,6 +489,48 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  \brief Upgrade a shared_lock to a (writable) full lock and pass the full lock to the argument doWithWriteLock function (and restore the shared_lock on exit); return true if succeeds, and false if fails (timeout trying to full-lock) or doWithWriteLock () returns false
+         * 
+         *  @see UpgradeLockNonAtomically - which just calls UpgradeLockNonAtomicallyQuietly () and throws timeout on timeout inteveningWriteLock or doWithWriteLock returns false
+         *
+         *  \note - also returns false on intevening lock IFF doWithWriteLock/1 passed in has no inteveningWriteLock parameter.
+         *
+         *  \note optional 'bool interveningWriteLock' parameter - if present, intevening locks are flagged with this paraemter, and if 
+         *        the parameter is NOT present, intevening locks are treated as timeouts (even if infinite timeout specified)
+         *
+         *  \note - This does NOT require the mutex be recursive  - just supporting both lock_shared and lock ()
+         * 
+         *  \note  A DEFEFCT with UpgradeLockAtomically is that it CAN DEADLOCK if two threads acquire read locks and then both try to upgrade them to
+         *         write locks. For that reason, its recommended NOT to use an infinite timeout, or, to assure the upgrades are ONLY done on one thread
+         *         and that its other threads just use the read-lock. If you use a small timeout, and properly handle interveningWriteLock, you should be fine.
+         *
+         *  \par Example Usage
+         *      \code
+         *          Execution::RWSynchronized<Status_> fStatus_;
+         *          ...
+         *          again:
+         *          auto lockedStatus = fStatus_.cget ();
+         *          // do a bunch of code that only needs read access
+         *          if (some rare event) {
+         *              if (not fStatus_.UpgradeLockNonAtomicallyQuietly ([=](auto&& writeLock) {
+         *                      writeLock.rwref ().fCompletedScans.Add (scan);
+         *                  }
+         *              )) {
+         *                  Execution::Sleep (1s);
+         *                  goto again;   // important to goto before we acquire readlock to avoid deadlock when multiple threads do this
+         *              }
+         *          }
+         *      \endcode
+         */
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
+        nonvirtual bool UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
+        nonvirtual bool UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+
+    public:
+        /**
+         *  \brief Upgrade a shared_lock to a (writable) full lock and pass the full lock to the argument doWithWriteLock function (and restore the shared_lock on exit). Throw if timeout acquiring full lock.
+         * 
          *  A DEFEFCT with UpgradeLockNonAtomically, is that you cannot count on values computed with the read lock to remain
          *  valid in the upgrade lock (since we unlock and then re-lock). We resolve this by having two versions of UpgradeLockNonAtomically,
          *  one where the callback gets notified there was an interening writelock, and one where the entire call fails and you have to
@@ -498,13 +539,15 @@ namespace Stroika::Foundation::Execution {
          *  \note optional 'bool interveningWriteLock' parameter - if present, intevening locks are flagged with this paraemter, and if 
          *        the parameter is NOT present, intevening locks are treated as timeouts (even if infinite timeout specified)
          *
-         *  But other than that, this approach seems pretty usable/testable.
-         *
-         *  NOTE - this guarantees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
-         *
          *  \note - the 'ReadableReference' must be shared_locked coming in, and will be identically shared_locked on return.
          *
-         *  \note - throws on timeout
+         *  \note - throws on timeout OR if interveningWriteLock and doWithWriteLock/1 passed, or if doWithWriteLock returns false
+         *
+         *  \note - This does NOT require the mutex be recursive  - just supporting both lock_shared and lock ()
+         *
+         *  \note  A DEFEFCT with UpgradeLockAtomically is that it CAN DEADLOCK if two threads acquire read locks and then both try to upgrade them to
+         *         write locks. For that reason, its recommended NOT to use an infinite timeout, or, to assure the upgrades are ONLY done on one thread
+         *         and that its other threads just use the read-lock. If you use a small timeout, and properly handle interveningWriteLock, you should be fine.
          *
          *  \note - the timeout refers ONLY the acquiring the upgrade - not the time it takes to re-acquire the shared lock or perform
          *          the argument operation
@@ -515,6 +558,7 @@ namespace Stroika::Foundation::Execution {
          *          auto lockedStatus = fStatus_.cget ();
          *          // do a bunch of code that only needs read access
          *          if (some rare event) {
+         *              // This COULD fail/throw only if called from intervening lock
          *              fStatus_.UpgradeLockNonAtomically ([=](auto&& writeLock) {
          *                  writeLock.rwref ().fCompletedScans.Add (scan);
          *              });
@@ -524,112 +568,13 @@ namespace Stroika::Foundation::Execution {
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
         nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
-        nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+        nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
 
     public:
-        /**
-         *  @see UpgradeLockNonAtomically - same but returns true on success; and returns false on timeout, instead of throwing; use to more quietly handle
-         *       timeout scenarios. Note - also returns false on intevening lock IFF function<> passed in has no inteveningWriteLock parameter.
-         *
-         *  \note optional 'bool interveningWriteLock' parameter - if present, intevening locks are flagged with this paraemter, and if 
-         *        the parameter is NOT present, intevening locks are treated as timeouts (even if infinite timeout specified)
-         *
-         *  \par Example Usage
-         *      \code
-         *          Execution::RWSynchronized<Status_> fStatus_;
-         *          again:
-         *          auto lockedStatus = fStatus_.cget ();
-         *          // do a bunch of code that only needs read access
-         *          if (some rare event) {
-         *              if (not fStatus_.UpgradeLockNonAtomicallyQuietly ([=](auto&& writeLock) {
-         *                  writeLock.rwref ().fCompletedScans.Add (scan);
-         *              })) {
-         *                  Execution::Sleep (1s);
-         *                  goto again;   // important to goto before we acquire readlock to avoid deadlock when multiple threads do this
-         *              }
-         *          }
-         *      \endcode
-         */
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
-        nonvirtual bool UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
-        nonvirtual bool UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
-
-    public:
-        /**
-         *  \note *** EXPERIMENTAL API *** as of Stroika 2.1d27
-         *
-         *  A DEFEFCT with UpgradeLockAtomically is that it CAN DEADLOCK. Beware (or pass in small timeout to avoid deadlock).
-         *
-         *  NOTE - this guarantees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
-         *
-         *  @see UpgradeLockAtomicallyQuietly
-         *
-         *  \note - the 'ReadableReference' must be shared_locked coming in, and will be identically shared_locked on return.
-         *
-         *  \note if more than one thread MIGHT need to call this UpgradeLockAtomically*, that can lead to a deadlock, so its critical in that case
-         *        to provide a timeout (which is why the timeout parameter is required). You MAY provide kInfinite if you are sure you
-         *        won't deadlock (dont have two threads trying to UpgradeLockAtomically at the same time).
-         *
-         *        If using this, its best to arrange for only one thread to be able to 'upgrade' the lock, or to provide a timeout, so
-         *        when the upgrade fails, you can cleanly backout and try again.
-         *
-         *  \note - throws on timeout (or detectable deadlock, since that would definitely timeout)
-         *
-         *  \par Example Usage
-         *      \code
-         *          Execution::UpgradableRWSynchronized<Status_> fStatus_;
-         *          auto lockedStatus = fStatus_.cget ();
-         *          // do a bunch of code that only needs read access
-         *          if (some rare event) {
-         *              constexpr auto kTimeout_ = 1s;  // since otherwise can deadlock
-         *              fStatus_.UpgradeLockAtomically ([=](auto&& writeLock) {
-         *                  writeLock.rwref ().fCompletedScans.Add (scan);
-         *              }, kTimeout_);
-         *          }
-         *      \endcode
-         */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>* = nullptr>
-        nonvirtual void UpgradeLockAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout);
-
-    public:
-        /**
-         *  \note *** EXPERIMENTAL API *** as of Stroika 2.1d27
-         *
-         *  A DEFEFCT with UpgradeLockAtomically is that it CAN DEADLOCK, so use carefully.
-         *
-         *  NOTE - this guarantees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
-         *
-         *  \note - the 'ReadableReference' must be shared_locked coming in, and will be identically shared_locked on return.
-         *
-         *  \note if more than one thread MIGHT need to call this UpgradeLockAtomically*, that can lead to a deadlock, so its critical in that case
-         *        to provide a timeout (which is why the timeout parameter is required). You MAY provide kInfinite if you are sure you
-         *        won't deadlock (dont have two threads trying to UpgradeLock at the same time).
-         *
-         *        If using this, its best to arrange for only one thread to be able to 'upgrade' the lock, or to provide a timeout, so
-         *        when the upgrade fails, you can cleanly backout and try again.
-         *
-         *  \note - returns false on timeout (or detectable deadlock); and true otherwise. May throw for other reasons;
-         *
-         *  \par Example Usage
-         *      \code
-         *          Execution::UpgradableRWSynchronized<Status_> fStatus_;
-         *          again:
-         *          auto lockedStatus = fStatus_.cget ();
-         *          // do a bunch of code that only needs read access
-         *          if (some rare event) {
-         *              constexpr auto kTimeout_ = 1s;  // since otherwise can deadlock
-         *              if (not fStatus_.UpgradeLockAtomicallyQuietly ([=](auto&& writeLock) {
-         *                  writeLock.rwref ().fCompletedScans.Add (scan);
-         *              }, kTimeout_)) {
-         *                  Execution::Sleep (1s);
-         *                  goto again;     // re-acquire data since merge of results inadequate
-         *              }
-         *          }
-         *      \endcode
-         */
+        [[deprecated ("Since Stroika 2.1b14 - use UpgradeLockNonAtomically ")]] void UpgradeLockAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout);
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>* = nullptr>
-        nonvirtual bool UpgradeLockAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout);
+        [[deprecated ("Since Stroika 2.1b14 - use UpgradeLockNonAtomicallyQuietly")]] bool UpgradeLockAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout);
 
     private:
         nonvirtual void NoteLockStateChanged_ (const wchar_t* m) const;
@@ -907,7 +852,7 @@ namespace Stroika::Foundation::Execution {
      *        read locks held for a long time (and multiple threads doing so)
      */
     template <typename T>
-    using UpgradableRWSynchronized = Synchronized<T, Synchronized_Traits<PRIVATE_::BOOST_HELP_::UpgradeMutex>>;
+    using UpgradableRWSynchronized [[deprecated ("Since Stroika 2.1b14")]] = Synchronized<T, Synchronized_Traits<PRIVATE_::BOOST_HELP_::UpgradeMutex>>;
 #endif
 
 }

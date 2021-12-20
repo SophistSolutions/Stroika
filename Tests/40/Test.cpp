@@ -1251,7 +1251,35 @@ namespace {
 #endif
                                 writeLock.store (false);
                             }
+                            return true; // instead of reloading here, could return false and let retyr code happen
                         });
+                    }
+                }
+            };
+            auto testUpgradeLockNonAtomically3 = [] (auto& isEven) {
+                while (true) {
+                    Thread::CheckForInterruption ();
+                    auto rLock = isEven.cget ();
+                    if (rLock.load ()) {
+                        while (not isEven.UpgradeLockNonAtomicallyQuietly (&rLock, [&] (auto&& writeLock, bool interveningWriteLock) {
+                            if (interveningWriteLock) {
+                                return false; // will get retried
+                            }
+                            else {
+                                // in this case we effectively did an atomic upgrade, because no intervening writers
+#if qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy
+                                bool t = writeLock.load ();
+                                if (not t) {
+                                    DbgTrace ("***assert false");
+                                }
+#else
+                                Assert (writeLock.load ());
+#endif
+                                writeLock.store (false);
+                                return true; // instead of reloading here, could return false and let retyr code happen
+                            }
+                        }))
+                            ;
                     }
                 }
             };
@@ -1348,28 +1376,11 @@ namespace {
                 RWSynchronized<bool>      isEven{true};
                 runSyncTest (isEven, [&] () { testUpgradeLockNonAtomically2 (isEven); });
             }
-#if qHasFeature_boost
             {
-                Debug::TraceContextBumper      ctx1{"run-test (1) UpgradableRWSynchronized NonAtomically"};
-                UpgradableRWSynchronized<bool> isEven{true};
-                runSyncTest (isEven, [&] () { testUpgradeLockNonAtomically1 (isEven); });
+                Debug::TraceContextBumper ctx1{"run-test (3) RWSynchronized NonAtomically"};
+                RWSynchronized<bool>      isEven{true};
+                runSyncTest (isEven, [&] () { testUpgradeLockNonAtomically3 (isEven); });
             }
-            {
-                Debug::TraceContextBumper      ctx1{"run-test (2) UpgradableRWSynchronized NonAtomically"};
-                UpgradableRWSynchronized<bool> isEven{true};
-                runSyncTest (isEven, [&] () { testUpgradeLockNonAtomically2 (isEven); });
-            }
-            {
-                Debug::TraceContextBumper      ctx1{"run-test UpgradableRWSynchronized Atomically"};
-                UpgradableRWSynchronized<bool> isEven{true};
-                runSyncTest (isEven, [&] () { testUpgradeLockAtomically1 (isEven); });
-            }
-            {
-                Debug::TraceContextBumper      ctx1{"run-test UpgradableRWSynchronized Atomically (quietly)"};
-                UpgradableRWSynchronized<bool> isEven{true};
-                runSyncTest (isEven, [&] () { testUpgradeLockAtomically2 (isEven); });
-            }
-#endif
         }
     }
 }
