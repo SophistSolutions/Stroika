@@ -7,6 +7,3438 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+
+### MAJOR POINTS FOR THIS RELEASE
+
+- Major revsion / cleanups to Containers
+  - Unified constructors, and major improvments to 'concept' usage on constructors, IsAddable
+  - new KeyedCollection, SortedKeytedCollection, Assocation, and SortedAssocation containers (along with related factories/concrete types)
+  - No more Iterator patching (and related API changes to containers).
+  - Performance improvements to containers
+
+- New XCode support, including support for M1 native/cross compiling
+- openssl 3
+- boost X?
+- Visaul Studio 2022 support
+- Performance and polish improvements
+
+
+
+
+#### COMPILER BUG WORKAROUNDS
+
+- qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy
+- another workaround for https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
+
+#### COMPILER VERSIN SUPPORTS
+
+- VS_16_11_1 in docker builds
+
+- Mac / XCode
+  - Build / pass regtests on M1 MacOS (alot of fixes rolled into this)
+  - macos default configurations - now also build Release-x86_64 and Release-arm64e
+
+##### Build System
+
+- PARALLELMAKEFLAG arg support in RunRemoteRegressionTests script
+- https://stroika.atlassian.net/browse/STK-427 (Get OpenSSL working with cross-compile...) workaround appears no longer needed for raspberrypi and causes problems on macos
+
+
+#### ThirdPartyCompoents
+
+- LZMA
+  - fixed LZMA TPC makefile to use configure-based linker, so cross-compilers work on macos
+- zlib
+  - fixed zlib makefile to pass along AR/RANLIB build flags to lower makefile (for build of with clang/lto on ubuntu)
+- sqlite
+  - Fixed makefile logging to BUILD_LOG.txt
+
+
+##### Docs
+- Lots of docs cleanups
+
+#if 0
+
+commit ab92fe9abf7853d0762500b842437b0cb1c201b2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Aug 19 13:49:16 2021 -0400
+
+    Simplify / fix invoke submake in libcurl thirdpartycomponents makefile so should work for raspbeerypi cross config and macos m1 cross compiles
+
+commit 91f2ff8c35fc0b975bc7663e3635133569ffc797
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Aug 19 14:00:34 2021 -0400
+
+    Simplify / fix invoke submake in libcurl thirdpartycomponents makefile so should work for raspbeerypi cross config and macos m1 cross compiles
+
+commit b78ceed638eda255bc689a1712211996ebf2fb3e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Aug 20 01:43:02 2021 +0100
+
+    fixed cross-compiling flag for configure on macos x86 when setting corss compile for arm
+
+commit c278b0b7cf1c6305efa9e29742588729e2505413
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Aug 20 10:53:06 2021 -0400
+
+    Cross-Compiled-Only flag optionally to GetConfigurations
+
+commit f02ff6e941384befee981066a564b9dad20bfbf3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Aug 20 10:53:41 2021 -0400
+
+    use --cross-compiled-only flags in RegressionTests call to GetConfigurations to correctly count expected number of passed tests
+
+commit 8293adb55b0c9eaad090d0ae38260c06a2126e8e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Aug 20 21:49:04 2021 -0400
+
+    use --quiet arg to a few GetConfigurations calls
+
+commit e0cfc0b18eed67cd770ca32690078fb4b572f1a1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Aug 20 22:02:04 2021 -0400
+
+    GetConfigurations --quiet
+
+commit 47d548347d28f51d89f2197b492650df50d37231
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Aug 20 22:09:45 2021 -0400
+
+    fixed regressiontest sample app test loop to not ren local tests when cross compiling
+
+commit 7f752016f36b92b6fb62718855c143829cc4f011
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Aug 21 20:10:01 2021 -0400
+
+    fix confugre to not default to using LTO on clang++6 since that fails on ubuntu for libcurl (not worth debugging why)
+
+commit 554e201c97629e929782dace20abbea6f8d17fc1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 23 16:11:06 2021 +0100
+
+    workaround https://stroika.atlassian.net/browse/STK-742 issue with docker desktop on windows
+
+commit ae0a02a94a9358d842c8c3ac97cd22563164f945
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Aug 24 12:51:01 2021 +0100
+
+    abandon doing release now since builds suggest maybe not stable
+
+commit 6d72121efb0a8d236b15a630f9ce7860bc4213c0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 30 03:02:48 2021 +0100
+
+    regression test BugWithWhereCallingAdd_Test20_ and fix for Sequence<>::Where
+
+commit 9c5af9d2f04ecda91f1197398b0b9d720b48f791
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 30 14:43:26 2021 +0100
+
+    cosmetic and use uniform initializer (only tested on windows - hope OK on unix)
+
+commit bb4eb25fb47022a3c3ab98e334b689cba14bb5a6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 30 17:48:43 2021 +0100
+
+    fixed vs2k19 sln file for Foundation::Cache folder (wrong files included)
+
+commit e147fcdf2003f8a9dd50401eba356bf5b0b05195
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Aug 30 17:50:32 2021 +0100
+
+    Cache/CallerStalenessCache: docs and cleanups, and more careful about setting timestamp at END of fillerCache call, in case that takes real time
+
+commit 35f73d643c5fc89627972cb53fe3a19161b0919d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 4 04:00:17 2021 +0100
+
+    Sequence<>::erase method
+
+commit 6dc67885128896af7dc2582d834c203fba7d49f7
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Sep 10 04:07:47 2021 +0100
+
+    Switch to released OpenSSL 3.0, and added BWA qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy and a few other changes for last minute openssl 3.0 name changes
+
+commit c429ce8bdf9518c89186a7bf2fc2891b917debd7
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Sep 10 04:53:07 2021 +0100
+
+    openssl 3.0 builds need configure --libdir=lib(still untested)
+
+commit e3683b517e7fc7165a4ffb78f405b1b77b99bcaf
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Sep 10 05:08:42 2021 +0100
+
+    qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy broken for gcc (so probably real bug with my code or openssl)
+
+commit b711f019b6cbba9eafb4aeb8da8af660143fdcdf
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Sep 10 09:53:22 2021 -0400
+
+    Improved configure error reporting if it cannot open configuration output file
+
+commit 36a4fe1cee86a04f7ccf580641d98eb053b19584
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Sep 11 23:03:00 2021 -0400
+
+    Cryptography/OpenSSL/LibraryContext - fixes to load/unload logic to fix issues found by TemporarilyAddProvider cleanups; and fixed Load/Unload issues
+
+commit 01329a492be688922b4bdce7f52c77696036f953
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Sep 12 14:01:10 2021 -0400
+
+    Added missing perl modules for Centos VMs to build OpenSSL 3
+
+commit 331496167ece5718d1d2b10f0e7f53277f4e425f
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Sep 13 20:33:50 2021 -0400
+
+    OpenSSL 3.0 fix builds for raspberrypi - machine arm-linux-gnueabihf - set target config for that machine so builds properly and no -m64 errors
+
+commit 3fb039bab894263ffa1b8a6f1992eee58c900963
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 14 02:03:35 2021 +0100
+
+    cleanup recent dumpmachine OpenSSL 3.0 fix
+
+commit 75b03daeb343a7e5e304c2a831623c5431b0c3d4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 14 02:51:54 2021 +0100
+
+    adjusted hardwired known failing openssl3 ciphers from regtest
+
+commit 1fc92f2b531a01bb1d9b7e1d41bae19e6df16310
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 14 02:52:13 2021 +0100
+
+    fixed minor issue with openssl makefile workaround
+
+commit 3cb25c980cde53324cf95e4923ffa4fba2cd6aa8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 14 19:00:06 2021 +0100
+
+    cleanup Set operator overloads, work more/better with Iterable<> and probably performance tweak a few cases
+
+commit 214468ee6b19a7a094066274d6f60e5e747d20a6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 14 20:23:16 2021 +0100
+
+    cleanup debugtrace calls in openssl wrapper code
+
+commit 8613b6c8114da04445ffa91899cfae0e1c0f5c37
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 14 21:45:10 2021 +0100
+
+    better docs and a few renames of available openssl digest algorithms (and added a few more named mappings)
+
+commit 3ae712b202e9558004381bb6997d3d088ea7b94d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 14 23:31:38 2021 +0100
+
+    replaced NEltsOf macro with NEltsOf() function (mostly adjusted to scope call to Memory namespace)
+
+commit 06b802d7040bb01c15105309f406c712537455ba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 14 23:51:05 2021 +0100
+
+    warn/report if cannot load openssl provider - dont fail in openssl regtests
+
+commit 6eaee46c458389f691042086a6912a57a7e2ea48
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 15 02:15:55 2021 +0100
+
+    hopefully fixed cross compiling of openssl v3 on m1/i86 machines for macos
+
+commit b64dbd6eac3097d3ecca27991190e29c8d55770c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Sep 20 03:54:33 2021 +0100
+
+    Added Configuration::is_callable_v utility template
+
+commit a9351fc5f9c54f75b582abfbcc19dadebf2a49c2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Sep 20 03:56:21 2021 +0100
+
+    Set<T> :: deprecated Contains (list overload) and replacedwith ContainsAll/ContainsAny
+
+commit 20a9d587f6f3a0609fc884cafa7fd571481a7a03
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Sep 20 03:58:24 2021 +0100
+
+    simplifications to ComparisonRelationDeclaration<...>
+
+commit 4fe954f9d528e9bc81fe2a1025d320116c702fe5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 21 01:51:11 2021 +0100
+
+    use latest VS2k19 for RunLocalWindowsDockerRegressionTests and make docker image, and -j8 -cpus 8, and lose --memory 8G since fails for unknown reasons
+
+commit 4ec01fbc0f66c3ce2bb4a8ceb0d76a7f444e6e82
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 21 01:52:17 2021 +0100
+
+    draft of KeyedCollection<> template
+
+commit a2ca3ac2df82ff02c76691a4907e8b6884a0217a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 22 19:54:59 2021 +0100
+
+    test codeql
+
+commit fdacbbc95ca790920ce47d98bd3df4886a20a206
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 22 21:22:02 2021 +0100
+
+    try to fix codeql test workflow
+
+commit 6b992d55ff7e991dd0e39e7764a95b3fac44579a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 22 21:23:28 2021 +0100
+
+    more tweaks to get docker run of windows regtests working again
+
+commit 5b8b33ed11da4ec57e694b46cc3c7912dcbec7de
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 23 01:18:50 2021 +0100
+
+    added regtest 26 for /SortedKeyedCollection
+
+commit f94b004068c1a8f353dc488cbedf66e4f7a5e1e9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 23 01:19:07 2021 +0100
+
+    sortedkeyedcollection progress
+
+commit e52204c44cb5b35c44400ca4c21940cf5d74dd16
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 23 01:28:45 2021 +0100
+
+    attempt to fix workflow  codeql-analysis
+
+commit e52ac383ba4dee57d518b0082227620167908358
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 23 01:34:05 2021 +0100
+
+    progress on .github/workflows/codeql-analysis.yml
+
+commit e3b9616a5c01a6b5eeaaf9910f6a61301ce076d9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 23 01:35:13 2021 +0100
+
+    progress on .github/workflows/codeql-analysis.yml
+
+commit da6c9131a48fbd7e573bd97f2a9048c7249c2414
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 23 01:47:30 2021 +0100
+
+    more cleanups of  .github/workflows/codeql-analysis.yml
+
+commit a3d62abc60217b3e14dcff365479b566ae505803
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 23 15:41:59 2021 +0100
+
+    refactored keyedcollection tests into commontests_keyedcolleciton for regtests
+
+commit 526854b983021005906dcbfca38af2161acc02b5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 23 21:07:22 2021 -0400
+
+    updated xcode project
+
+commit 80fd70952fb61015164e9ea95af28f6fffddfb9a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 23 21:08:10 2021 -0400
+
+    xcode doesnt support auto in function param names - must use template
+
+commit eda0399807b857389a27de43ff591de2b5e166a6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Sep 24 02:12:39 2021 +0100
+
+    another attempt to get codeql working
+
+commit d96ecfdcfa65bc60254faf1be35be09c657ef63c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 25 13:37:50 2021 +0100
+
+    more progress on CodeQL build
+
+commit cdd01d9093149bda529ea9171df9e6cc6b8319aa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 25 14:07:09 2021 +0100
+
+    more progress on CodeQL build
+
+commit a6fd0a4900c1a04746b817f6d9f6f5767c617587
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 25 14:35:43 2021 +0100
+
+    some progress on SortedKeyedCollection.h
+
+commit 96bca7d57aaaa0da76a1667ccf505b7e11e066d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Sep 25 14:54:16 2021 +0100
+
+    not totally backward compatible change to all container templates - renamed (for example) _BijectionRepSharedPtr to  _IRepSharedPtr
+
+commit 54ec6914e7c361d94ab7a3e0cc52ad19dbfc0da3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Sep 26 01:51:13 2021 +0100
+
+     [[NO_UNIQUE_ADDRESS_ATTR]]
+
+commit 69b51e0a142de63777c51a1c7871aab2c60863d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Sep 26 02:47:49 2021 +0100
+
+    SortedKeyedCollection progress
+
+commit a3169b1acee6cfca726c838db7f650f8db8b6d86
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Sep 26 03:46:47 2021 +0100
+
+    switched KeyedCollection<> template to use explicit KEYS_EQUALS_COMPARER argument in CTOR (not traits)
+
+commit 826adcc05ad17d3c9119c43fd09b27a2d03cd7a9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Sep 26 04:17:47 2021 +0100
+
+    progress on KeyedCollection
+
+commit ab18aa435cd73b149ffeb2966703de02bfc50449
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Sep 26 19:55:59 2021 +0100
+
+    progress on KeyedCollection<> - towards losing traits and pushing optional template params through CTORs to internal rep
+
+commit 3062b17f91f61aca64f03a0868ac3a6f9fcc7da4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Sep 26 22:47:40 2021 +0100
+
+    fixed many containers/factories, to use const for COMPARERS (function objects that often have no size) and use  [[NO_UNIQUE_ADDRESS_ATTR]] c
+
+commit 562991544c4fb85a65b82209748fd40e42b16317
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Sep 27 13:53:39 2021 +0100
+
+    Containers\Concrete\SortedKeyedCollection_stdset.h first draft - seems to work
+
+commit c59ee8852db3f59616b90be3cde3b7932360d12f
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Sep 27 09:03:59 2021 -0400
+
+    fixed (I think longstanding) bug with Mapping_Array - copying / cloning - not copying comparer (so rarely relevant)
+
+commit d58db786921d0de72cfa1cc50b5688a7e52c8e95
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Sep 27 09:06:02 2021 -0400
+
+    fixed minor issue with SortedKeyedCollection_stdset
+
+commit 906337ef54f79010749f6c8e3e66bb0d48c0cb55
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Sep 27 14:44:56 2021 +0100
+
+    avoid deprecated contains overload
+
+commit 74af8f15b94cd8cc42af377a4383cda6e62cfa78
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Sep 27 15:01:55 2021 +0100
+
+    fixed bug in new SortedKeyedCollection_stdset Add method (updating)
+
+commit 8b33543923329fae5cc0fb18de5027d2ef568a26
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Sep 28 01:40:29 2021 +0100
+
+    fixed two small bugs with KeyedCollection<>
+
+commit 6d9d73f0a3b47ed514c9852ff9e75c90f9c3a584
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Sep 28 13:06:21 2021 -0400
+
+    qMacUBSanitizerifreqAlignmentIssue_Buggy still buggy on XCode 13
+
+commit 871b216653be4d32d70de8391ada5f0aec515446
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 29 00:28:45 2021 +0100
+
+    vs2k17 compat code issue
+
+commit dc5268d831593d392a0c3d94b4389e43b21abd1d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 29 01:09:48 2021 +0100
+
+    more cleanups of KeyedCollection<T> code - more CTORs, etc
+
+commit 0be81c6fd23796ae0f51b0b2c5b5bd89ce1a937d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 29 01:33:26 2021 +0100
+
+    Progress on SortedKeyedCollection ctors
+
+commit 5084ed7b1f41e09e875ea7a10912ba90859f0270
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Sep 28 20:51:25 2021 -0400
+
+    fixed mistakes in last KeyedCollection.inl checkin
+
+commit 1061c6c1d845576da2665be76cd8cd3a1787e4d4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 29 01:54:41 2021 +0100
+
+    fixed issue with vs2k17 + cosmetic
+
+commit 76406ed32db4c83e12cf752945328b4b9d2eb35d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Sep 29 14:56:54 2021 +0100
+
+    fixed a couple minor (recent) regressions RunPerformanceRegressionTests
+
+commit daf441e498328a97a5829b4934692478c7a1de87
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 30 02:09:47 2021 +0100
+
+    fixed small recent regression in RunPerformacenRegressionTests
+
+commit 48e57038e62b5a31a71eaed713a959215f7a896c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Sep 30 14:18:02 2021 +0100
+
+    use libcurl 7.79.1 (except not on macos yet)
+
+commit 9767ddce34f56ce30138f2805c2765edd80a3edb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 1 02:46:40 2021 +0100
+
+    Cleaned up CTORs for Concrete::KeyedCollection_LinkedList<> and improved regtests
+
+commit 602c547494629ae4d84cc4fbce619321e440c6d7
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Oct 1 09:29:47 2021 -0400
+
+    Additional workaround for https://stroika.atlassian.net/browse/STK-679 on openssl3"
+
+commit 6ef48880b6cf266586d1b616829523559f404813
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 2 02:29:04 2021 +0100
+
+    Cleaned up CTORs for Concrete::KeyedCollection_LinkedList<> and improved regtests
+
+commit 665b9b7bd20545cf8ff62d4fef8e042d2ae97bc3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 2 03:14:18 2021 +0100
+
+    new draft KeyedCollection_stdset
+
+commit f5e3004cc133307b787147e3e40866649bb12d06
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 2 03:57:53 2021 +0100
+
+    KeyedCollection_Factory ... enable_if KEY_TYPE=equal_to use KeyedCollection_stdset
+
+commit cdd40c037e6b27c7400fdc5e11f623cffe1acc6d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 2 04:07:17 2021 +0100
+
+    use if constexpr is_save_v isntead of comapritng typeid () so dont compile uneeded class
+
+commit aba222e728cfd790471d85116473e05e57e30847
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 2 16:36:23 2021 +0100
+
+    a few more touchups with SOrtedKeyedCollection (adding accessor to inordercomparer and a litlte more)
+
+commit a856396de380533568d774e4d969c30040224ec4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 3 14:36:02 2021 +0100
+
+    https://stroika.atlassian.net/browse/STK-558 - ObjectVariantMapper uses KeyedCollection<>
+
+commit 2d7aff3810a85419d018d45397320fd053e8ffb3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 3 14:37:41 2021 +0100
+
+    Containers::Adder supports KeyedCollection
+
+commit c550dbf99d0b15976fb1f1d0bf4b718011a63307
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 3 17:19:11 2021 +0100
+
+    KeyedCollection/SortedKeyedCollection<> now supported in ObjectVariantMapper default mappers
+
+commit 466e7597ffee14125039c813b44f8f935e084f41
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 3 17:51:08 2021 +0100
+
+    use KeyedCollection<> in place of Collection<>/Mapping<> in a few places
+
+commit 5609901c508d3d89e8dc57a2399b5f9f5d997765
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 3 18:08:29 2021 +0100
+
+    keyedcollection<>::LOokupChecked/LookupValue
+
+commit ee9c9034f3a3ab69176c1b3004ac45b6738627a1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 4 00:06:36 2021 +0100
+
+    rewrite use of openssl md5 (now deprecated) with Stroika local copy of algorithm
+
+commit 8bf516816ec1b5d02431220c924c43f845644355
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 4 00:06:57 2021 +0100
+
+    Comments, and made ReturnType public in each Digester
+
+commit 6c91427475785a3744e63d8f298c298a10a8914e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 4 00:39:08 2021 +0100
+
+    moved KeyLength.IVLength methods to CipherAlgorithm
+
+commit c37cb690672cd0370ccfc54fc3d1f9155e010dd7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 4 01:18:05 2021 +0100
+
+    redo EVP_BytesToKey usage so cleaner and avoids warnings from openssl3
+
+commit 9a76a929394806239518b656481dfe539469ee80
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 4 02:17:29 2021 +0100
+
+    workaround macos clang bug - qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy
+
+commit 308abaec6d5979aa6a3d9bb1b8b90191625d820c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 4 02:31:18 2021 +0100
+
+    qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy broken on clang unix too
+
+commit 704975506c2b020db56292b5e8a2614a2c175d17
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 3 22:23:35 2021 -0400
+
+    compiler bug defines for xcode 13
+
+commit cdff91d061076c559742423ed961f6a04bd68f0c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 3 22:36:33 2021 -0400
+
+    compiler tweaks for xcode
+
+commit f9575092814ea77a364900f341e8f3cd8a88e731
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Oct 3 23:19:28 2021 -0400
+
+    fixed define qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy
+
+commit 275cecc35ac9e9b1ffc72c00fb9bde230820ff34
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 4 15:32:14 2021 +0100
+
+    tweak TypeMappingDetails_Extractor_
+
+commit 2a3645c02cdae8866555351d1b56c9810ddd4123
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 4 11:15:14 2021 -0400
+
+    lose qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy - just dont use auto without specifying return type and that fixes issue with clang - probably clang++ bug due to doing that evaluation too late, but no matter - not worth tracking issue
+
+commit 8fd010af651bc24400eefafaa4f0ea260f015559
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 6 02:57:10 2021 +0100
+
+    Lose obsolete Bag<> temlpa te- container - never implemtned and documented why noti mplemented (at elast for now)
+
+commit 55074cb052692a2f8914119d9cd9ee630953aa50
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 6 02:58:03 2021 +0100
+
+    Lose obsolete Bag<> temlpa te- container - never implemtned and documented why noti mplemented (at elast for now)
+
+commit ee2ad2bb168dd186c4e6bf21a69e1300a57804ea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 6 03:03:33 2021 +0100
+
+    removed support for Bag
+
+commit d505724d5d4cf095e4c120316c3787f9de28eb0b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 13 16:10:18 2021 +0100
+
+    SHaredByValue<> template - added new Assure2OrFewerReferences and GetAndMaybeCopySavingOriginal member functions
+
+commit 9309f8317c218210b7affd614602416ed06692ae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 15 09:16:06 2021 +0100
+
+    SharedByValue cleanups
+
+commit adc6fe4b38922af10becba98df6b081c94f2fda1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 15 11:21:45 2021 +0100
+
+    check __cplusplus for lambda in unevaluated context
+
+commit 055e0f12ee7c087f5ee00357c0fcf63a585bd7eb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 15 12:22:20 2021 +0100
+
+    new experimental SharedByValue<T, TRAITS>::BreakReferences_nu_ and  SharedByValue<T, TRAITS>::AssureNOrFewerReferences_nu and SharedByValue<T, TRAITS>::get_nu
+
+commit 8da1c17a13006e3f372730ada674f135a5aa7bd3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 15 15:14:06 2021 +0100
+
+    cosmetic cleanups to Iterator code
+
+commit 396cab562f6db9e2761e4a0277681fac7b3ce45f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 15 15:15:34 2021 +0100
+
+    Small progress on cleanups to SharedByValue
+
+commit ce7dc3d56e65afab085f72f97432348458e8a32a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 18 07:48:01 2021 +0100
+
+    Added Iterator<>::Refresh() method
+
+commit 6994f099f3ea8aee8a4845c22941add0f8edb477
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 18 07:50:50 2021 +0100
+
+    progress losing iterator patching - just mutliset and mapping so far - regtests passing but not well
+
+commit 1cb7eb321fc659229d5c61999318bae6e29ae0f3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 19 15:12:38 2021 +0100
+
+    More progress losing iterator patching code - for Set/Sequence and a few more
+
+commit c98d1dc9f7b05dcd7a9290b2edac9c870ad1211c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 19 17:40:23 2021 +0100
+
+    start using new Debug::CAST support
+
+commit fb94b6001e98915c36496148fa1427370f2fc30e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 19 20:32:21 2021 +0100
+
+    cleanups to, and more use of Debug::UncheckedDynamicCast
+
+commit 0eeeebed498b55f7a99e84d8d59080e2735f53a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 21 20:10:33 2021 +0100
+
+    added value_type using declaration in containers (subclassing from Iterable)
+
+commit be6cd73d53d6e107102db546c8b5506347abe95c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 18 07:50:50 2021 +0100
+
+    progress losing iterator patching - just mutliset and mapping so far - regtests passing but not well
+
+commit f6ec327ede9e5e14698e3953faccc91b06d5f274
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 19 15:12:38 2021 +0100
+
+    More progress losing iterator patching code - for Set/Sequence and a few more
+
+commit 815c2f59a596d3c76db993b62fa35186e792370c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 19 17:40:23 2021 +0100
+
+    start using new Debug::CAST support
+
+commit 9112ae9baaa8b53850c594682ae541ddec113c2c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 19 20:32:21 2021 +0100
+
+    cleanups to, and more use of Debug::UncheckedDynamicCast
+
+commit cab92eef65e9ac9d224abe8a6acaf031be7584c4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 21 20:49:18 2021 +0100
+
+    lots more progress on new containers 'patching' logic - very restricted support now for patching (so far just on Remove); working for Multiset and Mapping now. More to come; rewrote much of low level Array template (esp iterator) - less duplication and use index instead of ptr for current (to avoid work patching)
+
+commit 1ad44dfcf718ad12ec9da9cdb1f318631d14b105
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 21 21:26:14 2021 +0100
+
+    cosmetic and warning reduction
+
+commit bd4f654e34f8176ed85718d92b55ea930e0d5de5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 21 23:10:27 2021 +0100
+
+    Progress moving DataHyperRectangle code to using new Iterator code (non-patching)
+
+commit 786ad600e2908be8676ef31611dd929ca5c45b11
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 22 04:43:16 2021 +0100
+
+    more refactoring for new iterable patching: renamed IteratorHelper2_ back to IteratorHelper_ and got rid of a few more uses of PatchindgDataStructures and marked the files deprecated
+
+commit 16b0c56e58ff0d588355b8d89c46ea78c9268cd5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 22 13:37:21 2021 +0100
+
+    vs16_11_5 use
+
+commit e9d6db4ff7cf94e68b95c3d48788005708c28bd9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 22 14:39:07 2021 +0100
+
+    start support for vs2k22 in configure
+
+commit b939b74c50679cad49a54318d5ef3159764ca79c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 22 14:40:57 2021 +0100
+
+    cosmetic lenaups to IteartorImplHelper_
+
+commit cfe31d26847dfca9ac16fcf9e80d5988da619abe
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Oct 22 10:05:08 2021 -0400
+
+    qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy bug workarounds
+
+commit 823760b3f0650330dec175b69cd72035088b9d31
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 22 15:28:12 2021 +0100
+
+    fixed docker getting started instructions for new configuration names for windows
+
+commit 8e449897dcb2ff6303a193e2cf333d281e771430
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Oct 22 10:36:00 2021 -0400
+
+    fixed Configure-VisualStudio-Support.pl for vs2k22
+
+commit 794a7b082aba36d30d4db1d0fb4a8f6421c0ccc1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 22 20:54:44 2021 +0100
+
+    updated docker build code to have both builds of vs2k19 and vs2k22
+
+commit 4131e96724ba0a10516221cde3c7edce8d704be5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 22 21:53:13 2021 +0100
+
+    refactoring cleanup on lose-iterator-patching code - _GetWriterRepAndPatchAssociatedIterator helper added
+
+commit a5916fd84b94292683cf027c3837a2f334b41c32
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 22 22:07:24 2021 +0100
+
+    fixed remiaing refernece to  Private::PatchingDataStructures
+
+commit e6275cf37e31e8267486bc2b1ff2be1103507ccd
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Oct 22 17:20:12 2021 -0400
+
+    qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy also broken on gcc 11
+
+commit eec2b6e8cdd59fef3b9dffda445e639472277c1f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 22 22:28:20 2021 +0100
+
+    MultiSet<T, TRAITS>::_GetWriterRepAndPatchAssociatedIterator refactornig
+
+commit 20759c518a8a96c456394873dce44cb0aeb4a167
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 22 22:42:26 2021 +0100
+
+    Cosmetic, and lose a few more refs to old patching code
+
+commit bfabad5d5640b8f324978f90e1503c1a88ae538e
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Oct 22 20:46:17 2021 -0400
+
+    workaround weird syntax issue afflicting g++8 - not worth bug define
+
+commit 13abd4025559057b406350f2f0017e8a6ec9d646
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 23 01:50:53 2021 +0100
+
+    PatchBeforeRemove/PatchIteratorBeforeRemove/CloneAndPatchIterator for Collection<> classes
+
+commit c2247912d79be71e7fcb0e0adac06419bde5bcc9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 22 20:54:09 2021 -0400
+
+    fixed macos specific typo (recent regression)
+
+commit 7e2aab54a6741af766107e877c57e1a1040008e9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 23 02:18:36 2021 +0100
+
+    cleanups to Containers/DataStructures code
+
+commit 6f8f12c2fbec994a7ccfb61dec53241ee800ae92
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 23 02:31:31 2021 +0100
+
+    cosmetic cleanups to DataStructure::LinkedList code
+
+commit a8db588091f354294df3f72057db5154ab894abd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 23 04:19:16 2021 +0100
+
+    vs2k22 support (docker and slns and project files)
+
+commit d41b0bd96543f716c0272db22b2ad2ab59bfef82
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 23 04:29:52 2021 +0100
+
+    use if constexpr in a few places to silence warnings
+
+commit 9a089751d6309863f90f121ca3adc9fe8b57ad73
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 23 04:30:08 2021 +0100
+
+    vs2k22 support
+
+commit 86f678a033607e4b57f72c1c6ce8a903c174518e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 23 13:20:12 2021 +0100
+
+    fixed configure script calculate of default FEATUREFLAG_ATLMFC
+
+commit 5a11104d43e760bb37d429f6416b783cf944845c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 23 14:57:13 2021 +0100
+
+    silence warning
+
+commit c1adb0380dce3509444c4ef8bbc866792dc7a9b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 23 14:57:36 2021 +0100
+
+    fixed configure script checking for atlmfc for vs2k22
+
+commit 467b6f316051501caef032ac6c21088bfd470769
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 23 14:57:55 2021 +0100
+
+    fixed xerces build for vs2k22
+
+commit cc1b697afc0e415d1b70714f9a350c374cf3fc82
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 23 14:58:14 2021 +0100
+
+    makefile help improvements
+
+commit 1ec3558cc6fa150bc23f6d302c20413aa5f43419
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 23 14:59:00 2021 +0100
+
+    tweaked vs2k22 projectfiles
+
+commit 6830ccc0a56341f625432d0fa6707bd2d7aa0840
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 23 16:23:10 2021 +0100
+
+    I think I got boost working with vs2k22
+
+commit 2c983ee3f026e05071ca8eb03f16b15d30589bea
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Oct 24 21:02:59 2021 -0400
+
+    lose old complex code for setting --jobs flag in BOOST build - never really worked/helped, so needless complexity
+
+commit 4fef31d26ae300cc55b2f283637af6eb2f6821ba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 25 14:10:07 2021 +0100
+
+    maybe fix toolset_name setting for building vs2k22 on docekr on windwos/boost
+
+commit 027771f08b5528131787dd22c2b2d40e1994039f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 25 15:18:37 2021 +0100
+
+    hopefully fix toolset issue with boost build under docker
+
+commit 2657887779e2f60f82ab7d8dd6fd97c12ea70a55
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 26 02:11:26 2021 +0100
+
+    Use boost 1.77.0; and try to get boost windows docker build working again, but still no luck
+
+commit 3d1fe2a649f88393d245cbda10db974333d1d145
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 26 04:28:04 2021 +0100
+
+    cosemtic + DoublyLinkedList<T>::ForwardIterator::PatchBeforeRemove
+
+commit 1a5a218ce21688d085750ab8c070a84fc8e17679
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 26 21:10:35 2021 +0100
+
+    progress but no success getting boost to build with vs2k22: for now just disable boost under vs2k22 by default
+
+commit 220bf9679b5871b81d204e4ffe56d92de9c501b2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 26 21:34:12 2021 +0100
+
+    docs about regtests builds
+
+commit 4c5da32d6ad41909239ef8ca206c5b202d362e17
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 26 22:04:19 2021 +0100
+
+    fixed buildproject files (test) for vs2k22
+
+commit 851d90dc8f8a816247181c18b618ee50f5988b99
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 26 22:05:20 2021 +0100
+
+    fixed accidnetal checkin
+
+commit e60fc1d29bf2dc5f34608d23a0605d5ea7e72d26
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 27 00:50:17 2021 +0100
+
+    More progress on Container patching change: Remove() REPS now take & paraemter for nextI
+
+commit ef5292cc174dfc2ccf6f92d8145339b72c0b0763
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 27 01:43:24 2021 +0100
+
+    Sequence<T>::_GetWriterRepAndPatchAssociatedIterator () and Remove() changes to accomodate new Iteartor patchign API
+
+commit e9c0ee449ad8bd0de6f7e770c0f0ba8c5230de00
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 27 02:00:04 2021 +0100
+
+    support new clone/remove/iterator patching changes in Bijection container
+
+commit ab1b21764d8b8eb46ede44d028d6a28caa451f7d
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Oct 26 21:46:21 2021 -0400
+
+    workaround issue with centos and newer version of boost - no need to debug since probably wont support centos much longer
+
+commit ebd0f3b2b51ea4f71bdebe90835df5bd4f36af88
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 27 16:46:15 2021 +0100
+
+    major container cleanup (so far just applied to Bijection/Collection classes) - lose _APPLY_ARGTYPE, _APPLYUNTIL_ARGTYPE, and use explicit types, and cleanup use of forward declared using typedefs in various mixins (simpler) - and heavy switch to using value_type - ESPECAIALLY as arg to Iterator<> - so much simpler/clearer code in container impls
+
+commit b122d840d85ed1b02c983d83f3f6b43844c3485b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 27 21:44:47 2021 +0100
+
+    cleanup containers KeyedCollection/Deque for value_type cleanup and using name usage cleanup
+
+commit a51a6d4829964cc56a5bd6e66f84dc3de155f31f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 28 02:03:44 2021 +0100
+
+    Progress on KeyedCollection update for Remove() API change, and CloneAndPatchIterator api etc
+
+commit cc4511f00e913bbd2374557c7c08ae67ef4fe1fe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 28 15:56:23 2021 +0100
+
+    more container fixes for value_type cleanup and using cleanups - mostly did Multiset
+
+commit ccd7122807afa4a8461575cc13b9ce01293c7993
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 28 16:35:54 2021 +0100
+
+    clenaups to Queue container templates: value_type and cleanup of use of typedefs
+
+commit e20ea00e3edd2c8acdc42cab745f78a83c4cf157
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 28 17:41:13 2021 +0100
+
+    cleaned up Sequence<> use of typedef/using and value_type
+
+commit cc812b69daa90fcefc498d3965292a19c607ad1f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 29 02:02:04 2021 +0100
+
+    finished first pass updating containers to use new Iterable no-patching logic, and value_type and cleanup of using/typedefs - more releated stuff todo but good point to test
+
+commit 7cd2a6369262e2e1f66647644bef671102a67a45
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 29 10:52:17 2021 +0100
+
+    cleanup CloneAndPatchIterator implementations
+
+commit 9bbabbed686a4e9e7ef5d1cfae150225df84b72a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 29 11:12:27 2021 +0100
+
+    notes about https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
+
+commit 57cc28b0dbf75d2ef7637621441270f417e39f37
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 29 11:20:48 2021 +0100
+
+    fixed Stack<> use of value_type
+
+commit 246759d289de6ca33daf15fd81a8af7b43aa4b3e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 29 13:19:48 2021 +0100
+
+    cleanup Container Clone code - no longer need const cast
+
+commit d579da8c68cfcbd299cc7190fed0fec470f059d2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 29 16:23:56 2021 +0100
+
+    value_type (and types) cleanup for DataHyperRectangle containers
+
+commit 0bc0baa554f12966b2544a9c05c17060dd5690c4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 29 21:46:32 2021 +0100
+
+    various cleanups - losing uneeded const_cast code with iterators - so Stroika Iterators ALWAYS have CONST ptr to underlying data
+
+commit 92f05c3f0fbc92247dc190b4bc90bc62eb5ef2c6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 30 03:35:50 2021 +0100
+
+    cleaned up (made uniform) container support for scoped_lock<Debug::AssertExternallySynchronizedLock>  and shared_lock<const Debug::AssertExternallySynchronizedLock> writeLock/readLock
+
+commit 3bbf4586ad4da720d174d3b4e082c77265d66610
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 31 01:45:00 2021 +0100
+
+    new ContainerDebugChangeCounts_ used in Containter code - so all the concrete containers use that to track if iterator used after initialized. That debugging found serveral cases where still an issue, so those fixed too so all regtests pass
+
+commit 0cd395555aa94d7810c9cad8702954f01b53bd0c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 31 03:25:14 2021 +0100
+
+    fixed issue in Containers sample app violating rules of new container code
+
+commit b8b996d8f9e599f05d12c93fdc762032bb2ba35f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 31 13:06:26 2021 +0100
+
+    fixed qCompiler_LimitLengthBeforeMainCrash_Buggy bug define for macos xcode 13
+
+commit aeb9537fbcf33cd050888c4f57e3f97371fd0acf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Oct 31 14:30:07 2021 +0100
+
+    new method on Mapping container: Update()
+
+commit a1b983da34000e24cd4dbc3e5d2fbb176b84d623
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Oct 31 12:16:08 2021 -0400
+
+    use new Mapping<>::Update API to accomodate new lack of automatic iterator patching in Stroika containers
+
+commit ed438fceddd37b94d00081b4073cc74475000b51
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 1 00:22:19 2021 +0100
+
+    NOT BACKWARD COMPATIBLE - but only an issue if someone wrote Container backends - no more IteratorOwnerID and related Iterator Owner stuff
+
+commit 00dc07f49af13d748d31ea53b30267b6426f2527
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 1 01:22:04 2021 +0100
+
+    deprecated _APPLY_ARGTYPE and _APPLYUNTIL_ARGTYPE and fixed a few remaining uses
+
+commit df9ba99005b4e6b3293eefc0a7439c76de95fc8d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 1 01:34:57 2021 +0100
+
+    update docs to say using xcode 13
+
+commit 1f9d9259ed7241938fe6233c217b3fcd7a3205cc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 1 15:44:02 2021 +0100
+
+    renamed SharedByValue<>::get_nu to SharedByValue<T, TRAITS>::rwget (); and deprecated CONST overload of get (use cget)
+
+commit 3556835656aa1dac5fe455c000df20302b44fdeb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 1 15:54:13 2021 +0100
+
+    more cleanups to SharedByValue - losing some interum stuff we added experiemntally this release and renamed AssureNOrFewerReferences_nu to AssureNOrFewerReferences
+
+commit 3a66417f05229823637bb2338131e15381d7b0cb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 1 18:00:53 2021 +0100
+
+    more cleanups to SharedByValue object (and use)
+
+commit e40c12523efd8b387482b48bab2279b85e3e7d0f
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Nov 1 14:32:30 2021 -0400
+
+    ContainerDebugChangeCounts_ cleanups -- side effect workaround g++8 bugs
+
+commit bd079be563a2ec80cf491312561b4fb9a3d0c3d6
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Nov 1 14:32:56 2021 -0400
+
+    cleanup use of new SharedByValue changes
+
+commit c2fcf6c6aafce216a669d5419f6c6d14bdc8c753
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 1 19:44:12 2021 +0100
+
+    SharedByValue_CopyByDefault more efficeint for common case of shared_ptr - use make_shared
+
+commit 87efcbd488f60890753ccf1c32510dacb9a9df2f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 1 22:35:19 2021 +0100
+
+    more cleanups to SharedByValue<> and use in _GetWritableRepAndPatchAssociatedIterator - now uses element_type* version not shared_ptr verison for performance (and simpler/clearer)
+
+commit ed687594b6ddcffec7ddef99bd8186dd01dc632e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 2 01:28:51 2021 +0100
+
+    lots of cleanups to SharedByValue, including performance improvements. SOMEWHAT risky - losing SharedByValue_CopySharedPtrExternallySynchronized abstraction, but I think OK
+
+commit ef7cfd5bc356624a8173a75e1fe4f3f6d55d8bc5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 2 01:37:55 2021 +0100
+
+    marked qStroika_Foundation_Traveral_IterableUsesSharedFromThis_ as DEPRECATED feature flag
+
+commit ea8bd3576a5f8a975d444dfc00aa1c9a6730a693
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 2 02:48:48 2021 +0100
+
+    start rewrite of calls to CloneEmpty in Containers
+
+commit be810deb76cf048a81d0ab279e54fb4c01a81d00
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 2 15:17:54 2021 +0100
+
+    Fixed significant performance bug with container RemoveAll calls (and small bugs with Bijection other apis losing attributes) and deprecated Iterable<>::_UpdateRep
+
+commit 60c3b72f0231c964aadc3094a3967f55a6b25f04
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 3 02:06:04 2021 +0100
+
+    lose Container::DataStructures ... SupressMore logic, and hack in IteratorImplHelper to workaround it. **NOT BACKWARD COMPATIBLE**(only for code directly iterating using low level data structures), and other related contianer cleanups
+
+commit c4ce3cde80ef82f032aa70f5190e93c9bf9c27fa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 3 02:35:30 2021 +0100
+
+    mostly cosmetic Containers/DataStructures cleanups
+
+commit 065663e5a38c15845fb1f46211412a8f7966e9c6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 3 14:52:20 2021 +0100
+
+    cosmetic cleanups, and new std::shared_ptr (make_shared) versus Memory::SharedPtr performance test
+
+commit 37654376d7415306d82cf4a231c87407bc043126
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 3 15:07:07 2021 +0100
+
+    qIterationOnCopiedContainer_ThreadSafety_Buggy https://stroika.atlassian.net/browse/STK-535 maybe fixed - retesting
+
+commit d5b89e878842103565e0ef817814092aadeb0505
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 3 17:58:04 2021 +0100
+
+    changed timing threshold on new shared_ptr performance regtest (with make_shared); but more importantly, now switched kSharedPtr_IsFasterThan_shared_ptr to always false - so we really don't need SharedPtr anymore (though may keep around for a little bit)
+
+commit aa0d4270eae7830c08266e43ebdf3ad17f3d2737
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 4 18:22:56 2021 +0100
+
+    Memory::BlockAllocator<> now supports https://en.cppreference.com/w/cpp/named_req/Allocator - **NOT BACKWARD COMPATIBLE** - but not in a way that should matter since probably not used directly (deprecated BlockAllocator<T>::Deallocate/Allocate
+
+commit 4559950f2cf4b26e60acbe2542eed12d7e2e5227
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 4 19:02:55 2021 +0100
+
+    added helper UsesBlockAllocation (), and used it in IterableBase::MakeSmartPtr () to use allocate_shared<> where appropriate
+
+commit 6abca4fcd3f5db7e24537b69097007b3ac13e29e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 4 21:18:14 2021 +0100
+
+    use  if constexpr (Memory::UsesBlockAllocation<T> ()) in a few more places to invoke allocate_shared<T> and fixed String_BufferedArray_Rep_ performance issue ((use Memory::UseBlockAllocationIfAppropriate))
+
+commit 810581bad0046a08f5c1cf3c15baa1bc269bd2a5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 4 22:57:19 2021 +0100
+
+    experimental use of __cpp_lib_format - but had worse performance, so ignore for now
+
+commit dd92f9b7abf93fbdecde133f8c537987c64df5c5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 4 23:45:42 2021 +0100
+
+    use new std c++ to_chars - THAT is much faster than snprintf, for converting float to string (in limited testing)
+
+commit 2fbca67e73e306e2167550aa7d161fd817e10489
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 5 00:16:53 2021 +0100
+
+    qCompilerAndStdLib_to_chars_FP_Buggy workaronud
+
+commit 9f5d0bbb6a751c5de8c82cfdec504ec80be65362
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 5 14:44:38 2021 +0100
+
+    qCompilerAndStdLib_to_chars_FP_Buggy for clang/xcode
+
+commit 72d82428b302e9fc8553d13c48608e4c8075b31f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 5 15:39:17 2021 +0100
+
+    workaround apparent bug with fabs () on windows, or just quirky edge case undocumented behavior - in mkElsipolon for NearlyEquals test
+
+commit ab608d5d23d42e648620492034a2f3f1ab9a89a2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 5 15:40:00 2021 +0100
+
+    Added SmallStackBuffer<T, BUF_SIZE>::clear () method
+
+commit a75f252411faa586cf1bf36f0e19b8eb7e882255
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 5 15:41:32 2021 +0100
+
+    new String::AsASCIIQuietly () method, along with new conversion type it supports (SmallStackBuffer), and used that to refactor String::AsASCII (adding extra conversion type it supports - smallstackbuffer)
+
+commit cd8fc78999457c18a4c3e9908e8b39c0a08db8cb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 5 20:14:55 2021 +0100
+
+    internal changes in String2Float() to make it run faster (using new std::from_chars) - maybe 30% speedup from this
+
+commit f52d573a70ca334683ef7c950842c7fb47864fac
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 5 21:01:50 2021 +0100
+
+    use Debug::UncheckedDynamicCast() all over the place as a performance tweak
+
+commit 452ce68ee071e402244bc30277bb6e5250680372
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 6 16:18:33 2021 +0100
+
+    disable WeakAssert in SharedByValue code cuz too noisy, and innocuous - comment where/why
+
+commit eb91c8ea10f780803b37d39fa9ded6833e56eb5b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 6 22:41:04 2021 +0100
+
+    Travaral::Generator cleanups; Traveral::Iterator docs
+
+commit 1cee46b38f7aa68bbafd64af6a4d8916fbe64e27
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 7 00:27:33 2021 +0100
+
+    Traversal/IterableFromIterator significant internal code cleanups - replacing many of the template specailizations iwth a few specific methods being enable_if_t and data member same trick
+
+commit 9db657680c661938c4857c091d25c867d7a9e528
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 7 15:17:52 2021 +0000
+
+    Cleanup/simplify impl of MakeIterableFromIterator and CreateGeneratorIterator ()
+
+commit af399b1135034e05b21230ef2162a263b66fe83f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 7 15:27:36 2021 +0000
+
+    cosmetic + unlikely attr cleanups to DataExchange/Variant/JSON/Reader
+
+commit 680e9225dd754431341c11200fa4ee7870e53b13
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 7 16:14:12 2021 +0000
+
+    new placeholder String2Int and String2Float taking 2 args (iterators instead of String) as performance tweak and use it JSON reader (and also other JSON reader perf cleanups)
+
+commit fc2f73614422d1d107ba1be681d39bc5773a2854
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 8 02:43:25 2021 +0000
+
+    more String::AsASCIIQuietly<> overload/specializations
+
+commit 0090a7e4a1f33d6f3b54f5857b6bb69ef47cef84
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 8 15:33:33 2021 +0000
+
+    String2Int and String2Float iterator overloads now implemented using from_chars (where possible) - and with asserts saying same results as before; and for String2Int, new require of no surrounding whitespace
+
+commit d51f98c452cc8d2188ceb88def045ca120a783dd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 8 16:22:36 2021 +0000
+
+    minor tweaks to Math::NearlyEquals
+
+commit b5582fa01c16c0a008aafa558b6c2a2998277dbb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 8 18:53:27 2021 +0000
+
+    slight performance tweak for OutputStream<Characters::Character>::Ptr::Write
+
+commit 29c88f92ef337c4385267b9b39a715c25e05f56c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 8 18:54:09 2021 +0000
+
+    slight performance tweak in Containers/Private/IteratorImplHelper
+
+commit 1607da3ed1dba42649ee29c74dfede3fc58d6676
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 8 18:55:09 2021 +0000
+
+    new Mapping_stdmap::CTOR (map<KEY_TYPE, MAPPED_VALUE_TYPE>&& src) for performance
+
+commit 431182f51ba85c158d789a56f29b31b5a3c6453d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 8 19:02:25 2021 +0000
+
+    slight performance tweak in JSON::Writer
+
+commit 2624989d78b2ad9385a4173bd50bdf5211796366
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 8 19:03:13 2021 +0000
+
+    slight performance tweak in ObjectVariantMapper - construct std::map and then convert to Concrete::Mapping_stdmap<> at last minute with move CTOR
+
+commit 63a02011754801d050a24f335d874d786ef9c6d0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 8 23:12:55 2021 +0000
+
+    concrete containers; use prepend on a few LinkedList containers instead of Append, and fixed regression tests to not check for order and comment on a few related performance issues
+
+commit 3f6b07d5093816a7b7a23fa5398f7c541a77b644
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 8 23:23:56 2021 +0000
+
+    minor cleanups/performance tweaks on Set<T> code
+
+commit bf0699b27b7cd0fc89925f7feb00aed42b7156f0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 8 23:33:48 2021 +0000
+
+    Sequence_stdvector::Remove() performance tweaks
+
+commit a6539df4188179bbc2f07b9b8b580b50c6da4f34
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 9 03:13:32 2021 +0000
+
+    various cleanups to String code: SubString_ special case of full string optimizaiton, lose obsolete threadSafeCopy code (earlier thread safety model), and optimized String::Replace
+
+commit 827fb81f20eb6cbb9215e7386c33f438f3988add
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 9 03:13:55 2021 +0000
+
+     StringBuilder::StringBuilder (const wchar_t* start, const wchar_t* end)
+
+commit 7a0aac57f63c8807ec5757253fac19c7edffe572
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 9 14:48:41 2021 +0000
+
+    lose obsolete (deprecated) Foundation/Containers/Private/PatchingDataStructures
+
+commit 2267f049ba04f2a0717b1d88904ede45074344b7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 9 15:59:43 2021 +0000
+
+    mostly cosmetic/docs cleanups to Containers/DataStructures code
+
+commit f96ace9552c986a5b13de52af65cfd57d702c334
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 9 16:00:10 2021 +0000
+
+    still need Default Switch setting for docker on windoze
+
+commit c57546676cfdea73a5b5ecb91ec88d63e393a618
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 9 17:55:07 2021 +0000
+
+    Containers::DataStrucutres cleanups: STLContainerWrapper uses const_iterator for iterator itself, and const ptr to data in iterator, cleaned up remove_constness code, and other data strucutres cleaned up docs/comments (mostly about complexity)
+
+commit fd21bc10f9798519b365d3b236adb9b86da275e4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 9 19:25:07 2021 +0000
+
+    more cleanups of Containers::DataStructures code - especially STLContainerWrapper - losing protected stuff and making things private (a few that were public) and require accessors
+
+commit d2d2a52719c52e653e926d46f684bf3b7e6a39bc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 9 20:29:36 2021 +0000
+
+    mostly cosmetic cleanups to DataStructures::Array code (mostly private member names convention)
+
+commit dc8fe38418e10f9674e7d1150eeceeebcee45ff6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 10 02:54:46 2021 +0000
+
+    Containers::DataStructures::LinkedList cleanups
+
+commit 92dc82ddae8426c109c5911ea5b7ff061647ec5b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 10 11:12:42 2021 +0000
+
+    More cleanups to Containers::DataStructures::DoublyLinkedList
+
+commit e90b888d1d1dd91ebf794526b67f0b0faedbba34
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 10 12:12:51 2021 +0000
+
+    performance tweak: CreateGeneratorIterator now uses block allocation for its iterator-rep
+
+commit 1c8c2b1f63f5b41afb3d4713ed3f9c2cb6addc7e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 10 13:37:17 2021 +0000
+
+    small fixes to Sequence_Array/Sequence_stdvector (capacity)
+
+commit 4abc5e643c12f7d7b8f3bfcffc1dd3d84440300b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 10 15:50:26 2021 +0000
+
+    new refactor - deprecating Containers::ReserveSpeedTweekAddN etc and using new Containers::Support::ReserveTweaks::Reserve4AddN () instead; new performance regtets for Sequence_stdvector and Sequence_Array;  and docs cleanups
+
+commit 4804e1e2c4b8d63e30aa2f03335b8dc3c070c5e1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 10 15:55:44 2021 +0000
+
+    lose qIterationOnCopiedContainer_ThreadSafety_Buggy https://stroika.atlassian.net/browse/STK-535 bug workaround code
+
+commit 2e2c56fe52ea63a1ec118183383024820b5ed3d7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 11 01:21:13 2021 +0000
+
+    qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy bug workaround
+
+commit 663cc47212ba959791fb6ff5ae653bd16b2a60fa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 11 15:40:26 2021 +0000
+
+    new optional andTrueCheck parameter to UseBlockAllocationIfAppropriate<> template (defaults to true); allows more terse short-cutting when we include block allocation. Used in a couple places as UseBlockAllocationIfAppropriate<Link, sizeof (T) <= 1024>
+
+commit efc3b9ba816792a49ad4b02e8837c4f40ec86bd2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 11 19:30:44 2021 +0000
+
+    checks in IterableHelepr_ ContainerDebugChangeCounts_ code - check for having been deleted dangling pointer
+
+commit f481fcfcdd11ae33ffe6f46f648476e856865257
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 11 19:42:54 2021 +0000
+
+    Lose obsolete qStroika_Foundation_Traveral_OverwriteContainerWhileIteratorRunning_Buggy   https://stroika.atlassian.net/browse/STK-570 - and imrpoved test code a bit
+
+commit e45d00506599376a4f4f3213adc294292ec89268
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 11 20:48:13 2021 +0000
+
+    new (debug only) Invariant () support in Iterator<> class, and used it to hook into container class iterator validationchangecount logic, so iterators should be more systemcatilcaly safe to use (meaning debug versions will detect more cases of invalid use automatically)
+
+commit a4a1ac0a8ca3e462755dd42b5f2fd8f2934203cc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 11 21:20:48 2021 +0000
+
+    fixed one small bug with compliance to new iterator rules found by stricter assertion checking
+
+commit cf1cb15750353f7e254b7280a58cd1fcdbe27e5e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 11 23:59:28 2021 +0000
+
+    renamed Debug::AssertExternallySynchronizedLock -> Debug::AssertExternallySynchronizedMutex, class and modules, and deprecated old name
+
+commit 513c240db83a5aaae625648b0eab289a3b236ac4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 12 02:46:33 2021 +0000
+
+    https://stroika.atlassian.net/browse/STK-746 draft attempt at using block allocation allocator within std::map<>/set etc usage, instead Stroika containers
+
+commit 09dc66b377f65e144636ab0f3d6a76fe55500d94
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 12 04:09:04 2021 +0000
+
+    https://stroika.atlassian.net/browse/STK-746 draft attempt at block allocation for keyedcollection_stdset
+
+commit a2f7b26f0eba6c36530ffce478cb33d9877260f8
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Nov 12 10:06:49 2021 -0500
+
+    qCompilerAndStdLib_to_chars_INT_Buggy new define and BWA
+
+commit 81565634c5e89a42a7e3baa7a26df1a0b667a3b0
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Nov 12 10:12:22 2021 -0500
+
+    qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy bug define and BWA
+
+commit 563d890dd23287675be7cdbae03277bfe1bd3a8c
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Nov 12 10:31:50 2021 -0500
+
+    qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy broken on xcode 13
+
+commit 3cf821e780a95c0a90dc6995a71ead677e9d9448
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 12 22:22:32 2021 +0000
+
+    attempted support for block allocation in KeyedCollection stdstet implmenations
+
+commit ff64d77c983d5cddfbf1798ccc902618ba21fa07
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 12 23:16:08 2021 +0000
+
+    more progress on https://stroika.atlassian.net/browse/STK-746  - block allocation for stl structures
+
+commit 33452f8f7c4b0542eb218e12a02ada729ed7973d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 12 21:10:56 2021 -0500
+
+    qCompilerAndStdLib_to_chars_FP_Buggy buggy for vs2k17
+
+commit c339a95acd397707bb4bd1c553695c85ea03202d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 13 03:46:22 2021 +0000
+
+    fix STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness () so smarter about detecting forward_lsit
+
+commit 71483637a9db4f2e27b71cf00b665e8a2b5b3e79
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 13 03:47:30 2021 +0000
+
+    https://stroika.atlassian.net/browse/STK-746 - fixed Concrete/Collection_stdforward_list block allocation support
+
+commit bb2529945212964a8e89fc3eb792bb4e9cf6a430
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Nov 13 11:09:11 2021 -0500
+
+    fixed define of qCompilerAndStdLib_to_chars_FP_Buggy for gcc
+
+commit b3ee76a967edb590ab761d9dcde7c746c1c3fbe1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 13 16:21:52 2021 -0500
+
+    qCompilerAndStdLib_to_chars_FP_Precision_Buggy define and workaround
+
+commit 51612457bde6687c16a51b4f7c37e0613cc7335e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 13 17:03:50 2021 -0500
+
+    renamed qCompilerAndStdLib_to_chars_FP_Precision_Buggy -> qCompilerAndStdLib_from_chars_FP_Precision_Buggy and did more dramatic workaround
+
+commit ddb3887b0b98faba628a68a22346b2807eef434a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 13 17:19:56 2021 -0500
+
+    another rename/tweak of this bug report qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
+
+commit ada013b3a3eb77078bf43ec7cbf2038dcbcf338d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 13 17:38:05 2021 -0500
+
+    cleanup FloatingConversion code (esp use if constexpr instead of #if for workarounds)
+
+commit a66e5882d70a8cfb888cd1e2933aec704005ac22
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 13 23:26:54 2021 -0500
+
+    Refactoring: renmaed Float2StringOptions -> FloatConversion::ToStringOptions and Float2String -> FloatConversion::ToString
+
+commit 416be40ad13d3cd406f6c87b8c24df79a51927be
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 14 08:36:32 2021 -0500
+
+    react to Float2StringOptions -> FloatConversion::ToStringOptions rename
+
+commit 3ac9a954430bc7c0a7f47fa2f0311d7f142cd3a6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 14 08:37:00 2021 -0500
+
+    qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy also broken in clang++ 10
+
+commit d2ac3f33592c15b88764bafc51ef57a51884fa33
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 14 21:20:44 2021 -0500
+
+    More cleanups to FloatConversion code - deprecating String2Float and replacing with FloatConversion::ToFloat, and deprecating Float2String and replacing with FloatConversion::ToString - incomplete but better
+
+commit 8f628c49ecbb2ac3cdbceaeab3fb336f524f1c74
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 15 13:50:10 2021 -0500
+
+    more cleanups to new FloatConversions code - not totally backward compatible, but PITA to be fully backward compatible here and obvious how to fix compile errors on change of version/upgrade
+
+commit c5479f5955a7209b055a8ee26462d841d1a20e56
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 15 14:47:02 2021 -0500
+
+    qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy depends on __GLIBCXX__ not __GNUC__)
+
+commit 241687f3a8c7fe32738133f854fa002d954e6dd6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 15 15:15:09 2021 -0500
+
+    woraround qCompilerAndStdLib_to_chars_FP_Buggy if constexpr issue on clang++7
+
+commit 945d23c63c78af9672eb1c3929acd8bce59998f8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 15 15:22:17 2021 -0500
+
+    fixewd qCompilerAndStdLib_to_chars_INT_Buggy for clang++ 7
+
+commit b54b2ac0a8ee09c493ae01274087a3548a25112d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 15 15:50:41 2021 -0500
+
+    fix one bug with FromString (remainder case) and added more likely/unlikely attrs to FloatConversion code
+
+commit 4f54fee547157d1ea2f16ede26b000e532e2e951
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 15 17:09:09 2021 -0500
+
+    Added additional regtest for FloatConversion::ToFloat - handling &remainder code/test case
+
+commit 6b50b86f7bbcaecfa201182177ecab10c4ebdd3f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 15 17:56:36 2021 -0500
+
+    more progress on FloatConversions: more regtests (with &remainder) and docs on said, and one or two fixes for said
+
+commit f222866ec9b7c8055490bf9fb9322f21990f77f2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 15 19:53:58 2021 -0500
+
+    fixed remaining regrression in Characters/FloatConversion.
+
+commit a76701b2aa49d2064a570985a1386bf4ccbab10c
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Nov 15 21:05:03 2021 -0500
+
+    ThirdPartyComponents/boost makefile: autocmpute +VERSION_WITH_DOTS even forbeta versions and support beta download, and then switch the default to 1.78.0 b1 to test if fixes issues on vs2k22, and more
+
+commit 334016c986709d560235ff8d0c6cadcccce253b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 15 21:30:35 2021 -0500
+
+    cleanup curl makefile (macos bug workaround) - and use curl 7.80.0 (except still not on macos)
+
+commit 1d05854514ef1280c78a03d076f68984d9397ce0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 15 21:36:30 2021 -0500
+
+    re-enable boost by default with vs2k22
+
+commit 89fdea33fe9a1ee27310815c0438f3d596f1ca16
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 16 09:29:45 2021 -0500
+
+    in a few placse ,use if constexpr instead of #ifdef for bug defines, but still cannot use everywhere - in part due to bugs iwth older GCC versions
+
+commit 083add7a5a165cc217b684cbc21e793476cac462
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 16 09:33:29 2021 -0500
+
+    centos build of boost still not working so re-disabled, and re-ordered FETCHURLS in boost makefile to avoid spurrious download failures
+
+commit a1b2df993d3d1297ea564e37000aed7dddc17300
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 16 10:19:54 2021 -0500
+
+    a few more if bug define cleanups (removed obsolete one - qCompilerAndStdLib_optional_value_const_Buggy etc)
+
+commit e44eeaf70aff018521f0869a753e29dcdaafca0f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 16 10:29:34 2021 -0500
+
+    updated Container sample to have better docs, and more accurately reflect recent changes to Iterator safety design
+
+commit d3efa038a11aa7a2ed9c6cdea5b5b701aca20f4e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 16 10:36:50 2021 -0500
+
+    sadly have to go back to #if qCompilerAndStdLib_quick_exit_Buggy instead of if constexpr xcode issue
+
+commit 2aaee406b14519eb9d8e2c0acd40627af47d4749
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 16 10:37:26 2021 -0500
+
+    in github action builds, print xcode version
+
+commit 8c3ac6f237ffe182a3ab26f5768409a870e883b5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 16 14:23:08 2021 -0500
+
+    Use ++prefix instead of postfix++ preferentially (and --prefix)
+
+commit 9c3ee3402b52ccb230623224993f86a981ce4d15
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 16 15:09:05 2021 -0500
+
+    another place I cannot use if constexpr - avoiding warnings with clang and gcc - so revert to #ifdef for buggy tests in one more place
+
+commit 313a4dd8dd1fd0c1cfc8afd998e5b159fcabc315
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 16 16:58:28 2021 -0500
+
+    A few more cosmetic and {} and ++i vs i++ cleanups
+
+commit 5d01010f970fdbcf8e4232fec1187eab87439778
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 16 17:56:29 2021 -0500
+
+    fixed Samples/AppSettings projhect files
+
+commit 8e9a680d2973e506c19e68012a60556d75af8322
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 16 21:10:56 2021 -0500
+
+    regression test for Test_KeyedCollectionTypeIndexUsesStdSet_, and used to fix bug with KeyedCollection_Factory, and one call to factory - added static_asserts for keyedcollectionfactory to help debug/identify future similar issues
+
+commit c84fed7237d6660c2ac053b441a572ac5a5f8964
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 16 22:38:07 2021 -0500
+
+    more static asserts in Container::Factory classes, and that uncoverd (and fixed) a bug with Set<> CTOR
+
+commit f846a64d69633254ae413fd41223783d6190800c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 16 23:48:17 2021 -0500
+
+    cleanup/simplify IteratorImplHelper_
+
+commit c3014625adae4221789e6e499dccedb97671e224
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 17 11:23:05 2021 -0500
+
+    attempt at getting FloatConversions stuff working with locale specific tranforms like japanese numbers and european ,/. confusion; Created  https://stroika.atlassian.net/browse/STK-747 and https://stroika.atlassian.net/browse/STK-748 issues to track (total failure) on this front; also created FindLocaleNameQuietly () helper to find locales
+
+commit 69a3e3a69e4a850768dd29bdb00b0931027f7e90
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 17 12:18:59 2021 -0500
+
+    deprecated CString::String2Float and CString::Float2String () - and replaced with overloads in FloatConversion (toFloat/ToString)
+
+commit 3fd8f598f652ca51107d7cf3c7bd6c3b92fab2f9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 17 14:23:06 2021 -0500
+
+    cosmetic cleanups to Synchronized code
+
+commit b39bcaaf42e5b21b60aac2bba56fc1eecdfb5754
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 17 15:37:04 2021 -0500
+
+    tweaked Synchronized<T, TRAITS> CTOR for issue with explicit CTOR in argument type T (on g++)
+
+commit 0327152a557c50048c5fefb2e6257aa6a1cda13c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 17 20:48:45 2021 -0500
+
+    Comments and a few more assertions on Iterable _SafeReadWriteRepAccessor (relating to debug of https://stroika.atlassian.net/browse/STK-700)
+
+commit d8700d31ac1faa1358551a52158d389239467df6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 17 21:05:03 2021 -0500
+
+    Debug notes on FAILED attempt to fix https://stroika.atlassian.net/browse/STK-700; learned stuff and docuemnted better the situation
+
+commit 05a8c20d9e4ed9a00e10c7a24061a43331f4e287
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 18 12:41:47 2021 -0500
+
+    VS_17_0_1 on VS2k22 docker container; and VS_16_11_7 on VKS2k19 docker container
+
+commit efb8652c0c8c35f1c46d40591fd1527e375e976f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 18 12:44:23 2021 -0500
+
+    cosmetic cleanups to DockerFiles for vs2kXXX - throwing away no longer needed comments (so go back to this version if Im wrong and needed)
+
+commit a70c71f88f6fa56a1c0d51d82d29cc561988abad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 18 13:00:31 2021 -0500
+
+    fixed bug (apparently no regtests) in SparseDataHyperRectangle_stdmap missing first elt in iteration - this code is very incomplete/need regtests to complete
+
+commit 0115d32ace10ad405b134cfbe86569304db5fbaa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 18 13:02:22 2021 -0500
+
+    comments DockerBuildContainers/Windows-Cygwin-VS2k22/Dockerfile on tried workaround to cygwin issue with docker - but failed
+
+commit 4b8f44a6cf303b21cdd17a15714dc04dc07e362f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 18 13:03:32 2021 -0500
+
+    Simplified Containers::DataStructures iterator 'More' functions (more cleanups to come)
+
+commit 3b9b9c8decd771162c6ee71425ceb04bb5d64332
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 18 13:26:45 2021 -0500
+
+    Container::DataStructuroe iterator code - NOT BACKWARD COMAPTIBLE changes, but shouldnt matter since^Cot used extrerally - now More (adcance=true) case REQUIRES !Done
+
+commit 77e154559cfe4e1bd2a6cc264d39070085ad80a8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 18 14:00:17 2021 -0500
+
+    fixed small regression in SortedCollection_LinkedList; and simplified (lose call to underlying DataStructure MORE method) in Iterator More call
+
+commit 478569e54579caedc46eeedd1a1eee2ff8f2682a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 18 14:46:59 2021 -0500
+
+    Lose Containers::DataStructures Iterator::More () calls (not backward comaptible but on LOW LIKELIHOOD USE API)
+
+commit 7262ea555469677b773e7786c2397470f6c0c814
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 18 15:24:30 2021 -0500
+
+    EndianConverter () - now constexpr
+
+commit ccc6b932d0d9be9c80bee2f5e87289f604a0aed9
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Nov 18 18:32:41 2021 -0500
+
+    fixed qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy broken for clang++11
+
+commit 8e6acb67c6913d794f7b85d3ed5a9c79ff720ac5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 18 23:30:20 2021 -0500
+
+    name unification (not 100% backward compatible but nobody uses datastructure apis directly); GetUnderlyingIteratorRep/SetUnderlyingIteratorRep; and optional UnderlyingIteratorRep arg to backend ForwardIterator objects (still not used)
+
+commit c17aeeba3d08632ee835af0da18a31b310faade4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 19 08:26:23 2021 -0500
+
+    qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy broken for clang 12 too
+
+commit 19239a7ce39fa45c11217d896157e3b9d20cc508
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 19 10:38:32 2021 -0500
+
+    small tweaks to Iterator CTOR (no longer explicit on rep, and handle both copy and move of rep and Iterator itself
+
+commit 91a95e8c6cda8b7886e4fada881bf6604ab5d4e7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 19 10:39:38 2021 -0500
+
+    use new extra arg to Private::IteratorImpl  and each ForwardIterator in DataStructures, so we now more cleanly construct new Iterators from the underlyingIteratorRep objects
+
+commit 18cdff7d82526533ef8a6d4a4518d36d0c8b4c67
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 19 18:43:05 2021 -0500
+
+    new qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy bug define for xcode 12
+
+commit dcbf90ed79074f021577254e15bffacfe13c1cd1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 19 20:25:52 2021 -0500
+
+    Further cleanups of use of DataStructure:: (limited) patching code. Now much simpler - losing PatchBeforeRemove & unused PatchAfterAdd methods of datastructure code. Just do the right thing in each (few) wrapper calls where patching iterators (there we need to know representation anyhow)
+
+commit 95f7f53ace10b91e125b0504ecb2313daeada2ef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 19 21:36:05 2021 -0500
+
+    More small cleanups to Container/Iterator code, including making Iterator<>::Refresh () non-const (instead of fake/mutable)
+
+commit edf22c58bf357e7cdcb61fd259a6d9e507a01d04
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 19 22:30:14 2021 -0500
+
+    Simplified Container Factory code to not use SFINAE, but use if contexpr insaetd (more readable); then used this to fix Factory for mutlisets to al souse the stdmap impl if needed. And probably fixed bugs where we were doing wrong ithng in some factory cases
+
+commit 0bfeeadfa2e339bf705bedf7131476f9191c6a77
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 20 09:56:29 2021 -0500
+
+    MultiSet_Factory now uses Multiset_LinkedList as default (when no ordering); and lots of comments and performance characteristics of different concrete containers
+
+commit 2540d47ba0548e1bc6f33781a99478228bc7a8b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 20 15:07:47 2021 -0500
+
+    renamed array-based containers 'Compact' method to 'shrink_to_fit' - as in stl vector (NOT backward comatpible but nobidy used the API)
+
+commit 1a7fbf93a5d61d95e38ecaf17359a94538d5d222
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 20 19:25:50 2021 -0500
+
+    new ontainers\Concrete\SortedCollection_stdmultiset., and make it the default in the SortedCollectionFactory
+
+commit ae026943443505497642ce19d56f494a1eb7e775
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Nov 20 21:06:10 2021 -0500
+
+    qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy adjust for clang
+
+commit a3e426b0a0ea3144f44b5fdf4b91e3c0ac078987
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 20 21:34:35 2021 -0500
+
+    Containers::Update (iterator) method now also takes optional Iterator<>* nextI (like remove)
+
+commit bc4e0617b5d7e54f0e345f70a1dac305fdd085cc
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Nov 21 09:51:15 2021 -0500
+
+    qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy broken in clang 10
+
+commit 63dd2929c0b8624e60649aff0db9da2976b120ea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 21 09:53:40 2021 -0500
+
+    cleanup Iterable CTORs - losing initalizer_list CTOR (cuz CONTAINTER&&) and other cleanups and hten removed remaining workarounds in COntainers CTOR calling () and instead using {} - so far seems to be working (but must test more)
+
+commit 645faf6bf6a0885411d59748afd66f800182ad64
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 21 20:02:46 2021 -0500
+
+    Renamed Iterable<>::FindFirstThat to just Iterable<>::Find() (deprecating old name)
+
+commit 8f2e1fcf3aca1257b17bf96f694bb014bdc366da
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 21 20:06:38 2021 -0500
+
+    Traversal::Iterable<> cleanups
+
+commit 8c7340743264d0ddf42f85ae2277db9ba21b417c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 21 21:43:23 2021 -0500
+
+    New Configuration::IsTPredicate (), and used in making Iterable::Find() now a templated function taking templated function object
+
+commit 24693b4e0bdab0f449f7315ae45901f3cccf202a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 21 22:20:50 2021 -0500
+
+    More Iterable<>::Find () overloads (to find by value)
+
+commit 18cdb59d888e194f9855ee685943ff58bd718ebb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 21 22:46:27 2021 -0500
+
+    support has_equal_to
+
+commit 2355d11de78255a92b525986b72516217864bc2c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 22 20:29:28 2021 -0500
+
+    Draft of HasUsableEqualToOptimization () and new has_spaceship tester, and FEEBLE attempts to workaround issue https://stroika.atlassian.net/browse/STK-749 - which I dont totally understand yet
+
+commit 9ec25873bf515388746716bc30251f7409f7d2a5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 22 20:51:00 2021 -0500
+
+    refactored operator==/operator<=> code slightly for KeyValuePair/CountedValue to check if Configuration::has_eq and Configuration::has_spaceship on PARTS before providing said operators on WHOLE
+
+commit cd8a0a43ee643a88368a0c0b17cf9082409fe5d9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 22 21:07:28 2021 -0500
+
+    Support operator== for IO/Network/HTTP/CacheControl
+
+commit 8c93fe3476d735d48c6219237cf1776321c724f1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 22 22:11:30 2021 -0500
+
+    More progress on Iterable<>::Find code - but needs more workarounds for still not solved https://stroika.atlassian.net/browse/STK-749
+
+commit 94c6de04167a63c0002ae9a128531939412baf4e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 22 22:15:40 2021 -0500
+
+    tweaked    Iterable<T>::Find ()
+
+commit a96860abc9cd6158f8497904cda70f7763afc320
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 23 09:40:44 2021 -0500
+
+    mostly cosmetic cleanups, but a little bit of refactoring to use new Iterable<>->Find () helper
+
+commit 307e566578a1fabb66acabd69cd26d7bb21afc98
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 23 10:38:37 2021 -0500
+
+    fixed (long standing) bug with MultiSet_Array:: default constructor (not sure why asan just started warning about this)
+
+commit b6ba6c2c090c6d2d3301625d5ab38870e221b3c7
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 23 10:40:29 2021 -0500
+
+    Attempted adding useful environment options to vscode gdb launch, but didnt work
+
+commit 927902d99607b652ae251656c05108ae8efe623e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 23 10:42:53 2021 -0500
+
+    start using Find_equal_to () overrides, and using indexes
+
+commit 8e60af1310b6a7338543a3e57785e633ce78e3ed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 23 11:22:27 2021 -0500
+
+    a few cosmetic cleanups; and use move(result) in place of returning it in several places where return type differs (often iterable) from container used to create - so efficent move and not COPIED redundantly through Iterable CTOR (note different types prevents normal return call optimization)
+
+commit b3109c8fce2c866b87fce46213019cbbd43e51c7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 23 13:34:23 2021 -0500
+
+    cosmetic cleanup - use Configuration::remove_cvref_t instead of ifdefs __cplusplus < kStrokia_Foundation_Configuration_cplusplus_20 in several more places
+
+commit a4cc1e47ed3146420342e234dcc5893ae1554351
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 23 15:13:50 2021 -0500
+
+    use const auto& in for loops in place of auto (since this may avoid creating a temporary)
+
+commit c7e69c9da5ae13f2dd0b7e383653e9ddefc4b059
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 23 16:54:33 2021 -0500
+
+    simply declare explicltly the X(X&) and X(X&&) ctors/operator= for internetaddress, String, and URL/UniformResourceIdentification classes
+
+commit 4fa6abc960b8845a649219462008dd6e6888aea3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 24 08:30:23 2021 -0500
+
+    attempt workaround for qCompilerAndStdLib_move_and_copy_and_opequal_optional_Buggy
+
+commit 34f8f96ad245ac6524d9a32b0430156840999bd2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 24 13:47:01 2021 -0500
+
+    lose qCompilerAndStdLib_move_and_copy_and_opequal_optional_Buggy bug define, and undo most of the X(X&) no except=default and mvoe op= etc I had done yetserday, and try again more slowly
+
+commit f42584c3ba1878a5cc8734b7103ebdce19098f41
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 24 13:56:58 2021 -0500
+
+    simplified/corrected X(X&) noexcept and op= (copy/move) operators in SharedByValue
+
+commit 2569ee44b3169e08496cef4c7ce4ef1059a774f2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 24 14:07:58 2021 -0500
+
+    **not backward compatible** - decorated all Invariant/Invariant_ methods with noexcept
+
+commit 9fc7544318f71351c202f3f6e19cbe578d76b351
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 24 14:21:46 2021 -0500
+
+    tweaks to operator=/move/copy CTOR for SharedByValue
+
+commit 803f5af9b00b2b336a96d76e5c68775e91946fb9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 24 14:25:36 2021 -0500
+
+    cleanup noexecept use on Iterator CTORs and op= methods
+
+commit 15e5019a1b05ab9c8b7ca0728891f5a1c6bcbae8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 24 14:32:42 2021 -0500
+
+    cleanup Iterable<> use of move and CTOR/op= moves with noexcept
+
+commit e05fb0eb16a5293679a14a373c4c89dbb2858075
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 24 14:37:14 2021 -0500
+
+    fixed noexcept on operator= for String
+
+commit 8ed6141fe2de78d057eff45f6eea0eed6f0c12c4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 24 14:49:59 2021 -0500
+
+    SocketAddress CTOR cleanups - noexcept and constexpr
+
+commit fedd47b3b20099c83cc9efcc2c1b96f7025c2530
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 24 14:50:19 2021 -0500
+
+    URI constructor/op= cleanups - default/move CTOR
+
+commit 52f9ce39380f35a2ac4a52353e727fc1af373b60
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 24 14:58:20 2021 -0500
+
+    URI constructor/op= cleanups - default/move CTOR
+
+commit a00d67c80f705fcd081416ee3c048208c1fe4f8f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 24 15:07:38 2021 -0500
+
+    failed to get noexcept stuff working for URI, so try again
+
+commit bba8a9b4d39578d5e2febab64afde8bacd09639c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 24 17:22:08 2021 -0500
+
+    mark and workaround stroika bug (?) https://stroika.atlassian.net/browse/STK-750 - with noexcept on Host & Authority and fixed noexcept usage for URI
+
+commit c8abbf095ab14d2a3492ecbd85b25168deedf280
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 24 17:24:51 2021 -0500
+
+    mark and workaround stroika bug (?) https://stroika.atlassian.net/browse/STK-750 - with noexcept on Host & Authority and fixed noexcept usage for URI
+
+commit 45f346681b688d2138a7e656dd15cc3c0d0c96f0
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Nov 24 19:54:29 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-751 valgrind issue supression
+
+commit 1ad4383cc6788fe0969a1a50a7bfac78b0ee71bf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 24 21:48:15 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-752 - partial fix and documenting remaining issues, so try again
+
+commit 6c334d5915e7ee7604fceed7ce38e0930fd9da7e
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Nov 25 16:14:11 2021 -0500
+
+    test possible fix for Debug::AssertExternallySynchronizedMutex move sematnics
+
+commit 59a5c2cbf0b02fb88a6296648b31f8fd21e0783d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 25 17:40:03 2021 -0500
+
+    docs on Debug/AssertExternallySynchronizedMutex
+
+commit 146cbd225b78022c71c2507bde11ca7668aac9ef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 25 21:16:26 2021 -0500
+
+    more cleanups of Debug/AssertExternallySynchronizedMutex - much simpler implementation now - more self-documenting
+
+commit 034d5475beadbc11dc1dd4cf1a002c75bea68381
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 26 10:22:03 2021 -0500
+
+    start losing workaround for  https://stroika.atlassian.net/browse/STK-749 and use new Configuration::is_detected_v (START CONVERSION PROCESS)
+
+commit 01854d706b73719b79610598f37430fe270b6648
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 26 11:06:08 2021 -0500
+
+    more progress cleaning up concept/has_eq stuff and deprecating older code - https://stroika.atlassian.net/browse/STK-749
+
+commit 46511e1ddc67ea8ae90bc7a45680e361d7417759
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 26 11:37:30 2021 -0500
+
+    more cleanups of Concept code
+
+commit daa617ac5f88340559999236ce545e1340c6f368
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 26 18:52:14 2021 -0500
+
+    cleanups to more concept stuff
+
+commit c86d6f0932d9771694a3dc1432e137079ca836ab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 26 22:31:42 2021 -0500
+
+    more cleanups of Concepts (c++17 workaround for lack of) code
+
+commit 41f3bc1140b09c0cab486a35a564e34d34f9bf1c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 26 23:28:23 2021 -0500
+
+    regression tests for IsIterableOfT_v
+
+commit 0e63a3a960dedfa4b39d67e39535c623fe605da2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 26 23:53:35 2021 -0500
+
+    more cleanups to Configuration::Concepts module
+
+commit 63165b434a26720a969a21bdda9d4fce065e6d22
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 27 10:36:40 2021 -0500
+
+    more cleanups to Concepts.h
+
+commit 6ab11bc974512d0bd39cb33531f440a950e6b30f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 27 13:46:42 2021 -0500
+
+    more cleanups to remove use of deprecated STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS and use Configuration::is_detected_v instead
+
+commit 78f1fccb4c8c6c6780835c2a8bce0848106ad4be
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 27 16:30:29 2021 -0500
+
+    support Collection_stdmultiset<> and integrated it into regtests and Collection_Factory (new default if less present)
+
+commit 7bb5bf0b0a1ac36783fc39df5a6ea449c669841d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 27 17:19:29 2021 -0500
+
+    added std::set<int> vs Set<int> performance test
+
+commit de385473793e977573f113c300458128508dfe3c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 27 19:10:47 2021 -0500
+
+    changed (not backward compat but internal) - Set::IRep API - losing Contains, and genrealizing Lookup api to optionally return either value or Iterator (again just internal API); then used that to implement Set<T>::find (...) that returns iterator
+
+commit ff471a13a0c3474703b4fb0b841626b671a47dc8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 27 20:38:52 2021 -0500
+
+    Significant sized change to containers, and NOT fully **backward compatible**: Remove() API now requires it FINDS what is being removed, and RemoveIf() API allows missing values to be removed, and returns bool or count (depending on API) to indicate success. Changed internal Rep methods even more, to accomodate this API change. Affects Set, KeyedColleciton, Mapping, Collection
+
+commit 9639025f8879ac25a403ac0b782c60824837a615
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 27 21:45:27 2021 -0500
+
+    small docs and semstics cleanups on Containers RemoveAll methods (mostly just returning number removed)
+
+commit e793dab139d8350c1652395029f7e929d0fb81b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 27 21:46:43 2021 -0500
+
+    fixed a couple small regressions due to recent container change
+
+commit 8ee019006dad8f1ea7693d9f9e617034c9fc3347
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 28 11:24:50 2021 -0500
+
+    new use of  enable_if_t<Configuration::IsTPredicate<T, PREDICATE> () in Container::... RemoveAll() calls with predicate, and defined additional ones iwth that predicate in most appropriate containers
+
+commit a5d08542629a9d7eea2fc85b0bb97ae1cde81c5a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 28 19:21:44 2021 -0500
+
+    silence one visible warning about legacy openssl provider (deal with in the future - not sure there is a need right now)
+
+commit 87522903e0bf459667518f23e1a931b25621236d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 28 20:49:09 2021 -0500
+
+    SQLite 3.37.0
+
+commit 92c3eed2f609f1c576756e434a3ec68340b67b99
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 29 09:20:07 2021 -0500
+
+    workaround if constexpr issue with msvc 2k19 (add ifdef to avoid compile error for sqlite call)
+
+commit 0f414601d5c3f026e47008c1482802614a644048
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 29 09:22:30 2021 -0500
+
+    cosmetic + silence pointless compiler warning
+
+commit 8c2b551d51bf35294686097d8b52c697a65e2a9e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 29 09:26:32 2021 -0500
+
+    more warnings cleanups
+
+commit c9ff3dc73f144918141716f3854eae05be2faa6b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 29 10:16:33 2021 -0500
+
+    fixed regression in sqlite makefile (need .NOTPARALLEL)
+
+commit 277825bb61fe3d38863ef495538852edcd27eea3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 29 10:43:37 2021 -0500
+
+    thirdpartycomponent makefile cleanup - redirect to -OUT.txt not .OUT (avoiding complaints for vscode about knowing how to read .OUT files)
+
+commit 8902084c4e53b9868aa4a20f82b5d12d6bf9bbe7
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Nov 29 15:56:52 2021 -0500
+
+    simplify and document regtest BWA for https://stroika.atlassian.net/browse/STK-632
+
+commit 9872f212fdb879f9c590d954def8506b03afebc1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 29 16:01:32 2021 -0500
+
+    revert pat of last  https://stroika.atlassian.net/browse/STK-632 - all cases I had before are still needed
+
+commit 870702c4ef8c6bebfd274a0f49ad222c7ccc6471
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 29 16:16:21 2021 -0500
+
+    qCompilerAndStdLib_if_constexpr_annoyingly_evaluates_untaken_path_Buggy bwa for vs2k17
+
+commit 143ff40238891a91bb17e57f93a97eb88f6ed56e
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Nov 29 17:06:37 2021 -0500
+
+    Docker - switch from support of Ubuntu 21.04 to 21.10 (only support latest short term release); and updated regtests mostly
+
+commit 6812ff360253a37c4c685bd9eba70137616bb9bd
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 30 07:31:49 2021 -0500
+
+    fixed define GLIBCXX_11x_ 20210918 for ubuntu 21.10
+
+commit 952b7d1f38dc20aa25e559060d6219c932b92ecd
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 30 08:36:15 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-632 sqlite threading bug workaround
+
+commit e6ac43c7429caf267c94c7181e75a8384ce5281b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 30 07:35:45 2021 -0500
+
+    Added (if compilers present) regression test configurations to makefile for g++12 and clang++-13
+
+commit 4f7ba8fca5205432949e07c22fd4ac5d12c9a720
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 30 08:56:00 2021 -0500
+
+    fixed compiler version numbers/confg for gcc 11.2
+
+commit 999b453ba2d3a14884b5ef55cca876a77f4b7789
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 30 14:12:20 2021 -0500
+
+    fixed dockerfile cuz clang++-13 appears to depend on libunwind-13-dev
+
+commit e42b2293169a3968c5456fd560275b1c20e64340
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 30 14:50:28 2021 -0500
+
+    support clang++-13 bug defines
+
+commit fc1f39236863ab8236ac923fd1ad6e3823b8a8d7
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 30 14:52:33 2021 -0500
+
+    support clang++-13 bug defines
+
+commit a4b61e4e055d1145695b1cae2926a46580e9a293
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 30 14:53:29 2021 -0500
+
+    support clang++-13 bug defines
+
+commit 26744571e4fc82a6cff1a8c526a3fd567c88ab07
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 30 15:09:56 2021 -0500
+
+    recently added Set<T>::find() should be a const method
+
+commit 205865dbe454db2429561de2f81c75091cfa0d1f
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 30 20:46:00 2021 -0500
+
+    ubuntu 21.10 dockerfile tweaks so more builds
+
+commit f266b271fcb3827c3655a3027c7bf0bd61433bff
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 30 21:06:10 2021 -0500
+
+    enahnce onlyIfCompiler exists for clang/libc++ check to handle more recent clang versions (up to 15)
+
+commit d5d3bbe6a5f89f9bae000a49b748265606726371
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Dec 1 11:51:22 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-753: lose old workaround (only worked around tsand not valgrind) - and revert to using 3.36.0 of sqlite due to this bug
+
+commit ff3833835e1190fa1d2bfbd61bd94cd0fe931058
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Dec 1 15:31:36 2021 -0500
+
+    cleaned up sematnics of --no-sanitize flag to configure and store list as array
+
+commit 673abec9dd94e8e717ee2c46a07b973667968761
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Dec 1 15:46:01 2021 -0500
+
+    configure now writes out SanitizerFlags to configuration file; and ApplyConfiguration now writes SanizerFlags and ConfigTags to the Configuration.mk file
+
+commit e43a337f13efc2abc43a0e473e3e4f37edd0673f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 1 17:33:54 2021 -0500
+
+    qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy is broken for clang++-13
+
+commit e2c3a34ab0e4eeced96fcfad7c6e1fb056662e87
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 1 17:42:03 2021 -0500
+
+    silence new warning from gcc (really library) - Wstringop-overflow
+
+commit c0b233ced0d279ad930e5d1380764bce1106768a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 1 21:24:25 2021 -0500
+
+    cleanup CTORs for the various containers - more uniform use of copy/move etc. Prepare to doc all this. And re-opened and solved  https://stroika.atlassian.net/browse/STK-541 - just a bad test case and going to document why not allowed
+
+commit 037ca305e6db494f0f3d848ecb48becfa744ea63
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 2 08:02:16 2021 -0500
+
+    docs on Container Constructors
+
+commit f4c43935718614f22531a4563bac535ad8b0454c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 2 08:16:56 2021 -0500
+
+    Containers docs
+
+commit ceb577a45b5c8f39dae6d0eb710a345ddee707fc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 2 08:28:19 2021 -0500
+
+    fixed check for right version of libc++ stuff to only do on linux not xcode cuz looking in the wrong place
+
+commit 9e0daf2801d77a2a19e43b2ed8492cd561610357
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 2 08:43:13 2021 -0500
+
+    container docs
+
+commit 1ae31cce3ca7aab76d2338e02a2ddc102c214eee
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 2 09:40:21 2021 -0500
+
+    fixed recent regression in configure --no-sanitizer flag support (dropped default vptr for clang/macos)
+
+commit 568fc8c6786d2e4192ece2feeb4e209ba4dfc803
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 2 10:29:48 2021 -0500
+
+    Cosmetic
+
+commit f5e3bfc57305b86fbdc8f4518010730fff359095
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 2 14:58:20 2021 -0500
+
+    Compare functions/utility classes etc - cleanups
+
+commit 9d43e051b10c8be04c16f7cef01d3f9047b1680b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 2 15:42:35 2021 -0500
+
+    new utility Configuration::function_traits<> and used that in regression tests, and DeclareEqualsComparer static assertion
+
+commit fa2dd0d3ffd6cfbd233091377858ac313b5f1b52
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 2 16:59:31 2021 -0500
+
+    cleanup function_traits
+
+commit 4672d6dec404900d5cc38d72b887993cb08830dc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 2 17:02:43 2021 -0500
+
+    draft/progress on Comare logic - template overload of IsEqualsComparer and IsStrictInOrderComparer taking typea rg too (not fully implemtned) - and new draft IsPotentiallyComparerRelation2 (temporaty name) reversing parameters
+
+commit 336df18fba9df8e61f36a94f496fad73fb6f8034
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 2 17:03:38 2021 -0500
+
+    cosmetic
+
+commit aad89bf0a6eadd48aea61330d9b79897a1944ea6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 2 17:04:28 2021 -0500
+
+    cosmetic
+
+commit 15327dfdfd19d7ccbb7534c4a23e1c071db58c07
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 3 00:19:47 2021 -0500
+
+    INCOMPLETE - and NOT BACKWARD COMPATIBLE - changed order of template paraemters to Common::IsPotentiallyComparerRelation
+
+commit ef639c21a906467ac212b8d7513f858ec2fb1f57
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 3 07:25:36 2021 -0500
+
+    Completed switch of order of parameters (**not backward compatible) for IsPotentiallyComparerRelation<> template function, and a few other related cleanups
+
+commit b7840c99ecc8926045f336874e4541eb275e9c2f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 3 07:37:55 2021 -0500
+
+    switched bijection from IsPotentiallyComparerRelation<> to IsEqualsComparer<> on comparer args and updated docs
+
+commit 0d2ebf2c6068cb585ad3d7f0b70df4e3d7f07b8a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 3 07:59:56 2021 -0500
+
+    in several more containers, replace the restriction to Common::IsPotentiallyComparerRelation with IsEqualsComparer or IsStrictInOrderComparer as appropriate
+
+commit 0730dee3be17916727e1a8f340748021d5db7fed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 3 08:02:05 2021 -0500
+
+    docs
+
+commit 0351bbce1932abc40d160dbbdea5332a0013668e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 3 08:20:41 2021 -0500
+
+    finished converting Containers to use of IsStrictInOrderComparer or IsEqualsComparer as appropriate, from IsPotentiallyComparerRelation: SOME code that used lambdas might no longer compiler and require a DeclareEqualsCOmparer or DeclareStrictInorderComparer wrapper (so not 100% backward compatible but probably quite close)
+
+commit e535665e283881dd6565537de1e534a1f9d0f4ad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 3 08:26:32 2021 -0500
+
+    docs comments
+
+commit 7d9c8fdeb966285d9f3e2ec43d4116c2e0b92658
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 3 09:36:12 2021 -0500
+
+    minor inline cleanup
+
+commit 80131dad5a8506b1b73e77bd973eef28929c95b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 3 09:36:40 2021 -0500
+
+    cosmetic
+
+commit f4804f97be5a924bcdb339b4b5aeb73393b00a25
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 3 09:47:34 2021 -0500
+
+    Container docs
+
+commit 24d77579c8c091d4a52a56fee243dc991db152c2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 3 17:05:32 2021 -0500
+
+    todo comments; and replace most use of Configuration::remove_cvref_t<> with decay_t, since CONTAINER_OF_T (or of addable) could be an array
+
+commit 1576982020b9bfecc43c22b6eea175f29b32e99c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 3 21:29:10 2021 -0500
+
+    cosmetic
+
+commit 1351ab9c20925dfc2ce5c0c07e4e1be0abdbb2b6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 3 21:29:55 2021 -0500
+
+    Added a couple IsAddable uses in Containers
+
+commit e2be8a50d834de11190bd538776dfb2887837d4b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 3 22:58:37 2021 -0500
+
+    draft/experimental support for Configuration::IsIterableOfPredicateOfT_v with Collection<>::IsAddable (or _t)
+
+commit 985ad5fb4b65b24232f353f0d3d344006285b195
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Dec 4 07:56:04 2021 -0500
+
+    fixed test for Configuration::IsIterableOfPredicateOfT_v
+
+commit 20af8fb6487d4dd6b92ee078badcebeb6a240f5f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 4 13:28:53 2021 -0500
+
+    new typetraits helper ExtractValueType_t
+
+commit bde467a40f05630fde7c64c2fcf318d46d4b0c0e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 4 14:12:18 2021 -0500
+
+    Fixed new ExtractValueType_t to support references etc
+
+commit d118bbe0e15461dc878f383b7a9a343e3d774acd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 4 16:52:46 2021 -0500
+
+    Draft support BWA for template Issue so I canuse IsAddable_v with Collection<T>
+
+commit 8321c2d7aab3e7e0254ace13118a9f46d5f63867
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Dec 5 09:56:30 2021 -0500
+
+    fixed a couple missing typename declarations
+
+commit 30889476b16d2c376476e9481cb29534310611a6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 5 11:05:27 2021 -0500
+
+    In Containers, using a few more Configuration templates to make use of those (concept like) templates a little more terse
+
+commit e24fd2af7a0e8ee8a2c6152b3839bc8aaf7f8795
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 5 11:37:04 2021 -0500
+
+    Configuration::ExtractValueType_t support for pointer type T (like old school iterator)
+
+commit c4019318e18abfac17d187427d5b7a9e6893f072
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 5 11:45:50 2021 -0500
+
+    docs and more use of comments on IsAddable_v in new Collection code
+
+commit 8ea3934a31b3e1bba808bfe52808de8abd12780c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 5 20:53:26 2021 -0500
+
+    qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy define for both vs2k17/19 - very differnt errors (and workarounds) - but found one that works for both - at least testing
+
+commit 9edfa7924d83c064bb1ddd0cb5ed5cc86c07f920
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 5 21:15:17 2021 -0500
+
+    qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy broken for clang
+
+commit 8af3a30a00e2168f82b8ef0f32f9d214e449c4d8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 5 21:19:47 2021 -0500
+
+    qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy broken on xcode 13
+
+commit b2ce4a880c97919ae1008802b5f683fe0e0d4bd7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 5 22:00:16 2021 -0500
+
+    qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy broken for vs2k22
+
+commit 993c52ae4d01345cc53b5dac8d04254b6e850cdd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 6 10:18:19 2021 -0500
+
+    cannot use 'using' very effectively for templates - not sure why...
+
+commit 21b5ba0f9aa4f7f48afce9ac18d400933658bd88
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 6 10:27:35 2021 -0500
+
+    start getting new IsAddable_t stuff working on bijection
+
+commit d09f2a9a0a756ced9d1fc918d326043a4e1fa380
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 6 10:28:06 2021 -0500
+
+    ok - i get it - the using stuff only owrks on type templates, not constexpr bool ones - sigh
+
+commit debe3ad7da0f70cfa09c4b6dbb5b7620af34e38f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 6 10:51:32 2021 -0500
+
+    progress on IsAddable_v support for Bijection
+
+commit d62af2b2803ca6778929ac61caa9a5c4df5b2a2b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 6 11:23:38 2021 -0500
+
+    small Collection<T> cleanups
+
+commit bc27ad07c1e780626cbc520d1299744fcc125b96
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 6 11:30:12 2021 -0500
+
+    https://dl.bintray.com no longer supported for boost downloads
+
+commit ce687db34db44e3597299ea1e4752aacfcf31de9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 6 11:30:40 2021 -0500
+
+    https://dl.bintray.com no longer supported for boost downloads
+
+commit a3d146c14fc33f67162e59b0072c9781b317bb5f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 6 14:49:15 2021 -0500
+
+    Configuration::EnumNames needs value_type so it can be treated as a propper iterable
+
+commit 6e637ddf031f962c4bd8e1c5b5a8f4b69174cd28
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 6 14:58:43 2021 -0500
+
+    'concept IsIterable_v' now also checks there is a valid value_type (and comment we may in the future check more)
+
+commit 05ca8e8a1597515d7903aa6b9811c9bfeb84109e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 6 16:13:21 2021 -0500
+
+    Common::KeyValuePair<> fixed missing namespace prefix
+
+commit b22272ad222da9d626283b27da7bdd5b340c060e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 6 17:50:32 2021 -0500
+
+    experiement replacing enable_if_t of IsAddable_v in Collection<> CTOR with just doing in body of CTOR: advantage better error messages, so long as doing so produces no ambiguous ctor sitations and avoids messy qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy workaround
+
+commit 66b8146ce5679a4b95899a4cb9f79c9de2abc1ff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 6 17:52:12 2021 -0500
+
+    progress on Bijection IsAddable changes - trying to use less enable_if_t, and more static_assert in methods. May produce clearer error messages and less visual dissonance
+
+commit bcf003b7e7df643ee477743696c1d64b22202248
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 6 20:26:03 2021 -0500
+
+    lose use of qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy, but leave define in case we need to use it again (cuz documents how to workaroudn -w as hard to figure out); and docs cleanups for container s9- migrated common stuff to ReadMe.md
+
+
+commit 06a616dd28b6a4f02a187af9897ca05d6674af86
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 6 20:49:32 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-651 https://stroika.atlassian.net/browse/STK-744  IsAddable_v and constructor cleanup for Queue and Deque templates
+
+commit af4f0a9c403ee1e91a41042231dd191b5c50270c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 7 09:12:52 2021 -0500
+
+    cleanup KeyedCollection for https://stroika.atlassian.net/browse/STK-651 - static_assert on IsAddable_v etc, and less enable_if_t
+
+commit 4f35da9e9d68cc97eca99ff1a53f3dd590d728dc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 7 09:17:24 2021 -0500
+
+    cleanup more containers - names and Isaddable stuff for https://stroika.atlassian.net/browse/STK-651 - static_assert on IsAddable_v etc, and less enable_if_t
+
+commit d5b8abdcf2447920a9253a8973f3350b02b5ab4e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 7 10:05:29 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-651 and https://stroika.atlassian.net/browse/STK-744 - cleanup CTORs and IsAddable (FOR MAPPING now) - but also improved semantcs for RemoveAll - and naming of iterator parameters
+
+commit 1e6d3d6b1facda0625da060c776521636c57ce2c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 7 11:17:42 2021 -0500
+
+    comsetic (Containers) cleanup and https://stroika.atlassian.net/browse/STK-651 updates to MultiSet
+
+commit 761b930488d0deb9938ab947e4906f017984f230
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 7 11:36:10 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-651 https://stroika.atlassian.net/browse/STK-744  cleanup to Sequence<>
+
+commit c2538fecafd4b077b049d18fd8990ebae1102fa3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 7 11:51:38 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-651 https://stroika.atlassian.net/browse/STK-744  cleanup to Set<>
+
+commit f8c5f6e51d9f930172f12588cf81f6f711e75cc5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 7 13:15:33 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-651 https://stroika.atlassian.net/browse/STK-744  cleanup to several SortedXXX container templates<>
+
+commit 4419adc9fa7e72c3b0a4df9cee1e73c6a9b7821c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 7 20:01:17 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-651 https://stroika.atlassian.net/browse/STK-744  cleanup to several SortedXXX container templates<>
+
+commit c9459e5df97923f22edd5269ad8313fb23e13305
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 7 20:22:55 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-651 https://stroika.atlassian.net/browse/STK-744  cleanup to several SortedXXX and Stack, and fixed Stack implematnion of copy constructor
+
+commit a53c21027fb8a8d9ca4dd2a51dac3729c2c1e7f5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 7 20:32:17 2021 -0500
+
+    not backward compatible* - but rename Configuration::is_iterator_v -> Configuration::IsIterator_v
+
+commit 633ac7006002b5d2d18fa5da2a5337c8872ed667
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 8 08:45:36 2021 -0500
+
+    qCompilerAndStdLib_template_value_type_ambiguous_confusion_Buggy abd workaround
+
+commit 2595417f1b7a531d475029585308d4fa3b441059
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 8 08:58:12 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-651, https://stroika.atlassian.net/browse/STK-652 , https://stroika.atlassian.net/browse/STK-744 : redid concrete bijection CTORS based on archetype CTORs
+
+commit 5f6dff7574fe82c36f9d80a5900dec7559be59fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 8 10:42:51 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-651, https://stroika.atlassian.net/browse/STK-652 , https://stroika.atlassian.net/browse/STK-744 : redid concrete Collection constructors
+
+commit d07d8dabba6b7d8adc9e9abb063c7557dff923dc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 8 12:20:17 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-651, https://stroika.atlassian.net/browse/STK-652 , https://stroika.atlassian.net/browse/STK-744 : redid concrete Deque constructors
+
+commit 2f2a3d954455681b6ff374b961deae03c46114ec
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 8 13:45:24 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-651, https://stroika.atlassian.net/browse/STK-652 , https://stroika.atlassian.net/browse/STK-744 : redid concrete KeyedCollection<> constructors
+
+commit cb99674086553fa6253be7200615ffb938cdb582
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 8 16:33:59 2021 -0500
+
+    new Concept 'has_size_v'
+
+commit ce44bc864697d9f6c1bce2380ce7f14eb188bd9a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 8 16:34:34 2021 -0500
+
+    called SetCapacity() in a few sensible places for Collection_Array CTORs
+
+commit 6e794b09ed61291ff7f58894ea3c15038458b933
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 8 16:35:24 2021 -0500
+
+    fixed call in Containers/Mapping.inl to Factory::Mapping_Factory to just indirect to other appropriate Mapping CTOR (so only one call to factory)
+
+commit 18b804b24864f2c8d6fd1fc086e7a4f9afa3974b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 8 17:13:32 2021 -0500
+
+     https://stroika.atlassian.net/browse/STK-651, https://stroika.atlassian.net/browse/STK-652 , https://stroika.atlassian.net/browse/STK-744 : redid concrete container CTORs
+
+commit bf482821e22dd10e7dfaa5fdb285c7935523311a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 9 13:50:12 2021 -0500
+
+    Foundation/DataExchange/Atom now uses Concrete::Mapping_stdmap<> for case insensitive map
+
+commit 69b90fbafc4144dce020866ec4f38fdd33a1034d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 9 18:54:16 2021 +0000
+
+    use boost 1.78.0
+
+commit 9b416145cba1d5fa0f976b15b9baa7eba53f5f05
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 9 19:31:01 2021 -0500
+
+    cleanup use of operator= (...) = default and a few defaulted CTORS
+
+commit 1fcd30075eee774cc46206dd9af85e75a5383f19
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 10 10:12:52 2021 -0500
+
+    CookieList cannot use operator= defaulted (nor CTOR) due to use of properties (documented)
+
+commit 2f28e1a87ef2196adbdd57e8b9d7b8ee675e74d9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 10 10:13:21 2021 -0500
+
+    debug regression test output cleaned up - one workaround only applies to x86 not arm builds
+
+commit 30f95c183feb1a2293778150eb31f4000b7f0b57
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 10 11:20:56 2021 -0500
+
+    Tweaked ciphers regression test to see if issue with a few ciphers is message (length) specific
+
+commit 32f03777f5a72756b240b867403914fa2011c469
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 10 11:49:27 2021 -0500
+
+    dont bother with  g++-8-release-sanitize_address_undefined and  g++-8-release-sanitize_thread_undefined configs cuz caught in generic g++ (sanitizer) builds, just duplicative and no reason to highlight these compilers on all OESes
+
+commit 1cd79152742931d0f53563f0ab76802573fdf6f3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 10 15:24:59 2021 -0500
+
+    changed (wag) at detecting x86/x64 compilers - defined(_M_IX86) || defined(_M_X64) => (defined(__x86__) || defined(__x86_64__)
+
+commit cd2b0180677eabc3d4824c06764a018b7ea5034b
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Dec 10 20:01:31 2021 -0500
+
+    qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy / https://stroika.atlassian.net/browse/STK-717 - cleanups, and define true for Ubuntu 21.10 in configure. MANY changes / cleanups so less blanket removeabl of test code, but still alot more tuning todo. Only really testing most of this on Ubuntu 21.10 now since we no logner test on teh other prerelease ubuntus
+
+commit eb102aea5ae6cb01fe5e6108ead4f059f564a115
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Dec 10 20:20:27 2021 -0500
+
+    tweak configure script - no longer support very old WSL workarounds
+
+commit ba83e621c1a515638804ca779bc6f64d513adae5
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Dec 11 11:57:43 2021 -0500
+
+    re-added workaround for (re-opened) https://stroika.atlassian.net/browse/STK-644
+
+commit dcc1801120c3b71fb93cb198853e66f300122a26
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 11 14:04:26 2021 -0500
+
+    configure script cleanups: and switch default compiler (if all present) to msvc2k22 (for visual studio versions)
+
+commit 96096b154430f724e0302b6225713ccac0e623af
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 11 16:03:14 2021 -0500
+
+    cleanup regression test SimpleClassWithoutComparisonOperators and SimpleClass code, and adjust use to verify VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0);
+
+commit 4b21e9683b21cdd234efbffdbe92a38b5bc357df
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 11 20:45:18 2021 -0500
+
+    DISABLE_COMPILER_GCC_WARNING_START for ubuntu 21.10 g++11(?)
+
+commit eea7151cfcf7ea4cdfbdfa0957b03aab29de6486
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 11 20:45:36 2021 -0500
+
+    VS_17_0_2 for docker container
+
+commit 0f3ce8e0c943af6cd30d67ac8ad5be33ca5f7dd6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 11 21:28:51 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-49 - start support for Association (cloned Mapping code and renamed, but yet to change API or add regtests)
+
+commit a828c46a32ff33fe46f00bb4b161224c2be58fac
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 11 23:38:32 2021 -0500
+
+    o       https://stroika.atlassian.net/browse/STK-49 - Association progress: regtests cloned from mapping (and tweaked) - and lose AddOrUpdateMode from Association
+
+commit ec71abd3edd77b5ef961988d8620320b8cb89139
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 12 10:53:10 2021 -0500
+
+    more progress on https://stroika.atlassian.net/browse/STK-49 Association - lose operator[]
+    and renamed LookupValue/LookupChakecedk to include One
+
+commit 80585c22f314c7f3b0aa2dc0c496c00f569e999b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 12 15:08:07 2021 -0500
+
+    more progress on https://stroika.atlassian.net/browse/STK-49 Association - progress on revised Lookup
+
+commit 3be6cf6dbed7fde7932e611b9152ae60d694b608
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Dec 12 15:42:09 2021 -0500
+
+     https://stroika.atlassian.net/browse/STK-755 valgrind workaround
+
+commit baf0aa4df7822524ee29c30a02d719fb20a0125f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 12 16:23:17 2021 -0500
+
+    more progress on https://stroika.atlassian.net/browse/STK-49 Association - progress on revised Lookup
+
+commit 5bd53e3d0843bb6baec417a11ac4fc199d93ec2f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 12 17:28:55 2021 -0500
+
+    Iterable<T>::mk_ (CONTAINER_OF_T&& from) now hopefully more efficient - not always copying to array (just for initializer_list); and not using array indexing, but a single iterator
+
+commit 4d6124f53bc6c5b3acb68ccb0b19176a5c5f1cfb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 12 20:06:26 2021 -0500
+
+    more progress on https://stroika.atlassian.net/browse/STK-49 Association - progress on revised Lookup
+
+commit 73dabe3a54dbfa1046a32a0546cbe288eb86593d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 12 20:13:19 2021 -0500
+
+    more progress on https://stroika.atlassian.net/browse/STK-49 Association - progress on revised Lookup
+
+commit 81be40ea21bf9a153146329b7890cc25d9591bc9
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Dec 12 20:15:42 2021 -0500
+
+    revised    https://stroika.atlassian.net/browse/STK-755 workaround
+
+commit aca848b01cf80d8aa2ee19998daab10e23a70ee8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 12 21:59:17 2021 -0500
+
+    more progress on https://stroika.atlassian.net/browse/STK-49 Association - final? pass at Association - now seems working and did imrpvoed regtests
+
+commit 7b0ecb6496aaf4aca3c5ec527215b8a616a239a1
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Dec 12 23:29:59 2021 -0500
+
+    cleanup workaronds for https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy with valgrind now (essentially same bug I think)
+
+commit d65be9f615ad2cc23f3b245c260055a5c3f8c376
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 12 23:33:26 2021 -0500
+
+    ScriptsLib/RunLocalWindowsDockerRegressionTests now defaults to vs2k22, but example runs shows both run 2k19 and 2k22
+
+commit 252a08e9e25b26312902a5732b959293bb50c6bf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 13 10:59:08 2021 -0500
+
+    maybe silence strange gcc warning
+
+commit 89ae3fb6defdbb7291b7f9da8223b238c9cd7149
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 13 19:27:46 2021 -0500
+
+    Added Association<KEY_TYPE, MAPPED_VALUE_TYPE>::OccurrencesOf
+
+commit 8f4676b6f83e664755cfd63ec564185729e720c5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 13 19:49:35 2021 -0500
+
+    fixed serious bug with Association::ContainsKey () - backwards
+
+commit af69b22a018da2ea7ef85851b27569ec68181421
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 13 19:52:57 2021 -0500
+
+    Cryptography::OpenSSL library context code switched from Mapping<> to Association<> use
+
+commit 6ab49761dec3522c47e2dcc2b20cbbe2eab5819f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 13 20:06:02 2021 -0500
+
+    fixed small regression with recent OpenSSL/LibraryContext change to using Association
+
+commit bff8cce26266d3917be0da69b04b8b48dadbac54
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 13 20:12:18 2021 -0500
+
+    cosmetic cleanups to IO::Network::HTTP::Headers implementation
+
+commit 4bfe83deffb74c7c1954db2799077385191c8c76
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 13 20:15:30 2021 -0500
+
+    minor clenaups and bug fixes to HTTP::Headers::operator= (case was broken)
+
+commit 9dce5fc3739d930bd8251788e87f0e6ff13e72d7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 13 20:53:30 2021 -0500
+
+    IO::Networking::HTTP::Headers updated to support Association<> and various overloads/cleanups and docs improvements
+
+commit f83dbe173ec3dc6b3e0f6b4c9a572d534a81dd08
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Dec 13 21:09:14 2021 -0500
+
+    minor tweaks to Frameworks/Webserver/Router
+
+commit efeb2da36390d4e290c7cdcf5bf3ef4557e81695
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 13 21:14:32 2021 -0500
+
+    hopefully fixed summary of number of errors in regression test output
+
+commit eb545603011417108c34adfff638cf1f3c1fe267
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Dec 14 12:14:38 2021 -0500
+
+    tweaked workaround for https://stroika.atlassian.net/browse/STK-644 (helgrind suppression)
+
+commit 3cff1eb6c677540db66f41df99834558894ea792
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 14 12:33:44 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-690 - use perfect forwarding for MANY cases of iterator arguments - mostly to stroika container ctors and a few key methods (like AddAll) - slight performance tweak - as avoids needless iterator clone
+
+commit 34af001aba77a97c5eb2ac40c9613801084f6491
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 14 12:40:50 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-690 - use perfect forwarding for MANY cases of iterator arguments - mostly to stroika container ctors and a few key methods (like AddAll) - slight performance tweak - as avoids needless iterator clone
+
+commit 85d4d64e45ee62da37d85310e72e97a4cf88dadf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 14 12:49:24 2021 -0500
+
+    cosmetic cleanups to Traversal/DisjointDiscreteRange, along with removing one no-longer-needed BWA calling SortedSet CTOR
+
+commit f6c7f3a4a11170129ed9414c6ffd09322c3aeb34
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 14 12:54:30 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-690 - tweaks, and cosmetic cleanups
+
+commit f4abeee2660a43510ed8dbd155987f7e5ed51a0b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 14 13:29:56 2021 -0500
+
+    cleanup/static asserts (could use more) in  DisjointDiscreteRange CTORS
+
+commit 2035bd72cb2cb21d8db9f03a1382f9211a9c56ad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 14 13:30:43 2021 -0500
+
+    revert convert of SOrtedSet to using perfect forwarding til I fixed regression it caused
+
+commit 0b0b855b262d7bde7545597b956d25da32265587
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 14 13:40:54 2021 -0500
+
+    fixed Configuraiton::IsIterator_v to handle references/r-value references (decay) - and docuemnt and added regtests
+
+commit 33c76fc2f85f1ab176d851f2503b2ceb462a4832
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 14 13:41:25 2021 -0500
+
+    re-instituted perfect-forwarding fix to SortedSet CTORs now that I fixed IsIterator_v
+
+commit 9d01b0fd2cb35acc979b770dd3cff1f8d765298f
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Dec 14 19:21:21 2021 -0500
+
+    simplified https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy TSAN workaroudns a bit
+
+commit 60f34588f2bbf716141f6fcc182ce1af68dad284
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 15 01:58:54 2021 +0000
+
+    regression tests - LOSE hack about skipping valgrind/helgrind run due to qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy - I think I have them working somewhat now
+
+commit 43dc32bf0bfd2021f66ac62f9c3bf071dc3c455a
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Dec 14 21:07:56 2021 -0500
+
+    write qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy to .mk file, and then use in Tests Makefile to augment the set of supression files and put all teh supressions for that bug into that one file, so we can surgically apply those suppressions on OSes idnetified as haivngt this problem: related to https://stroika.atlassian.net/browse/STK-717
+
+commit 3d41ccb7d99f459911c0f15f05b4af7320d97d59
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Dec 15 10:44:40 2021 -0500
+
+    hopefully fixed Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated in BlockAllocator code, so hopefully will have corrected rare, hard to reproduce issue on Ubuntu 1804 with helgrind (will take more testing to see)
+
+commit a38859840407aaf0bd9525bcc0989e7a5806b985
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 15 11:00:16 2021 -0500
+
+    use msvc 2k19 16.11.8
+
+commit f038019c4ff7aef24a9913cd4642df8b9089c759
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 15 11:49:52 2021 -0500
+
+    cleanup annotations of noexcept on move constructors/assignemnt operators, esp for containers
+
+commit 4a390aded00aba046189f352b103748d0879728f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 15 12:06:53 2021 -0500
+
+    fixed (badly but OK for now) LRUCache move CTOR
+
+commit 964fc833eda17c0ae008657031e6eb033c6c296c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 15 12:07:25 2021 -0500
+
+    another attempt at silencing rare gcc warning = Wstringop-overflow
+
+commit 2ca39ab4d860098e6a3ae7858dad22fb273272a1
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Dec 15 14:06:32 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-717 TSAN workaround, and a few cosmetic changes
+
+commit edaf36c94fb646590a5f056a4026e6948855e684
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 15 14:08:16 2021 -0500
+
+    renamed BlockingQueue::EndOfInput -> SignalEndOfInput ()
+
+commit 8a87eeba1b1872509b75c5b072c5b10643da1eda
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Dec 15 15:13:29 2021 -0500
+
+    Tests/Valgrind-Helgrind-qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp tweaks (for link time codegen)
+
+commit 8fc6f255537a7cb4a706f7ed8ac6c72f8c0f04dc
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Dec 16 00:35:26 2021 -0500
+
+    try to fix regtest so helgrind uses right set of configs for apps helgrind
+
+commit 16f5a0e03bc9975779258dc1221925c071faf28a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 16 10:39:20 2021 -0500
+
+    vs2k17.0.3 (2022) in docker container
+
+commit 11488c7411a345c4e7beee678c4d7a2fb6a1f509
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Dec 16 11:07:03 2021 -0500
+
+    hopefully fixed SUPPRESSION_LINES_ settings in RegressionTests script for valingrd/app testsing
+
+commit 52bb3ef90c49d9ebb3f706f5b31912e7b8e5a6d8
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Dec 16 15:49:22 2021 -0500
+
+    LRUCache MOVE CTOR deleted cuz cannot easily move
+
+commit fb7a08b8bb0c4418262b069940e9216984539455
+Merge: c0d07bb49 52bb3ef90
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 16 16:24:10 2021 -0500
+
+    Merge branch 'v2.1-Dev' of github.com:SophistSolutions/Stroika into v2.1-Dev
+
+commit ed5876d69dadc71de277f2d769c6c5484c1a7d2a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 16 16:49:56 2021 -0500
+
+    comments, and (hopefully fixed) some quirks with MOVE declarations on LRUCache, since really not usefully mvoable, but needs to be declared movable
+
+commit 6c904dedf6c8cdc9ca15049faef1188cc9fad3b9
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Dec 16 17:10:02 2021 -0500
+
+    qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy bug define and workaround
+
+commit 8c4666d2a5d5faeebdd3ff482493d7f38dd228d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 16 22:16:26 2021 -0500
+
+    make a few String constructors explicit (2 arg ones) so constructor of pair<> from initializerlist doesnt map to these accidentally
+
+commit cdfedaafd30ab7822e226ddad56094d943cc05b6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 16 22:21:47 2021 -0500
+
+    Lose initailizer_list<pair<... constructors from Mapping/Association templates (archetypes and concrete types); to allow disambiguated Mapping<> etc ctor calls with simpler initializer lists (see docs for Mapping CTOR and examples in regression tests
+
+commit 02e02186466c12e30e363d9e981a5a83db462b9d
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Dec 16 22:32:36 2021 -0500
+
+    changed default for RASPBERRYPI_REMOTE_MACHINE:=raspberrypi to RASPBERRYPI_REMOTE_MACHINE:=raspberrypi.local (since seems to work better on my DNS setup for some reason)
+
+commit e2c2ececbd90e56fe7ed6ddfb97e7d4b0084bd3f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 16 23:35:31 2021 -0500
+
+    move constructor support for SmallStackBuffer<T> - no tests yet
+
+commit b418424a4b0f63ebfe1968c53fe68bc6e618e6a6
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Dec 16 23:52:47 2021 -0500
+
+    more fixes to SUPPRESSION_LINES_ variable of regressiontest script
+
+commit 1baee357f514819787e5798d0564a6d8173408a6
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Dec 17 08:39:06 2021 -0500
+
+    hopefully fixed SUPPRESSION_LINES_SUPPRESSION_LINES_ fix in RegressionTests script
+
+commit c91ad10e750eb52d0f9ed3c428127e3e0db57449
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 17 10:05:35 2021 -0500
+
+    retry RASPBERRYPI_REMOTE_MACHINE:=raspberrypi after rebooting my router
+
+commit 9d2eabe68a1c0ba2460af9a88b9f1128c0d44080
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 17 20:40:23 2021 -0500
+
+    use the names capacity/reserve instead of GetCapacity/SetCapacity () --- I hink hte older names, but it just caused trouble with interoperability
+
+commit fa0f8b23ef4fc58269ab1c6eda743e6ed949df29
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 17 20:56:32 2021 -0500
+
+    use Containers::Support::ReserveTweaks code instead of manually doing similar stuff through out stroika
+
+commit ca66d3d53fedefee7efa25d7181748b4173d30d8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 17 23:27:35 2021 -0500
+
+    revert part of ReserveTweaks that broke things (dont understnad why yet)
+
+commit 68ece8edf22842bf2dd7ac57b3c401cb26503593
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 18 00:25:28 2021 -0500
+
+    fixed serious bug with Array<>::reserve that happened to go unnoticed due to quirks of how I had scaled before on adding
+
+commit a8718a1df487b31fca9765c018963c80e2907f7f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 18 00:34:43 2021 -0500
+
+    probably failed attempt to workaround stringop-overflow warning issue
+
+commit 6c25e68e64eea5a69ebd7068154f218ea3b3aefa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 17 21:19:49 2021 -0500
+
+    use size() instead of GetLength () - deprecated name GetLength ()
+
+commit 100a41f2d7323ed534c02ceb6a5222120d2a8981
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 18 10:18:59 2021 -0500
+
+    small cleanups to recent GetLength->size () change
+
+commit 3f039852db9a47baaf4e774c72eee2dcbf251ae3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 18 10:32:43 2021 -0500
+
+    deprecated Iterable<>::IsEmpty () call, and replaced with just using name empty () (STL name)
+
+commit c5a6b1912277ca57a5aa525b87195a31c655a906
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 18 10:52:23 2021 -0500
+
+    Iterable<>::Sequential/Set/EtcEquals methods take default template arg of initializer_list<> so we can say c.Skip (3).SequentialEquals ({4, 5, 6}) etc and updated docs accordingly
+
+commit 10a526326ca82f0b17a7568a191b7928a1471605
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 18 11:38:38 2021 -0500
+
+    smaples cleanups
+
+commit f513b89e7cd78dafb227794ea15794e06545d424
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Dec 1 16:16:42 2021 -0500
+
+    re-enable sqlite 3.37.0 and a few fixes to makefile, all related to fix to  https://stroika.atlassian.net/browse/STK-753 (did a while back but somehow the commit didn't get pushed)
+
+commit ee47f935bcfe3ae653865b9612ddce66f0d4f159
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Dec 19 12:37:12 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-644 valgrind tweaks - so works more
+
+commit 7e4e68cad8e71c05b03ebb82f6a840c7d7c08c8e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 19 22:25:06 2021 -0500
+
+    Deprecated UpgradeLockAtomically variants now all deprecated because I think the non-atomically way safer; and changed API UpgradeLockNonAtomically (and Quietly variant) to have 2 arg callback return bool - slight cleanup of API, NOT fully backward compatible
+
+commit 1e099cca3921be8a903f32dfcd50207e1bcf203b
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Dec 19 22:51:49 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-736 helgrind/tsan supressions (I THINK) no longer needed - just my misunderstandin gbaout debug flag on building sqlite
+
+#endif
+
+
+
+
+
+
+
+
+
 ### 2.1b13 {2021-08-15}
 
 #### TLDR
