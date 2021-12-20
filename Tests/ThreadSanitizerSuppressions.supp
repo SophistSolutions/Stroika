@@ -40,10 +40,6 @@ signal:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHan
 deadlock:Stroika::Foundation::Debug::AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex
 deadlock:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_
 
-# https://stroika.atlassian.net/browse/STK-736 (sqlite)
-race:sqlite3_mutex_enter
-race:sqlite3_prepare_v2
-
 # https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
 # MAYBE only affects Ubuntu 21.10 (of remaining systems I test on) - must test more - used to have elaborate workaround
 # TO REPRODUCE: TSAN_OPTIONS=suppressions=/Sandbox/Stroika-Dev/Tests/ThreadSanitizerSuppressions.supp Builds/g++-release-sanitize_thread_undefined/Tests/Test38

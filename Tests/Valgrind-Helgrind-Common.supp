@@ -73,13 +73,6 @@
    fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
 }
 {
-   https://stroika.atlassian.net/browse/STK-736 (sqlite)
-   Helgrind:Race
-   ...
-   fun:sqlite3_mutex_enter
-   ...
-}
-{
    https://stroika.atlassian.net/browse/STK-741
    Helgrind:Race
    ...
