@@ -323,7 +323,7 @@ namespace Stroika::Foundation::Execution {
         return true;
     }
     template <typename T, typename TRAITS>
-    inline void Synchronized<T, TRAITS>::NoteLockStateChanged_ ([[maybe_unused]] const wchar_t* m) const
+    inline void Synchronized<T, TRAITS>::NoteLockStateChanged_ ([[maybe_unused]] const wchar_t* m) const noexcept
     {
         if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {
             if (this->fDbgTraceLocksName) {

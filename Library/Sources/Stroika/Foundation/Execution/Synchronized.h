@@ -577,7 +577,7 @@ namespace Stroika::Foundation::Execution {
         [[deprecated ("Since Stroika 2.1b14 - use UpgradeLockNonAtomicallyQuietly")]] bool UpgradeLockAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout);
 
     private:
-        nonvirtual void NoteLockStateChanged_ (const wchar_t* m) const;
+        nonvirtual void NoteLockStateChanged_ (const wchar_t* m) const noexcept;
 
     private:
         using ReadLockType_ = typename TRAITS::ReadLockType;

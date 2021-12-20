@@ -1261,25 +1261,26 @@ namespace {
                     Thread::CheckForInterruption ();
                     auto rLock = isEven.cget ();
                     if (rLock.load ()) {
-                        while (not isEven.UpgradeLockNonAtomicallyQuietly (&rLock, [&] (auto&& writeLock, bool interveningWriteLock) {
-                            if (interveningWriteLock) {
-                                return false; // will get retried
-                            }
-                            else {
+                        isEven.UpgradeLockNonAtomicallyQuietly (
+                            &rLock,
+                            [&] (auto&& writeLock, bool interveningWriteLock) {
+                                if (interveningWriteLock) {
+                                    return false; // will get retried
+                                }
+                                else {
                                 // in this case we effectively did an atomic upgrade, because no intervening writers
 #if qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy
-                                bool t = writeLock.load ();
-                                if (not t) {
-                                    DbgTrace ("***assert false");
-                                }
+                                    bool t = writeLock.load ();
+                                    if (not t) {
+                                        DbgTrace ("***assert false");
+                                    }
 #else
-                                Assert (writeLock.load ());
+                                    VerifyTestResult (writeLock.load ());
 #endif
-                                writeLock.store (false);
-                                return true; // instead of reloading here, could return false and let retyr code happen
-                            }
-                        }))
-                            ;
+                                    writeLock.store (false);
+                                    return true; // instead of reloading here, could return false and let retyr code happen
+                                }
+                            });
                     }
                 }
             };
