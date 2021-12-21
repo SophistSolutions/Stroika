@@ -40,6 +40,7 @@ especially those they need to be aware of when upgrading.
      - qMacUBSanitizerifreqAlignmentIssue_Buggy still buggy on XCode 13
      - qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy bug workarounds
      - fixed qCompiler_LimitLengthBeforeMainCrash_Buggy bug define for macos xcode 13
+     - qCompilerAndStdLib_to_chars_FP_Buggy workaronud
   - Configurations
     - configure script
       - fixed cross-compiling flag for configure on macos x86 when setting corss compile for arm
@@ -69,9 +70,22 @@ especially those they need to be aware of when upgrading.
   - Major cleanup of Containers docs
 - All code cleanups 
   - cleanup use of operator= (...) = default and a few defaulted CTORS
+  - likely/unlikely attr cleanups
 - Foundation Library
   - Cache
     - Cache/CallerStalenessCache: docs and cleanups, and more careful about setting timestamp at END of fillerCache call, in case that takes real time
+  - Characters
+    - String
+      - new AsASCIIQuietly () method, along with new conversion type it supports (SmallStackBuffer), and used that to refactor String::AsASCII (adding extra conversion type it supports - smallstackbuffer)
+      - various cleanups to String code: SubString_ special case of full string optimizaiton, lose obsolete threadSafeCopy code (earlier thread safety model), and optimized String::Replace
+    - Number Conversion
+      - internal changes in String2Float() to make it run faster (using new std::from_chars) - maybe 30% speedup from this
+      - new String2Int and String2Float overloads taking 2 args (iterators instead of String) as performance tweak and use it JSON reader (and also other JSON reader perf cleanups)
+      - experimental use of __cpp_lib_format - but had worse performance, so ignore for now
+      - use new std c++ to_chars - THAT is much faster than snprintf, for converting float to string (in limited testing)
+      - String2Int and String2Float iterator overloads now implemented using from_chars (where possible) - and with asserts saying same results as before; and for String2Int, new require of no surrounding whitespace
+    - StringBuilder
+      - CTOR (const wchar_t* start, const wchar_t* end)
   - Configuration
     - Concepts
       - draft/experimental support for Configuration::IsIterableOfPredicateOfT_v with Collection<>::IsAddable (or _t)
@@ -96,14 +110,21 @@ especially those they need to be aware of when upgrading.
       - new ContainerDebugChangeCounts_ used in Containter code - so all the concrete containers use that to track if iterator used after initialized. That debugging found serveral cases where still an issue, so those fixed too so all regtests pass
       - rewrite of calls to CloneEmpty in Containers
       - Fixed significant performance bug with container RemoveAll calls (and small bugs with Bijection other apis losing attributes) and deprecated Iterable<>::_UpdateRep
-      - lose Container::DataStructures ... SupressMore logic, and hack in IteratorImplHelper to workaround it. **NOT BACKWARD COMPATIBLE**(only for code directly iterating using low level data structures), and other related contianer cleanups
+      - use prepend on a few LinkedList containers instead of Append, and fixed regression tests to not check for order and comment on a few related performance issues
     - Private::PatchingDataStructures REMOVED
+    - DataStructures
+      - Lots of mostly cosmetic, naming, private cleanups
+      - but also removed suppress support, and other attempts to make more uniform
+      - STLContainerWrapper uses const_iterator for iterator itself, and const ptr to data in iterator, cleaned up remove_constness code, and other data strucutres cleaned up docs/comments (mostly about complexity)
+      - more cleanups of Containers::DataStructures code - especially STLContainerWrapper - losing protected stuff and making things private (a few that were public) and require accessors
+      - lose SupressMore logic, and hack in IteratorImplHelper to workaround it. **NOT BACKWARD COMPATIBLE**(only for code directly iterating using low level data structures), and other related contianer cleanups
     - Association, AssociationCollection (and related concretes and factories) - all new
     - Bag - Lose obsolete Bag<> temlpte- container - never implemented and documented why not implemented (at least for now)
     - KeyedCollection, SortedKeyedCollection (and related concretes and factories) - all new
     - Mapping
       - fixed (I think longstanding) bug with Mapping_Array - copying / cloning - not copying comparer (so rarely relevant)
       - new method: Update() to accomodate new lack of automatic iterator patching in Stroika containers
+      - new Mapping_stdmap::CTOR (map<KEY_TYPE, MAPPED_VALUE_TYPE>&& src) for performance
     - Sequence
       - Sequence<>::erase method
       - regression test BugWithWhereCallingAdd_Test20_ and fix for Sequence<>::Where
@@ -123,11 +144,15 @@ especially those they need to be aware of when upgrading.
   - DataExchange
     - https://stroika.atlassian.net/browse/STK-558 - ObjectVariantMapper uses KeyedCollection<>
     - KeyedCollection/SortedKeyedCollection<> now supported in ObjectVariantMapper default mappers
+    - ObjectVariantMapper
+      - performance tweaks
   - Debug
     - Debug::UncheckedDynamicCast (use everywhere in place of dynamic_cast, as performance tweak when used just to CHECK/ASSERT)
     - AssertExTERNAL
       - cleaned up (made uniform) container support for scoped_lock<Debug::AssertExternallySynchronizedLock>  and shared_lock<const Debug::AssertExternallySynchronizedLock> writeLock/readLock
   - IO::Network
+  - Math
+    - workaround apparent bug with fabs () on windows, or just quirky edge case undocumented behavior - in mkElsipolon for NearlyEquals test
   - Memory
     - replaced NEltsOf macro with Memory::NEltsOf() function
     - SharedByValue
@@ -135,6 +160,12 @@ especially those they need to be aware of when upgrading.
       - revised/new rwget (); and deprecated CONST overload of get (use cget)
       - SharedByValue_CopyByDefault more efficeint for common case of shared_ptr - use make_shared
       - lots of cleanups to SharedByValue, including performance improvements. SOMEWHAT risky - losing SharedByValue_CopySharedPtrExternallySynchronized abstraction
+    - changed timing threshold on new shared_ptr performance regtest (with make_shared); but more importantly, now switched kSharedPtr_IsFasterThan_shared_ptr to always false - so we really don't need SharedPtr anymore (though may keep around for a little bit)
+    - BlockAllocation
+      - Memory::BlockAllocator<> now supports https://en.cppreference.com/w/cpp/named_req/Allocator - **NOT BACKWARD COMPATIBLE** - but not in a way that should matter since probably not used directly (deprecated BlockAllocator<T>::Deallocate/Allocate
+    - added helper UsesBlockAllocation (), and used it in IterableBase::MakeSmartPtr () to use allocate_shared<> where appropriate
+  - SmallStackBuffer<T>
+    - Added clear () method
   - Traveral
     - Iterator<T>
       - Added Refresh() method
@@ -142,6 +173,10 @@ especially those they need to be aware of when upgrading.
     - Iterable
       - deprecated _APPLY_ARGTYPE and _APPLYUNTIL_ARGTYPE and fixed a few remaining uses
       - marked qStroika_Foundation_Traveral_IterableUsesSharedFromThis_ as DEPRECATED feature flag
+      - qIterationOnCopiedContainer_ThreadSafety_Buggy https://stroika.atlassian.net/browse/STK-535  fixed 
+    - IterableFromIterator significant internal code cleanups - replacing many of the template specailizations iwth a few specific methods being enable_if_t and data member same trick
+    - Cleanup/simplify impl of MakeIterableFromIterator and CreateGeneratorIterator ()
+
 - Samples
 - Tests
 - ThirdPartyComponents
@@ -215,215 +250,6 @@ especially those they need to be aware of when upgrading.
 -------------
 
 #if 0
-    qIterationOnCopiedContainer_ThreadSafety_Buggy https://stroika.atlassian.net/browse/STK-535 maybe fixed - retesting
-
-commit d5b89e878842103565e0ef817814092aadeb0505
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 3 17:58:04 2021 +0100
-
-    changed timing threshold on new shared_ptr performance regtest (with make_shared); but more importantly, now switched kSharedPtr_IsFasterThan_shared_ptr to always false - so we really don't need SharedPtr anymore (though may keep around for a little bit)
-
-commit aa0d4270eae7830c08266e43ebdf3ad17f3d2737
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 4 18:22:56 2021 +0100
-
-    Memory::BlockAllocator<> now supports https://en.cppreference.com/w/cpp/named_req/Allocator - **NOT BACKWARD COMPATIBLE** - but not in a way that should matter since probably not used directly (deprecated BlockAllocator<T>::Deallocate/Allocate
-
-commit 4559950f2cf4b26e60acbe2542eed12d7e2e5227
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 4 19:02:55 2021 +0100
-
-    added helper UsesBlockAllocation (), and used it in IterableBase::MakeSmartPtr () to use allocate_shared<> where appropriate
-
-commit 6abca4fcd3f5db7e24537b69097007b3ac13e29e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 4 21:18:14 2021 +0100
-
-    use  if constexpr (Memory::UsesBlockAllocation<T> ()) in a few more places to invoke allocate_shared<T> and fixed String_BufferedArray_Rep_ performance issue ((use Memory::UseBlockAllocationIfAppropriate))
-
-commit 810581bad0046a08f5c1cf3c15baa1bc269bd2a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 4 22:57:19 2021 +0100
-
-    experimental use of __cpp_lib_format - but had worse performance, so ignore for now
-
-commit dd92f9b7abf93fbdecde133f8c537987c64df5c5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 4 23:45:42 2021 +0100
-
-    use new std c++ to_chars - THAT is much faster than snprintf, for converting float to string (in limited testing)
-
-commit 2fbca67e73e306e2167550aa7d161fd817e10489
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 5 00:16:53 2021 +0100
-
-    qCompilerAndStdLib_to_chars_FP_Buggy workaronud
-
-commit 9f5d0bbb6a751c5de8c82cfdec504ec80be65362
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 5 14:44:38 2021 +0100
-
-    qCompilerAndStdLib_to_chars_FP_Buggy for clang/xcode
-
-commit 72d82428b302e9fc8553d13c48608e4c8075b31f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 5 15:39:17 2021 +0100
-
-    workaround apparent bug with fabs () on windows, or just quirky edge case undocumented behavior - in mkElsipolon for NearlyEquals test
-
-commit ab608d5d23d42e648620492034a2f3f1ab9a89a2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 5 15:40:00 2021 +0100
-
-    Added SmallStackBuffer<T, BUF_SIZE>::clear () method
-
-commit a75f252411faa586cf1bf36f0e19b8eb7e882255
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 5 15:41:32 2021 +0100
-
-    new String::AsASCIIQuietly () method, along with new conversion type it supports (SmallStackBuffer), and used that to refactor String::AsASCII (adding extra conversion type it supports - smallstackbuffer)
-
-commit cd8fc78999457c18a4c3e9908e8b39c0a08db8cb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 5 20:14:55 2021 +0100
-
-    internal changes in String2Float() to make it run faster (using new std::from_chars) - maybe 30% speedup from this
-
-commit eb91c8ea10f780803b37d39fa9ded6833e56eb5b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 6 22:41:04 2021 +0100
-
-    Travaral::Generator cleanups; Traveral::Iterator docs
-
-commit 1cee46b38f7aa68bbafd64af6a4d8916fbe64e27
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 7 00:27:33 2021 +0100
-
-    Traversal/IterableFromIterator significant internal code cleanups - replacing many of the template specailizations iwth a few specific methods being enable_if_t and data member same trick
-
-commit 9db657680c661938c4857c091d25c867d7a9e528
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 7 15:17:52 2021 +0000
-
-    Cleanup/simplify impl of MakeIterableFromIterator and CreateGeneratorIterator ()
-
-commit af399b1135034e05b21230ef2162a263b66fe83f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 7 15:27:36 2021 +0000
-
-    cosmetic + unlikely attr cleanups to DataExchange/Variant/JSON/Reader
-
-commit 680e9225dd754431341c11200fa4ee7870e53b13
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 7 16:14:12 2021 +0000
-
-    new placeholder String2Int and String2Float taking 2 args (iterators instead of String) as performance tweak and use it JSON reader (and also other JSON reader perf cleanups)
-
-commit fc2f73614422d1d107ba1be681d39bc5773a2854
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 8 02:43:25 2021 +0000
-
-    more String::AsASCIIQuietly<> overload/specializations
-
-commit 0090a7e4a1f33d6f3b54f5857b6bb69ef47cef84
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 8 15:33:33 2021 +0000
-
-    String2Int and String2Float iterator overloads now implemented using from_chars (where possible) - and with asserts saying same results as before; and for String2Int, new require of no surrounding whitespace
-
-commit d51f98c452cc8d2188ceb88def045ca120a783dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 8 16:22:36 2021 +0000
-
-    minor tweaks to Math::NearlyEquals
-
-commit 1607da3ed1dba42649ee29c74dfede3fc58d6676
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 8 18:55:09 2021 +0000
-
-    new Mapping_stdmap::CTOR (map<KEY_TYPE, MAPPED_VALUE_TYPE>&& src) for performance
-
-commit 2624989d78b2ad9385a4173bd50bdf5211796366
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 8 19:03:13 2021 +0000
-
-    slight performance tweak in ObjectVariantMapper - construct std::map and then convert to Concrete::Mapping_stdmap<> at last minute with move CTOR
-
-commit 63a02011754801d050a24f335d874d786ef9c6d0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 8 23:12:55 2021 +0000
-
-    concrete containers; use prepend on a few LinkedList containers instead of Append, and fixed regression tests to not check for order and comment on a few related performance issues
-
-commit 3f6b07d5093816a7b7a23fa5398f7c541a77b644
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 8 23:23:56 2021 +0000
-
-    minor cleanups/performance tweaks on Set<T> code
-
-commit bf0699b27b7cd0fc89925f7feb00aed42b7156f0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 8 23:33:48 2021 +0000
-
-    Sequence_stdvector::Remove() performance tweaks
-
-commit a6539df4188179bbc2f07b9b8b580b50c6da4f34
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 9 03:13:32 2021 +0000
-
-    various cleanups to String code: SubString_ special case of full string optimizaiton, lose obsolete threadSafeCopy code (earlier thread safety model), and optimized String::Replace
-
-commit 827fb81f20eb6cbb9215e7386c33f438f3988add
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 9 03:13:55 2021 +0000
-
-     StringBuilder::StringBuilder (const wchar_t* start, const wchar_t* end)
-
-commit 2267f049ba04f2a0717b1d88904ede45074344b7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 9 15:59:43 2021 +0000
-
-    mostly cosmetic/docs cleanups to Containers/DataStructures code
-
-commit f96ace9552c986a5b13de52af65cfd57d702c334
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 9 16:00:10 2021 +0000
-
-    still need Default Switch setting for docker on windoze
-
-commit c57546676cfdea73a5b5ecb91ec88d63e393a618
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 9 17:55:07 2021 +0000
-
-    Containers::DataStrucutres cleanups: STLContainerWrapper uses const_iterator for iterator itself, and const ptr to data in iterator, cleaned up remove_constness code, and other data strucutres cleaned up docs/comments (mostly about complexity)
-
-commit fd21bc10f9798519b365d3b236adb9b86da275e4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 9 19:25:07 2021 +0000
-
-    more cleanups of Containers::DataStructures code - especially STLContainerWrapper - losing protected stuff and making things private (a few that were public) and require accessors
-
-commit d2d2a52719c52e653e926d46f684bf3b7e6a39bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 9 20:29:36 2021 +0000
-
-    mostly cosmetic cleanups to DataStructures::Array code (mostly private member names convention)
-
-commit dc8fe38418e10f9674e7d1150eeceeebcee45ff6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 10 02:54:46 2021 +0000
-
-    Containers::DataStructures::LinkedList cleanups
-
-commit 92dc82ddae8426c109c5911ea5b7ff061647ec5b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 10 11:12:42 2021 +0000
-
-    More cleanups to Containers::DataStructures::DoublyLinkedList
-
-commit e90b888d1d1dd91ebf794526b67f0b0faedbba34
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 10 12:12:51 2021 +0000
 
     performance tweak: CreateGeneratorIterator now uses block allocation for its iterator-rep
 
