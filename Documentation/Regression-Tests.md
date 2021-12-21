@@ -59,6 +59,16 @@ checkin from one spot.
       ./ScriptsLib/RegressionTests
   ```
 
+- \$TEST_TARGET=Windows_VS2k22
+
+  (on windows bash shell run; takes about 4 HRs)
+  (note this done on my laptop, not windows-dev-vm)
+
+  ```bash
+  USE_TEST_BASENAME=Windows_VS2k22 PLATFORM=VisualStudio.Net-2022 \
+      ./ScriptsLib/RegressionTests
+  ```
+
 - \$TEST_TARGET=Ubuntu1804_x86_64
 
   (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
