@@ -8,181 +8,130 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
+### 2.1b14x {2021-12-??}
 
-### MAJOR POINTS FOR THIS RELEASE
+#### TLDR
 
 - Major revsion / cleanups to Containers
-  - Unified constructors, and major improvments to 'concept' usage on constructors, IsAddable
+  - Unified constructors, and major improvments to 'concept' usage on constructors, IsAddable, etc
   - new KeyedCollection, SortedKeytedCollection, Assocation, and SortedAssocation containers (along with related factories/concrete types)
   - No more Iterator patching (and related API changes to containers).
-  - Performance improvements to containers
-
 - New XCode support, including support for M1 native/cross compiling
 - openssl 3
-- boost X?
 - Visaul Studio 2022 support
 - Performance and polish improvements
 
+#### Change Details
+
+- Build System And Tools
+  - Build Scripts
+    - PARALLELMAKEFLAG arg support in RunRemoteRegressionTests script
+  - Compiler versions
+  - Compiler bug defines
+     - qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy
+     - another workaround for https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
+     - added BWA qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy and a few other changes for last minute openssl 3.0
+  - Configurations
+    - configure script
+      - fixed cross-compiling flag for configure on macos x86 when setting corss compile for arm
+      - fix confugre to not default to using LTO on clang++6 since that fails on ubuntu for libcurl (not worth debugging why)
+      - Improved configure error reporting if it cannot open configuration output file
+
+  - Docker
+    - workaround https://stroika.atlassian.net/browse/STK-742 issue with docker desktop on windows
+  - MacOS Builds
+    - Build / pass regtests on M1 MacOS (alot of fixes rolled into this)
+    - macos default configurations - now also build Release-x86_64 and Release-arm64e
+  - CI Systems
+  - Debugger
+  - Scripts
+    - Cross-Compiled-Only flag optionally to GetConfigurations and --quiet
+  - codeql
+  - Regression Tests
+    - use --cross-compiled-only flags in RegressionTests call to GetConfigurations to correctly count expected number of passed tests
+    - fixed regressiontest sample app test loop to not run local tests when cross compiling
+
+- Documentation
+  - Lots of docs cleanups
+  - Major cleanup of Containers docs
+- Foundation Library
+  - Cache
+    - Cache/CallerStalenessCache: docs and cleanups, and more careful about setting timestamp at END of fillerCache call, in case that takes real time
+  - Containers
+    - Sequence
+      - Sequence<>::erase method
+      - regression test BugWithWhereCallingAdd_Test20_ and fix for Sequence<>::Where
+  - Configuration
+    - Concepts
+      - draft/experimental support for Configuration::IsIterableOfPredicateOfT_v with Collection<>::IsAddable (or _t)
+      - fixed test for Configuration::IsIterableOfPredicateOfT_v
+      - new typetraits helper ExtractValueType_t
+
+  - Database
+  - DataExchange
+  - IO::Network
+- Samples
+- Tests
+- ThirdPartyComponents
+  - curl
+    - Simplify / fix invoke submake in libcurl thirdpartycomponents makefile so should work for raspbeerypi cross config and macos m1 cross compiles
+    - use libcurl 7.79.1 (except not on macos yet)
+  - LZMA
+    - fixed LZMA TPC makefile to use configure-based linker, so cross-compilers work on macos
+  - openssl
+    - https://stroika.atlassian.net/browse/STK-427 (Get OpenSSL working with cross-compile...) workaround appears no longer needed for raspberrypi and causes problems on macos
+    - OpenSSL 3.0
+      - Many fixes/changes to build for different OSes etc and openssl 3 support
+      - fix builds for raspberrypi - machine arm-linux-gnueabihf - set target config for that machine so builds properly and no -m64 errors
+      - openssl 3.0 builds need configure --libdir=lib(still untested)???
+
+  - sqlite
+    - Fixed makefile logging to BUILD_LOG.txt
+  - zlib
+    - fixed zlib makefile to pass along AR/RANLIB build flags to lower makefile (for build of with clang/lto on ubuntu)
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13; XCode: 13 }
+  - MSVC: { 15.9.36, 16.10.4, 16.11.8, 17.0.3 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+    - WSL v1 & WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - both running x86_64 and arn64/m1 chips
+  - Linux: { Ubuntu: [18.04, 20.04, 21.10], Centos: [7, 8], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - CodeQL
+- Build Systems
+  - [CircleCI](https://app.circleci.com/pipelines/github/SophistSolutions/Stroika)
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+  - Centos 7
+    - two warnings about locale issues, very minor
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - vs2k19 and vs2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+  - WSL-Regression tests
+    - Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure
 
 
-
-#### COMPILER BUG WORKAROUNDS
-
-- qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy
-- another workaround for https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
-
-#### COMPILER VERSIN SUPPORTS
-
-- VS_16_11_1 in docker builds
-
-- Mac / XCode
-  - Build / pass regtests on M1 MacOS (alot of fixes rolled into this)
-  - macos default configurations - now also build Release-x86_64 and Release-arm64e
-
-##### Build System
-
-- PARALLELMAKEFLAG arg support in RunRemoteRegressionTests script
-- https://stroika.atlassian.net/browse/STK-427 (Get OpenSSL working with cross-compile...) workaround appears no longer needed for raspberrypi and causes problems on macos
-
-
-#### ThirdPartyCompoents
-
-- LZMA
-  - fixed LZMA TPC makefile to use configure-based linker, so cross-compilers work on macos
-- zlib
-  - fixed zlib makefile to pass along AR/RANLIB build flags to lower makefile (for build of with clang/lto on ubuntu)
-- sqlite
-  - Fixed makefile logging to BUILD_LOG.txt
-
-
-##### Docs
-- Lots of docs cleanups
+-------------
 
 #if 0
-
-commit ab92fe9abf7853d0762500b842437b0cb1c201b2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 19 13:49:16 2021 -0400
-
-    Simplify / fix invoke submake in libcurl thirdpartycomponents makefile so should work for raspbeerypi cross config and macos m1 cross compiles
-
-commit 91f2ff8c35fc0b975bc7663e3635133569ffc797
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 19 14:00:34 2021 -0400
-
-    Simplify / fix invoke submake in libcurl thirdpartycomponents makefile so should work for raspbeerypi cross config and macos m1 cross compiles
-
-commit b78ceed638eda255bc689a1712211996ebf2fb3e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 20 01:43:02 2021 +0100
-
-    fixed cross-compiling flag for configure on macos x86 when setting corss compile for arm
-
-commit c278b0b7cf1c6305efa9e29742588729e2505413
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 20 10:53:06 2021 -0400
-
-    Cross-Compiled-Only flag optionally to GetConfigurations
-
-commit f02ff6e941384befee981066a564b9dad20bfbf3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 20 10:53:41 2021 -0400
-
-    use --cross-compiled-only flags in RegressionTests call to GetConfigurations to correctly count expected number of passed tests
-
-commit 8293adb55b0c9eaad090d0ae38260c06a2126e8e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 20 21:49:04 2021 -0400
-
-    use --quiet arg to a few GetConfigurations calls
-
-commit e0cfc0b18eed67cd770ca32690078fb4b572f1a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 20 22:02:04 2021 -0400
-
-    GetConfigurations --quiet
-
-commit 47d548347d28f51d89f2197b492650df50d37231
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 20 22:09:45 2021 -0400
-
-    fixed regressiontest sample app test loop to not ren local tests when cross compiling
-
-commit 7f752016f36b92b6fb62718855c143829cc4f011
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Aug 21 20:10:01 2021 -0400
-
-    fix confugre to not default to using LTO on clang++6 since that fails on ubuntu for libcurl (not worth debugging why)
-
-commit 554e201c97629e929782dace20abbea6f8d17fc1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 23 16:11:06 2021 +0100
-
-    workaround https://stroika.atlassian.net/browse/STK-742 issue with docker desktop on windows
-
-commit ae0a02a94a9358d842c8c3ac97cd22563164f945
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 24 12:51:01 2021 +0100
-
-    abandon doing release now since builds suggest maybe not stable
-
-commit 6d72121efb0a8d236b15a630f9ce7860bc4213c0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 30 03:02:48 2021 +0100
-
-    regression test BugWithWhereCallingAdd_Test20_ and fix for Sequence<>::Where
-
-commit 9c5af9d2f04ecda91f1197398b0b9d720b48f791
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 30 14:43:26 2021 +0100
-
-    cosmetic and use uniform initializer (only tested on windows - hope OK on unix)
-
-commit bb4eb25fb47022a3c3ab98e334b689cba14bb5a6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 30 17:48:43 2021 +0100
-
-    fixed vs2k19 sln file for Foundation::Cache folder (wrong files included)
-
-commit e147fcdf2003f8a9dd50401eba356bf5b0b05195
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 30 17:50:32 2021 +0100
-
-    Cache/CallerStalenessCache: docs and cleanups, and more careful about setting timestamp at END of fillerCache call, in case that takes real time
-
-commit 35f73d643c5fc89627972cb53fe3a19161b0919d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 4 04:00:17 2021 +0100
-
-    Sequence<>::erase method
-
-commit 6dc67885128896af7dc2582d834c203fba7d49f7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Sep 10 04:07:47 2021 +0100
-
-    Switch to released OpenSSL 3.0, and added BWA qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy and a few other changes for last minute openssl 3.0 name changes
-
-commit c429ce8bdf9518c89186a7bf2fc2891b917debd7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Sep 10 04:53:07 2021 +0100
-
-    openssl 3.0 builds need configure --libdir=lib(still untested)
-
-commit e3683b517e7fc7165a4ffb78f405b1b77b99bcaf
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Sep 10 05:08:42 2021 +0100
-
-    qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy broken for gcc (so probably real bug with my code or openssl)
-
-commit b711f019b6cbba9eafb4aeb8da8af660143fdcdf
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Sep 10 09:53:22 2021 -0400
-
-    Improved configure error reporting if it cannot open configuration output file
-
-commit 36a4fe1cee86a04f7ccf580641d98eb053b19584
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Sep 11 23:03:00 2021 -0400
 
     Cryptography/OpenSSL/LibraryContext - fixes to load/unload logic to fix issues found by TemporarilyAddProvider cleanups; and fixed Load/Unload issues
 
@@ -191,18 +140,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Sep 12 14:01:10 2021 -0400
 
     Added missing perl modules for Centos VMs to build OpenSSL 3
-
-commit 331496167ece5718d1d2b10f0e7f53277f4e425f
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Sep 13 20:33:50 2021 -0400
-
-    OpenSSL 3.0 fix builds for raspberrypi - machine arm-linux-gnueabihf - set target config for that machine so builds properly and no -m64 errors
-
-commit 3fb039bab894263ffa1b8a6f1992eee58c900963
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 14 02:03:35 2021 +0100
-
-    cleanup recent dumpmachine OpenSSL 3.0 fix
 
 commit 75b03daeb343a7e5e304c2a831623c5431b0c3d4
 Author: Lewis Pringle <lewis@sophists.com>
@@ -276,24 +213,6 @@ Date:   Tue Sep 21 01:51:11 2021 +0100
 
     use latest VS2k19 for RunLocalWindowsDockerRegressionTests and make docker image, and -j8 -cpus 8, and lose --memory 8G since fails for unknown reasons
 
-commit 4ec01fbc0f66c3ce2bb4a8ceb0d76a7f444e6e82
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 21 01:52:17 2021 +0100
-
-    draft of KeyedCollection<> template
-
-commit a2ca3ac2df82ff02c76691a4907e8b6884a0217a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 22 19:54:59 2021 +0100
-
-    test codeql
-
-commit fdacbbc95ca790920ce47d98bd3df4886a20a206
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 22 21:22:02 2021 +0100
-
-    try to fix codeql test workflow
-
 commit 6b992d55ff7e991dd0e39e7764a95b3fac44579a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Sep 22 21:23:28 2021 +0100
@@ -311,30 +230,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 23 01:19:07 2021 +0100
 
     sortedkeyedcollection progress
-
-commit e52204c44cb5b35c44400ca4c21940cf5d74dd16
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 23 01:28:45 2021 +0100
-
-    attempt to fix workflow  codeql-analysis
-
-commit e52ac383ba4dee57d518b0082227620167908358
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 23 01:34:05 2021 +0100
-
-    progress on .github/workflows/codeql-analysis.yml
-
-commit e3b9616a5c01a6b5eeaaf9910f6a61301ce076d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 23 01:35:13 2021 +0100
-
-    progress on .github/workflows/codeql-analysis.yml
-
-commit da6c9131a48fbd7e573bd97f2a9048c7249c2414
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 23 01:47:30 2021 +0100
-
-    more cleanups of  .github/workflows/codeql-analysis.yml
 
 commit a3d62abc60217b3e14dcff365479b566ae505803
 Author: Lewis Pringle <lewis@sophists.com>
@@ -354,24 +249,6 @@ Date:   Thu Sep 23 21:08:10 2021 -0400
 
     xcode doesnt support auto in function param names - must use template
 
-commit eda0399807b857389a27de43ff591de2b5e166a6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 24 02:12:39 2021 +0100
-
-    another attempt to get codeql working
-
-commit d96ecfdcfa65bc60254faf1be35be09c657ef63c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 25 13:37:50 2021 +0100
-
-    more progress on CodeQL build
-
-commit cdd01d9093149bda529ea9171df9e6cc6b8319aa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 25 14:07:09 2021 +0100
-
-    more progress on CodeQL build
-
 commit a6fd0a4900c1a04746b817f6d9f6f5767c617587
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 25 14:35:43 2021 +0100
@@ -383,12 +260,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 25 14:54:16 2021 +0100
 
     not totally backward compatible change to all container templates - renamed (for example) _BijectionRepSharedPtr to  _IRepSharedPtr
-
-commit 54ec6914e7c361d94ab7a3e0cc52ad19dbfc0da3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 26 01:51:13 2021 +0100
-
-     [[NO_UNIQUE_ADDRESS_ATTR]]
 
 commit 69b51e0a142de63777c51a1c7871aab2c60863d1
 Author: Lewis Pringle <lewis@sophists.com>
@@ -480,12 +351,6 @@ Date:   Wed Sep 29 01:33:26 2021 +0100
 
     Progress on SortedKeyedCollection ctors
 
-commit 5084ed7b1f41e09e875ea7a10912ba90859f0270
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Sep 28 20:51:25 2021 -0400
-
-    fixed mistakes in last KeyedCollection.inl checkin
-
 commit 1061c6c1d845576da2665be76cd8cd3a1787e4d4
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Sep 29 01:54:41 2021 +0100
@@ -504,12 +369,6 @@ Date:   Thu Sep 30 02:09:47 2021 +0100
 
     fixed small recent regression in RunPerformacenRegressionTests
 
-commit 48e57038e62b5a31a71eaed713a959215f7a896c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 30 14:18:02 2021 +0100
-
-    use libcurl 7.79.1 (except not on macos yet)
-
 commit 9767ddce34f56ce30138f2805c2765edd80a3edb
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Oct 1 02:46:40 2021 +0100
@@ -527,18 +386,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Oct 2 02:29:04 2021 +0100
 
     Cleaned up CTORs for Concrete::KeyedCollection_LinkedList<> and improved regtests
-
-commit 665b9b7bd20545cf8ff62d4fef8e042d2ae97bc3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 2 03:14:18 2021 +0100
-
-    new draft KeyedCollection_stdset
-
-commit f5e3004cc133307b787147e3e40866649bb12d06
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 2 03:57:53 2021 +0100
-
-    KeyedCollection_Factory ... enable_if KEY_TYPE=equal_to use KeyedCollection_stdset
 
 commit cdd40c037e6b27c7400fdc5e11f623cffe1acc6d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2412,12 +2259,6 @@ Date:   Tue Nov 30 14:12:20 2021 -0500
 
     fixed dockerfile cuz clang++-13 appears to depend on libunwind-13-dev
 
-commit e42b2293169a3968c5456fd560275b1c20e64340
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Nov 30 14:50:28 2021 -0500
-
-    support clang++-13 bug defines
-
 commit fc1f39236863ab8236ac923fd1ad6e3823b8a8d7
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue Nov 30 14:52:33 2021 -0500
@@ -2484,41 +2325,17 @@ Date:   Wed Dec 1 21:24:25 2021 -0500
 
     cleanup CTORs for the various containers - more uniform use of copy/move etc. Prepare to doc all this. And re-opened and solved  https://stroika.atlassian.net/browse/STK-541 - just a bad test case and going to document why not allowed
 
-commit 037ca305e6db494f0f3d848ecb48becfa744ea63
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 2 08:02:16 2021 -0500
-
-    docs on Container Constructors
-
-commit f4c43935718614f22531a4563bac535ad8b0454c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 2 08:16:56 2021 -0500
-
-    Containers docs
-
 commit ceb577a45b5c8f39dae6d0eb710a345ddee707fc
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Dec 2 08:28:19 2021 -0500
 
     fixed check for right version of libc++ stuff to only do on linux not xcode cuz looking in the wrong place
 
-commit 9e0daf2801d77a2a19e43b2ed8492cd561610357
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 2 08:43:13 2021 -0500
-
-    container docs
-
 commit 1ae31cce3ca7aab76d2338e02a2ddc102c214eee
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Dec 2 09:40:21 2021 -0500
 
     fixed recent regression in configure --no-sanitizer flag support (dropped default vptr for clang/macos)
-
-commit 568fc8c6786d2e4192ece2feeb4e209ba4dfc803
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 2 10:29:48 2021 -0500
-
-    Cosmetic
 
 commit f5e3bfc57305b86fbdc8f4518010730fff359095
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2633,30 +2450,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 3 21:29:55 2021 -0500
 
     Added a couple IsAddable uses in Containers
-
-commit e2be8a50d834de11190bd538776dfb2887837d4b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 3 22:58:37 2021 -0500
-
-    draft/experimental support for Configuration::IsIterableOfPredicateOfT_v with Collection<>::IsAddable (or _t)
-
-commit 985ad5fb4b65b24232f353f0d3d344006285b195
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Dec 4 07:56:04 2021 -0500
-
-    fixed test for Configuration::IsIterableOfPredicateOfT_v
-
-commit 20af8fb6487d4dd6b92ee078badcebeb6a240f5f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 4 13:28:53 2021 -0500
-
-    new typetraits helper ExtractValueType_t
-
-commit bde467a40f05630fde7c64c2fcf318d46d4b0c0e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 4 14:12:18 2021 -0500
-
-    Fixed new ExtractValueType_t to support references etc
 
 commit d118bbe0e15461dc878f383b7a9a343e3d774acd
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2789,7 +2582,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 6 20:26:03 2021 -0500
 
     lose use of qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy, but leave define in case we need to use it again (cuz documents how to workaroudn -w as hard to figure out); and docs cleanups for container s9- migrated common stuff to ReadMe.md
-
 
 commit 06a616dd28b6a4f02a187af9897ca05d6674af86
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3398,12 +3190,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 18 10:52:23 2021 -0500
 
     Iterable<>::Sequential/Set/EtcEquals methods take default template arg of initializer_list<> so we can say c.Skip (3).SequentialEquals ({4, 5, 6}) etc and updated docs accordingly
-
-commit 10a526326ca82f0b17a7568a191b7928a1471605
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 18 11:38:38 2021 -0500
-
-    smaples cleanups
 
 commit f513b89e7cd78dafb227794ea15794e06545d424
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
