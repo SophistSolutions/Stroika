@@ -31,19 +31,26 @@ especially those they need to be aware of when upgrading.
       - (vs 2k 17) 16.11.5??
       - (vs 2k 19) 16.11.5??
       - (vs 2k 22) 16.11.5??
+    - XCode
+      - Upgrade to XCode 13
   - Compiler bug defines
      - qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy
      - another workaround for https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
      - added BWA qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy and a few other changes for last minute openssl 3.0
      - qMacUBSanitizerifreqAlignmentIssue_Buggy still buggy on XCode 13
+     - qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy bug workarounds
+     - fixed qCompiler_LimitLengthBeforeMainCrash_Buggy bug define for macos xcode 13
   - Configurations
     - configure script
       - fixed cross-compiling flag for configure on macos x86 when setting corss compile for arm
       - fix confugre to not default to using LTO on clang++6 since that fails on ubuntu for libcurl (not worth debugging why)
       - Improved configure error reporting if it cannot open configuration output file
+      - fixed configure script calculate of default FEATUREFLAG_ATLMFC (esp for vs2k22)
+    - Support for vs2k22 in configure
 
   - Docker
     - workaround https://stroika.atlassian.net/browse/STK-742 issue with docker desktop on windows
+    - updated docker build code to have both builds of vs2k19 and vs2k22
   - MacOS Builds
     - Build / pass regtests on M1 MacOS (alot of fixes rolled into this)
     - macos default configurations - now also build Release-x86_64 and Release-arm64e
@@ -55,10 +62,13 @@ especially those they need to be aware of when upgrading.
   - Regression Tests
     - use --cross-compiled-only flags in RegressionTests call to GetConfigurations to correctly count expected number of passed tests
     - fixed regressiontest sample app test loop to not run local tests when cross compiling
+    - new std::shared_ptr (make_shared) versus Memory::SharedPtr performance test
 
 - Documentation
   - Lots of docs cleanups
   - Major cleanup of Containers docs
+- All code cleanups 
+  - cleanup use of operator= (...) = default and a few defaulted CTORS
 - Foundation Library
   - Cache
     - Cache/CallerStalenessCache: docs and cleanups, and more careful about setting timestamp at END of fillerCache call, in case that takes real time
@@ -72,14 +82,28 @@ especially those they need to be aware of when upgrading.
     - All Containers Constructors
       - major cleanup of all CTORS - more uniform across archetypes and concrete
       - Use IsAddable_v in CTORSs and "Add()/AddAll()" methods (static_assert).
+      - **Lose Iterator Patching** - major change to all containers, well document rules of iterator lifetime
+      - https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
     - All Containers other
       - not totally backward compatible change to all container templates - renamed (for example) _BijectionRepSharedPtr to  _IRepSharedPtr (or similar)
       - use  [[NO_UNIQUE_ADDRESS_ATTR]] in MANY places (factories, concretes) to save space/performance
+      - added value_type using declaration in containers (subclassing from Iterable)
+      - _GetWriterRepAndPatchAssociatedIterator helper added to help with new Remove (I, &nextI) apis
+      - lose _APPLY_ARGTYPE, _APPLYUNTIL_ARGTYPE, and use explicit types, and cleanup use of forward declared using typedefs in various mixins (simpler) - and heavy switch to using value_type - ESPECAIALLY as arg to Iterator<> - so much simpler/clearer code in container impls
+      - CloneAndPatchIterator
+      - cleanup Container Clone code - no longer need const cast
+      - various cleanups - losing uneeded const_cast code with iterators - so Stroika Iterators ALWAYS have CONST ptr to underlying data
+      - new ContainerDebugChangeCounts_ used in Containter code - so all the concrete containers use that to track if iterator used after initialized. That debugging found serveral cases where still an issue, so those fixed too so all regtests pass
+      - rewrite of calls to CloneEmpty in Containers
+      - Fixed significant performance bug with container RemoveAll calls (and small bugs with Bijection other apis losing attributes) and deprecated Iterable<>::_UpdateRep
+      - lose Container::DataStructures ... SupressMore logic, and hack in IteratorImplHelper to workaround it. **NOT BACKWARD COMPATIBLE**(only for code directly iterating using low level data structures), and other related contianer cleanups
+    - Private::PatchingDataStructures REMOVED
     - Association, AssociationCollection (and related concretes and factories) - all new
     - Bag - Lose obsolete Bag<> temlpte- container - never implemented and documented why not implemented (at least for now)
     - KeyedCollection, SortedKeyedCollection (and related concretes and factories) - all new
     - Mapping
       - fixed (I think longstanding) bug with Mapping_Array - copying / cloning - not copying comparer (so rarely relevant)
+      - new method: Update() to accomodate new lack of automatic iterator patching in Stroika containers
     - Sequence
       - Sequence<>::erase method
       - regression test BugWithWhereCallingAdd_Test20_ and fix for Sequence<>::Where
@@ -93,24 +117,39 @@ especially those they need to be aware of when upgrading.
       - warn/report if cannot load openssl provider - dont fail in openssl regtests
       - Additional workaround for https://stroika.atlassian.net/browse/STK-679 on openssl3"
       - rewrite use of openssl md5 (now deprecated) with Stroika local copy of algorithm
+      - library context code switched from Mapping<> to Association<> use
 
   - Database
   - DataExchange
     - https://stroika.atlassian.net/browse/STK-558 - ObjectVariantMapper uses KeyedCollection<>
     - KeyedCollection/SortedKeyedCollection<> now supported in ObjectVariantMapper default mappers
+  - Debug
+    - Debug::UncheckedDynamicCast (use everywhere in place of dynamic_cast, as performance tweak when used just to CHECK/ASSERT)
+    - AssertExTERNAL
+      - cleaned up (made uniform) container support for scoped_lock<Debug::AssertExternallySynchronizedLock>  and shared_lock<const Debug::AssertExternallySynchronizedLock> writeLock/readLock
   - IO::Network
   - Memory
     - replaced NEltsOf macro with Memory::NEltsOf() function
     - SharedByValue
-      - added new Assure2OrFewerReferences and GetAndMaybeCopySavingOriginal member functions
+      - added new AssureNOrFewerReferences and GetAndMaybeCopySavingOriginal member functions
+      - revised/new rwget (); and deprecated CONST overload of get (use cget)
+      - SharedByValue_CopyByDefault more efficeint for common case of shared_ptr - use make_shared
+      - lots of cleanups to SharedByValue, including performance improvements. SOMEWHAT risky - losing SharedByValue_CopySharedPtrExternallySynchronized abstraction
   - Traveral
     - Iterator<T>
       - Added Refresh() method
+      - **not backward compatible** - but only an issue if someone wrote Container backends - no more IteratorOwnerID and related Iterator Owner stuff
+    - Iterable
+      - deprecated _APPLY_ARGTYPE and _APPLYUNTIL_ARGTYPE and fixed a few remaining uses
+      - marked qStroika_Foundation_Traveral_IterableUsesSharedFromThis_ as DEPRECATED feature flag
 - Samples
 - Tests
 - ThirdPartyComponents
   - boost
     - https://dl.bintray.com no longer supported for boost downloads
+    - lose old complex code for setting --jobs flag in BOOST build - never really worked/helped, so needless complexity
+    - finally got working with vs2k22 (when get new boost)
+    - use boost 1.78.0 (which fixes build issue with VS2k22)
   - curl
     - Simplify / fix invoke submake in libcurl thirdpartycomponents makefile so should work for raspbeerypi cross config and macos m1 cross compiles
     - use libcurl 7.79.1 (except not on macos yet)
@@ -129,6 +168,8 @@ especially those they need to be aware of when upgrading.
 
   - sqlite
     - Fixed makefile logging to BUILD_LOG.txt
+  - Xerces
+    - fixed build for vs2k22
   - zlib
     - fixed zlib makefile to pass along AR/RANLIB build flags to lower makefile (for build of with clang/lto on ubuntu)
 
@@ -174,530 +215,6 @@ especially those they need to be aware of when upgrading.
 -------------
 
 #if 0
-
-    
-    progress losing iterator patching - just mutliset and mapping so far - regtests passing but not well
-
-commit 1cb7eb321fc659229d5c61999318bae6e29ae0f3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 19 15:12:38 2021 +0100
-
-    More progress losing iterator patching code - for Set/Sequence and a few more
-
-commit c98d1dc9f7b05dcd7a9290b2edac9c870ad1211c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 19 17:40:23 2021 +0100
-
-    start using new Debug::CAST support
-
-commit fb94b6001e98915c36496148fa1427370f2fc30e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 19 20:32:21 2021 +0100
-
-    cleanups to, and more use of Debug::UncheckedDynamicCast
-
-commit 0eeeebed498b55f7a99e84d8d59080e2735f53a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 21 20:10:33 2021 +0100
-
-    added value_type using declaration in containers (subclassing from Iterable)
-
-commit be6cd73d53d6e107102db546c8b5506347abe95c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 18 07:50:50 2021 +0100
-
-    progress losing iterator patching - just mutliset and mapping so far - regtests passing but not well
-
-commit f6ec327ede9e5e14698e3953faccc91b06d5f274
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 19 15:12:38 2021 +0100
-
-    More progress losing iterator patching code - for Set/Sequence and a few more
-
-commit 815c2f59a596d3c76db993b62fa35186e792370c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 19 17:40:23 2021 +0100
-
-    start using new Debug::CAST support
-
-commit 9112ae9baaa8b53850c594682ae541ddec113c2c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 19 20:32:21 2021 +0100
-
-    cleanups to, and more use of Debug::UncheckedDynamicCast
-
-commit cab92eef65e9ac9d224abe8a6acaf031be7584c4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 21 20:49:18 2021 +0100
-
-    lots more progress on new containers 'patching' logic - very restricted support now for patching (so far just on Remove); working for Multiset and Mapping now. More to come; rewrote much of low level Array template (esp iterator) - less duplication and use index instead of ptr for current (to avoid work patching)
-
-commit bd4f654e34f8176ed85718d92b55ea930e0d5de5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 21 23:10:27 2021 +0100
-
-    Progress moving DataHyperRectangle code to using new Iterator code (non-patching)
-
-commit 786ad600e2908be8676ef31611dd929ca5c45b11
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 22 04:43:16 2021 +0100
-
-    more refactoring for new iterable patching: renamed IteratorHelper2_ back to IteratorHelper_ and got rid of a few more uses of PatchindgDataStructures and marked the files deprecated
-
-commit e9d6db4ff7cf94e68b95c3d48788005708c28bd9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 22 14:39:07 2021 +0100
-
-    start support for vs2k22 in configure
-
-commit b939b74c50679cad49a54318d5ef3159764ca79c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 22 14:40:57 2021 +0100
-
-    cosmetic lenaups to IteartorImplHelper_
-
-commit cfe31d26847dfca9ac16fcf9e80d5988da619abe
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Oct 22 10:05:08 2021 -0400
-
-    qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy bug workarounds
-
-commit 823760b3f0650330dec175b69cd72035088b9d31
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 22 15:28:12 2021 +0100
-
-    fixed docker getting started instructions for new configuration names for windows
-
-commit 8e449897dcb2ff6303a193e2cf333d281e771430
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Oct 22 10:36:00 2021 -0400
-
-    fixed Configure-VisualStudio-Support.pl for vs2k22
-
-commit 794a7b082aba36d30d4db1d0fb4a8f6421c0ccc1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 22 20:54:44 2021 +0100
-
-    updated docker build code to have both builds of vs2k19 and vs2k22
-
-commit 4131e96724ba0a10516221cde3c7edce8d704be5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 22 21:53:13 2021 +0100
-
-    refactoring cleanup on lose-iterator-patching code - _GetWriterRepAndPatchAssociatedIterator helper added
-
-commit a5916fd84b94292683cf027c3837a2f334b41c32
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 22 22:07:24 2021 +0100
-
-    fixed remiaing refernece to  Private::PatchingDataStructures
-
-commit e6275cf37e31e8267486bc2b1ff2be1103507ccd
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Oct 22 17:20:12 2021 -0400
-
-    qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy also broken on gcc 11
-
-commit eec2b6e8cdd59fef3b9dffda445e639472277c1f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 22 22:28:20 2021 +0100
-
-    MultiSet<T, TRAITS>::_GetWriterRepAndPatchAssociatedIterator refactornig
-
-commit 20759c518a8a96c456394873dce44cb0aeb4a167
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 22 22:42:26 2021 +0100
-
-    Cosmetic, and lose a few more refs to old patching code
-
-commit bfabad5d5640b8f324978f90e1503c1a88ae538e
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Oct 22 20:46:17 2021 -0400
-
-    workaround weird syntax issue afflicting g++8 - not worth bug define
-
-commit 13abd4025559057b406350f2f0017e8a6ec9d646
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 23 01:50:53 2021 +0100
-
-    PatchBeforeRemove/PatchIteratorBeforeRemove/CloneAndPatchIterator for Collection<> classes
-
-commit c2247912d79be71e7fcb0e0adac06419bde5bcc9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 22 20:54:09 2021 -0400
-
-    fixed macos specific typo (recent regression)
-
-commit 7e2aab54a6741af766107e877c57e1a1040008e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 23 02:18:36 2021 +0100
-
-    cleanups to Containers/DataStructures code
-
-commit 6f8f12c2fbec994a7ccfb61dec53241ee800ae92
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 23 02:31:31 2021 +0100
-
-    cosmetic cleanups to DataStructure::LinkedList code
-
-commit a8db588091f354294df3f72057db5154ab894abd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 23 04:19:16 2021 +0100
-
-    vs2k22 support (docker and slns and project files)
-
-commit d41b0bd96543f716c0272db22b2ad2ab59bfef82
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 23 04:29:52 2021 +0100
-
-    use if constexpr in a few places to silence warnings
-
-commit 9a089751d6309863f90f121ca3adc9fe8b57ad73
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 23 04:30:08 2021 +0100
-
-    vs2k22 support
-
-commit 86f678a033607e4b57f72c1c6ce8a903c174518e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 23 13:20:12 2021 +0100
-
-    fixed configure script calculate of default FEATUREFLAG_ATLMFC
-
-commit 5a11104d43e760bb37d429f6416b783cf944845c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 23 14:57:13 2021 +0100
-
-    silence warning
-
-commit c1adb0380dce3509444c4ef8bbc866792dc7a9b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 23 14:57:36 2021 +0100
-
-    fixed configure script checking for atlmfc for vs2k22
-
-commit 467b6f316051501caef032ac6c21088bfd470769
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 23 14:57:55 2021 +0100
-
-    fixed xerces build for vs2k22
-
-commit cc1b697afc0e415d1b70714f9a350c374cf3fc82
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 23 14:58:14 2021 +0100
-
-    makefile help improvements
-
-commit 1ec3558cc6fa150bc23f6d302c20413aa5f43419
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 23 14:59:00 2021 +0100
-
-    tweaked vs2k22 projectfiles
-
-commit 6830ccc0a56341f625432d0fa6707bd2d7aa0840
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 23 16:23:10 2021 +0100
-
-    I think I got boost working with vs2k22
-
-commit 2c983ee3f026e05071ca8eb03f16b15d30589bea
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Oct 24 21:02:59 2021 -0400
-
-    lose old complex code for setting --jobs flag in BOOST build - never really worked/helped, so needless complexity
-
-commit 4fef31d26ae300cc55b2f283637af6eb2f6821ba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 25 14:10:07 2021 +0100
-
-    maybe fix toolset_name setting for building vs2k22 on docekr on windwos/boost
-
-commit 027771f08b5528131787dd22c2b2d40e1994039f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 25 15:18:37 2021 +0100
-
-    hopefully fix toolset issue with boost build under docker
-
-commit 2657887779e2f60f82ab7d8dd6fd97c12ea70a55
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 26 02:11:26 2021 +0100
-
-    Use boost 1.77.0; and try to get boost windows docker build working again, but still no luck
-
-commit 3d1fe2a649f88393d245cbda10db974333d1d145
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 26 04:28:04 2021 +0100
-
-    cosemtic + DoublyLinkedList<T>::ForwardIterator::PatchBeforeRemove
-
-commit 1a5a218ce21688d085750ab8c070a84fc8e17679
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 26 21:10:35 2021 +0100
-
-    progress but no success getting boost to build with vs2k22: for now just disable boost under vs2k22 by default
-
-commit 220bf9679b5871b81d204e4ffe56d92de9c501b2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 26 21:34:12 2021 +0100
-
-    docs about regtests builds
-
-commit 4c5da32d6ad41909239ef8ca206c5b202d362e17
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 26 22:04:19 2021 +0100
-
-    fixed buildproject files (test) for vs2k22
-
-commit 851d90dc8f8a816247181c18b618ee50f5988b99
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Oct 26 22:05:20 2021 +0100
-
-    fixed accidnetal checkin
-
-commit e60fc1d29bf2dc5f34608d23a0605d5ea7e72d26
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 27 00:50:17 2021 +0100
-
-    More progress on Container patching change: Remove() REPS now take & paraemter for nextI
-
-commit ef5292cc174dfc2ccf6f92d8145339b72c0b0763
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 27 01:43:24 2021 +0100
-
-    Sequence<T>::_GetWriterRepAndPatchAssociatedIterator () and Remove() changes to accomodate new Iteartor patchign API
-
-commit e9c0ee449ad8bd0de6f7e770c0f0ba8c5230de00
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 27 02:00:04 2021 +0100
-
-    support new clone/remove/iterator patching changes in Bijection container
-
-commit ab1b21764d8b8eb46ede44d028d6a28caa451f7d
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Oct 26 21:46:21 2021 -0400
-
-    workaround issue with centos and newer version of boost - no need to debug since probably wont support centos much longer
-
-commit ebd0f3b2b51ea4f71bdebe90835df5bd4f36af88
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 27 16:46:15 2021 +0100
-
-    major container cleanup (so far just applied to Bijection/Collection classes) - lose _APPLY_ARGTYPE, _APPLYUNTIL_ARGTYPE, and use explicit types, and cleanup use of forward declared using typedefs in various mixins (simpler) - and heavy switch to using value_type - ESPECAIALLY as arg to Iterator<> - so much simpler/clearer code in container impls
-
-commit b122d840d85ed1b02c983d83f3f6b43844c3485b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 27 21:44:47 2021 +0100
-
-    cleanup containers KeyedCollection/Deque for value_type cleanup and using name usage cleanup
-
-commit a51a6d4829964cc56a5bd6e66f84dc3de155f31f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 28 02:03:44 2021 +0100
-
-    Progress on KeyedCollection update for Remove() API change, and CloneAndPatchIterator api etc
-
-commit cc4511f00e913bbd2374557c7c08ae67ef4fe1fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 28 15:56:23 2021 +0100
-
-    more container fixes for value_type cleanup and using cleanups - mostly did Multiset
-
-commit ccd7122807afa4a8461575cc13b9ce01293c7993
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 28 16:35:54 2021 +0100
-
-    clenaups to Queue container templates: value_type and cleanup of use of typedefs
-
-commit e20ea00e3edd2c8acdc42cab745f78a83c4cf157
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 28 17:41:13 2021 +0100
-
-    cleaned up Sequence<> use of typedef/using and value_type
-
-commit cc812b69daa90fcefc498d3965292a19c607ad1f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 29 02:02:04 2021 +0100
-
-    finished first pass updating containers to use new Iterable no-patching logic, and value_type and cleanup of using/typedefs - more releated stuff todo but good point to test
-
-commit 7cd2a6369262e2e1f66647644bef671102a67a45
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 29 10:52:17 2021 +0100
-
-    cleanup CloneAndPatchIterator implementations
-
-commit 9bbabbed686a4e9e7ef5d1cfae150225df84b72a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 29 11:12:27 2021 +0100
-
-    notes about https://stroika.atlassian.net/browse/STK-744 - rethink details of Stroika Container constructors
-
-commit 57cc28b0dbf75d2ef7637621441270f417e39f37
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 29 11:20:48 2021 +0100
-
-    fixed Stack<> use of value_type
-
-commit 246759d289de6ca33daf15fd81a8af7b43aa4b3e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 29 13:19:48 2021 +0100
-
-    cleanup Container Clone code - no longer need const cast
-
-commit d579da8c68cfcbd299cc7190fed0fec470f059d2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 29 16:23:56 2021 +0100
-
-    value_type (and types) cleanup for DataHyperRectangle containers
-
-commit 0bc0baa554f12966b2544a9c05c17060dd5690c4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 29 21:46:32 2021 +0100
-
-    various cleanups - losing uneeded const_cast code with iterators - so Stroika Iterators ALWAYS have CONST ptr to underlying data
-
-commit 92f05c3f0fbc92247dc190b4bc90bc62eb5ef2c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 30 03:35:50 2021 +0100
-
-    cleaned up (made uniform) container support for scoped_lock<Debug::AssertExternallySynchronizedLock>  and shared_lock<const Debug::AssertExternallySynchronizedLock> writeLock/readLock
-
-commit 3bbf4586ad4da720d174d3b4e082c77265d66610
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 31 01:45:00 2021 +0100
-
-    new ContainerDebugChangeCounts_ used in Containter code - so all the concrete containers use that to track if iterator used after initialized. That debugging found serveral cases where still an issue, so those fixed too so all regtests pass
-
-commit 0cd395555aa94d7810c9cad8702954f01b53bd0c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 31 03:25:14 2021 +0100
-
-    fixed issue in Containers sample app violating rules of new container code
-
-commit b8b996d8f9e599f05d12c93fdc762032bb2ba35f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 31 13:06:26 2021 +0100
-
-    fixed qCompiler_LimitLengthBeforeMainCrash_Buggy bug define for macos xcode 13
-
-commit aeb9537fbcf33cd050888c4f57e3f97371fd0acf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 31 14:30:07 2021 +0100
-
-    new method on Mapping container: Update()
-
-commit a1b983da34000e24cd4dbc3e5d2fbb176b84d623
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Oct 31 12:16:08 2021 -0400
-
-    use new Mapping<>::Update API to accomodate new lack of automatic iterator patching in Stroika containers
-
-commit ed438fceddd37b94d00081b4073cc74475000b51
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 1 00:22:19 2021 +0100
-
-    NOT BACKWARD COMPATIBLE - but only an issue if someone wrote Container backends - no more IteratorOwnerID and related Iterator Owner stuff
-
-commit 00dc07f49af13d748d31ea53b30267b6426f2527
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 1 01:22:04 2021 +0100
-
-    deprecated _APPLY_ARGTYPE and _APPLYUNTIL_ARGTYPE and fixed a few remaining uses
-
-commit df9ba99005b4e6b3293eefc0a7439c76de95fc8d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 1 01:34:57 2021 +0100
-
-    update docs to say using xcode 13
-
-commit 1f9d9259ed7241938fe6233c217b3fcd7a3205cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 1 15:44:02 2021 +0100
-
-    renamed SharedByValue<>::get_nu to SharedByValue<T, TRAITS>::rwget (); and deprecated CONST overload of get (use cget)
-
-commit 3556835656aa1dac5fe455c000df20302b44fdeb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 1 15:54:13 2021 +0100
-
-    more cleanups to SharedByValue - losing some interum stuff we added experiemntally this release and renamed AssureNOrFewerReferences_nu to AssureNOrFewerReferences
-
-commit 3a66417f05229823637bb2338131e15381d7b0cb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 1 18:00:53 2021 +0100
-
-    more cleanups to SharedByValue object (and use)
-
-commit e40c12523efd8b387482b48bab2279b85e3e7d0f
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Nov 1 14:32:30 2021 -0400
-
-    ContainerDebugChangeCounts_ cleanups -- side effect workaround g++8 bugs
-
-commit bd079be563a2ec80cf491312561b4fb9a3d0c3d6
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Nov 1 14:32:56 2021 -0400
-
-    cleanup use of new SharedByValue changes
-
-commit c2fcf6c6aafce216a669d5419f6c6d14bdc8c753
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 1 19:44:12 2021 +0100
-
-    SharedByValue_CopyByDefault more efficeint for common case of shared_ptr - use make_shared
-
-commit 87efcbd488f60890753ccf1c32510dacb9a9df2f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 1 22:35:19 2021 +0100
-
-    more cleanups to SharedByValue<> and use in _GetWritableRepAndPatchAssociatedIterator - now uses element_type* version not shared_ptr verison for performance (and simpler/clearer)
-
-commit ed687594b6ddcffec7ddef99bd8186dd01dc632e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 2 01:28:51 2021 +0100
-
-    lots of cleanups to SharedByValue, including performance improvements. SOMEWHAT risky - losing SharedByValue_CopySharedPtrExternallySynchronized abstraction, but I think OK
-
-commit ef7cfd5bc356624a8173a75e1fe4f3f6d55d8bc5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 2 01:37:55 2021 +0100
-
-    marked qStroika_Foundation_Traveral_IterableUsesSharedFromThis_ as DEPRECATED feature flag
-
-commit ea8bd3576a5f8a975d444dfc00aa1c9a6730a693
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 2 02:48:48 2021 +0100
-
-    start rewrite of calls to CloneEmpty in Containers
-
-commit be810deb76cf048a81d0ab279e54fb4c01a81d00
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 2 15:17:54 2021 +0100
-
-    Fixed significant performance bug with container RemoveAll calls (and small bugs with Bijection other apis losing attributes) and deprecated Iterable<>::_UpdateRep
-
-commit 60c3b72f0231c964aadc3094a3967f55a6b25f04
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 3 02:06:04 2021 +0100
-
-    lose Container::DataStructures ... SupressMore logic, and hack in IteratorImplHelper to workaround it. **NOT BACKWARD COMPATIBLE**(only for code directly iterating using low level data structures), and other related contianer cleanups
-
-commit c4ce3cde80ef82f032aa70f5190e93c9bf9c27fa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 3 02:35:30 2021 +0100
-
-    mostly cosmetic Containers/DataStructures cleanups
-
-commit 065663e5a38c15845fb1f46211412a8f7966e9c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 3 14:52:20 2021 +0100
-
-    cosmetic cleanups, and new std::shared_ptr (make_shared) versus Memory::SharedPtr performance test
-
-commit 37654376d7415306d82cf4a231c87407bc043126
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 3 15:07:07 2021 +0100
-
     qIterationOnCopiedContainer_ThreadSafety_Buggy https://stroika.atlassian.net/browse/STK-535 maybe fixed - retesting
 
 commit d5b89e878842103565e0ef817814092aadeb0505
@@ -772,18 +289,6 @@ Date:   Fri Nov 5 20:14:55 2021 +0100
 
     internal changes in String2Float() to make it run faster (using new std::from_chars) - maybe 30% speedup from this
 
-commit f52d573a70ca334683ef7c950842c7fb47864fac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 5 21:01:50 2021 +0100
-
-    use Debug::UncheckedDynamicCast() all over the place as a performance tweak
-
-commit 452ce68ee071e402244bc30277bb6e5250680372
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 6 16:18:33 2021 +0100
-
-    disable WeakAssert in SharedByValue code cuz too noisy, and innocuous - comment where/why
-
 commit eb91c8ea10f780803b37d39fa9ded6833e56eb5b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Nov 6 22:41:04 2021 +0100
@@ -832,29 +337,11 @@ Date:   Mon Nov 8 16:22:36 2021 +0000
 
     minor tweaks to Math::NearlyEquals
 
-commit b5582fa01c16c0a008aafa558b6c2a2998277dbb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 8 18:53:27 2021 +0000
-
-    slight performance tweak for OutputStream<Characters::Character>::Ptr::Write
-
-commit 29c88f92ef337c4385267b9b39a715c25e05f56c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 8 18:54:09 2021 +0000
-
-    slight performance tweak in Containers/Private/IteratorImplHelper
-
 commit 1607da3ed1dba42649ee29c74dfede3fc58d6676
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Nov 8 18:55:09 2021 +0000
 
     new Mapping_stdmap::CTOR (map<KEY_TYPE, MAPPED_VALUE_TYPE>&& src) for performance
-
-commit 431182f51ba85c158d789a56f29b31b5a3c6453d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 8 19:02:25 2021 +0000
-
-    slight performance tweak in JSON::Writer
 
 commit 2624989d78b2ad9385a4173bd50bdf5211796366
 Author: Lewis Pringle <lewis@sophists.com>
@@ -891,12 +378,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 9 03:13:55 2021 +0000
 
      StringBuilder::StringBuilder (const wchar_t* start, const wchar_t* end)
-
-commit 7a0aac57f63c8807ec5757253fac19c7edffe572
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 9 14:48:41 2021 +0000
-
-    lose obsolete (deprecated) Foundation/Containers/Private/PatchingDataStructures
 
 commit 2267f049ba04f2a0717b1d88904ede45074344b7
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1180,12 +661,6 @@ Date:   Mon Nov 15 21:30:35 2021 -0500
 
     cleanup curl makefile (macos bug workaround) - and use curl 7.80.0 (except still not on macos)
 
-commit 1d05854514ef1280c78a03d076f68984d9397ce0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 15 21:36:30 2021 -0500
-
-    re-enable boost by default with vs2k22
-
 commit 89fdea33fe9a1ee27310815c0438f3d596f1ca16
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 16 09:29:45 2021 -0500
@@ -1275,12 +750,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Nov 17 12:18:59 2021 -0500
 
     deprecated CString::String2Float and CString::Float2String () - and replaced with overloads in FloatConversion (toFloat/ToString)
-
-commit 3fd8f598f652ca51107d7cf3c7bd6c3b92fab2f9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 17 14:23:06 2021 -0500
-
-    cosmetic cleanups to Synchronized code
 
 commit b39bcaaf42e5b21b60aac2bba56fc1eecdfb5754
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1708,18 +1177,6 @@ Date:   Fri Nov 26 23:28:23 2021 -0500
 
     regression tests for IsIterableOfT_v
 
-commit 0e63a3a960dedfa4b39d67e39535c623fe605da2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 26 23:53:35 2021 -0500
-
-    more cleanups to Configuration::Concepts module
-
-commit 63165b434a26720a969a21bdda9d4fce065e6d22
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 27 10:36:40 2021 -0500
-
-    more cleanups to Concepts.h
-
 commit 6ab11bc974512d0bd39cb33531f440a950e6b30f
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Nov 27 13:46:42 2021 -0500
@@ -1785,18 +1242,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Nov 29 09:20:07 2021 -0500
 
     workaround if constexpr issue with msvc 2k19 (add ifdef to avoid compile error for sqlite call)
-
-commit 0f414601d5c3f026e47008c1482802614a644048
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 29 09:22:30 2021 -0500
-
-    cosmetic + silence pointless compiler warning
-
-commit 8c2b551d51bf35294686097d8b52c697a65e2a9e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 29 09:26:32 2021 -0500
-
-    more warnings cleanups
 
 commit c9ff3dc73f144918141716f3854eae05be2faa6b
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1870,12 +1315,6 @@ Date:   Tue Nov 30 14:52:33 2021 -0500
 
     support clang++-13 bug defines
 
-commit a4b61e4e055d1145695b1cae2926a46580e9a293
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Nov 30 14:53:29 2021 -0500
-
-    support clang++-13 bug defines
-
 commit 26744571e4fc82a6cff1a8c526a3fd567c88ab07
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 30 15:09:56 2021 -0500
@@ -1942,41 +1381,17 @@ Date:   Thu Dec 2 09:40:21 2021 -0500
 
     fixed recent regression in configure --no-sanitizer flag support (dropped default vptr for clang/macos)
 
-commit f5e3bfc57305b86fbdc8f4518010730fff359095
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 2 14:58:20 2021 -0500
-
-    Compare functions/utility classes etc - cleanups
-
 commit 9d43e051b10c8be04c16f7cef01d3f9047b1680b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Dec 2 15:42:35 2021 -0500
 
     new utility Configuration::function_traits<> and used that in regression tests, and DeclareEqualsComparer static assertion
 
-commit fa2dd0d3ffd6cfbd233091377858ac313b5f1b52
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 2 16:59:31 2021 -0500
-
-    cleanup function_traits
-
 commit 4672d6dec404900d5cc38d72b887993cb08830dc
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Dec 2 17:02:43 2021 -0500
 
     draft/progress on Comare logic - template overload of IsEqualsComparer and IsStrictInOrderComparer taking typea rg too (not fully implemtned) - and new draft IsPotentiallyComparerRelation2 (temporaty name) reversing parameters
-
-commit 336df18fba9df8e61f36a94f496fad73fb6f8034
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 2 17:03:38 2021 -0500
-
-    cosmetic
-
-commit aad89bf0a6eadd48aea61330d9b79897a1944ea6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 2 17:04:28 2021 -0500
-
-    cosmetic
 
 commit 15327dfdfd19d7ccbb7534c4a23e1c071db58c07
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2002,53 +1417,17 @@ Date:   Fri Dec 3 07:59:56 2021 -0500
 
     in several more containers, replace the restriction to Common::IsPotentiallyComparerRelation with IsEqualsComparer or IsStrictInOrderComparer as appropriate
 
-commit 0730dee3be17916727e1a8f340748021d5db7fed
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 3 08:02:05 2021 -0500
-
-    docs
-
 commit 0351bbce1932abc40d160dbbdea5332a0013668e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 3 08:20:41 2021 -0500
 
     finished converting Containers to use of IsStrictInOrderComparer or IsEqualsComparer as appropriate, from IsPotentiallyComparerRelation: SOME code that used lambdas might no longer compiler and require a DeclareEqualsCOmparer or DeclareStrictInorderComparer wrapper (so not 100% backward compatible but probably quite close)
 
-commit e535665e283881dd6565537de1e534a1f9d0f4ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 3 08:26:32 2021 -0500
-
-    docs comments
-
-commit 7d9c8fdeb966285d9f3e2ec43d4116c2e0b92658
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 3 09:36:12 2021 -0500
-
-    minor inline cleanup
-
-commit 80131dad5a8506b1b73e77bd973eef28929c95b9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 3 09:36:40 2021 -0500
-
-    cosmetic
-
-commit f4804f97be5a924bcdb339b4b5aeb73393b00a25
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 3 09:47:34 2021 -0500
-
-    Container docs
-
 commit 24d77579c8c091d4a52a56fee243dc991db152c2
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 3 17:05:32 2021 -0500
 
     todo comments; and replace most use of Configuration::remove_cvref_t<> with decay_t, since CONTAINER_OF_T (or of addable) could be an array
-
-commit 1576982020b9bfecc43c22b6eea175f29b32e99c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 3 21:29:10 2021 -0500
-
-    cosmetic
 
 commit 1351ab9c20925dfc2ce5c0c07e4e1be0abdbb2b6
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2110,37 +1489,6 @@ Date:   Sun Dec 5 22:00:16 2021 -0500
 
     qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy broken for vs2k22
 
-commit 993c52ae4d01345cc53b5dac8d04254b6e850cdd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 6 10:18:19 2021 -0500
-
-    cannot use 'using' very effectively for templates - not sure why...
-
-commit 21b5ba0f9aa4f7f48afce9ac18d400933658bd88
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 6 10:27:35 2021 -0500
-
-    start getting new IsAddable_t stuff working on bijection
-
-commit d09f2a9a0a756ced9d1fc918d326043a4e1fa380
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 6 10:28:06 2021 -0500
-
-    ok - i get it - the using stuff only owrks on type templates, not constexpr bool ones - sigh
-
-commit debe3ad7da0f70cfa09c4b6dbb5b7620af34e38f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 6 10:51:32 2021 -0500
-
-    progress on IsAddable_v support for Bijection
-
-commit d62af2b2803ca6778929ac61caa9a5c4df5b2a2b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 6 11:23:38 2021 -0500
-
-    small Collection<T> cleanups
-
-
 commit a3d146c14fc33f67162e59b0072c9781b317bb5f
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 6 14:49:15 2021 -0500
@@ -2153,23 +1501,11 @@ Date:   Mon Dec 6 14:58:43 2021 -0500
 
     'concept IsIterable_v' now also checks there is a valid value_type (and comment we may in the future check more)
 
-commit 05ca8e8a1597515d7903aa6b9811c9bfeb84109e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 6 16:13:21 2021 -0500
-
-    Common::KeyValuePair<> fixed missing namespace prefix
-
 commit b22272ad222da9d626283b27da7bdd5b340c060e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 6 17:50:32 2021 -0500
 
     experiement replacing enable_if_t of IsAddable_v in Collection<> CTOR with just doing in body of CTOR: advantage better error messages, so long as doing so produces no ambiguous ctor sitations and avoids messy qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy workaround
-
-commit 66b8146ce5679a4b95899a4cb9f79c9de2abc1ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 6 17:52:12 2021 -0500
-
-    progress on Bijection IsAddable changes - trying to use less enable_if_t, and more static_assert in methods. May produce clearer error messages and less visual dissonance
 
 commit bcf003b7e7df643ee477743696c1d64b22202248
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2218,12 +1554,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 7 11:51:38 2021 -0500
 
     https://stroika.atlassian.net/browse/STK-651 https://stroika.atlassian.net/browse/STK-744  cleanup to Set<>
-
-commit f8c5f6e51d9f930172f12588cf81f6f711e75cc5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 7 13:15:33 2021 -0500
-
-    https://stroika.atlassian.net/browse/STK-651 https://stroika.atlassian.net/browse/STK-744  cleanup to several SortedXXX container templates<>
 
 commit 4419adc9fa7e72c3b0a4df9cee1e73c6a9b7821c
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2302,18 +1632,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Dec 9 13:50:12 2021 -0500
 
     Foundation/DataExchange/Atom now uses Concrete::Mapping_stdmap<> for case insensitive map
-
-commit 69b90fbafc4144dce020866ec4f38fdd33a1034d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 9 18:54:16 2021 +0000
-
-    use boost 1.78.0
-
-commit 9b416145cba1d5fa0f976b15b9baa7eba53f5f05
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 9 19:31:01 2021 -0500
-
-    cleanup use of operator= (...) = default and a few defaulted CTORS
 
 commit 1fcd30075eee774cc46206dd9af85e75a5383f19
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2465,30 +1783,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 12 23:33:26 2021 -0500
 
     ScriptsLib/RunLocalWindowsDockerRegressionTests now defaults to vs2k22, but example runs shows both run 2k19 and 2k22
-
-commit 252a08e9e25b26312902a5732b959293bb50c6bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 13 10:59:08 2021 -0500
-
-    maybe silence strange gcc warning
-
-commit 89ae3fb6defdbb7291b7f9da8223b238c9cd7149
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 13 19:27:46 2021 -0500
-
-    Added Association<KEY_TYPE, MAPPED_VALUE_TYPE>::OccurrencesOf
-
-commit 8f4676b6f83e664755cfd63ec564185729e720c5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 13 19:49:35 2021 -0500
-
-    fixed serious bug with Association::ContainsKey () - backwards
-
-commit af69b22a018da2ea7ef85851b27569ec68181421
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 13 19:52:57 2021 -0500
-
-    Cryptography::OpenSSL library context code switched from Mapping<> to Association<> use
 
 commit 6ab49761dec3522c47e2dcc2b20cbbe2eab5819f
 Author: Lewis Pringle <lewis@sophists.com>
