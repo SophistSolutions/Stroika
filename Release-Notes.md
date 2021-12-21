@@ -13,12 +13,12 @@ especially those they need to be aware of when upgrading.
 #### TLDR
 
 - Major revsion / cleanups to Containers
-  - Unified constructors, and major improvments to 'concept' usage on constructors, IsAddable, etc
+  - Unified constructors; major improvments to 'concept' usage on constructors; IsAddable, etc
   - new KeyedCollection, SortedKeytedCollection, Assocation, and SortedAssocation containers (along with related factories/concrete types)
   - No more Iterator patching (and related API changes to containers).
-- New XCode support, including support for M1 native/cross compiling
+- XCode 13 support, including support for M1 native/cross compiling
 - openssl 3
-- Visaul Studio 2022 support
+- Visual Studio 2022 support
 - Performance and polish improvements
 
 #### Change Details
@@ -27,10 +27,15 @@ especially those they need to be aware of when upgrading.
   - Build Scripts
     - PARALLELMAKEFLAG arg support in RunRemoteRegressionTests script
   - Compiler versions
+    - MSVC 
+      - (vs 2k 17) 16.11.5??
+      - (vs 2k 19) 16.11.5??
+      - (vs 2k 22) 16.11.5??
   - Compiler bug defines
      - qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy
      - another workaround for https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
      - added BWA qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy and a few other changes for last minute openssl 3.0
+     - qMacUBSanitizerifreqAlignmentIssue_Buggy still buggy on XCode 13
   - Configurations
     - configure script
       - fixed cross-compiling flag for configure on macos x86 when setting corss compile for arm
@@ -57,22 +62,55 @@ especially those they need to be aware of when upgrading.
 - Foundation Library
   - Cache
     - Cache/CallerStalenessCache: docs and cleanups, and more careful about setting timestamp at END of fillerCache call, in case that takes real time
-  - Containers
-    - Sequence
-      - Sequence<>::erase method
-      - regression test BugWithWhereCallingAdd_Test20_ and fix for Sequence<>::Where
   - Configuration
     - Concepts
       - draft/experimental support for Configuration::IsIterableOfPredicateOfT_v with Collection<>::IsAddable (or _t)
       - fixed test for Configuration::IsIterableOfPredicateOfT_v
       - new typetraits helper ExtractValueType_t
+      - Added Configuration::is_callable_v utility template
+  - Containers
+    - All Containers Constructors
+      - major cleanup of all CTORS - more uniform across archetypes and concrete
+      - Use IsAddable_v in CTORSs and "Add()/AddAll()" methods (static_assert).
+    - All Containers other
+      - not totally backward compatible change to all container templates - renamed (for example) _BijectionRepSharedPtr to  _IRepSharedPtr (or similar)
+      - use  [[NO_UNIQUE_ADDRESS_ATTR]] in MANY places (factories, concretes) to save space/performance
+    - Association, AssociationCollection (and related concretes and factories) - all new
+    - Bag - Lose obsolete Bag<> temlpte- container - never implemented and documented why not implemented (at least for now)
+    - KeyedCollection, SortedKeyedCollection (and related concretes and factories) - all new
+    - Mapping
+      - fixed (I think longstanding) bug with Mapping_Array - copying / cloning - not copying comparer (so rarely relevant)
+    - Sequence
+      - Sequence<>::erase method
+      - regression test BugWithWhereCallingAdd_Test20_ and fix for Sequence<>::Where
+    - Set
+      - cleanup Set operator overloads, work more/better with Iterable<> and probably performance tweak a few cases
+      - Set<T>:: deprecated Contains (list overload) and replacedwith ContainsAll/ContainsAny
+  - Cryptography
+    - OpenSSL
+      - LibraryContext - fixes to load/unload logic to fix issues found by TemporarilyAddProvider cleanups; and fixed Load/Unload issues
+      - better docs and a few renames of available openssl digest algorithms (and added a few more named mappings)
+      - warn/report if cannot load openssl provider - dont fail in openssl regtests
+      - Additional workaround for https://stroika.atlassian.net/browse/STK-679 on openssl3"
+      - rewrite use of openssl md5 (now deprecated) with Stroika local copy of algorithm
 
   - Database
   - DataExchange
+    - https://stroika.atlassian.net/browse/STK-558 - ObjectVariantMapper uses KeyedCollection<>
+    - KeyedCollection/SortedKeyedCollection<> now supported in ObjectVariantMapper default mappers
   - IO::Network
+  - Memory
+    - replaced NEltsOf macro with Memory::NEltsOf() function
+    - SharedByValue
+      - added new Assure2OrFewerReferences and GetAndMaybeCopySavingOriginal member functions
+  - Traveral
+    - Iterator<T>
+      - Added Refresh() method
 - Samples
 - Tests
 - ThirdPartyComponents
+  - boost
+    - https://dl.bintray.com no longer supported for boost downloads
   - curl
     - Simplify / fix invoke submake in libcurl thirdpartycomponents makefile so should work for raspbeerypi cross config and macos m1 cross compiles
     - use libcurl 7.79.1 (except not on macos yet)
@@ -84,6 +122,10 @@ especially those they need to be aware of when upgrading.
       - Many fixes/changes to build for different OSes etc and openssl 3 support
       - fix builds for raspberrypi - machine arm-linux-gnueabihf - set target config for that machine so builds properly and no -m64 errors
       - openssl 3.0 builds need configure --libdir=lib(still untested)???
+      - fixed cross compiling on m1/i86 machines for macos
+      - Comments, and made ReturnType public in each Digester
+      - moved KeyLength.IVLength methods to CipherAlgorithm
+      - redo EVP_BytesToKey usage so cleaner and avoids warnings from openssl3
 
   - sqlite
     - Fixed makefile logging to BUILD_LOG.txt
@@ -133,432 +175,7 @@ especially those they need to be aware of when upgrading.
 
 #if 0
 
-    Cryptography/OpenSSL/LibraryContext - fixes to load/unload logic to fix issues found by TemporarilyAddProvider cleanups; and fixed Load/Unload issues
-
-commit 01329a492be688922b4bdce7f52c77696036f953
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 12 14:01:10 2021 -0400
-
-    Added missing perl modules for Centos VMs to build OpenSSL 3
-
-commit 75b03daeb343a7e5e304c2a831623c5431b0c3d4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 14 02:51:54 2021 +0100
-
-    adjusted hardwired known failing openssl3 ciphers from regtest
-
-commit 1fc92f2b531a01bb1d9b7e1d41bae19e6df16310
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 14 02:52:13 2021 +0100
-
-    fixed minor issue with openssl makefile workaround
-
-commit 3cb25c980cde53324cf95e4923ffa4fba2cd6aa8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 14 19:00:06 2021 +0100
-
-    cleanup Set operator overloads, work more/better with Iterable<> and probably performance tweak a few cases
-
-commit 214468ee6b19a7a094066274d6f60e5e747d20a6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 14 20:23:16 2021 +0100
-
-    cleanup debugtrace calls in openssl wrapper code
-
-commit 8613b6c8114da04445ffa91899cfae0e1c0f5c37
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 14 21:45:10 2021 +0100
-
-    better docs and a few renames of available openssl digest algorithms (and added a few more named mappings)
-
-commit 3ae712b202e9558004381bb6997d3d088ea7b94d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 14 23:31:38 2021 +0100
-
-    replaced NEltsOf macro with NEltsOf() function (mostly adjusted to scope call to Memory namespace)
-
-commit 06b802d7040bb01c15105309f406c712537455ba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 14 23:51:05 2021 +0100
-
-    warn/report if cannot load openssl provider - dont fail in openssl regtests
-
-commit 6eaee46c458389f691042086a6912a57a7e2ea48
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 15 02:15:55 2021 +0100
-
-    hopefully fixed cross compiling of openssl v3 on m1/i86 machines for macos
-
-commit b64dbd6eac3097d3ecca27991190e29c8d55770c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 20 03:54:33 2021 +0100
-
-    Added Configuration::is_callable_v utility template
-
-commit a9351fc5f9c54f75b582abfbcc19dadebf2a49c2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 20 03:56:21 2021 +0100
-
-    Set<T> :: deprecated Contains (list overload) and replacedwith ContainsAll/ContainsAny
-
-commit 20a9d587f6f3a0609fc884cafa7fd571481a7a03
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 20 03:58:24 2021 +0100
-
-    simplifications to ComparisonRelationDeclaration<...>
-
-commit 4fe954f9d528e9bc81fe2a1025d320116c702fe5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 21 01:51:11 2021 +0100
-
-    use latest VS2k19 for RunLocalWindowsDockerRegressionTests and make docker image, and -j8 -cpus 8, and lose --memory 8G since fails for unknown reasons
-
-commit 6b992d55ff7e991dd0e39e7764a95b3fac44579a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 22 21:23:28 2021 +0100
-
-    more tweaks to get docker run of windows regtests working again
-
-commit 5b8b33ed11da4ec57e694b46cc3c7912dcbec7de
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 23 01:18:50 2021 +0100
-
-    added regtest 26 for /SortedKeyedCollection
-
-commit f94b004068c1a8f353dc488cbedf66e4f7a5e1e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 23 01:19:07 2021 +0100
-
-    sortedkeyedcollection progress
-
-commit a3d62abc60217b3e14dcff365479b566ae505803
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 23 15:41:59 2021 +0100
-
-    refactored keyedcollection tests into commontests_keyedcolleciton for regtests
-
-commit 526854b983021005906dcbfca38af2161acc02b5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 23 21:07:22 2021 -0400
-
-    updated xcode project
-
-commit 80fd70952fb61015164e9ea95af28f6fffddfb9a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 23 21:08:10 2021 -0400
-
-    xcode doesnt support auto in function param names - must use template
-
-commit a6fd0a4900c1a04746b817f6d9f6f5767c617587
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 25 14:35:43 2021 +0100
-
-    some progress on SortedKeyedCollection.h
-
-commit 96bca7d57aaaa0da76a1667ccf505b7e11e066d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 25 14:54:16 2021 +0100
-
-    not totally backward compatible change to all container templates - renamed (for example) _BijectionRepSharedPtr to  _IRepSharedPtr
-
-commit 69b51e0a142de63777c51a1c7871aab2c60863d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 26 02:47:49 2021 +0100
-
-    SortedKeyedCollection progress
-
-commit a3169b1acee6cfca726c838db7f650f8db8b6d86
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 26 03:46:47 2021 +0100
-
-    switched KeyedCollection<> template to use explicit KEYS_EQUALS_COMPARER argument in CTOR (not traits)
-
-commit 826adcc05ad17d3c9119c43fd09b27a2d03cd7a9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 26 04:17:47 2021 +0100
-
-    progress on KeyedCollection
-
-commit ab18aa435cd73b149ffeb2966703de02bfc50449
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 26 19:55:59 2021 +0100
-
-    progress on KeyedCollection<> - towards losing traits and pushing optional template params through CTORs to internal rep
-
-commit 3062b17f91f61aca64f03a0868ac3a6f9fcc7da4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 26 22:47:40 2021 +0100
-
-    fixed many containers/factories, to use const for COMPARERS (function objects that often have no size) and use  [[NO_UNIQUE_ADDRESS_ATTR]] c
-
-commit 562991544c4fb85a65b82209748fd40e42b16317
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 27 13:53:39 2021 +0100
-
-    Containers\Concrete\SortedKeyedCollection_stdset.h first draft - seems to work
-
-commit c59ee8852db3f59616b90be3cde3b7932360d12f
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Sep 27 09:03:59 2021 -0400
-
-    fixed (I think longstanding) bug with Mapping_Array - copying / cloning - not copying comparer (so rarely relevant)
-
-commit d58db786921d0de72cfa1cc50b5688a7e52c8e95
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Sep 27 09:06:02 2021 -0400
-
-    fixed minor issue with SortedKeyedCollection_stdset
-
-commit 906337ef54f79010749f6c8e3e66bb0d48c0cb55
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 27 14:44:56 2021 +0100
-
-    avoid deprecated contains overload
-
-commit 74af8f15b94cd8cc42af377a4383cda6e62cfa78
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 27 15:01:55 2021 +0100
-
-    fixed bug in new SortedKeyedCollection_stdset Add method (updating)
-
-commit 8b33543923329fae5cc0fb18de5027d2ef568a26
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 28 01:40:29 2021 +0100
-
-    fixed two small bugs with KeyedCollection<>
-
-commit 6d9d73f0a3b47ed514c9852ff9e75c90f9c3a584
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Sep 28 13:06:21 2021 -0400
-
-    qMacUBSanitizerifreqAlignmentIssue_Buggy still buggy on XCode 13
-
-commit 871b216653be4d32d70de8391ada5f0aec515446
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 29 00:28:45 2021 +0100
-
-    vs2k17 compat code issue
-
-commit dc5268d831593d392a0c3d94b4389e43b21abd1d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 29 01:09:48 2021 +0100
-
-    more cleanups of KeyedCollection<T> code - more CTORs, etc
-
-commit 0be81c6fd23796ae0f51b0b2c5b5bd89ce1a937d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 29 01:33:26 2021 +0100
-
-    Progress on SortedKeyedCollection ctors
-
-commit 1061c6c1d845576da2665be76cd8cd3a1787e4d4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 29 01:54:41 2021 +0100
-
-    fixed issue with vs2k17 + cosmetic
-
-commit 76406ed32db4c83e12cf752945328b4b9d2eb35d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 29 14:56:54 2021 +0100
-
-    fixed a couple minor (recent) regressions RunPerformanceRegressionTests
-
-commit daf441e498328a97a5829b4934692478c7a1de87
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 30 02:09:47 2021 +0100
-
-    fixed small recent regression in RunPerformacenRegressionTests
-
-commit 9767ddce34f56ce30138f2805c2765edd80a3edb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 1 02:46:40 2021 +0100
-
-    Cleaned up CTORs for Concrete::KeyedCollection_LinkedList<> and improved regtests
-
-commit 602c547494629ae4d84cc4fbce619321e440c6d7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Oct 1 09:29:47 2021 -0400
-
-    Additional workaround for https://stroika.atlassian.net/browse/STK-679 on openssl3"
-
-commit 6ef48880b6cf266586d1b616829523559f404813
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 2 02:29:04 2021 +0100
-
-    Cleaned up CTORs for Concrete::KeyedCollection_LinkedList<> and improved regtests
-
-commit cdd40c037e6b27c7400fdc5e11f623cffe1acc6d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 2 04:07:17 2021 +0100
-
-    use if constexpr is_save_v isntead of comapritng typeid () so dont compile uneeded class
-
-commit aba222e728cfd790471d85116473e05e57e30847
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 2 16:36:23 2021 +0100
-
-    a few more touchups with SOrtedKeyedCollection (adding accessor to inordercomparer and a litlte more)
-
-commit a856396de380533568d774e4d969c30040224ec4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 3 14:36:02 2021 +0100
-
-    https://stroika.atlassian.net/browse/STK-558 - ObjectVariantMapper uses KeyedCollection<>
-
-commit 2d7aff3810a85419d018d45397320fd053e8ffb3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 3 14:37:41 2021 +0100
-
-    Containers::Adder supports KeyedCollection
-
-commit c550dbf99d0b15976fb1f1d0bf4b718011a63307
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 3 17:19:11 2021 +0100
-
-    KeyedCollection/SortedKeyedCollection<> now supported in ObjectVariantMapper default mappers
-
-commit 466e7597ffee14125039c813b44f8f935e084f41
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 3 17:51:08 2021 +0100
-
-    use KeyedCollection<> in place of Collection<>/Mapping<> in a few places
-
-commit 5609901c508d3d89e8dc57a2399b5f9f5d997765
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 3 18:08:29 2021 +0100
-
-    keyedcollection<>::LOokupChecked/LookupValue
-
-commit ee9c9034f3a3ab69176c1b3004ac45b6738627a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 4 00:06:36 2021 +0100
-
-    rewrite use of openssl md5 (now deprecated) with Stroika local copy of algorithm
-
-commit 8bf516816ec1b5d02431220c924c43f845644355
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 4 00:06:57 2021 +0100
-
-    Comments, and made ReturnType public in each Digester
-
-commit 6c91427475785a3744e63d8f298c298a10a8914e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 4 00:39:08 2021 +0100
-
-    moved KeyLength.IVLength methods to CipherAlgorithm
-
-commit c37cb690672cd0370ccfc54fc3d1f9155e010dd7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 4 01:18:05 2021 +0100
-
-    redo EVP_BytesToKey usage so cleaner and avoids warnings from openssl3
-
-commit 9a76a929394806239518b656481dfe539469ee80
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 4 02:17:29 2021 +0100
-
-    workaround macos clang bug - qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy
-
-commit 308abaec6d5979aa6a3d9bb1b8b90191625d820c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 4 02:31:18 2021 +0100
-
-    qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy broken on clang unix too
-
-commit 704975506c2b020db56292b5e8a2614a2c175d17
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 3 22:23:35 2021 -0400
-
-    compiler bug defines for xcode 13
-
-commit cdff91d061076c559742423ed961f6a04bd68f0c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Oct 3 22:36:33 2021 -0400
-
-    compiler tweaks for xcode
-
-commit f9575092814ea77a364900f341e8f3cd8a88e731
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Oct 3 23:19:28 2021 -0400
-
-    fixed define qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy
-
-commit 275cecc35ac9e9b1ffc72c00fb9bde230820ff34
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 4 15:32:14 2021 +0100
-
-    tweak TypeMappingDetails_Extractor_
-
-commit 2a3645c02cdae8866555351d1b56c9810ddd4123
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 4 11:15:14 2021 -0400
-
-    lose qCompiler_KeyedCollectionWithTraitsCTORNotWorkingNestedClass_Buggy - just dont use auto without specifying return type and that fixes issue with clang - probably clang++ bug due to doing that evaluation too late, but no matter - not worth tracking issue
-
-commit 8fd010af651bc24400eefafaa4f0ea260f015559
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 6 02:57:10 2021 +0100
-
-    Lose obsolete Bag<> temlpa te- container - never implemtned and documented why noti mplemented (at elast for now)
-
-commit 55074cb052692a2f8914119d9cd9ee630953aa50
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 6 02:58:03 2021 +0100
-
-    Lose obsolete Bag<> temlpa te- container - never implemtned and documented why noti mplemented (at elast for now)
-
-commit ee2ad2bb168dd186c4e6bf21a69e1300a57804ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 6 03:03:33 2021 +0100
-
-    removed support for Bag
-
-commit d505724d5d4cf095e4c120316c3787f9de28eb0b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 13 16:10:18 2021 +0100
-
-    SHaredByValue<> template - added new Assure2OrFewerReferences and GetAndMaybeCopySavingOriginal member functions
-
-commit 9309f8317c218210b7affd614602416ed06692ae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 15 09:16:06 2021 +0100
-
-    SharedByValue cleanups
-
-commit adc6fe4b38922af10becba98df6b081c94f2fda1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 15 11:21:45 2021 +0100
-
-    check __cplusplus for lambda in unevaluated context
-
-commit 055e0f12ee7c087f5ee00357c0fcf63a585bd7eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 15 12:22:20 2021 +0100
-
-    new experimental SharedByValue<T, TRAITS>::BreakReferences_nu_ and  SharedByValue<T, TRAITS>::AssureNOrFewerReferences_nu and SharedByValue<T, TRAITS>::get_nu
-
-commit 8da1c17a13006e3f372730ada674f135a5aa7bd3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 15 15:14:06 2021 +0100
-
-    cosmetic cleanups to Iterator code
-
-commit 396cab562f6db9e2761e4a0277681fac7b3ce45f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 15 15:15:34 2021 +0100
-
-    Small progress on cleanups to SharedByValue
-
-commit ce7dc3d56e65afab085f72f97432348458e8a32a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 18 07:48:01 2021 +0100
-
-    Added Iterator<>::Refresh() method
-
-commit 6994f099f3ea8aee8a4845c22941add0f8edb477
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Oct 18 07:50:50 2021 +0100
-
+    
     progress losing iterator patching - just mutliset and mapping so far - regtests passing but not well
 
 commit 1cb7eb321fc659229d5c61999318bae6e29ae0f3
@@ -615,12 +232,6 @@ Date:   Thu Oct 21 20:49:18 2021 +0100
 
     lots more progress on new containers 'patching' logic - very restricted support now for patching (so far just on Remove); working for Multiset and Mapping now. More to come; rewrote much of low level Array template (esp iterator) - less duplication and use index instead of ptr for current (to avoid work patching)
 
-commit 1ad44dfcf718ad12ec9da9cdb1f318631d14b105
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 21 21:26:14 2021 +0100
-
-    cosmetic and warning reduction
-
 commit bd4f654e34f8176ed85718d92b55ea930e0d5de5
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Oct 21 23:10:27 2021 +0100
@@ -632,12 +243,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Oct 22 04:43:16 2021 +0100
 
     more refactoring for new iterable patching: renamed IteratorHelper2_ back to IteratorHelper_ and got rid of a few more uses of PatchindgDataStructures and marked the files deprecated
-
-commit 16b0c56e58ff0d588355b8d89c46ea78c9268cd5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 22 13:37:21 2021 +0100
-
-    vs16_11_5 use
 
 commit e9d6db4ff7cf94e68b95c3d48788005708c28bd9
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2535,17 +2140,6 @@ Date:   Mon Dec 6 11:23:38 2021 -0500
 
     small Collection<T> cleanups
 
-commit bc27ad07c1e780626cbc520d1299744fcc125b96
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 6 11:30:12 2021 -0500
-
-    https://dl.bintray.com no longer supported for boost downloads
-
-commit ce687db34db44e3597299ea1e4752aacfcf31de9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 6 11:30:40 2021 -0500
-
-    https://dl.bintray.com no longer supported for boost downloads
 
 commit a3d146c14fc33f67162e59b0072c9781b317bb5f
 Author: Lewis Pringle <lewis@sophists.com>
