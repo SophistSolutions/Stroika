@@ -17,7 +17,6 @@ especially those they need to be aware of when upgrading.
   - new KeyedCollection, SortedKeytedCollection, Assocation, and SortedAssocation containers (along with related factories/concrete types)
   - No more Iterator patching (and related API changes to containers).
 - XCode 13 support, including support for M1 native/cross compiling
-- openssl 3
 - Visual Studio 2022 support
 - Performance and polish improvements
 
@@ -28,11 +27,11 @@ especially those they need to be aware of when upgrading.
     - PARALLELMAKEFLAG arg support in RunRemoteRegressionTests script
   - Compiler versions
     - MSVC 
-      - (vs 2k 17) 16.11.5??
+      - (vs 2k 17) 15.9.41
       - (vs 2k 19) 16.11.7
       - (vs 2k 22) 17.0.1
     - XCode
-      - Upgrade to XCode 13
+      - XCode 13.1
   - Compiler bug defines
      - qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy
      - another workaround for https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
@@ -46,6 +45,10 @@ especially those they need to be aware of when upgrading.
      - qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy bug define and BWA
      - qCompilerAndStdLib_from_chars_FP_Precision_Buggy
      - removed obsolete one - qCompilerAndStdLib_optional_value_const_Buggy etc
+     - new qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy bug define for xcode 12
+     - qCompilerAndStdLib_if_constexpr_annoyingly_evaluates_untaken_path_Buggy bwa for vs2k17
+
+
   - Configurations
     - configure script
       - fixed cross-compiling flag for configure on macos x86 when setting corss compile for arm
@@ -57,6 +60,7 @@ especially those they need to be aware of when upgrading.
   - Docker
     - workaround https://stroika.atlassian.net/browse/STK-742 issue with docker desktop on windows
     - updated docker build code to have both builds of vs2k19 and vs2k22
+    - Switch from support of Ubuntu 21.04 to 21.10 (only support latest short term release); and updated regtests mostly
   - MacOS Builds
     - Build / pass regtests on M1 MacOS (alot of fixes rolled into this)
     - macos default configurations - now also build Release-x86_64 and Release-arm64e
@@ -65,7 +69,7 @@ especially those they need to be aware of when upgrading.
   - Debugger
   - Scripts
     - Cross-Compiled-Only flag optionally to GetConfigurations and --quiet
-  - codeql
+  - codeql support added (inside github actions)
   - Regression Tests
     - use --cross-compiled-only flags in RegressionTests call to GetConfigurations to correctly count expected number of passed tests
     - fixed regressiontest sample app test loop to not run local tests when cross compiling
@@ -79,6 +83,8 @@ especially those they need to be aware of when upgrading.
   - likely/unlikely attr cleanups
   - in a few placse, use if constexpr instead of #ifdef for bug defines, but still cannot use everywhere - in part due to bugs iwth older GCC versions
   - Use ++prefix instead of postfix++ preferentially (and --prefix)
+  - **not backward compatible** - decorated all Invariant/Invariant_ methods with noexcept
+
 - Foundation Library
   - Cache
     - Cache/CallerStalenessCache: docs and cleanups, and more careful about setting timestamp at END of fillerCache call, in case that takes real time
@@ -101,12 +107,18 @@ especially those they need to be aware of when upgrading.
 
     - StringBuilder
       - CTOR (const wchar_t* start, const wchar_t* end)
+  - Common
+    - refactored operator==/operator<=> code slightly for KeyValuePair/CountedValue to check if Configuration::has_eq and Configuration::has_spaceship on PARTS before providing said operators on WHOLE
   - Configuration
     - Concepts
       - draft/experimental support for Configuration::IsIterableOfPredicateOfT_v with Collection<>::IsAddable (or _t)
       - fixed test for Configuration::IsIterableOfPredicateOfT_v
       - new typetraits helper ExtractValueType_t
       - Added Configuration::is_callable_v utility template
+      - New Configuration::IsTPredicate ()
+      - support has_equal_to, HasUsableEqualToOptimization () , has_spaceship tester, and fided issue https://stroika.atlassian.net/browse/STK-749
+      - deprecated STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS and use Configuration::is_detected_v instead (related https://stroika.atlassian.net/browse/STK-749)
+      - Lots of cleanups, deprecating old/unused concepts and redoing a lot using is_detected_v, and added regression tests for several of the concept testers
   - Containers
     - All Containers Constructors
       - major cleanup of all CTORS - more uniform across archetypes and concrete
@@ -127,6 +139,12 @@ especially those they need to be aware of when upgrading.
       - Fixed significant performance bug with container RemoveAll calls (and small bugs with Bijection other apis losing attributes) and deprecated Iterable<>::_UpdateRep
       - use prepend on a few LinkedList containers instead of Append, and fixed regression tests to not check for order and comment on a few related performance issues
       - more static asserts in Container::Factory classes, and that uncoverd (and fixed) a bug with Set<> CTOR
+      - Simplified Factory code to not use SFINAE, but use if contexpr insaetd (more readable); then used this to fix Factory for mutlisets to al souse the stdmap impl if needed. And probably fixed bugs where we were doing wrong ithng in some factory cases
+      - renamed array-based containers 'Compact' method to 'shrink_to_fit' - as in stl vector (NOT backward comatpible but nobidy used the API)
+      - Containers::Update (iterator) method now also takes optional Iterator<>* nextI (like remove)
+      - Significant sized change to containers, and NOT fully **backward compatible**: Remove() API now requires it FINDS what is being removed, and RemoveIf() API allows missing values to be removed, and returns bool or count (depending on API) to indicate success. Changed internal Rep methods even more, to accomodate this API change. Affects Set, KeyedColleciton, Mapping, Collection
+      - small docs and semstics cleanups on Containers RemoveAll methods (mostly just returning number removed)
+      - new use of  enable_if_t<Configuration::IsTPredicate<T, PREDICATE> () in Container::... RemoveAll() calls with predicate, and defined additional ones iwth that predicate in most appropriate containers
     - Private::PatchingDataStructures REMOVED
     - DataStructures
       - Lots of mostly cosmetic, naming, private cleanups
@@ -141,17 +159,25 @@ especially those they need to be aware of when upgrading.
       - new refactor - deprecating Containers::ReserveSpeedTweekAddN etc and using new Containers::Support::ReserveTweaks::Reserve4AddN () instead; new performance regtets for Sequence_stdvector and Sequence_Array;  and docs cleanups
     - Association, AssociationCollection (and related concretes and factories) - all new
     - Bag - Lose obsolete Bag<> temlpte- container - never implemented and documented why not implemented (at least for now)
+    - Collection<T>
+      - support Collection_stdmultiset<> and integrated it into regtests and Collection_Factory (new default if less present)
     - KeyedCollection, SortedKeyedCollection (and related concretes and factories) - all new
     - Mapping
       - fixed (I think longstanding) bug with Mapping_Array - copying / cloning - not copying comparer (so rarely relevant)
       - new method: Update() to accomodate new lack of automatic iterator patching in Stroika containers
       - new Mapping_stdmap::CTOR (map<KEY_TYPE, MAPPED_VALUE_TYPE>&& src) for performance
+    - Multiset
+      - MultiSet_Factory now uses Multiset_LinkedList as default (when no ordering); and lots of comments and performance characteristics of different concrete containers
+      - fixed (long standing) bug with MultiSet_Array:: default constructor (not sure why asan just started warning about this)
     - Sequence
       - Sequence<>::erase method
       - regression test BugWithWhereCallingAdd_Test20_ and fix for Sequence<>::Where
     - Set
       - cleanup Set operator overloads, work more/better with Iterable<> and probably performance tweak a few cases
       - Set<T>:: deprecated Contains (list overload) and replacedwith ContainsAll/ContainsAny
+      - changed (not backward compat but internal) - Set::IRep API - losing Contains, and genrealizing Lookup api to optionally return either value or Iterator (again just internal API); then used that to implement Set<T>::find (...) that returns iterator
+    - SortedCollection
+      - new Containers\Concrete\SortedCollection_stdmultiset., and make it the default in the SortedCollectionFactory
   - Cryptography
     - OpenSSL
       - LibraryContext - fixes to load/unload logic to fix issues found by TemporarilyAddProvider cleanups; and fixed Load/Unload issues
@@ -172,7 +198,10 @@ especially those they need to be aware of when upgrading.
     - AssertExternallySynchronizedMutex
       - cleaned up (made uniform) container support for scoped_lock<Debug::AssertExternallySynchronizedLock>  and shared_lock<const Debug::AssertExternallySynchronizedLock> writeLock/readLock
       - renamed Debug::AssertExternallySynchronizedLock -> Debug::AssertExternallySynchronizedMutex, class and modules, and deprecated old name
+      - Debug::AssertExternallySynchronizedMutex - https://stroika.atlassian.net/browse/STK-752 - fix move / assign semantics
+      - much simpler implementation now - more self-documenting
   - IO::Network
+    - mark and workaround stroika bug (?) https://stroika.atlassian.net/browse/STK-750 - with noexcept on Host & Authority and fixed noexcept usage for URI
   - Math
     - workaround apparent bug with fabs () on windows, or just quirky edge case undocumented behavior - in mkElsipolon for NearlyEquals test
   - Memory
@@ -195,18 +224,28 @@ especially those they need to be aware of when upgrading.
       - Added Refresh() method
       - **not backward compatible** - but only an issue if someone wrote Container backends - no more IteratorOwnerID and related Iterator Owner stuff
       - new (debug only) Invariant () support in Iterator<> class, and used it to hook into container class iterator validationchangecount logic, so iterators should be more systemcatilcaly safe to use (meaning debug versions will detect more cases of invalid use automatically); fixed one small bug with compliance to new iterator rules found by stricter assertion checking
+      - small tweaks to Iterator CTOR (no longer explicit on rep, and handle both copy and move of rep and Iterator itself
     - Iterable
       - deprecated _APPLY_ARGTYPE and _APPLYUNTIL_ARGTYPE and fixed a few remaining uses
       - marked qStroika_Foundation_Traveral_IterableUsesSharedFromThis_ as DEPRECATED feature flag
       - qIterationOnCopiedContainer_ThreadSafety_Buggy https://stroika.atlassian.net/browse/STK-535  fixed
       - Lose obsolete qStroika_Foundation_Traveral_OverwriteContainerWhileIteratorRunning_Buggy   https://stroika.atlassian.net/browse/STK-570 - and imrpoved test code a bit
+      - cleanup Iterable CTORs - losing initalizer_list CTOR (cuz CONTAINTER&&) and other cleanups and hten removed remaining workarounds in COntainers CTOR calling () and instead using {} - so far seems to be working (but must test more)
+      - Renamed Iterable<>::FindFirstThat to just Iterable<>::Find() (deprecating old name)
+      - Use Configuration::IsTPredicate () in making Iterable::Find() now a templated function taking templated function object
+      - More Iterable<>::Find () overloads (to find by value)
+      - use move(result) in place of returning it in several places where return type differs (often iterable) from container used to create - so efficent move and not COPIED redundantly through Iterable CTOR (note different types prevents normal return call optimization)
     - IterableFromIterator significant internal code cleanups - replacing many of the template specailizations iwth a few specific methods being enable_if_t and data member same trick
     - Cleanup/simplify impl of MakeIterableFromIterator and CreateGeneratorIterator ()
 
 - Samples
   - updated Container sample to have better docs, and more accurately reflect recent changes to Iterator safety design
   - fixed Samples/AppSettings projhect files
+- Sanitizers
+  - https://stroika.atlassian.net/browse/STK-751 valgrind issue supression
+  - helgrind suppressions - simplify and document regtest BWA for https://stroika.atlassian.net/browse/STK-632
 - Tests
+  - added std::set<int> vs Set<int> performance test
 - ThirdPartyComponents
   - boost
     - https://dl.bintray.com no longer supported for boost downloads
@@ -233,6 +272,8 @@ especially those they need to be aware of when upgrading.
 
   - sqlite
     - Fixed makefile logging to BUILD_LOG.txt
+    - Version 3.37.0
+    - https://stroika.atlassian.net/browse/STK-632 sqlite threading bug workaround
   - Xerces
     - fixed build for vs2k22
   - zlib
@@ -280,456 +321,6 @@ especially those they need to be aware of when upgrading.
 -------------
 
 #if 0
-
-    small tweaks to Iterator CTOR (no longer explicit on rep, and handle both copy and move of rep and Iterator itself
-
-commit 91a95e8c6cda8b7886e4fada881bf6604ab5d4e7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 19 10:39:38 2021 -0500
-
-    use new extra arg to Private::IteratorImpl  and each ForwardIterator in DataStructures, so we now more cleanly construct new Iterators from the underlyingIteratorRep objects
-
-commit 18cdff7d82526533ef8a6d4a4518d36d0c8b4c67
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 19 18:43:05 2021 -0500
-
-    new qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy bug define for xcode 12
-
-commit dcbf90ed79074f021577254e15bffacfe13c1cd1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 19 20:25:52 2021 -0500
-
-    Further cleanups of use of DataStructure:: (limited) patching code. Now much simpler - losing PatchBeforeRemove & unused PatchAfterAdd methods of datastructure code. Just do the right thing in each (few) wrapper calls where patching iterators (there we need to know representation anyhow)
-
-commit 95f7f53ace10b91e125b0504ecb2313daeada2ef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 19 21:36:05 2021 -0500
-
-    More small cleanups to Container/Iterator code, including making Iterator<>::Refresh () non-const (instead of fake/mutable)
-
-commit edf22c58bf357e7cdcb61fd259a6d9e507a01d04
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 19 22:30:14 2021 -0500
-
-    Simplified Container Factory code to not use SFINAE, but use if contexpr insaetd (more readable); then used this to fix Factory for mutlisets to al souse the stdmap impl if needed. And probably fixed bugs where we were doing wrong ithng in some factory cases
-
-commit 0bfeeadfa2e339bf705bedf7131476f9191c6a77
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 20 09:56:29 2021 -0500
-
-    MultiSet_Factory now uses Multiset_LinkedList as default (when no ordering); and lots of comments and performance characteristics of different concrete containers
-
-commit 2540d47ba0548e1bc6f33781a99478228bc7a8b9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 20 15:07:47 2021 -0500
-
-    renamed array-based containers 'Compact' method to 'shrink_to_fit' - as in stl vector (NOT backward comatpible but nobidy used the API)
-
-commit 1a7fbf93a5d61d95e38ecaf17359a94538d5d222
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 20 19:25:50 2021 -0500
-
-    new ontainers\Concrete\SortedCollection_stdmultiset., and make it the default in the SortedCollectionFactory
-
-commit ae026943443505497642ce19d56f494a1eb7e775
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Nov 20 21:06:10 2021 -0500
-
-    qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy adjust for clang
-
-commit a3e426b0a0ea3144f44b5fdf4b91e3c0ac078987
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 20 21:34:35 2021 -0500
-
-    Containers::Update (iterator) method now also takes optional Iterator<>* nextI (like remove)
-
-commit bc4e0617b5d7e54f0e345f70a1dac305fdd085cc
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Nov 21 09:51:15 2021 -0500
-
-    qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy broken in clang 10
-
-commit 63dd2929c0b8624e60649aff0db9da2976b120ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 21 09:53:40 2021 -0500
-
-    cleanup Iterable CTORs - losing initalizer_list CTOR (cuz CONTAINTER&&) and other cleanups and hten removed remaining workarounds in COntainers CTOR calling () and instead using {} - so far seems to be working (but must test more)
-
-commit 645faf6bf6a0885411d59748afd66f800182ad64
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 21 20:02:46 2021 -0500
-
-    Renamed Iterable<>::FindFirstThat to just Iterable<>::Find() (deprecating old name)
-
-commit 8f2e1fcf3aca1257b17bf96f694bb014bdc366da
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 21 20:06:38 2021 -0500
-
-    Traversal::Iterable<> cleanups
-
-commit 8c7340743264d0ddf42f85ae2277db9ba21b417c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 21 21:43:23 2021 -0500
-
-    New Configuration::IsTPredicate (), and used in making Iterable::Find() now a templated function taking templated function object
-
-commit 24693b4e0bdab0f449f7315ae45901f3cccf202a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 21 22:20:50 2021 -0500
-
-    More Iterable<>::Find () overloads (to find by value)
-
-commit 18cdb59d888e194f9855ee685943ff58bd718ebb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 21 22:46:27 2021 -0500
-
-    support has_equal_to
-
-commit 2355d11de78255a92b525986b72516217864bc2c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 22 20:29:28 2021 -0500
-
-    Draft of HasUsableEqualToOptimization () and new has_spaceship tester, and FEEBLE attempts to workaround issue https://stroika.atlassian.net/browse/STK-749 - which I dont totally understand yet
-
-commit 9ec25873bf515388746716bc30251f7409f7d2a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 22 20:51:00 2021 -0500
-
-    refactored operator==/operator<=> code slightly for KeyValuePair/CountedValue to check if Configuration::has_eq and Configuration::has_spaceship on PARTS before providing said operators on WHOLE
-
-commit cd8a0a43ee643a88368a0c0b17cf9082409fe5d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 22 21:07:28 2021 -0500
-
-    Support operator== for IO/Network/HTTP/CacheControl
-
-commit 8c93fe3476d735d48c6219237cf1776321c724f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 22 22:11:30 2021 -0500
-
-    More progress on Iterable<>::Find code - but needs more workarounds for still not solved https://stroika.atlassian.net/browse/STK-749
-
-commit 94c6de04167a63c0002ae9a128531939412baf4e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 22 22:15:40 2021 -0500
-
-    tweaked    Iterable<T>::Find ()
-
-commit a96860abc9cd6158f8497904cda70f7763afc320
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 23 09:40:44 2021 -0500
-
-    mostly cosmetic cleanups, but a little bit of refactoring to use new Iterable<>->Find () helper
-
-commit 307e566578a1fabb66acabd69cd26d7bb21afc98
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Nov 23 10:38:37 2021 -0500
-
-    fixed (long standing) bug with MultiSet_Array:: default constructor (not sure why asan just started warning about this)
-
-commit b6ba6c2c090c6d2d3301625d5ab38870e221b3c7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Nov 23 10:40:29 2021 -0500
-
-    Attempted adding useful environment options to vscode gdb launch, but didnt work
-
-commit 927902d99607b652ae251656c05108ae8efe623e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 23 10:42:53 2021 -0500
-
-    start using Find_equal_to () overrides, and using indexes
-
-commit 8e60af1310b6a7338543a3e57785e633ce78e3ed
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 23 11:22:27 2021 -0500
-
-    a few cosmetic cleanups; and use move(result) in place of returning it in several places where return type differs (often iterable) from container used to create - so efficent move and not COPIED redundantly through Iterable CTOR (note different types prevents normal return call optimization)
-
-commit b3109c8fce2c866b87fce46213019cbbd43e51c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 23 13:34:23 2021 -0500
-
-    cosmetic cleanup - use Configuration::remove_cvref_t instead of ifdefs __cplusplus < kStrokia_Foundation_Configuration_cplusplus_20 in several more places
-
-commit a4cc1e47ed3146420342e234dcc5893ae1554351
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 23 15:13:50 2021 -0500
-
-    use const auto& in for loops in place of auto (since this may avoid creating a temporary)
-
-commit c7e69c9da5ae13f2dd0b7e383653e9ddefc4b059
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 23 16:54:33 2021 -0500
-
-    simply declare explicltly the X(X&) and X(X&&) ctors/operator= for internetaddress, String, and URL/UniformResourceIdentification classes
-
-commit 4fa6abc960b8845a649219462008dd6e6888aea3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 24 08:30:23 2021 -0500
-
-    attempt workaround for qCompilerAndStdLib_move_and_copy_and_opequal_optional_Buggy
-
-commit 34f8f96ad245ac6524d9a32b0430156840999bd2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 24 13:47:01 2021 -0500
-
-    lose qCompilerAndStdLib_move_and_copy_and_opequal_optional_Buggy bug define, and undo most of the X(X&) no except=default and mvoe op= etc I had done yetserday, and try again more slowly
-
-commit f42584c3ba1878a5cc8734b7103ebdce19098f41
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 24 13:56:58 2021 -0500
-
-    simplified/corrected X(X&) noexcept and op= (copy/move) operators in SharedByValue
-
-commit 2569ee44b3169e08496cef4c7ce4ef1059a774f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 24 14:07:58 2021 -0500
-
-    **not backward compatible** - decorated all Invariant/Invariant_ methods with noexcept
-
-commit 9fc7544318f71351c202f3f6e19cbe578d76b351
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 24 14:21:46 2021 -0500
-
-    tweaks to operator=/move/copy CTOR for SharedByValue
-
-commit 803f5af9b00b2b336a96d76e5c68775e91946fb9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 24 14:25:36 2021 -0500
-
-    cleanup noexecept use on Iterator CTORs and op= methods
-
-commit 15e5019a1b05ab9c8b7ca0728891f5a1c6bcbae8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 24 14:32:42 2021 -0500
-
-    cleanup Iterable<> use of move and CTOR/op= moves with noexcept
-
-commit e05fb0eb16a5293679a14a373c4c89dbb2858075
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 24 14:37:14 2021 -0500
-
-    fixed noexcept on operator= for String
-
-commit 8ed6141fe2de78d057eff45f6eea0eed6f0c12c4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 24 14:49:59 2021 -0500
-
-    SocketAddress CTOR cleanups - noexcept and constexpr
-
-commit fedd47b3b20099c83cc9efcc2c1b96f7025c2530
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 24 14:50:19 2021 -0500
-
-    URI constructor/op= cleanups - default/move CTOR
-
-commit 52f9ce39380f35a2ac4a52353e727fc1af373b60
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 24 14:58:20 2021 -0500
-
-    URI constructor/op= cleanups - default/move CTOR
-
-commit a00d67c80f705fcd081416ee3c048208c1fe4f8f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 24 15:07:38 2021 -0500
-
-    failed to get noexcept stuff working for URI, so try again
-
-commit bba8a9b4d39578d5e2febab64afde8bacd09639c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 24 17:22:08 2021 -0500
-
-    mark and workaround stroika bug (?) https://stroika.atlassian.net/browse/STK-750 - with noexcept on Host & Authority and fixed noexcept usage for URI
-
-commit c8abbf095ab14d2a3492ecbd85b25168deedf280
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 24 17:24:51 2021 -0500
-
-    mark and workaround stroika bug (?) https://stroika.atlassian.net/browse/STK-750 - with noexcept on Host & Authority and fixed noexcept usage for URI
-
-commit 45f346681b688d2138a7e656dd15cc3c0d0c96f0
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Nov 24 19:54:29 2021 -0500
-
-    https://stroika.atlassian.net/browse/STK-751 valgrind issue supression
-
-commit 1ad4383cc6788fe0969a1a50a7bfac78b0ee71bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 24 21:48:15 2021 -0500
-
-    https://stroika.atlassian.net/browse/STK-752 - partial fix and documenting remaining issues, so try again
-
-commit 6c334d5915e7ee7604fceed7ce38e0930fd9da7e
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Nov 25 16:14:11 2021 -0500
-
-    test possible fix for Debug::AssertExternallySynchronizedMutex move sematnics
-
-commit 59a5c2cbf0b02fb88a6296648b31f8fd21e0783d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 25 17:40:03 2021 -0500
-
-    docs on Debug/AssertExternallySynchronizedMutex
-
-commit 146cbd225b78022c71c2507bde11ca7668aac9ef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 25 21:16:26 2021 -0500
-
-    more cleanups of Debug/AssertExternallySynchronizedMutex - much simpler implementation now - more self-documenting
-
-commit 034d5475beadbc11dc1dd4cf1a002c75bea68381
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 26 10:22:03 2021 -0500
-
-    start losing workaround for  https://stroika.atlassian.net/browse/STK-749 and use new Configuration::is_detected_v (START CONVERSION PROCESS)
-
-commit 01854d706b73719b79610598f37430fe270b6648
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 26 11:06:08 2021 -0500
-
-    more progress cleaning up concept/has_eq stuff and deprecating older code - https://stroika.atlassian.net/browse/STK-749
-
-commit 46511e1ddc67ea8ae90bc7a45680e361d7417759
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 26 11:37:30 2021 -0500
-
-    more cleanups of Concept code
-
-commit daa617ac5f88340559999236ce545e1340c6f368
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 26 18:52:14 2021 -0500
-
-    cleanups to more concept stuff
-
-commit c86d6f0932d9771694a3dc1432e137079ca836ab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 26 22:31:42 2021 -0500
-
-    more cleanups of Concepts (c++17 workaround for lack of) code
-
-commit 41f3bc1140b09c0cab486a35a564e34d34f9bf1c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 26 23:28:23 2021 -0500
-
-    regression tests for IsIterableOfT_v
-
-commit 6ab11bc974512d0bd39cb33531f440a950e6b30f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 27 13:46:42 2021 -0500
-
-    more cleanups to remove use of deprecated STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS and use Configuration::is_detected_v instead
-
-commit 78f1fccb4c8c6c6780835c2a8bce0848106ad4be
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 27 16:30:29 2021 -0500
-
-    support Collection_stdmultiset<> and integrated it into regtests and Collection_Factory (new default if less present)
-
-commit 7bb5bf0b0a1ac36783fc39df5a6ea449c669841d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 27 17:19:29 2021 -0500
-
-    added std::set<int> vs Set<int> performance test
-
-commit de385473793e977573f113c300458128508dfe3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 27 19:10:47 2021 -0500
-
-    changed (not backward compat but internal) - Set::IRep API - losing Contains, and genrealizing Lookup api to optionally return either value or Iterator (again just internal API); then used that to implement Set<T>::find (...) that returns iterator
-
-commit ff471a13a0c3474703b4fb0b841626b671a47dc8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 27 20:38:52 2021 -0500
-
-    Significant sized change to containers, and NOT fully **backward compatible**: Remove() API now requires it FINDS what is being removed, and RemoveIf() API allows missing values to be removed, and returns bool or count (depending on API) to indicate success. Changed internal Rep methods even more, to accomodate this API change. Affects Set, KeyedColleciton, Mapping, Collection
-
-commit 9639025f8879ac25a403ac0b782c60824837a615
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 27 21:45:27 2021 -0500
-
-    small docs and semstics cleanups on Containers RemoveAll methods (mostly just returning number removed)
-
-commit e793dab139d8350c1652395029f7e929d0fb81b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 27 21:46:43 2021 -0500
-
-    fixed a couple small regressions due to recent container change
-
-commit 8ee019006dad8f1ea7693d9f9e617034c9fc3347
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 28 11:24:50 2021 -0500
-
-    new use of  enable_if_t<Configuration::IsTPredicate<T, PREDICATE> () in Container::... RemoveAll() calls with predicate, and defined additional ones iwth that predicate in most appropriate containers
-
-commit a5d08542629a9d7eea2fc85b0bb97ae1cde81c5a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 28 19:21:44 2021 -0500
-
-    silence one visible warning about legacy openssl provider (deal with in the future - not sure there is a need right now)
-
-commit 87522903e0bf459667518f23e1a931b25621236d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 28 20:49:09 2021 -0500
-
-    SQLite 3.37.0
-
-commit 92c3eed2f609f1c576756e434a3ec68340b67b99
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 29 09:20:07 2021 -0500
-
-    workaround if constexpr issue with msvc 2k19 (add ifdef to avoid compile error for sqlite call)
-
-commit c9ff3dc73f144918141716f3854eae05be2faa6b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 29 10:16:33 2021 -0500
-
-    fixed regression in sqlite makefile (need .NOTPARALLEL)
-
-commit 277825bb61fe3d38863ef495538852edcd27eea3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 29 10:43:37 2021 -0500
-
-    thirdpartycomponent makefile cleanup - redirect to -OUT.txt not .OUT (avoiding complaints for vscode about knowing how to read .OUT files)
-
-commit 8902084c4e53b9868aa4a20f82b5d12d6bf9bbe7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Nov 29 15:56:52 2021 -0500
-
-    simplify and document regtest BWA for https://stroika.atlassian.net/browse/STK-632
-
-commit 9872f212fdb879f9c590d954def8506b03afebc1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 29 16:01:32 2021 -0500
-
-    revert pat of last  https://stroika.atlassian.net/browse/STK-632 - all cases I had before are still needed
-
-commit 870702c4ef8c6bebfd274a0f49ad222c7ccc6471
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 29 16:16:21 2021 -0500
-
-    qCompilerAndStdLib_if_constexpr_annoyingly_evaluates_untaken_path_Buggy bwa for vs2k17
-
-commit 143ff40238891a91bb17e57f93a97eb88f6ed56e
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Nov 29 17:06:37 2021 -0500
-
-    Docker - switch from support of Ubuntu 21.04 to 21.10 (only support latest short term release); and updated regtests mostly
-
-commit 6812ff360253a37c4c685bd9eba70137616bb9bd
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Nov 30 07:31:49 2021 -0500
-
-    fixed define GLIBCXX_11x_ 20210918 for ubuntu 21.10
-
-commit 952b7d1f38dc20aa25e559060d6219c932b92ecd
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Nov 30 08:36:15 2021 -0500
-
-    https://stroika.atlassian.net/browse/STK-632 sqlite threading bug workaround
-
-commit e6ac43c7429caf267c94c7181e75a8384ce5281b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 30 07:35:45 2021 -0500
 
     Added (if compilers present) regression test configurations to makefile for g++12 and clang++-13
 
