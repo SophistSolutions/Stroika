@@ -5,8 +5,8 @@
 #      Status (as of 2020-04-26)
 #             The builds_and_tests workflow appears to completely support
 #                    - basic-debug-builds-test-ubuntu1804
-#                    - basic-debug-builds-test-ubuntu1910
-#                    - basic-clang-8-builds-test-ubuntu1910
+#                    - basic-debug-builds-test-ubuntu2004
+#                    - basic-clang-8-builds-test-ubuntu2004
 #                    - winbuild-via-tests
 #                    - winbuild-via-samples
 #
@@ -193,9 +193,9 @@ jobs:
       - store_test_results:
           path: ~/build-4-linux/test-results/run-tests-log.txt
 
-  basic-debug-builds-test-ubuntu1910:
+  basic-debug-builds-test-ubuntu2004:
     docker:
-      - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
+      - image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
 
     working_directory: ~/build-4-linux
 
@@ -251,9 +251,9 @@ jobs:
       - store_test_results:
           path: ~/build-4-linux/test-results/run-tests-log.txt
 
-  basic-clang-8-builds-test-ubuntu1910:
+  basic-clang-8-builds-test-ubuntu2004:
     docker:
-      - image: sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
+      - image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
 
     working_directory: ~/build-4-linux
 
@@ -300,13 +300,13 @@ workflows:
               only:
                 #- v2.1-Dev
                 - v2.1-Release
-      - basic-debug-builds-test-ubuntu1910:
+      - basic-debug-builds-test-ubuntu2004:
           filters:
             branches:
               only:
                 #- v2.1-Dev
                 - v2.1-Release
-      - basic-clang-8-builds-test-ubuntu1910:
+      - basic-clang-8-builds-test-ubuntu2004:
           filters:
             branches:
               only:
