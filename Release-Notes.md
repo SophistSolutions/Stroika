@@ -7,14 +7,15 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+---
 
-### 2.1b14x {2021-12-??}
+### 2.1b14 {2021-12-22}
 
 #### TLDR
 
-- Major revsion / cleanups to Containers
+- Major revsion / cleanups to containers
   - Unified constructors; major improvments to 'concept' usage on constructors; IsAddable, etc
-  - new KeyedCollection, SortedKeytedCollection, Assocation, and SortedAssocation containers (along with related factories/concrete types)
+  - new KeyedCollection, SortedKeytedCollection, Association, and SortedAssociation containers (along with related factories/concrete types)
   - No more Iterator patching (and related API changes to containers).
 - XCode 13 support, including support for M1 native/cross compiling
 - Visual Studio 2022 support
