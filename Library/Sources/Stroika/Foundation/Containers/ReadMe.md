@@ -218,7 +218,7 @@ Each container Archetype has its own set of arguments that make sense for its co
 - CONTAINERS can generally be move copied/assigned, just generically manipulating by the base class Iterable<> implementation - really just done by SharedByValue used in Iterable<>.
   ~~~
   public:
-      nonvirtual CONTAINER& operator= (CONTAINER&& rhs) = default;
+      nonvirtual CONTAINER& operator= (CONTAINER&& rhs) noexcept = default;
       nonvirtual CONTAINER& operator= (const CONTAINER& rhs) = default;
   ~~~
 
@@ -270,9 +270,6 @@ KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
     Special case of unsticky keys -
     like array indexes? In that sense, a KEY is almost like an ITERATOR. In fact,
     an interator is somewhat better than a key.
-- We may want Find() to (optionally) return an iterator positioned at the first entry (like STL).
-  - **Reason Rejected**:
-    unclear what ++ would do. I know what it does in STL, but thats fairly meaningless/arbitrary. Better to return optional<>
 - We may want a[i] or some rough analog for sequnces to get a sequence - offset by I.
   - **Reason Rejected**:
     This really only applies to randomly accessed containers (so not stack, deque etc).
@@ -280,7 +277,7 @@ KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
     keep key as a 'key' concept for Map<>, and use 'index' - which is analagous - but different -
     for sequence (important difference is stickiness of assocation when container is modified).
 
-- No Compact()/shrink_to_fit() methods
+- No generic Compact()/shrink_to_fit() methods
   - Stroika 1.0 had Compact() methods - that could be used to generically request that a container
     be compacted.
     We decided against that for Stroika v2 because
@@ -317,7 +314,7 @@ KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
     ```
       for (Iterator<view> i = s.begin() ; i != s.end (); ) {
           if ((*i))->invisible) {
-            s.remove (i);
+            s.Remove (i, &i);
           }
           else {
             ++i;
