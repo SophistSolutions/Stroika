@@ -4,8 +4,9 @@
 #ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:2004
 #ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
 #ARG BASE_IMAGE=mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019
-#ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019
-ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022
+###### ltsc2022 not working (yet) on github actions - LGP 2021-12-23
+ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019
+#ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022
 FROM ${BASE_IMAGE}
 
 
