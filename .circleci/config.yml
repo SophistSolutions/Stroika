@@ -149,7 +149,7 @@ jobs:
           command: ./configure Debug --config-tag Unix --apply-default-debug-flags --compiler-driver g++-8 --debug-symbols false
       - run:
           name: Build
-          command: make QUICK_BUILD=1 all -j2
+          command: make QUICK_BUILD=1 all -j1
       - store_artifacts:
           path: ~/build-4-linux/Builds/Debug/Samples-AppSettings/
           destination: Samples
