@@ -137,7 +137,7 @@ jobs:
   basic-debug-builds-test-ubuntu1804:
     docker:
       - image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
-
+    resource_class: large
     working_directory: ~/build-4-linux
 
     steps:
