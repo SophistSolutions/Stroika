@@ -65,17 +65,6 @@ Stroika's biggest strength is also its biggest weakness:
 
 ## CI System Integration
 
-- CircleCI
-
-  - Nice CI system (docker based).
-  - Autobuilds Linux, and Windows configurations (macos not free for opensource).
-  - Expensive for opensource projects (only allows free trivial builds or once a week builds).
-
-  | [Branches](https://app.circleci.com/pipelines/github/SophistSolutions/Stroika) |                                                                               Status                                                                               | [.circleci/config.yml](.circleci/config.yml) |
-  | :----------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------- |
-  | **v2.1-Release**                                                               | [![Link](https://circleci.com/gh/SophistSolutions/Stroika/tree/v2.1-Release.svg?style=shield)](https://circleci.com/gh/SophistSolutions/Stroika/tree/v2.1-Release) |                                              |
-  | **v2.1-Dev**                                                                   |     [![Link](https://circleci.com/gh/SophistSolutions/Stroika/tree/v2.1-Dev.svg?style=shield)](https://circleci.com/gh/SophistSolutions/Stroika/tree/v2.1-Dev)     |                                              |
-
 - Github Actions
 
   | [Branches](https://github.com/SophistSolutions/Stroika) |                                                                                                                               Status                                                                                                                                |                                                                                                    |

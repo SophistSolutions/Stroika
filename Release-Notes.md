@@ -14,6 +14,7 @@ especially those they need to be aware of when upgrading.
 #### TLDR
 
 - Fixed docker compatability issue with github actions
+- Lose support for Circle CI. Limitations for opensource projects, plus painful debugging, plus github actions working so well just make it not worth supporting.
 
 #### Change Details
 
