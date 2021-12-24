@@ -27,7 +27,7 @@ elif [ -f /etc/debian_version ] ; then
     DIST=`cat /etc/lsb-release | grep '^DISTRIB_ID' | awk -F=  '{ print $2 }'`
     PSUEDONAME=`cat /etc/lsb-release | grep '^DISTRIB_CODENAME' | awk -F=  '{ print $2 }'`
     REV=`cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }'`
- elif [ `uname -s` == "Darwin"  ] ; then
+elif [ `uname -s` == "Darwin"  ] ; then
     DistroBasedOn='Darwin'
     PSUEDONAME="Darwin - MacOSX"
     REV=""
@@ -68,7 +68,7 @@ elif [ $TOOL == "realpath" ] ; then
 elif [ $TOOL == "node" ] ; then
 	if [ $DistroBasedOn == "cygwin" ] ; then
 		echo -n ": try installing https://nodejs.org/en/ msi installer" && echo && exit 0
-	else 
+	elif [ $DistroBasedOn == "Debian" ] ; then
 		echo -n ": try apt-get install -y nodejs" && echo && exit 0
 	fi
 elif [ $TOOL == "sed" ] ||  [ $TOOL == "gsed" ] ; then
