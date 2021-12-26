@@ -46,7 +46,7 @@
 
 * [SQL](SQL/)
   Simple example program using the Stroika SQL wrappers to access/update an SQL database.
-  Only SQL fully supported for now.
+  Only SQLite fully supported for now.
 
 * [SSDPClient](SSDPClient/)
   shows how to user the Stroika UPnP framework to search (SSDP) for UPnP devices.

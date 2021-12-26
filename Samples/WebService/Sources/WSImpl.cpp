@@ -42,7 +42,7 @@ Number WSImpl::Variables_GET (const String& variable) const
     if (auto o = sVariables_.cget ()->Lookup (variable)) {
         return *o;
     }
-    Execution::Throw (ClientErrorException (L"no such variable"sv));
+    Execution::Throw (ClientErrorException{L"no such variable"sv});
 }
 
 void WSImpl::Variables_DELETE (const String& variable) const
@@ -74,7 +74,7 @@ Number WSImpl::divide (Number lhs, Number rhs) const
 {
     if (rhs == Number{0}) {
         // Note - important to use ClientErrorException so web-server returns HTTP status 400, instead of 500
-        Execution::Throw (ClientErrorException (L"divide by zero"sv));
+        Execution::Throw (ClientErrorException{L"divide by zero"sv});
     }
     return lhs / rhs;
 }
