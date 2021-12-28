@@ -23,8 +23,6 @@
  *
  *
  * TODO:
- *      @todo   make Link private
- *
  *      @todo   DataStructures::DoublyLinkedList::ForwardIterator has the 'suporesMode' in the
  *              datastrcutre code and we have it here in the patching code. Note SURE what is better
  *              probably patching code) - but make them consistent!
@@ -66,13 +64,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual DoublyLinkedList& operator= (const DoublyLinkedList& list);
 
     public:
-        class Link;
+    private:
+        class Link_;
 
     public:
         /**
          *  Basic (mostly internal) element used by ForwardIterator. Abstract name so can be referenced generically across 'DataStructure' objects
          */
-        using UnderlyingIteratorRep = const Link*;
+        using UnderlyingIteratorRep = const Link_*;
 
     public:
         /**
@@ -250,8 +249,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant () const noexcept;
 
     private:
-        Link* fHead_{};
-        Link* fTail_{};
+        Link_* fHead_{};
+        Link_* fTail_{};
 
 #if qDebug
     private:
@@ -267,16 +266,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  dont use block allocation for link sizes too large
      */
     template <typename T>
-    class DoublyLinkedList<T>::Link : public Memory::UseBlockAllocationIfAppropriate<Link, sizeof (T) <= 1024> {
+    class DoublyLinkedList<T>::Link_ : public Memory::UseBlockAllocationIfAppropriate<Link_, sizeof (T) <= 1024> {
     public:
-        Link ()            = delete;
-        Link (const Link&) = delete;
-        Link (ArgByValueType<T> item, Link* prev, Link* next);
+        Link_ ()             = delete;
+        Link_ (const Link_&) = delete;
+        Link_ (ArgByValueType<T> item, Link_* prev, Link_* next);
 
     public:
-        T     fItem;
-        Link* fPrev{nullptr};
-        Link* fNext{nullptr};
+        T      fItem;
+        Link_* fPrev{nullptr};
+        Link_* fNext{nullptr};
     };
 
     /**
@@ -319,7 +318,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     private:
         const DoublyLinkedList* fData_{nullptr};
-        const Link*             fCurrent_{nullptr};
+        const Link_*            fCurrent_{nullptr};
 
 #if qDebug
     private:

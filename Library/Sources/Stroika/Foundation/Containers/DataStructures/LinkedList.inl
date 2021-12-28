@@ -17,11 +17,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     /*
      ********************************************************************************
-     ********************** LinkedList<T,TRAITS>::Link ******************************
+     ********************** LinkedList<T,TRAITS>::Link_ *****************************
      ********************************************************************************
      */
     template <typename T>
-    inline LinkedList<T>::Link::Link (ArgByValueType<T> item, Link* next)
+    inline LinkedList<T>::Link_::Link_ (ArgByValueType<T> item, Link_* next)
         : fItem{item}
         , fNext{next}
     {
@@ -48,11 +48,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  case is handled outside, before the loop.
          */
         if (from.fHead_ != nullptr) {
-            fHead_       = new Link{from.fHead_->fItem, nullptr};
-            Link* newCur = fHead_;
-            for (const Link* cur = from.fHead_->fNext; cur != nullptr; cur = cur->fNext) {
-                Link* newPrev  = newCur;
-                newCur         = new Link{cur->fItem, nullptr};
+            fHead_        = new Link_{from.fHead_->fItem, nullptr};
+            Link_* newCur = fHead_;
+            for (const Link_* cur = from.fHead_->fNext; cur != nullptr; cur = cur->fNext) {
+                Link_* newPrev = newCur;
+                newCur         = new Link_{cur->fItem, nullptr};
                 newPrev->fNext = newCur;
             }
         }
@@ -89,11 +89,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
              *  case is handled outside, before the loop.
              */
             if (rhs.fHead_ != nullptr) {
-                fHead_       = new Link{rhs.fHead_->fItem, nullptr};
-                Link* newCur = fHead_;
-                for (const Link* cur = rhs.fHead_->fNext; cur != nullptr; cur = cur->fNext) {
-                    Link* newPrev  = newCur;
-                    newCur         = new Link{cur->fItem, nullptr};
+                fHead_        = new Link_{rhs.fHead_->fItem, nullptr};
+                Link_* newCur = fHead_;
+                for (const Link_* cur = rhs.fHead_->fNext; cur != nullptr; cur = cur->fNext) {
+                    Link_* newPrev = newCur;
+                    newCur         = new Link_{cur->fItem, nullptr};
                     newPrev->fNext = newCur;
                 }
             }
@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         size_t                                               n = 0;
-        for (const Link* i = fHead_; i != nullptr; i = i->fNext) {
+        for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
             ++n;
         }
         return n;
@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         Invariant ();
-        fHead_ = new Link{item, fHead_};
+        fHead_ = new Link_{item, fHead_};
         Invariant ();
     }
     template <typename T>
@@ -174,12 +174,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
             Prepend (item);
         }
         else {
-            Link* last = this->fHead_;
+            Link_* last = this->fHead_;
             for (; last->fNext != nullptr; last = last->fNext)
                 ;
             Assert (last != nullptr);
             Assert (last->fNext == nullptr);
-            last->fNext = new Link{item, nullptr};
+            last->fNext = new Link_{item, nullptr};
         }
     }
     template <typename T>
@@ -189,10 +189,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (not empty ());
         AssertNotNull (fHead_);
         Invariant ();
-        Link* victim = fHead_;
-        fHead_       = victim->fNext;
+        Link_* victim = fHead_;
+        fHead_        = victim->fNext;
         delete victim;
         Invariant ();
+    }
+    template <typename T>
+    inline T* LinkedList<T>::PeekAt (const ForwardIterator& i)
+    {
+        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Require (not i.Done ());
+        Invariant ();
+        i.Invariant ();
+        return &const_cast<Link_*> (i.fCurrent_)->fItem;
     }
     template <typename T>
     inline void LinkedList<T>::SetAt (const ForwardIterator& i, ArgByValueType<T> newValue)
@@ -201,7 +210,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (not i.Done ());
         Invariant ();
         i.Invariant ();
-        const_cast<Link*> (i.fCurrent_)->fItem = newValue;
+        const_cast<Link_*> (i.fCurrent_)->fItem = newValue;
         Invariant ();
     }
     template <typename T>
@@ -214,7 +223,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
         i.Invariant ();
 
-        Link* prev = nullptr;
+        Link_* prev = nullptr;
         if ((this->fHead_ != nullptr) and (this->fHead_ != i.fCurrent_)) {
             for (prev = this->fHead_; prev->fNext != i.fCurrent_; prev = prev->fNext) {
                 AssertNotNull (prev); // cuz that would mean fCurrent_ not in LinkedList!!!
@@ -223,11 +232,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         if (prev == nullptr) {
             Assert (this->fHead_ == i.fCurrent_); // could be nullptr, or not...
-            this->fHead_ = new Link{newValue, this->fHead_};
+            this->fHead_ = new Link_{newValue, this->fHead_};
         }
         else {
             Assert (prev->fNext == i.fCurrent_);
-            prev->fNext = new Link (newValue, prev->fNext);
+            prev->fNext = new Link_ (newValue, prev->fNext);
         }
 
         Invariant ();
@@ -239,7 +248,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (not i.Done ());
         AssertNotNull (i.fCurrent_); // since not done...
         i.Invariant ();
-        const_cast<Link*> (i.fCurrent_)->fNext = new Link{newValue, i.fCurrent_->fNext};
+        const_cast<Link_*> (i.fCurrent_)->fNext = new Link_{newValue, i.fCurrent_->fNext};
     }
     template <typename T>
     auto LinkedList<T>::RemoveAt (const ForwardIterator& i) -> ForwardIterator
@@ -252,7 +261,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         ForwardIterator next = i;
         ++next;
 
-        Link* victim = const_cast<Link*> (i.fCurrent_);
+        Link_* victim = const_cast<Link_*> (i.fCurrent_);
 
         /*
          *      At this point we need the fPrev pointer. But it may have been lost
@@ -260,7 +269,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  fCurrent_ == fData->fHead_). If it is nullptr, recompute. Be careful if it
          *  is still nullptr, that means update fHead_.
          */
-        Link* prevLink = nullptr;
+        Link_* prevLink = nullptr;
         if (this->fHead_ != victim) {
             AssertNotNull (this->fHead_); // cuz there must be something to remove current
             for (prevLink = this->fHead_; prevLink->fNext != victim; prevLink = prevLink->fNext) {
@@ -308,7 +317,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     T* LinkedList<T>::Lookup (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this}; // lock not shared cuz return mutable ptr
-        for (Link* i = fHead_; i != nullptr; i = i->fNext) {
+        for (Link_* i = fHead_; i != nullptr; i = i->fNext) {
             if (equalsComparer (i->fItem, item)) {
                 return &i->fItem;
             }
@@ -320,7 +329,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     const T* LinkedList<T>::Lookup (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
-        for (const Link* i = fHead_; i != nullptr; i = i->fNext) {
+        for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
             if (equalsComparer (i->fItem, item)) {
                 return &i->fItem;
             }
@@ -332,7 +341,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void LinkedList<T>::Apply (FUNCTION doToElement) const
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
-        for (const Link* i = fHead_; i != nullptr; i = i->fNext) {
+        for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
             doToElement (i->fItem);
         }
     }
@@ -341,7 +350,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline auto LinkedList<T>::Find (FUNCTION doToElement) const -> UnderlyingIteratorRep
     {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
-        for (Link* i = fHead_; i != nullptr; i = i->fNext) {
+        for (Link_* i = fHead_; i != nullptr; i = i->fNext) {
             if (doToElement (i->fItem)) {
                 return i;
             }
@@ -353,9 +362,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         Invariant ();
-        for (Link* i = fHead_; i != nullptr;) {
-            Link* deleteMe = i;
-            i              = i->fNext;
+        for (Link_* i = fHead_; i != nullptr;) {
+            Link_* deleteMe = i;
+            i               = i->fNext;
             delete deleteMe;
         }
         fHead_ = nullptr;
@@ -368,7 +377,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
         Require (i >= 0);
         Require (i < size ());
-        const Link* cur = fHead_;
+        const Link_* cur = fHead_;
         for (; i != 0; cur = cur->fNext, --i) {
             AssertNotNull (cur); // cuz i <= fLength
         }
@@ -381,7 +390,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         Require (i >= 0);
         Require (i < size ());
-        Link* cur = fHead_;
+        Link_* cur = fHead_;
         for (; i != 0; cur = cur->fNext, --i) {
             AssertNotNull (cur); // cuz i <= fLength
         }
@@ -398,7 +407,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /*
          * Check we are properly linked together.
          */
-        for (Link* i = fHead_; i != nullptr; i = i->fNext) {
+        for (Link_* i = fHead_; i != nullptr; i = i->fNext) {
             // at least make sure no currupted links and no infinite loops
         }
     }
@@ -469,7 +478,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         RequireNotNull (fData_);
         RequireNotNull (this->fCurrent_);
         size_t i = 0;
-        for (const Link* l = fData_->fHead_; l != this->fCurrent_; l = l->fNext, ++i) {
+        for (const Link_* l = fData_->fHead_; l != this->fCurrent_; l = l->fNext, ++i) {
             AssertNotNull (l);
         }
         return i;

@@ -61,13 +61,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         class ForwardIterator;
 
     public:
-        class Link;
+    private:
+        class Link_;
 
     public:
         /**
          *  Basic (mostly internal) element used by ForwardIterator. Abstract name so can be referenced generically across 'DataStructure' objects
          */
-        using UnderlyingIteratorRep = const Link*;
+        using UnderlyingIteratorRep = const Link_*;
 
     public:
         /*
@@ -158,6 +159,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  Complexity:
          *      Always: constant
+         * 
+         *  \note lifetime of returned pointer only extends til the start of the next non-const call to this LinkedList object
+         */
+        nonvirtual T* PeekAt (const ForwardIterator& i);
+
+    public:
+        /**
+         *  Complexity:
+         *      Always: constant
          */
         nonvirtual void SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);
 
@@ -221,7 +231,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Invariant () const noexcept;
 
     private:
-        Link* fHead_{nullptr};
+        Link_* fHead_{nullptr};
 
 #if qDebug
     private:
@@ -236,15 +246,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  dont use block allocation for link sizes too large
      */
     template <typename T>
-    class LinkedList<T>::Link : public Memory::UseBlockAllocationIfAppropriate<Link, sizeof (T) <= 1024> {
+    class LinkedList<T>::Link_ : public Memory::UseBlockAllocationIfAppropriate<Link_, sizeof (T) <= 1024> {
     public:
-        Link () = delete;
-        Link (ArgByValueType<T> item, Link* next);
-        Link (const Link&) = delete;
+        Link_ () = delete;
+        Link_ (ArgByValueType<T> item, Link_* next);
+        Link_ (const Link_&) = delete;
 
     public:
-        T     fItem;
-        Link* fNext{nullptr};
+        T      fItem;
+        Link_* fNext{nullptr};
     };
 
     /*
@@ -289,7 +299,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     private:
         const LinkedList* fData_;
-        const Link*       fCurrent_;
+        const Link_*      fCurrent_;
 
 #if qDebug
     private:

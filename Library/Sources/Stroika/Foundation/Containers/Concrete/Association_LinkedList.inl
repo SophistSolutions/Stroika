@@ -169,16 +169,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedMutex>            writeLock{fData_};
-            optional<typename DataStructureImplType_::UnderlyingIteratorRep> savedUnderlyingIndex;
+            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
+            auto                                                  dataStructureIterator = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator;
+            fData_.PeekAt (dataStructureIterator)->fValue                               = newValue;
             if (nextI != nullptr) {
-                savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
-            }
-            // avoid for performance sake and do safe const_cast instead fData_.SetAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator, value_type {key, newValue});
-            typename DataStructureImplType_::Link* mutableLink = const_cast<typename DataStructureImplType_::Link*> (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ());
-            mutableLink->fItem.fValue                          = newValue;
-            if (nextI != nullptr) {
-                *nextI = Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
+                *nextI = Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, dataStructureIterator.GetUnderlyingIteratorRep ())};
             }
         }
 
