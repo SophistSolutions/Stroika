@@ -20,7 +20,7 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
-*      @todo    Consider if Seek () past end of stream on writable stream should be
+ *      @todo   Consider if Seek () past end of stream on writable stream should be
  *              allowed. Often - like in UNIX - this works - and you can then write there,
  *              and this creates a hole in the file read back as zeros.
  *

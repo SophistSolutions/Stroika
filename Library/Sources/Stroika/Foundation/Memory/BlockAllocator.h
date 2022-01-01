@@ -148,17 +148,6 @@ namespace Stroika::Foundation::Memory {
         nonvirtual bool operator== (const BlockAllocator& rhs) const;
 #endif
 
-    public:
-        [[deprecated ("Since v2.1b14 - use BlockAllocator<T>{}.allocate (1)")]] static void* Allocate (size_t n)
-        {
-            Require (n == sizeof (T));
-            return BlockAllocator<T>{}.allocate (1);
-        }
-        [[deprecated ("Since v2.1b14 - use BlockAllocator<T>{}.deallocate (p, 1)")]] static void Deallocate (void* p) noexcept
-        {
-            return BlockAllocator<T>{}.deallocate (reinterpret_cast<T*> (p), 1);
-        }
-
     private:
         // ensure return value is >= sizeof (T), and has legit alignment for T
         static constexpr size_t AdjustSizeForPool_ ();

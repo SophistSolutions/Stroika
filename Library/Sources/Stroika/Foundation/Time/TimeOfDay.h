@@ -177,10 +177,6 @@ namespace Stroika::Foundation::Time {
         static const TimeOfDay kMax; // defined constexpr
 
     public:
-        [[deprecated ("Since Stroika 2.1b4 use kMin")]] static constexpr TimeOfDay min ();
-        [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr TimeOfDay max ();
-
-    public:
         class FormatException;
 
     public:
@@ -221,21 +217,13 @@ namespace Stroika::Foundation::Time {
          *      and sometimes leading zeros, stripped, so for example, 01:03:05 PM will become 1:03:05 PM,
          *      and 04:06:00 PM will become 4:06 PM.
          */
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         enum class PrintFormat : uint8_t {
-            eCurrentLocale [[deprecated ("Since Stroika 2.1b10 - use locale{}")]],
-            eISO8601 [[deprecated ("Since Stroika 2.1b10 - use kISO8601Format")]],
             eCurrentLocale_WithZerosStripped,
 
             eDEFAULT = eCurrentLocale_WithZerosStripped,
 
-            Stroika_Define_Enum_Bounds (eCurrentLocale, eCurrentLocale_WithZerosStripped)
+            Stroika_Define_Enum_Bounds (eCurrentLocale_WithZerosStripped, eCurrentLocale_WithZerosStripped)
         };
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
 
     public:
         /**
@@ -261,19 +249,6 @@ namespace Stroika::Foundation::Time {
          *  @see Characters::ToString ()
          */
         nonvirtual String ToString () const;
-
-    public:
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
-        enum class [[deprecated ("Since Stroika 2.1b10 ")]] ParseFormat : uint8_t{
-            eCurrentLocale,
-            eISO8601 [[deprecated ("Since Stroika 2.1b10 - use kISO8601Format")]],
-            Stroika_Define_Enum_Bounds (eCurrentLocale, eISO8601)};
-        [[deprecated ("Since Stroika 2.1b10 *use Parse/1")]] static TimeOfDay Parse (const String& rep, ParseFormat pf);
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
 
     private:
         uint32_t fTime_;

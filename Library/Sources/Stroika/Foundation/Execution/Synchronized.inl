@@ -300,29 +300,6 @@ namespace Stroika::Foundation::Execution {
         }
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>*>
-    bool Synchronized<T, TRAITS>::UpgradeLockAtomicallyQuietly ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
-    {
-#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockAtomicallyQuietly", L"&fMutex_=%p, timeout=%s", &fMutex_, Characters::ToString (timeout).c_str ()};
-#endif
-        RequireNotNull (lockBeingUpgraded);
-        Require (lockBeingUpgraded->fSharedLock_.mutex () == &fMutex_);
-        Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
-        typename TRAITS::WriteLockType writeLock{fMutex_, std::defer_lock};
-        if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
-            writeLock.lock (); // if wait 'infinite' use no-time-arg lock call
-        }
-        else {
-            if (not writeLock.try_lock_for (timeout)) {
-                return false;
-            }
-        }
-        Assert (writeLock.owns_lock ());
-        doWithWriteLock (WritableReference{this, std::move (writeLock)});
-        return true;
-    }
-    template <typename T, typename TRAITS>
     inline void Synchronized<T, TRAITS>::NoteLockStateChanged_ ([[maybe_unused]] const wchar_t* m) const noexcept
     {
         if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {

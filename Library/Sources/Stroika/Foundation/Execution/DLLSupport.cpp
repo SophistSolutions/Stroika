@@ -147,26 +147,6 @@ DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& se
 }
 #endif
 
-#if !qPlatform_Windows
-DLLHandle DLLLoader::LoadDLL (const SDKChar* dllName, int flags) /// *** DEPRECATED****
-{
-#if qTargetPlatformSDKUseswchar_t
-    DLLHandle module = ::dlopen (Characters::WideStringToUTF8 (dllName).c_str (), flags);
-#else
-    DLLHandle module = ::dlopen (dllName, flags);
-#endif
-
-    if (module == nullptr) {
-        // either main module or not found
-        const char* err = ::dlerror ();
-        if (err != nullptr) [[UNLIKELY_ATTR]] {
-            Execution::Throw (DLLException{err});
-        }
-    }
-    return module;
-}
-#endif
-
 DLLLoader::~DLLLoader ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

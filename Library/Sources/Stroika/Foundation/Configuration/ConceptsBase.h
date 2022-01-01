@@ -52,28 +52,6 @@ namespace Stroika::Foundation::Configuration {
     };
 
     /**
-     *  \brief  Define has_XXX (where you specify XXX) class which has a 'value' field saying
-     *          if the XXX property is present.
-     *
-     *  Since I cannot (so far figure out how to) do in a single simple statement/template,
-     *  at least do this magic in a macro...
-     */
-#define STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(NAME, XTEST)                                                    \
-    namespace Private_ {                                                                                            \
-        template <typename T>                                                                                       \
-        struct NAME##_result_impl {                                                                                 \
-            template <typename X>                                                                                   \
-            static auto                                                     check (const X& x) -> decltype (XTEST); \
-            static Stroika::Foundation::Configuration::substitution_failure check (...);                            \
-            using type = decltype (check (declval<T> ()));                                                          \
-        };                                                                                                          \
-    }                                                                                                               \
-    template <typename T>                                                                                           \
-    using NAME##_result = typename Private_::NAME##_result_impl<T>::type;                                           \
-    template <typename T>                                                                                           \
-    struct [[deprecated ("Since Stroika 2.1b14 - use templates in Concepts.h and is_detected_v")]] has_##NAME : integral_constant<bool, not is_same<NAME##_result<T>, Stroika::Foundation::Configuration::substitution_failure>::value>{};
-
-    /**
      * 
      *     // just needed til we have c++ 20 concepts
      *

@@ -59,11 +59,6 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     {
         return ::EVP_CIPHER_iv_length (fCipher_);
     }
-
-    [[deprecated ("Since Stroika 2.1b12")]] inline const EVP_CIPHER* Convert2OpenSSL (CipherAlgorithm alg)
-    {
-        return alg;
-    }
 #endif
 
 }

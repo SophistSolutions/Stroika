@@ -118,9 +118,6 @@ namespace Stroika::Foundation::IO::Network::SystemFirewall {
      */
     class Manager {
     public:
-        [[deprecated ("Use default CTOR- deprecated in Stroika 2.1b2")]] static Manager sThe;
-
-    public:
         Manager () = default;
 
     public:

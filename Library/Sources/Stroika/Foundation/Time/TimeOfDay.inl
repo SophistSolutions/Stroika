@@ -28,16 +28,8 @@ namespace Stroika::Foundation::Time {
     {
         Assert (fTime_ < kMaxSecondsPerDay);
     }
-    inline constexpr TimeOfDay TimeOfDay::kMin{0};
-    inline constexpr TimeOfDay TimeOfDay::min ()
-    {
-        return TimeOfDay{0};
-    }
-    inline constexpr TimeOfDay TimeOfDay::kMax{TimeOfDay::kMaxSecondsPerDay - 1};
-    inline constexpr TimeOfDay TimeOfDay::max ()
-    {
-        return TimeOfDay{kMaxSecondsPerDay - 1};
-    }
+    inline constexpr TimeOfDay    TimeOfDay::kMin{0};
+    inline constexpr TimeOfDay    TimeOfDay::kMax{TimeOfDay::kMaxSecondsPerDay - 1};
     inline constexpr unsigned int TimeOfDay::GetAsSecondsCount () const
     {
         Ensure (fTime_ < kMaxSecondsPerDay);

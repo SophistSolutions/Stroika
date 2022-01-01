@@ -334,15 +334,6 @@ auto SQL::SQLite::Connection::New (const Options& options) -> Ptr
 {
     return Ptr{make_shared<Rep_> (options)};
 }
-auto SQL::SQLite::Connection::New (const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer) -> Ptr
-{
-    auto tmp = make_shared<Rep_> (options);
-    Ptr  result{tmp};
-    if (tmp->fTmpHackCreated_) {
-        dbInitializer (result);
-    }
-    return result;
-}
 
 /*
  ********************************************************************************

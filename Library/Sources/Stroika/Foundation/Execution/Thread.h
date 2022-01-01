@@ -245,16 +245,6 @@ namespace Stroika::Foundation::Execution {
         Configuration DefaultConfiguration () noexcept;
         Configuration DefaultConfiguration (const optional<Configuration>& newConfiguration);
 
-        [[deprecated ("since Stroika 2.1b2 - use DefaultConfiguration")]] inline Configuration GetDefaultConfiguration ()
-        {
-            return DefaultConfiguration ();
-        }
-
-        [[deprecated ("since Stroika 2.1b2 - use DefaultConfiguration")]] inline void SetDefaultConfiguration (const Configuration& config)
-        {
-            (void)DefaultConfiguration (config);
-        }
-
         /**
          * optional flag for constructing new threads
          */
@@ -404,15 +394,6 @@ namespace Stroika::Foundation::Execution {
              */
             nonvirtual bool ThrowInterruptExceptionInsideUserAPC () const noexcept;
             nonvirtual bool ThrowInterruptExceptionInsideUserAPC (optional<bool> throwInterruptExceptionInsideUserAPC);
-
-            [[deprecated ("Since Stroika 2.1b2 - use ThrowInterruptExceptionInsideUserAPC")]] inline bool GetThrowInterruptExceptionInsideUserAPC () const
-            {
-                return ThrowInterruptExceptionInsideUserAPC ();
-            }
-            [[deprecated ("Since Stroika 2.1b2 - use ThrowInterruptExceptionInsideUserAPC")]] inline void SetThrowInterruptExceptionInsideUserAPC (bool throwInterruptExceptionInsideUserAPC)
-            {
-                (void)ThrowInterruptExceptionInsideUserAPC (throwInterruptExceptionInsideUserAPC);
-            }
 #endif
 
         public:
@@ -1044,21 +1025,6 @@ namespace Stroika::Foundation::Execution {
          */
         SignalID SignalUsedForThreadInterrupt () noexcept;
         SignalID SignalUsedForThreadInterrupt (optional<SignalID> signalNumber);
-
-        /**
-         */
-        [[deprecated ("Since Stroika v2.1 use SignalUsedForThreadInterrupt")]] static SignalID GetSignalUsedForThreadInterrupt ()
-        {
-            return SignalUsedForThreadInterrupt ();
-        }
-
-        /**
-         *  Unsafe to change this while threads running - at least if you could be interupting threads during this time.
-         */
-        [[deprecated ("Since Stroika v2.1 use SignalUsedForThreadInterrupt")]] static void SetSignalUsedForThreadInterrupt (SignalID signalNumber)
-        {
-            (void)SignalUsedForThreadInterrupt (signalNumber);
-        }
 #endif
 
         struct FormatThreadInfo {
@@ -1107,30 +1073,6 @@ namespace Stroika::Foundation::Execution {
         dont_inline void Yield ();
 
     };
-
-    [[deprecated ("Since Stroika v2.1b2 - use Thread::GetCurrentThreadID()")]] inline Thread::IDType GetCurrentThreadID () noexcept
-    {
-        return Thread::GetCurrentThreadID ();
-    }
-    [[deprecated ("Since Stroika v2.1b2 - use Thread::CheckForInterruption()")]] inline void CheckForThreadInterruption ()
-    {
-        Thread::CheckForInterruption ();
-    }
-    template <unsigned int kEveryNTimes>
-    [[deprecated ("Since Stroika v2.1b2 - use Thread::CheckForInterruption()")]] inline void CheckForThreadInterruption ()
-    {
-        Thread::CheckForInterruption<kEveryNTimes> ();
-    }
-    [[deprecated ("Since Stroika v2.1b2 - use Thread::Yield()")]] inline dont_inline void Yield ()
-    {
-        Thread::Yield ();
-    }
-    [[deprecated ("Since Stroika v2.1b2, use Thread::FormatThreadID_A")]] inline string FormatThreadID_A (Thread::IDType threadID)
-    {
-        Thread::FormatThreadInfo fi;
-        fi.fIncludeLeadingZeros = true;
-        return Thread::FormatThreadID_A (threadID, fi);
-    }
 
 }
 

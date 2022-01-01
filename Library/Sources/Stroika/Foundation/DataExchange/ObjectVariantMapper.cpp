@@ -14,9 +14,7 @@
 #include "../IO/Network/InternetAddress.h"
 #include "../IO/Network/URI.h"
 #include "../Time/Date.h"
-#include "../Time/DateRange.h"
 #include "../Time/DateTime.h"
-#include "../Time/DateTimeRange.h"
 #include "../Time/Duration.h"
 
 #include "InternetMediaType.h"

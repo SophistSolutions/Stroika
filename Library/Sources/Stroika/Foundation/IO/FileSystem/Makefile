@@ -20,7 +20,6 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)Directory${OBJ_SUFFIX}\
 	$(ObjDir)DirectoryIterable${OBJ_SUFFIX}\
 	$(ObjDir)DirectoryIterator${OBJ_SUFFIX}\
 	$(ObjDir)Disk${OBJ_SUFFIX}\

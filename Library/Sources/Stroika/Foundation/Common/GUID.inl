@@ -48,10 +48,6 @@ namespace Stroika::Foundation::Common {
     {
         return reinterpret_cast<const std::byte*> (this) + 16;
     }
-    constexpr GUID GUID::Zero ()
-    {
-        return GUID{};
-    }
 
 #if __cpp_impl_three_way_comparison < 201907 or qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
     /*

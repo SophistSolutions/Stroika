@@ -8,9 +8,6 @@
 #include "../Containers/SortedMapping.h"
 #include "../DataExchange/BadFormatException.h"
 
-// Just for **deprecated** IsTextFormat/IsImageFormat
-#include "InternetMediaTypeRegistry.h"
-
 #include "InternetMediaType.h"
 
 using namespace Stroika::Foundation;
@@ -126,16 +123,6 @@ Common::strong_ordering InternetMediaType::THREEWAYCOMPARE_ (const InternetMedia
         return Mapping<String, String>::SequentialThreeWayComparer{}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
 #endif
     }
-}
-
-bool InternetMediaType::IsTextFormat () const
-{
-    return InternetMediaTypeRegistry::Get ().IsTextFormat (*this);
-}
-
-bool InternetMediaType::IsImageFormat () const
-{
-    return InternetMediaTypeRegistry::Get ().IsImageFormat (*this);
 }
 
 /*

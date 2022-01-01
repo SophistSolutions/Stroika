@@ -30,9 +30,7 @@
  *      @todo   Could optimize the Format/Parse calls for case without locale to just hardwire implementaton
  *              using sprintf/scanf (as we had before 2.1b10); only performance optimization and unclear it would help
  *
- *      @todo   Complete removal of deprecated 'empty' and no-arg constructor
- *
- *              Consider losing eEmptyDayOfMonth and eEmptyMonthOfYear and using optional instead
+ *      @todo   Consider losing eEmptyDayOfMonth and eEmptyMonthOfYear and using optional instead
  *
  *              Several comments and names still use the word empty
  *
@@ -372,9 +370,6 @@ namespace Stroika::Foundation::Time {
         nonvirtual void mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const;
 
     public:
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         /**
          *  \brief  DisplayFormat is a representation which a date can be transformed in and out of
          *
@@ -393,18 +388,12 @@ namespace Stroika::Foundation::Time {
          *  \note   Configuration::DefaultNames<> supported
          */
         enum class PrintFormat : uint8_t {
-            eCurrentLocale [[deprecated ("Since Stroika 2.1b10 - use locale{}")]],
-            eISO8601 [[deprecated ("Since Stroika 2.1b10 - use kISO8601Format")]],
-            eJavascript [[deprecated ("Since Stroika 2.1b10 - use kMonthDayYearFormat")]],
             eCurrentLocale_WithZerosStripped,
 
             eDEFAULT = eCurrentLocale_WithZerosStripped,
 
-            Stroika_Define_Enum_Bounds (eCurrentLocale, eCurrentLocale_WithZerosStripped)
+            Stroika_Define_Enum_Bounds (eCurrentLocale_WithZerosStripped, eCurrentLocale_WithZerosStripped)
         };
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
 
     public:
         /**
@@ -484,25 +473,6 @@ namespace Stroika::Foundation::Time {
          */
         template <typename T>
         nonvirtual T As () const;
-
-    public:
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
-        enum class ParseFormat : uint8_t {
-            eCurrentLocale [[deprecated ("Since Stroika 2.1b10 - use locale{}")]],
-            eISO8601 [[deprecated ("Since Stroika 2.1b10 - use kISO8601Format")]],
-            eJavascript [[deprecated ("Since Stroika 2.1b10 - use kMonthDayYearFormat")]],
-
-            Stroika_Define_Enum_Bounds (eCurrentLocale, eJavascript)
-        };
-
-        [[deprecated ("Since Stroika 2.1b10")]] static Date Parse (const String& rep, ParseFormat pf);
-        DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr Date min ();
-        [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr Date max ();
 
     private:
         constexpr static JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year);

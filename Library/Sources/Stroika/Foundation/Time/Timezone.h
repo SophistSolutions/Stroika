@@ -137,8 +137,6 @@ namespace Stroika::Foundation::Time {
          */
         static const Timezone kUTC; // defined constexpr
 
-        [[deprecated ("Since Stroika 2.1b4 use kUTC")]] static constexpr Timezone UTC ();
-
     public:
         /**
          *  Returns Timezone object in localtime timezone.
@@ -148,15 +146,11 @@ namespace Stroika::Foundation::Time {
          */
         static const Timezone kLocalTime; // defined constexpr
 
-        [[deprecated ("Since Stroika 2.1b4 use kLocalTime")]] static constexpr Timezone LocalTime ();
-
     public:
         /**
          *  Returns Timezone object in localtime timezone.
          */
         static const optional<Timezone> kUnknown; // defined constexpr
-
-        [[deprecated ("Since Stroika 2.1b4 use kUnknown")]] static constexpr optional<Timezone> Unknown ();
 
     public:
         /**

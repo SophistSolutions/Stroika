@@ -226,12 +226,6 @@ namespace Stroika::Foundation::Execution {
          */
         nonvirtual void clear ();
 
-    public:
-        [[deprecated ("Since Stroika 2.1b14, use SignalEndOfInput")]] void EndOfInput ()
-        {
-            SignalEndOfInput ();
-        }
-
     private:
         mutable ConditionVariable<> fCondtionVariable_;
         bool                        fEndOfInput_{false};

@@ -93,7 +93,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\RC4.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Format.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.cpp" />
@@ -138,7 +137,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\BackTrace.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp" />
@@ -188,7 +187,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Users.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.cpp" />
@@ -301,7 +299,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\GUID.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Immortalize.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\ObjectForSideEffects.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Property.h" />
@@ -434,7 +431,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Jenkins.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\MD5.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\DigestDataToString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Hash.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.h" />
@@ -443,7 +439,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\RC4.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Format.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.h" />
@@ -453,9 +448,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Exception.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLite.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\EngineProperties.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBC.h" />
@@ -500,7 +492,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\BackTrace.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Cast.h" />
@@ -569,13 +561,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UpdatableWaitForIOReady.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Users.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\VirtualConstant.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.h" />
@@ -613,7 +603,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Versions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddressRange.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\ICMP.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\IP.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.h" />
@@ -687,11 +676,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Date.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateRange.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateTime.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateTimeRange.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Duration.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Realtime.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Timezone.h" />
@@ -872,7 +858,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\MD5.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\DigestDataToString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Hash.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Makefile" />
@@ -883,7 +868,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Format.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.inl" />
@@ -950,7 +934,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Cast.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlagChecker.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Makefile" />
@@ -1012,7 +996,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.inl" />

@@ -240,28 +240,6 @@ wstring Characters::CString::StripTrailingCharIfAny (const wstring& s, wchar_t c
 
 /*
  ********************************************************************************
- ********************************* Float2String *********************************
- ********************************************************************************
- */
-wstring Characters::CString::Float2String (double f)
-{
-    if (isnan (f)) {
-        static const wstring kNAN_STR_{L"NAN"};
-        return kNAN_STR_;
-    }
-    if (isinf (f)) {
-        static const wstring kNEG_INF_STR_{L"-INF"};
-        static const wstring kINF_STR_{L"INF"};
-        return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
-    }
-    wstringstream s;
-    s.imbue (locale ("C"));
-    s << f;
-    return s.str ();
-}
-
-/*
- ********************************************************************************
  ****************************** HexString2Int ***********************************
  ********************************************************************************
  */
@@ -326,56 +304,4 @@ unsigned long long int Characters::CString::Private_::String2UInt_ (const wstrin
 {
     long long int l = wcstoull (s.c_str (), nullptr, 10);
     return l;
-}
-
-/*
- ********************************************************************************
- ********************************* String2Float *********************************
- ********************************************************************************
- */
-double Characters::CString::String2Float (const string& s)
-{
-    char*  e = nullptr;
-    double d = strtod (s.c_str (), &e);
-    // if trailing crap - return nan
-    if (*e != '\0') {
-        return Math::nan<double> ();
-    }
-    if (d == 0) {
-        if (s.c_str () == e) {
-            return Math::nan<double> ();
-        }
-    }
-    return d;
-}
-
-double Characters::CString::String2Float (const wchar_t* s)
-{
-    RequireNotNull (s);
-    wchar_t* e = nullptr;
-    double   d = wcstod (s, &e);
-    if (*e != '\0') {
-        return Math::nan<double> ();
-    }
-    if (d == 0) {
-        if (s == e) {
-            return Math::nan<double> ();
-        }
-    }
-    return d;
-}
-
-double Characters::CString::String2Float (const wstring& s)
-{
-    wchar_t* e = nullptr;
-    double   d = wcstod (s.c_str (), &e);
-    if (*e != '\0') {
-        return Math::nan<double> ();
-    }
-    if (d == 0) {
-        if (s.c_str () == e) {
-            return Math::nan<double> ();
-        }
-    }
-    return d;
 }

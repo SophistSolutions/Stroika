@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Memory {
     };
 
     /**
-     *  \brief  SharedByValue is a utility class to implement Copy-On-Write (aka COW)
+     *  \brief  SharedByValue is a utility class to implement Copy-On-Write (aka COW) - sort of halfway between unique_ptr and shared_ptr
      *
      *  SharedByValue is a utility class to implement Copy-On-Write (aka Copy on Write, or COW).
      *
@@ -202,7 +202,6 @@ namespace Stroika::Foundation::Memory {
          *  \note This can be confusing, because at the point of call, its unclear if this may invoke BreakReferences or not
          */
         nonvirtual const element_type& operator* () const;
-        nonvirtual element_type& operator* ();
 
     public:
         /**
@@ -261,14 +260,6 @@ namespace Stroika::Foundation::Memory {
         template <typename COPIER>
         nonvirtual void AssureNOrFewerReferences (COPIER&& copier, unsigned int n = 1u);
         nonvirtual void AssureNOrFewerReferences (unsigned int n = 1u);
-
-    public:
-        [[deprecated ("Since Stroika 2.1b14 - use cget()")]] nonvirtual const element_type* get () const noexcept;
-        template <typename... COPY_ARGS>
-        [[deprecated ("Since Stroika 2.1b14 - use rwget() - but note COPIER not COPYARGS arguments")]] nonvirtual element_type* get (COPY_ARGS&&... copyArgs);
-        [[deprecated ("Since Stroika 2.1b14 - use GetDefaultCopier")]] element_copier_type                                      GetCopier () const { GetDefaultCopier (); }
-        template <typename... COPY_ARGS>
-        [[deprecated ("Since Stroika 2.1b14 - use AssureNOrFewerReferences() - and NOTE difference in ARGS")]] nonvirtual void Assure1Reference (COPY_ARGS&&... copyArgs);
 
     private:
         template <typename COPIER>

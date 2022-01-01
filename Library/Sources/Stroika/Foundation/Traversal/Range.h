@@ -351,12 +351,6 @@ namespace Stroika::Foundation::Traversal {
         static constexpr Range Ball (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen = TRAITS::kLowerBoundOpenness, Openness rhsOpen = TRAITS::kUpperBoundOpenness);
 
     public:
-        static constexpr Range Circle [[deprecated ("Since Stroika v2.1b8 use Ball")]] (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen = TRAITS::kLowerBoundOpenness, Openness rhsOpen = TRAITS::kUpperBoundOpenness)
-        {
-            return Ball (center, radius, lhsOpen, rhsOpen);
-        }
-
-    public:
         /**
          *  This returns begin>end? EMPTY else Range<T, TRAITS> (begin,  end);
          *

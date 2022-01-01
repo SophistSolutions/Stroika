@@ -42,18 +42,6 @@ filesystem::path Execution::GetEXEDir ()
 
 /*
  ********************************************************************************
- **************************** Execution::GetEXEDirT *****************************
- ********************************************************************************
- */
-SDKString Execution::GetEXEDirT ()
-{
-    // Currently this impl depends on String - we may want to redo one cleanly without any dependency on String()...
-    // Docs call for this - but I'm not sure its needed
-    return GetEXEDir ().native ();
-}
-
-/*
- ********************************************************************************
  **************************** Execution::GetEXEPath *****************************
  ********************************************************************************
  */
@@ -106,11 +94,6 @@ filesystem::path Execution::GetEXEPath ()
  **************************** Execution::GetEXEPathT ****************************
  ********************************************************************************
  */
-SDKString Execution::GetEXEPathT () //***DEPRECATED***
-{
-    return GetEXEPath ().native ();
-}
-
 filesystem::path Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
 {
 #if qPlatform_MacOS

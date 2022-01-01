@@ -265,31 +265,6 @@ DateTime DateTime::Parse (const String& rep, LocaleIndependentFormat format)
     Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
 }
 
-DateTime DateTime::Parse (const String& rep, ParseFormat pf)
-{
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
-    switch (pf) {
-        case ParseFormat::eCurrentLocale: {
-            return Parse (rep, locale{});
-        } break;
-        case ParseFormat::eISO8601: {
-            return Parse (rep, LocaleIndependentFormat::eISO8601);
-        } break;
-        case ParseFormat::eRFC1123: {
-            return Parse (rep, LocaleIndependentFormat::eRFC1123);
-        } break;
-        default: {
-            AssertNotReached ();
-            Execution::Throw (FormatException::kThe);
-        } break;
-    }
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
-}
-
 DateTime DateTime::Parse (const String& rep, const locale& l, const String& formatPattern)
 {
     if (rep.empty ()) [[UNLIKELY_ATTR]] {
@@ -648,13 +623,7 @@ String DateTime::Format (LocaleIndependentFormat format) const
 
 String DateTime::Format (PrintFormat pf) const
 {
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
     switch (pf) {
-        case PrintFormat::eCurrentLocale: {
-            return Format (locale{});
-        } break;
         case PrintFormat::eCurrentLocale_WithZerosStripped: {
             /*
              *  Use basic current locale formatting, and then use regexp to find special case 0s to strip.
@@ -683,16 +652,7 @@ String DateTime::Format (PrintFormat pf) const
             }
             return mungedData;
         }
-        case PrintFormat::eISO8601: {
-            return Format (LocaleIndependentFormat::eISO8601);
-        } break;
-        case PrintFormat::eRFC1123: {
-            return Format (LocaleIndependentFormat::eRFC1123);
-        } break;
     }
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
     AssertNotReached ();
     return String{};
 }

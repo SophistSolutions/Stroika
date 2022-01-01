@@ -8,9 +8,6 @@
 
 #include <cstddef>
 
-// while we support deprecated APIS
-#include "Support/ReserveTweaks.h"
-
 namespace Stroika::Foundation::Containers {
 
     /**
@@ -38,26 +35,6 @@ namespace Stroika::Foundation::Containers {
     typename CONTAINER::value_type* End (CONTAINER& c);
     template <typename CONTAINER>
     const typename CONTAINER::value_type* End (const CONTAINER& c);
-
-    template <typename CONTAINER>
-    [[deprecated ("Since Stroika 2.1b14 use Support::ReserveTweaks::Reserve4Add1")]] inline void ReserveSpeedTweekAdd1 (CONTAINER& c, size_t minChunk = 16)
-    {
-        Support::ReserveTweaks::Reserve4Add1 (c, minChunk);
-    }
-    template <typename CONTAINER>
-    [[deprecated ("Since Stroika 2.1b14 use Support::ReserveTweaks::Reserve4AddN")]] inline void ReserveSpeedTweekAddN (CONTAINER& c, size_t n, size_t minChunk = 16)
-    {
-        Support::ReserveTweaks::Reserve4AddN (c, n, minChunk);
-    }
-    [[deprecated ("Since Stroika 2.1b14 use Support::ReserveTweaks::GetScaledUpCapacity")]] inline size_t ReserveSpeedTweekAdjustCapacity (size_t targetCapacity, size_t minChunk = 16)
-    {
-        return Support::ReserveTweaks::GetScaledUpCapacity (targetCapacity, 1, minChunk);
-    }
-    template <typename CONTAINER>
-    [[deprecated ("Since Stroika 2.1b14 use Support::ReserveTweaks::GetScaledUpCapacity4AddN")]] inline size_t ReserveSpeedTweekAddNCapacity (const CONTAINER& c, size_t n, size_t minChunk = 16)
-    {
-        return Support::ReserveTweaks::GetScaledUpCapacity4AddN (c, n, minChunk).value_or (size_t (-1));
-    }
 
 }
 

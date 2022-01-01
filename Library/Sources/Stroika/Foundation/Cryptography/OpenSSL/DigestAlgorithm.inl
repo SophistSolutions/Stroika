@@ -51,11 +51,6 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     {
         return String::FromASCII (::EVP_MD_name (fDigester_));
     }
-
-    [[deprecated ("Since Stroika 2.1b12")]] inline const EVP_MD* Convert2OpenSSL (DigestAlgorithm alg)
-    {
-        return alg;
-    }
 #endif
 
 }

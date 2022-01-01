@@ -247,17 +247,3 @@ filesystem::path FileSystem::WellKnownLocations::GetTemporary ()
     }();
     return kCachedResult_;
 }
-
-/*
- ********************************************************************************
- ************* FileSystem::WellKnownLocations::GetTemporaryT ********************
- ********************************************************************************
- */
-SDKString FileSystem::WellKnownLocations::GetTemporaryT ()
-{
-    // Cacheable because the environment variables should be set externally.
-    // This has the defect that it misses setenv calls, but that SB so rare,
-    // and not clearly a bug we ignore subsequent changes...
-    static SDKString kCachedResult_ = GetTemporary_ ();
-    return kCachedResult_;
-}

@@ -76,8 +76,6 @@ String Rule::ToString () const
  ***************** IO::Network::SystemFirewall::Manager *************************
  ********************************************************************************
  */
-SystemFirewall::Manager SystemFirewall::Manager::sThe; // sThe deprecated in Stroika 2.1b2
-
 #if qPlatform_Windows
 namespace {
     Rule ReadRule_ (INetFwRule* pFwRule)

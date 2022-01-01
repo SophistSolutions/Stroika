@@ -190,13 +190,6 @@ namespace Stroika::Foundation::DataExchange {
         static void Set (const InternetMediaTypeRegistry& newRegistry);
 
     public:
-        // DEPRECATED
-        [[deprecated ("Since Stroika 2.1b2 - use sThe (?) instead")]] static InternetMediaTypeRegistry Default ()
-        {
-            return Get ();
-        }
-
-    public:
         /**
          *  Return the current override mappings (note - these are initialized per-OS, to provide sometimes better values than that OS,
          *  but this can be overridden/cleared).

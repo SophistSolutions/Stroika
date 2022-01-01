@@ -204,14 +204,6 @@ namespace Stroika::Foundation::Traversal {
         Ensure (fIterableEnvelope_->_fRep.use_count () == 1);
         return *fRepReference_;
     }
-    template <typename T>
-    template <typename REP_SUB_TYPE>
-    inline void Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_UpdateRep (const typename _SharedByValueRepType::shared_ptr_type& sp)
-    {
-        RequireNotNull (sp);
-        EnsureNotNull (fIterableEnvelope_);
-        fIterableEnvelope_->_fRep = sp;
-    }
 
     /*
      ********************************************************************************
@@ -556,44 +548,6 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
-    template <typename T1, typename T2, typename RESULT>
-    Iterable<RESULT> Iterable<T>::Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2) const
-    {
-        RequireNotNull (extract1);
-        RequireNotNull (extract2);
-        // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
-        auto sharedContext = make_shared<Iterable<T>> (*this);
-        // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
-        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-        function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), extract1, extract2] () mutable -> optional<RESULT> {
-            if (perIteratorContextBaseIterator) {
-                RESULT result{extract1 (*perIteratorContextBaseIterator), extract2 (*perIteratorContextBaseIterator)};
-                ++perIteratorContextBaseIterator;
-                return result;
-            }
-            return nullopt;
-        };
-        return CreateGenerator (getNext);
-    }
-    template <typename T>
-    template <typename T1, typename T2, typename T3, typename RESULT>
-    Iterable<RESULT> Iterable<T>::Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const
-    {
-        // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
-        auto sharedContext = make_shared<Iterable<T>> (*this);
-        // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
-        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-        function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), extract1, extract2, extract3] () mutable -> optional<RESULT> {
-            if (perIteratorContextBaseIterator) {
-                RESULT result{extract1 (*perIteratorContextBaseIterator), extract2 (*perIteratorContextBaseIterator), extract3 (*perIteratorContextBaseIterator)};
-                ++perIteratorContextBaseIterator;
-                return result;
-            }
-            return nullopt;
-        };
-        return CreateGenerator (getNext);
-    }
-    template <typename T>
     template <typename RESULT>
     Iterable<RESULT> Iterable<T>::Select (const function<optional<RESULT> (const T&)>& extract) const
     {
@@ -737,17 +691,6 @@ namespace Stroika::Foundation::Traversal {
         return i ? *i : optional<T>{};
     }
     template <typename T>
-    inline optional<T> Iterable<T>::First (const function<bool (ArgByValueType<T>)>& that) const
-    {
-        RequireNotNull (that);
-        for (const auto i : *this) {
-            if (that (i)) {
-                return i;
-            }
-        }
-        return nullopt;
-    }
-    template <typename T>
     template <typename RESULT_T>
     inline optional<RESULT_T> Iterable<T>::First (const function<optional<RESULT_T> (ArgByValueType<T>)>& that) const
     {
@@ -782,18 +725,6 @@ namespace Stroika::Foundation::Traversal {
             return *prev;
         }
         return nullopt;
-    }
-    template <typename T>
-    optional<T> Iterable<T>::Last (const function<bool (ArgByValueType<T>)>& that) const
-    {
-        RequireNotNull (that);
-        optional<T> result;
-        for (const auto i : *this) {
-            if (that (i)) {
-                result = i;
-            }
-        }
-        return result;
     }
     template <typename T>
     template <typename RESULT_T>

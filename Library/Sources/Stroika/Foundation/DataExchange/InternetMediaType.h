@@ -131,19 +131,6 @@ namespace Stroika::Foundation::DataExchange {
          */
         nonvirtual void clear ();
 
-    public:
-        [[deprecated ("Use InternetMediaTypeRegistry::IsTextFormat")]] bool IsTextFormat () const;
-
-    public:
-        [[deprecated ("Use InternetMediaTypeRegistry::IsImageFormat")]] nonvirtual bool IsImageFormat () const;
-
-    public:
-        [[deprecated ("Since Stroika 2.1b2 - Use just compare GetType () == type (argument)")]] nonvirtual bool                                                                  Match (const AtomType& type) const;
-        [[deprecated ("Since Stroika 2.1b2 - Use GetType<AtomType> () != rhs.GetType<AtomType> () and GetSubType<AtomType> () != rhs.GetSubType<AtomType> ()")]] nonvirtual bool Match (const InternetMediaType& rhs) const;
-
-    public:
-        [[deprecated ("Since Stroika 2.1b2 - use InternetMediaTypeRegistry::IsA")]] nonvirtual bool IsA (const InternetMediaType& moreGeneralType) const;
-
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
@@ -197,11 +184,6 @@ namespace Stroika::Foundation::DataExchange {
     bool operator>= (const InternetMediaType& lhs, const InternetMediaType& rhs);
     bool operator> (const InternetMediaType& lhs, const InternetMediaType& rhs);
 #endif
-
-    /**
-     */
-    template <typename CONTAINER>
-    [[deprecated ("Since Stroika v2.1b2 - use InternetMediaTypeRegistry")]] bool TypeMatchesAny (const CONTAINER& types, const InternetMediaType& type2SeeIfMatchesAny);
 
 }
 
