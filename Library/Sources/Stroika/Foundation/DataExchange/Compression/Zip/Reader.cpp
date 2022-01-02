@@ -55,12 +55,11 @@ namespace {
 
         public:
             Streams::InputStream<Memory::byte>::Ptr fInStream_;
-            z_stream                                fZStream_;
+            z_stream                                fZStream_{};
             byte                                    fInBuf_[CHUNK_];
             SeekOffsetType                          _fSeekOffset{};
             BaseRep_ (const Streams::InputStream<byte>::Ptr& in)
-                : fInStream_ (in)
-                , fZStream_{}
+                : fInStream_{in}
             {
             }
             virtual ~BaseRep_ () = default;
@@ -104,7 +103,7 @@ namespace {
         };
         struct DeflateRep_ : BaseRep_ {
             DeflateRep_ (const Streams::InputStream<byte>::Ptr& in)
-                : BaseRep_ (in)
+                : BaseRep_{in}
             {
                 int level = Z_DEFAULT_COMPRESSION;
                 ThrowIfZLibErr_ (::deflateInit (&fZStream_, level));
@@ -215,7 +214,7 @@ namespace {
         };
         struct InflateRep_ : BaseRep_ {
             InflateRep_ (const Streams::InputStream<byte>::Ptr& in)
-                : BaseRep_ (in)
+                : BaseRep_{in}
             {
                 // see http://zlib.net/manual.html  for meaning of params and http://www.lemoda.net/c/zlib-open-read/ for example
                 constexpr int windowBits       = 15;
@@ -267,11 +266,11 @@ namespace {
         enum Compression { eCompression };
         enum DeCompression { eDeCompression };
         MyCompressionStream_ (Compression, const Streams::InputStream<byte>::Ptr& in)
-            : InputStream<byte>::Ptr (make_shared<DeflateRep_> (in))
+            : InputStream<byte>::Ptr{make_shared<DeflateRep_> (in)}
         {
         }
         MyCompressionStream_ (DeCompression, const Streams::InputStream<byte>::Ptr& in)
-            : InputStream<byte>::Ptr (make_shared<InflateRep_> (in))
+            : InputStream<byte>::Ptr{make_shared<InflateRep_> (in)}
         {
         }
     };
