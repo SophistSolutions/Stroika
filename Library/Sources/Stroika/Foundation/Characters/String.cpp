@@ -242,7 +242,7 @@ String String::FromSDKString (const SDKChar* from)
 {
     RequireNotNull (from);
     // @todo FIX PERFORMANCE
-    return String (SDKString2Wide (from));
+    return String{SDKString2Wide (from)};
 }
 
 String String::FromSDKString (const SDKChar* from, const SDKChar* to)
@@ -253,7 +253,7 @@ String String::FromSDKString (const SDKChar* from, const SDKChar* to)
 #else
     wstring tmp;
     NarrowStringToWide (from, to, GetDefaultSDKCodePage (), &tmp);
-    return String (tmp);
+    return String{tmp};
 #endif
 }
 
@@ -261,9 +261,9 @@ String String::FromSDKString (const SDKString& from)
 {
 // @todo FIX PERFORMANCE
 #if qTargetPlatformSDKUseswchar_t
-    return String (from);
+    return String{from};
 #else
-    return String (NarrowStringToWide (from, GetDefaultSDKCodePage ()));
+    return String{NarrowStringToWide (from, GetDefaultSDKCodePage ())};
 #endif
 }
 
@@ -279,7 +279,7 @@ String String::FromNarrowSDKString (const char* from, const char* to)
     // @todo FIX PERFORMANCE
     wstring tmp;
     NarrowStringToWide (from, to, GetDefaultSDKCodePage (), &tmp);
-    return String (tmp);
+    return String{tmp};
 }
 
 String String::FromNarrowSDKString (const string& from)
@@ -424,8 +424,8 @@ String String::Concatenate (const String& rhs) const
     if (rhsD.first == rhsD.second) [[UNLIKELY_ATTR]] {
         return *this;
     }
-    return String (mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
-                        reinterpret_cast<const wchar_t*> (rhsD.first), reinterpret_cast<const wchar_t*> (rhsD.second)));
+    return String{mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
+                       reinterpret_cast<const wchar_t*> (rhsD.first), reinterpret_cast<const wchar_t*> (rhsD.second))};
 }
 
 String String::Concatenate (const wchar_t* appendageCStr) const
@@ -435,10 +435,10 @@ String String::Concatenate (const wchar_t* appendageCStr) const
     pair<const Character*, const Character*> lhsD   = thisAccessor._ConstGetRep ().GetData ();
     size_t                                   lhsLen = lhsD.second - lhsD.first;
     if (lhsLen == 0) [[UNLIKELY_ATTR]] {
-        return String (appendageCStr);
+        return String{appendageCStr};
     }
-    return String (mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
-                        appendageCStr, appendageCStr + ::wcslen (appendageCStr)));
+    return String{mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
+                       appendageCStr, appendageCStr + ::wcslen (appendageCStr))};
 }
 
 void String::SetCharAt (Character c, size_t i)
@@ -497,7 +497,7 @@ String String::RemoveAt (size_t from, size_t to) const
     else {
         pair<const Character*, const Character*> d = accessor._ConstGetRep ().GetData ();
         const wchar_t*                           p = reinterpret_cast<const wchar_t*> (d.first);
-        return String (mk_ (p, p + from, p + to, p + length));
+        return String{mk_ (p, p + from, p + to, p + length)};
     }
 }
 
@@ -799,7 +799,7 @@ bool String::Match (const RegularExpression& regEx, Containers::Sequence<String>
 
 String String::ReplaceAll (const RegularExpression& regEx, const String& with) const
 {
-    return String (regex_replace (As<wstring> (), regEx.GetCompiled (), with.As<wstring> ()));
+    return String{regex_replace (As<wstring> (), regEx.GetCompiled (), with.As<wstring> ())};
 }
 
 String String::ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co) const
