@@ -621,7 +621,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  This returns an Iterable<T> with a subset of data - including only the items that pass the argument filter funtion.
@@ -646,7 +645,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  This returns an Iterable<T> that contains just the subset of the items which are distinct (equality comparer)
@@ -907,7 +905,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq. (LastOrDefault)
          *
          *  \par Example Usage
@@ -941,7 +938,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  Walk the entire list of items, and use the argument 'op' to combine items to a resulting single item.
@@ -972,7 +968,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  \par Example Usage
@@ -1000,7 +995,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  EXAMPLE:
@@ -1028,7 +1022,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  \par Example Usage
@@ -1056,7 +1049,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  \par Example Usage
@@ -1084,8 +1076,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
-         *
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 9, 4, 5, 3 };
@@ -1210,17 +1200,6 @@ namespace Stroika::Foundation::Traversal {
      *          your _SafeReadRepAccessor<> use, you should be safe.
      *
      *  @see _SafeReadWriteRepAccessor
-     *
-     *  <<<DOCS_OBSOLETE_AS_OF_2015-12-24>>>
-     *      EXPERIMENTAL -- LGP 2014-02-21 - 2.0a22
-     *
-     *      _SafeReadRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the
-     *      'this' object, and makes a copy incrementing the reference count, and the caller accesses the
-     *      rep through the copied/bumped reference.
-     *
-     *      This assures that if another thread assigns to *this, that has no corruption effect on this
-     *      operation/method running on the prior '*this' object.
-     *  <<</DOCS_OBSOLETE_AS_OF_2015-12-24>>>
      */
     template <typename T>
     template <typename REP_SUB_TYPE>
