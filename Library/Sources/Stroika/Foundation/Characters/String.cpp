@@ -741,7 +741,7 @@ bool String::StartsWith (const String& subString, CompareOptions co) const
 #endif
     const Character*                         subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
     pair<const Character*, const Character*> thisData    = accessor._ConstGetRep ().GetData ();
-    bool                                     result      = (Character::Compare (thisData.first, thisData.first + subStrLen, subStrStart, subStrStart + subStrLen, co) == 0);
+    bool                                     result      = Character::Compare (thisData.first, thisData.first + subStrLen, subStrStart, subStrStart + subStrLen, co) == 0;
     Assert (result == referenceResult);
     return result;
 }
@@ -845,13 +845,12 @@ String String::ReplaceAll (const Containers::Set<Character>& charSet, const Stri
 
 Containers::Sequence<String> String::Tokenize (const function<bool (Character)>& isTokenSeperator, bool trim) const
 {
-    String                       tmp{*this}; // quickie thread-safety - do diffenrtly soon with new thread safety model... -- LGP 2014-10-31
     Containers::Sequence<String> r;
     bool                         inToken = false;
     StringBuilder                curToken;
-    size_t                       len = tmp.size ();
+    size_t                       len = size ();
     for (size_t i = 0; i != len; ++i) {
-        Character c          = tmp[i];
+        Character c          = GetCharAt (i);
         bool      newInToken = not isTokenSeperator (c);
         if (inToken != newInToken) {
             if (inToken) {
@@ -859,7 +858,7 @@ Containers::Sequence<String> String::Tokenize (const function<bool (Character)>&
                 if (trim) {
                     s = s.Trim ();
                 }
-                r.Append (s);
+                r += s;
                 curToken.clear ();
                 inToken = false;
             }
@@ -876,7 +875,7 @@ Containers::Sequence<String> String::Tokenize (const function<bool (Character)>&
         if (trim) {
             s = s.Trim ();
         }
-        r.Append (s);
+        r += s;
     }
     return r;
 }
