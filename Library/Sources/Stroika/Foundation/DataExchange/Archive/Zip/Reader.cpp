@@ -2597,7 +2597,7 @@ private:
         bool fOpened_{false};
 #endif
         MyISeekInStream (const Streams::InputStream<byte>::Ptr& in)
-            : fInStream_ (in)
+            : fInStream_{in}
         {
             this->zopen64_file = [] (voidpf opaqueStream, const void* /*filename*/, int /*mode*/) -> voidpf {
                 MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);

@@ -282,11 +282,11 @@ class Zip::Reader::Rep_ : public Reader::_IRep {
 public:
     virtual InputStream<byte>::Ptr Compress (const InputStream<byte>::Ptr& src) const override
     {
-        return MyCompressionStream_ (MyCompressionStream_::eCompression, src);
+        return MyCompressionStream_{MyCompressionStream_::eCompression, src};
     }
     virtual InputStream<byte>::Ptr Decompress (const InputStream<byte>::Ptr& src) const override
     {
-        return MyCompressionStream_ (MyCompressionStream_::eDeCompression, src);
+        return MyCompressionStream_{MyCompressionStream_::eDeCompression, src};
     }
 };
 
