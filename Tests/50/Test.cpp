@@ -340,24 +340,24 @@ namespace {
             // NOTE - these values are wrong, but since using locale code, not easy to fix/workaround - but to note XCode locale stuff still
             // somewhat broken...
             VerifyTestResult (TimeOfDay{101}.Format (locale{}) == L"00:01:41");
-            VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"0:01");
+            VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"0:01");
             VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == L"01:01:41");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01:41");
-            VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01");
+            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"1:01:41");
+            VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"1:01");
 #else
             VerifyTestResult (TimeOfDay{101}.Format (locale{}) == L"12:01:41 AM");
-            VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"12:01 AM");
+            VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"12:01 AM");
             VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == L"1:01:41 AM" or TimeOfDay (60 * 60 + 101).Format (locale{}) == L"01:01:41 AM");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01:41 AM");
-            VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01 AM");
+            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"1:01:41 AM");
+            VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"1:01 AM");
 #endif
         }
         {
             VerifyTestResult (TimeOfDay{101}.Format (locale{}) == L"00:01:41");
             VerifyTestResult (TimeOfDay{60}.Format (locale{}) == L"00:01:00");
-            VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"0:01");
+            VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"0:01");
             VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == L"01:01:41");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01:41");
+            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"1:01:41");
             VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (locale{}) == L"01:01:00");
         }
         {
@@ -430,12 +430,12 @@ namespace {
             Date                           d = Date{Year{1903}, MonthOfYear::eApril, DayOfMonth{5}};
             TestRoundTripFormatThenParseNoChange_ (d);
             VerifyTestResult (d.Format (locale{}) == L"4/5/1903" or d.Format (locale{}) == L"04/05/1903");
-            VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/1903");
+            VerifyTestResult (d.Format (Date::eCurrentLocale_WithZerosStripped) == L"4/5/1903");
         }
         {
             Date d = Date (Year{1903}, MonthOfYear::eApril, DayOfMonth{5});
             VerifyTestResult (d.Format (locale{}) == L"4/5/1903" or d.Format (locale{}) == L"04/05/1903" or d.Format (locale{}) == L"04/05/03");
-            VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/1903" or d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/03");
+            VerifyTestResult (d.Format (Date::eCurrentLocale_WithZerosStripped) == L"4/5/1903" or d.Format (Date::eCurrentLocale_WithZerosStripped) == L"4/5/03");
         }
         {
             Date d = Date{Date::JulianRepType{2455213}};
