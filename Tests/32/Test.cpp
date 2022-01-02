@@ -788,7 +788,7 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-        Test1_7zArchive_::DoAll_();
+        Test1_7zArchive_::DoAll_ ();
         Test2_ZipArchive_::DoAll_ ();
         INI_ONLY_::DoAll_ ();
         JSON_ONLY_::DoAll_ ();
