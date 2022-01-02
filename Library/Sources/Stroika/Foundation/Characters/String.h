@@ -1359,6 +1359,9 @@ namespace Stroika::Foundation::Characters {
 
     /**
      * Protected helper Rep class.
+     * 
+     *  \note   Important design note - String reps are IMMUTABLE. Changes to string like +=, create new string reps (so costly).
+     *          Use StringBuilder for that purpose in performance sensative code.
      */
     class String::_IRep
         : public Iterable<Character>::_IRep
@@ -1377,19 +1380,11 @@ namespace Stroika::Foundation::Characters {
         _IRep () = default;
 
     protected:
+        _IRep (const pair<const wchar_t*, const wchar_t*>& span);
         _IRep (const wchar_t* start, const wchar_t* end);
 
     public:
         virtual ~_IRep () = default;
-
-    protected:
-        /**
-         *  PROTECTED INLINE UTILITY
-         *  \req *end == '\0'
-         *
-         *  So allocated storage MUST always contain space for the terminating NUL-character.
-         */
-        nonvirtual void _SetData (const wchar_t* start, const wchar_t* end);
 
     protected:
         /**
@@ -1416,10 +1411,7 @@ namespace Stroika::Foundation::Characters {
         virtual bool                            empty () const override;
         virtual void                            Apply (const function<void (Configuration::ArgByValueType<value_type> item)>& doToElement) const override;
         virtual Traversal::Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const override;
-        virtual Traversal::Iterator<value_type> Find_equal_to (const Configuration::ArgByValueType<value_type>& v) const override
-        {
-            return this->_Find_equal_to_default_implementation (v);
-        }
+        virtual Traversal::Iterator<value_type> Find_equal_to (const Configuration::ArgByValueType<value_type>& v) const override;
 
     public:
         nonvirtual Character GetAt (size_t index) const;

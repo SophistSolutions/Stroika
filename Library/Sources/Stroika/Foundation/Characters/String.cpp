@@ -48,52 +48,24 @@ namespace {
 
     public:
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
-            : inherited{start, end}
+            : inherited{make_pair (start, end)}
         {
         }
-        String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end, size_t reserveExtraCharacters)
-            : inherited{start, end, reserveExtraCharacters}
+        String_BufferedArray_Rep_ (const TextSpan& t1, const TextSpan& t2)
+            : inherited{t1, t2}
+        {
+        }
+        String_BufferedArray_Rep_ (const TextSpan& t1, const TextSpan& t2, const TextSpan& t3)
+            : inherited{t1, t2, t3}
         {
         }
         virtual _IterableRepSharedPtr Clone () const override
         {
-            AssertNotReached (); // Since Strings now immutable, this should never be called
-            return String::MakeSmartPtr<String_BufferedArray_Rep_> (_fStart, _fEnd);
+            AssertNotReached (); // Since String reps now immutable, this should never be called
+            return nullptr;
         }
     };
 }
-
-#if 0
-//cannot do (except for special case at end) as of Stroika v2.0a148 - because we enforce that strings pre-nul-terminated for thread safety reasons (so cannot
-// do in const c_str() method - and have unsynchonzied).
-namespace   {
-    struct String_Substring_ : public String {
-        class   MyRep_ : public _IRep , public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
-            using inherited = _IRep;
-        public:
-            MyRep_ (const _SafeReadRepAccessor& savedSP, const wchar_t* start, const wchar_t* end)
-                : inherited{start, end}
-                , fSaved_{savedSP}
-            {
-                Assert (reinterpret_cast<const wchar_t*> (fSaved_._ConstGetRep ().Peek ()) <= _fStart and _fStart <= _fEnd);
-            }
-            MyRep_ (const MyRep_& from)
-                : inherited {from._fStart, from._fEnd}
-                , fSaved_ {from.fSaved_}
-            {
-                Assert (reinterpret_cast<const wchar_t*> (fSaved_._ConstGetRep ().Peek ()) <= _fStart and _fStart <= _fEnd);
-            }
-            virtual  _IterableRepSharedPtr   Clone () const override
-            {
-                AssertNotReached ();    // Since Strings now immutable, this should never be called
-                return String_Substring_::MakeSmartPtr<MyRep_> (*this);
-            }
-        private:
-            _SafeReadRepAccessor  fSaved_;
-        };
-    };
-}
-#endif
 
 namespace {
     template <typename FACET>
@@ -402,12 +374,7 @@ String::_SharedPtrIRep String::mk_ (const wchar_t* start1, const wchar_t* end1, 
     RequireNotNull (start2);
     RequireNotNull (end2);
     Require (start2 <= end2);
-    size_t len1 = end1 - start1;
-    auto   sRep = MakeSmartPtr<String_BufferedArray_Rep_> (start1, end1, end2 - start2);
-    if (start2 != end2) [[LIKELY_ATTR]] {
-        sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
-    }
-    return sRep;
+    return MakeSmartPtr<String_BufferedArray_Rep_> (make_pair (start1, end1), make_pair (start2, end2));
 }
 
 String::_SharedPtrIRep String::mk_ (const char16_t* from, const char16_t* to)
@@ -498,10 +465,18 @@ String String::InsertAt (const Character* from, const Character* to, size_t at) 
         return *this;
     }
     _SafeReadRepAccessor                     copyAccessor{this};
-    pair<const Character*, const Character*> d    = copyAccessor._ConstGetRep ().GetData ();
+    pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
+
+    return String{String::MakeSmartPtr<String_BufferedArray_Rep_> (
+        make_pair (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.first + at)),
+        make_pair (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)),
+        make_pair (reinterpret_cast<const wchar_t*> (d.first + at), reinterpret_cast<const wchar_t*> (d.second)))};
+
+#if 0
     auto                                     sRep = MakeSmartPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (to - from));
     sRep->InsertAt (from, to, at);
-    return String (move (sRep));
+    return String{move (sRep)};
+#endif
 }
 
 String String::RemoveAt (size_t from, size_t to) const
@@ -1341,14 +1316,11 @@ String Characters::operator+ (const wchar_t* lhs, const String& rhs)
 {
     RequireNotNull (lhs);
     String::_SafeReadRepAccessor             rhsAccessor{&rhs};
-    pair<const Character*, const Character*> rhsD     = rhsAccessor._ConstGetRep ().GetData ();
-    size_t                                   lhsLen   = ::wcslen (lhs);
-    size_t                                   totalLen = lhsLen + (rhsD.second - rhsD.first);
-    auto                                     sRep     = String::MakeSmartPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen);
-    if (rhsD.first != rhsD.second) {
-        sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
-    }
-    return String (move (sRep));
+    pair<const Character*, const Character*> rhsD   = rhsAccessor._ConstGetRep ().GetData ();
+    size_t                                   lhsLen = ::wcslen (lhs);
+    return String{String::MakeSmartPtr<String_BufferedArray_Rep_> (
+        make_pair (lhs, lhs + lhsLen),
+        make_pair (reinterpret_cast<const wchar_t*> (rhsD.first), reinterpret_cast<const wchar_t*> (rhsD.second)))};
 }
 
 /*
