@@ -10,6 +10,7 @@
  ********************************************************************************
  */
 #include <charconv>
+#include <sstream>
 
 #include "../Containers/Common.h"
 #include "../Memory/Optional.h"
