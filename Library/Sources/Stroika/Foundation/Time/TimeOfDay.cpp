@@ -298,16 +298,16 @@ optional<TimeOfDay> TimeOfDay::ParseQuietly_ (const wstring& rep, const time_get
     return result;
 }
 
-String TimeOfDay::Format (PrintFormat pf) const
+String TimeOfDay::Format (NonStandardPrintFormat pf) const
 {
     switch (pf) {
-        case PrintFormat::eCurrentLocale_WithZerosStripped: {
+        case eCurrentLocale_WithZerosStripped: {
             String tmp = Format (locale{});
             /*
              * This logic probably needs to be locale-specific, but this is good enuf for now...
              */
             optional<size_t> i;
-            while ((i = tmp.RFind (L":00"))) {
+            while ((i = tmp.RFind (L":00"sv))) {
                 // if its a TRAILING :00 - lose it...
                 bool trailing = false;
                 if (*i + 3 == tmp.size ()) {

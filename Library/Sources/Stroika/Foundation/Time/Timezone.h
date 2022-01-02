@@ -19,7 +19,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-636

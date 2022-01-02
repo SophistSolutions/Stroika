@@ -210,14 +210,14 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  \brief  PrintFormat is a representation which a TimeOfDay can be transformed into
+         *  \brief  NonStandardPrintFormat is a representation which a TimeOfDay can be transformed into
          *
          *  eCurrentLocale_WithZerosStripped
          *      eCurrentLocale_WithZerosStripped is eCurrentLocale, but with many cases of trailing zero's,
          *      and sometimes leading zeros, stripped, so for example, 01:03:05 PM will become 1:03:05 PM,
          *      and 04:06:00 PM will become 4:06 PM.
          */
-        enum class PrintFormat : uint8_t {
+        enum class NonStandardPrintFormat : uint8_t {
             eCurrentLocale_WithZerosStripped,
 
             eDEFAULT = eCurrentLocale_WithZerosStripped,
@@ -226,13 +226,16 @@ namespace Stroika::Foundation::Time {
         };
 
     public:
+        static constexpr NonStandardPrintFormat eCurrentLocale_WithZerosStripped = NonStandardPrintFormat::eCurrentLocale_WithZerosStripped;
+
+    public:
         /**
          *  For formatPattern, see http://en.cppreference.com/w/cpp/locale/time_put/put
          *  If only formatPattern specified, and no locale, use default (global) locale.
          * 
          * \note if locale is missing (not specified as argument) the default locale (locale{}) is used.
          */
-        nonvirtual String Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
+        nonvirtual String Format (NonStandardPrintFormat pf = NonStandardPrintFormat::eDEFAULT) const;
         nonvirtual String Format (const locale& l) const;
         nonvirtual String Format (const locale& l, const String& formatPattern) const;
         nonvirtual String Format (const String& formatPattern) const;

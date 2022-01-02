@@ -362,20 +362,23 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  \brief  PrintFormat is a representation which a datetime can be transformed into
+         *  \brief  NonStandardPrintFormat is a representation which a datetime can be transformed into
          *
          *  eCurrentLocale_WithZerosStripped
          *      eCurrentLocale_WithZerosStripped is eCurrentLocale, but with many cases of trailing zero's,
          *      and sometimes leading zeros, stripped, so for example, 01:03:05 PM will become 1:03:05 PM,
          *      and 04:06:00 PM will become 4:06 PM.
          */
-        enum class PrintFormat : uint8_t {
+        enum class NonStandardPrintFormat : uint8_t {
             eCurrentLocale_WithZerosStripped,
 
             eDEFAULT = eCurrentLocale_WithZerosStripped,
 
             Stroika_Define_Enum_Bounds (eCurrentLocale_WithZerosStripped, eCurrentLocale_WithZerosStripped)
         };
+
+    public:
+        static constexpr NonStandardPrintFormat eCurrentLocale_WithZerosStripped = NonStandardPrintFormat::eCurrentLocale_WithZerosStripped;
 
     public:
         /**
@@ -391,7 +394,7 @@ namespace Stroika::Foundation::Time {
          *
          *  \note   @todo - https://stroika.atlassian.net/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
          */
-        nonvirtual String Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
+        nonvirtual String Format (NonStandardPrintFormat pf = NonStandardPrintFormat::eDEFAULT) const;
         nonvirtual String Format (LocaleIndependentFormat format) const;
         nonvirtual String Format (const locale& l) const;
         nonvirtual String Format (const locale& l, const String& formatPattern) const;

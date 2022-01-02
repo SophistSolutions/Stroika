@@ -621,10 +621,10 @@ String DateTime::Format (LocaleIndependentFormat format) const
     }
 }
 
-String DateTime::Format (PrintFormat pf) const
+String DateTime::Format (NonStandardPrintFormat pf) const
 {
     switch (pf) {
-        case PrintFormat::eCurrentLocale_WithZerosStripped: {
+        case eCurrentLocale_WithZerosStripped: {
             /*
              *  Use basic current locale formatting, and then use regexp to find special case 0s to strip.
              *

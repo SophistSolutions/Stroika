@@ -329,9 +329,9 @@ namespace Stroika::Foundation::Configuration {
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
-    constexpr EnumNames<Stroika::Foundation::Time::Date::PrintFormat> DefaultNames<Stroika::Foundation::Time::Date::PrintFormat>::k{
-        EnumNames<Stroika::Foundation::Time::Date::PrintFormat>::BasicArrayInitializer{{
-            {Stroika::Foundation::Time::Date::PrintFormat::eCurrentLocale_WithZerosStripped, L"Current-Locale-With-Zeros-Stripped"},
+    constexpr EnumNames<Stroika::Foundation::Time::Date::NonStandardPrintFormat> DefaultNames<Stroika::Foundation::Time::Date::NonStandardPrintFormat>::k{
+        EnumNames<Stroika::Foundation::Time::Date::NonStandardPrintFormat>::BasicArrayInitializer{{
+            {Stroika::Foundation::Time::Date::NonStandardPrintFormat::eCurrentLocale_WithZerosStripped, L"Current-Locale-With-Zeros-Stripped"},
         }}};
 
 }
@@ -350,6 +350,7 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
     {
         return n.AddDays (-1);
     }
+
 };
 
 #endif /*_Stroika_Foundation_Time_Date_inl_*/

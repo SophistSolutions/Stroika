@@ -137,10 +137,10 @@ optional<Date> Date::ParseQuietly_ (const wstring& rep, const time_get<wchar_t>&
     }
 }
 
-String Date::Format (PrintFormat pf) const
+String Date::Format (NonStandardPrintFormat pf) const
 {
     switch (pf) {
-        case PrintFormat::eCurrentLocale_WithZerosStripped: {
+        case eCurrentLocale_WithZerosStripped: {
             String tmp = Format (locale{});
             /*
              *  This logic probably needs to be locale-specific, but this is good enuf for now...

@@ -260,6 +260,8 @@ namespace Stroika::Foundation::Time {
          *        so equivilent to %Y-%m-%d
          *  \note this is LOCALE-INDEPENDENT
          *  \see kMonthDayYearFormat
+         * 
+         *  \note also used for XML
          */
         static constexpr wstring_view kISO8601Format = L"%Y-%m-%d"sv;
 
@@ -373,21 +375,14 @@ namespace Stroika::Foundation::Time {
         /**
          *  \brief  DisplayFormat is a representation which a date can be transformed in and out of
          *
-         *  eCurrentLocale
-         *      Note this is the current C++ locale, which may not be the same as the platform default locale.
-         *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
-         *
          *  eCurrentLocale_WithZerosStripped
-         *      eCurrentLocale_WithZerosStripped is eCurrentLocale, but with many cases of leading zero's,
+         *      eCurrentLocale_WithZerosStripped is locale{}, but with many cases of leading zero's,
          *      stripped, so for example, 03/05/2013 becomes 3/5/2013. This only affects the day/month, and not the
          *      year.
          *
-         *  \note Before Stroika v2.1d11, we supported eXML, but this is defined to be the same as eISO8601, except for supporting
-         *        timezones (which we don't support in this class because it wouldn't make sense).
-         *
          *  \note   Configuration::DefaultNames<> supported
          */
-        enum class PrintFormat : uint8_t {
+        enum class NonStandardPrintFormat : uint8_t {
             eCurrentLocale_WithZerosStripped,
 
             eDEFAULT = eCurrentLocale_WithZerosStripped,
@@ -396,11 +391,14 @@ namespace Stroika::Foundation::Time {
         };
 
     public:
+        static constexpr NonStandardPrintFormat eCurrentLocale_WithZerosStripped = NonStandardPrintFormat::eCurrentLocale_WithZerosStripped;
+
+    public:
         /**
          *  For formatPattern, see http://en.cppreference.com/w/cpp/locale/time_put/put
          *  If only formatPattern specified, and no locale, use default (global) locale.
          */
-        nonvirtual String Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
+        nonvirtual String Format (NonStandardPrintFormat pf = NonStandardPrintFormat::eDEFAULT) const;
         nonvirtual String Format (const locale& l) const;
         nonvirtual String Format (const locale& l, const String& formatPattern) const;
         nonvirtual String Format (const String& formatPattern) const;
