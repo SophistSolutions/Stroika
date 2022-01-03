@@ -22,13 +22,6 @@ VERSION=7.80.0
 #VERSION=7.79.1
 #VERSION=7.78.0
 #VERSION=7.77.0
-#VERSION=7.76.1
-#VERSION=7.75.0
-#VERSION=7.74.0
-ifeq ($(shell uname), Darwin)
-# Undefined symbols for architecture x86_64: "_SCDynamicStoreCopyProxies", referenced from:  _Curl_resolv in libcurl.a(libcurl_la-hostip.o)
-VERSION=7.76.1
-endif
 BASENAME=curl-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
@@ -115,6 +108,7 @@ ENVIRONMENT_CONFIGURE_PREFIX=
 ifneq (,$(PKG_CONFIG_PATH))
 ENVIRONMENT_CONFIGURE_PREFIX=
 ENVIRONMENT_CONFIGURE_PREFIX+= export PKG_CONFIG_PATH=$(PKG_CONFIG_PATH);
+ENVIRONMENT_CONFIGURE_PREFIX+= export ARCH=$(ARCH);
 ENVIRONMENT_CONFIGURE_PREFIX+= export CC=$(CC);
 ENVIRONMENT_CONFIGURE_PREFIX+= export CXX=$(CXX);
 ENVIRONMENT_CONFIGURE_PREFIX+= export AR=$(AR);
@@ -177,6 +171,36 @@ LIBCURL_CONFIGURE += --disable-debug
 LIBCURL_CONFIGURE += --enable-optimize
 LIBCURL_CONFIGURE += --disable-curldebug
 endif
+
+ifeq ($(shell uname), Darwin)
+# https://stroika.atlassian.net/browse/STK-759
+### On M1 Mac (even if running under rosetta) - really just one mac tested - 
+### Get error:
+#		undef: _BrotliDecoderDestroyInstance
+#		undef: _BrotliDecoderVersion
+#		undef: _BrotliDecoderDecompressStream
+#		undef: _BrotliDecoderGetErrorCode
+#		undef: _BrotliDecoderCreateInstance
+#		Undefined symbols for architecture x86_64:
+#		"_BrotliDecoderDestroyInstance", referenced from:
+#			_brotli_unencode_write in lto.o
+#			_brotli_close_writer in lto.o
+#		"_BrotliDecoderVersion", referenced from:
+#			_curl_version in lto.o
+#			_curl_version_info in lto.o
+#		"_BrotliDecoderDecompressStream", referenced from:
+#			_brotli_unencode_write in lto.o
+#		"_BrotliDecoderGetErrorCode", referenced from:
+#			_brotli_unencode_write in lto.o
+#		"_BrotliDecoderCreateInstance", referenced from:
+#			_brotli_init_writer in lto.o
+#		ld: symbol(s) not found for architecture x86_64
+#
+ifeq ($(ARCH), x86_64)
+LIBCURL_CONFIGURE += --without-brotli
+endif
+endif
+
 #seems illrelevant for us one way or the other, but breaks building for centos5.8 - https://stroika.atlassian.net/browse/STK-419
 LIBCURL_CONFIGURE += --without-zsh-functions-dir
 
@@ -203,6 +227,14 @@ LIBCURL_CONFIGURE +=  LIBS='-ldl'
 LIBCURL_CONFIGURE +=  LIBS='-ldl -lpthread'
 endif
 
+ifeq ($(shell uname), Darwin)
+ifeq ($(ARCH), x86_64)
+# https://stroika.atlassian.net/browse/STK-759
+# Undefined symbols for architecture x86_64: "_SCDynamicStoreCopyProxies", referenced from:  _Curl_resolv in libcurl.a(libcurl_la-hostip.o)
+LIBCURL_CONFIGURE +=  LIBS='-framework Foundation -framework SystemConfiguration'
+endif
+endif
+
 
 
 	
@@ -214,7 +246,7 @@ endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --no-print-directory check_prerequisites_
 	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl ${VERSION} - Build configure tools (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-CONF-TOOLS-OUT.txt) ... "`
-	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);./buildconf > BUILD-CONF-TOOLS-OUT.txt 2>&1
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);autoreconf -fi > BUILD-CONF-TOOLS-OUT.txt 2>&1
 	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl ${VERSION} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME}/CONFIGURE-OUT.txt) ... "`
 	@$(ECHO) "$(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE-OUT.txt
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ($(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE-OUT.txt
@@ -233,10 +265,12 @@ endif
 
 
 check_prerequisites_:
+ifeq (Unix,$(ProjectPlatformSubdir))
 	@type automake > /dev/null 2>&1 || (../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && ../../ScriptsLib/GetMessageForMissingTool automake && exit 1)
 	@type autoconf > /dev/null 2>&1 || (../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && ../../ScriptsLib/GetMessageForMissingTool autoconf && exit 1)
+	@type autoreconf > /dev/null 2>&1 || (../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && ../../ScriptsLib/GetMessageForMissingTool autoreconf && exit 1)
 	@type libtool > /dev/null 2>&1 || (../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools... " && ../../ScriptsLib/GetMessageForMissingTool libtool && exit 1)
-
+endif
 
 
 check:
