@@ -248,7 +248,7 @@ namespace Stroika::Foundation::Characters {
             if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
                 return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char32_t**> (targetStart), reinterpret_cast<char32_t*> (targetEnd), flags);
             }
-            AssertNotReached ();
+            AssertNotImplemented ();
             return sourceIllegal;
         }
         template <>
@@ -257,7 +257,7 @@ namespace Stroika::Foundation::Characters {
             if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
                 return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char16_t**> (targetStart), reinterpret_cast<char16_t*> (targetEnd), flags);
             }
-            AssertNotReached ();
+            AssertNotImplemented ();
             return sourceIllegal;
         }
         template <typename FROM, typename TO>
