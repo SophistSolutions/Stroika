@@ -11,16 +11,6 @@
  */
 namespace Stroika::Frameworks::WebServer {
 
-    /*
-     ********************************************************************************
-     ******************************** ConnectionManager *****************************
-     ********************************************************************************
-     */
-    inline ConnectionManager::Options ConnectionManager::GetOptions () const
-    {
-        return fEffectiveOptions_;
-    }
-
 }
 
 #endif /*_Stroika_Frameworks_WebServer_ConnectionManager_inl_*/

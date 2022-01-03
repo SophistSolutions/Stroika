@@ -333,13 +333,6 @@ void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/)
     AssertNotImplemented ();
 }
 
-Collection<shared_ptr<Connection>> ConnectionManager::GetConnections () const
-{
-    scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
-    Ensure (Set<shared_ptr<Connection>>{fActiveConnections_.load ()}.Intersection (GetInactiveConnections_ ()).empty ());
-    return GetInactiveConnections_ () + fActiveConnections_.load ();
-}
-
 void ConnectionManager::AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo)
 {
     switch (relativeTo) {

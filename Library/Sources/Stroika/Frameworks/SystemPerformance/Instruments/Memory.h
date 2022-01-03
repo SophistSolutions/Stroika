@@ -334,15 +334,6 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Memory {
         static const ObjectVariantMapper kObjectVariantMapper;
     };
 
-    [[deprecated ("Since Stroika 2.1b12, use CPU::Instrument instead of Memory::GetInstrument()")]] inline SystemPerformance::Instrument GetInstrument (Options options = Options{})
-    {
-        return Instrument{options};
-    }
-    [[deprecated ("Since Stroika 2.1b12, use CPU::Instrument instead of Memory::Instrument::kObjectVariantMapper")]] inline ObjectVariantMapper GetObjectVariantMapper ()
-    {
-        return Instrument::kObjectVariantMapper;
-    }
-
 }
 
 namespace Stroika::Frameworks::SystemPerformance {

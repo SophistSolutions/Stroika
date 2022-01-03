@@ -332,7 +332,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\CORS.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRequestHandler.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRouter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\LoggingInterceptor.h" />

@@ -58,11 +58,6 @@ namespace Stroika::Foundation::IO::Network {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         _ref ().Write (start, end);
     }
-    inline optional<IO::Network::SocketAddress> ConnectionOrientedStreamSocket::Ptr::GetPeerAddress () const
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
-        return _cref ().GetPeerAddress ();
-    }
     inline optional<Time::DurationSecondsType> ConnectionOrientedStreamSocket::Ptr::GetAutomaticTCPDisconnectOnClose () const
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};

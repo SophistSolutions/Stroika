@@ -1574,22 +1574,6 @@ namespace Stroika::Frameworks::Led {
     void Led_CenterWindowInParent (HWND w);
 #endif
 
-    // LEGACY NAMES
-    using Led_TWIPS [[deprecated ("Since Stroika 2.1b12 use TWIPS")]]                                               = TWIPS;
-    using Led_Coordinate [[deprecated ("Since Stroika 2.1b12 use CoordinateType")]]                                 = CoordinateType;
-    using Led_Distance [[deprecated ("Since Stroika 2.1b12 use DistanceType")]]                                     = DistanceType;
-    using Led_TabStopList [[deprecated ("Since Stroika 2.1b12 use TabStopList")]]                                   = TabStopList;
-    using Led_IncrementalFontSpecification [[deprecated ("Since Stroika 2.1b12 use IncrementalFontSpecification")]] = IncrementalFontSpecification;
-    using Led_FontSpecification [[deprecated ("Since Stroika 2.1b12 use FontSpecification")]]                       = FontSpecification;
-    using Led_WindowDC [[deprecated ("Since Stroika 2.1b12 use WindowDC")]]                                         = WindowDC;
-    using Led_Color [[deprecated ("Since Stroika 2.1b12 use Color")]]                                               = Color;
-    using Led_Pen [[deprecated ("Since Stroika 2.1b12 use Pen")]]                                                   = Pen;
-    using Led_LineSpacing [[deprecated ("Since Stroika 2.1b12 use LineSpacing")]]                                   = LineSpacing;
-    using Led_Justification [[deprecated ("Since Stroika 2.1b12 use Justification")]]                               = Justification;
-    using Led_IME [[deprecated ("Since Stroika 2.1b12 use IME")]]                                                   = IME;
-    using Led_Bitmap [[deprecated ("Since Stroika 2.1b12 use Bitmap")]]                                             = Bitmap;
-    using Led_Tablet [[deprecated ("Since Stroika 2.1b12 use Tablet*")]]                                            = Tablet*;
-
 }
 
 /*

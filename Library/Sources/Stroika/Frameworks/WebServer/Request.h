@@ -86,56 +86,6 @@ namespace Stroika::Frameworks::WebServer {
         */
         nonvirtual String ToString () const;
 
-    public:
-        [[deprecated ("Since Stroika 2.1b10, use rwHeaders().Set or Add or other")]] inline void AddHeader (const String& headerName, const String& value)
-        {
-            this->rwHeaders ().Set (headerName, value);
-        }
-        [[deprecated ("Since Stroika 2.1b10 use this->keepAliveRequested")]] inline bool GetKeepAliveRequested () const
-        {
-            return this->keepAliveRequested ();
-        }
-        [[deprecated ("Since Stroika 2.1b10 use this->contentLength")]] inline optional<uint64_t> GetContentLength () const
-        {
-            return this->headers ().contentLength;
-        }
-        [[deprecated ("Since Stroika v2.1b10 use contentType property")]] inline optional<InternetMediaType> GetContentType () const
-        {
-            return headers ().contentType;
-        }
-        [[deprecated ("Since Stroika v2.1b10 use httpVersion property")]] inline String GetHTTPVersion () const
-        {
-            return this->httpVersion ();
-        }
-        [[deprecated ("Since Stroika v2.1b10 use httpVersion property")]] inline void SetHTTPVersion (const String& versionOrVersionLabel)
-        {
-            this->httpVersion = versionOrVersionLabel;
-        }
-        [[deprecated ("Since Stroika v2.1b10 use httpMethod property")]] inline String GetHTTPMethod () const
-        {
-            return this->httpMethod ();
-        }
-        [[deprecated ("Since Stroika v2.1b10 use httpMethod property")]] inline void SetHTTPMethod (const String& method)
-        {
-            this->httpMethod = method;
-        }
-        [[deprecated ("Since Stroika v2.1b10 use url property")]] inline IO::Network::URI GetURL () const
-        {
-            return this->url ();
-        }
-        [[deprecated ("Since Stroika v2.1b10 use url property")]] inline void SetURL (const IO::Network::URI& newUrl)
-        {
-            this->url = newUrl;
-        }
-        [[deprecated ("Since Stroika v2.1b10 use headers property")]] IO::Network::HTTP::Headers GetHeaders () const
-        {
-            return this->headers ();
-        }
-        [[deprecated ("Since Stroika v2.1b10 use headers property")]] void SetHeaders (const IO::Network::HTTP::Headers& newHeaders)
-        {
-            this->rwHeaders = newHeaders;
-        }
-
     private:
         Streams::InputStream<byte>::Ptr fInputStream_;
         Streams::InputStream<byte>::Ptr fBodyInputStream_;
