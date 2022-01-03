@@ -14,6 +14,8 @@ endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
+include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
+
 
 
 VERSION=7.80.0
@@ -117,8 +119,8 @@ ENVIRONMENT_CONFIGURE_PREFIX+= export CC=$(CC);
 ENVIRONMENT_CONFIGURE_PREFIX+= export CXX=$(CXX);
 ENVIRONMENT_CONFIGURE_PREFIX+= export AR=$(AR);
 ENVIRONMENT_CONFIGURE_PREFIX+= export RANLIB=$(RANLIB);
-#ENVIRONMENT_CONFIGURE_PREFIX+= export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))";   ### not sure why this quote_quote call not working (produces empty string on m1 build) - but seems to work the other way so leave for now...LGP 2021-08-19
-ENVIRONMENT_CONFIGURE_PREFIX+= export CFLAGS="$(CFLAGS)";
+ENVIRONMENT_CONFIGURE_PREFIX+= export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))";
+ENVIRONMENT_CONFIGURE_PREFIX+= export CPPFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CPPFLAGS))";
 endif
 
 
