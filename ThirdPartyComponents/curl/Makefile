@@ -228,11 +228,9 @@ LIBCURL_CONFIGURE +=  LIBS='-ldl -lpthread'
 endif
 
 ifeq ($(shell uname), Darwin)
-ifeq ($(ARCH), x86_64)
 # https://stroika.atlassian.net/browse/STK-759
 # Undefined symbols for architecture x86_64: "_SCDynamicStoreCopyProxies", referenced from:  _Curl_resolv in libcurl.a(libcurl_la-hostip.o)
 LIBCURL_CONFIGURE +=  LIBS='-framework Foundation -framework SystemConfiguration'
-endif
 endif
 
 
