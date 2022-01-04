@@ -99,7 +99,7 @@ namespace {
     void Demo_Using_Direct_Capture_On_Instrument_ (Set<InstrumentNameType> run, bool oneLineMode, Duration captureInterval)
     {
         cout << "Results for each instrument:" << endl;
-        for (const Instrument& i : SystemPerformance::GetAllInstruments ()) {
+        for (Instrument i : SystemPerformance::GetAllInstruments ()) {
             if (not run.empty ()) {
                 if (not run.Contains (i.pInstrumentName)) {
                     continue;
