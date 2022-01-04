@@ -216,7 +216,7 @@ namespace {
             // Note - /procfs files always unseekable
             unsigned int nLine  = 0;
             unsigned int n2Skip = 2;
-            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcFileName_, FileInputStream::eNotSeekable))) {
+            for (const Sequence<String>& line : reader.ReadMatrix (FileInputStream::New (kProcFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"in Instruments::Network::Info capture_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
@@ -270,14 +270,14 @@ namespace {
             // Note - /procfs files always unseekable
             bool                    firstTime = true;
             Mapping<String, size_t> labelMap;
-            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcFileName_, FileInputStream::eNotSeekable))) {
+            for (const Sequence<String>& line : reader.ReadMatrix (FileInputStream::New (kProcFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"in Instruments::Network::Info Read_proc_net_netstat_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
                 if (line.size () >= 2 and line[0].Trim () == L"TcpExt:") {
                     if (firstTime) {
                         size_t idx = 0;
-                        for (String i : line) {
+                        for (const String& i : line) {
                             labelMap.Add (i.Trim (), idx++);
                         }
                         firstTime = false;
@@ -303,14 +303,14 @@ namespace {
             bool                    firstTime = true;
             Mapping<String, size_t> labelMap;
             optional<uint64_t>      totalTCPSegments;
-            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcFileName_, FileInputStream::eNotSeekable))) {
+            for (const Sequence<String>& line : reader.ReadMatrix (FileInputStream::New (kProcFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"in Instruments::Network::Info Read_proc_net_snmp_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
                 if (line.size () >= 2 and line[0].Trim () == L"Tcp:") {
                     if (firstTime) {
                         size_t idx = 0;
-                        for (String i : line) {
+                        for (const String& i : line) {
                             labelMap.Add (i.Trim (), idx++);
                         }
                         firstTime = false;
@@ -364,7 +364,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             {
                 Debug::TraceContextBumper ctx{"ALL WMI Network Avialable instances"};
-                for (String i : fAvailableInstances_) {
+                for (const String& i : fAvailableInstances_) {
                     DbgTrace (L"wmiInstanceName='%s'", i.c_str ());
                 }
             }
@@ -389,7 +389,7 @@ namespace {
             _fContext.rwget ().rwref ()->fTCPv6WMICollector_.Collect ();
 #endif
             {
-                for (IO::Network::Interface networkInterface : networkInterfacs) {
+                for (const IO::Network::Interface& networkInterface : networkInterfacs) {
                     InterfaceInfo ii;
 #if 0
                     ii.fInternalInterfaceID = networkInterface.fInternalInterfaceID;
@@ -402,7 +402,7 @@ namespace {
                     Read_WMI_ (networkInterface, &ii);
 #endif
                     accumSummary += ii.fIOStatistics;
-                    interfaceResults.Add (ii);
+                    interfaceResults.Add (move (ii));
                 }
             }
             result.fInterfaces = interfaceResults;

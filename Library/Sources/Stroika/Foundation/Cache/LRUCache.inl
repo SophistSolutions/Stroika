@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Cache {
         if (this != &rhs) {
             SetMaxCacheSize (rhs.GetMaxCacheSize ());
             ClearCache_ ();
-            for (auto i : rhs.Elements ()) {
+            for (const auto& i : rhs.Elements ()) {
                 if (i.fKey) {
                     Add (*i.fKey, *i.fValue);
                 }

@@ -60,7 +60,7 @@ public:
         Debug::TraceContextBumper ctx{"DataExchange::Variant::CharacterDelimitedLines::Reader::Rep_::ReadMatrix"};
 #endif
         Sequence<Sequence<String>> result;
-        for (String line : in.ReadLines ()) {
+        for (const String& line : in.ReadLines ()) {
             Sequence<String> tokens{line.Tokenize (fDelimiters_)};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"DataExchange::Variant::CharacterDelimitedLines::Reader::ReadMatrix: line=%s, tokenCount=%d", line.c_str (), tokens.size ());

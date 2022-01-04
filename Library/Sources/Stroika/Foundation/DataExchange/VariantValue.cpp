@@ -672,8 +672,8 @@ map<wstring, VariantValue> VariantValue::As () const
             auto v = Debug::UncheckedDynamicCast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
             AssertNotNull (v);
             map<wstring, VariantValue> tmp;
-            for (auto i : v->fVal) {
-                tmp.insert (map<wstring, VariantValue>::value_type (i.fKey.As<wstring> (), i.fValue));
+            for (const auto& i : v->fVal) {
+                tmp.insert ({i.fKey.As<wstring> (), i.fValue});
             }
             return tmp;
         }

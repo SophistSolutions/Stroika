@@ -133,7 +133,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     Vector<T> operator* (T lhs, const Vector<T>& rhs)
     {
         vector<T> tmp;
-        for (T i : rhs.GetItems ()) {
+        for (const auto& i : rhs.GetItems ()) {
             tmp.push_back (lhs * i);
         }
         return tmp;
@@ -142,7 +142,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     Vector<T> operator* (const Vector<T>& lhs, T rhs)
     {
         vector<T> tmp;
-        for (T i : lhs.GetItems ()) {
+        for (const auto& i : lhs.GetItems ()) {
             tmp.push_back (i * rhs);
         }
         return tmp;
@@ -162,7 +162,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     Vector<T> operator+ (T lhs, const Vector<T>& rhs)
     {
         vector<T> tmp;
-        for (T i : rhs.GetItems ()) {
+        for (const auto& i : rhs.GetItems ()) {
             tmp.push_back (lhs + i);
         }
         return tmp;
@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     Vector<T> operator+ (const Vector<T>& lhs, T rhs)
     {
         vector<T> tmp;
-        for (T i : lhs.GetItems ()) {
+        for (const auto& i : lhs.GetItems ()) {
             tmp.push_back (i + rhs);
         }
         return tmp;
@@ -200,7 +200,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     Vector<T> operator- (const Vector<T>& lhs, T rhs)
     {
         vector<T> tmp;
-        for (T i : lhs.GetItems ()) {
+        for (const auto& i : lhs.GetItems ()) {
             tmp.push_back (i - rhs);
         }
         return tmp;

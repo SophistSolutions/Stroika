@@ -49,7 +49,7 @@ public:
         Section          currentSection;
         for (String line : in.ReadLines ()) {
             line = line.Trim ();
-            if (line.StartsWith (L"[") and line.EndsWith (L"]"sv)) {
+            if (line.StartsWith (L"["sv) and line.EndsWith (L"]"sv)) {
                 if (readingSection.has_value ()) {
                     p.fNamedSections.Add (*readingSection, currentSection);
                     currentSection.fProperties.clear ();
@@ -63,7 +63,7 @@ public:
                 size_t i     = *line.Find ('=');
                 String key   = line.SubString (0, i).Trim ();
                 String value = line.SubString (i + 1).Trim ();
-                if (value.StartsWith (L"\"") and value.EndsWith (L"\"")) {
+                if (value.StartsWith (L"\""sv) and value.EndsWith (L"\""sv)) {
                     value = value.SubString (1, -1);
                 }
                 if (readingSection.has_value ()) {

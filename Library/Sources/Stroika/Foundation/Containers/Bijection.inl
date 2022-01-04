@@ -218,7 +218,7 @@ namespace Stroika::Foundation::Containers {
     {
         vector<RANGE_TYPE> tmp;
         tmp.reserve (values.size ());
-        for (auto i : values) {
+        for (const auto& i : values) {
             tmp.push_back (*Lookup (i));
         }
         return Iterable<RANGE_TYPE>{tmp};
@@ -228,7 +228,7 @@ namespace Stroika::Foundation::Containers {
     {
         vector<DOMAIN_TYPE> tmp;
         tmp.reserve (values.size ());
-        for (auto i : values) {
+        for (const auto& i : values) {
             tmp.push_back (*InverseLookup (i));
         }
         return Iterable<DOMAIN_TYPE>{move (tmp)};
@@ -239,7 +239,7 @@ namespace Stroika::Foundation::Containers {
         // @todo - fix very primitive implementation - could use Generator instead?, generator avoids copy of data, and just copies includeIfTrue filter function
         _SafeReadRepAccessor<_IRep> lhs{this};
         Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty ());
-        for (auto&& i : *this) {
+        for (const auto& i : *this) {
             if (includeIfTrue (i)) {
                 result.Add (i);
             }
@@ -252,7 +252,7 @@ namespace Stroika::Foundation::Containers {
         // @todo - fix very primitive implementation - could use Generator instead?, generator avoids copy of data, and just copies includeIfTrue filter function
         _SafeReadRepAccessor<_IRep> lhs{this};
         Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty ());
-        for (auto&& i : *this) {
+        for (const auto& i : *this) {
             if (domainValues.Contains (i.first, this->GetDomainEqualsComparer ())) {
                 result.Add (i);
             }
@@ -265,7 +265,7 @@ namespace Stroika::Foundation::Containers {
         // @todo - fix very primitive implementation - could use Generator instead?, generator avoids copy of data, and just copies includeIfTrue filter function
         _SafeReadRepAccessor<_IRep> lhs{this};
         Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty ());
-        for (auto&& i : *this) {
+        for (const auto& i : *this) {
             if (rangeValues.Contains (i.second, this->GetRangeEqualsComparer ())) {
                 result.Add (i);
             }

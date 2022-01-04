@@ -31,13 +31,13 @@ CacheControl CacheControl::Parse (const String& headerValue)
         auto v = String2Int<int32_t> (i);
         return v < 0 ? optional<uint32_t>{} : static_cast<uint32_t> (v);
     };
-    for (String v : headerValue.Tokenize ({',', ' '})) {
+    for (const String& v : headerValue.Tokenize ({',', ' '})) {
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control case insensitive
         Assert (not v.empty ());
         Sequence<String> vv = v.Tokenize ({'='});
         Assert (not vv.empty ()); // cuz the first tokenize will never return an empty item
         String token = vv[0];
-        for (Cacheability sr : DiscreteRange<Cacheability>::FullRange ()) {
+        for (const Cacheability& sr : DiscreteRange<Cacheability>::FullRange ()) {
             if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, DefaultNames<Cacheability>{}.GetName (sr))) {
                 r.fCacheability = sr;
                 goto DoneWithV;

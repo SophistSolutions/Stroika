@@ -21,10 +21,10 @@ Profile INI::Convert (VariantValue v)
 {
     Profile                       profile;
     Mapping<String, VariantValue> mv = v.As<Mapping<String, VariantValue>> (); // throws if format mismatch
-    for (KeyValuePair<String, VariantValue> kvi : mv) {
+    for (const KeyValuePair<String, VariantValue>& kvi : mv) {
         if (kvi.fValue.GetType () == VariantValue::eMap) {
             Section newSection;
-            for (KeyValuePair<String, VariantValue> namedSectionElt : kvi.fValue.As<Mapping<String, VariantValue>> ()) {
+            for (const KeyValuePair<String, VariantValue>& namedSectionElt : kvi.fValue.As<Mapping<String, VariantValue>> ()) {
                 newSection.fProperties.Add (namedSectionElt.fKey, namedSectionElt.fValue.As<String> ());
             }
             profile.fNamedSections.Add (kvi.fKey, newSection);
@@ -41,16 +41,16 @@ VariantValue INI::Convert (Profile p)
 {
     auto sec2VV = [] (Section s) -> VariantValue {
         Mapping<String, VariantValue> m;
-        for (KeyValuePair<String, String> k : s.fProperties) {
+        for (const KeyValuePair<String, String>& k : s.fProperties) {
             m.Add (k.fKey, k.fValue);
         }
         return VariantValue (m);
     };
     Mapping<String, VariantValue> mv;
-    for (KeyValuePair<String, Section> kvp : p.fNamedSections) {
+    for (const KeyValuePair<String, Section>& kvp : p.fNamedSections) {
         mv.Add (kvp.fKey, sec2VV (kvp.fValue));
     }
-    for (KeyValuePair<String, String> kvp : p.fUnnamedSection.fProperties) {
+    for (const KeyValuePair<String, String>& kvp : p.fUnnamedSection.fProperties) {
         mv.Add (kvp.fKey, kvp.fValue);
     }
     return VariantValue (mv);

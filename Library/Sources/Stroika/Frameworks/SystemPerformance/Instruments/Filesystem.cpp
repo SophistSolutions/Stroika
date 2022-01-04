@@ -280,7 +280,7 @@ namespace {
             }
             ApplyDiskTypes_ (&results.fMountedFilesystems);
             if (not _fOptions.fIncludeTemporaryDevices or not _fOptions.fIncludeSystemDevices) {
-                for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : results.fMountedFilesystems) {
+                for (const KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType>& i : results.fMountedFilesystems) {
                     if (not _fOptions.fIncludeTemporaryDevices and i.fValue.fDeviceKind == BlockDeviceKind::eTemporaryFiles) {
                         results.fMountedFilesystems.Remove (i.fKey);
                     }
@@ -300,7 +300,7 @@ namespace {
         static Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> ReadVolumesAndUsageFromProcMountsAndstatvfs_ ()
         {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> result;
-            for (IO::FileSystem::MountedFilesystemType mi : IO::FileSystem::GetMountedFilesystems ()) {
+            for (const IO::FileSystem::MountedFilesystemType& mi : IO::FileSystem::GetMountedFilesystems ()) {
                 MountedFilesystemInfoType vi;
                 String                    deviceName = (not mi.fDevicePaths.has_value () or mi.fDevicePaths->empty ()) ? String{} : IO::FileSystem::FromPath (mi.fDevicePaths->Nth (0));
                 if (not deviceName.empty ()) {
@@ -461,7 +461,7 @@ namespace {
             String                   out;
             Streams::TextReader::Ptr stdOut        = Streams::TextReader::New (useStdOut);
             bool                     skippedHeader = false;
-            for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+            for (const String& i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 if (not skippedHeader) {
                     skippedHeader = true;
                     continue;
@@ -523,7 +523,7 @@ namespace {
             String                   out;
             Streams::TextReader::Ptr stdOut        = Streams::TextReader::New (useStdOut);
             bool                     skippedHeader = false;
-            for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+            for (const String& i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 if (not skippedHeader) {
                     skippedHeader = true;
                     continue;
@@ -571,7 +571,7 @@ namespace {
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
             static const filesystem::path                          kProcMemInfoFileName_{"/proc/diskstats"sv};
             // Note - /procfs files always unseekable
-            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {
+            for (const Sequence<String>& line : reader.ReadMatrix (FileInputStream::New (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Filesystem::ReadProcFS_diskstats_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
@@ -603,7 +603,7 @@ namespace {
                     if (kAlsoReadQLen_) {
                         optional<filesystem::path> sysBlockInfoPath = GetSysBlockDirPathForDevice_ (devName);
                         if (sysBlockInfoPath) {
-                            for (Sequence<String> ll : reader.ReadMatrix (FileInputStream::New (*sysBlockInfoPath / "stat", FileInputStream::eNotSeekable))) {
+                            for (const Sequence<String>& ll : reader.ReadMatrix (FileInputStream::New (*sysBlockInfoPath / "stat", FileInputStream::eNotSeekable))) {
                                 if (ll.size () >= 11) {
                                     weightedTimeInQSeconds = FloatConversion::ToFloat (ll[11 - 1]) / 1000.0; // we record in seconds, but the value in file in milliseconds
                                     break;
@@ -655,7 +655,7 @@ namespace {
             // Could probably usefully optimize to not capture if no drives because we can only get this when running as
             // Admin, and for now, we capture little useful information at the drive level. But - we may eventually capture more...
             Collection<IO::FileSystem::DiskInfoType> physDrives = IO::FileSystem::GetAvailableDisks ();
-            for (IO::FileSystem::DiskInfoType pd : physDrives) {
+            for (const IO::FileSystem::DiskInfoType& pd : physDrives) {
                 DiskInfoType di{};
                 di.fSizeInBytes = pd.fSizeInBytes;
                 result.fDisks.Add (pd.fDeviceName, di);
@@ -677,7 +677,7 @@ namespace {
             }
 #endif
 
-            for (IO::FileSystem::MountedFilesystemType mfinfo : IO::FileSystem::GetMountedFilesystems ()) {
+            for (const IO::FileSystem::MountedFilesystemType& mfinfo : IO::FileSystem::GetMountedFilesystems ()) {
                 MountedFilesystemInfoType v;
                 v.fFileSystemType = mfinfo.fFileSystemType;
                 v.fVolumeID       = mfinfo.fVolumeID;
@@ -921,12 +921,12 @@ namespace {
             // So first compute the total stat per disk
             using WeightingStat2UseType = double;
             Mapping<DynamicDiskIDType, WeightingStat2UseType> totalWeights;
-            for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : fileSystems) {
+            for (const KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType>& i : fileSystems) {
                 Set<DynamicDiskIDType> disksForFS = NullCoalesce (i.fValue.fOnPhysicalDrive);
                 if (disksForFS.size () > 0) {
                     WeightingStat2UseType weightForFS = NullCoalesce (NullCoalesce (i.fValue.fCombinedIOStats).fBytesTransfered);
                     weightForFS /= disksForFS.size ();
-                    for (DynamicDiskIDType di : disksForFS) {
+                    for (const DynamicDiskIDType& di : disksForFS) {
                         totalWeights.Add (di, totalWeights.LookupValue (di) + weightForFS); // accumulate relative application to each disk
                     }
                 }
@@ -951,7 +951,7 @@ namespace {
              */
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> newFilessytems;
             if (totalWeights.size () >= 1) {
-                for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : fileSystems) {
+                for (const KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType>& i : fileSystems) {
                     MountedFilesystemInfoType mfi        = i.fValue;
                     Set<DynamicDiskIDType>    disksForFS = NullCoalesce (mfi.fOnPhysicalDrive);
                     if (disksForFS.size () > 0) {
@@ -962,7 +962,7 @@ namespace {
                         bool        computeQLen       = not cumStats.fQLength.has_value ();
                         bool        computeTotalXFers = not cumStats.fTotalTransfers.has_value ();
 
-                        for (DynamicDiskIDType di : disksForFS) {
+                        for (const DynamicDiskIDType& di : disksForFS) {
                             IOStatsType diskIOStats = NullCoalesce (disks.LookupValue (di).fCombinedIOStats);
                             if (weightForFS > 0) {
                                 double scaleFactor = weightForFS / totalWeights.LookupValue (di);

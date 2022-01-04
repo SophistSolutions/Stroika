@@ -121,7 +121,7 @@ void Statement::Bind (const Traversal::Iterable<ParameterDescription>& parameter
 {
     lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
     int                                                        idx = 0;
-    for (auto i : parameters) {
+    for (const auto& i : parameters) {
         if (i.fName) {
             Bind (*i.fName, i.fValue);
         }
@@ -135,7 +135,7 @@ void Statement::Bind (const Traversal::Iterable<ParameterDescription>& parameter
 void Statement::Bind (const Traversal::Iterable<Common::KeyValuePair<String, VariantValue>>& parameters)
 {
     lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
-    for (auto i : parameters) {
+    for (const auto& i : parameters) {
         Bind (i.fKey, i.fValue);
     }
 }

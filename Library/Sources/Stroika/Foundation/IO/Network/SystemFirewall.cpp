@@ -247,7 +247,7 @@ Traversal::Iterable<Rule> SystemFirewall::Manager::LookupByGroup (const String& 
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SystemFirewall::Manager::LookupByGroup", L"groupName=%s", groupName.c_str ())};
     Collection<Rule>          rules;
-    for (Rule r : LookupAll ()) {
+    for (const Rule& r : LookupAll ()) {
         if (r.fGroup == groupName) {
             rules += r;
         }

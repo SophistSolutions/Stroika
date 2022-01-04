@@ -142,7 +142,7 @@ namespace Stroika::Foundation::Containers::STL {
     template <typename T, typename FROMCONTAINER>
     void Union (set<T>* s1, const FROMCONTAINER& s2)
     {
-        for (auto i : s2) {
+        for (const auto& i : s2) {
             if (s1->find (i) == s1->end ()) {
                 s1->insert (i);
             }
@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Containers::STL {
     void Difference (set<T>* s1, const FROMCONTAINER& s2)
     {
         RequireNotNull (s1);
-        for (auto i : s2) {
+        for (const auto& i : s2) {
             if (s1->find (i) != s1->end ()) {
                 s1->erase (i);
             }

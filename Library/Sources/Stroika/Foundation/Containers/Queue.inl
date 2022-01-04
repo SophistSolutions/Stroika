@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Containers {
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
-        for (auto i : s) {
+        for (const auto& i : s) {
             tmp._GetWriteableRep ().AddTail (i);
         }
     }

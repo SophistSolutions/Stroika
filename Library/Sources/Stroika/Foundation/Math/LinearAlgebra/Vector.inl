@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     {
         Characters::StringBuilder sb;
         sb += L"[";
-        for (T i : fRep_.cget ()->fData) {
+        for (const T& i : fRep_.cget ()->fData) {
             sb += Characters::ToString (i) + L", ";
         }
         sb += L"]";

@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Traversal {
         Containers::SortedSet<value_type> ss{start, end};
         value_type                        startAt{};
         optional<value_type>              endAt;
-        for (value_type i : ss) {
+        for (const value_type& i : ss) {
             if (not endAt.has_value ()) {
                 startAt = i;
                 endAt   = i;

@@ -238,7 +238,7 @@ Transfer::Cache::Element::Element (const Response& response)
             fCacheControl = Set<String>{hi->fValue.Tokenize ({','})};
             hi            = headers.erase (hi);
             static const String kMaxAgeEquals_{L"max-age="sv};
-            for (String cci : *fCacheControl) {
+            for (const String& cci : *fCacheControl) {
                 if (cci.StartsWith (kMaxAgeEquals_)) {
                     fExpiresDueToMaxAge = DateTime::Now () + Duration{Characters::FloatConversion::ToFloat (cci.SubString (kMaxAgeEquals_.size ()))};
                 }

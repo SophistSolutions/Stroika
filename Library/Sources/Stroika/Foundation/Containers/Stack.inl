@@ -33,10 +33,10 @@ namespace Stroika::Foundation::Containers {
         // sadly intrinsically expensive to copy an interable using the stack API
         // @todo find a more efficient way - for example - if there is a way to get a reverse-iterator from 'src' this can be much cheaper!
         vector<T> tmp;
-        for (auto si : src) {
+        for (const auto& si : src) {
             tmp.push_back (si);
         }
-        for (auto si : tmp) {
+        for (const auto& si : tmp) {
             Push (si);
         }
     }
@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Containers {
         for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {
             tmp.push_back (*i);
         }
-        for (auto si : tmp) {
+        for (const auto& si : tmp) {
             Push (si);
         }
     }

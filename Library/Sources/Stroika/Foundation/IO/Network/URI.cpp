@@ -62,7 +62,7 @@ namespace {
         }
         vector<String> segments2;                         // apply ../. removal
         bool           lastSegmentShouldHaveSlash{false}; // not sure about this
-        for (String segment : segments) {
+        for (const String& segment : segments) {
             lastSegmentShouldHaveSlash = false;
             if (segment == L"." or segment == L"/.") {
                 // drop it on the floor
@@ -84,7 +84,7 @@ namespace {
         }
 
         StringBuilder result;
-        for (String segment : segments2) {
+        for (const String& segment : segments2) {
             result += segment;
         }
         if (lastSegmentShouldHaveSlash and not result.str ().EndsWith (L"/")) {

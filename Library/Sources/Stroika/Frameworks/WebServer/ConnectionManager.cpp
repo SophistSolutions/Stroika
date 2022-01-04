@@ -310,7 +310,7 @@ void ConnectionManager::ReplaceInEarlyInterceptor_ (const optional<Interceptor>&
     auto                  rwLock = this->fEarlyInterceptors_.rwget ();
     Sequence<Interceptor> newInterceptors;
     bool                  addedDefault = false;
-    for (Interceptor i : rwLock.load ()) {
+    for (const Interceptor& i : rwLock.load ()) {
         if (oldValue == i) {
             if (newValue) {
                 newInterceptors += *newValue;

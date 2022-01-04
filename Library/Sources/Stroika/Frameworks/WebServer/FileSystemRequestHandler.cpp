@@ -48,7 +48,7 @@ namespace {
             , fDefaultIndexFileNames{defaultIndexFileNames}
         {
             if (cacheControlSettings) {
-                for (const auto i : *cacheControlSettings) {
+                for (const auto& i : *cacheControlSettings) {
                     fCacheControlSettings.push_back (i);
                 }
             }

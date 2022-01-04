@@ -165,7 +165,7 @@ struct Router::Rep_ : Interceptor::_IRep {
     }
     nonvirtual optional<RequestHandler> Lookup_ (const String& method, const String& hostRelPath, const Request& request, Sequence<String>* matches) const
     {
-        for (Route r : fRoutes_) {
+        for (const Route& r : fRoutes_) {
             if (r.Matches (method, hostRelPath, request, matches)) {
                 return r.fHandler_;
             }
@@ -181,8 +181,8 @@ struct Router::Rep_ : Interceptor::_IRep {
         String                   hostRelPath = ExtractHostRelPath_ (request.url);
         static const Set<String> kMethods2Try_{HTTP::Methods::kGet, HTTP::Methods::kPut, HTTP::Methods::kOptions, HTTP::Methods::kDelete, HTTP::Methods::kPost};
         Set<String>              methods;
-        for (String method : kMethods2Try_) {
-            for (Route r : fRoutes_) {
+        for (const String& method : kMethods2Try_) {
+            for (const Route& r : fRoutes_) {
                 if (r.Matches (method, hostRelPath, request)) {
                     methods.Add (method);
                 }

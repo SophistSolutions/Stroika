@@ -64,7 +64,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     VariantValue ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPES...)>& f)
     {
         Sequence<VariantValue> vvs;
-        for (auto i : paramNames) {
+        for (const auto& i : paramNames) {
             vvs += variantValueArgs.LookupValue (i);
         }
         return ApplyArgs (vvs, objVarMapper, f);

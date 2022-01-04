@@ -171,10 +171,10 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"Lookup(%s)", hostNameOrAddress.c_str ());
     DbgTrace (L"CANONNAME: %s", result.fCanonicalName.c_str ());
-    for (String i : result.fAliases) {
+    for (const String& i : result.fAliases) {
         DbgTrace (L" ALIAS: %s", i.c_str ());
     }
-    for (InternetAddress i : result.fAddressList) {
+    for (const InternetAddress& i : result.fAddressList) {
         DbgTrace (L" ADDR: %s", i.As<String> ().c_str ());
     }
 #endif

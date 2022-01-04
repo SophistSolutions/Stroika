@@ -203,7 +203,7 @@ namespace {
     inline String mkWS_ (const Traversal::Iterable<Character>& src)
     {
         StringBuilder r;
-        for (auto&& i : src) {
+        for (const auto& i : src) {
             Containers::Support::ReserveTweaks::Reserve4Add1 (r); // could be optimized further moving outside loop, but we don't generically quickly know size
             r.push_back (i.As<wchar_t> ());
         }
@@ -818,7 +818,7 @@ String String::ReplaceAll (const String& string2SearchFor, const String& with, C
 String String::ReplaceAll (const function<bool (Character)>& replaceCharP, const String& with) const
 {
     StringBuilder sb;
-    for (const Character&& i : *this) {
+    for (const Character& i : *this) {
         if (replaceCharP (i)) {
             sb += with;
         }
@@ -832,7 +832,7 @@ String String::ReplaceAll (const function<bool (Character)>& replaceCharP, const
 String String::ReplaceAll (const Containers::Set<Character>& charSet, const String& with) const
 {
     StringBuilder sb;
-    for (const Character&& i : *this) {
+    for (const Character& i : *this) {
         if (charSet.Contains (i)) {
             sb += with;
         }

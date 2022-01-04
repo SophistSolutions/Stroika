@@ -183,7 +183,7 @@ namespace {
 
         while (true) {
             try {
-                for (auto employee : getAllActiveEmployees.GetAllRows (0, 1, 2)) {
+                for (const auto& employee : getAllActiveEmployees.GetAllRows (0, 1, 2)) {
                     int    id     = get<0> (employee).As<int> ();
                     String name   = get<1> (employee).As<String> ();
                     double salary = get<2> (employee).As<double> ();

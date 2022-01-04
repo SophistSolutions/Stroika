@@ -227,7 +227,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"Processing kReadCoils_ (starting0Address: %d, quantity: %d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
-                        for (auto i : serviceHandler->ReadCoils (DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}.Elements ().As<IModbusService::SetRegisterNames<CoilsDescriptorType>> ())) {
+                        for (const auto& i : serviceHandler->ReadCoils (DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}.Elements ().As<IModbusService::SetRegisterNames<CoilsDescriptorType>> ())) {
                             if (startingAddress <= oneBasedToZeroBased (i.fKey) and oneBasedToZeroBased (i.fKey) < endInclusiveAddress and i.fValue) {
                                 results[(oneBasedToZeroBased (i.fKey) - startingAddress) / 8] |= Memory::Bit ((oneBasedToZeroBased (i.fKey) - startingAddress) % 8);
                             }
@@ -261,7 +261,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"Processing kReadDiscreteInputs_ (starting0Address: %d, quantity: %d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
-                        for (auto i : serviceHandler->ReadDiscreteInput (DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}.Elements ().As<IModbusService::SetRegisterNames<DiscreteInputDescriptorType>> ())) {
+                        for (const auto& i : serviceHandler->ReadDiscreteInput (DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}.Elements ().As<IModbusService::SetRegisterNames<DiscreteInputDescriptorType>> ())) {
                             if (startingAddress <= oneBasedToZeroBased (i.fKey) and oneBasedToZeroBased (i.fKey) <= endInclusiveAddress) {
                                 if (i.fValue) {
                                     results[(oneBasedToZeroBased (i.fKey) - startingAddress) / 8] |= Memory::Bit ((oneBasedToZeroBased (i.fKey) - startingAddress) % 8);
@@ -293,7 +293,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"Processing kReadHoldingResisters_ (starting0Address: %d, quantity: %d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
-                        for (auto i : serviceHandler->ReadHoldingRegisters (DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}.Elements ().As<IModbusService::SetRegisterNames<HoldingRegisterDescriptorType>> ())) {
+                        for (const auto& i : serviceHandler->ReadHoldingRegisters (DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}.Elements ().As<IModbusService::SetRegisterNames<HoldingRegisterDescriptorType>> ())) {
                             if (startingAddress <= oneBasedToZeroBased (i.fKey) and oneBasedToZeroBased (i.fKey) <= endInclusiveAddress) {
                                 results[oneBasedToZeroBased (i.fKey) - startingAddress] = ToNetwork_ (i.fValue);
                             }
@@ -323,7 +323,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"Processing kReadInputRegister_ (starting0Address: %d, quantity: %d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
-                        for (auto i : serviceHandler->ReadInputRegisters (DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}.Elements ().As<IModbusService::SetRegisterNames<InputRegisterDescriptorType>> ())) {
+                        for (const auto& i : serviceHandler->ReadInputRegisters (DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}.Elements ().As<IModbusService::SetRegisterNames<InputRegisterDescriptorType>> ())) {
                             if (startingAddress <= oneBasedToZeroBased (i.fKey) and oneBasedToZeroBased (i.fKey) <= endInclusiveAddress) {
                                 results[oneBasedToZeroBased (i.fKey) - startingAddress] = ToNetwork_ (i.fValue);
                             }
