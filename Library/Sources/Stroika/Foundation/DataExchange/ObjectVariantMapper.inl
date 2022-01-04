@@ -119,7 +119,7 @@ namespace Stroika::Foundation::DataExchange {
     {
         // See https://stroika.atlassian.net/browse/STK-601 - properly/safely map the types, or do the more performant cast of the function objects
         if constexpr (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
-            return [fromObjectMapper] (const ObjectVariantMapper& mapper, const void* objOfType) -> VariantValue {
+            return [fromObjectMapper] (const ObjectVariantMapper& mapper, const T* objOfType) -> VariantValue {
                 return fromObjectMapper (mapper, objOfType);
             };
         }
@@ -138,7 +138,7 @@ namespace Stroika::Foundation::DataExchange {
     {
         // See https://stroika.atlassian.net/browse/STK-601 - properly/safely map the types, or do the more performant cast of the function objects
         if constexpr (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
-            return [toObjectMapper] (const ObjectVariantMapper& mapper, const VariantValue& d, void* into) -> void {
+            return [toObjectMapper] (const ObjectVariantMapper& mapper, const VariantValue& d, T* into) -> void {
                 toObjectMapper (mapper, d, into);
             };
         }
