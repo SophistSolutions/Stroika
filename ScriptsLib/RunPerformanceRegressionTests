@@ -35,7 +35,10 @@ elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ] ; then
 elif [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
     # Do something under Windows NT platform
     EXE=${EXE-"Builds/Release-x86/Tests/$PERF_TEST"}
+    EXE2=${EXE-"Builds/Release-x86_64/Tests/$PERF_TEST"}
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="Windows-x86-vs2k19"; fi
+    USE_TEST_BASENAME_APP="x86-"
+    USE_TEST_BASENAME_APP2="x86_64-"
     CMDRUN_PREFIX=""
 else
     echo "WARNING - unrecognized OS"
@@ -43,6 +46,11 @@ fi
 
 if [ ! -e "$EXE" ] ; then echo "Warning: $EXE not found"; fi
 
-echo -n "$CMDRUN_PREFIX" "$EXE --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VER.txt ... "
-$CMDRUN_PREFIX $EXE --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VER.txt
+echo -n "$CMDRUN_PREFIX" "$EXE --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$USE_TEST_BASENAME_APP$VER.txt ... "
+$CMDRUN_PREFIX $EXE --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$USE_TEST_BASENAME_APP$VER.txt
+
+if [ -e "$EXE2" ] ; then
+    echo -n "$CMDRUN_PREFIX" "$EXE2 --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$USE_TEST_BASENAME_APP2$VER.txt ... "
+    $CMDRUN_PREFIX $EXE2 --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$USE_TEST_BASENAME_APP2$VER.txt
+fi
 echo "done"
