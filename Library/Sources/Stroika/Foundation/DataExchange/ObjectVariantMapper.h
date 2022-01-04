@@ -225,7 +225,9 @@ namespace Stroika::Foundation::DataExchange {
          *  This is a low level mapper - use for a few internal purposes, like pointer to member (class member) mapping, and
          *  for internal storage of mappers.
          *
-         *  For the short term, we assume this mapper is interchangable (binary copyable) to/from any FromObjectMapperType<T>
+         *  \note For performance reasons, we treat this as interchangeable with the real FromObjectMapperType<T>, but
+         *        see https://stroika.atlassian.net/browse/STK-601 for details but, with ubsan, we need todo an extra
+         *        layer of lambdas mapping, cuz it detects this not totally kosher cast.
          *
          *  @see ToGenericObjectMapperType
          *  @see FromObjectMapperType<T>
@@ -237,7 +239,9 @@ namespace Stroika::Foundation::DataExchange {
          *  This is a low level mapper - use for a few internal purposes, like pointer to member (class member) mapping, and
          *  for internal storage of mappers.
          *
-         *  For the short term, we assume this mapper is interchangable (binary copyable) to/from any ToObjectMapperType<T>
+         *  \note For performance reasons, we treat this as interchangeable with the real FromObjectMapperType<T>, but
+         *        see https://stroika.atlassian.net/browse/STK-601 for details but, with ubsan, we need todo an extra
+         *        layer of lambdas mapping, cuz it detects this not totally kosher cast.
          *
          *  @see FromGenericObjectMapperType
          *  @see ToObjectMapperType<T>
@@ -266,6 +270,8 @@ namespace Stroika::Foundation::DataExchange {
             FromGenericObjectMapperType fFromObjecttMapper;
             ToGenericObjectMapperType   fToObjectMapper;
 
+            /**
+             */
             TypeMappingDetails ()                          = delete;
             TypeMappingDetails (const TypeMappingDetails&) = default;
             TypeMappingDetails (TypeMappingDetails&&) noexcept = default;
@@ -290,10 +296,17 @@ namespace Stroika::Foundation::DataExchange {
              */
             nonvirtual bool operator== (const TypeMappingDetails& rhs) const;
 
+            /**
+             *  See FromGenericObjectMapperType
+             */
             template <typename T>
             static FromObjectMapperType<T> FromObjectMapper (const FromGenericObjectMapperType& fromObjectMapper);
             template <typename T>
             nonvirtual FromObjectMapperType<T> FromObjectMapper () const;
+
+            /**
+             *  See ToGenericObjectMapperType
+             */
             template <typename T>
             static ToObjectMapperType<T> ToObjectMapper (const ToGenericObjectMapperType& toObjectMapper);
             template <typename T>
