@@ -268,12 +268,14 @@ namespace Stroika::Foundation::DataExchange {
 
             TypeMappingDetails ()                          = delete;
             TypeMappingDetails (const TypeMappingDetails&) = default;
+            TypeMappingDetails (TypeMappingDetails&&) noexcept = default;
             explicit TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper, const ToGenericObjectMapperType& toObjectMapper);
             template <typename T, enable_if_t<not is_same_v<T, void> and Debug::kBuiltWithUndefinedBehaviorSanitizer>* = nullptr>
             TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
             template <typename T, enable_if_t<not is_same_v<T, void> and not Debug::kBuiltWithUndefinedBehaviorSanitizer>* = nullptr>
             TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
 
+            nonvirtual TypeMappingDetails& operator= (TypeMappingDetails&& rhs) noexcept = default;
             nonvirtual TypeMappingDetails& operator= (const TypeMappingDetails& rhs) = default;
 
 #if __cpp_impl_three_way_comparison >= 201907
