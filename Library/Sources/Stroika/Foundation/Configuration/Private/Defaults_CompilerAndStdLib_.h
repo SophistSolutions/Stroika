@@ -1236,6 +1236,69 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 
 #endif
 
+/*
+
+./Builds/g++-release-sanitize_address_undefined/Samples-SQL/SQL 
+=================================================================
+==711063==ERROR: AddressSanitizer: global-buffer-overflow on address 0x56148d9e104c at pc 0x56148d242544 bp 0x7ffe78498710 sp 0x7ffe78498700
+READ of size 2 at 0x56148d9e104c thread T0
+    #0 0x56148d242543 in Stroika::Foundation::Characters::UTFConvert::ConversionResult Stroika::Foundation::Characters::UTFConvert::ConvertQuietly<char16_t, char32_t>(char16_t const**, char16_t const*, char32_t**, char32_t*, Stroika::Foundation::Characters::UTFConvert::ConversionFlags) /Sandbox/Stroika-Dev/Samples/SQL/CodePage.cpp:2976
+    #1 0x56148d242543 in Stroika::Foundation::Characters::UTFConvert::ConversionResult Stroika::Foundation::Characters::UTFConvert::ConvertQuietly<char16_t, wchar_t>(char16_t const**, char16_t const*, wchar_t**, wchar_t*, Stroika::Foundation::Characters::UTFConvert::ConversionFlags) ../Containers/../Traversal/../Memory/../Execution/../Debug/../Characters/CodePage.inl:249
+    #2 0x56148d242543 in void Stroika::Foundation::Characters::UTFConvert::Convert<char16_t, wchar_t>(char16_t const**, char16_t const*, wchar_t**, wchar_t*, Stroika::Foundation::Characters::UTFConvert::ConversionFlags) ../Containers/../Traversal/../Memory/../Execution/../Debug/../Characters/CodePage.inl:269
+    #3 0x56148d242543 in Stroika::Foundation::Characters::String::mk_(char16_t const*, char16_t const*) [clone .constprop.0] /Sandbox/Stroika-Dev/Samples/SQL/String.cpp:392
+    #4 0x56148d0f40ec in Stroika::Foundation::Characters::String::String(char16_t const*, char16_t const*) ../Cryptography/Digest/Algorithm/../../../Memory/../Streams/../Execution/../Characters/String.inl:150
+    #5 0x56148d0f40ec in Stroika::Foundation::Characters::String::String(char16_t const*) /Sandbox/Stroika-Dev/Samples/SQL/String.cpp:182
+    #6 0x56148d0f40ec in main /Sandbox/Stroika-Dev/Samples/SQL//Sources/Main.cpp:32
+    #7 0x7f097f4260b2 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x270b2)
+    #8 0x56148d0f9dbd in _start (/Sandbox/Stroika-Dev/Builds/g++-release-sanitize_address_undefined/Samples-SQL/SQL+0xe3fdbd)
+
+0x56148d9e104c is located 0 bytes to the right of global variable '*.LC134' defined in '/tmp/SQL.VhKQdJ.ltrans0.o' (0x56148d9e1020) of size 44
+SUMMARY: AddressSanitizer: global-buffer-overflow /Sandbox/Stroika-Dev/Samples/SQL/CodePage.cpp:2976 in Stroika::Foundation::Characters::UTFConvert::ConversionResult Stroika::Foundation::Characters::UTFConvert::ConvertQuietly<char16_t, char32_t>(char16_t const**, char16_t const*, char32_t**, char32_t*, Stroika::Foundation::Characters::UTFConvert::ConversionFlags)
+Shadow bytes around the buggy address:
+  0x0ac311b341b0: f9 f9 f9 f9 00 f9 f9 f9 f9 f9 f9 f9 00 00 00 00
+  0x0ac311b341c0: 00 00 00 00 00 00 00 f9 f9 f9 f9 f9 00 f9 f9 f9
+  0x0ac311b341d0: f9 f9 f9 f9 00 f9 f9 f9 f9 f9 f9 f9 00 00 00 00
+  0x0ac311b341e0: 00 00 00 04 f9 f9 f9 f9 00 f9 f9 f9 f9 f9 f9 f9
+  0x0ac311b341f0: 00 f9 f9 f9 f9 f9 f9 f9 00 00 00 00 00 00 f9 f9
+=>0x0ac311b34200: f9 f9 f9 f9 00 00 00 00 00[04]f9 f9 f9 f9 f9 f9
+  0x0ac311b34210: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 05
+  0x0ac311b34220: f9 f9 f9 f9 00 00 00 00 00 f9 f9 f9 f9 f9 f9 f9
+  0x0ac311b34230: 00 04 f9 f9 f9 f9 f9 f9 00 04 f9 f9 f9 f9 f9 f9
+  0x0ac311b34240: 00 00 04 f9 f9 f9 f9 f9 00 00 04 f9 f9 f9 f9 f9
+  0x0ac311b34250: 00 00 f9 f9 f9 f9 f9 f9 00 00 f9 f9 f9 f9 f9 f9
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+  Shadow gap:              cc
+==711063==ABORTING
+*/
+#ifndef qCompiler_ASanitizer_global_buffer_overflow_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// Broken in g++9, and lower - Ubuntu 18.04 and 20.04
+#define qCompiler_ASanitizer_global_buffer_overflow_Buggy ((__GNUC__ <= 9))
+#else
+#define qCompiler_ASanitizer_global_buffer_overflow_Buggy 0
+#endif
+
+#endif
+
 // Debug builds - only fails running samples - not tests - crashes
 // ./Builds/Debug/Samples-SystemPerformanceClient/SystemPerformanceClient - MacOS Only
 #ifndef qCompiler_LimitLengthBeforeMainCrash_Buggy
