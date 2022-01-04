@@ -61,7 +61,7 @@ namespace Stroika::Foundation::DataExchange {
      */
     inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper, const ToGenericObjectMapperType& toObjectMapper)
         : fForType{forTypeInfo}
-        , fFromObjecttMapper{fromObjectMapper}
+        , fFromObjectMapper{fromObjectMapper}
         , fToObjectMapper{toObjectMapper}
     {
         RequireNotNull (fromObjectMapper);
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::DataExchange {
     inline ObjectVariantMapper::FromObjectMapperType<T> ObjectVariantMapper::TypeMappingDetails::FromObjectMapper () const
     {
         Require (type_index{typeid (T)} == fForType);
-        return FromObjectMapper<T> (fFromObjecttMapper);
+        return FromObjectMapper<T> (fFromObjectMapper);
     }
     template <typename T>
     inline ObjectVariantMapper::ToObjectMapperType<T> ObjectVariantMapper::TypeMappingDetails::ToObjectMapper (const ToGenericObjectMapperType& toObjectMapper)
@@ -263,7 +263,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline auto ObjectVariantMapper::FromObjectMapper () const -> FromObjectMapperType<T>
     {
-        Require (Lookup_ (typeid (T)).fFromObjecttMapper);
+        Require (Lookup_ (typeid (T)).fFromObjectMapper);
         return Lookup_ (typeid (T)).FromObjectMapper<T> ();
     }
     template <typename T>
@@ -497,7 +497,7 @@ namespace Stroika::Foundation::DataExchange {
         const T*           n = nullptr; // arg unused, just for overloading
         TypeMappingDetails tmp{MakeCommonSerializer_ (n, forward<ARGS> (args)...)};
         // NB: beacuse of how we match on MakeCommonSerializer_, the type it sees maybe a base class of T, and we want to actually register the type the user specified.
-        return TypeMappingDetails{typeid (T), tmp.fFromObjecttMapper, tmp.fToObjectMapper};
+        return TypeMappingDetails{typeid (T), tmp.fFromObjectMapper, tmp.fToObjectMapper};
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE>*)
@@ -956,14 +956,14 @@ namespace Stroika::Foundation::DataExchange {
 #endif
         FromObjectMapperType<CLASS> fromObjectMapper = [fields] (const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) -> VariantValue {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjecttMapper"};
+            Debug::TraceContextBumper ctx{L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjectMapper"};
 #endif
             map<String, VariantValue> m; //slight performance tweak, build STL container and then convert
             for (const auto&& i : fields) {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset);
 #endif
-                FromGenericObjectMapperType toGenericVariantMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fFromObjecttMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fFromObjecttMapper;
+                FromGenericObjectMapperType toGenericVariantMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fFromObjectMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fFromObjectMapper;
                 VariantValue                vv                     = toGenericVariantMapper (mapper, reinterpret_cast<const std::byte*> (fromObjOfTypeT) + i.fFieldMetaInfo.fOffset);
                 if (i.fNullFields == ObjectVariantMapper::StructFieldInfo::eIncludeNullFields or vv.GetType () != VariantValue::eNull) {
                     m.insert ({i.fSerializedFieldName, vv});
@@ -1030,7 +1030,7 @@ namespace Stroika::Foundation::DataExchange {
 #endif
         FromObjectMapperType<CLASS> fromObjectMapper = [fields, baseClassTypeInfo] (const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) -> VariantValue {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjecttMapper"};
+            Debug::TraceContextBumper ctx{L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjectMapper"};
 #endif
             Mapping<String, VariantValue> m;
             if (baseClassTypeInfo) {
@@ -1040,7 +1040,7 @@ namespace Stroika::Foundation::DataExchange {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset);
 #endif
-                FromGenericObjectMapperType fromGenericObjectMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fFromObjecttMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fFromObjecttMapper;
+                FromGenericObjectMapperType fromGenericObjectMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fFromObjectMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fFromObjectMapper;
                 VariantValue                vv                      = fromGenericObjectMapper (mapper, reinterpret_cast<const std::byte*> (fromObjOfTypeT) + i.fFieldMetaInfo.fOffset);
                 if (i.fNullFields == ObjectVariantMapper::StructFieldInfo::NullFieldHandling::eInclude or vv.GetType () != VariantValue::eNull) {
                     m.Add (i.fSerializedFieldName, vv);
