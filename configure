@@ -871,6 +871,10 @@ sub	SetDefaultForCompilerDriver_
 				if(!exists($already{'address'})) {
 					push @sanitizerFlags, 'address';
 				}
+				# note ubsan not yet supported --LGP 2022-01-04
+				# if(!exists($already{'undefined'})) {
+				# 	push @sanitizerFlags, 'undefined';
+				# }
 			}
 			$sanitizerFlagsIsDefined = true;
 		}
