@@ -1113,7 +1113,7 @@ namespace {
             Streams::TextReader::Ptr stdOut        = Streams::TextReader::New (useStdOut);
             bool                     skippedHeader = false;
             size_t                   headerLen     = 0;
-            for (const String& i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+            for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 if (not skippedHeader) {
                     skippedHeader = true;
                     headerLen     = i.RTrim ().length ();
