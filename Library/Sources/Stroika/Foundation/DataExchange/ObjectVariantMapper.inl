@@ -67,7 +67,19 @@ namespace Stroika::Foundation::DataExchange {
         RequireNotNull (fromObjectMapper);
         RequireNotNull (toObjectMapper);
     }
-    template <typename T, enable_if_t<not is_same_v<T, void>>*>
+    template <typename T, enable_if_t<not is_same_v<T, void> and Debug::kBuiltWithUndefinedBehaviorSanitizer>*>
+    inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper)
+        : TypeMappingDetails{forTypeInfo,
+                             [fromObjectMapper] (const ObjectVariantMapper& mapper, const void* objOfType) -> VariantValue {
+                                 return fromObjectMapper (mapper, reinterpret_cast<const T*> (objOfType));
+                             },
+                             [toObjectMapper] (const ObjectVariantMapper& mapper, const VariantValue& d, void* into) -> void {
+                                 toObjectMapper (mapper, d, reinterpret_cast<T*> (into));
+                             }}
+    {
+        Require (type_index{typeid (T)} == forTypeInfo);
+    }
+    template <typename T, enable_if_t<not is_same_v<T, void> and not Debug::kBuiltWithUndefinedBehaviorSanitizer>*>
     inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper)
         : TypeMappingDetails{forTypeInfo, *reinterpret_cast<const FromGenericObjectMapperType*> (&fromObjectMapper), *reinterpret_cast<const ToGenericObjectMapperType*> (&toObjectMapper)}
     {
@@ -105,7 +117,15 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline ObjectVariantMapper::FromObjectMapperType<T> ObjectVariantMapper::TypeMappingDetails::FromObjectMapper (const FromGenericObjectMapperType& fromObjectMapper)
     {
-        return *reinterpret_cast<const FromObjectMapperType<T>*> (&fromObjectMapper);
+        // See https://stroika.atlassian.net/browse/STK-601 - properly/safely map the types, or do the more performant cast of the function objects
+        if constexpr (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
+            return [fromObjectMapper] (const ObjectVariantMapper& mapper, const void* objOfType) -> VariantValue {
+                return fromObjectMapper (mapper, objOfType);
+            };
+        }
+        else {
+            return *reinterpret_cast<const FromObjectMapperType<T>*> (&fromObjectMapper);
+        }
     }
     template <typename T>
     inline ObjectVariantMapper::FromObjectMapperType<T> ObjectVariantMapper::TypeMappingDetails::FromObjectMapper () const
@@ -116,7 +136,15 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline ObjectVariantMapper::ToObjectMapperType<T> ObjectVariantMapper::TypeMappingDetails::ToObjectMapper (const ToGenericObjectMapperType& toObjectMapper)
     {
-        return *reinterpret_cast<const ToObjectMapperType<T>*> (&toObjectMapper);
+        // See https://stroika.atlassian.net/browse/STK-601 - properly/safely map the types, or do the more performant cast of the function objects
+        if constexpr (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
+            return [toObjectMapper] (const ObjectVariantMapper& mapper, const VariantValue& d, void* into) -> void {
+                toObjectMapper (mapper, d, into);
+            };
+        }
+        else {
+            return *reinterpret_cast<const ToObjectMapperType<T>*> (&toObjectMapper);
+        }
     }
     template <typename T>
     inline ObjectVariantMapper::ToObjectMapperType<T> ObjectVariantMapper::TypeMappingDetails::ToObjectMapper () const
