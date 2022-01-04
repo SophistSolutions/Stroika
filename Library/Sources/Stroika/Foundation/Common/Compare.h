@@ -67,8 +67,8 @@ namespace Stroika::Foundation::Common {
      *        std::compare_three_way in c++20, so just specialize std::compare_three_way<>::operator()...
      */
 #if __cpp_lib_three_way_comparison < 201907L
-    template <class LT, class RT>
     struct ThreeWayComparer {
+        template <class LT, class RT>
         constexpr auto operator() (LT&& lhs, RT&& rhs) const
         {
             using CT = common_type_t<LT, RT>;
@@ -81,8 +81,8 @@ namespace Stroika::Foundation::Common {
         }
     };
 #else
-    template <class LT, class RT>
     struct ThreeWayComparer {
+        template <class LT, class RT>
         constexpr auto operator() (LT&& lhs, RT&& rhs) const
         {
             return std::compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Common {
      *  to use a case insensitive comparer for the strings, is tricky. THIS class solves that, by letting you pass in explicitly the 
      *  'base comparer'.
      */
-    template <typename T, typename TCOMPARER = ThreeWayComparer<T, T>>
+    template <typename T, typename TCOMPARER = ThreeWayComparer>
     struct OptionalThreeWayComparer {
         constexpr OptionalThreeWayComparer (TCOMPARER&& tComparer);
         constexpr OptionalThreeWayComparer (const TCOMPARER& tComparer);
@@ -273,8 +273,8 @@ namespace Stroika::Foundation::Common {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eInOrderOrEquals;
     };
 #if __cpp_lib_three_way_comparison >= 201907
-    template <typename T>
-    struct ExtractComparisonTraits<ThreeWayComparer<T, T>> {
+    template <>
+    struct ExtractComparisonTraits<ThreeWayComparer> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
     };
     template <>
