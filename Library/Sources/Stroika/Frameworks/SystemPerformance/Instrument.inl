@@ -17,6 +17,10 @@ namespace Stroika::Frameworks::SystemPerformance {
      ************************ SystemPerformance::Instrument *************************
      ********************************************************************************
      */
+    inline Instrument::Instrument (Instrument&& src) noexcept
+        : Instrument{move (src.fInstrumentName_), move (src.fCaptureRep_), move (src.fCapturedMeasurementTypes_), move (src.fType2MeasurementTypes_), move (src.fObjectVariantMapper_)}
+    {
+    }
     inline Instrument::Instrument (const Instrument& src)
         : Instrument{src.fInstrumentName_, src.fCaptureRep_->Clone (), src.fCapturedMeasurementTypes_, src.fType2MeasurementTypes_, src.fObjectVariantMapper_}
     {
