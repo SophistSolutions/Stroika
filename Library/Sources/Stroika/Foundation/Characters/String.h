@@ -1627,17 +1627,6 @@ namespace Stroika::Foundation::DataExchange {
     };
 }
 
-#if __cpp_lib_three_way_comparison < 201907L
-namespace Stroika::Foundation::Common {
-    /**
-     * defined for performance - not semantics (on old systems, on new systems irrelevant cuz uses operator <=>)
-     */
-    template <>
-    struct ThreeWayComparer<Characters::String, Characters::String> : Characters::String::ThreeWayComparer {
-    };
-}
-#endif
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
