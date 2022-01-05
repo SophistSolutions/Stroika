@@ -347,7 +347,7 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
         virtual Containers::Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
         {
             Containers::Set<InternetMediaType> results;
-            for (const InternetMediaType imt : fMediaType2PreferredSuffixMap_.Keys ()) {
+            for (const InternetMediaType& imt : fMediaType2PreferredSuffixMap_.Keys ()) {
                 if (majorType != nullopt and (imt.GetType<InternetMediaType::AtomType> () != *majorType)) {
                     continue;
                 }
