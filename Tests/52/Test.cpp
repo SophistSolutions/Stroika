@@ -1476,7 +1476,7 @@ namespace {
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<string>>, L"Sequence_DoublyLinkedList<string>",
             9900,
-            0.5,
+            0.65,
             &failedTests);
         Tester (
             L"Collection<int> basics",
@@ -1490,7 +1490,7 @@ namespace {
             [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
             [] () { Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([] (Collection<string>* c) { c->Add (string ()); }); }, L"Collection<string>",
             9600,
-            0.6,
+            0.8,
             &failedTests);
 #endif
         Tester (
