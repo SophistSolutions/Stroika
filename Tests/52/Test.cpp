@@ -1317,7 +1317,7 @@ namespace {
             Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
             24500,
-            .62,
+            .65,
             &failedTests);
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
@@ -1419,7 +1419,7 @@ namespace {
             [] () { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([] (const wstringstream& w) { return w.str (); }); }, L"wstringstream",
             [] () { Test_StreamBuilderStringBuildingWithExtract_<MemStreamOfChars_> ([] (const MemStreamOfChars_& w) { return w.As<String> (); }); }, L"MemoryStream<Characters::Character>",
             210000,
-            1.3,
+            1.6,
             &failedTests);
 #endif
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1472,7 +1472,7 @@ namespace {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_stdvector<int>>, L"Sequence_stdvector<int>",
             120000,
-            1.0,
+            1.1,
             &failedTests);
         Tester (
             L"Sequence_DoublyLinkedList<string> basics",
