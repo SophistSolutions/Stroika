@@ -476,8 +476,8 @@ protected:
                 AssertNotReached (); // because we checked within maxlen above
                 //Execution::Throw (Execution::RuntimeErrorException {L"Seek past end of input"sv}); // @todo clarify - docuemnt - not sure if/how to handle this
             }
-            fSrcIter_++;
-            fOffset_++;
+            ++fSrcIter_;
+            ++fOffset_;
         }
         return fOffset_;
     }
