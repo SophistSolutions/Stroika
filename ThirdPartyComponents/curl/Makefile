@@ -131,15 +131,18 @@ endif
 LIBCURL_CONFIGURE =
 LIBCURL_CONFIGURE += $(CONFIGURE_ARGS)
 LIBCURL_CONFIGURE += --enable-static
-ifeq ($(qFeatureFlag_OpenSSL), use)
+ifeq ($(qFeatureFlag_OpenSSL), no)
+LIBCURL_CONFIGURE += --without-ssl
+else
 #finds right one through PKG_CONFIG_PATH
 LIBCURL_CONFIGURE += --with-ssl
 endif
-ifeq ($(qFeatureFlag_OpenSSL), use-system)
-LIBCURL_CONFIGURE += --with-ssl
-endif
-ifeq ($(qFeatureFlag_OpenSSL), no)
-LIBCURL_CONFIGURE += --without-ssl
+ifeq ($(qFeatureFlag_ZLib), no)
+LIBCURL_CONFIGURE += --without-zlib
+else
+#LIBCURL_CONFIGURE += --with-zlib=$(PER_CONFIGURATION_BUILDS_DIR)
+#finds right one through PKG_CONFIG_PATH
+LIBCURL_CONFIGURE += --with-zlib
 endif
 LIBCURL_CONFIGURE += --disable-shared
 LIBCURL_CONFIGURE += --without-cyassl
@@ -160,8 +163,6 @@ LIBCURL_CONFIGURE += --disable-pop3
 LIBCURL_CONFIGURE += --disable-imap
 ## really want ares but hindrance for static linking for now
 LIBCURL_CONFIGURE += --disable-ares
-## really want zlib but until we can do relative build/static link... leave out..
-LIBCURL_CONFIGURE += --without-zlib
 ifeq ($(ENABLE_ASSERTIONS), 1)
 LIBCURL_CONFIGURE += --enable-debug
 LIBCURL_CONFIGURE += --disable-optimize
@@ -245,13 +246,12 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --no-print-directory check_prerequisites_
 	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl ${VERSION} - Build configure tools (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-CONF-TOOLS-OUT.txt) ... "`
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);autoreconf -fi > BUILD-CONF-TOOLS-OUT.txt 2>&1
-	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl ${VERSION} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME}/CONFIGURE-OUT.txt) ... "`
+	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl ${VERSION} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME}CONFIGURE-OUT.txt) ... "`
 	@$(ECHO) "$(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE-OUT.txt
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ($(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE-OUT.txt
-	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl $(VERSION) - Compiling (see ${OUTPUT_WORKDIR_PRETTYNAME}/BUILD-OUT.txt) ... "`
+	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl $(VERSION) - Compiling (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-OUT.txt) ... "`
 	@echo $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory install CC="$(CC)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt
 	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory install CC="$(CC)" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
-
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "curl ${VERSION} - Build CURRENT into $(BUILDS_DIR) ... "
