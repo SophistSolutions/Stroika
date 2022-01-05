@@ -22,6 +22,9 @@
 #include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/Configuration/StroikaVersion.h"
 #include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Concrete/Collection_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/Collection_stdforward_list.h"
+#include "Stroika/Foundation/Containers/Concrete/Collection_stdmultiset.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_DoublyLinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_stdvector.h"
@@ -1490,9 +1493,60 @@ namespace {
             [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
             [] () { Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([] (Collection<string>* c) { c->Add (string ()); }); }, L"Collection<string>",
             9600,
-            0.8,
+            0.5,
             &failedTests);
 #endif
+        {
+            // In Stroika 2.1b15, we changed the default Collection factory to use Collection_stdmultiset. This is probably a good choice,
+            // but is a small pessimization so include original Collection_stdforward_list for comparison (maybe orig was something else but this works).
+            using Containers::Concrete::Collection_LinkedList;
+            using Containers::Concrete::Collection_stdforward_list;
+            using Containers::Concrete::Collection_stdmultiset;
+            Tester (
+                L"Collection_LinkedList<string> basics",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_LinkedList<string>> ([] (Collection_LinkedList<string>* c) { c->Add (string ()); }); }, L"Collection_LinkedList<string>",
+                9600,
+                0.5,
+                &failedTests);
+            Tester (
+                L"Collection_stdforward_list<string> basics",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_stdforward_list<string>> ([] (Collection_stdforward_list<string>* c) { c->Add (string ()); }); }, L"Collection_stdforward_list<string>",
+                9600,
+                0.5,
+                &failedTests);
+            Tester (
+                L"Collection_stdmultiset<string> basics",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_stdmultiset<string>> ([] (Collection_stdmultiset<string>* c) { c->Add (string ()); }); }, L"Collection_stdmultiset<string>",
+                9600,
+                0.8,
+                &failedTests);
+        }
+        {
+            using Containers::Concrete::Collection_stdmultiset;
+            // In Stroika 2.1b15, we changed the default Collection factory to use Collection_stdmultiset. This is probably a good choice,
+            // but is a small pessimization when we have ALL IDENTICAL strings (so all conflicts). Just avoid that
+            static const vector<string> kRandomStrings_ = [] () {
+                vector<string> r;
+                r.reserve (100);
+                for (int i = 0; i < 100; ++i) {
+                    char buf[1024];
+                    snprintf (buf, NEltsOf (buf), "hello %d", i);
+                    r.push_back (buf);
+                }
+                return r;
+            }();
+            // this would do much better if we cared about mem usage, or did lookups, remove, etc...
+            Tester (
+                L"Collection_stdmultiset<string> basics with rnd strings",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (kRandomStrings_[rand () % kRandomStrings_.size ()]); }); }, L"vector<string>",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_stdmultiset<string>> ([] (Collection_stdmultiset<string>* c) { c->Add (kRandomStrings_[rand () % kRandomStrings_.size ()]); }); }, L"Collection_stdmultiset<string>",
+                9600,
+                0.8,
+                &failedTests);
+        }
         Tester (
             L"std::set<int> vs Set<int>",
             Test_SetvsSet_<set<int>>, L"set<int>",
