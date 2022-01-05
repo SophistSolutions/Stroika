@@ -1378,7 +1378,7 @@ namespace {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             360000,
-            9.7,
+            24,
             &failedTests);
         Tester (
             L"String a + b",
@@ -1472,7 +1472,7 @@ namespace {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_stdvector<int>>, L"Sequence_stdvector<int>",
             120000,
-            0.9,
+            1.0,
             &failedTests);
         Tester (
             L"Sequence_DoublyLinkedList<string> basics",
@@ -1493,7 +1493,7 @@ namespace {
             [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
             [] () { Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([] (Collection<string>* c) { c->Add (string ()); }); }, L"Collection<string>",
             9600,
-            0.5,
+            0.6,
             &failedTests);
 #endif
         {
@@ -1507,21 +1507,21 @@ namespace {
                 [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
                 [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_LinkedList<string>> ([] (Collection_LinkedList<string>* c) { c->Add (string ()); }); }, L"Collection_LinkedList<string>",
                 9600,
-                0.5,
+                0.6,
                 &failedTests);
             Tester (
                 L"Collection_stdforward_list<string> basics",
                 [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
                 [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_stdforward_list<string>> ([] (Collection_stdforward_list<string>* c) { c->Add (string ()); }); }, L"Collection_stdforward_list<string>",
                 9600,
-                0.5,
+                0.6,
                 &failedTests);
             Tester (
                 L"Collection_stdmultiset<string> basics",
                 [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
                 [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_stdmultiset<string>> ([] (Collection_stdmultiset<string>* c) { c->Add (string ()); }); }, L"Collection_stdmultiset<string>",
                 9600,
-                0.8,
+                1.3,
                 &failedTests);
         }
         {
@@ -1544,7 +1544,7 @@ namespace {
                 [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (kRandomStrings_[rand () % kRandomStrings_.size ()]); }); }, L"vector<string>",
                 [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_stdmultiset<string>> ([] (Collection_stdmultiset<string>* c) { c->Add (kRandomStrings_[rand () % kRandomStrings_.size ()]); }); }, L"Collection_stdmultiset<string>",
                 9600,
-                0.8,
+                1.3,
                 &failedTests);
         }
         Tester (
@@ -1572,7 +1572,7 @@ namespace {
             L"Test_JSONReadWriteFile",
             Test_JSONReadWriteFile_::DoRunPerfTest, L"Test_JSONReadWriteFile",
             Debug::IsRunningUnderValgrind () ? 2 : 64,
-            0.25,
+            0.1,
             &failedTests);
         Tester (
             L"Test_Optional_",
