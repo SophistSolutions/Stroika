@@ -324,8 +324,8 @@ namespace Stroika::Foundation::Traversal {
          */
         Iterator (const RepSmartPtr& rep) noexcept;
         Iterator (RepSmartPtr&& rep) noexcept;
-        Iterator (const Iterator& src);
         Iterator (Iterator&& src) noexcept;
+        Iterator (const Iterator& src);
         constexpr Iterator (nullptr_t) noexcept;
         Iterator () = delete;
 
@@ -336,8 +336,8 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief  Iterators are safely copyable, preserving their current position. Copy-Assigning could throw since it probably involves a Clone()
          */
-        nonvirtual Iterator& operator= (const Iterator& rhs);
         nonvirtual Iterator& operator= (Iterator&& rhs) noexcept;
+        nonvirtual Iterator& operator= (const Iterator& rhs);
 
     public:
         /**
@@ -348,8 +348,13 @@ namespace Stroika::Foundation::Traversal {
          *  support begin, end).
          *
          *  This function is a synonym for @ref Current();
-        */
-        nonvirtual T operator* () const;
+         * 
+         *  \note Until Stroika 2.1r1, this returend T, and was switched to return const T& on the theorey that it might
+         *        perform better, but testing has not confirmed that (though this does appear to be existing practice in things like STL).
+         * 
+         *  \note It is illegal (but goes undetected) to hang onto (and use) the reference returned past when the iterator is next modified
+         */
+        nonvirtual const T& operator* () const;
 
     public:
         /**
@@ -382,8 +387,20 @@ namespace Stroika::Foundation::Traversal {
          *  Note - the value return by Current() is frozen (until the next operator++() call)
          *  when this method is called. Its legal to update the underlying container, but those
          *  values won't be seen until the next iteration.
+         * 
+         *  \note As of Stroika 2.1r1, we only support pre-increment. There were very few cases in the Stroika
+         *        code we used post-increment, and most of those were a mistake. In a couple places, it made code cleaner/
+         *        simpler, but it was rare (and easy to workaround).
+         * 
+         *        Problem with support of post-increment, is that its not compatible with (also in 2.1r1) change to have operator* return reference.
+         *        Issue there is that when we incrmenet/move forward, that reference (pointer) returned now refers to the NEXT item though it didn't
+         *        when we saved it to return.
+         * 
+         *        Now - that would be pretty easy to fix - by storing TWO values in the iterator (optional<T>) - and ping pong between them.
+         *        But that would have a performance and memory overhead for virtually no benefit.
+         *              -- LGP 2022-01-04
          */
-        nonvirtual Iterator<T>& operator++ ();
+        nonvirtual Iterator& operator++ ();
 
         /**
          *  \brief
@@ -396,7 +413,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  @see operator++()
          */
-        nonvirtual Iterator<T> operator++ (int);
+        // nonvirtual Iterator& operator++ (int);
 
     public:
         /*
@@ -473,37 +490,24 @@ namespace Stroika::Foundation::Traversal {
          *  Current() returns the value of the current item visited by the Iterator<T>.
          *
          *  Only one things can change the current value of Current():
-         *      o   operator++()
+         *      o   any non-const method of the iterator
          *
-         *  Because of this, two subsequent calls to it.Current () *cannot* return different values with no
-         *  intervening calls on the iterator, even if the underlying container changes.
+         *  Two subsequent calls to it.Current () *cannot* return different values with no
+         *  intervening (non-const) calls on the iterator.
          *
-         *  So even in multithread scenarios, its always safe to say:
-         *
-         *      if (not it.Done ()) {
-         *          T v = it.Current ();
-         *      }
-         *
-         *  and moreover, even in multithreaded scenarios, where another thread is randomly and rapidly modifying
-         *  a container:
-         *
-         *      if (not it.Done ()) {
-         *          T v1 = it.Current ();
-         *          sleep(1);
-         *          T v2 = it.Current ();
-         *          Assert (v1 == v2);      // they refer to the same value - this COULD fail
-         *                                  // if you defined a queer operator== that had operator==(x,x) return false)
-         *      }
-         *
-         *  The value of Current is undefined (Assertion error) if called when Done().
+         *  The value of returned is undefined (Assertion error) if called when Done().
          *
          *  operator*() is a common synonym for Current().
          *
          *  @see operator*()
          *  @see operator++()
          *
+         *  \note Until Stroika 2.1r1, this returend T, and was switched to return const T& on the theorey that it might
+         *        perform better, but testing has not confirmed that (though this does appear to be existing practice in things like STL).
+         * 
+         *  \note It is illegal (but goes undetected) to hang onto (and use) the reference returned past when the iterator is next modified
          */
-        nonvirtual T Current () const;
+        nonvirtual const T& Current () const;
 
     public:
         /**

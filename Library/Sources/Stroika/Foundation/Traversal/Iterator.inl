@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Traversal {
 #endif
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline T Iterator<T, ITERATOR_TRAITS>::Current () const
+    inline const T& Iterator<T, ITERATOR_TRAITS>::Current () const
     {
         RequireNotNull (fRep_);
         Require (fCurrentValue_.has_value ());
@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Traversal {
         *this = GetEmptyIterator ();
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline T Iterator<T, ITERATOR_TRAITS>::operator* () const
+    inline const T& Iterator<T, ITERATOR_TRAITS>::operator* () const
     {
         Require (not Done ());
         RequireNotNull (fRep_);
@@ -165,23 +165,13 @@ namespace Stroika::Foundation::Traversal {
         return fCurrentValue_.operator-> ();
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline Iterator<T>& Iterator<T, ITERATOR_TRAITS>::operator++ ()
+    inline auto Iterator<T, ITERATOR_TRAITS>::operator++ () -> Iterator&
     {
         Require (not Done ());
         RequireNotNull (fRep_);
         fRep_->More (&fCurrentValue_, true);
         this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
         return *this;
-    }
-    template <typename T, typename ITERATOR_TRAITS>
-    inline Iterator<T> Iterator<T, ITERATOR_TRAITS>::operator++ (int)
-    {
-        RequireNotNull (fRep_);
-        Require (not Done ());
-        Iterator<T> tmp = *this;
-        fRep_->More (&fCurrentValue_, true);
-        this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
-        return tmp;
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS> Iterator<T, ITERATOR_TRAITS>::operator+ (int i) const

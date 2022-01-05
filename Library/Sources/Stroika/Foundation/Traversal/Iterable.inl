@@ -448,7 +448,9 @@ namespace Stroika::Foundation::Traversal {
                 ++perIteratorContextBaseIterator;
             }
             if (perIteratorContextBaseIterator) {
-                return *perIteratorContextBaseIterator++;
+                auto tmp = *perIteratorContextBaseIterator;
+                ++perIteratorContextBaseIterator;
+                return move (tmp);
             }
             return nullopt;
         };
@@ -541,7 +543,9 @@ namespace Stroika::Foundation::Traversal {
         // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
         function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), extract] () mutable -> optional<RESULT> {
             if (perIteratorContextBaseIterator) {
-                return RESULT (extract (*perIteratorContextBaseIterator++));
+                RESULT result = extract (*perIteratorContextBaseIterator);
+                ++perIteratorContextBaseIterator;
+                return move (result);
             }
             return nullopt;
         };
@@ -560,9 +564,10 @@ namespace Stroika::Foundation::Traversal {
             // tricky. The funtion we are defining returns nullopt as a sentinal to signal end of iteration. The function we are GIVEN returns nullopt
             // to signal skip this item. So adjust accordingly
             while (perIteratorContextBaseIterator) {
-                auto t = extract (*perIteratorContextBaseIterator++);
+                optional<RESULT> t = extract (*perIteratorContextBaseIterator);
+                ++perIteratorContextBaseIterator;
                 if (t) {
-                    return RESULT{*t};
+                    return *t;
                 }
             }
             return nullopt;
@@ -612,11 +617,13 @@ namespace Stroika::Foundation::Traversal {
         // perIteratorContextNItemsToSkip also must be cloned per iterator instance
         function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), perIteratorContextNItemsToSkip = nItems] () mutable -> optional<T> {
             while (perIteratorContextBaseIterator and perIteratorContextNItemsToSkip > 0) {
-                perIteratorContextNItemsToSkip--;
+                --perIteratorContextNItemsToSkip;
                 ++perIteratorContextBaseIterator;
             }
             if (perIteratorContextBaseIterator) {
-                return *perIteratorContextBaseIterator++;
+                auto result = *perIteratorContextBaseIterator;
+                ++perIteratorContextBaseIterator;
+                return move (result);
             }
             return nullopt;
         };
@@ -636,7 +643,9 @@ namespace Stroika::Foundation::Traversal {
             }
             perIteratorContextNItemsToTake--;
             if (perIteratorContextBaseIterator) {
-                return *perIteratorContextBaseIterator++;
+                auto result = *perIteratorContextBaseIterator;
+                ++perIteratorContextBaseIterator;
+                return move (result);
             }
             return nullopt;
         };
@@ -653,7 +662,7 @@ namespace Stroika::Foundation::Traversal {
         // perIteratorContextNItemsToTake also must be cloned per iterator instance
         function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), perIteratorContextNItemsToSkip = from, perIteratorContextNItemsToTake = to - from] () mutable -> optional<T> {
             while (perIteratorContextBaseIterator and perIteratorContextNItemsToSkip > 0) {
-                perIteratorContextNItemsToSkip--;
+                --perIteratorContextNItemsToSkip;
                 ++perIteratorContextBaseIterator;
             }
             if (perIteratorContextNItemsToTake == 0) {
@@ -661,7 +670,9 @@ namespace Stroika::Foundation::Traversal {
             }
             perIteratorContextNItemsToTake--;
             if (perIteratorContextBaseIterator) {
-                return *perIteratorContextBaseIterator++;
+                auto result = *perIteratorContextBaseIterator;
+                ++perIteratorContextBaseIterator;
+                return move (result);
             }
             return nullopt;
         };
