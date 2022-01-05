@@ -42,16 +42,13 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         Rep_ (const INORDER_COMPARER& inorderComparer)
-            : fInorderComparer_{inorderComparer}
+            : fData_{inorderComparer}
         {
         }
         Rep_ (const Rep_& from) = default;
 
     public:
         nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-    private:
-        [[NO_UNIQUE_ADDRESS_ATTR]] const INORDER_COMPARER fInorderComparer_;
 
         // Iterable<T>::_IRep overrides
     public:
@@ -97,7 +94,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _CollectionRepSharedPtr CloneEmpty () const override
         {
-            return Iterable<T>::template MakeSmartPtr<Rep_> (fInorderComparer_); // keep comparer, but lose data in clone
+            return Iterable<T>::template MakeSmartPtr<Rep_> (fData_.key_comp ()); // keep comparer, but lose data in clone
         }
         virtual _CollectionRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
@@ -142,7 +139,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual InOrderComparerType GetInOrderComparer () const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            return InOrderComparerType{fInorderComparer_};
+            return InOrderComparerType{fData_.key_comp ()};
         }
         virtual bool Equals ([[maybe_unused]] const typename Collection<T>::_IRep& rhs) const override
         {
@@ -168,7 +165,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 
     private:
-        using DataStructureImplType_ = DataStructures::STLContainerWrapper<STDSET<INORDER_COMPARER>>;
+        using DataStructureImplType_ = DataStructures::STLContainerWrapper<STDMULTISET<INORDER_COMPARER>>;
         using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
