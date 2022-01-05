@@ -32,7 +32,11 @@
     "thread": "cpp",
     "evp.h": "c",
     "charconv": "cpp",
-    "limits": "cpp"
+    "limits": "cpp",
+    "chrono": "cpp",
+    "condition_variable": "cpp",
+    "exception": "cpp",
+    "ostream": "cpp"
   },
   "files.watcherExclude": {
     "Archive/**": true,
