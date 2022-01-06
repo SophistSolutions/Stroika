@@ -127,6 +127,9 @@ private:
 public:
     Rep_ ()
     {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper trcCtx{L"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::CTOR", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"this=%p", this)};
+#endif
         Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fIncomingSignalCounts_);
         Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fLastSignalRecieved_);
         fBlockingQueuePusherThread_ = Thread::New (
@@ -180,7 +183,7 @@ public:
 public:
     ~Rep_ ()
     {
-        Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_"};
+        Debug::TraceContextBumper trcCtx{L"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"this=%p", this)};
         Stroika_Foundation_Debug_ValgrindDisableHelgrind (fRecievedSig_); // For RARE (1/10 times) failure in regtest Foundation::Execution::Signals
         Thread::SuppressInterruptionInContext suppressInterruption;
         fBlockingQueuePusherThread_.Abort ();
