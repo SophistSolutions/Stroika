@@ -1472,7 +1472,7 @@ namespace {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_stdvector<int>>, L"Sequence_stdvector<int>",
             120000,
-            1.1,
+            1.3,
             &failedTests);
         Tester (
             L"Sequence_DoublyLinkedList<string> basics",
@@ -1552,7 +1552,7 @@ namespace {
             Test_SetvsSet_<set<int>>, L"set<int>",
             Test_SetvsSet_<Set<int>>, L"Set<int>",
             13000,
-            0.2,
+            0.3,
             &failedTests);
         Tester (
             L"String Characters::Format ()",
