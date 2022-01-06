@@ -29,6 +29,7 @@
 #include "../Containers/SortedKeyedCollection.h"
 #include "../Containers/SortedMapping.h"
 #include "../Containers/SortedSet.h"
+#include "../Debug/Sanitizer.h"
 #include "../Execution/Synchronized.h"
 #include "../Memory/Common.h"
 #include "../Memory/Optional.h"
@@ -224,7 +225,9 @@ namespace Stroika::Foundation::DataExchange {
          *  This is a low level mapper - use for a few internal purposes, like pointer to member (class member) mapping, and
          *  for internal storage of mappers.
          *
-         *  For the short term, we assume this mapper is interchangable (binary copyable) to/from any FromObjectMapperType<T>
+         *  \note For performance reasons, we treat this as interchangeable with the real FromObjectMapperType<T>, but
+         *        see https://stroika.atlassian.net/browse/STK-601 for details but, with ubsan, we need todo an extra
+         *        layer of lambdas mapping, cuz it detects this not totally kosher cast.
          *
          *  @see ToGenericObjectMapperType
          *  @see FromObjectMapperType<T>
@@ -236,7 +239,9 @@ namespace Stroika::Foundation::DataExchange {
          *  This is a low level mapper - use for a few internal purposes, like pointer to member (class member) mapping, and
          *  for internal storage of mappers.
          *
-         *  For the short term, we assume this mapper is interchangable (binary copyable) to/from any ToObjectMapperType<T>
+         *  \note For performance reasons, we treat this as interchangeable with the real FromObjectMapperType<T>, but
+         *        see https://stroika.atlassian.net/browse/STK-601 for details but, with ubsan, we need todo an extra
+         *        layer of lambdas mapping, cuz it detects this not totally kosher cast.
          *
          *  @see FromGenericObjectMapperType
          *  @see ToObjectMapperType<T>
@@ -262,15 +267,21 @@ namespace Stroika::Foundation::DataExchange {
          */
         struct TypeMappingDetails {
             type_index                  fForType;
-            FromGenericObjectMapperType fFromObjecttMapper;
+            FromGenericObjectMapperType fFromObjectMapper;
             ToGenericObjectMapperType   fToObjectMapper;
 
-            TypeMappingDetails ()                          = delete;
-            TypeMappingDetails (const TypeMappingDetails&) = default;
+            /**
+             */
+            TypeMappingDetails ()                              = delete;
+            TypeMappingDetails (const TypeMappingDetails&)     = default;
+            TypeMappingDetails (TypeMappingDetails&&) noexcept = default;
             explicit TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper, const ToGenericObjectMapperType& toObjectMapper);
-            template <typename T, enable_if_t<not is_same_v<T, void>>* = nullptr>
+            template <typename T, enable_if_t<not is_same_v<T, void> and Debug::kBuiltWithUndefinedBehaviorSanitizer>* = nullptr>
+            TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
+            template <typename T, enable_if_t<not is_same_v<T, void> and not Debug::kBuiltWithUndefinedBehaviorSanitizer>* = nullptr>
             TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
 
+            nonvirtual TypeMappingDetails& operator= (TypeMappingDetails&& rhs) noexcept = default;
             nonvirtual TypeMappingDetails& operator= (const TypeMappingDetails& rhs) = default;
 
 #if __cpp_impl_three_way_comparison >= 201907
@@ -285,10 +296,17 @@ namespace Stroika::Foundation::DataExchange {
              */
             nonvirtual bool operator== (const TypeMappingDetails& rhs) const;
 
+            /**
+             *  See FromGenericObjectMapperType
+             */
             template <typename T>
             static FromObjectMapperType<T> FromObjectMapper (const FromGenericObjectMapperType& fromObjectMapper);
             template <typename T>
             nonvirtual FromObjectMapperType<T> FromObjectMapper () const;
+
+            /**
+             *  See ToGenericObjectMapperType
+             */
             template <typename T>
             static ToObjectMapperType<T> ToObjectMapper (const ToGenericObjectMapperType& toObjectMapper);
             template <typename T>

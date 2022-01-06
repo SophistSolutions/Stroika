@@ -512,28 +512,6 @@ namespace Stroika::Foundation::Configuration {
 #endif
         ;
 
-    /// DEPRECATED CALLS ////////////////////
-
-    // move to bottom when I've removed dependencies
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (beginend, (std::begin (x) != std::end (x))); // DEPRECATED -
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (begin, std::begin (x));                      // DEPRECATED -
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x));                               // DEPRECATED - use has_eq_v
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x - x));                             // DEPRECATED - use has_minus_v
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (lt, (x < x));                                // DEPRECATED - use has_lt_v
-
-    template <typename T>
-    [[deprecated ("Since Stroika 2.1b14 - not sure why had something so specific")]] constexpr bool HasMinusWithIntegerResult ()
-    {
-        return has_minus_v<T> && is_convertible_v<minus_result<T>, int>;
-    }
-
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (neq, (x != x)); // DEPRECATED - use has_neq_v
-#if __cpp_impl_three_way_comparison >= 201907
-    STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (spaceship, (x <=> x)); // DEPRECATED - use has_spaceship_v
-#endif
-    template <typename ITERABLE>
-    using IsIterable [[deprecated ("Since Stroika 2.1b14 dont use (probaly use IsIterable_v)")]] = integral_constant<bool, has_beginend_v<ITERABLE>>;
-
 }
 
 /*

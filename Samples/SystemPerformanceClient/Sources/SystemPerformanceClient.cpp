@@ -59,7 +59,7 @@ namespace {
     void Demo_PrintInstruments_ ()
     {
         cout << "Instrument:" << endl;
-        for (Instrument i : SystemPerformance::GetAllInstruments ()) {
+        for (const Instrument& i : SystemPerformance::GetAllInstruments ()) {
             cout << "  " << i.pInstrumentName ().GetPrintName ().AsNarrowSDKString () << endl;
             // print measurements too?
         }
@@ -73,7 +73,7 @@ namespace {
         {
             CaptureSet cs;
             cs.pRunPeriod = captureInterval;
-            for (Instrument i : SystemPerformance::GetAllInstruments ()) {
+            for (const Instrument& i : SystemPerformance::GetAllInstruments ()) {
                 if (not run.empty ()) {
                     if (not run.Contains (i.pInstrumentName)) {
                         continue;
@@ -85,7 +85,7 @@ namespace {
         }
         capturer.AddMeasurementsCallback ([oneLineMode] (MeasurementSet ms) {
             cout << "    Measured-At: " << ms.fMeasuredAt.ToString ().AsNarrowSDKString () << endl;
-            for (Measurement mi : ms.fMeasurements) {
+            for (const Measurement& mi : ms.fMeasurements) {
                 cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
             }
         });
@@ -113,7 +113,7 @@ namespace {
             }
             else {
                 cout << "    Measured-At: " << m.fMeasuredAt.ToString ().AsNarrowSDKString () << endl;
-                for (Measurement mi : m.fMeasurements) {
+                for (const Measurement& mi : m.fMeasurements) {
                     cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
                 }
             }

@@ -77,22 +77,6 @@ namespace Stroika::Foundation::Traversal {
     constexpr bool kIterableUsesStroikaSharedPtr = Memory::kSharedPtr_IsFasterThan_shared_ptr;
 
     /**
-     *  EXPERIMENTAL AS OF v2.0a22x
-     *
-     *  @todo - TEST. I don't think this is important one way or the other, but I think it may aid performance,
-     *          especially if NOT using kIterableUsesStroikaSharedPtr, because of the single
-     *          memory allocation (like make_shared<>?).
-     *  \note - as of Stroika 2.1b10, this changed from defaulting to 1, to defaulting to 0, since it appears
-     *          NOT to improve performance (maybe reduces it very slightly); and I believe it costs a bit of memory
-     *          (for weak_ptr). -- LGP 2021-02-15
-     * 
-     *  \note DEPRECATED in Stroika 2.1b15 - remove it when we remove deprecations at the end of beta.
-     */
-#ifndef qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-#define qStroika_Foundation_Traveral_IterableUsesSharedFromThis_ 0
-#endif
-
-    /**
      */
     struct IterableBase {
     public:
@@ -463,7 +447,7 @@ namespace Stroika::Foundation::Traversal {
         struct SequentialEqualsComparer;
 
     public:
-        template <typename T_THREEWAY_COMPARER = Common::ThreeWayComparer<T, T>>
+        template <typename T_THREEWAY_COMPARER = Common::ThreeWayComparer>
         struct SequentialThreeWayComparer;
 
     public:
@@ -637,7 +621,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  This returns an Iterable<T> with a subset of data - including only the items that pass the argument filter funtion.
@@ -662,7 +645,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  This returns an Iterable<T> that contains just the subset of the items which are distinct (equality comparer)
@@ -923,7 +905,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq. (LastOrDefault)
          *
          *  \par Example Usage
@@ -957,7 +938,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  Walk the entire list of items, and use the argument 'op' to combine items to a resulting single item.
@@ -988,7 +968,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  \par Example Usage
@@ -1016,7 +995,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  EXAMPLE:
@@ -1044,7 +1022,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  \par Example Usage
@@ -1072,7 +1049,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
          *  BASED ON Microsoft .net Linq.
          *
          *  \par Example Usage
@@ -1100,8 +1076,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  EXPERIMENTAL
-         *
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 9, 4, 5, 3 };
@@ -1155,32 +1129,6 @@ namespace Stroika::Foundation::Traversal {
          * \brief STL-ish alias for size() - really in STL only used in string, I think, but still makes sense as an alias.
          */
         nonvirtual size_t length () const;
-
-    public:
-        [[deprecated ("Since Stroika 2.1b14, use empty () not IsEmpty ()")]] bool IsEmpty () const
-        {
-            return empty ();
-        }
-        using _APPLY_ARGTYPE [[deprecated ("Since Stroika 2.1b14, use const function<void (ArgByValueType<T> item)>")]]      = const function<void (ArgByValueType<T> item)>&;
-        using _APPLYUNTIL_ARGTYPE [[deprecated ("Since Stroika 2.1b14, use const function<bool (ArgByValueType<T> item)>")]] = const function<bool (ArgByValueType<T> item)>&;
-        [[deprecated ("Since Stroika 2.1b12, use First<RESULTT>")]] optional<T> First (const function<bool (ArgByValueType<T>)>& that) const;
-        [[deprecated ("Since Stroika 2.1b12, use Last<RESULTT>")]] optional<T>  Last (const function<bool (ArgByValueType<T>)>& that) const;
-        template <typename T1, typename T2, typename RESULT = pair<T1, T2>>
-        [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2>)")]] Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2) const;
-        template <typename T1, typename T2, typename T3, typename RESULT = tuple<T1, T2, T3>>
-        [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2,T3>)")]] Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const;
-        [[deprecated ("Since Stroika 2.1b14 use Find ()")]] Iterator<T>                                                                                                FindFirstThat (const function<bool (ArgByValueType<T> item)>& that) const
-        {
-            return Find (that);
-        }
-        [[deprecated ("Since Stroika 2.1b14 use Find ()")]] Iterator<T> FindFirstThat (const Iterator<T>& startAt, const function<bool (ArgByValueType<T> item)>& that) const
-        {
-            return Find (startAt, that);
-        }
-        [[deprecated ("Since Stroika 2.1b14, use size () not GetLength ()")]] size_t GetLength () const
-        {
-            return this->size ();
-        }
 
     protected:
         /**
@@ -1252,17 +1200,6 @@ namespace Stroika::Foundation::Traversal {
      *          your _SafeReadRepAccessor<> use, you should be safe.
      *
      *  @see _SafeReadWriteRepAccessor
-     *
-     *  <<<DOCS_OBSOLETE_AS_OF_2015-12-24>>>
-     *      EXPERIMENTAL -- LGP 2014-02-21 - 2.0a22
-     *
-     *      _SafeReadRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the
-     *      'this' object, and makes a copy incrementing the reference count, and the caller accesses the
-     *      rep through the copied/bumped reference.
-     *
-     *      This assures that if another thread assigns to *this, that has no corruption effect on this
-     *      operation/method running on the prior '*this' object.
-     *  <<</DOCS_OBSOLETE_AS_OF_2015-12-24>>>
      */
     template <typename T>
     template <typename REP_SUB_TYPE>
@@ -1314,9 +1251,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         nonvirtual REP_SUB_TYPE& _GetWriteableRep ();
-
-    public:
-        [[deprecated ("Since Stroika 2.1b14, just directly assign to _fRep")]] nonvirtual void _UpdateRep (const typename _SharedByValueRepType::shared_ptr_type& sp);
 
     private:
         Iterable<T>*  fIterableEnvelope_; // mostly saved for assertions, but also for _UpdateRep- when we lose that - we can ifdef qDebug this field (as we do for read accessor)

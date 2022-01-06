@@ -196,27 +196,6 @@ namespace Stroika::Foundation::Characters::CString {
     template <typename T>
     T String2Int (const wstring& s);
 
-    /**
-     *  Convert the given decimal-format floating point string to an double.
-     *  String2Float will return nan () if no valid parse.
-     *
-     *  @see strtod(), or @see wcstod (). This is a simple wrapper on strtod() / wcstod ()
-     *  except that it returns nan() on invalid data, instead of zero.
-     *
-     *  strtod() /etc are more flexible. This is merely meant to be an often convenient wrapper.
-     *  Use strtod etc directly to see if the string parsed properly.
-     */
-    [[deprecated ("Since Stroika 2.1b14, use Characters::FloatConversion::ToFloat ()")]] double String2Float (const string& s);
-    [[deprecated ("Since Stroika 2.1b14, use Characters::FloatConversion::ToFloat ()")]] double String2Float (const wchar_t* s);
-    [[deprecated ("Since Stroika 2.1b14, use Characters::FloatConversion::ToFloat ()")]] double String2Float (const wstring& s);
-
-    /**
-     *  Note - this routine ignores the current locale settings, and always uses the 'C' locale.
-     *
-     *  @see Characters::Float2String
-     */
-    [[deprecated ("Since Stroika 2.1b14, use Characters::FloatConversion::ToString ()")]] wstring Float2String (double f);
-
     /*
     @CONFIGVAR:     qPlatformSupports_wcscasecmp
     @DESCRIPTION:   <p>Defines if the compiler supports the wcscasecmp function/p>

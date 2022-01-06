@@ -174,13 +174,6 @@ namespace Stroika::Frameworks::SystemPerformance {
          */
         nonvirtual void AddCaptureSet (const CaptureSet& cs);
 
-    public:
-        [[deprecated ("Since Stroika 2.1b12 use pMostRecentMeasurements")]] nonvirtual MeasurementSet GetMostRecentMeasurements () const;
-        [[deprecated ("Since Stroika 2.1b12 use pMeasurementsCallbacks")]] nonvirtual Collection<NewMeasurementsCallbackType> GetMeasurementsCallbacks () const;
-        [[deprecated ("Since Stroika 2.1b12 use pMeasurementsCallbacks")]] nonvirtual void                                    SetMeasurementsCallbacks (const Collection<NewMeasurementsCallbackType>& callbacks);
-        [[deprecated ("Since Stroika 2.1b12 use pCaptureSets")]] nonvirtual Collection<CaptureSet> GetCaptureSets () const;
-        [[deprecated ("Since Stroika 2.1b12 use pCaptureSets")]] nonvirtual void                   SetCaptureSets (const Collection<CaptureSet>& captureSets);
-
     private:
         nonvirtual void ManageRunner_ (bool on);
 

@@ -15,7 +15,6 @@
 #if qHasFeature_ZLib
 #include "Stroika/Foundation/DataExchange/Archive/Zip/Reader.h"
 #endif
-#include "Stroika/Foundation/IO/FileSystem/Directory.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"

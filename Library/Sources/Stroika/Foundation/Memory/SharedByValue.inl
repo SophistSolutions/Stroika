@@ -11,7 +11,6 @@
  */
 
 #include "../Debug/Assertions.h"
-#include "../Debug/Trace.h"
 
 namespace Stroika::Foundation::Memory {
 
@@ -85,29 +84,6 @@ namespace Stroika::Foundation::Memory {
         return *this;
     }
     template <typename T, typename TRAITS>
-    inline const typename SharedByValue<T, TRAITS>::element_type* SharedByValue<T, TRAITS>::get () const noexcept
-    {
-        return fSharedImpl_.get ();
-    }
-    template <typename T, typename TRAITS>
-    template <typename... COPY_ARGS>
-    inline typename SharedByValue<T, TRAITS>::element_type* SharedByValue<T, TRAITS>::get (COPY_ARGS&&... copyArgs)
-    {
-        element_type* ptr = fSharedImpl_.get ();
-        /*
-         * For non-const pointing, we must clone ourselves (if there are
-         * extra referneces). If we are a nullptr pointer, nobody could actually
-         * rereference it anyhow, so don't bother with the Assure1Reference()
-         * in that case.
-         */
-        if (ptr != nullptr) {
-            Assure1Reference (forward<COPY_ARGS> (copyArgs)...);
-            ptr = fSharedImpl_.get ();
-            EnsureNotNull (ptr);
-        }
-        return ptr;
-    }
-    template <typename T, typename TRAITS>
     inline const typename SharedByValue<T, TRAITS>::element_type* SharedByValue<T, TRAITS>::cget () const noexcept
     {
         return fSharedImpl_.get ();
@@ -127,12 +103,9 @@ namespace Stroika::Foundation::Memory {
          * 
          *  Save this way so no race (after Assure1Reference() other remaining ptr could go away.
          */
-        //shared_ptr_type origPtr = fSharedImpl_;
         if (fSharedImpl_ != nullptr) [[LIKELY_ATTR]] {
-            //AssureNOrFewerReferences (forward<COPIER> (copier), 2);
             AssureNOrFewerReferences (forward<COPIER> (copier));
             shared_ptr_type result = fSharedImpl_;
-            //Ensure ((result != origPtr and result.use_count () == 2) or (result == origPtr and result.use_count () == 3));
             Ensure (result.use_count () == 1);
             return result;
         }
@@ -153,11 +126,8 @@ namespace Stroika::Foundation::Memory {
          * 
          *  Save this way so no race (after Assure1Reference() other remaining ptr could go away.
          */
-        //shared_ptr_type origPtr = fSharedImpl_;
         if (fSharedImpl_ != nullptr) [[LIKELY_ATTR]] {
-            //AssureNOrFewerReferences (forward<COPIER> (copier), 2);
             AssureNOrFewerReferences (forward<COPIER> (copier));
-            //Ensure ((fSharedImpl_ != origPtr and fSharedImpl_.use_count () == 1) or (fSharedImpl_ == origPtr and fSharedImpl_.use_count () == 2));
             Ensure (fSharedImpl_.use_count () == 1);
             return fSharedImpl_.get ();
         }
@@ -177,18 +147,6 @@ namespace Stroika::Foundation::Memory {
     inline const typename SharedByValue<T, TRAITS>::element_type& SharedByValue<T, TRAITS>::operator* () const
     {
         const element_type* ptr = cget ();
-        EnsureNotNull (ptr);
-        return *ptr;
-    }
-    template <typename T, typename TRAITS>
-    inline typename SharedByValue<T, TRAITS>::element_type& SharedByValue<T, TRAITS>::operator* ()
-    {
-        /*
-         * For non-const dereferencing, we must clone ourselves (if there are
-         * extra referneces).
-         */
-        AssureNOrFewerReferences ();
-        element_type* ptr = get ();
         EnsureNotNull (ptr);
         return *ptr;
     }
@@ -238,14 +196,6 @@ namespace Stroika::Foundation::Memory {
     inline unsigned int SharedByValue<T, TRAITS>::use_count () const
     {
         return fSharedImpl_.use_count ();
-    }
-    template <typename T, typename TRAITS>
-    template <typename... COPY_ARGS>
-    inline void SharedByValue<T, TRAITS>::Assure1Reference (COPY_ARGS&&... copyArgs)
-    {
-        if (fSharedImpl_.use_count () > 1) {
-            BreakReferences_ ([&] (const T& e) { return fCopier_ (e, forward<COPY_ARGS> (copyArgs)...); });
-        }
     }
     template <typename T, typename TRAITS>
     template <typename COPIER>

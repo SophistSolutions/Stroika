@@ -20,23 +20,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Characters::Concrete;
 
-namespace {
-    class String_BufferedArray_Rep_ : public Concrete::Private::BufferedStringRep::_Rep, public Memory::UseBlockAllocationIfAppropriate<String_BufferedArray_Rep_> {
-    private:
-        using inherited = Concrete::Private::BufferedStringRep::_Rep;
-
-    public:
-        String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
-            : inherited{start, end}
-        {
-        }
-        virtual _IterableRepSharedPtr Clone () const override
-        {
-            return Traversal::Iterable<Character>::MakeSmartPtr<String_BufferedArray_Rep_> (_fStart, _fEnd);
-        }
-    };
-}
-
 class String_ExternalMemoryOwnership_ApplicationLifetime::MyRep_ : public String::_IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
 private:
     using inherited = String::_IRep;
@@ -50,16 +33,14 @@ public:
     }
     virtual _IterableRepSharedPtr Clone () const override
     {
-        /*
-         * Subtle point. If we are making a clone, its cuz caller wants to change the buffer, and they cannot cuz its readonly, so
-         * make a rep that is modifyable
-         */
-        return Traversal::Iterable<Character>::MakeSmartPtr<String_BufferedArray_Rep_> (_fStart, _fEnd);
+        AssertNotReached (); // Since String reps now immutable, this should never be called
+        return nullptr;
     }
     virtual const wchar_t* c_str_peek () const noexcept override
     {
         // This class ALWAYS constructed with String_ExternalMemoryOwnership_ApplicationLifetime and ALWAYS with NUL-terminated string
-        Assert (_fStart + ::wcslen (_fStart) == _fEnd);
+        // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Assert (_fStart + ::wcslen (_fStart) == _fEnd);
+        Assert (*_fEnd == '\0' and _fStart + ::wcslen (_fStart) <= _fEnd);
         return _fStart;
     }
 };
@@ -70,8 +51,8 @@ public:
  ********************************************************************************
  */
 String_ExternalMemoryOwnership_ApplicationLifetime::String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t* start, const wchar_t* end)
-    : inherited{_SharedPtrIRep (new MyRep_ (start, end))}
+    : inherited{MakeSmartPtr<MyRep_> (start, end)}
 {
-    Require (*end == '\0');
-    Require (end == start + ::wcslen (start)); // require standard C-string
+    // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
+    Require (*end == '\0' and start + ::wcslen (start) <= end);
 }

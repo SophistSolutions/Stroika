@@ -20,7 +20,7 @@
 namespace Stroika::Foundation::Containers::Concrete {
 
     /**
-     *  \brief SortedCollection_stdmultiset<T> is an stdset-based concrete implementation of the SortedCollection<T> container pattern.
+     *  \brief SortedCollection_stdmultiset<T> is an stdmultiset-based concrete implementation of the SortedCollection<T> container pattern.
      *
      * \note Performance Notes:
      *      o   size () is O(log N)
@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         template <typename INORDER_COMPARER>
-        using STDSET = multiset<value_type, INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<value_type, sizeof (value_type) <= 1024>>;
+        using STDMULTISET = multiset<value_type, INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<value_type, sizeof (value_type) <= 1024>>;
 
     public:
         /**

@@ -30,9 +30,7 @@
  *      @todo   Could optimize the Format/Parse calls for case without locale to just hardwire implementaton
  *              using sprintf/scanf (as we had before 2.1b10); only performance optimization and unclear it would help
  *
- *      @todo   Complete removal of deprecated 'empty' and no-arg constructor
- *
- *              Consider losing eEmptyDayOfMonth and eEmptyMonthOfYear and using optional instead
+ *      @todo   Consider losing eEmptyDayOfMonth and eEmptyMonthOfYear and using optional instead
  *
  *              Several comments and names still use the word empty
  *
@@ -262,6 +260,8 @@ namespace Stroika::Foundation::Time {
          *        so equivilent to %Y-%m-%d
          *  \note this is LOCALE-INDEPENDENT
          *  \see kMonthDayYearFormat
+         * 
+         *  \note also used for XML
          */
         static constexpr wstring_view kISO8601Format = L"%Y-%m-%d"sv;
 
@@ -372,46 +372,33 @@ namespace Stroika::Foundation::Time {
         nonvirtual void mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const;
 
     public:
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         /**
          *  \brief  DisplayFormat is a representation which a date can be transformed in and out of
          *
-         *  eCurrentLocale
-         *      Note this is the current C++ locale, which may not be the same as the platform default locale.
-         *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
-         *
          *  eCurrentLocale_WithZerosStripped
-         *      eCurrentLocale_WithZerosStripped is eCurrentLocale, but with many cases of leading zero's,
+         *      eCurrentLocale_WithZerosStripped is locale{}, but with many cases of leading zero's,
          *      stripped, so for example, 03/05/2013 becomes 3/5/2013. This only affects the day/month, and not the
          *      year.
          *
-         *  \note Before Stroika v2.1d11, we supported eXML, but this is defined to be the same as eISO8601, except for supporting
-         *        timezones (which we don't support in this class because it wouldn't make sense).
-         *
          *  \note   Configuration::DefaultNames<> supported
          */
-        enum class PrintFormat : uint8_t {
-            eCurrentLocale [[deprecated ("Since Stroika 2.1b10 - use locale{}")]],
-            eISO8601 [[deprecated ("Since Stroika 2.1b10 - use kISO8601Format")]],
-            eJavascript [[deprecated ("Since Stroika 2.1b10 - use kMonthDayYearFormat")]],
+        enum class NonStandardPrintFormat : uint8_t {
             eCurrentLocale_WithZerosStripped,
 
             eDEFAULT = eCurrentLocale_WithZerosStripped,
 
-            Stroika_Define_Enum_Bounds (eCurrentLocale, eCurrentLocale_WithZerosStripped)
+            Stroika_Define_Enum_Bounds (eCurrentLocale_WithZerosStripped, eCurrentLocale_WithZerosStripped)
         };
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
+
+    public:
+        static constexpr NonStandardPrintFormat eCurrentLocale_WithZerosStripped = NonStandardPrintFormat::eCurrentLocale_WithZerosStripped;
 
     public:
         /**
          *  For formatPattern, see http://en.cppreference.com/w/cpp/locale/time_put/put
          *  If only formatPattern specified, and no locale, use default (global) locale.
          */
-        nonvirtual String Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
+        nonvirtual String Format (NonStandardPrintFormat pf = NonStandardPrintFormat::eDEFAULT) const;
         nonvirtual String Format (const locale& l) const;
         nonvirtual String Format (const locale& l, const String& formatPattern) const;
         nonvirtual String Format (const String& formatPattern) const;
@@ -484,25 +471,6 @@ namespace Stroika::Foundation::Time {
          */
         template <typename T>
         nonvirtual T As () const;
-
-    public:
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
-        enum class ParseFormat : uint8_t {
-            eCurrentLocale [[deprecated ("Since Stroika 2.1b10 - use locale{}")]],
-            eISO8601 [[deprecated ("Since Stroika 2.1b10 - use kISO8601Format")]],
-            eJavascript [[deprecated ("Since Stroika 2.1b10 - use kMonthDayYearFormat")]],
-
-            Stroika_Define_Enum_Bounds (eCurrentLocale, eJavascript)
-        };
-
-        [[deprecated ("Since Stroika 2.1b10")]] static Date Parse (const String& rep, ParseFormat pf);
-        DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr Date min ();
-        [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr Date max ();
 
     private:
         constexpr static JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year);

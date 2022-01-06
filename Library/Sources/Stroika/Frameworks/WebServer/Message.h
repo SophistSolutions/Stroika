@@ -70,7 +70,8 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          *  Returns a read-only reference (so not assignable) to a Request& (so CAN modify the request).
-         *  This should very rarely be used (just perhaps when constructing the original message)
+         *  This should very rarely be used (just perhaps when constructing the original message).
+         *  Generally use request instead.
          */
         Common::ReadOnlyProperty<Request&> rwRequest;
 
@@ -92,25 +93,6 @@ namespace Stroika::Frameworks::WebServer {
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
-
-    public:
-        [[deprecated ("Since Stroika v2.1b10, just use request().GetBody()")]] Memory::BLOB                   GetRequestBody ();
-        [[deprecated ("Since Stroika v2.1b10, just use response()")]] const Response*                         PeekResponse () const;
-        [[deprecated ("Since Stroika v2.1b10, just use rwResponse()")]] Response*                             PeekResponse ();
-        [[deprecated ("Since Stroika v2.1b10, just use request()")]] const Request*                           PeekRequest () const;
-        [[deprecated ("Since Stroika v2.1b10, just use request()")]] Request*                                 PeekRequest ();
-        [[deprecated ("Since Stroika v2.1b10, just use request()")]] const Request&                           GetRequestReference () const;
-        [[deprecated ("Since Stroika v2.1b10, just use rwRequest()")]] Request&                               GetRequestReference ();
-        [[deprecated ("Since Stroika v2.1b10, just use peerAddress()")]] optional<IO::Network::SocketAddress> GetPeerAddress () const;
-        [[deprecated ("Since Stroika v2.1b10, just use request().GetURL")]] URI                               GetRequestURL () const;
-        [[deprecated ("Since Stroika v2.1b10, just use request().GetHTTPMethod")]] String                     GetRequestHTTPMethod () const;
-        [[deprecated ("Since Stroika v2.1b10, just use response().SetContentType")]] void                     SetResponseContentType (const InternetMediaType& contentType);
-        template <typename... ARGS_TYPE>
-        [[deprecated ("Since Stroika v2.1b10, just use response().write")]] void write (ARGS_TYPE&&... args);
-        template <typename... ARGS_TYPE>
-        [[deprecated ("Since Stroika v2.1b10, just use response().printf")]] void printf (ARGS_TYPE&&... args);
-        template <typename... ARGS_TYPE>
-        [[deprecated ("Since Stroika v2.1b10, just use response().writeln")]] void writeln (ARGS_TYPE&&... args);
 
     private:
         optional<IO::Network::SocketAddress> fPeerAddress_;

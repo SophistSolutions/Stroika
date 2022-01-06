@@ -14,19 +14,14 @@ endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
+include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
+
 
 
 VERSION=7.80.0
 #VERSION=7.79.1
 #VERSION=7.78.0
 #VERSION=7.77.0
-#VERSION=7.76.1
-#VERSION=7.75.0
-#VERSION=7.74.0
-ifeq ($(shell uname), Darwin)
-# Undefined symbols for architecture x86_64: "_SCDynamicStoreCopyProxies", referenced from:  _Curl_resolv in libcurl.a(libcurl_la-hostip.o)
-VERSION=7.76.1
-endif
 BASENAME=curl-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
@@ -113,12 +108,13 @@ ENVIRONMENT_CONFIGURE_PREFIX=
 ifneq (,$(PKG_CONFIG_PATH))
 ENVIRONMENT_CONFIGURE_PREFIX=
 ENVIRONMENT_CONFIGURE_PREFIX+= export PKG_CONFIG_PATH=$(PKG_CONFIG_PATH);
+ENVIRONMENT_CONFIGURE_PREFIX+= export ARCH=$(ARCH);
 ENVIRONMENT_CONFIGURE_PREFIX+= export CC=$(CC);
 ENVIRONMENT_CONFIGURE_PREFIX+= export CXX=$(CXX);
 ENVIRONMENT_CONFIGURE_PREFIX+= export AR=$(AR);
 ENVIRONMENT_CONFIGURE_PREFIX+= export RANLIB=$(RANLIB);
-#ENVIRONMENT_CONFIGURE_PREFIX+= export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))";   ### not sure why this quote_quote call not working (produces empty string on m1 build) - but seems to work the other way so leave for now...LGP 2021-08-19
-ENVIRONMENT_CONFIGURE_PREFIX+= export CFLAGS="$(CFLAGS)";
+ENVIRONMENT_CONFIGURE_PREFIX+= export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))";
+ENVIRONMENT_CONFIGURE_PREFIX+= export CPPFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CPPFLAGS))";
 endif
 
 
@@ -135,15 +131,18 @@ endif
 LIBCURL_CONFIGURE =
 LIBCURL_CONFIGURE += $(CONFIGURE_ARGS)
 LIBCURL_CONFIGURE += --enable-static
-ifeq ($(qFeatureFlag_OpenSSL), use)
+ifeq ($(qFeatureFlag_OpenSSL), no)
+LIBCURL_CONFIGURE += --without-ssl
+else
 #finds right one through PKG_CONFIG_PATH
 LIBCURL_CONFIGURE += --with-ssl
 endif
-ifeq ($(qFeatureFlag_OpenSSL), use-system)
-LIBCURL_CONFIGURE += --with-ssl
-endif
-ifeq ($(qFeatureFlag_OpenSSL), no)
-LIBCURL_CONFIGURE += --without-ssl
+ifeq ($(qFeatureFlag_ZLib), no)
+LIBCURL_CONFIGURE += --without-zlib
+else
+#LIBCURL_CONFIGURE += --with-zlib=$(PER_CONFIGURATION_BUILDS_DIR)
+#finds right one through PKG_CONFIG_PATH
+LIBCURL_CONFIGURE += --with-zlib
 endif
 LIBCURL_CONFIGURE += --disable-shared
 LIBCURL_CONFIGURE += --without-cyassl
@@ -164,8 +163,6 @@ LIBCURL_CONFIGURE += --disable-pop3
 LIBCURL_CONFIGURE += --disable-imap
 ## really want ares but hindrance for static linking for now
 LIBCURL_CONFIGURE += --disable-ares
-## really want zlib but until we can do relative build/static link... leave out..
-LIBCURL_CONFIGURE += --without-zlib
 ifeq ($(ENABLE_ASSERTIONS), 1)
 LIBCURL_CONFIGURE += --enable-debug
 LIBCURL_CONFIGURE += --disable-optimize
@@ -175,6 +172,36 @@ LIBCURL_CONFIGURE += --disable-debug
 LIBCURL_CONFIGURE += --enable-optimize
 LIBCURL_CONFIGURE += --disable-curldebug
 endif
+
+ifeq ($(shell uname), Darwin)
+# https://stroika.atlassian.net/browse/STK-759
+### On M1 Mac (even if running under rosetta) - really just one mac tested - 
+### Get error:
+#		undef: _BrotliDecoderDestroyInstance
+#		undef: _BrotliDecoderVersion
+#		undef: _BrotliDecoderDecompressStream
+#		undef: _BrotliDecoderGetErrorCode
+#		undef: _BrotliDecoderCreateInstance
+#		Undefined symbols for architecture x86_64:
+#		"_BrotliDecoderDestroyInstance", referenced from:
+#			_brotli_unencode_write in lto.o
+#			_brotli_close_writer in lto.o
+#		"_BrotliDecoderVersion", referenced from:
+#			_curl_version in lto.o
+#			_curl_version_info in lto.o
+#		"_BrotliDecoderDecompressStream", referenced from:
+#			_brotli_unencode_write in lto.o
+#		"_BrotliDecoderGetErrorCode", referenced from:
+#			_brotli_unencode_write in lto.o
+#		"_BrotliDecoderCreateInstance", referenced from:
+#			_brotli_init_writer in lto.o
+#		ld: symbol(s) not found for architecture x86_64
+#
+ifeq ($(ARCH), x86_64)
+LIBCURL_CONFIGURE += --without-brotli
+endif
+endif
+
 #seems illrelevant for us one way or the other, but breaks building for centos5.8 - https://stroika.atlassian.net/browse/STK-419
 LIBCURL_CONFIGURE += --without-zsh-functions-dir
 
@@ -201,6 +228,12 @@ LIBCURL_CONFIGURE +=  LIBS='-ldl'
 LIBCURL_CONFIGURE +=  LIBS='-ldl -lpthread'
 endif
 
+ifeq ($(shell uname), Darwin)
+# https://stroika.atlassian.net/browse/STK-759
+# Undefined symbols for architecture x86_64: "_SCDynamicStoreCopyProxies", referenced from:  _Curl_resolv in libcurl.a(libcurl_la-hostip.o)
+LIBCURL_CONFIGURE +=  LIBS='-framework Foundation -framework SystemConfiguration'
+endif
+
 
 
 	
@@ -212,14 +245,13 @@ endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --no-print-directory check_prerequisites_
 	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl ${VERSION} - Build configure tools (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-CONF-TOOLS-OUT.txt) ... "`
-	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);./buildconf > BUILD-CONF-TOOLS-OUT.txt 2>&1
-	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl ${VERSION} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME}/CONFIGURE-OUT.txt) ... "`
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_);autoreconf -fi > BUILD-CONF-TOOLS-OUT.txt 2>&1
+	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl ${VERSION} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME}CONFIGURE-OUT.txt) ... "`
 	@$(ECHO) "$(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE-OUT.txt
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ($(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE-OUT.txt
-	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl $(VERSION) - Compiling (see ${OUTPUT_WORKDIR_PRETTYNAME}/BUILD-OUT.txt) ... "`
+	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl $(VERSION) - Compiling (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-OUT.txt) ... "`
 	@echo $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory install CC="$(CC)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt
 	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory install CC="$(CC)" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
-
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "curl ${VERSION} - Build CURRENT into $(BUILDS_DIR) ... "
@@ -231,10 +263,12 @@ endif
 
 
 check_prerequisites_:
+ifeq (Unix,$(ProjectPlatformSubdir))
 	@type automake > /dev/null 2>&1 || (../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && ../../ScriptsLib/GetMessageForMissingTool automake && exit 1)
 	@type autoconf > /dev/null 2>&1 || (../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && ../../ScriptsLib/GetMessageForMissingTool autoconf && exit 1)
+	@type autoreconf > /dev/null 2>&1 || (../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && ../../ScriptsLib/GetMessageForMissingTool autoreconf && exit 1)
 	@type libtool > /dev/null 2>&1 || (../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools... " && ../../ScriptsLib/GetMessageForMissingTool libtool && exit 1)
-
+endif
 
 
 check:

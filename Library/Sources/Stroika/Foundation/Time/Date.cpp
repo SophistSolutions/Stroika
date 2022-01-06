@@ -72,66 +72,6 @@ const Traversal::Iterable<String> Date::kDefaultParseFormats{
 };
 #endif
 
-Date Date::Parse (const String& rep, ParseFormat pf)
-{
-    // NB: if rep.empty() this will always throw, but handled in each case below
-    switch (pf) {
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
-        case ParseFormat::eCurrentLocale: {
-            return Parse (rep, locale{});
-        } break;
-        case ParseFormat::eISO8601: {
-            /*
-             * We intentionally ignore TZ here - if any - because there is no notion of TZ in Date module - just DateTime...
-             */
-            int year  = 0;
-            int month = 0;
-            int day   = 0;
-            DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
-            int nItems = ::swscanf (rep.c_str (), L"%d-%d-%d", &year, &month, &day);
-            DISABLE_COMPILER_MSC_WARNING_END (4996)
-            if (nItems == 3) {
-                Date result = Date{Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year))};
-                Ensure (result == Parse (rep, kISO8601Format));
-                return result;
-            }
-            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
-        } break;
-        case ParseFormat::eJavascript: {
-#if qDebug
-            auto legacy = [&] () -> optional<Date> {
-                int year  = 0;
-                int month = 0;
-                int day   = 0;
-                DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
-                int nItems = ::swscanf (rep.c_str (), L"%d/%d/%d", &month, &day, &year);
-                DISABLE_COMPILER_MSC_WARNING_END (4996)
-                if (nItems == 3) {
-                    return Date{Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year))};
-                }
-                return nullopt;
-            };
-#endif
-            try {
-                auto r = Parse (rep, kMonthDayYearFormat);
-                Assert (legacy () == r);
-                return r;
-            }
-            catch (...) {
-                Assert (not legacy ().has_value ());
-                Execution::ReThrow ();
-            }
-        } break;
-            DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    }
-    AssertNotReached ();
-    Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
-}
-
 Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo)
 {
     if (rep.empty ()) {
@@ -197,19 +137,10 @@ optional<Date> Date::ParseQuietly_ (const wstring& rep, const time_get<wchar_t>&
     }
 }
 
-String Date::Format (PrintFormat pf) const
+String Date::Format (NonStandardPrintFormat pf) const
 {
     switch (pf) {
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
-        case PrintFormat::eCurrentLocale: {
-            return Format (locale{});
-        } break;
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
-        case PrintFormat::eCurrentLocale_WithZerosStripped: {
+        case eCurrentLocale_WithZerosStripped: {
             String tmp = Format (locale{});
             /*
              *  This logic probably needs to be locale-specific, but this is good enuf for now...
@@ -244,49 +175,6 @@ String Date::Format (PrintFormat pf) const
             }
             return tmp;
         }
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
-        case PrintFormat::eISO8601: {
-            wchar_t     buf[20]; // really only  11 needed (so long as no negatives - which I don't think is allowed)
-            MonthOfYear m = MonthOfYear::eEmptyMonthOfYear;
-            DayOfMonth  d = DayOfMonth::eEmptyDayOfMonth;
-            Year        y = Year::eEmptyYear;
-            mdy (&m, &d, &y);
-            Verify (::swprintf (buf, NEltsOf (buf), L"%04d-%02d-%02d", y, m, d) == 10);
-            Ensure (buf == Format (locale::classic (), kISO8601Format));
-            return buf;
-        } break;
-        case PrintFormat::eJavascript: {
-#if qDebug
-            auto legacy = [&] () -> String {
-                /*
-                 *  From
-                 *      http://msdn.microsoft.com/library/default.asp?url=/library/en-us/script56/html/ed737e50-6398-4462-8779-2af3c03f8325.asp
-                 *
-                 *          parse Method (JScript 5.6)
-                 *          ...
-                 *          The following rules govern what the parse method can successfully parse:
-                 *          Short dates can use either a "/" or "-" date separator, but must follow the month/day/year format, for example "7/20/96".
-                 *
-                 *  @see    explicit Date (const String& rep, Javascript);
-                 */
-                wchar_t     buf[20]; // really only  11 needed (so long as no negatives - which I don't think is allowed)
-                MonthOfYear m = MonthOfYear::eEmptyMonthOfYear;
-                DayOfMonth  d = DayOfMonth::eEmptyDayOfMonth;
-                Year        y = Year::eEmptyYear;
-                mdy (&m, &d, &y);
-                Verify (::swprintf (buf, NEltsOf (buf), L"%02d/%02d/%04d", m, d, y) == 10);
-                return buf;
-            };
-#endif
-            auto r = Format (kMonthDayYearFormat);
-            Assert (r == legacy ());
-            return r;
-        } break;
-            DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     }
     AssertNotReached ();
     return String{};

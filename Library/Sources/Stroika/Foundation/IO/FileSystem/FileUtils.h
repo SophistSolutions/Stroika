@@ -22,7 +22,6 @@
 
 #include "../AccessMode.h"
 #include "Common.h"
-#include "Directory.h"
 
 /**
  * TODO:
@@ -36,24 +35,6 @@ namespace Stroika::Foundation::IO::FileSystem {
     String FileSizeToDisplayString (FileOffset_t bytes);
 
     void SetFileAccessWideOpened (const filesystem::path& filePathName);
-
-    /*
-     * Possibly useful, even after using std::filesystem, as I dont think supported in std::filesystem.
-     *
-        * CreateDirectory makes sure the directory with the given name exists on the filesystem. If it already exists, this is NOT an error.
-        * If it already exists, but is a FILE (anything but a directory) - then it is an error).
-        *
-        * If createParentComponentsIfNeeded - the function braks the directory paoth into parts, and recursively applies itself to each segment from
-        * the root down.
-        *
-        * The net effect - this makes sure the given DIRECTORY exists or raises an exception.
-        *
-        *          TODO:
-        *              (o) We need an overload which takes the directory permissions as argument.
-        */
-    [[deprecated ("Since Stroika 2.1b2, use create_directories() or create_directory()")]] void CreateDirectory (const filesystem::path& directoryPath, bool createParentComponentsIfNeeded = true);
-
-    [[deprecated ("Since Stroika 2.1b2, use create_directories() or create_directory() with argument filePath.parent_path ()")]] void CreateDirectoryForFile (const filesystem::path& filePath);
 
     /**
      * Possibly useful, even after using std::filesystem, as I dont think supported in std::filesystem.

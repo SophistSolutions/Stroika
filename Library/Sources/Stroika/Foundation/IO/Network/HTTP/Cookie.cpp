@@ -224,7 +224,7 @@ String CookieList::EncodeForCookieHeader () const
 CookieList CookieList::Parse (const String& cookieValueArg)
 {
     Collection<Cookie> results;
-    for (auto keyValuePair : cookieValueArg.Tokenize ({';'})) {
+    for (const auto& keyValuePair : cookieValueArg.Tokenize ({';'})) {
         results += Cookie::Parse (keyValuePair);
     }
     return results;

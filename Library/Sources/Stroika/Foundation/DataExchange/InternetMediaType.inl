@@ -87,28 +87,6 @@ namespace Stroika::Foundation::DataExchange {
     {
         return fParameters_;
     }
-    inline bool InternetMediaType::Match (const InternetMediaType& rhs) const
-    {
-        if (GetType<AtomType> () != rhs.GetType<AtomType> ()) {
-            return false;
-        }
-        if (GetSubType<AtomType> () != rhs.GetSubType<AtomType> ()) {
-            return false;
-        }
-        return true;
-    }
-    inline bool InternetMediaType::Match (const AtomType& rhsType) const
-    {
-        return (GetType<AtomType> () == rhsType);
-    }
-    inline bool InternetMediaType::IsA (const InternetMediaType& moreGeneralType) const
-    {
-        if (GetType<AtomType> () != moreGeneralType.GetType<AtomType> ()) {
-            return false;
-        }
-        // compare just the subtypes, for prefix equals
-        return GetSubType<String> ().StartsWith (moreGeneralType.GetSubType<String> (), Characters::CompareOptions::eCaseInsensitive);
-    }
     template <>
     inline wstring InternetMediaType::As () const
     {
@@ -124,22 +102,6 @@ namespace Stroika::Foundation::DataExchange {
         return THREEWAYCOMPARE_ (rhs) == 0;
     }
 #endif
-
-    /*
-     ********************************************************************************
-     ********************************** TypeMatchesAny ******************************
-     ********************************************************************************
-     */
-    template <typename CONTAINER>
-    bool TypeMatchesAny (const CONTAINER& types, const InternetMediaType& type2SeeIfMatchesAny)
-    {
-        for (auto i = types.begin (); i != types.end (); ++i) {
-            if (i->IsA (type2SeeIfMatchesAny)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
 #if __cpp_impl_three_way_comparison < 201907
     /*

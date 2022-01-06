@@ -49,22 +49,6 @@ namespace Stroika::Foundation::Execution {
     filesystem::path GetEXEPath ();
 
     /**
-     *  @see GetEXEDir
-     *
-     *  The variant returning TString is useful especially when you need to avoid other Stroika
-     *  dependencies, such as low level coding and avoiding deadly embraces with tracelog code.
-     */
-    [[deprecated ("Since Stroika 2.1b1, use GetEXEDir cuz uses std::filesystem::path not String")]] SDKString GetEXEDirT ();
-
-    /**
-     *  @see GetEXEPath
-     *
-     *  The variant returning SDKString is useful especially when you need to avoid other Stroika
-     *  dependencies, such as low level coding and avoiding deadly embraces with tracelog code.
-     */
-    [[deprecated ("Since Stroika 2.1b1, use GetEXEPath cuz uses std::filesystem::path not String")]] SDKString GetEXEPathT ();
-
-    /**
      *  Return the full path to the given process
      */
     filesystem::path GetEXEPath (pid_t processID);

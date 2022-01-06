@@ -180,38 +180,6 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename TRAITS>
     DiscreteRange<T, TRAITS> operator^ (const DiscreteRange<T, TRAITS>& lhs, const DiscreteRange<T, TRAITS>& rhs);
 
-    namespace RangeTraits {
-        // ---------------- DEPRECATED -----------------
-        template <typename T>
-        using DefaultDiscreteRangeTraits [[deprecated ("Since Stroika 2.1b8 use Default")]] = conditional_t<
-            is_enum_v<T>, Default_Enum<T>,
-            conditional_t<
-                is_integral_v<T>, Default_Integral<T>,
-                Default<T>>>;
-        template <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral")]] ExplicitDiscreteRangeTraits : Explicit<T,
-                                                                                                                  ExplicitOpenness<Openness::eClosed, Openness::eClosed>,
-                                                                                                                  ExplicitBounds<T, MIN, MAX>,
-                                                                                                                  ExplicitDifferenceTypes<SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>
-        {
-            using RangeTraitsType = Explicit<T,
-                                             ExplicitOpenness<Openness::eClosed, Openness::eClosed>,
-                                             ExplicitBounds<T, MIN, MAX>,
-                                             ExplicitDifferenceTypes<SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>;
-        };
-        template <typename T>
-        struct [[deprecated ("Since Stroika 2.1b8 use Default_Enum")]] DefaultDiscreteRangeTraits_Enum : Default_Enum<T>
-        {
-            using RangeTraitsType = Default_Enum<T>;
-        };
-        template <typename T>
-        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral")]] DefaultDiscreteRangeTraits_Integral : Default_Integral<T>
-        {
-            using RangeTraitsType = Default_Integral<T>;
-        };
-
-    }
-
 }
 
 /*

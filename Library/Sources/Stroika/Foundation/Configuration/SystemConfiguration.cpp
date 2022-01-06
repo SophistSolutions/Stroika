@@ -219,7 +219,7 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
             using Characters::String2Int;
             using IO::FileSystem::FileInputStream;
             using Streams::TextReader;
-            for (String line : TextReader::New (FileInputStream::New (kProcUptimeFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
+            for (const String& line : TextReader::New (FileInputStream::New (kProcUptimeFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
                 Sequence<String> t = line.Tokenize ();
                 if (t.size () >= 2) {
                     result.fBootedAt = DateTime::Now ().AddSeconds (-Characters::FloatConversion::ToFloat<double> (t[0]));
@@ -364,7 +364,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         optional<unsigned int> currentProcessorID;
         optional<String>       currentModelName;
         optional<unsigned int> currentSocketID;
-        for (String line : TextReader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
+        for (const String& line : TextReader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
 #endif

@@ -50,7 +50,8 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T>
     inline Collection<T> Collection_Factory<T>::Default_ ()
     {
-        if constexpr (Configuration::has_lt_v<T>) {
+        constexpr bool kUse_stdmultiset_IfPossible_ = false;
+        if constexpr (Configuration::has_lt_v<T> and kUse_stdmultiset_IfPossible_) {
             return Concrete::Collection_stdmultiset<T>{};
         }
         else {

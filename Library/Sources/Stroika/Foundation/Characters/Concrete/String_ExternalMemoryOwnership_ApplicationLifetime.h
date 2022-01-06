@@ -14,9 +14,6 @@
  *  \file
  *
  * TODO:
- *      @todo   Consider if param to String_ExternalMemoryOwnership_ApplicationLifetime should use
- *              constexpr? Would that add to safety?
- *
  *      @todo   Consider adding platform-specific code to detect if the argument is in fact read-only memory
  *              or stack memory, with debug asserts - as a debugging aid to help prevent accidental mis-use.
  */
@@ -56,6 +53,8 @@ namespace Stroika::Foundation::Characters::Concrete {
      * maybe slightly more efficent, but all are equally safe.
      *
      *  \em WARNING - BE VERY CAREFUL - be sure arguments have application lifetime.
+     * 
+     *  \req argument string must be nul-terminated (but CAN contain additional embedded nul characters)
      */
     class String_ExternalMemoryOwnership_ApplicationLifetime : public String {
     private:

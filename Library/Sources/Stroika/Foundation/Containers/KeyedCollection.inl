@@ -299,7 +299,7 @@ namespace Stroika::Foundation::Containers {
     inline size_t KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveAll (const ITERABLE_OF_ADDABLE& items)
     {
         size_t cnt{};
-        for (auto i : items) {
+        for (const auto& i : items) {
             Remove (i.first);
             ++cnt;
         }
@@ -476,7 +476,7 @@ namespace Stroika::Foundation::Containers {
          * 
          *  Leverage fact we know by this point the two iterables have the same length.
          */
-        for (auto ri : rhs) {
+        for (const auto& ri : rhs) {
             if (not lhs.Contains (ri)) {
                 return false;
             }

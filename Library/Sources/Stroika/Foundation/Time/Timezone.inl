@@ -33,28 +33,16 @@ namespace Stroika::Foundation::Time {
 #else
     inline constexpr Timezone Timezone::kUTC{TZ_::eUTC};
 #endif
-    inline constexpr Timezone Timezone::UTC ()
-    {
-        return Timezone{TZ_::eUTC};
-    }
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     constexpr Timezone Timezone::kLocalTime{TZ_::eLocalTime};
 #else
     inline constexpr Timezone Timezone::kLocalTime{TZ_::eLocalTime};
 #endif
-    inline constexpr Timezone Timezone::LocalTime ()
-    {
-        return Timezone{TZ_::eLocalTime};
-    }
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     constexpr optional<Timezone> Timezone::kUnknown{nullopt};
 #else
     inline constexpr optional<Timezone> Timezone::kUnknown{nullopt};
 #endif
-    inline constexpr optional<Timezone> Timezone::Unknown ()
-    {
-        return {};
-    }
     inline make_signed_t<time_t> Timezone::GetBiasFromUTC (const Date& date, const TimeOfDay& tod) const
     {
         // Cast to avoid warning, but no chance of overflow cuz GetBiasInMinutesFromUTC range restricted and time_t at least 4 bytes

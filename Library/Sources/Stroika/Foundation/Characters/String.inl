@@ -21,6 +21,11 @@ namespace Stroika::Foundation::Characters {
      ********************************* String::_IRep ********************************
      ********************************************************************************
      */
+    inline String::_IRep::_IRep (const pair<const wchar_t*, const wchar_t*>& span)
+        : _fStart{span.first}
+        , _fEnd{span.second}
+    {
+    }
     inline String::_IRep::_IRep (const wchar_t* start, const wchar_t* end)
         : _fStart{start}
         , _fEnd{end}
@@ -32,14 +37,6 @@ namespace Stroika::Foundation::Characters {
         Require (index < size ());
         return _fStart[index];
     }
-#if 0
-    inline const Character* String::_IRep::Peek () const
-    {
-        Assert (_fStart <= _fEnd);
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        return reinterpret_cast<const Character*> (_fStart);
-    }
-#endif
     inline pair<const Character*, const Character*> String::_IRep::GetData () const
     {
         Assert (_fStart <= _fEnd);
@@ -60,13 +57,6 @@ namespace Stroika::Foundation::Characters {
         size_t nChars = _GetLength ();
         (void)::memcpy (bufFrom, _Peek (), nChars * sizeof (Character));
     }
-    inline void String::_IRep::_SetData (const wchar_t* start, const wchar_t* end)
-    {
-        Require (_fStart <= _fEnd);
-        Require (*end == '\0');
-        _fStart = start;
-        _fEnd   = end;
-    }
     inline size_t String::_IRep::_GetLength () const
     {
         Assert (_fStart <= _fEnd);
@@ -84,6 +74,10 @@ namespace Stroika::Foundation::Characters {
         Assert (_fStart <= _fEnd);
         static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
         return (const Character*)_fStart;
+    }
+    inline auto String::_IRep::Find_equal_to (const Configuration::ArgByValueType<value_type>& v) const -> Traversal::Iterator<value_type>
+    {
+        return this->_Find_equal_to_default_implementation (v);
     }
 
     /*

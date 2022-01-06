@@ -229,9 +229,6 @@ namespace Stroika::Foundation::Cryptography::Digest {
         Digester (const Digester& src) = delete;
 
     public:
-        [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const Streams::InputStream<std::byte>::Ptr& from);
-        [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const std::byte* from, const std::byte* to);
-        [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const BLOB& from);
         /**
          *  The reason we support the overload BLOB, is that this is the most convenient and univeral argument
          *  to a Digester.

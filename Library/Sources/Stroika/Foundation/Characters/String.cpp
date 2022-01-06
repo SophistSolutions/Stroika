@@ -48,52 +48,24 @@ namespace {
 
     public:
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
-            : inherited{start, end}
+            : inherited{make_pair (start, end)}
         {
         }
-        String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end, size_t reserveExtraCharacters)
-            : inherited{start, end, reserveExtraCharacters}
+        String_BufferedArray_Rep_ (const TextSpan& t1, const TextSpan& t2)
+            : inherited{t1, t2}
+        {
+        }
+        String_BufferedArray_Rep_ (const TextSpan& t1, const TextSpan& t2, const TextSpan& t3)
+            : inherited{t1, t2, t3}
         {
         }
         virtual _IterableRepSharedPtr Clone () const override
         {
-            AssertNotReached (); // Since Strings now immutable, this should never be called
-            return String::MakeSmartPtr<String_BufferedArray_Rep_> (_fStart, _fEnd);
+            AssertNotReached (); // Since String reps now immutable, this should never be called
+            return nullptr;
         }
     };
 }
-
-#if 0
-//cannot do (except for special case at end) as of Stroika v2.0a148 - because we enforce that strings pre-nul-terminated for thread safety reasons (so cannot
-// do in const c_str() method - and have unsynchonzied).
-namespace   {
-    struct String_Substring_ : public String {
-        class   MyRep_ : public _IRep , public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
-            using inherited = _IRep;
-        public:
-            MyRep_ (const _SafeReadRepAccessor& savedSP, const wchar_t* start, const wchar_t* end)
-                : inherited{start, end}
-                , fSaved_{savedSP}
-            {
-                Assert (reinterpret_cast<const wchar_t*> (fSaved_._ConstGetRep ().Peek ()) <= _fStart and _fStart <= _fEnd);
-            }
-            MyRep_ (const MyRep_& from)
-                : inherited {from._fStart, from._fEnd}
-                , fSaved_ {from.fSaved_}
-            {
-                Assert (reinterpret_cast<const wchar_t*> (fSaved_._ConstGetRep ().Peek ()) <= _fStart and _fStart <= _fEnd);
-            }
-            virtual  _IterableRepSharedPtr   Clone () const override
-            {
-                AssertNotReached ();    // Since Strings now immutable, this should never be called
-                return String_Substring_::MakeSmartPtr<MyRep_> (*this);
-            }
-        private:
-            _SafeReadRepAccessor  fSaved_;
-        };
-    };
-}
-#endif
 
 namespace {
     template <typename FACET>
@@ -231,7 +203,7 @@ namespace {
     inline String mkWS_ (const Traversal::Iterable<Character>& src)
     {
         StringBuilder r;
-        for (const auto&& i : src) {
+        for (const auto& i : src) {
             Containers::Support::ReserveTweaks::Reserve4Add1 (r); // could be optimized further moving outside loop, but we don't generically quickly know size
             r.push_back (i.As<wchar_t> ());
         }
@@ -270,7 +242,7 @@ String String::FromSDKString (const SDKChar* from)
 {
     RequireNotNull (from);
     // @todo FIX PERFORMANCE
-    return String (SDKString2Wide (from));
+    return String{SDKString2Wide (from)};
 }
 
 String String::FromSDKString (const SDKChar* from, const SDKChar* to)
@@ -281,7 +253,7 @@ String String::FromSDKString (const SDKChar* from, const SDKChar* to)
 #else
     wstring tmp;
     NarrowStringToWide (from, to, GetDefaultSDKCodePage (), &tmp);
-    return String (tmp);
+    return String{tmp};
 #endif
 }
 
@@ -289,9 +261,9 @@ String String::FromSDKString (const SDKString& from)
 {
 // @todo FIX PERFORMANCE
 #if qTargetPlatformSDKUseswchar_t
-    return String (from);
+    return String{from};
 #else
-    return String (NarrowStringToWide (from, GetDefaultSDKCodePage ()));
+    return String{NarrowStringToWide (from, GetDefaultSDKCodePage ())};
 #endif
 }
 
@@ -307,7 +279,7 @@ String String::FromNarrowSDKString (const char* from, const char* to)
     // @todo FIX PERFORMANCE
     wstring tmp;
     NarrowStringToWide (from, to, GetDefaultSDKCodePage (), &tmp);
-    return String (tmp);
+    return String{tmp};
 }
 
 String String::FromNarrowSDKString (const string& from)
@@ -402,12 +374,7 @@ String::_SharedPtrIRep String::mk_ (const wchar_t* start1, const wchar_t* end1, 
     RequireNotNull (start2);
     RequireNotNull (end2);
     Require (start2 <= end2);
-    size_t len1 = end1 - start1;
-    auto   sRep = MakeSmartPtr<String_BufferedArray_Rep_> (start1, end1, end2 - start2);
-    if (start2 != end2) [[LIKELY_ATTR]] {
-        sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
-    }
-    return sRep;
+    return MakeSmartPtr<String_BufferedArray_Rep_> (make_pair (start1, end1), make_pair (start2, end2));
 }
 
 String::_SharedPtrIRep String::mk_ (const char16_t* from, const char16_t* to)
@@ -457,8 +424,8 @@ String String::Concatenate (const String& rhs) const
     if (rhsD.first == rhsD.second) [[UNLIKELY_ATTR]] {
         return *this;
     }
-    return String (mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
-                        reinterpret_cast<const wchar_t*> (rhsD.first), reinterpret_cast<const wchar_t*> (rhsD.second)));
+    return String{mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
+                       reinterpret_cast<const wchar_t*> (rhsD.first), reinterpret_cast<const wchar_t*> (rhsD.second))};
 }
 
 String String::Concatenate (const wchar_t* appendageCStr) const
@@ -468,10 +435,10 @@ String String::Concatenate (const wchar_t* appendageCStr) const
     pair<const Character*, const Character*> lhsD   = thisAccessor._ConstGetRep ().GetData ();
     size_t                                   lhsLen = lhsD.second - lhsD.first;
     if (lhsLen == 0) [[UNLIKELY_ATTR]] {
-        return String (appendageCStr);
+        return String{appendageCStr};
     }
-    return String (mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
-                        appendageCStr, appendageCStr + ::wcslen (appendageCStr)));
+    return String{mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
+                       appendageCStr, appendageCStr + ::wcslen (appendageCStr))};
 }
 
 void String::SetCharAt (Character c, size_t i)
@@ -498,10 +465,18 @@ String String::InsertAt (const Character* from, const Character* to, size_t at) 
         return *this;
     }
     _SafeReadRepAccessor                     copyAccessor{this};
-    pair<const Character*, const Character*> d    = copyAccessor._ConstGetRep ().GetData ();
+    pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
+
+    return String{String::MakeSmartPtr<String_BufferedArray_Rep_> (
+        make_pair (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.first + at)),
+        make_pair (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)),
+        make_pair (reinterpret_cast<const wchar_t*> (d.first + at), reinterpret_cast<const wchar_t*> (d.second)))};
+
+#if 0
     auto                                     sRep = MakeSmartPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (to - from));
     sRep->InsertAt (from, to, at);
-    return String (move (sRep));
+    return String{move (sRep)};
+#endif
 }
 
 String String::RemoveAt (size_t from, size_t to) const
@@ -522,7 +497,7 @@ String String::RemoveAt (size_t from, size_t to) const
     else {
         pair<const Character*, const Character*> d = accessor._ConstGetRep ().GetData ();
         const wchar_t*                           p = reinterpret_cast<const wchar_t*> (d.first);
-        return String (mk_ (p, p + from, p + to, p + length));
+        return String{mk_ (p, p + from, p + to, p + length)};
     }
 }
 
@@ -766,7 +741,7 @@ bool String::StartsWith (const String& subString, CompareOptions co) const
 #endif
     const Character*                         subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
     pair<const Character*, const Character*> thisData    = accessor._ConstGetRep ().GetData ();
-    bool                                     result      = (Character::Compare (thisData.first, thisData.first + subStrLen, subStrStart, subStrStart + subStrLen, co) == 0);
+    bool                                     result      = Character::Compare (thisData.first, thisData.first + subStrLen, subStrStart, subStrStart + subStrLen, co) == 0;
     Assert (result == referenceResult);
     return result;
 }
@@ -824,7 +799,7 @@ bool String::Match (const RegularExpression& regEx, Containers::Sequence<String>
 
 String String::ReplaceAll (const RegularExpression& regEx, const String& with) const
 {
-    return String (regex_replace (As<wstring> (), regEx.GetCompiled (), with.As<wstring> ()));
+    return String{regex_replace (As<wstring> (), regEx.GetCompiled (), with.As<wstring> ())};
 }
 
 String String::ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co) const
@@ -843,7 +818,7 @@ String String::ReplaceAll (const String& string2SearchFor, const String& with, C
 String String::ReplaceAll (const function<bool (Character)>& replaceCharP, const String& with) const
 {
     StringBuilder sb;
-    for (const Character&& i : *this) {
+    for (const Character& i : *this) {
         if (replaceCharP (i)) {
             sb += with;
         }
@@ -857,7 +832,7 @@ String String::ReplaceAll (const function<bool (Character)>& replaceCharP, const
 String String::ReplaceAll (const Containers::Set<Character>& charSet, const String& with) const
 {
     StringBuilder sb;
-    for (const Character&& i : *this) {
+    for (const Character& i : *this) {
         if (charSet.Contains (i)) {
             sb += with;
         }
@@ -870,13 +845,12 @@ String String::ReplaceAll (const Containers::Set<Character>& charSet, const Stri
 
 Containers::Sequence<String> String::Tokenize (const function<bool (Character)>& isTokenSeperator, bool trim) const
 {
-    String                       tmp{*this}; // quickie thread-safety - do diffenrtly soon with new thread safety model... -- LGP 2014-10-31
     Containers::Sequence<String> r;
     bool                         inToken = false;
     StringBuilder                curToken;
-    size_t                       len = tmp.size ();
+    size_t                       len = size ();
     for (size_t i = 0; i != len; ++i) {
-        Character c          = tmp[i];
+        Character c          = GetCharAt (i);
         bool      newInToken = not isTokenSeperator (c);
         if (inToken != newInToken) {
             if (inToken) {
@@ -884,7 +858,7 @@ Containers::Sequence<String> String::Tokenize (const function<bool (Character)>&
                 if (trim) {
                     s = s.Trim ();
                 }
-                r.Append (s);
+                r += s;
                 curToken.clear ();
                 inToken = false;
             }
@@ -901,7 +875,7 @@ Containers::Sequence<String> String::Tokenize (const function<bool (Character)>&
         if (trim) {
             s = s.Trim ();
         }
-        r.Append (s);
+        r += s;
     }
     return r;
 }
@@ -1341,14 +1315,11 @@ String Characters::operator+ (const wchar_t* lhs, const String& rhs)
 {
     RequireNotNull (lhs);
     String::_SafeReadRepAccessor             rhsAccessor{&rhs};
-    pair<const Character*, const Character*> rhsD     = rhsAccessor._ConstGetRep ().GetData ();
-    size_t                                   lhsLen   = ::wcslen (lhs);
-    size_t                                   totalLen = lhsLen + (rhsD.second - rhsD.first);
-    auto                                     sRep     = String::MakeSmartPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen);
-    if (rhsD.first != rhsD.second) {
-        sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
-    }
-    return String (move (sRep));
+    pair<const Character*, const Character*> rhsD   = rhsAccessor._ConstGetRep ().GetData ();
+    size_t                                   lhsLen = ::wcslen (lhs);
+    return String{String::MakeSmartPtr<String_BufferedArray_Rep_> (
+        make_pair (lhs, lhs + lhsLen),
+        make_pair (reinterpret_cast<const wchar_t*> (rhsD.first), reinterpret_cast<const wchar_t*> (rhsD.second)))};
 }
 
 /*

@@ -35,8 +35,6 @@ namespace Stroika::Foundation::Characters::Concrete::Private {
      *  \note   This class always assure nul-terminated, and so 'capacity' always at least one greater than length.
      *
      *  @todo Explain queer wrapper class cuz protected
-     *
-     *  @todo fCapacity_ initialized to zero then corrected - confusing... - cleanup
      */
     struct BufferedStringRep : String {
         struct _Rep : public _IRep {
@@ -70,44 +68,35 @@ namespace Stroika::Foundation::Characters::Concrete::Private {
             /**
              *  The argument wchar_t* strings MAY or MAY NOT be nul-terminated
              */
-            _Rep (const wchar_t* start, const wchar_t* end, size_t reserveExtraCharacters = 0);
+            using TextSpan = pair<const wchar_t*, const wchar_t*>;
+            _Rep (const tuple<const wchar_t*, const wchar_t*, size_t>& strAndCapacity);
+            _Rep (const TextSpan& t1);
+            _Rep (const TextSpan& t1, const TextSpan& t2);
+            _Rep (const TextSpan& t1, const TextSpan& t2, const TextSpan& t3);
 
         public:
             ~_Rep ();
 
-        public:
-            // \req srcStart < srcEnd
-            nonvirtual void InsertAt (const Character* srcStart, const Character* srcEnd, size_t index);
+        private:
+            static pair<wchar_t*, wchar_t*>                      mkBuf_ (size_t length);
+            static tuple<const wchar_t*, const wchar_t*, size_t> mkBuf_ (const TextSpan& t1);
+            static tuple<const wchar_t*, const wchar_t*, size_t> mkBuf_ (const TextSpan& t1, const TextSpan& t2);
+            static tuple<const wchar_t*, const wchar_t*, size_t> mkBuf_ (const TextSpan& t1, const TextSpan& t2, const TextSpan& t3);
 
         public:
             virtual const wchar_t* c_str_peek () const noexcept override;
-
-        protected:
-            //Presume fStart is really a WRITABLE pointer
-            nonvirtual wchar_t* _PeekStart ();
-
-            // @todo - SB private next few methods - except for use in ReserveAtLeast_()...
-            // size() function defined only so we can use Containers::ReserveSpeedTweekAddN() template
-        private:
-            nonvirtual void SetLength_ (size_t newLength);
 
         public:
             virtual size_t size () const override;
 
         private:
-            /**
-             *  Capacity INCLUDES null char
-             */
-            nonvirtual void reserve_ (size_t newCapacity);
-
-        private:
             static size_t AdjustCapacity_ (size_t initialCapacity);
 
         private:
-            nonvirtual void ReserveAtLeast_ (size_t newCapacity);
-
-        private:
-            size_t fCapacity_; // includes INCLUDES nul/EOS char
+            // includes INCLUDES nul/EOS char
+            // @todo add constexpr config var here, and play with it: COULD have recomputed this from the length in the DTOR (only place its used) - but that recompute could be moderately expensive, so just
+            // save it (perhaps reconsider as CPU faster and memory bandwidth more limiting)
+            size_t fCapacity_;
         };
     };
 

@@ -45,7 +45,6 @@ namespace Stroika::Frameworks::WebServer {
          *  Any route to apply the handler, must match ALL argument constraints.
          */
         FileSystemRequestHandler (const filesystem::path& filesystemRoot, const Options& options = kDefaultOptions);
-        [[deprecated ("Since Stroika 2.1b10 - use overload with Options object")]] FileSystemRequestHandler (const filesystem::path& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames = {});
     };
 
     struct FileSystemRequestHandler::Options {

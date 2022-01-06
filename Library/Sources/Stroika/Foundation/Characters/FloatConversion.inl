@@ -10,6 +10,7 @@
  ********************************************************************************
  */
 #include <charconv>
+#include <sstream>
 
 #include "../Containers/Common.h"
 #include "../Memory/Optional.h"
@@ -634,37 +635,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         return result;
     }
 
-}
-
-namespace Stroika::Foundation::Characters {
-    using Float2StringOptions [[deprecated ("Since Stroika 2.1b14, use FloatConversion::ToStringOptions")]] = FloatConversion::ToStringOptions;
-    [[deprecated ("Since Stroika 2.1b14, use FloatConversion::ToString")]] inline String Float2String (float f, const FloatConversion::ToStringOptions& options = FloatConversion::ToStringOptions{})
-    {
-        return FloatConversion::ToString (f, options);
-    }
-    [[deprecated ("Since Stroika 2.1b14, use FloatConversion::ToString")]] inline String Float2String (double f, const FloatConversion::ToStringOptions& options = FloatConversion::ToStringOptions{})
-    {
-        return FloatConversion::ToString (f, options);
-    }
-    [[deprecated ("Since Stroika 2.1b14, use FloatConversion::ToString")]] inline String Float2String (long double f, const FloatConversion::ToStringOptions& options = FloatConversion::ToStringOptions{})
-    {
-        return FloatConversion::ToString (f, options);
-    }
-    template <typename T = double>
-    [[deprecated ("Since Stroika 2.1b14, use FloatConversion::ToFloat")]] inline T String2Float (const wchar_t* start, const wchar_t* end)
-    {
-        return FloatConversion::ToFloat<T> (start, end);
-    }
-    template <typename T = double>
-    [[deprecated ("Since Stroika 2.1b14, use FloatConversion::ToFloat")]] inline T String2Float (const String& s)
-    {
-        return FloatConversion::ToFloat<T> (s);
-    }
-    template <typename T = double>
-    [[deprecated ("Since Stroika 2.1b14, use FloatConversion::ToFloat")]] inline T String2Float (const String& s, String* remainder)
-    {
-        return FloatConversion::ToFloat<T> (s, remainder);
-    }
 }
 
 #endif /*_Stroika_Foundation_Characters_FloatConversion_inl_*/

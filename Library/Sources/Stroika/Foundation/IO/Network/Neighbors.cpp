@@ -47,9 +47,9 @@ namespace {
         Collection<Neighbor> result;
         using std::byte;
 #if qPlatform_POSIX
-        ProcessRunner pr (L"arp -an"); // -a means 'BSD-style output' and -n means numeric (dont do reverse dns)
+        ProcessRunner pr{L"arp -an"sv}; // -a means 'BSD-style output' and -n means numeric (dont do reverse dns)
 #elif qPlatform_Windows
-        ProcessRunner pr (includePurgedEntries ? L"arp -av" : L"arp -a"); // -a means 'BSD-style output', -v verbose(show invalid items)
+        ProcessRunner pr{includePurgedEntries ? L"arp -av"sv : L"arp -a"sv}; // -a means 'BSD-style output', -v verbose(show invalid items)
 #endif
         Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
         pr.SetStdOut (useStdOut);
@@ -138,7 +138,7 @@ namespace {
         */
         bool readFirstLine = false;
         // Note - /procfs files always unseekable
-        for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcFileName_, FileInputStream::eNotSeekable))) {
+        for (const Sequence<String>& line : reader.ReadMatrix (FileInputStream::New (kProcFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"in ProcNetArp_ capture_ line=%s", Characters::ToString (line).c_str ());
 #endif

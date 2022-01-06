@@ -4,6 +4,7 @@
 #include "../StroikaPreComp.h"
 
 #include <cstdlib> // to force __GLIBCXX__ define reference
+#include <sstream>
 
 #if qPlatform_Linux
 #include <execinfo.h>

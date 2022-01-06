@@ -67,13 +67,6 @@ namespace Stroika::Foundation::Execution {
         nonvirtual ProcAddress GetProcAddress (const char* procName) const;
         nonvirtual ProcAddress GetProcAddress (const wchar_t* procName) const;
 
-#if !qPlatform_Windows
-        /*
-         * see linux.die.net/man/3/dlopen for flags
-         */
-        [[deprecated ("Use DLLLoader::CTOR since Stroika v2.1b2")]] DLLHandle LoadDLL (const SDKChar* dllName, int flags = RTLD_NOW);
-#endif
-
     private:
         DLLHandle fModule_;
     };

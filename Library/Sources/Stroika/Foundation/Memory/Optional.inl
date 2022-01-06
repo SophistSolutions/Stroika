@@ -276,16 +276,5 @@ namespace Stroika::Foundation::Memory {
         return nullopt;
     }
 
-    template <typename T>
-    [[deprecated ("Since Stroika 2.1b10 use NullCoalesce")]] T ValueOrDefault (const optional<T>& o, T defaultValue = T{})
-    {
-        return NullCoalesce (o, defaultValue);
-    }
-    template <typename T>
-    [[deprecated ("Since Stroika 2.1b10 use NullCoalesce")]] inline optional<T> OptionalValue (const optional<T>& l, const optional<T>& r)
-    {
-        return NullCoalesce (l, r);
-    }
-
 }
 #endif /*_Stroika_Foundation_Memory_Optional_inl_*/

@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
                         }
                         return tmp;
                     };
-                    for (PartialResultType_ tup : removeLast (res)) {
+                    for (const PartialResultType_& tup : removeLast (res)) {
                         for (size_t i = 0; i < x0.GetDimension (); ++i) {
                             FLOAT_TYPE c = Sequence<FLOAT_TYPE>{tup.fResults}[i];
                             x0[i] += c / (res.size () - 1);
@@ -183,7 +183,7 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
                 {
                     Vector<FLOAT_TYPE>         x1 = res[0].fResults;
                     vector<PartialResultType_> nres;
-                    for (PartialResultType_ tup : res) {
+                    for (const PartialResultType_& tup : res) {
                         Vector<FLOAT_TYPE> redx  = x1 + sigma * (Vector<FLOAT_TYPE>{tup.fResults} - x1);
                         FLOAT_TYPE         score = f (redx.GetItems ());
                         res.push_back (PartialResultType_{redx.GetItems (), score});

@@ -24,7 +24,7 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
 KeepAlive KeepAlive::Parse (const String& headerValue)
 {
     KeepAlive r;
-    for (String token : headerValue.Tokenize ({' ', ','})) {
+    for (const String& token : headerValue.Tokenize ({' ', ','})) {
         Containers::Sequence<String> kvp = token.Tokenize ({'='});
         if (kvp.length () == 2) {
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive

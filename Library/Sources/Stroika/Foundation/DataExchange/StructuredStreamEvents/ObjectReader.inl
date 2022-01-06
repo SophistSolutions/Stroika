@@ -206,7 +206,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         , fValuePtr_{vp}
     {
         RequireNotNull (vp);
-        for (StructFieldInfo i : fieldDescriptions) {
+        for (const StructFieldInfo& i : fieldDescriptions) {
             if (i.fSerializedFieldName.fType == Name::eValue) {
                 fValueFieldMetaInfo_ = i.fFieldMetaInfo;
             }
@@ -274,7 +274,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     ReaderFromVoidStarFactory ClassReader<T>::LookupFactoryForName_ (const Name& name) const
     {
         RequireNotNull (fActiveContext_);
-        for (StructFieldInfo i : fFieldDescriptions_) {
+        for (const StructFieldInfo& i : fFieldDescriptions_) {
             if (i.fSerializedFieldName == name) {
                 if (i.fOverrideTypeMapper) {
                     return *i.fOverrideTypeMapper;
@@ -436,7 +436,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         , fMixins_{mixins}
     {
         RequireNotNull (vp);
-        for (MixinEltTraits m : mixins) {
+        for (const MixinEltTraits& m : mixins) {
             fMixinReaders_ += m.fReaderFactory (m.fAddressOfSubElementFetcher (vp));
         }
     }
@@ -451,7 +451,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     {
         RequireNotNull (fActiveContext_);
         size_t idx = 0;
-        for (MixinEltTraits m : fMixins_) {
+        for (const MixinEltTraits& m : fMixins_) {
             if (m.fReadsName (name)) {
                 shared_ptr<IElementConsumer> reader = fMixinReaders_[idx];
                 if (not fActivatedReaders_.Contains (reader)) {
@@ -469,7 +469,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     {
         RequireNotNull (fActiveContext_);
         size_t idx = 0;
-        for (MixinEltTraits m : fMixins_) {
+        for (const MixinEltTraits& m : fMixins_) {
             if (m.fReadsText ()) {
                 shared_ptr<IElementConsumer> reader = fMixinReaders_[idx];
                 if (not fActivatedReaders_.Contains (reader)) {
@@ -699,7 +699,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     void Registry::AddCommonReader_Class (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
     {
 #if qDebug
-        for (auto kv : fieldDescriptions) {
+        for (const auto& kv : fieldDescriptions) {
             if (not kv.fOverrideTypeMapper.has_value () and not fFactories_.ContainsKey (kv.fFieldMetaInfo.fTypeInfo)) {
                 Debug::TraceContextBumper ctx (L"Registry::AddCommonReader_Class", L"CLASS=%s field-TypeInfo-not-found = %s, for field named '%s' - UnRegistered Type!", Characters::ToString (typeid (CLASS)).c_str (), Characters::ToString (kv.fFieldMetaInfo.fTypeInfo).c_str (), Characters::ToString (kv.fSerializedFieldName).c_str ());
                 RequireNotReached ();

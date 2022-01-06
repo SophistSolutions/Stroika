@@ -101,10 +101,12 @@ namespace Stroika::Frameworks::SystemPerformance {
         /**
          */
         Instrument () = delete;
+        Instrument (Instrument&& src) noexcept;
         Instrument (const Instrument& src);
         Instrument (InstrumentNameType instrumentName, unique_ptr<IRep>&& capturer, const Set<MeasurementType>& capturedMeasurements, const Mapping<type_index, MeasurementType>& typeToMeasurementTypeMap, const DataExchange::ObjectVariantMapper& objectVariantMapper);
 
     public:
+        nonvirtual Instrument& operator= (Instrument&& rhs) noexcept;
         nonvirtual Instrument& operator= (const Instrument& rhs);
 
     public:

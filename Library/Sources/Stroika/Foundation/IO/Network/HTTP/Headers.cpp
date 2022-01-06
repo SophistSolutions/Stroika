@@ -312,7 +312,7 @@ Headers::Headers (Headers&& src)
 Headers::Headers (const Iterable<pair<String, String>>& src)
     : Headers{}
 {
-    for (auto kv : src) {
+    for (const auto& kv : src) {
         Set (kv.first, kv.second);
     }
 }
@@ -320,7 +320,7 @@ Headers::Headers (const Iterable<pair<String, String>>& src)
 Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
     : Headers{}
 {
-    for (auto kv : src) {
+    for (const auto& kv : src) {
         Set (kv.fKey, kv.fValue);
     }
 }
@@ -704,7 +704,7 @@ Collection<KeyValuePair<String, String>> Headers::As () const
     }
     if (fSetCookieList_) {
         // fSetCookieList_ produces multiple set-headers
-        for (auto i : fSetCookieList_->cookieDetails ()) {
+        for (const auto& i : fSetCookieList_->cookieDetails ()) {
             results.Add ({HeaderName::kSetCookie, i.As<String> ()});
         }
     }

@@ -20,9 +20,9 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 # last stable version
-VERSION=1.2.8
+#VERSION=1.2.8
 # crashes in regtest for inflate on Win32 (but not Win64), 1.2.9 thru 1.2.11
-#VERSION=1.2.11
+VERSION=1.2.11
 
 
 BASENAME=zlib-$(VERSION)
@@ -107,18 +107,21 @@ $(ZIPPEDFILE):
 
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+# See comments at head of win32/Makefile.msc for the meaning of these flags (DASMV, etc)
 ASFLAGS_=/coff /Z7
 ifeq ($(ENABLE_ASSERTIONS),1)
 CFLAGS+= /DZLIB_DEBUG
 endif
-CFLAGS+= /DASMV /DASMINF
 CFLAGS+= /I.
 ifeq ($(ARCH), x86)
-OBJA_=inffas32.obj match686.obj
+# For reasons not worth debugging, this ASM code crashes on x86, so just disable - https://stroika.atlassian.net/browse/STK-568
+#CFLAGS+= /DASMV /DASMINF
+#OBJA_=inffas32.obj match686.obj
 ### avoid occasional 'fatal error LNK1281: Unable to generate SAFESEH image.'
-ASFLAGS_+= /safeseh
+#ASFLAGS_+= /safeseh
 endif
 ifeq ($(ARCH), x86_64)
+CFLAGS+= /DASMV /DASMINF
 OBJA_=inffasx64.obj gvmat64.obj inffas8664.obj
 endif
 endif

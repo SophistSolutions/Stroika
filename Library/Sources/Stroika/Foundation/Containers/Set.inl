@@ -104,16 +104,6 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (item, nullptr, nullptr);
     }
     template <typename T>
-    bool Set<T>::Contains (const Iterable<value_type>& items) const
-    {
-        for (const auto& i : items) {
-            if (not Contains (i)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    template <typename T>
     bool Set<T>::ContainsAll (const Iterable<value_type>& items) const
     {
         for (const auto& i : items) {

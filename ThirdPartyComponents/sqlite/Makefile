@@ -17,11 +17,10 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 # because we list multiple targets in PRODUCED_OUTPUT_ARTIFACTS, all of which are built with the same script
 .NOTPARALLEL:
 
-VERSION=3370000
+VERSION=3370100
+#VERSION=3370000
 #VERSION=3360000
 #VERSION=3350500
-#VERSION=3340100
-#VERSION=3340000
 
 #
 # Download of SQLITE from www.sqlite.org mysteriously started failing on the macos machines only for travisci

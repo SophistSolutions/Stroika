@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Containers::Private {
         }
         else {
             size_t n = 0;
-            for (T i : c) {
+            for (const T& i : c) {
                 if (equalsComparer (i, item)) {
                     return n;
                 }
@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Containers::Private {
         for (auto i = c.begin (); i != c.end (); ++i, ++n) {
             bool foundDiff = false;
             auto ii        = i;
-            for (T r : rhs) {
+            for (const T& r : rhs) {
                 if (ii == c.end ()) {
                     return {};
                 }

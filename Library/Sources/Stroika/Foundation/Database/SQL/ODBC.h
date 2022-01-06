@@ -149,24 +149,6 @@ namespace Stroika::Foundation::Database::SQL::ODBC {
     };
 #endif
 
-#if qHasLibrary_ODBC
-    class [[deprecated ("Since Stroika 2.1b13 use Connection::New")]] DBConnection
-    {
-    private:
-        class Rep;
-
-    public:
-        DBConnection (const wstring& dsn);
-        virtual ~DBConnection () = default;
-
-    public:
-        nonvirtual unsigned int GetNestedTransactionCount () const;
-
-    private:
-        shared_ptr<Rep> fRep;
-    };
-#endif
-
 }
 
 /*

@@ -214,8 +214,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual bool                                                         Contains (ArgByValueType<value_type> item) const;
-        nonvirtual [[deprecated ("Since Stroika 2.1b14 use ContainsAny")]] bool Contains (const Iterable<value_type>& items) const;
+        nonvirtual bool Contains (ArgByValueType<value_type> item) const;
 
     public:
         /**

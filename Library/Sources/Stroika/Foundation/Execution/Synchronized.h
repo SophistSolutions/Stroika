@@ -16,10 +16,6 @@
 #include <compare>
 #endif
 
-#if qHasFeature_boost
-#include <boost/thread/shared_mutex.hpp>
-#endif
-
 #include "../Configuration/Common.h"
 #include "../Configuration/Empty.h"
 #include "../Configuration/TypeHints.h"
@@ -64,32 +60,6 @@ namespace Stroika::Foundation::Execution {
     };
     constexpr InternallySynchronized eInternallySynchronized         = InternallySynchronized::eInternallySynchronized;
     constexpr InternallySynchronized eNotKnownInternallySynchronized = InternallySynchronized::eNotKnownInternallySynchronized;
-
-#if qHasFeature_boost
-    /*
-     * Make the boost types play more nicely with the stdc++ types.
-     */
-    namespace PRIVATE_::BOOST_HELP_ {
-        struct UpgradeMutex : boost::upgrade_mutex {
-            using inherited = boost::upgrade_mutex;
-            template <class _Rep, class _Period>
-            bool try_lock_for (const boost::chrono::duration<_Rep, _Period>& timeout)
-            {
-                return inherited::try_lock_for (timeout);
-            }
-            bool try_lock_for (const chrono::duration<Time::DurationSecondsType>& timeout)
-            {
-                return inherited::try_lock_for (cvt_ (timeout));
-            }
-            static boost::chrono::milliseconds cvt_ (const chrono::duration<Time::DurationSecondsType>& timeout)
-            {
-                // @todo better to rewrite this to match precision of incoming arguments but not sure identical APIs between
-                // boost and std (for float/double for example)
-                return boost::chrono::milliseconds (static_cast<boost::int_least64_t> (1000 * timeout.count ()));
-            }
-        };
-    }
-#endif
 
     /**
      *  MUTEX:
@@ -140,26 +110,12 @@ namespace Stroika::Foundation::Execution {
 
         /**
          */
-        static constexpr bool kSupportsTimedLocks =
-            is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex>
-#if qHasFeature_boost
-            or is_same_v<MUTEX, PRIVATE_::BOOST_HELP_::UpgradeMutex>
-#endif
-            ;
-
-        /**
-         */
-        static constexpr bool kIsUpgradableSharedToExclusive =
-            false
-#if qHasFeature_boost
-            or is_same_v<MUTEX, PRIVATE_::BOOST_HELP_::UpgradeMutex>
-#endif
-            ;
+        static constexpr bool kSupportsTimedLocks = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex>;
 
         /**
          */
         static constexpr bool kSupportSharedLocks =
-            is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, shared_mutex> or kIsUpgradableSharedToExclusive;
+            is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, shared_mutex>;
 
         /**
          */
@@ -500,10 +456,6 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note - This does NOT require the mutex be recursive  - just supporting both lock_shared and lock ()
          * 
-         *  \note  A DEFEFCT with UpgradeLockAtomically is that it CAN DEADLOCK if two threads acquire read locks and then both try to upgrade them to
-         *         write locks. For that reason, its recommended NOT to use an infinite timeout, or, to assure the upgrades are ONLY done on one thread
-         *         and that its other threads just use the read-lock. If you use a small timeout, and properly handle interveningWriteLock, you should be fine.
-         *
          *  \par Example Usage
          *      \code
          *          Execution::RWSynchronized<Status_> fStatus_;
@@ -545,10 +497,6 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note - This does NOT require the mutex be recursive  - just supporting both lock_shared and lock ()
          *
-         *  \note  A DEFEFCT with UpgradeLockAtomically is that it CAN DEADLOCK if two threads acquire read locks and then both try to upgrade them to
-         *         write locks. For that reason, its recommended NOT to use an infinite timeout, or, to assure the upgrades are ONLY done on one thread
-         *         and that its other threads just use the read-lock. If you use a small timeout, and properly handle interveningWriteLock, you should be fine.
-         *
          *  \note - the timeout refers ONLY the acquiring the upgrade - not the time it takes to re-acquire the shared lock or perform
          *          the argument operation
          *
@@ -569,12 +517,6 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
         nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
-
-    public:
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>* = nullptr>
-        [[deprecated ("Since Stroika 2.1b14 - use UpgradeLockNonAtomically ")]] void UpgradeLockAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout);
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsUpgradableSharedToExclusive>* = nullptr>
-        [[deprecated ("Since Stroika 2.1b14 - use UpgradeLockNonAtomicallyQuietly")]] bool UpgradeLockAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout);
 
     private:
         nonvirtual void NoteLockStateChanged_ (const wchar_t* m) const noexcept;
@@ -837,23 +779,6 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename T>
     using RWSynchronized = Synchronized<T, Synchronized_Traits<shared_timed_mutex>>;
-
-#if qHasFeature_boost
-    /**
-     * UpgradableRWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer, and allow the UpgradeLockAtomically method
-     * (Typically, using boost:::upgrade_mutex);
-     *
-     *  \note UpgradableRWSynchronized is ONLY available when using boost.
-     *
-     *  \note UpgradableRWSynchronized allows AtomicallyUpgradeLock() - which allows for converting a shared lock (read lock)
-     *        into a write lock without ever giving up the read lock (so the data/computed so far doesnt get invalidating in the conversion).
-     *
-     *  \note Use of UpgradableRWSynchronized has HIGH PERFORMANCE OVERHEAD, and only makes sense when you have
-     *        read locks held for a long time (and multiple threads doing so)
-     */
-    template <typename T>
-    using UpgradableRWSynchronized [[deprecated ("Since Stroika 2.1b14")]] = Synchronized<T, Synchronized_Traits<PRIVATE_::BOOST_HELP_::UpgradeMutex>>;
-#endif
 
 }
 

@@ -419,8 +419,8 @@ String ProcessRunner::GetEffectiveCmdLine_ () const
         Execution::Throw (Execution::Exception{L"need command-line or executable path to run a process"sv});
     }
     sb += IO::FileSystem::FromPath (*fExecutable_);
-    for (String i : fArgs_) {
-        sb += +L" " + i;
+    for (const String& i : fArgs_) {
+        sb += L" "sv + i;
     }
     return sb.str ();
 }
@@ -612,7 +612,7 @@ namespace {
             Sequence<size_t> argsIdx;
             size_t           bufferIndex{};
             execArgsPtrBuffer.GrowToSize_uninitialized (commandLine.size () + 1);
-            for (auto i : commandLine) {
+            for (const auto& i : commandLine) {
                 string tmp{i.AsNarrowSDKString ()};
                 for (char c : tmp) {
                     execDataArgsBuffer.push_back (c);

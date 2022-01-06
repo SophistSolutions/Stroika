@@ -298,7 +298,7 @@ namespace {
                  *        eth0    000011AC        00000000        0001    0       0       0       0000FFFF        0       0       0
                  */
                 // Note - /procfs files always unseekable
-                for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kFileName_, FileInputStream::eNotSeekable))) {
+                for (const Sequence<String>& line : reader.ReadMatrix (FileInputStream::New (kFileName_, FileInputStream::eNotSeekable))) {
                     if (line.size () >= 3 and
                         line[0] == String::FromNarrowSDKString (name) and
                         line[1] == L"00000000") {
@@ -330,7 +330,7 @@ namespace {
                 DataExchange::Variant::CharacterDelimitedLines::Reader reader{{':'}};
                 optional<String>                                       forInterface;
                 optional<String>                                       gateway;
-                for (Sequence<String> line : reader.ReadMatrix (useStdOut)) {
+                for (const Sequence<String>& line : reader.ReadMatrix (useStdOut)) {
                     if (line.size () == 2 and line[0] == L"interface") {
                         forInterface = line[1];
                     }
@@ -965,7 +965,7 @@ optional<Interface> SystemInterfacesMgr::GetById (const Interface::SystemIDType&
     Debug::TraceContextBumper ctx ("Network::GetById");
 #endif
     // @todo - a much more efficent implementation - maybe good enuf to use caller staleness cache with a few seconds staleness
-    for (Interface i : GetAll ()) {
+    for (const Interface& i : GetAll ()) {
         if (i.fInternalInterfaceID == internalInterfaceID) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"found interface %s", internalInterfaceID.c_str ());
@@ -985,7 +985,7 @@ optional<Interface> SystemInterfacesMgr::GetContainingAddress (const InternetAdd
     Debug::TraceContextBumper ctx ("Network::GetById");
 #endif
     // @todo - a much more efficent implementation - maybe good enuf to use caller staleness cache with a few seconds staleness
-    for (Interface i : GetAll ()) {
+    for (const Interface& i : GetAll ()) {
         if (i.fBindings.fAddressRanges.Any ([&ia] (CIDR c) { return c.GetRange ().Contains (ia); })) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"found interface %s", internalInterfaceID.c_str ());

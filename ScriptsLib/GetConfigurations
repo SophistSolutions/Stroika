@@ -60,7 +60,7 @@ while [[ $# -gt 0 ]]; do
       shift 1
       ;;
     --help)
-      echo "GetConfigurations returns all configurations; GetConfigurations --config-tags 'abc def' returns all configurations with BOTH the abc and def tags; optional --quiet flag suppresses warnings"
+      echo "GetConfigurations returns all configurations; GetConfigurations --config-tags 'abc def' returns all configurations with BOTH the abc and def tags; --all-default returns only default for current platform configurations; --cross-compiled-only returns only cross-compiled configurations; optional --quiet flag suppresses warnings"
       exit 0
       ;;
     --) # end argument parsing

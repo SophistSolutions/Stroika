@@ -270,10 +270,6 @@ namespace Stroika::Frameworks::WebServer {
          */
         Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> connections;
 
-    public:
-        [[deprecated ("Since Stroika v2.1b10 use property connections()")]] Collection<shared_ptr<Connection>> GetConnections () const;
-        [[deprecated ("Since Stroika v2.1b10 use property options()")]] Options                                GetOptions () const;
-
     private:
         nonvirtual void onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s);
 

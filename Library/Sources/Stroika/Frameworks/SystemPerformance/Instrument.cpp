@@ -54,6 +54,18 @@ Instrument::Instrument (InstrumentNameType instrumentName, unique_ptr<IRep>&& ca
 {
 }
 
+Instrument& Instrument::operator= (Instrument&& rhs) noexcept
+{
+    lock_guard<const AssertExternallySynchronizedMutex>  critSec1{*this};
+    shared_lock<const AssertExternallySynchronizedMutex> critSec2{rhs};
+    fInstrumentName_           = move (rhs.fInstrumentName_);
+    fCaptureRep_               = move (rhs.fCaptureRep_);
+    fType2MeasurementTypes_    = move (rhs.fType2MeasurementTypes_);
+    fCapturedMeasurementTypes_ = move (rhs.fCapturedMeasurementTypes_);
+    fObjectVariantMapper_      = move (rhs.fObjectVariantMapper_);
+    return *this;
+}
+
 Instrument& Instrument::operator= (const Instrument& rhs)
 {
     lock_guard<const AssertExternallySynchronizedMutex>  critSec1{*this};

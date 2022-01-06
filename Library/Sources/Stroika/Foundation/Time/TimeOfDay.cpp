@@ -165,30 +165,6 @@ namespace {
 }
 #endif
 
-DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
-TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
-{
-    switch (pf) {
-        case ParseFormat::eCurrentLocale: {
-            return Parse (rep, locale{});
-        }
-        case ParseFormat::eISO8601: {
-            if (auto r = LocaleIndependent_Parse_iso8601_ (rep)) {
-                return *r;
-            }
-        }
-        default: {
-            AssertNotReached ();
-        }
-    }
-    Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
-}
-DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
-
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -322,22 +298,16 @@ optional<TimeOfDay> TimeOfDay::ParseQuietly_ (const wstring& rep, const time_get
     return result;
 }
 
-String TimeOfDay::Format (PrintFormat pf) const
+String TimeOfDay::Format (NonStandardPrintFormat pf) const
 {
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
     switch (pf) {
-        case PrintFormat::eCurrentLocale: {
-            return Format (locale{});
-        }
-        case PrintFormat::eCurrentLocale_WithZerosStripped: {
+        case eCurrentLocale_WithZerosStripped: {
             String tmp = Format (locale{});
             /*
              * This logic probably needs to be locale-specific, but this is good enuf for now...
              */
             optional<size_t> i;
-            while ((i = tmp.RFind (L":00"))) {
+            while ((i = tmp.RFind (L":00"sv))) {
                 // if its a TRAILING :00 - lose it...
                 bool trailing = false;
                 if (*i + 3 == tmp.size ()) {
@@ -359,17 +329,11 @@ String TimeOfDay::Format (PrintFormat pf) const
             }
             return tmp;
         }
-        case PrintFormat::eISO8601: {
-            return LocaleIndependent_Format_iso8601_ (fTime_);
-        }
         default: {
             AssertNotReached ();
             return String{};
         }
     }
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
 }
 
 String TimeOfDay::Format (const locale& l) const

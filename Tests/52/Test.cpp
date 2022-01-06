@@ -22,6 +22,9 @@
 #include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/Configuration/StroikaVersion.h"
 #include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Concrete/Collection_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/Collection_stdforward_list.h"
+#include "Stroika/Foundation/Containers/Concrete/Collection_stdmultiset.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_DoublyLinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_stdvector.h"
@@ -1314,7 +1317,7 @@ namespace {
             Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
             24500,
-            .62,
+            .65,
             &failedTests);
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
@@ -1375,7 +1378,7 @@ namespace {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             360000,
-            9.7,
+            24,
             &failedTests);
         Tester (
             L"String a + b",
@@ -1416,7 +1419,7 @@ namespace {
             [] () { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([] (const wstringstream& w) { return w.str (); }); }, L"wstringstream",
             [] () { Test_StreamBuilderStringBuildingWithExtract_<MemStreamOfChars_> ([] (const MemStreamOfChars_& w) { return w.As<String> (); }); }, L"MemoryStream<Characters::Character>",
             210000,
-            1.3,
+            1.6,
             &failedTests);
 #endif
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1469,14 +1472,14 @@ namespace {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_stdvector<int>>, L"Sequence_stdvector<int>",
             120000,
-            0.9,
+            1.1,
             &failedTests);
         Tester (
             L"Sequence_DoublyLinkedList<string> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
             Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<string>>, L"Sequence_DoublyLinkedList<string>",
             9900,
-            0.5,
+            0.65,
             &failedTests);
         Tester (
             L"Collection<int> basics",
@@ -1493,6 +1496,57 @@ namespace {
             0.6,
             &failedTests);
 #endif
+        {
+            // In Stroika 2.1b15, we changed the default Collection factory to use Collection_stdmultiset. This is probably a good choice,
+            // but is a small pessimization so include original Collection_stdforward_list for comparison (maybe orig was something else but this works).
+            using Containers::Concrete::Collection_LinkedList;
+            using Containers::Concrete::Collection_stdforward_list;
+            using Containers::Concrete::Collection_stdmultiset;
+            Tester (
+                L"Collection_LinkedList<string> basics",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_LinkedList<string>> ([] (Collection_LinkedList<string>* c) { c->Add (string ()); }); }, L"Collection_LinkedList<string>",
+                9600,
+                0.6,
+                &failedTests);
+            Tester (
+                L"Collection_stdforward_list<string> basics",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_stdforward_list<string>> ([] (Collection_stdforward_list<string>* c) { c->Add (string ()); }); }, L"Collection_stdforward_list<string>",
+                9600,
+                0.6,
+                &failedTests);
+            Tester (
+                L"Collection_stdmultiset<string> basics",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_stdmultiset<string>> ([] (Collection_stdmultiset<string>* c) { c->Add (string ()); }); }, L"Collection_stdmultiset<string>",
+                9600,
+                1.3,
+                &failedTests);
+        }
+        {
+            using Containers::Concrete::Collection_stdmultiset;
+            // In Stroika 2.1b15, we changed the default Collection factory to use Collection_stdmultiset. This is probably a good choice,
+            // but is a small pessimization when we have ALL IDENTICAL strings (so all conflicts). Just avoid that
+            static const vector<string> kRandomStrings_ = [] () {
+                vector<string> r;
+                r.reserve (100);
+                for (int i = 0; i < 100; ++i) {
+                    char buf[1024];
+                    snprintf (buf, NEltsOf (buf), "hello %d", i);
+                    r.push_back (buf);
+                }
+                return r;
+            }();
+            // this would do much better if we cared about mem usage, or did lookups, remove, etc...
+            Tester (
+                L"Collection_stdmultiset<string> basics with rnd strings",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (kRandomStrings_[rand () % kRandomStrings_.size ()]); }); }, L"vector<string>",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_stdmultiset<string>> ([] (Collection_stdmultiset<string>* c) { c->Add (kRandomStrings_[rand () % kRandomStrings_.size ()]); }); }, L"Collection_stdmultiset<string>",
+                9600,
+                1.3,
+                &failedTests);
+        }
         Tester (
             L"std::set<int> vs Set<int>",
             Test_SetvsSet_<set<int>>, L"set<int>",
@@ -1518,7 +1572,7 @@ namespace {
             L"Test_JSONReadWriteFile",
             Test_JSONReadWriteFile_::DoRunPerfTest, L"Test_JSONReadWriteFile",
             Debug::IsRunningUnderValgrind () ? 2 : 64,
-            0.25,
+            0.1,
             &failedTests);
         Tester (
             L"Test_Optional_",

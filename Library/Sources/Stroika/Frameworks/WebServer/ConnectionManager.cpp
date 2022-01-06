@@ -310,7 +310,7 @@ void ConnectionManager::ReplaceInEarlyInterceptor_ (const optional<Interceptor>&
     auto                  rwLock = this->fEarlyInterceptors_.rwget ();
     Sequence<Interceptor> newInterceptors;
     bool                  addedDefault = false;
-    for (Interceptor i : rwLock.load ()) {
+    for (const Interceptor& i : rwLock.load ()) {
         if (oldValue == i) {
             if (newValue) {
                 newInterceptors += *newValue;
@@ -331,13 +331,6 @@ void ConnectionManager::ReplaceInEarlyInterceptor_ (const optional<Interceptor>&
 void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/)
 {
     AssertNotImplemented ();
-}
-
-Collection<shared_ptr<Connection>> ConnectionManager::GetConnections () const
-{
-    scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
-    Ensure (Set<shared_ptr<Connection>>{fActiveConnections_.load ()}.Intersection (GetInactiveConnections_ ()).empty ());
-    return GetInactiveConnections_ () + fActiveConnections_.load ();
 }
 
 void ConnectionManager::AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo)

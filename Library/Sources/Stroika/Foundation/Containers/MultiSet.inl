@@ -451,13 +451,13 @@ namespace Stroika::Foundation::Containers {
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[UNLIKELY_ATTR]] {
                 // very rare corner case
                 vector<typename decay_t<ITERABLE_OF_ADDABLE>::value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
-                for (auto&& i : copy) {
+                for (const auto& i : copy) {
                     Add (i);
                 }
                 return;
             }
         }
-        for (auto&& i : items) {
+        for (const auto& i : items) {
             Add (i);
         }
     }

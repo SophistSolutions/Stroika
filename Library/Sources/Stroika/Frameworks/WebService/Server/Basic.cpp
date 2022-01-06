@@ -90,7 +90,7 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
         response->printf (L"<div class='curlExample'>%s</div>", exampleCall.c_str ());
         response->writeln (L"</li>");
     };
-    for (WebServiceMethodDescription i : operations) {
+    for (const WebServiceMethodDescription& i : operations) {
         StringBuilder tmpDocs;
         if (i.fDetailedDocs) {
             i.fDetailedDocs->Apply ([&] (const String& i) { tmpDocs += L"<div>" + substVars (i) + L"</div>"; });

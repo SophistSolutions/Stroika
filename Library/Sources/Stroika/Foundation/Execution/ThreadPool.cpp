@@ -220,13 +220,13 @@ void ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
     }
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
-        for (TPInfo_ ti : fThreads_) {
+        for (const TPInfo_& ti : fThreads_) {
             ti.fThread.Abort ();
         }
     }
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
-        for (TPInfo_ ti : fThreads_) {
+        for (const TPInfo_& ti : fThreads_) {
             // @todo fix wrong timeout value here
             ti.fThread.AbortAndWaitForDone (timeout);
         }
@@ -350,10 +350,10 @@ void ThreadPool::WaitForTasksDoneUntil (const Iterable<TaskType>& tasks, Time::D
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::WaitForTasksDoneUntil", L"*this=%s, tasks=%s, timeoutAt=%f", ToString ().c_str (), ToString (tasks).c_str (), timeoutAt)};
 #endif
     Thread::CheckForInterruption ();
-    for (auto&& task : tasks) {
+    for (const auto& task : tasks) {
         auto now = Time::GetTickCount ();
         ThrowTimeoutExceptionAfter (timeoutAt);
-        this->WaitForTask (task, timeoutAt - now);
+        WaitForTask (task, timeoutAt - now);
     }
 }
 
@@ -381,7 +381,7 @@ void ThreadPool::Abort_ () noexcept
         // Clear the task Q and then abort each thread
         [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
         fPendingTasks_.clear ();
-        for (TPInfo_&& ti : fThreads_) {
+        for (const TPInfo_& ti : fThreads_) {
             ti.fThread.Abort ();
         }
     }

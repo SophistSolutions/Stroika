@@ -204,14 +204,6 @@ namespace Stroika::Foundation::Traversal {
         Ensure (fIterableEnvelope_->_fRep.use_count () == 1);
         return *fRepReference_;
     }
-    template <typename T>
-    template <typename REP_SUB_TYPE>
-    inline void Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_UpdateRep (const typename _SharedByValueRepType::shared_ptr_type& sp)
-    {
-        RequireNotNull (sp);
-        EnsureNotNull (fIterableEnvelope_);
-        fIterableEnvelope_->_fRep = sp;
-    }
 
     /*
      ********************************************************************************
@@ -329,9 +321,9 @@ namespace Stroika::Foundation::Traversal {
          *  An extremely inefficient but space-constant implementation. N^2 and check
          *  a contains b and b contains a
          */
-        for (const auto ti : lhs) {
+        for (const auto& ti : lhs) {
             bool contained = false;
-            for (const auto ri : rhs) {
+            for (const auto& ri : rhs) {
                 if (equalsComparer (ti, ri)) {
                     contained = true;
                     break;
@@ -341,9 +333,9 @@ namespace Stroika::Foundation::Traversal {
                 return false;
             }
         }
-        for (const auto ri : rhs) {
+        for (const auto& ri : rhs) {
             bool contained = false;
-            for (const auto ti : lhs) {
+            for (const auto& ti : lhs) {
                 if (equalsComparer (ti, ri)) {
                     contained = true;
                     break;
@@ -367,7 +359,7 @@ namespace Stroika::Foundation::Traversal {
     {
         auto tallyOf = [&equalsComparer] (const auto& c, Configuration::ArgByValueType<T> item) -> size_t {
             size_t total = 0;
-            for (const auto ti : c) {
+            for (const auto& ti : c) {
                 if (equalsComparer (ti, item)) {
                     ++total;
                 }
@@ -378,12 +370,12 @@ namespace Stroika::Foundation::Traversal {
          *  An extremely in-efficient but space-constant implementation. N^3 and check
          *  a contains b and b contains a
          */
-        for (const auto ti : lhs) {
+        for (const auto& ti : lhs) {
             if (tallyOf (lhs, ti) != tallyOf (rhs, ti)) {
                 return false;
             }
         }
-        for (const auto ti : rhs) {
+        for (const auto& ti : rhs) {
             if (tallyOf (lhs, ti) != tallyOf (rhs, ti)) {
                 return false;
             }
@@ -456,7 +448,9 @@ namespace Stroika::Foundation::Traversal {
                 ++perIteratorContextBaseIterator;
             }
             if (perIteratorContextBaseIterator) {
-                return *perIteratorContextBaseIterator++;
+                auto tmp = *perIteratorContextBaseIterator;
+                ++perIteratorContextBaseIterator;
+                return move (tmp);
             }
             return nullopt;
         };
@@ -474,7 +468,7 @@ namespace Stroika::Foundation::Traversal {
     {
         Require (emptyResult.empty ());
         RESULT_CONTAINER result = emptyResult;
-        for (const auto i : Where (includeIfTrue)) {
+        for (const auto& i : Where (includeIfTrue)) {
             result.Add (i);
         }
         return result;
@@ -489,7 +483,7 @@ namespace Stroika::Foundation::Traversal {
             tmp = vector<T>{t1.begin (), t1.end ()};
         }
         else {
-            for (const auto i : *this) {
+            for (const auto& i : *this) {
                 if (find_if (tmp.begin (), tmp.end (), [&] (ArgByValueType<T> n) { return equalsComparer (n, i); }) == tmp.end ()) {
                     tmp.push_back (i);
                 }
@@ -514,13 +508,13 @@ namespace Stroika::Foundation::Traversal {
         vector<RESULT> tmp; // Simplistic/stupid/weak implementation
         if constexpr (is_same_v<equal_to<T>, EQUALS_COMPARER> and is_invocable_v<less<T>>) {
             set<RESULT> t1;
-            for (T i : *this) {
+            for (const T& i : *this) {
                 t1.add (extractElt (i));
             }
             tmp = vector<RESULT>{t1.begin (), t1.end ()};
         }
         else {
-            for (const T i : *this) {
+            for (const T& i : *this) {
                 RESULT item2Test = extractElt (i);
                 if (find_if (tmp.begin (), tmp.end (), [&] (ArgByValueType<T> n) { return equalsComparer (n, item2Test); }) == tmp.end ()) {
                     tmp.push_back (item2Test);
@@ -549,45 +543,9 @@ namespace Stroika::Foundation::Traversal {
         // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
         function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), extract] () mutable -> optional<RESULT> {
             if (perIteratorContextBaseIterator) {
-                return RESULT (extract (*perIteratorContextBaseIterator++));
-            }
-            return nullopt;
-        };
-        return CreateGenerator (getNext);
-    }
-    template <typename T>
-    template <typename T1, typename T2, typename RESULT>
-    Iterable<RESULT> Iterable<T>::Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2) const
-    {
-        RequireNotNull (extract1);
-        RequireNotNull (extract2);
-        // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
-        auto sharedContext = make_shared<Iterable<T>> (*this);
-        // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
-        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-        function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), extract1, extract2] () mutable -> optional<RESULT> {
-            if (perIteratorContextBaseIterator) {
-                RESULT result{extract1 (*perIteratorContextBaseIterator), extract2 (*perIteratorContextBaseIterator)};
+                RESULT result = extract (*perIteratorContextBaseIterator);
                 ++perIteratorContextBaseIterator;
-                return result;
-            }
-            return nullopt;
-        };
-        return CreateGenerator (getNext);
-    }
-    template <typename T>
-    template <typename T1, typename T2, typename T3, typename RESULT>
-    Iterable<RESULT> Iterable<T>::Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const
-    {
-        // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
-        auto sharedContext = make_shared<Iterable<T>> (*this);
-        // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
-        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-        function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), extract1, extract2, extract3] () mutable -> optional<RESULT> {
-            if (perIteratorContextBaseIterator) {
-                RESULT result{extract1 (*perIteratorContextBaseIterator), extract2 (*perIteratorContextBaseIterator), extract3 (*perIteratorContextBaseIterator)};
-                ++perIteratorContextBaseIterator;
-                return result;
+                return move (result);
             }
             return nullopt;
         };
@@ -606,9 +564,10 @@ namespace Stroika::Foundation::Traversal {
             // tricky. The funtion we are defining returns nullopt as a sentinal to signal end of iteration. The function we are GIVEN returns nullopt
             // to signal skip this item. So adjust accordingly
             while (perIteratorContextBaseIterator) {
-                auto t = extract (*perIteratorContextBaseIterator++);
+                optional<RESULT> t = extract (*perIteratorContextBaseIterator);
+                ++perIteratorContextBaseIterator;
                 if (t) {
-                    return RESULT{*t};
+                    return *t;
                 }
             }
             return nullopt;
@@ -621,7 +580,7 @@ namespace Stroika::Foundation::Traversal {
     {
         RESULT result{};
         bool   firstTime{true};
-        for (const auto i : *this) {
+        for (const auto& i : *this) {
             if (firstTime) {
                 result    = convertToT (i);
                 firstTime = false;
@@ -658,11 +617,13 @@ namespace Stroika::Foundation::Traversal {
         // perIteratorContextNItemsToSkip also must be cloned per iterator instance
         function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), perIteratorContextNItemsToSkip = nItems] () mutable -> optional<T> {
             while (perIteratorContextBaseIterator and perIteratorContextNItemsToSkip > 0) {
-                perIteratorContextNItemsToSkip--;
+                --perIteratorContextNItemsToSkip;
                 ++perIteratorContextBaseIterator;
             }
             if (perIteratorContextBaseIterator) {
-                return *perIteratorContextBaseIterator++;
+                auto result = *perIteratorContextBaseIterator;
+                ++perIteratorContextBaseIterator;
+                return move (result);
             }
             return nullopt;
         };
@@ -682,7 +643,9 @@ namespace Stroika::Foundation::Traversal {
             }
             perIteratorContextNItemsToTake--;
             if (perIteratorContextBaseIterator) {
-                return *perIteratorContextBaseIterator++;
+                auto result = *perIteratorContextBaseIterator;
+                ++perIteratorContextBaseIterator;
+                return move (result);
             }
             return nullopt;
         };
@@ -699,7 +662,7 @@ namespace Stroika::Foundation::Traversal {
         // perIteratorContextNItemsToTake also must be cloned per iterator instance
         function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), perIteratorContextNItemsToSkip = from, perIteratorContextNItemsToTake = to - from] () mutable -> optional<T> {
             while (perIteratorContextBaseIterator and perIteratorContextNItemsToSkip > 0) {
-                perIteratorContextNItemsToSkip--;
+                --perIteratorContextNItemsToSkip;
                 ++perIteratorContextBaseIterator;
             }
             if (perIteratorContextNItemsToTake == 0) {
@@ -707,7 +670,9 @@ namespace Stroika::Foundation::Traversal {
             }
             perIteratorContextNItemsToTake--;
             if (perIteratorContextBaseIterator) {
-                return *perIteratorContextBaseIterator++;
+                auto result = *perIteratorContextBaseIterator;
+                ++perIteratorContextBaseIterator;
+                return move (result);
             }
             return nullopt;
         };
@@ -737,22 +702,11 @@ namespace Stroika::Foundation::Traversal {
         return i ? *i : optional<T>{};
     }
     template <typename T>
-    inline optional<T> Iterable<T>::First (const function<bool (ArgByValueType<T>)>& that) const
-    {
-        RequireNotNull (that);
-        for (const auto i : *this) {
-            if (that (i)) {
-                return i;
-            }
-        }
-        return nullopt;
-    }
-    template <typename T>
     template <typename RESULT_T>
     inline optional<RESULT_T> Iterable<T>::First (const function<optional<RESULT_T> (ArgByValueType<T>)>& that) const
     {
         RequireNotNull (that);
-        for (const auto i : *this) {
+        for (const auto& i : *this) {
             if (auto r = that (i)) {
                 return r;
             }
@@ -784,24 +738,12 @@ namespace Stroika::Foundation::Traversal {
         return nullopt;
     }
     template <typename T>
-    optional<T> Iterable<T>::Last (const function<bool (ArgByValueType<T>)>& that) const
-    {
-        RequireNotNull (that);
-        optional<T> result;
-        for (const auto i : *this) {
-            if (that (i)) {
-                result = i;
-            }
-        }
-        return result;
-    }
-    template <typename T>
     template <typename RESULT_T>
     inline optional<RESULT_T> Iterable<T>::Last (const function<optional<RESULT_T> (ArgByValueType<T>)>& that) const
     {
         RequireNotNull (that);
         optional<T> result;
-        for (const auto i : *this) {
+        for (const auto& i : *this) {
             if (auto o = that (i)) {
                 result = *o;
             }
@@ -827,7 +769,7 @@ namespace Stroika::Foundation::Traversal {
     bool Iterable<T>::All (const function<bool (ArgByValueType<T>)>& testEachElt) const
     {
         RequireNotNull (testEachElt);
-        for (const auto i : *this) {
+        for (const auto& i : *this) {
             if (not testEachElt (i)) {
                 return false;
             }
@@ -839,7 +781,7 @@ namespace Stroika::Foundation::Traversal {
     optional<RESULT_TYPE> Iterable<T>::Accumulate (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const
     {
         optional<RESULT_TYPE> result;
-        for (const T i : *this) {
+        for (const auto& i : *this) {
             if (result) {
                 result = op (i, *result);
             }
@@ -883,7 +825,7 @@ namespace Stroika::Foundation::Traversal {
     {
         RESULT_TYPE  result{};
         unsigned int count{};
-        for (T i : *this) {
+        for (const T& i : *this) {
             ++count;
             result += i;
         }
@@ -1043,7 +985,7 @@ namespace Stroika::Foundation::Traversal {
     {
         Require (n < size ());
         size_t idx = n;
-        for (const T i : *this) {
+        for (const T& i : *this) {
             if (idx == 0) {
                 return i;
             }
@@ -1056,7 +998,7 @@ namespace Stroika::Foundation::Traversal {
     T Iterable<T>::NthValue (size_t n, ArgByValueType<T> defaultValue) const
     {
         size_t idx = n;
-        for (const T i : *this) {
+        for (const T& i : *this) {
             if (idx == 0) {
                 return i;
             }

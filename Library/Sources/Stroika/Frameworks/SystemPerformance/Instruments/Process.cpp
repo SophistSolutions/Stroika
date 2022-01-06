@@ -391,7 +391,7 @@ namespace {
              *  the lightweight process thread ids,  so we don't need to specially filter them out. However, I've not found
              *  this claim documented anywhere, so beware...
              */
-            for (auto& p : filesystem::directory_iterator{"/proc", filesystem::directory_options{filesystem::directory_options::skip_permission_denied}}) {
+            for (const auto& p : filesystem::directory_iterator{"/proc", filesystem::directory_options{filesystem::directory_options::skip_permission_denied}}) {
                 const filesystem::path& dir               = p.path (); // full-path
                 String                  dirFileNameString = IO::FileSystem::FromPath (dir.filename ());
                 bool                    isAllNumeric      = not dirFileNameString.Find ([] (Character c) -> bool { return not c.IsDigit (); });
@@ -601,7 +601,7 @@ namespace {
         static Mapping<String, String> ReadFileStringsMap_ (const filesystem::path& fullPath)
         {
             Mapping<String, String> results;
-            for (String i : ReadFileStrings_ (fullPath)) {
+            for (const String& i : ReadFileStrings_ (fullPath)) {
                 auto tokens = i.Tokenize ({'='});
                 if (tokens.size () == 2) {
                     results.Add (tokens[0], tokens[1]);
@@ -986,7 +986,7 @@ namespace {
             }
             ProcessType::TCPStats stats;
             bool                  didSkip = false;
-            for (String i : TextReader::New (FileInputStream::New (fullPath, FileInputStream::eNotSeekable)).ReadLines ()) { // @todo redo using .Skip(1) but crashes --LGP 2016-05-17
+            for (const String& i : TextReader::New (FileInputStream::New (fullPath, FileInputStream::eNotSeekable)).ReadLines ()) { // @todo redo using .Skip(1) but crashes --LGP 2016-05-17
                 if (not didSkip) {
                     didSkip = true;
                     continue;
@@ -1243,14 +1243,14 @@ namespace {
             DurationSecondsType timeCollecting{processWMICollectorLock.rwref ().GetTimeOfLastCollection () - timeOfPrevCollection};
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            for (String i : processWMICollectorLock.rwref ().GetAvailableInstaces ()) {
+            for (const String& i : processWMICollectorLock.rwref ().GetAvailableInstaces ()) {
                 DbgTrace (L"WMI instance name %s", i.c_str ());
             }
 #endif
 
             // NOTE THIS IS BUGGY - MUST READ BACK AS INT NOT DOUBLE
             Mapping<pid_t, String> pid2InstanceMap;
-            for (KeyValuePair<String, double> i : processWMICollectorLock.rwref ().GetCurrentValues (kProcessID_)) {
+            for (const KeyValuePair<String, double>& i : processWMICollectorLock.rwref ().GetCurrentValues (kProcessID_)) {
                 pid2InstanceMap.Add (static_cast<int> (i.fValue), i.fKey);
             }
 #endif

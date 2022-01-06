@@ -269,14 +269,6 @@ namespace Stroika::Foundation::Debug {
         nonvirtual void unlock_shared () const noexcept;
 
 #if qDebug
-    public:
-        [[deprecated ("Since Stroika 2.1b14 use SetAssertExternallySynchronizedMutexContext")]] void SetAssertExternallySynchronizeLockContext (const shared_ptr<SharedContext>& sharedContext)
-        {
-            SetAssertExternallySynchronizedMutexContext (sharedContext);
-        }
-#endif
-
-#if qDebug
     private:
         nonvirtual void lock_ () const noexcept;
         nonvirtual void unlock_ () const noexcept;

@@ -18,7 +18,7 @@ in Stroika and CAN be used to greatly improve the efficiency of some memory acce
 - [BlockAllocator.h](BlockAllocator.h)
 - [Common.h](Common.h)
 - [MemoryAllocator.h](MemoryAllocator.h)
-- [Optional.h](Optional.h) - mostly deprecated due to std::optional (but a few handy helpers)
+- [Optional.h](Optional.h) - a few handy optional<T> related helpers
 - [Platform/](Platform/ReadMe.md)
 - [SharedByValue.h](SharedByValue.h) - a utility class to implement Copy-On-Write (aka COW)
 - [SharedPtr.h](SharedPtr.h)

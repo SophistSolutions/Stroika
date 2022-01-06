@@ -291,9 +291,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.h">
       <Filter>WebServer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRouter.h">
-      <Filter>WebServer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.h">
       <Filter>WebServer</Filter>
     </ClInclude>

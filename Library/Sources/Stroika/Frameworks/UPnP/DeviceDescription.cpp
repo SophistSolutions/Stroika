@@ -193,7 +193,7 @@ Memory::BLOB UPnP::Serialize (const DeviceDescription& dd)
     }
     if (dd.fIcons) {
         tmp << "                <iconList>" << endl;
-        for (DeviceDescription::Icon i : *dd.fIcons) {
+        for (const DeviceDescription::Icon& i : *dd.fIcons) {
             tmp << "                    <icon>" << endl;
             tmp << "                            <mimetype>" << QuoteForXML (i.fMimeType.As<String> ()) << "</mimetype>" << endl;
             tmp << "                            <width>" << i.fHorizontalPixels << "</width>" << endl;
@@ -206,7 +206,7 @@ Memory::BLOB UPnP::Serialize (const DeviceDescription& dd)
     }
     if (dd.fServices) {
         tmp << "                <serviceList>" << endl;
-        for (DeviceDescription::Service i : *dd.fServices) {
+        for (const DeviceDescription::Service& i : *dd.fServices) {
             tmp << "                    <service>" << endl;
             tmp << "                            <serviceType>" << QuoteForXML (i.fServiceType) << "</serviceType>" << endl;
             tmp << "                            <serviceId>" << QuoteForXML (i.fServiceID) << "</serviceId>" << endl;

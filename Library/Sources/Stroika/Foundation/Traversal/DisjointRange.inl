@@ -130,8 +130,8 @@ namespace Stroika::Foundation::Traversal {
     {
         // @todo could do more efficiently
         Containers::Sequence<RangeType> disjointRanges{};
-        for (RangeType rri : rhs.SubRanges ()) {
-            for (RangeType mySR : this->SubRanges ()) {
+        for (const RangeType& rri : rhs.SubRanges ()) {
+            for (const RangeType& mySR : this->SubRanges ()) {
                 RangeType intersectedSubPart = rri ^ mySR;
                 if (not intersectedSubPart.empty ()) {
                     disjointRanges.Append (intersectedSubPart);
@@ -145,8 +145,8 @@ namespace Stroika::Foundation::Traversal {
     {
         // @todo could do more efficiently
         Containers::Sequence<RangeType> disjointRanges{};
-        for (RangeType rri : rhs.SubRanges ()) {
-            for (RangeType mySR : this->SubRanges ()) {
+        for (const RangeType& rri : rhs.SubRanges ()) {
+            for (const RangeType& mySR : this->SubRanges ()) {
                 RangeType sp = rri + mySR;
                 disjointRanges.Append (sp);
             }
@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Traversal {
     {
         Characters::StringBuilder out;
         out += L"[";
-        for (RangeType rri : SubRanges ()) {
+        for (const RangeType& rri : SubRanges ()) {
             out += rri.ToString (elt2String);
         }
         out += L"]";
@@ -345,7 +345,7 @@ namespace Stroika::Foundation::Traversal {
     {
 #if qDebug
         optional<RangeType> lastRangeSeenSoFar;
-        for (RangeType r : fSubRanges_) {
+        for (const RangeType& r : fSubRanges_) {
             Assert (not r.empty ());
             if (lastRangeSeenSoFar) {
                 Assert (lastRangeSeenSoFar->GetUpperBound () <= r.GetLowerBound ()); // equal maybe bad but check that case with itersects which pays attention to openness

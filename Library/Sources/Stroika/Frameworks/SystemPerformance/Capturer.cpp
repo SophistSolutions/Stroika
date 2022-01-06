@@ -50,16 +50,6 @@ Capturer::Capturer (const CaptureSet& cs)
     AddCaptureSet (cs);
 }
 
-Collection<Capturer::NewMeasurementsCallbackType> Capturer::GetMeasurementsCallbacks () const
-{
-    return fCallbacks_;
-}
-
-void Capturer::SetMeasurementsCallbacks (const Collection<NewMeasurementsCallbackType>& callbacks)
-{
-    fCallbacks_ = callbacks;
-}
-
 void Capturer::AddMeasurementsCallback (const NewMeasurementsCallbackType& cb)
 {
     fCallbacks_.rwget ()->Add (cb);
@@ -68,19 +58,6 @@ void Capturer::AddMeasurementsCallback (const NewMeasurementsCallbackType& cb)
 void Capturer::RemoveMeasurementsCallback (const NewMeasurementsCallbackType& cb)
 {
     fCallbacks_.rwget ()->Remove (cb);
-}
-
-Collection<CaptureSet> Capturer::GetCaptureSets () const
-{
-    return fCaptureSets_;
-}
-
-void Capturer::SetCaptureSets (const Collection<CaptureSet>& captureSets)
-{
-    auto rwLock = fCaptureSets_.rwget ();
-    rwLock.store (captureSets);
-    ++fCaptureSetChangeCount_;
-    ManageRunner_ (not captureSets.empty ());
 }
 
 void Capturer::AddCaptureSet (const CaptureSet& cs)

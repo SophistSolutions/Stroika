@@ -78,11 +78,6 @@ namespace Stroika::Foundation::Common {
 
     public:
         /**
-         */
-        [[deprecated ("Since v2.1b9 - just use default CTOR")]] static constexpr GUID Zero ();
-
-    public:
-        /**
          *  Like Windows UuidCreate, or CoCreateGuid - create a random GUID (but portably).
          */
         static GUID GenerateNew ();
