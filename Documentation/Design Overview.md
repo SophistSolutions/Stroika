@@ -100,7 +100,7 @@ This doesn&#39;t completely replace tools like thread-sanitizer, and valgrind/he
 
 ## External Validation Tools
 
-Tools like valgrind (helgrind and memcheck), and sanitizers (address, undefined behavior, and soon thread sanitizer) are all regularly run as part of the Stroika regression test suite, and are a sensible addition Stroika-based development process.
+Tools like valgrind (helgrind and memcheck), and sanitizers (address, undefined behavior, and thread sanitizer) are all regularly run as part of the Stroika regression test suite, and are a sensible addition Stroika-based development process.
 
 They are especially useful to help validate that any subtle bugs aren&#39;t present ONLY in release builds, but not in debug builds (extremely rare, but it can happen).
 
@@ -124,3 +124,33 @@ Advantages of using struct/class
 - Classes provide their own mechanism for automated related lookup (nested classes see members from parents) – which is helpful
 
 In the end – no very strong arguments, but for now I&#39;ve gone with &#39;struct/class&#39; in several places.
+
+## Range-based for loop (auto)
+
+I really have NO IDEA what is best here. I've searched alot and found no clear guidance. But consistency appears a virtue, so I've come up with a policy and documented. Its NOT ALWAYS right, just a good default
+
+This form makes clear the 'c' in the loop is readonly and just examined in the loop.
+~~~c++
+for (const auto& c : container) {...}     // this is used most of the time OR
+for (const String& c : container) {...}   // assuming String is the value_type of the container
+~~~
+
+Using the explicit name just makes it a little easier sometimes to see in the code where 'c' is used what its type is.
+
+When the 'c' value will be modified in place, or if I KNOW size is small/basic type, I may use
+~~~c++
+for (auto c : container) {...}    // OR
+for (String c : container) {...}  // assuming container is container of <String>
+~~~
+
+I cannot see the utility - except maybe in templated code where you may want to forward values, things like
+~~~c++
+for (auto&& c : container) {...}    // why except maybe
+
+for (auto&& c : container) { someapi (forward<T> (c)); }
+~~~
+
+NB - use of auto& c won't work with Stroika Iterator<> classes (since operator* returns const reference only as we don't allow updating containers by fiddling with the iterator only.
+~~~c++
+for (auto& c : container) {...}    // WONT WORK WITH STK ITERABLE<>
+~~~

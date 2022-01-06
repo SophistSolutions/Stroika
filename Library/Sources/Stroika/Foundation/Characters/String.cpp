@@ -818,7 +818,7 @@ String String::ReplaceAll (const String& string2SearchFor, const String& with, C
 String String::ReplaceAll (const function<bool (Character)>& replaceCharP, const String& with) const
 {
     StringBuilder sb;
-    for (const Character& i : *this) {
+    for (Character i : *this) {
         if (replaceCharP (i)) {
             sb += with;
         }
@@ -832,7 +832,7 @@ String String::ReplaceAll (const function<bool (Character)>& replaceCharP, const
 String String::ReplaceAll (const Containers::Set<Character>& charSet, const String& with) const
 {
     StringBuilder sb;
-    for (const Character& i : *this) {
+    for (Character i : *this) {
         if (charSet.Contains (i)) {
             sb += with;
         }

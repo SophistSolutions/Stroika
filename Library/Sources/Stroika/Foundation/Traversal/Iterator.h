@@ -353,6 +353,9 @@ namespace Stroika::Foundation::Traversal {
          *        perform better, but testing has not confirmed that (though this does appear to be existing practice in things like STL).
          * 
          *  \note It is illegal (but goes undetected) to hang onto (and use) the reference returned past when the iterator is next modified
+         * 
+         *  \note use of for (auto& c : Iterable<>) won't work with Stroika Iterator<> classes since operator* returns const reference only
+         *        as we don't allow updating containers by fiddling with the iterator only.
          */
         nonvirtual const T& operator* () const;
 
