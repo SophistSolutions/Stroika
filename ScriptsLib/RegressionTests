@@ -100,10 +100,14 @@ if [ $? -eq 0 ] ; then
 fi
 
 ### Print INFO about what OS version running (for several major OSes check)
+
+## Linux
 command -v lsb_release 2>&1 > /dev/null
 if [ $? -eq 0 ] ; then
 	echo "$PREFIX_OUT_LABEL" "    DEBIAN-STYLE-RELEASE: `lsb_release -d`" >>$TEST_OUT_FILE 2>&1
 fi
+
+## Windows
 command -v systeminfo 2>&1 > /dev/null
 if [ $? -eq 0 ] ; then
 	echo "$PREFIX_OUT_LABEL" "    Windows-SystemInfo: `systeminfo`" >>$TEST_OUT_FILE 2>&1
@@ -112,13 +116,19 @@ command -v "C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe
 if [ $? -eq 0 ] ; then
 	echo "$PREFIX_OUT_LABEL" "    vswhere=`"C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe" -format json -products '*'`" >>$TEST_OUT_FILE 2>&1
 fi
+
+## MACOS
 command -v "sw_vers" 2>&1 > /dev/null
 if [ $? -eq 0 ] ; then
-	echo "$PREFIX_OUT_LABEL" "    MacOS-X: `sw_vers | tr '\n' ';'`" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "    MacOS-X Version: `sw_vers | tr '\n' ';'`" >>$TEST_OUT_FILE 2>&1
 fi
-command -v "xcodebuild" 2>&1 > /dev/null
+command -v "xcodebuild -version" 2>&1 > /dev/null
 if [ $? -eq 0 ] ; then
-	echo "$PREFIX_OUT_LABEL" "    X-CODE: `xcodebuild -version | tr '\n' ';'`" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "    X-CODE Version: `xcodebuild -version | tr '\n' ';'`" >>$TEST_OUT_FILE 2>&1
+fi
+tmp=`pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version`
+if [ tmp != "" ] ; then
+	echo "$PREFIX_OUT_LABEL" "    X-CODE $tmp" >>$TEST_OUT_FILE 2>&1
 fi
 command -v "xcode-select" 2>&1 > /dev/null
 if [ $? -eq 0 ] ; then
@@ -126,7 +136,7 @@ if [ $? -eq 0 ] ; then
 fi
 command -v "system_profiler SPSoftwareDataType" 2>&1 > /dev/null
 if [ $? -eq 0 ] ; then
-	echo "$PREFIX_OUT_LABEL" "    system_profiler=`system_profiler SPSoftwareDataType`" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "    `system_profiler SPSoftwareDataType | grep "System Version"`" >>$TEST_OUT_FILE 2>&1
 fi
 if [ -e /etc/os-release ] ; then
 	echo "$PREFIX_OUT_LABEL" "    /etc/os-release: `cat /etc/os-release`" >>$TEST_OUT_FILE 2>&1
