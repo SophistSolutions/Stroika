@@ -45,7 +45,7 @@ Stroika's biggest strength is also its biggest weakness:
 
 ## Versions
 
-- Stroika v3 will start soon, and require C++20 or later.
+- Stroika v3 development has started, and requires C++20 or later.
 
 - Stroika v2.1 is stable (in maintainance), and requires C++17 or later. Version 2.1 also conditionally supports many c++20 features (such as three-way-comparison etc, if available).
 
