@@ -81,7 +81,8 @@ especially those they need to be aware of when upgrading.
     - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
     - WSL v1 & WSL v2
   - MacOS
-    - 11.4 (Big Sur) - both running x86_64 and arn64/m1 chips
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Moneterey) - arm64/m1 chip
   - Linux: { Ubuntu: [18.04, 20.04, 21.10], Centos: [7, 8], Raspbian(cross-compiled) }
 - Hardware Tested/Supported
   - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
