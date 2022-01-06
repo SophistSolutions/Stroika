@@ -7,16 +7,32 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+---
+
+### 2.1r1 {2022-01-06x}
+
+#### TLDR
+
+- Lose deprecated beta API support, in preparation for release.
+- Fixed a few ThirdPartyComponents versions (zlib, and libcurl issues)
+- Small performance tweaks/review/assessment
+- Docs improvements
+
+#### Change Details
+
+- Build System Tests And Tools
+  - Build System
+    - tweaked RunPerformanceRegressionTests for windwos run x86 and x86_64 tests
+    - fixed RunLocalWindowsDockerRegressionTests to copy out right performance regtests files
+  - Compiler bug defines
+    - qCompiler_ASanitizer_global_buffer_overflow_Buggy compiler bug define and workaround
+  - New Compiler Versions
+    - in docker, use vs2k22 17.0.4
+  - Regression Tests
+    - tweak performance regtests numbers for running under windows/docker (so no warnings)
 
 - Documentation
   - cleanups and prepare for release
-
-- Build System
-  - tweaked RunPerformanceRegressionTests for windwos run x86 and x86_64 tests
-  - fixed RunLocalWindowsDockerRegressionTests to copy out right performance regtests files
-
-- Compiler bug defines
-  - qCompiler_ASanitizer_global_buffer_overflow_Buggy compiler bug define and workaround
 
 - Library::Foundation
   - Characters
@@ -34,32 +50,61 @@ especially those they need to be aware of when upgrading.
   - Traverasal
     - **not backward compatible** - lose Iterator<> postfix ++ support, so that I can have Iterator<T>::operator* (and Current ()) return internal pointer/refernece as small performance tweak
 
-- Compiler Versions
-  - in docker, use vs2k22 17.0.4
-
-- MISC
+- Miscelaneous
   - removed most deprecated (beta) APIs (NOT BACKWARD COMPAT - SEE DOCS?? WHERE - ON UPGRAIND)
-
-- Regression Tests
-  - tweak performance regtests numbers for running under windows/docker (so no warnings)
-
-- Coding Style changes (applied throughout code)
-  - mostly cosmetic (I think) - but may have some performance implications (some +, some -) - use much more for (const T& or for (const auto& - replacing just for (T, or other things less clear / appropriate; haven't found clear docs on web about universally what is best here, but I if performance diff unclear (less a win for Stroika than other systems due to COW and maybe more cost due to how iterators return by value not reference)
-  - use MOVE ctors in one more place
-  - change const auto&& to auto&&; and frequently use const auto& in ranged for - use in ranged for loops in a few places (I think works better but not 100% sure)
+  - Coding Style changes (applied throughout code)
+    - mostly cosmetic (I think) - but may have some performance implications (some +, some -) - use much more for (const T& or for (const auto& - replacing just for (T, or other things less clear / appropriate; haven't found clear docs on web about universally what is best here, but I if performance diff unclear (less a win for Stroika than other systems due to COW and maybe more cost due to how iterators return by value not reference)
+    - use MOVE ctors in one more place
+    - change const auto&& to auto&&; and frequently use const auto& in ranged for - use in ranged for loops in a few places (I think works better but not 100% sure)
 
 - ThirdPartyComponents
   - libcurl
     - fixed libcurl Makefile to include /ScriptsLib/SharedMakeVariables-Default.mk so FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL now works right; and added CPPFLAGS in addition to CFLAGS to configure script
     - fixed missing zlib usage from build of libcurl
     - workaround https://stroika.atlassian.net/browse/STK-759; and now use curl VERSION=7.80.0 even on macos
-
   - sqlite
     - Version: 3.37.1
   - zlib
     - https://stroika.atlassian.net/browse/STK-568 (update to latest zlib (1.2.8 works fine but 1.2.9 and later crash on win32)
     - Version: 1.2.11
 
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13; XCode: 13 }
+  - MSVC: { 15.9.41, 16.11.8, 17.0.4 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+    - WSL v1 & WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - both running x86_64 and arn64/m1 chips
+  - Linux: { Ubuntu: [18.04, 20.04, 21.10], Centos: [7, 8], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [CircleCI](https://app.circleci.com/pipelines/github/SophistSolutions/Stroika)
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+  - Centos 7
+    - two warnings about locale issues, very minor
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - vs2k19 and vs2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+  - WSL-Regression tests
+    - Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure
 
 ---
 
