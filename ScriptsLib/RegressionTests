@@ -127,7 +127,7 @@ if [ $? -eq 0 ] ; then
 	echo "$PREFIX_OUT_LABEL" "    X-CODE Version: `xcodebuild -version | tr '\n' ';'`" >>$TEST_OUT_FILE 2>&1
 fi
 tmp=`(pkgutil --pkg-info=com.apple.pkg.CLTools_Executables 2> /dev/null) | grep version` 
-if [ $tmp != "" ] ; then
+if [ "$tmp" != "" ] ; then
 	echo "$PREFIX_OUT_LABEL" "    X-CODE $tmp" >>$TEST_OUT_FILE 2>&1
 fi
 command -v "xcode-select" 2>&1 > /dev/null
