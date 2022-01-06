@@ -153,7 +153,9 @@ my $FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_librt = undef;
 my $FEATUREFLAG_WIX = undef;
+my $TargettingValgrind = undef;
 my $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = undef;
+my $qCompiler_ValgrindDirectSignalHandler_Buggy = undef;
 my $qCompiler_HasNoMisleadingIndentation_Flag = undef;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS_LIB = true;
@@ -980,9 +982,15 @@ sub	SetDefaultForCompilerDriver_
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (11.0 <= GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 12.0)) {
 			$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true;
 		}
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and ($TargettingValgrind == true)) {
+			$qCompiler_ValgrindDirectSignalHandler_Buggy = true;
+		}
 	}
 	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
 		push (@useExtraCDefines, '#define qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy 1');
+	}
+	if (defined ($qCompiler_ValgrindDirectSignalHandler_Buggy) and $qCompiler_ValgrindDirectSignalHandler_Buggy) {
+		push (@useExtraCDefines, '#define qCompiler_ValgrindDirectSignalHandler_Buggy 1');
 	}
 	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin"))) {
 		$FEATUREFLAG_librt = $LIBFEATUREFLAG_UseSystem;
@@ -1265,6 +1273,7 @@ sub	ParseCommandLine_Remaining_
 			$var = $args[$i];
 			if ($var eq "enable") {
 				push (@useExtraCDefines, '#define qStroika_FeatureSupported_Valgrind 1');
+				$TargettingValgrind = true;
 			}
 			elsif ($var eq "disable") {
 				push (@useExtraCDefines, '#define qStroika_FeatureSupported_Valgrind 0');
@@ -2570,6 +2579,9 @@ sub	WriteConfigFile_
 
 	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy)) {
 		print (OUT "    <qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy>$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy</qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy>\n");
+	}
+	if (defined ($qCompiler_ValgrindDirectSignalHandler_Buggy)) {
+		print (OUT "    <qCompiler_ValgrindDirectSignalHandler_Buggy>$qCompiler_ValgrindDirectSignalHandler_Buggy</qCompiler_ValgrindDirectSignalHandler_Buggy>\n");
 	}
 	if (defined ($qCompiler_HasNoMisleadingIndentation_Flag)) {
 		print (OUT "    <qCompiler_HasNoMisleadingIndentation_Flag>$qCompiler_HasNoMisleadingIndentation_Flag</qCompiler_HasNoMisleadingIndentation_Flag>\n");

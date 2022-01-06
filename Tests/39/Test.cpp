@@ -7,6 +7,7 @@
 #include <cstdlib>
 
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Valgrind.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Finally.h"
@@ -32,7 +33,12 @@ namespace {
             SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler{[&called] ([[maybe_unused]] SignalID signal) noexcept -> void { called = true; }, SignalHandler::eDirect});
             [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&] () noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
             ::raise (SIGINT);
-            VerifyTestResult (called);
+            if (qCompiler_ValgrindDirectSignalHandler_Buggy and Debug::IsRunningUnderValgrind ()) {
+                VerifyTestResultWarning (called);
+            }
+            else {
+                VerifyTestResult (called);
+            }
         }
     }
 }
