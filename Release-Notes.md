@@ -7,6 +7,60 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+- Documentation
+  - cleanups and prepare for release
+
+- Build System
+  - tweaked RunPerformanceRegressionTests for windwos run x86 and x86_64 tests
+  - fixed RunLocalWindowsDockerRegressionTests to copy out right performance regtests files
+
+- Compiler bug defines
+  - qCompiler_ASanitizer_global_buffer_overflow_Buggy compiler bug define and workaround
+
+- Library::Foundation
+  - Characters
+    - String code cleanups due to the fact (now better documented) that String::IRep instances are always IMMUTABLE. Simplfiies alot of things.
+  - Common
+    - **not backward compatible** - changed Common::ThreeWayComparer so it is not templated, but operator() () is templated so args do perfect forwarding
+  - Containers
+    - DataStructures::LinkedList/DoubleLinkeLIst::Link renamed Link_ and made private, and  added and used   LinkedList<T>::PeekAt ()
+    - Fixed Collection_stdmultiset and SortedCollection_stdmultiset to use the argument in-order comparer (and fixed a few nmaes in that code)
+    - Collection_Factory<T>::Default_ () set back to using Colleicton_LinkedList fuz faster (for many cases) ftahn Collection_stdmultiset - an dupdated regression performance tests to relfect thsi
+  - DataExchange
+    - fixed https://stroika.atlassian.net/browse/STK-601 - ubsan warning clang call to function (unknown) through pointer to incorrect function type - correct, but intentional - qCompiler_SanitizerFunctionPtrConversionSuppressionBug
+  - Time
+    - replaced Date/TimeOfDay/DateTime::PrintFormat with NonStandardPrintFormat (now that we lost most of the standard ones - clearer name)
+  - Traverasal
+    - **not backward compatible** - lose Iterator<> postfix ++ support, so that I can have Iterator<T>::operator* (and Current ()) return internal pointer/refernece as small performance tweak
+
+- Compiler Versions
+  - in docker, use vs2k22 17.0.4
+
+- MISC
+  - removed most deprecated (beta) APIs (NOT BACKWARD COMPAT - SEE DOCS?? WHERE - ON UPGRAIND)
+
+- Regression Tests
+  - tweak performance regtests numbers for running under windows/docker (so no warnings)
+
+- Coding Style changes (applied throughout code)
+  - mostly cosmetic (I think) - but may have some performance implications (some +, some -) - use much more for (const T& or for (const auto& - replacing just for (T, or other things less clear / appropriate; haven't found clear docs on web about universally what is best here, but I if performance diff unclear (less a win for Stroika than other systems due to COW and maybe more cost due to how iterators return by value not reference)
+  - use MOVE ctors in one more place
+  - change const auto&& to auto&&; and frequently use const auto& in ranged for - use in ranged for loops in a few places (I think works better but not 100% sure)
+
+- ThirdPartyComponents
+  - libcurl
+    - fixed libcurl Makefile to include /ScriptsLib/SharedMakeVariables-Default.mk so FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL now works right; and added CPPFLAGS in addition to CFLAGS to configure script
+    - fixed missing zlib usage from build of libcurl
+    - workaround https://stroika.atlassian.net/browse/STK-759; and now use curl VERSION=7.80.0 even on macos
+
+  - sqlite
+    - Version: 3.37.1
+  - zlib
+    - https://stroika.atlassian.net/browse/STK-568 (update to latest zlib (1.2.8 works fine but 1.2.9 and later crash on win32)
+    - Version: 1.2.11
+
+
 ---
 
 ### 2.1b15 {2021-12-25}
