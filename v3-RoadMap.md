@@ -15,3 +15,4 @@ Rough outline of (informal/weak) plans for Stroika v3
 - Modules support
 - OpenAPI integration (maybe automatic methods, or at least validation).
 - Some sort of GUI integration (perhaps ) - CEF (https://code.google.com/p/chromiumembedded/) or Gekko/Mozilla, or WebKit/V8
+- Finish cleanup of IO::FileSystem code (really getting rid of most or all of it- unless I decide worth virtual fs for zipfiles and remote S3 etc)?
