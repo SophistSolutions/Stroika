@@ -101,7 +101,7 @@ private:
     {
 #if qConditionVariablesSafeInAsyncSignalHanlders
         Assert (not qPlatform_POSIX); // this strategy not safe with POSIX signals
-        unique_lock<mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
+        unique_lock<mutex> lk{fRecievedSig_NotSureWhatMutexFor_};
         fRecievedSig_.wait_for (lk, chrono::seconds (100), [this] () { return fWorkMaybeAvailable_.load (); });
 #else
         fRecievedSig_.Wait ();
