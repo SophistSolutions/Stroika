@@ -33,7 +33,7 @@ namespace {
             SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler{[&called] ([[maybe_unused]] SignalID signal) noexcept -> void { called = true; }, SignalHandler::eDirect});
             [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&] () noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
             ::raise (SIGINT);
-            DISABLE_COMPILER_MSC_WARNING_START (C4127)  // conditional expression is constant - WRONG - CAN be constant - but if qCompiler_ValgrindDirectSignalHandler_Buggy, depends on non constexpr function
+            DISABLE_COMPILER_MSC_WARNING_START (C4127) // conditional expression is constant - WRONG - CAN be constant - but if qCompiler_ValgrindDirectSignalHandler_Buggy, depends on non constexpr function
             if (qCompiler_ValgrindDirectSignalHandler_Buggy and Debug::IsRunningUnderValgrind ()) {
                 VerifyTestResultWarning (called);
             }
