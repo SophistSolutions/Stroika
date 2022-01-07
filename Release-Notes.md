@@ -13,7 +13,7 @@ especially those they need to be aware of when upgrading.
 
 #### TLDR
 
-- Lose deprecated beta API support, in preparation for release.
+- Lose deprecated beta API support, in preparation for release (see [Documentation/Upgrading.md](Documentation/Upgrading.md) )
 - Fixed a few ThirdPartyComponents versions (zlib, and libcurl issues)
 - Small performance tweaks/review/assessment
 - Docs improvements
@@ -22,7 +22,7 @@ especially those they need to be aware of when upgrading.
 
 - Build System Tests And Tools
   - Build System
-    - tweaked RunPerformanceRegressionTests for windwos run x86 and x86_64 tests
+    - tweaked RunPerformanceRegressionTests for windows run x86 and x86_64 tests
     - fixed RunLocalWindowsDockerRegressionTests to copy out right performance regtests files
   - Compiler bug defines
     - qCompiler_ASanitizer_global_buffer_overflow_Buggy compiler bug define and workaround
@@ -41,17 +41,17 @@ especially those they need to be aware of when upgrading.
     - **not backward compatible** - changed Common::ThreeWayComparer so it is not templated, but operator() () is templated so args do perfect forwarding
   - Containers
     - DataStructures::LinkedList/DoubleLinkeLIst::Link renamed Link_ and made private, and  added and used   LinkedList<T>::PeekAt ()
-    - Fixed Collection_stdmultiset and SortedCollection_stdmultiset to use the argument in-order comparer (and fixed a few nmaes in that code)
-    - Collection_Factory<T>::Default_ () set back to using Colleicton_LinkedList fuz faster (for many cases) ftahn Collection_stdmultiset - an dupdated regression performance tests to relfect thsi
+    - Fixed Collection_stdmultiset and SortedCollection_stdmultiset to use the argument in-order comparer (and fixed a few names in that code)
+    - Collection_Factory<T>::Default_ () set back to using Colleicton_LinkedList cuz faster (for many cases) than Collection_stdmultiset - and updated regression performance tests to relfect this
   - DataExchange
     - fixed https://stroika.atlassian.net/browse/STK-601 - ubsan warning clang call to function (unknown) through pointer to incorrect function type - correct, but intentional - qCompiler_SanitizerFunctionPtrConversionSuppressionBug
   - Time
     - replaced Date/TimeOfDay/DateTime::PrintFormat with NonStandardPrintFormat (now that we lost most of the standard ones - clearer name)
   - Traverasal
-    - **not backward compatible** - lose Iterator<> postfix ++ support, so that I can have Iterator<T>::operator* (and Current ()) return internal pointer/refernece as small performance tweak
+    - **not backward compatible** - but easy - lose Iterator<> postfix ++ support, so that I can have Iterator<T>::operator* (and Current ()) return internal pointer/refernece as small performance tweak
 
 - Miscelaneous
-  - removed most deprecated (beta) APIs (NOT BACKWARD COMPAT - SEE DOCS?? WHERE - ON UPGRAIND)
+  - removed most deprecated (beta) APIs - **not backward compatible** -  (see [Documentation/Upgrading.md](Documentation/Upgrading.md) )
   - Coding Style changes (applied throughout code)
     - mostly cosmetic (I think) - but may have some performance implications (some +, some -) - use much more for (const T& or for (const auto& - replacing just for (T, or other things less clear / appropriate; haven't found clear docs on web about universally what is best here, but I if performance diff unclear (less a win for Stroika than other systems due to COW and maybe more cost due to how iterators return by value not reference)
     - use MOVE ctors in one more place
