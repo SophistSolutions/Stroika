@@ -140,8 +140,7 @@ public:
                                         Execution::Throw (Execution::Exception{L"more than 10"sv});
                                     } }})},
 
-          } 
-        // clang-format off
+          } // clang-format off
         , fWSImpl_ { wsImpl }
 #if __cpp_designated_initializers
         , fConnectionMgr_ {
@@ -156,7 +155,7 @@ public:
                 ConnectionManager::Options { nullopt, nullopt, Socket::BindFlags{}, kDefaultResponseHeaders_ }
         }
 #endif
-        // clang-format on
+    // clang-format on
     {
         // @todo - move this to some framework-specific regtests...
         using VariantValue         = DataExchange::VariantValue;
