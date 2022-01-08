@@ -109,7 +109,7 @@ namespace {
 #else
                 ConnectionManager::Options { nullopt, nullopt, Socket::BindFlags{}, kDefaultResponseHeaders_ }}
 #endif
-            // clang-format on
+        // clang-format on
         {
         }
         // Can declare arguments as Request*,Response*
