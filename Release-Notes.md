@@ -24,6 +24,7 @@ especially those they need to be aware of when upgrading.
   - Build System
     - tweaked RunPerformanceRegressionTests for windows run x86 and x86_64 tests
     - fixed RunLocalWindowsDockerRegressionTests to copy out right performance regtests files
+    - workaround https://stroika.atlassian.net/browse/STK-761 - Ubuntu 21.10 (apparent ASAN) - but really I think lto - issue
   - Compiler bug defines
     - qCompiler_ASanitizer_global_buffer_overflow_Buggy compiler bug define and workaround
   - New Compiler Versions
@@ -78,8 +79,8 @@ especially those they need to be aware of when upgrading.
   - Windows
     - Windows 10 version 21H2
     - Windows 11 version 21H2
-    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
-    - WSL v1 & WSL v2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
   - MacOS
     - 11.4 (Big Sur) - x86_64
     - 12.0 (Moneterey) - arm64/m1 chip
