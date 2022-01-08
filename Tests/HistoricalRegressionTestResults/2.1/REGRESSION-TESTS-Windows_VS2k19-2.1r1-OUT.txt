@@ -1,0 +1,69 @@
+done (in 48 minutes)
+</Run-Tests ALL-Local>
+
+
+<Run-Tests-REMOTE>
+)))- Run-Tests raspberrypi remote...SKIPPED
+</Run-Tests-REMOTE>
+
+
+<LOCAL VALGRIND on (REGRESSION) tests>
+)))- Skipping valgrind memcheck regression tests because INCLUDE_VALGRIND_MEMCHECK_TESTS=0 and NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=0
+)))- Skipping helgrind regression tests because INCLUDE_VALGRIND_HELGRIND_TESTS=0 and NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=0
+</LOCAL VALGRIND on (REGRESSION) tests>
+
+
+<Running SAMPLE_APP basic tests>
+  )))- Builds/Debug-x86/Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/sqlite-amalgamation-*.zip...SUCCESS...done (in 0 minutes)
+  )))- Builds/Debug-x86/Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/lzma1604.7z...SUCCESS...done (in 0 minutes)
+  )))- Builds/Debug-x86/Samples-Containers/Containers...SUCCESS...done (in 0 minutes)
+  )))- Builds/Debug-x86/Samples-Serialization/Serialization...SUCCESS...done (in 0 minutes)
+  )))- Builds/Debug-x86/Samples-SQL/SQL...SUCCESS...done (in 0 minutes)
+  )))- Builds/Debug-x86/Samples-SystemPerformanceClient/SystemPerformanceClient...SUCCESS...done (in 1 minutes)
+  )))- Builds/Debug-x86/Samples-Traceroute/Traceroute www.sophists.com...SUCCESS...done (in 0 minutes)
+  )))- Builds/Debug-x86/Samples-WebServer/WebServer --quit-after 10...SUCCESS...done (in 0 minutes)
+  )))- Builds/Debug-x86_64/Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/sqlite-amalgamation-*.zip...SUCCESS...done (in 0 minutes)
+  )))- Builds/Debug-x86_64/Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/lzma1604.7z...SUCCESS...done (in 0 minutes)
+  )))- Builds/Debug-x86_64/Samples-Containers/Containers...SUCCESS...done (in 0 minutes)
+  )))- Builds/Debug-x86_64/Samples-Serialization/Serialization...SUCCESS...done (in 0 minutes)
+  )))- Builds/Debug-x86_64/Samples-SQL/SQL...SUCCESS...done (in 0 minutes)
+  )))- Builds/Debug-x86_64/Samples-SystemPerformanceClient/SystemPerformanceClient...SUCCESS...done (in 1 minutes)
+  )))- Builds/Debug-x86_64/Samples-Traceroute/Traceroute www.sophists.com...SUCCESS...done (in 0 minutes)
+  )))- Builds/Debug-x86_64/Samples-WebServer/WebServer --quit-after 10...SUCCESS...done (in 0 minutes)
+  )))- Builds/Release-x86/Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/sqlite-amalgamation-*.zip...SUCCESS...done (in 0 minutes)
+  )))- Builds/Release-x86/Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/lzma1604.7z...SUCCESS...done (in 0 minutes)
+  )))- Builds/Release-x86/Samples-Containers/Containers...SUCCESS...done (in 0 minutes)
+  )))- Builds/Release-x86/Samples-Serialization/Serialization...SUCCESS...done (in 0 minutes)
+  )))- Builds/Release-x86/Samples-SQL/SQL...SUCCESS...done (in 0 minutes)
+  )))- Builds/Release-x86/Samples-SystemPerformanceClient/SystemPerformanceClient...SUCCESS...done (in 1 minutes)
+  )))- Builds/Release-x86/Samples-Traceroute/Traceroute www.sophists.com...SUCCESS...done (in 0 minutes)
+  )))- Builds/Release-x86/Samples-WebServer/WebServer --quit-after 10...SUCCESS...done (in 0 minutes)
+  )))- Builds/Release-x86_64/Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/sqlite-amalgamation-*.zip...SUCCESS...done (in 0 minutes)
+  )))- Builds/Release-x86_64/Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/lzma1604.7z...SUCCESS...done (in 0 minutes)
+  )))- Builds/Release-x86_64/Samples-Containers/Containers...SUCCESS...done (in 0 minutes)
+  )))- Builds/Release-x86_64/Samples-Serialization/Serialization...SUCCESS...done (in 0 minutes)
+  )))- Builds/Release-x86_64/Samples-SQL/SQL...SUCCESS...done (in 0 minutes)
+  )))- Builds/Release-x86_64/Samples-SystemPerformanceClient/SystemPerformanceClient...SUCCESS...done (in 1 minutes)
+  )))- Builds/Release-x86_64/Samples-Traceroute/Traceroute www.sophists.com...SUCCESS...done (in 0 minutes)
+  )))- Builds/Release-x86_64/Samples-WebServer/WebServer --quit-after 10...SUCCESS...done (in 0 minutes)
+</Running SAMPLE_APP basic tests>
+
+
+<VALGRIND SAMPLE_APP basic tests>
+)))- Skipping memcheck SAMPLE_APPS_2_TEST because INCLUDE_VALGRIND_MEMCHECK_TESTS=0 and NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=0
+)))- Skipping helgrind SAMPLE_APPS_2_TEST because INCLUDE_VALGRIND_HELGRIND_TESTS=0 and NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=0
+</VALGRIND SAMPLE_APP basic tests>
+
+
+)))- ScriptsLib/RunPerformanceRegressionTests ... Builds/Release-x86/Tests/Test52 --x 15 --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-Windows_VS2k19-x86-2.1r1.txt ...  Builds/Release-x86_64/Tests/Test52 --x 15 --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-Windows_VS2k19-x86_64-2.1r1.txt ... done
+done (in 33 minutes)
+
+
+)))- Regression Tests Summary:
+   ***   WARNING: 0 tests succeeded and expected 208
+   0 items succeeded (expected 4 * 52)
+   0 items failed (expected 0)
+   0 items error (expected 0)
+   0 items warned (expected 0)
+   0 core dumps (expected 0)
+)))- Finished at Sat Jan  8 12:56:26 EST 2022  (244 minutes)
