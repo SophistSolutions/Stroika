@@ -44,7 +44,7 @@ if [ "$tmp" != "" ] ; then
     tmp=""
 else
     tmp=`(pkgutil --pkg-info=pkgutil --pkg-info=com.apple.pkg.Xcode 2> /dev/null) | grep version` 
-endif
+fi
 if [ "$tmp" != "" ] ; then
 	echo "$PREFIX_OUT_LABEL" "    X-CODE $tmp"  2>&1
 fi
