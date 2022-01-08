@@ -266,6 +266,7 @@ namespace Stroika::Foundation::Memory {
 #endif
 
     private:
+        // note must be inline declared here since used in type definition below
         static constexpr size_t SizeInBytes_ (size_t nElts)
         {
             return sizeof (T[1]) * nElts; // not sure why return sizeof (T[nElts]); fails on vs2k17?
