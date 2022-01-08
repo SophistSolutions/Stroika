@@ -1,0 +1,51 @@
+#!/bin/bash
+
+#
+# Script takes no arguments, but if environment variable PREFIX_OUT_LABEL is present, it is used, prefixes output lines
+#
+
+set -E
+trap '[ "$?" -ne 77 ] || exit 77' ERR
+
+### Print INFO about what OS version running (for several major OSes check)
+
+## Linux
+command -v lsb_release 2>&1 > /dev/null
+if [ $? -eq 0 ] ; then
+	echo "$PREFIX_OUT_LABEL" "    DEBIAN-STYLE-RELEASE: `lsb_release -d`"  2>&1
+fi
+
+## Windows
+command -v systeminfo 2>&1 > /dev/null
+if [ $? -eq 0 ] ; then
+	echo "$PREFIX_OUT_LABEL" "    Windows-SystemInfo: `systeminfo`"  2>&1
+fi
+command -v "C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe" 2>&1 > /dev/null
+if [ $? -eq 0 ] ; then
+	echo "$PREFIX_OUT_LABEL" "    vswhere=`"C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe" -format json -products '*'`" 2>&1
+fi
+
+## MACOS
+command -v "sw_vers" 2>&1 > /dev/null
+if [ $? -eq 0 ] ; then
+	echo "$PREFIX_OUT_LABEL" "    MacOS-X Version: `sw_vers | tr '\n' ';'`"  2>&1
+fi
+command -v "xcodebuild -version" 2>&1 > /dev/null
+if [ $? -eq 0 ] ; then
+	echo "$PREFIX_OUT_LABEL" "    X-CODE Version: `xcodebuild -version | tr '\n' ';'`"  2>&1
+fi
+tmp=`(pkgutil --pkg-info=com.apple.pkg.CLTools_Executables 2> /dev/null) | grep version` 
+if [ "$tmp" != "" ] ; then
+	echo "$PREFIX_OUT_LABEL" "    X-CODE $tmp"  2>&1
+fi
+command -v "xcode-select" 2>&1 > /dev/null
+if [ $? -eq 0 ] ; then
+	echo "$PREFIX_OUT_LABEL" "    X-CODE-PATH: `xcode-select --print-path | tr '\n' ';'`"  2>&1
+fi
+command -v "system_profiler SPSoftwareDataType" 2>&1 > /dev/null
+if [ $? -eq 0 ] ; then
+	echo "$PREFIX_OUT_LABEL" "    `system_profiler SPSoftwareDataType | grep "System Version"`"  2>&1
+fi
+if [ -e /etc/os-release ] ; then
+	echo "$PREFIX_OUT_LABEL" "    /etc/os-release: `cat /etc/os-release`" 2>&1
+fi
