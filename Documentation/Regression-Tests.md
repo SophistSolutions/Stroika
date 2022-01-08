@@ -169,7 +169,8 @@ checkin from one spot.
   ```
 
 - WSL (tested on Ubuntu 20.04) test
-  (inside WSL bash prompt)
+  (inside WSL2 bash prompt)
+  (may work on WSL1, but very slow, and not worth it - just test WSL2 from now on)
 
   ```bash
   ScriptsLib/RunLocalWSLRegressionTests
