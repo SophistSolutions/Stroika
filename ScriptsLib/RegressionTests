@@ -99,7 +99,7 @@ if [ $? -eq 0 ] ; then
 	echo "$PREFIX_OUT_LABEL" "    GIT COMMIT: $GIT_COMMIT" >>$TEST_OUT_FILE 2>&1
 fi
 
-PREFIX_OUT_LABEL=$PREFIX_OUT_LABEL ./PrintInfoAboutOSAndInstalledBuildTools >>$TEST_OUT_FILE
+PREFIX_OUT_LABEL=$PREFIX_OUT_LABEL ./ScriptsLib/PrintInfoAboutOSAndInstalledBuildTools >>$TEST_OUT_FILE
 
 if [ "$LOCAL_VALGRIND_CONFIGS" != "" ]; then
 	echo "$PREFIX_OUT_LABEL" "    LOCAL_VALGRIND_CONFIGS=$LOCAL_VALGRIND_CONFIGS" >>$TEST_OUT_FILE 2>&1
