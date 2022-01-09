@@ -9,7 +9,7 @@ especially those they need to be aware of when upgrading.
 
 ---
 
-### 2.1r1 {2022-01-06x}
+### 2.1r1 {2022-01-08}
 
 #### TLDR
 
