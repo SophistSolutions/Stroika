@@ -6,9 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
 
 #include <string>
 
@@ -152,7 +150,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          */
         nonvirtual bool IsSecure () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -162,33 +159,13 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         /**
          */
         nonvirtual bool operator== (const SchemeType& rhs) const;
-#endif
 
     private:
         static Common::strong_ordering TWC_ (const SchemeType& lhs, const SchemeType& rhs); // utility code share between c++17 and c++20 versions
 
     public:
         nonvirtual optional<PortType> GetDefaultPort () const;
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        friend bool operator< (const SchemeType& lhs, const SchemeType& rhs);
-        friend bool operator<= (const SchemeType& lhs, const SchemeType& rhs);
-        friend bool operator== (const SchemeType& lhs, const SchemeType& rhs);
-        friend bool operator!= (const SchemeType& lhs, const SchemeType& rhs);
-        friend bool operator>= (const SchemeType& lhs, const SchemeType& rhs);
-        friend bool operator> (const SchemeType& lhs, const SchemeType& rhs);
-#endif
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const SchemeType& lhs, const SchemeType& rhs);
-    bool operator<= (const SchemeType& lhs, const SchemeType& rhs);
-    bool operator== (const SchemeType& lhs, const SchemeType& rhs);
-    bool operator!= (const SchemeType& lhs, const SchemeType& rhs);
-    bool operator>= (const SchemeType& lhs, const SchemeType& rhs);
-    bool operator> (const SchemeType& lhs, const SchemeType& rhs);
-#endif
 
     /**
      * FROM https://tools.ietf.org/html/rfc3986#section-3.2.2:
@@ -284,7 +261,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         template <typename RESULT_TYPE = String>
         nonvirtual RESULT_TYPE AsEncoded () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -294,7 +270,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         /**
          */
         nonvirtual bool operator== (const Host& rhs) const;
-#endif
 
     private:
         static Common::strong_ordering TWC_ (const Host& lhs, const Host& rhs); // utility code share between c++17 and c++20 versions
@@ -318,31 +293,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         String                    fEncodedName_;
         optional<String>          fRegisteredName_;
         optional<InternetAddress> fInternetAddress_;
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        friend bool operator< (const Host& lhs, const Host& rhs);
-        friend bool operator<= (const Host& lhs, const Host& rhs);
-        friend bool operator== (const Host& lhs, const Host& rhs);
-        friend bool operator!= (const Host& lhs, const Host& rhs);
-        friend bool operator>= (const Host& lhs, const Host& rhs);
-        friend bool operator> (const Host& lhs, const Host& rhs);
-#endif
     };
 
     template <>
     String Host::AsEncoded () const;
     template <>
     string Host::AsEncoded () const;
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const Host& lhs, const Host& rhs);
-    bool operator<= (const Host& lhs, const Host& rhs);
-    bool operator== (const Host& lhs, const Host& rhs);
-    bool operator!= (const Host& lhs, const Host& rhs);
-    bool operator>= (const Host& lhs, const Host& rhs);
-    bool operator> (const Host& lhs, const Host& rhs);
-#endif
 
     /**
      * FROM https://tools.ietf.org/html/rfc3986#section-3.2.1:
@@ -406,7 +362,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         template <typename RESULT_TYPE = String>
         nonvirtual RESULT_TYPE AsEncoded () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -416,7 +371,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         /**
          */
         nonvirtual bool operator== (const UserInfo& rhs) const;
-#endif
 
     private:
         static Common::strong_ordering TWC_ (const UserInfo& lhs, const UserInfo& rhs); // utility code share between c++17 and c++20 versions
@@ -438,31 +392,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     private:
         String fEncodedUserInfo_;
         String fUserInfo_;
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        friend bool operator< (const UserInfo& lhs, const UserInfo& rhs);
-        friend bool operator<= (const UserInfo& lhs, const UserInfo& rhs);
-        friend bool operator== (const UserInfo& lhs, const UserInfo& rhs);
-        friend bool operator!= (const UserInfo& lhs, const UserInfo& rhs);
-        friend bool operator>= (const UserInfo& lhs, const UserInfo& rhs);
-        friend bool operator> (const UserInfo& lhs, const UserInfo& rhs);
-#endif
     };
 
     template <>
     String UserInfo::AsEncoded () const;
     template <>
     string UserInfo::AsEncoded () const;
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const UserInfo& lhs, const UserInfo& rhs);
-    bool operator<= (const UserInfo& lhs, const UserInfo& rhs);
-    bool operator== (const UserInfo& lhs, const UserInfo& rhs);
-    bool operator!= (const UserInfo& lhs, const UserInfo& rhs);
-    bool operator>= (const UserInfo& lhs, const UserInfo& rhs);
-    bool operator> (const UserInfo& lhs, const UserInfo& rhs);
-#endif
 
     /**
      *  \brief Authority is roughly the part of a URL where you say the hostname (and portnumber etc) - part just after //
@@ -554,7 +489,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          */
         nonvirtual void SetUserInfo (const optional<UserInfo>& userInfo);
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -564,7 +498,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         /**
          */
         nonvirtual bool operator== (const Authority& rhs) const;
-#endif
 
     private:
         static Common::strong_ordering TWC_ (const Authority& lhs, const Authority& rhs); // utility code share between c++17 and c++20 versions
@@ -580,26 +513,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         optional<Host>     fHost_;
         optional<PortType> fPort_;
         optional<UserInfo> fUserInfo_;
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        friend bool operator< (const Authority& lhs, const Authority& rhs);
-        friend bool operator<= (const Authority& lhs, const Authority& rhs);
-        friend bool operator== (const Authority& lhs, const Authority& rhs);
-        friend bool operator!= (const Authority& lhs, const Authority& rhs);
-        friend bool operator>= (const Authority& lhs, const Authority& rhs);
-        friend bool operator> (const Authority& lhs, const Authority& rhs);
-#endif
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const Authority& lhs, const Authority& rhs);
-    bool operator<= (const Authority& lhs, const Authority& rhs);
-    bool operator== (const Authority& lhs, const Authority& rhs);
-    bool operator!= (const Authority& lhs, const Authority& rhs);
-    bool operator>= (const Authority& lhs, const Authority& rhs);
-    bool operator> (const Authority& lhs, const Authority& rhs);
-#endif
 
     /**
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
@@ -645,7 +559,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         // http://tools.ietf.org/html/rfc3986
         nonvirtual String ComputeQueryString () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -655,7 +568,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         /**
          */
         nonvirtual bool operator== (const Query& rhs) const;
-#endif
 
     private:
         static Common::strong_ordering TWC_ (const Query& lhs, const Query& rhs); // utility code share between c++17 and c++20 versions
@@ -669,26 +581,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     private:
         Containers::Mapping<String, String> fMap_;
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        friend bool operator< (const Query& lhs, const Query& rhs);
-        friend bool operator<= (const Query& lhs, const Query& rhs);
-        friend bool operator== (const Query& lhs, const Query& rhs);
-        friend bool operator!= (const Query& lhs, const Query& rhs);
-        friend bool operator>= (const Query& lhs, const Query& rhs);
-        friend bool operator> (const Query& lhs, const Query& rhs);
-#endif
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const Query& lhs, const Query& rhs);
-    bool operator<= (const Query& lhs, const Query& rhs);
-    bool operator== (const Query& lhs, const Query& rhs);
-    bool operator!= (const Query& lhs, const Query& rhs);
-    bool operator>= (const Query& lhs, const Query& rhs);
-    bool operator> (const Query& lhs, const Query& rhs);
-#endif
 
     /*
      *  See http://tools.ietf.org/html/rfc3986

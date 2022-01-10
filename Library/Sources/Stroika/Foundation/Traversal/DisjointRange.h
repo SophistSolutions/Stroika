@@ -128,14 +128,12 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual RangeType Closure () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          *  This returns true if the constituent subranges are all equal. This amounts to checking
          *  if the 'covered points' are all equal.
          */
         constexpr bool operator== (const DisjointRange& rhs) const;
-#endif
 
     public:
         /**
@@ -176,15 +174,6 @@ namespace Stroika::Foundation::Traversal {
     private:
         static constexpr bool sNoisyDebugTrace_ = false;
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     */
-    template <typename T, typename RANGE_TYPE>
-    bool operator== (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
-    template <typename T, typename RANGE_TYPE>
-    bool operator!= (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
-#endif
 
     /**
      */

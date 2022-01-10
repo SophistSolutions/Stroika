@@ -133,9 +133,6 @@ namespace Stroika::Foundation::Memory {
 
     public:
         nonvirtual bool operator== (const STLAllocator& rhs) const;
-#if __cpp_impl_three_way_comparison < 201907
-        nonvirtual bool operator!= (const STLAllocator& rhs) const;
-#endif
     };
 
     /**

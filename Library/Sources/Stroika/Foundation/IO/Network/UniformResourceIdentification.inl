@@ -30,7 +30,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         : inherited{s}
     {
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering SchemeType::operator<=> (const SchemeType& rhs) const
     {
         return TWC_ (*this, rhs);
@@ -39,39 +38,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return TWC_ (*this, rhs) == 0;
     }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     **************************** SchemeType operators ******************************
-     ********************************************************************************
-     */
-    inline bool operator< (const SchemeType& lhs, const SchemeType& rhs)
-    {
-        return SchemeType::TWC_ (lhs, rhs) < 0;
-    }
-    inline bool operator<= (const SchemeType& lhs, const SchemeType& rhs)
-    {
-        return SchemeType::TWC_ (lhs, rhs) <= 0;
-    }
-    inline bool operator== (const SchemeType& lhs, const SchemeType& rhs)
-    {
-        return SchemeType::TWC_ (lhs, rhs) == 0;
-    }
-    inline bool operator!= (const SchemeType& lhs, const SchemeType& rhs)
-    {
-        return SchemeType::TWC_ (lhs, rhs) != 0;
-    }
-    inline bool operator>= (const SchemeType& lhs, const SchemeType& rhs)
-    {
-        return SchemeType::TWC_ (lhs, rhs) >= 0;
-    }
-    inline bool operator> (const SchemeType& lhs, const SchemeType& rhs)
-    {
-        return SchemeType::TWC_ (lhs, rhs) > 0;
-    }
-#endif
 
     /*
      ********************************************************************************
@@ -125,7 +91,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return fEncodedName_.AsASCII<string> ();
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering Host::operator<=> (const Host& rhs) const
     {
         return TWC_ (*this, rhs);
@@ -134,7 +99,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return TWC_ (*this, rhs) == 0;
     }
-#endif
     inline Common::strong_ordering Host::TWC_ (const Host& lhs, const Host& rhs)
     {
         if (Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.AsInternetAddress (), rhs.AsInternetAddress ()); cmp != Common::kEqual) {
@@ -142,38 +106,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         }
         return Common::OptionalThreeWayComparer<String, String::ThreeWayComparer>{String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ******************************** Host operators ********************************
-     ********************************************************************************
-     */
-    inline bool operator< (const Host& lhs, const Host& rhs)
-    {
-        return Host::TWC_ (lhs, rhs) < 0;
-    }
-    inline bool operator<= (const Host& lhs, const Host& rhs)
-    {
-        return Host::TWC_ (lhs, rhs) <= 0;
-    }
-    inline bool operator== (const Host& lhs, const Host& rhs)
-    {
-        return Host::TWC_ (lhs, rhs) == 0;
-    }
-    inline bool operator!= (const Host& lhs, const Host& rhs)
-    {
-        return Host::TWC_ (lhs, rhs) != 0;
-    }
-    inline bool operator>= (const Host& lhs, const Host& rhs)
-    {
-        return Host::TWC_ (lhs, rhs) >= 0;
-    }
-    inline bool operator> (const Host& lhs, const Host& rhs)
-    {
-        return Host::TWC_ (lhs, rhs) > 0;
-    }
-#endif
 
     /*
      ********************************************************************************
@@ -208,7 +140,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return fEncodedUserInfo_.AsASCII<string> ();
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering UserInfo::operator<=> (const UserInfo& rhs) const
     {
         return TWC_ (*this, rhs);
@@ -217,43 +148,10 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return TWC_ (*this, rhs) == 0;
     }
-#endif
     inline Common::strong_ordering UserInfo::TWC_ (const UserInfo& lhs, const UserInfo& rhs)
     {
         return Common::ThreeWayCompare (lhs.AsDecoded (), rhs.AsDecoded ());
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ****************************** UserInfo operators ******************************
-     ********************************************************************************
-     */
-    inline bool operator< (const UserInfo& lhs, const UserInfo& rhs)
-    {
-        return UserInfo::TWC_ (lhs, rhs) < 0;
-    }
-    inline bool operator<= (const UserInfo& lhs, const UserInfo& rhs)
-    {
-        return UserInfo::TWC_ (lhs, rhs) <= 0;
-    }
-    inline bool operator== (const UserInfo& lhs, const UserInfo& rhs)
-    {
-        return UserInfo::TWC_ (lhs, rhs) == 0;
-    }
-    inline bool operator!= (const UserInfo& lhs, const UserInfo& rhs)
-    {
-        return UserInfo::TWC_ (lhs, rhs) != 0;
-    }
-    inline bool operator>= (const UserInfo& lhs, const UserInfo& rhs)
-    {
-        return UserInfo::TWC_ (lhs, rhs) >= 0;
-    }
-    inline bool operator> (const UserInfo& lhs, const UserInfo& rhs)
-    {
-        return UserInfo::TWC_ (lhs, rhs) > 0;
-    }
-#endif
 
     /*
      ********************************************************************************
@@ -290,7 +188,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         fUserInfo_ = userInfo;
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering Authority::operator<=> (const Authority& rhs) const
     {
         return TWC_ (*this, rhs);
@@ -299,7 +196,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return TWC_ (*this, rhs) == 0;
     }
-#endif
     inline Common::strong_ordering Authority::TWC_ (const Authority& lhs, const Authority& rhs)
     {
         if (auto cmp = Common::ThreeWayCompare (lhs.GetHost (), rhs.GetHost ()); cmp != Common::kEqual) {
@@ -310,38 +206,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         }
         return Common::ThreeWayCompare (lhs.GetPort (), rhs.GetPort ());
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     *********************** Authority comparison operators *************************
-     ********************************************************************************
-     */
-    inline bool operator< (const Authority& lhs, const Authority& rhs)
-    {
-        return Authority::TWC_ (lhs, rhs) < 0;
-    }
-    inline bool operator<= (const Authority& lhs, const Authority& rhs)
-    {
-        return Authority::TWC_ (lhs, rhs) <= 0;
-    }
-    inline bool operator== (const Authority& lhs, const Authority& rhs)
-    {
-        return Authority::TWC_ (lhs, rhs) == 0;
-    }
-    inline bool operator!= (const Authority& lhs, const Authority& rhs)
-    {
-        return Authority::TWC_ (lhs, rhs) != 0;
-    }
-    inline bool operator>= (const Authority& lhs, const Authority& rhs)
-    {
-        return Authority::TWC_ (lhs, rhs) >= 0;
-    }
-    inline bool operator> (const Authority& lhs, const Authority& rhs)
-    {
-        return Authority::TWC_ (lhs, rhs) > 0;
-    }
-#endif
 
     /*
      ********************************************************************************
@@ -376,7 +240,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         RemoveFieldIfAny (Characters::UTF8StringToWide (idx));
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering Query::operator<=> (const Query& rhs) const
     {
         return TWC_ (*this, rhs);
@@ -385,39 +248,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return TWC_ (*this, rhs) == 0;
     }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     **************************** Query::operators **********************************
-     ********************************************************************************
-     */
-    inline bool operator< (const Query& lhs, const Query& rhs)
-    {
-        return Query::TWC_ (lhs, rhs) < 0;
-    }
-    inline bool operator<= (const Query& lhs, const Query& rhs)
-    {
-        return Query::TWC_ (lhs, rhs) <= 0;
-    }
-    inline bool operator== (const Query& lhs, const Query& rhs)
-    {
-        return Query::TWC_ (lhs, rhs) == 0;
-    }
-    inline bool operator!= (const Query& lhs, const Query& rhs)
-    {
-        return Query::TWC_ (lhs, rhs) != 0;
-    }
-    inline bool operator>= (const Query& lhs, const Query& rhs)
-    {
-        return Query::TWC_ (lhs, rhs) >= 0;
-    }
-    inline bool operator> (const Query& lhs, const Query& rhs)
-    {
-        return Query::TWC_ (lhs, rhs) > 0;
-    }
-#endif
 
 }
 

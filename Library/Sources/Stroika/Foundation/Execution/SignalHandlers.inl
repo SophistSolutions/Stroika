@@ -45,26 +45,6 @@ namespace Stroika::Foundation::Execution {
     {
         fCall_ (i);
     }
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool SignalHandler::operator== (const SignalHandler& rhs) const
-    {
-        return fType_ == rhs.fType_ and fCall_ == rhs.fCall_;
-    }
-    inline bool SignalHandler::operator!= (const SignalHandler& rhs) const
-    {
-        return fType_ != rhs.fType_ or fCall_ != rhs.fCall_;
-    }
-    inline bool SignalHandler::operator< (const SignalHandler& rhs) const
-    {
-        if (fType_ == rhs.fType_) {
-            // technically not quite real... - compute address of ptr...
-            return fCall_ < rhs.fCall_;
-        }
-        else {
-            return fType_ < rhs.fType_;
-        }
-    }
-#endif
 
 }
 

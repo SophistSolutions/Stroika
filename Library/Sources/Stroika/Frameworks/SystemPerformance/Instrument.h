@@ -6,10 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
-
 #include <memory>
 
 #include "../../Foundation/Common/Property.h"
@@ -180,7 +177,6 @@ namespace Stroika::Frameworks::SystemPerformance {
          */
         nonvirtual bool operator== (const Instrument& rhs) const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -188,15 +184,6 @@ namespace Stroika::Frameworks::SystemPerformance {
         {
             return fInstrumentName_ <=> rhs.fInstrumentName_;
         }
-
-#endif
-#if __cpp_impl_three_way_comparison < 201907
-    public:
-        bool operator< (const Instrument& rhs) const
-        {
-            return fInstrumentName_ < rhs.fInstrumentName_;
-        }
-#endif
 
     private:
         InstrumentNameType                   fInstrumentName_;

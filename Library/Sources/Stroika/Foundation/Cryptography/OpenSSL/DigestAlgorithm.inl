@@ -32,17 +32,10 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     {
         return fDigester_;
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline auto DigestAlgorithm::operator<=> (const DigestAlgorithm& rhs) const
     {
         return fDigester_ <=> rhs.fDigester_;
     }
-#else
-    inline auto DigestAlgorithm::operator< (const DigestAlgorithm& rhs) const
-    {
-        return fDigester_ < rhs.fDigester_;
-    }
-#endif
     inline bool DigestAlgorithm::operator== (const DigestAlgorithm& rhs) const
     {
         return fDigester_ == rhs.fDigester_;

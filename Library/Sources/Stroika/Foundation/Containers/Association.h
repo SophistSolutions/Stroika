@@ -499,14 +499,12 @@ namespace Stroika::Foundation::Containers {
         template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
         struct EqualsComparer;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          * simply indirect to @Association<>::EqualsComparer;
          * only defined if there is a default equals comparer for mapped_type
          */
         nonvirtual bool operator== (const Association& rhs) const;
-#endif
 
     public:
         /**
@@ -633,16 +631,6 @@ namespace Stroika::Foundation::Containers {
         nonvirtual bool                                  operator() (const Association& lhs, const Association& rhs) const;
         [[NO_UNIQUE_ADDRESS_ATTR]] VALUE_EQUALS_COMPARER fValueEqualsComparer;
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic comparison operator overloads with the obvious meaning, and simply indirect to @Association<>::EqualsComparer
-     */
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    bool operator== (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs);
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    bool operator!= (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs);
-#endif
 
 }
 

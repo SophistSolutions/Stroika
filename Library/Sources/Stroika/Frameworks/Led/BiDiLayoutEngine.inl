@@ -45,26 +45,6 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     *********************** TextLayoutBlock::ScriptRunElt **************************
-     ********************************************************************************
-     */
-    inline bool TextLayoutBlock::ScriptRunElt::operator== (const ScriptRunElt& rhs) const
-    {
-        return (fDirection == rhs.fDirection and
-                fRealStart == rhs.fRealStart and
-                fRealEnd == rhs.fRealEnd and
-                fVirtualStart == rhs.fVirtualStart and
-                fVirtualEnd == rhs.fVirtualEnd);
-    }
-    inline bool TextLayoutBlock::ScriptRunElt::operator!= (const ScriptRunElt& rhs) const
-    {
-        return not(*this == rhs);
-    }
-#endif
-
 }
 
 #endif /*_Stroika_Frameworks_Led_BiDiLayoutEngine_inl_*/

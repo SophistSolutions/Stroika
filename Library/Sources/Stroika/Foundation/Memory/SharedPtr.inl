@@ -434,7 +434,6 @@ namespace Stroika::Foundation::Memory {
         // respect the stl-ish names
         return IsUnique ();
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename T>
     constexpr bool SharedPtr<T>::operator== (const SharedPtr& rhs) const
     {
@@ -450,61 +449,6 @@ namespace Stroika::Foundation::Memory {
     {
         return fEnvelope_.GetPtr () <=> rhs.fEnvelope_.GetPtr ();
     }
-#endif
-#if __cpp_impl_three_way_comparison < 201907
-    template <typename T>
-    inline bool SharedPtr<T>::operator< (const SharedPtr& rhs) const noexcept
-    {
-        // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
-        // this does the same thing...
-        //      -- LGP 2009-01-11
-        return fEnvelope_.GetPtr () < rhs.fEnvelope_.GetPtr ();
-    }
-    template <typename T>
-    inline bool SharedPtr<T>::operator<= (const SharedPtr& rhs) const noexcept
-    {
-        // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
-        // this does the same thing...
-        //      -- LGP 2009-01-11
-        return fEnvelope_.GetPtr () <= rhs.fEnvelope_.GetPtr ();
-    }
-    template <typename T>
-    inline bool SharedPtr<T>::operator> (const SharedPtr& rhs) const noexcept
-    {
-        // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
-        // this does the same thing...
-        //      -- LGP 2009-01-11
-        return fEnvelope_.GetPtr () > rhs.fEnvelope_.GetPtr ();
-    }
-    template <typename T>
-    inline bool SharedPtr<T>::operator>= (const SharedPtr& rhs) const noexcept
-    {
-        // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
-        // this does the same thing...
-        //      -- LGP 2009-01-11
-        return fEnvelope_.GetPtr () >= rhs.fEnvelope_.GetPtr ();
-    }
-    template <typename T>
-    inline bool SharedPtr<T>::operator== (const SharedPtr& rhs) const noexcept
-    {
-        return fEnvelope_.GetPtr () == rhs.fEnvelope_.GetPtr ();
-    }
-    template <typename T>
-    inline bool SharedPtr<T>::operator!= (const SharedPtr& rhs) const noexcept
-    {
-        return fEnvelope_.GetPtr () != rhs.fEnvelope_.GetPtr ();
-    }
-    template <typename T>
-    inline bool SharedPtr<T>::operator== (nullptr_t) const noexcept
-    {
-        return get () == nullptr;
-    }
-    template <typename T>
-    inline bool SharedPtr<T>::operator!= (nullptr_t) const noexcept
-    {
-        return get () != nullptr;
-    }
-#endif
     template <typename T>
     inline SharedPtr<T>::operator bool () const noexcept
     {

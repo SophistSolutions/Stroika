@@ -6,10 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
-
 #include <climits>
 #include <string>
 
@@ -457,12 +454,10 @@ namespace Stroika::Foundation::Time {
         nonvirtual SignedJulianRepType operator- (const Date& rhs) const;
         nonvirtual Date                operator- (SignedJulianRepType daysOffset) const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
         constexpr strong_ordering operator<=> (const Date& rhs) const = default;
-#endif
 
     public:
         /**
@@ -508,15 +503,6 @@ namespace Stroika::Foundation::Time {
         kMonthDayYearFormat,            // Before Stroika 2.1b10, this was L"%D" (=="%m/%d/%y) which is hte 2-digit year
         kISO8601Format,
     };
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    constexpr bool operator< (const Date& lhs, const Date& rhs);
-    constexpr bool operator<= (const Date& lhs, const Date& rhs);
-    constexpr bool operator== (const Date& lhs, const Date& rhs);
-    constexpr bool operator!= (const Date& lhs, const Date& rhs);
-    constexpr bool operator>= (const Date& lhs, const Date& rhs);
-    constexpr bool operator> (const Date& lhs, const Date& rhs);
 #endif
 
     Date::SignedJulianRepType DayDifference (const Date& lhs, const Date& rhs);

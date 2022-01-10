@@ -119,13 +119,6 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         {
             return current == rhs.current;
         }
-#if __cpp_impl_three_way_comparison < 201907
-        template <typename V>
-        bool operator!= (V const& rhs) const
-        {
-            return !(*this == rhs);
-        }
-#endif
     };
 
     /*

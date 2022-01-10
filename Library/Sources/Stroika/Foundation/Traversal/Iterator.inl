@@ -189,7 +189,6 @@ namespace Stroika::Foundation::Traversal {
     {
         return not Done ();
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename T, typename ITERATOR_TRAITS>
     inline bool Iterator<T, ITERATOR_TRAITS>::operator== (const Iterator& rhs) const
     {
@@ -216,7 +215,6 @@ namespace Stroika::Foundation::Traversal {
         Ensure (lhsRep->Equals (rhsRep) == rhsRep->Equals (lhsRep));
         return lhsRep->Equals (rhsRep);
     }
-#endif
     template <typename T, typename ITERATOR_TRAITS>
     inline typename Iterator<T, ITERATOR_TRAITS>::RepSmartPtr Iterator<T, ITERATOR_TRAITS>::Clone_ (const typename Iterator<T, ITERATOR_TRAITS>::IRep& rep)
     {
@@ -227,38 +225,6 @@ namespace Stroika::Foundation::Traversal {
     {
         return Iterator<T, ITERATOR_TRAITS>{ConstructionFlagForceAtEnd_::ForceAtEnd};
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     **************************** Iterator operators ********************************
-     ********************************************************************************
-     */
-    template <typename T, typename ITERATOR_TRAITS>
-    inline bool operator== (const Iterator<T, ITERATOR_TRAITS>& lhs, const Iterator<T, ITERATOR_TRAITS>& rhs)
-    {
-        bool lDone = lhs.Done ();
-        bool rDone = rhs.Done ();
-        if (lDone != rDone) [[LIKELY_ATTR]] {
-            return false;
-        }
-        if (lDone) {
-            Assert (rDone);
-            return true;
-        }
-        Assert (not lDone and not rDone);
-        const typename Iterator<T, ITERATOR_TRAITS>::IRep* lhsRep = lhs.fRep_.get ();
-        const typename Iterator<T, ITERATOR_TRAITS>::IRep* rhsRep = rhs.fRep_.get ();
-        Ensure (lhsRep->Equals (rhsRep) == rhsRep->Equals (lhsRep));
-        return lhsRep->Equals (rhsRep);
-    }
-
-    template <typename T, typename ITERATOR_TRAITS>
-    inline bool operator!= (const Iterator<T, ITERATOR_TRAITS>& lhs, const Iterator<T, ITERATOR_TRAITS>& rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
 
     /*
      ********************************************************************************

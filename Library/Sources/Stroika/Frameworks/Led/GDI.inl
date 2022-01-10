@@ -31,38 +31,6 @@ namespace Stroika::Frameworks::Led {
         , h (newH)
     {
     }
-#if __cpp_impl_three_way_comparison < 201907
-    template <typename COORD_TYPE>
-    inline bool operator== (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs)
-    {
-        return (lhs.v == rhs.v and lhs.h == rhs.h);
-    }
-    template <typename COORD_TYPE>
-    inline bool operator!= (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs)
-    {
-        return (lhs.v != rhs.v or lhs.h != rhs.h);
-    }
-    template <typename COORD_TYPE>
-    inline bool operator< (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs)
-    {
-        return ((lhs.v <= rhs.v) and (lhs.h <= rhs.h) and (lhs != rhs));
-    }
-    template <typename COORD_TYPE>
-    inline bool operator<= (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs)
-    {
-        return ((lhs.v <= rhs.v) and (lhs.h <= rhs.h));
-    }
-    template <typename COORD_TYPE>
-    inline bool operator> (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs)
-    {
-        return ((lhs.v >= rhs.v) and (lhs.h >= rhs.h) and lhs != rhs);
-    }
-    template <typename COORD_TYPE>
-    inline bool operator>= (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs)
-    {
-        return ((lhs.v >= rhs.v) and (lhs.h >= rhs.h));
-    }
-#endif
     template <typename COORD_TYPE>
     inline Point_Base<COORD_TYPE> operator+ (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs)
     {
@@ -1800,16 +1768,10 @@ namespace Stroika::Frameworks::Led {
         }
         return true;
     }
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool LineSpacing::operator!= (LineSpacing rhs) const
-    {
-        return not(*this == rhs);
-    }
-#endif
 
     /*
      ********************************************************************************
-     ****************** FontSpecification::FontNameSpecifier ********************
+     ********************** FontSpecification::FontNameSpecifier ********************
      ********************************************************************************
      */
 #if qPlatform_Windows
@@ -3040,12 +3002,6 @@ namespace Stroika::Frameworks::Led {
 
         return true;
     }
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool operator!= (const IncrementalFontSpecification& lhs, const IncrementalFontSpecification& rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
 
     //  class   InstalledFonts
     inline const vector<Led_SDK_String>& InstalledFonts::GetUsableFontNames () const

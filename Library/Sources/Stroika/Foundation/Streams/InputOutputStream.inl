@@ -145,14 +145,7 @@ namespace Stroika::Foundation::Streams {
         Ensure (InputStream<ELEMENT_TYPE>::Ptr::operator== (nullptr) == OutputStream<ELEMENT_TYPE>::Ptr::operator== (nullptr));
         return InputStream<ELEMENT_TYPE>::Ptr::operator== (nullptr);
     }
-#if __cpp_impl_three_way_comparison < 201907
-    template <typename ELEMENT_TYPE>
-    inline bool InputOutputStream<ELEMENT_TYPE>::Ptr::operator!= (nullptr_t) const
-    {
-        Ensure (InputStream<ELEMENT_TYPE>::Ptr::operator!= (nullptr) == OutputStream<ELEMENT_TYPE>::Ptr::operator!= (nullptr));
-        return InputStream<ELEMENT_TYPE>::Ptr::operator!= (nullptr);
-    }
-#endif
+
 }
 
 #endif /*_Stroika_Foundation_Streams_InputOutputStream_inl_*/

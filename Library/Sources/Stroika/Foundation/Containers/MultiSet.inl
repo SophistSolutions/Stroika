@@ -533,33 +533,11 @@ namespace Stroika::Foundation::Containers {
         _SafeReadRepAccessor<_IRep>{this};
 #endif
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename T, typename TRAITS>
     inline bool MultiSet<T, TRAITS>::operator== (const MultiSet& rhs) const
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
     }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     **************************** MultiSet operators ********************************
-     ********************************************************************************
-     */
-    template <typename T, typename TRAITS>
-    inline bool operator== (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs)
-    {
-        using M        = MultiSet<T, TRAITS>;
-        using ACCESSOR = typename M::template _SafeReadRepAccessor<typename M::_IRep>;
-        return ACCESSOR{&lhs}._ConstGetRep ().Equals (ACCESSOR{&rhs}._ConstGetRep ());
-    }
-    template <typename T, typename TRAITS>
-    inline bool operator!= (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
 
 }
 

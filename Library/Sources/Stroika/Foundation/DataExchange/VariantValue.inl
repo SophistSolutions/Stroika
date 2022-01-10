@@ -174,7 +174,6 @@ namespace Stroika::Foundation::DataExchange {
     {
         return AsString_ ();
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering VariantValue::operator<=> (const VariantValue& rhs) const
     {
         return ThreeWayComparer{}(*this, rhs);
@@ -184,7 +183,6 @@ namespace Stroika::Foundation::DataExchange {
         Ensure (EqualsComparer{}(*this, rhs) == (ThreeWayComparer{}(*this, rhs) == 0)); // These must return the same answer
         return EqualsComparer{}(*this, rhs);
     }
-#endif
 
     /*
      ********************************************************************************
@@ -205,38 +203,6 @@ namespace Stroika::Foundation::DataExchange {
         : fExactTypeMatchOnly{exactTypeMatchOnly}
     {
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ************************* VariantValue operators *******************************
-     ********************************************************************************
-     */
-    inline bool operator< (const VariantValue& lhs, const VariantValue& rhs)
-    {
-        return VariantValue::ThreeWayComparer{}(lhs, rhs) < 0;
-    }
-    inline bool operator<= (const VariantValue& lhs, const VariantValue& rhs)
-    {
-        return VariantValue::ThreeWayComparer{}(lhs, rhs) <= 0;
-    }
-    inline bool operator== (const VariantValue& lhs, const VariantValue& rhs)
-    {
-        return VariantValue::EqualsComparer{}(lhs, rhs);
-    }
-    inline bool operator!= (const VariantValue& lhs, const VariantValue& rhs)
-    {
-        return not VariantValue::EqualsComparer{}(lhs, rhs);
-    }
-    inline bool operator>= (const VariantValue& lhs, const VariantValue& rhs)
-    {
-        return VariantValue::ThreeWayComparer{}(lhs, rhs) >= 0;
-    }
-    inline bool operator> (const VariantValue& lhs, const VariantValue& rhs)
-    {
-        return VariantValue::ThreeWayComparer{}(lhs, rhs) > 0;
-    }
-#endif
 
 }
 

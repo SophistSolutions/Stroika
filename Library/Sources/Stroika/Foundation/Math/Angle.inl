@@ -70,38 +70,6 @@ namespace Stroika::Foundation::Math {
         return *this;
     }
 
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ******************** Math::Angle relationship operators ************************
-     ********************************************************************************
-     */
-    constexpr bool operator< (const Angle& lhs, const Angle& rhs)
-    {
-        return Common::ThreeWayCompare (lhs.AsRadians (), rhs.AsRadians ()) < 0;
-    }
-    constexpr bool operator<= (const Angle& lhs, const Angle& rhs)
-    {
-        return Common::ThreeWayCompare (lhs.AsRadians (), rhs.AsRadians ()) <= 0;
-    }
-    constexpr bool operator== (const Angle& lhs, const Angle& rhs)
-    {
-        return Common::ThreeWayCompare (lhs.AsRadians (), rhs.AsRadians ()) == 0;
-    }
-    constexpr bool operator!= (const Angle& lhs, const Angle& rhs)
-    {
-        return Common::ThreeWayCompare (lhs.AsRadians (), rhs.AsRadians ()) != 0;
-    }
-    constexpr bool operator>= (const Angle& lhs, const Angle& rhs)
-    {
-        return Common::ThreeWayCompare (lhs.AsRadians (), rhs.AsRadians ()) >= 0;
-    }
-    constexpr bool operator> (const Angle& lhs, const Angle& rhs)
-    {
-        return Common::ThreeWayCompare (lhs.AsRadians (), rhs.AsRadians ()) > 0;
-    }
-#endif
-
     /*
      ********************************************************************************
      ************************* Math::Angle operators ********************************

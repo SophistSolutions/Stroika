@@ -64,38 +64,6 @@ namespace Stroika::Foundation::Time {
     }
 #endif
 
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ************************* TimeOfDay operators **********************************
-     ********************************************************************************
-     */
-    constexpr bool operator< (TimeOfDay lhs, TimeOfDay rhs)
-    {
-        return Common::ThreeWayCompare (lhs.GetAsSecondsCount (), rhs.GetAsSecondsCount ()) < 0;
-    }
-    constexpr bool operator<= (TimeOfDay lhs, TimeOfDay rhs)
-    {
-        return Common::ThreeWayCompare (lhs.GetAsSecondsCount (), rhs.GetAsSecondsCount ()) <= 0;
-    }
-    constexpr bool operator== (TimeOfDay lhs, TimeOfDay rhs)
-    {
-        return Common::ThreeWayCompare (lhs.GetAsSecondsCount (), rhs.GetAsSecondsCount ()) == 0;
-    }
-    constexpr bool operator!= (TimeOfDay lhs, TimeOfDay rhs)
-    {
-        return Common::ThreeWayCompare (lhs.GetAsSecondsCount (), rhs.GetAsSecondsCount ()) != 0;
-    }
-    constexpr bool operator>= (TimeOfDay lhs, TimeOfDay rhs)
-    {
-        return Common::ThreeWayCompare (lhs.GetAsSecondsCount (), rhs.GetAsSecondsCount ()) >= 0;
-    }
-    constexpr bool operator> (TimeOfDay lhs, TimeOfDay rhs)
-    {
-        return Common::ThreeWayCompare (lhs.GetAsSecondsCount (), rhs.GetAsSecondsCount ()) > 0;
-    }
-#endif
-
 }
 
 #endif /*_Stroika_Foundation_Time_TimeOfDay_inl_*/

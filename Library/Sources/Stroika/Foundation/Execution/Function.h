@@ -6,10 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
-
 #include <functional>
 #include <memory>
 
@@ -103,7 +100,6 @@ namespace Stroika::Foundation::Execution {
     public:
         struct ThreeWayComparer;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -113,51 +109,11 @@ namespace Stroika::Foundation::Execution {
         /**
          */
         nonvirtual bool operator== (const Function& rhs) const;
-#endif
 
     private:
         STDFUNCTION fFun_;
         void*       fOrdering_{}; // captured early when we have the right type info, so we can safely compare (since Stroika v2.1d8)
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        template <typename FS>
-        friend bool operator< (const Function<FS>& lhs, const Function<FS>& rhs);
-        template <typename FS>
-        friend bool operator<= (const Function<FS>& lhs, const Function<FS>& rhs);
-        template <typename FS>
-        friend bool operator== (const Function<FS>& lhs, const Function<FS>& rhs);
-        template <typename FS>
-        friend bool operator== (const Function<FS>& lhs, nullptr_t);
-        template <typename FS>
-        friend bool operator!= (const Function<FS>& lhs, const Function<FS>& rhs);
-        template <typename FS>
-        friend bool operator!= (const Function<FS>& lhs, nullptr_t);
-        template <typename FS>
-        friend bool operator> (const Function<FS>& lhs, const Function<FS>& rhs);
-        template <typename FS>
-        friend bool operator>= (const Function<FS>& lhs, const Function<FS>& rhs);
-#endif
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    template <typename FUNCTION_SIGNATURE>
-    bool operator< (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
-    template <typename FUNCTION_SIGNATURE>
-    bool operator<= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
-    template <typename FUNCTION_SIGNATURE>
-    bool operator== (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
-    template <typename FUNCTION_SIGNATURE>
-    bool operator== (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t);
-    template <typename FUNCTION_SIGNATURE>
-    bool operator!= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
-    template <typename FUNCTION_SIGNATURE>
-    bool operator!= (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t);
-    template <typename FUNCTION_SIGNATURE>
-    bool operator> (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
-    template <typename FUNCTION_SIGNATURE>
-    bool operator>= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
-#endif
 
 }
 

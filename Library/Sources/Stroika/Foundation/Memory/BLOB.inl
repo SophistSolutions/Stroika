@@ -311,7 +311,6 @@ namespace Stroika::Foundation::Memory {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return GetSize ();
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering BLOB::operator<=> (const BLOB& rhs) const
     {
         return TWC_ (*this, rhs);
@@ -335,7 +334,6 @@ namespace Stroika::Foundation::Memory {
         }
         return ::memcmp (l.first, r.first, lSize) == 0;
     }
-#endif
     inline BLOB BLOB::operator+ (const BLOB& rhs) const
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
@@ -362,38 +360,6 @@ namespace Stroika::Foundation::Memory {
         }
         return (lSize < rSize) ? Common::kLess : Common::kGreater;
     }
-
-    /*
-     ********************************************************************************
-     ****************************** BLOB operators **********************************
-     ********************************************************************************
-     */
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool operator< (const BLOB& lhs, const BLOB& rhs)
-    {
-        return BLOB::TWC_ (lhs, rhs) < 0;
-    }
-    inline bool operator<= (const BLOB& lhs, const BLOB& rhs)
-    {
-        return BLOB::TWC_ (lhs, rhs) <= 0;
-    }
-    inline bool operator!= (const BLOB& lhs, const BLOB& rhs)
-    {
-        return not(lhs == rhs);
-    }
-    inline bool operator>= (const BLOB& lhs, const BLOB& rhs)
-    {
-        return BLOB::TWC_ (lhs, rhs) >= 0;
-    }
-    inline bool operator> (const BLOB& lhs, const BLOB& rhs)
-    {
-        return BLOB::TWC_ (lhs, rhs) > 0;
-    }
-    inline bool operator== (const BLOB& lhs, const BLOB& rhs)
-    {
-        return BLOB::TWC_ (lhs, rhs) == 0;
-    }
-#endif
 
 }
 

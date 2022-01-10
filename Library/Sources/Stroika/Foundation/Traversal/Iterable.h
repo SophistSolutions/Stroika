@@ -6,13 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#include <compare>
 #include <functional>
 #include <shared_mutex>
 #include <vector>
-
-#if defined(__cpp_impl_three_way_comparison)
-#include <compare>
-#endif
 
 #include "../Common/Compare.h"
 #include "../Configuration/Common.h"

@@ -235,12 +235,6 @@ namespace Stroika::Frameworks::Led {
                fListStyle == rhs.fListStyle and
                fListIndentLevel == rhs.fListIndentLevel;
     }
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool WordProcessor::ParagraphInfo::operator!= (const ParagraphInfo& rhs) const
-    {
-        return not(*this == rhs);
-    }
-#endif
 
     /*
      ********************************************************************************
@@ -513,12 +507,6 @@ namespace Stroika::Frameworks::Led {
 
         return true;
     }
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool WordProcessor::IncrementalParagraphInfo::operator!= (const IncrementalParagraphInfo& rhs) const
-    {
-        return not(*this == rhs);
-    }
-#endif
 
     /*
      ********************************************************************************

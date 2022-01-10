@@ -6,9 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
 
 #include "../Characters/String.h"
 #include "../Common/Compare.h"
@@ -152,7 +150,6 @@ namespace Stroika::Foundation::DataExchange {
          */
         nonvirtual String GetPrintName () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -162,7 +159,6 @@ namespace Stroika::Foundation::DataExchange {
         /**
          */
         nonvirtual bool operator== (const Atom& rhs) const;
-#endif
 
     public:
         /**
@@ -211,29 +207,8 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual AtomInternalType _GetInternalRep () const;
 
     private:
-#if __cpp_impl_three_way_comparison < 201907
-    public: // for operator access
-#endif
         AtomInternalType fValue_;
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obvious meaning, and simply indirect to @Version::ThreeWayComparer (const Version& rhs)
-     */
-    template <typename ATOM_MANAGER>
-    bool operator< (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
-    template <typename ATOM_MANAGER>
-    bool operator<= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
-    template <typename ATOM_MANAGER>
-    bool operator== (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
-    template <typename ATOM_MANAGER>
-    bool operator!= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
-    template <typename ATOM_MANAGER>
-    bool operator>= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
-    template <typename ATOM_MANAGER>
-    bool operator> (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
-#endif
 
 }
 

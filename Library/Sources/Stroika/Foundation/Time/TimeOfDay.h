@@ -6,11 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
-#include <compare>
-#endif
-
 #include <climits>
+#include <compare>
 #include <locale>
 #include <string>
 
@@ -240,12 +237,10 @@ namespace Stroika::Foundation::Time {
         nonvirtual String Format (const locale& l, const String& formatPattern) const;
         nonvirtual String Format (const String& formatPattern) const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
         constexpr strong_ordering operator<=> (const TimeOfDay& rhs) const = default;
-#endif
 
     public:
         /**
@@ -294,15 +289,6 @@ namespace Stroika::Foundation::Time {
         L"%I:%M:%S"sv,
         L"%I:%M"sv,
     };
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    constexpr bool operator< (TimeOfDay lhs, TimeOfDay rhs);
-    constexpr bool operator<= (TimeOfDay lhs, TimeOfDay rhs);
-    constexpr bool operator== (TimeOfDay lhs, TimeOfDay rhs);
-    constexpr bool operator!= (TimeOfDay lhs, TimeOfDay rhs);
-    constexpr bool operator>= (TimeOfDay lhs, TimeOfDay rhs);
-    constexpr bool operator> (TimeOfDay lhs, TimeOfDay rhs);
 #endif
 
 }

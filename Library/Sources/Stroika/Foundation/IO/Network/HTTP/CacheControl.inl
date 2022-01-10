@@ -21,21 +21,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         return As<Characters::String> ();
     }
 
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool operator== (const CacheControl::MaxStale& lhs, const CacheControl::MaxStale& rhs)
-    {
-        return lhs.fAmount == rhs.fAmount;
-    }
-    inline bool operator== (const CacheControl& lhs, const CacheControl& rhs)
-    {
-        return lhs.fCacheability == rhs.fCacheability and lhs.fMaxAge == rhs.fMaxAge and lhs.fMustRevalidate == rhs.fMustRevalidate and lhs.fImmutable == rhs.fImmutable and lhs.fNoTransform == rhs.fNoTransform and lhs.fOnlyIfCached == rhs.fOnlyIfCached and lhs.fAge == rhs.fAge and lhs.fSharedMaxAge == rhs.fSharedMaxAge and lhs.fMaxStale == rhs.fMaxStale and lhs.fMinFresh == rhs.fMinFresh;
-    }
-    inline bool operator!= (const CacheControl& lhs, const CacheControl& rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
-
 }
 
 namespace Stroika::Foundation::Configuration {

@@ -358,31 +358,11 @@ namespace Stroika::Foundation::Traversal {
         }
 #endif
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename T, typename RANGE_TYPE>
     constexpr bool DisjointRange<T, RANGE_TYPE>::operator== (const DisjointRange& rhs) const
     {
         return SubRanges () == rhs.SubRanges ();
     }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ***************** DisjointRange<T, RANGE_TYPE> Comparisons Operators ***********
-     ********************************************************************************
-     */
-    template <typename T, typename RANGE_TYPE>
-    inline bool operator== (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
-    {
-        return lhs.SubRanges () == rhs.SubRanges ();
-    }
-    template <typename T, typename RANGE_TYPE>
-    inline bool operator!= (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
 
     /*
      ********************************************************************************

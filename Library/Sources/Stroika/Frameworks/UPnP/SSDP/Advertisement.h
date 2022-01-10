@@ -6,10 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
-
 #include <optional>
 
 #include "../../../Foundation/Characters/String.h"
@@ -46,36 +43,7 @@ namespace Stroika::Frameworks::UPnP::SSDP {
         String                  fTarget; // usually ST header (or NT for notify)
         Mapping<String, String> fRawHeaders;
 
-#if __cpp_lib_three_way_comparison < 201907
-        bool operator== (const Advertisement& rhs) const
-        {
-            if (fAlive != rhs.fAlive) {
-                return false;
-            }
-            if (fUSN != rhs.fUSN) {
-                return false;
-            }
-            if (fLocation != rhs.fLocation) {
-                return false;
-            }
-            if (fServer != rhs.fServer) {
-                return false;
-            }
-            if (fTarget != rhs.fTarget) {
-                return false;
-            }
-            if (fRawHeaders != rhs.fRawHeaders) {
-                return false;
-            }
-            return true;
-        }
-        bool operator!= (const Advertisement& rhs) const
-        {
-            return not(*this == rhs);
-        }
-#else
         bool operator== (const Advertisement&) const = default;
-#endif
 
         /**
          *  Mapper to facilitiate serialization

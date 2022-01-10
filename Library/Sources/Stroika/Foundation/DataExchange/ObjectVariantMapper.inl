@@ -85,31 +85,10 @@ namespace Stroika::Foundation::DataExchange {
     {
         Require (type_index{typeid (T)} == forTypeInfo);
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering ObjectVariantMapper::TypeMappingDetails::operator<=> (const TypeMappingDetails& rhs) const
     {
-#if __cpp_lib_three_way_comparison >= 201907
         return std::compare_three_way{}(fForType, rhs.fForType);
-#else
-        if (fForType < rhs.fForType) {
-            return strong_ordering::less;
-        }
-        if (fForType == rhs.fForType) {
-            return strong_ordering::equal;
-        }
-        if (fForType > rhs.fForType) {
-            return strong_ordering::greater;
-        }
-        AssertNotReached ();
-        return strong_ordering::equal;
-#endif
     }
-#else
-    inline bool ObjectVariantMapper::TypeMappingDetails::operator< (const TypeMappingDetails& rhs) const
-    {
-        return fForType < rhs.fForType;
-    }
-#endif
     inline bool ObjectVariantMapper::TypeMappingDetails::operator== (const TypeMappingDetails& rhs) const
     {
         return fForType == rhs.fForType;

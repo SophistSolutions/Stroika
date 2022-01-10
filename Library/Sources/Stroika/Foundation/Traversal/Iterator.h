@@ -6,10 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
-
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -442,7 +439,6 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual explicit operator bool () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          *  \brief Equals () checks if two iterators are equal to one another (point to the same position in the sequence).
@@ -480,7 +476,6 @@ namespace Stroika::Foundation::Traversal {
          *  Note that Equals is *commutative*.
          */
         nonvirtual bool operator== (const Iterator& rhs) const;
-#endif
 
     public:
         /**
@@ -608,12 +603,6 @@ namespace Stroika::Foundation::Traversal {
 
     private:
         static RepSmartPtr Clone_ (const IRep& rep);
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        template <typename T2, typename IT2>
-        friend bool operator== (const Iterator<T2, IT2>& lhs, const Iterator<T2, IT2>& rhs);
-#endif
     };
 
     /**
@@ -696,20 +685,6 @@ namespace Stroika::Foundation::Traversal {
         virtual void Invariant () const noexcept;
 #endif
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  \brief  operator== is a shorthand for lhs.Equals (rhs)
-     */
-    template <typename T, typename ITERATOR_TRAITS>
-    bool operator== (const Iterator<T, ITERATOR_TRAITS>& lhs, const Iterator<T, ITERATOR_TRAITS>& rhs);
-
-    /**
-     *  \brief  operator== is a shorthand for not lhs.Equals (rhs)
-     */
-    template <typename T, typename ITERATOR_TRAITS>
-    bool operator!= (const Iterator<T, ITERATOR_TRAITS>& lhs, const Iterator<T, ITERATOR_TRAITS>& rhs);
-#endif
 
     /**
      *  \brief More clear way of writing '&*' - convert iterator to pointer.

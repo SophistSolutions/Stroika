@@ -29,7 +29,6 @@ namespace Stroika::Foundation::IO::Network {
     {
         return fSignificantBits_;
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering CIDR::operator<=> (const CIDR& rhs) const
     {
         strong_ordering r = fSignificantBits_ <=> rhs.fSignificantBits_;
@@ -40,7 +39,6 @@ namespace Stroika::Foundation::IO::Network {
             return r;
         }
     }
-#endif
     inline bool CIDR::operator== (const CIDR& rhs) const
     {
         return fSignificantBits_ == rhs.fSignificantBits_ and fBaseAddress_.KeepSignifcantBits (fSignificantBits_) == rhs.fBaseAddress_.KeepSignifcantBits (fSignificantBits_);

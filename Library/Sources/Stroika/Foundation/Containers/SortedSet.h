@@ -120,13 +120,11 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual ElementInOrderComparerType GetInOrderComparer () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          *  Compare sequentially using the associated GetInOrderComparer ()  
          */
         nonvirtual strong_ordering operator<=> (const SortedSet& rhs) const;
-#endif
 
     protected:
         /**

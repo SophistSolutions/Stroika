@@ -321,7 +321,6 @@ namespace Stroika::Foundation::Containers {
     {
         return inherited::Where (includeIfTrue, ArchetypeContainerType{});
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::operator== (const KeyedCollection& rhs) const
     {
@@ -332,7 +331,6 @@ namespace Stroika::Foundation::Containers {
     {
         return EqualsComparer{}(*this, rhs);
     }
-#endif
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>& KeyedCollection<T, KEY_TYPE, TRAITS>::operator+= (ArgByValueType<value_type> item)
     {
@@ -488,24 +486,6 @@ namespace Stroika::Foundation::Containers {
     {
         return operator() (rhs, lhs); // use commutativity of ==
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ******************** Mapping comparison operators ******************************
-     ********************************************************************************
-     */
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline bool operator== (const KeyedCollection<T, KEY_TYPE, TRAITS>& lhs, const KeyedCollection<T, KEY_TYPE, TRAITS>& rhs)
-    {
-        return typename KeyedCollection<T, KEY_TYPE, TRAITS>::EqualsComparer{}(lhs, rhs);
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline bool operator!= (const KeyedCollection<T, KEY_TYPE, TRAITS>& lhs, const KeyedCollection<T, KEY_TYPE, TRAITS>& rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
 
 }
 

@@ -60,16 +60,6 @@ namespace Stroika::Foundation::Database::SQL {
     {
         return _fRep.get () == nullptr;
     }
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool Connection::Ptr::operator!= (const Ptr& rhs) const
-    {
-        return _fRep == rhs._fRep;
-    }
-    inline bool Connection::Ptr::operator!= (nullptr_t) const
-    {
-        return _fRep != nullptr;
-    }
-#endif
     inline shared_ptr<const EngineProperties> Connection::Ptr::GetEngineProperties () const
     {
         return _fRep->GetEngineProperties ();

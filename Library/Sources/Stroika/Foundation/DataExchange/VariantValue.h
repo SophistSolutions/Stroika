@@ -6,10 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
-
 #include <map>
 #include <vector>
 
@@ -356,7 +353,6 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual FloatType_           AsFloatType_ () const;
         nonvirtual String               AsString_ () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -366,7 +362,6 @@ namespace Stroika::Foundation::DataExchange {
         /**
          */
         nonvirtual bool operator== (const VariantValue& rhs) const;
-#endif
 
     public:
         struct EqualsComparer;
@@ -459,15 +454,6 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual Common::strong_ordering operator() (const VariantValue& lhs, const VariantValue& rhs) const;
         bool                               fExactTypeMatchOnly;
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const VariantValue& lhs, const VariantValue& rhs);
-    bool operator<= (const VariantValue& lhs, const VariantValue& rhs);
-    bool operator== (const VariantValue& lhs, const VariantValue& rhs);
-    bool operator!= (const VariantValue& lhs, const VariantValue& rhs);
-    bool operator>= (const VariantValue& lhs, const VariantValue& rhs);
-    bool operator> (const VariantValue& lhs, const VariantValue& rhs);
-#endif
 
 }
 

@@ -455,14 +455,12 @@ namespace Stroika::Foundation::Containers {
     public:
         struct EqualsComparer;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          * Simply intdirect to KeyedCollection<>::EqualsComparer
          */
         nonvirtual bool operator== (const KeyedCollection& rhs) const;
         nonvirtual bool operator== (const Iterable<value_type>& rhs) const;
-#endif
 
     public:
         /**

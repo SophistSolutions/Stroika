@@ -11,27 +11,22 @@
  */
 namespace Stroika::Foundation::DataExchange::XML {
 
-    //  class   NamespaceDefinition
+    /*
+     ********************************************************************************
+     ******************************** NamespaceDefinition ***************************
+     ********************************************************************************
+     */
     inline NamespaceDefinition::NamespaceDefinition (const wstring& uri, const wstring& prefix)
         : fURI{uri}
         , fPrefix{prefix}
     {
     }
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool operator< (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs)
-    {
-        if (lhs.fURI == rhs.fURI) {
-            return lhs.fPrefix < rhs.fPrefix;
-        }
-        return lhs.fURI < rhs.fURI;
-    }
-    inline bool operator== (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs)
-    {
-        return lhs.fURI == rhs.fURI and lhs.fPrefix == rhs.fPrefix;
-    }
-#endif
 
-    //  class   NamespaceDefinitionsList
+    /*
+     ********************************************************************************
+     *************************** NamespaceDefinitionsList ***************************
+     ********************************************************************************
+     */
     inline NamespaceDefinitionsList::NamespaceDefinitionsList (const vector<NamespaceDefinition>& namespaces)
         : fNamespaces (namespaces)
     {
