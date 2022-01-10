@@ -49,18 +49,15 @@ namespace {
      *  get the best web-server performance.
      */
     const ConstantProperty<FileSystemRequestHandler::Options> kFileSystemRouterOptions_{[] () {
-        Sequence<pair<RegularExpression, CacheControl>> cacheControlSettings_
-        {
+        // clang-format off
+        Sequence<pair<RegularExpression, CacheControl>> cacheControlSettings_ {
 #if __cpp_designated_initializers
-            {
-                RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { .fMaxAge = Duration{24h}.As<int32_t> () }
-            }
+            { RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { .fMaxAge = Duration{24h}.As<int32_t> () } }
 #else
-            {
-                RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { nullopt, Duration{24h}.As<int32_t> () }
-            }
+            { RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { nullopt, Duration{24h}.As<int32_t> () } }
 #endif
         };
+        // clang-format on
         return FileSystemRequestHandler::Options{L"Files"_k, Sequence<String>{L"index.html"_k}, nullopt, cacheControlSettings_};
     }};
 
@@ -96,7 +93,7 @@ namespace {
         MyWebServer_ (uint16_t portNumber)
             // clang-format off
             : kRoutes_{
-            Route{L""_RegEx, DefaultPage_},
+                Route{L""_RegEx, DefaultPage_},
                 Route{HTTP::MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
                 Route{L"FRED"_RegEx, [] (Request*, Response* response) {
                     response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;

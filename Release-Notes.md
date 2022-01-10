@@ -9,6 +9,107 @@ especially those they need to be aware of when upgrading.
 
 ---
 
+### 2.1r1 {2022-01-08}
+
+#### TLDR
+
+- Lose deprecated beta API support, in preparation for release (see [Documentation/Upgrading.md](Documentation/Upgrading.md) )
+- Fixed a few ThirdPartyComponents versions (zlib, and libcurl issues)
+- Small performance tweaks/review/assessment
+- Docs improvements
+
+#### Change Details
+
+- Build System Tests And Tools
+  - Build System
+    - tweaked RunPerformanceRegressionTests for windows run x86 and x86_64 tests
+    - fixed RunLocalWindowsDockerRegressionTests to copy out right performance regtests files
+    - workaround https://stroika.atlassian.net/browse/STK-761 - Ubuntu 21.10 (apparent ASAN) - but really I think lto - issue
+  - Compiler bug defines
+    - qCompiler_ASanitizer_global_buffer_overflow_Buggy compiler bug define and workaround
+  - New Compiler Versions
+    - in docker, use vs2k22 17.0.4
+  - Regression Tests
+    - tweak performance regtests numbers for running under windows/docker (so no warnings)
+
+- Documentation
+  - cleanups and prepare for release
+
+- Library::Foundation
+  - Characters
+    - String code cleanups due to the fact (now better documented) that String::IRep instances are always IMMUTABLE. Simplfiies alot of things.
+  - Common
+    - **not backward compatible** - changed Common::ThreeWayComparer so it is not templated, but operator() () is templated so args do perfect forwarding
+  - Containers
+    - DataStructures::LinkedList/DoubleLinkeLIst::Link renamed Link_ and made private, and  added and used   LinkedList<T>::PeekAt ()
+    - Fixed Collection_stdmultiset and SortedCollection_stdmultiset to use the argument in-order comparer (and fixed a few names in that code)
+    - Collection_Factory<T>::Default_ () set back to using Colleicton_LinkedList cuz faster (for many cases) than Collection_stdmultiset - and updated regression performance tests to relfect this
+  - DataExchange
+    - fixed https://stroika.atlassian.net/browse/STK-601 - ubsan warning clang call to function (unknown) through pointer to incorrect function type - correct, but intentional - qCompiler_SanitizerFunctionPtrConversionSuppressionBug
+  - Time
+    - replaced Date/TimeOfDay/DateTime::PrintFormat with NonStandardPrintFormat (now that we lost most of the standard ones - clearer name)
+  - Traverasal
+    - **not backward compatible** - but easy - lose Iterator<> postfix ++ support, so that I can have Iterator<T>::operator* (and Current ()) return internal pointer/refernece as small performance tweak
+
+- Miscelaneous
+  - removed most deprecated (beta) APIs - **not backward compatible** -  (see [Documentation/Upgrading.md](Documentation/Upgrading.md) )
+  - Coding Style changes (applied throughout code)
+    - mostly cosmetic (I think) - but may have some performance implications (some +, some -) - use much more for (const T& or for (const auto& - replacing just for (T, or other things less clear / appropriate; haven't found clear docs on web about universally what is best here, but I if performance diff unclear (less a win for Stroika than other systems due to COW and maybe more cost due to how iterators return by value not reference)
+    - use MOVE ctors in one more place
+    - change const auto&& to auto&&; and frequently use const auto& in ranged for - use in ranged for loops in a few places (I think works better but not 100% sure)
+
+- ThirdPartyComponents
+  - libcurl
+    - fixed libcurl Makefile to include /ScriptsLib/SharedMakeVariables-Default.mk so FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL now works right; and added CPPFLAGS in addition to CFLAGS to configure script
+    - fixed missing zlib usage from build of libcurl
+    - workaround https://stroika.atlassian.net/browse/STK-759; and now use curl VERSION=7.80.0 even on macos
+  - sqlite
+    - Version: 3.37.1
+  - zlib
+    - https://stroika.atlassian.net/browse/STK-568 (update to latest zlib (1.2.8 works fine but 1.2.9 and later crash on win32)
+    - Version: 1.2.11
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13; XCode: 13 }
+  - MSVC: { 15.9.41, 16.11.8, 17.0.4 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Moneterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 21.10], Centos: [7, 8], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [CircleCI](https://app.circleci.com/pipelines/github/SophistSolutions/Stroika)
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+  - Centos 7
+    - two warnings about locale issues, very minor
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - vs2k19 and vs2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+  - WSL-Regression tests
+    - Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure
+
+---
+
 ### 2.1b15 {2021-12-25}
 
 #### TLDR

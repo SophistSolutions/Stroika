@@ -45,23 +45,23 @@ Stroika's biggest strength is also its biggest weakness:
 
 ## Versions
 
+- Stroika v3 development has started, and requires C++20 or later.
+
+- Stroika v2.1 is stable (in maintainance), and requires C++17 or later. Version 2.1 also conditionally supports many c++20 features (such as three-way-comparison etc, if available).
+
 - Stroika v2.0 is very stable, and requires C++14 or later. Stroika v2.0 is used to power a wide variety of open source and commercial applications.
-
-- Stroika v2.1 is actively evolving, and requires C++17 or later. Version 2.1 also conditionally supports many c++20 features (such as three-way-comparison etc, if available).
-
-- Stroika v2.2 will start soon, and require C++20 or later.
 
 ## Compilers / Platforms regularly tested/supported
 
 - Linux, MacOS, Windows
 
-- Stroika v2.0
-
-  Tested on x86, arm, gcc5 thru gcc8, clang 3 thru clang 6, XCode 8 thru 9.
-
 - Stroika v2.1
 
   Regularly tested on x86, arm (+m1), gcc8 thru gcc11, clang 6 thru clang 12, Visual Studio.Net 2017, Visual Studio.Net 2019 and Visual Studio.Net 2022, XCode 13.
+
+- Stroika v2.0
+
+  Tested on x86, arm, gcc5 thru gcc8, clang 3 thru clang 6, XCode 8 thru 9.
 
 ## CI System Integration
 

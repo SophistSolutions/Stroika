@@ -2250,6 +2250,13 @@ WARNING: ThreadSanitizer: double lock of a mutex (pid=2575509)
 
 #endif
 
+#if !defined(qCompiler_ValgrindDirectSignalHandler_Buggy)
+
+// Now set in the configure script, because this depends on the OS
+#define qCompiler_ValgrindDirectSignalHandler_Buggy 0
+
+#endif
+
 // ASAN crash on windows, with openssl maybe just with default provider
 #ifndef qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
 

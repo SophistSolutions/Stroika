@@ -2,7 +2,7 @@
 
 Stroika makes lots of changes in its APIs over time. This the only way to improve. This is imposes a cost on developers using Stroika, but also provides significant benefits (better deisgn, better features)
 
-To mitigate the downsides, Stroika follows a few pattern:
+To mitigate the downsides, Stroika generally follows this pattern:
 
 - Within a major-minor-stage of development (e.g. 2.1d), Stroika will endeavor to backwardly support all previous APIs through classes or methods marked as deprecated.
 - those deprecation warnings, generally document what API to use INSTEAD
@@ -19,14 +19,16 @@ Thus the obvious upgrade process from using one verison of Stroika to another wo
   - Address any warnings about use of deprecated features
   - IF NEEDED, review release notes for that range of releases (hopefully such review will be rare)
 
-- Upgrading within a major-minor-stage (typically lasts around a year) should be relatively simple, just following instructions in deprecation warnings (with occasional bigger challenges when APIs change alot or something subtle slips through the cracks)
+- Upgrading within a major-minor-stage (typically about a year of development) should be relatively simple, just following instructions in deprecation warnings (with occasional bigger challenges when APIs change alot or something subtle slips through the cracks)
 
 ### Example
 
-So for exmaple, if upgrading from use of 2.0b23 to v2.1b3
+So for exmaple, if upgrading from use of 2.0b23 to v2.1 (final release)
 
-- Upgrade to v2.0a125
 - Upgrade to v2.0b7
 - Upgrade to v2.1d27
 - Upgrade to v2.1a5
-- Upgrade to v2.1b3
+- Upgrade to v2.1b15
+- Upgrade to v2.1
+
+Each stage of upgrade should come with fairly clear instructions (deprecation warnings) about what API changes to make, or just recompile with no problems.
