@@ -48,16 +48,6 @@ jobs:
           #   extra_config_args: --apply-default-debug-flags --trace2file enable
 
           # ubuntu 20.04
-          - displayTargetName: ubuntu-20.04-g++-9 (Debug)
-            os: unix
-            compiler: g++-9
-            runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
-            cpp_version: c++2a
-            config_name: Debug
-            extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
-            includeInDevBranchBuilds: false
-
           - displayTargetName: ubuntu-20.04-g++-10 (Debug)
             os: unix
             compiler: g++-10
@@ -77,16 +67,6 @@ jobs:
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: true
-
-          - displayTargetName: ubuntu-20.04-g++-10-c++2a
-            os: unix
-            compiler: g++-10
-            runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
-            cpp_version: c++2a
-            config_name: Release
-            extra_config_args: --apply-default-release-flags --trace2file enable
-            includeInDevBranchBuilds: false
 
           - displayTargetName: ubuntu-20.04-clang++-10
             os: unix
