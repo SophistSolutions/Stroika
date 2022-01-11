@@ -444,11 +444,6 @@ basic-unix-test-configurations:
 
 
 basic-unix-test-configurations_g++_versions_:
-	# g++-8
-	./configure g++-8-debug-c++2a --config-tag Unix --compiler-driver g++-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2a
-	./configure my-g++-8.3-debug-c++2a --config-tag Unix --compiler-driver /private-compiler-builds/gcc-8.3.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --no-sanitize address --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:/private-compiler-builds/gcc-8.3.0/lib64' --only-if-has-compiler --cppstd-version c++2a
-	# g++-9
-	./configure g++-9-debug-c++2a --config-tag Unix --compiler-driver g++-9 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2a
 	# g++-10
 	./configure g++-10-debug-c++2a --config-tag Unix --compiler-driver g++-10 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2a
 	# g++-11
