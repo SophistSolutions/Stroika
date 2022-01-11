@@ -58,6 +58,22 @@ namespace Stroika::Foundation::Common {
      *  \note DO NOT SPECIALIZE ThreeWayComparer<>, since its just a utility which trivailly wraps
      *        std::compare_three_way in c++20, so just specialize std::compare_three_way<>::operator()...
      */
+     // TODO SEEMS STILL NEEDED ON CLANG++-10???
+#if __cpp_lib_three_way_comparison < 201907L
+    struct ThreeWayComparer {
+        template <class LT, class RT>
+        constexpr auto operator() (LT&& lhs, RT&& rhs) const
+        {
+            using CT = common_type_t<LT, RT>;
+            // ISSUE HERE - PRE C++20, no distinction made between strong_ordering, weak_ordering, and partial_ordering, because
+            // this counts on cooperation with various types and mechanismns like operator<=> = default which we don't have (and declared strong_ordering=int)
+            if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
+                return Stroika::Foundation::Common::kEqual;
+            }
+            return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? Stroika::Foundation::Common::kLess : Stroika::Foundation::Common::kGreater;
+        }
+    };
+#else
     struct ThreeWayComparer {
         template <class LT, class RT>
         constexpr auto operator() (LT&& lhs, RT&& rhs) const
@@ -65,6 +81,7 @@ namespace Stroika::Foundation::Common {
             return std::compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
         }
     };
+#endif
 
     /**
      *  \brief trivial wrapper calling ThreeWayComparer<TL,TR>{}(lhs,rhs) i.e. std::compare_three_way{} (lhs, rhs)
@@ -252,10 +269,16 @@ namespace Stroika::Foundation::Common {
     struct ExtractComparisonTraits<ThreeWayComparer> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
     };
+#if __cpp_lib_three_way_comparison >= 201907
+    template <>
+    struct ExtractComparisonTraits<ThreeWayComparer> {
+        static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
+    };
     template <>
     struct ExtractComparisonTraits<std::compare_three_way> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
     };
+#endif
 
     /**
      *  \brief Checks (via ExtractComparisonTraits) if argument is an Equals comparer - one that takes two arguments of type T, and returns a bool, and compares
