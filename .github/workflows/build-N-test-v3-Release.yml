@@ -373,7 +373,7 @@ jobs:
 
     - name: Configure
       run: |
-        ./configure Release --cppstd-version c++20 --apply-default-release-flags
+        ./configure Release --cppstd-version c++2a --apply-default-release-flags
         cat ConfigurationFiles/Release.xml
 
     # Break out third-party-components to do clean so we dont run out of disk space, and break out TPC AND library
