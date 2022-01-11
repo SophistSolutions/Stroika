@@ -194,12 +194,22 @@ namespace Stroika::Foundation::Execution {
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
         shared_lock<const AssertExternallySynchronizedMutex> critSec2{rhs};
+         // @todo understnad why needed on XCode 13?
+#if __cpp_lib_three_way_comparison < 201907
+        return Common::ThreeWayCompare (fRep_, rhs.fRep_);
+#else
         return fRep_ <=> rhs.fRep_;
+#endif
     }
     inline strong_ordering Thread::Ptr::operator<=> (nullptr_t) const
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
+         // @todo understnad why needed on XCode 13?
+#if __cpp_lib_three_way_comparison < 201907
+        return Common::ThreeWayCompare (fRep_, nullptr);
+#else
         return fRep_ <=> nullptr;
+#endif
     }
     inline Thread::Ptr::operator bool () const
     {
