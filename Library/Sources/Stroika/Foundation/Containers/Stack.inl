@@ -104,7 +104,6 @@ namespace Stroika::Foundation::Containers {
         _SafeReadRepAccessor<_IRep>{this};
 #endif
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename T>
     inline bool Stack<T>::operator== (const Stack& rhs) const
     {
@@ -115,25 +114,6 @@ namespace Stroika::Foundation::Containers {
     {
         return ThreeWayComparer<>{}(*this, rhs);
     }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     **************************** Stack compare operators ***************************
-     ********************************************************************************
-     */
-    template <typename T>
-    inline bool operator== (const Stack<T>& lhs, const Stack<T>& rhs)
-    {
-        return typename Stack<T>::EqualsComparer{}(lhs, rhs);
-    }
-    template <typename T>
-    inline bool operator!= (const Stack<T>& lhs, const Stack<T>& rhs)
-    {
-        return not typename Stack<T>::EqualsComparer{}(lhs, rhs);
-    }
-#endif
 
 }
 

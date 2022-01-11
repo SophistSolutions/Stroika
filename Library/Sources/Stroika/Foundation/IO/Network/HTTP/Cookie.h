@@ -111,20 +111,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          */
         nonvirtual Characters::String ToString () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
         nonvirtual bool operator== (const Cookie& rhs) const = default;
-#endif
     };
     template <>
     String Cookie::As<String> () const;
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator== (const Cookie& lhs, const Cookie& rhs);
-    bool operator!= (const Cookie& lhs, const Cookie& rhs);
-#endif
 
     /**
      *  This corresponds to the value of the Cookie, or Set-Cookie in an HTTP Request header
@@ -181,26 +174,14 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          */
         nonvirtual Characters::String ToString () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
         nonvirtual bool operator== (const CookieList& rhs) const;
-#endif
 
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        friend bool operator== (const CookieList& lhs, const CookieList& rhs);
-        friend bool operator!= (const CookieList& lhs, const CookieList& rhs);
-#endif
     private:
         Collection<Cookie> fCookieDetails_; // redundant representation
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator== (const CookieList& lhs, const CookieList& rhs);
-    bool operator!= (const CookieList& lhs, const CookieList& rhs);
-#endif
 
 }
 

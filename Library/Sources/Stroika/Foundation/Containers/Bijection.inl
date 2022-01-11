@@ -432,13 +432,11 @@ namespace Stroika::Foundation::Containers {
         _SafeReadRepAccessor<_IRep>{this};
 #endif
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::operator== (const Bijection& rhs) const
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
     }
-#endif
 
     /*
      ********************************************************************************
@@ -559,25 +557,6 @@ namespace Stroika::Foundation::Containers {
         }
         return true;
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ******************** Bijection comparison operators ****************************
-     ********************************************************************************
-     */
-    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    inline bool operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs)
-    {
-        using B = Bijection<DOMAIN_TYPE, RANGE_TYPE>;
-        return typename B::template _SafeReadRepAccessor<typename B::_IRep>{&lhs}._ConstGetRep ().Equals (typename B::template _SafeReadRepAccessor<typename B::_IRep>{&rhs}._ConstGetRep ());
-    }
-    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    inline bool operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
 
 }
 

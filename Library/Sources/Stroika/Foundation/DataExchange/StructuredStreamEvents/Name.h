@@ -6,10 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
-
 #include <optional>
 
 #include "../../Characters/String.h"
@@ -65,7 +62,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         Name (const String& localName, NameType type = eElement);
         Name (const String& namespaceURI, const String& localName, NameType type = eElement);
 
-#if __cpp_impl_three_way_comparison >= 201907
         /**
          */
         nonvirtual strong_ordering operator<=> (const Name& rhs) const;
@@ -73,7 +69,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         /**
          */
         nonvirtual bool operator== (const Name& rhs) const;
-#endif
 
         /**
          *  Purely for debugging / diagnostic purposes. Don't count on this format.
@@ -82,26 +77,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
 
     private:
         static Common::strong_ordering TWC_ (const Name& lhs, const Name& rhs); // utility code share between c++17 and c++20 versions
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        friend bool operator< (const Name& lhs, const Name& rhs);
-        friend bool operator<= (const Name& lhs, const Name& rhs);
-        friend bool operator== (const Name& lhs, const Name& rhs);
-        friend bool operator!= (const Name& lhs, const Name& rhs);
-        friend bool operator>= (const Name& lhs, const Name& rhs);
-        friend bool operator> (const Name& lhs, const Name& rhs);
-#endif
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const Name& lhs, const Name& rhs);
-    bool operator<= (const Name& lhs, const Name& rhs);
-    bool operator== (const Name& lhs, const Name& rhs);
-    bool operator!= (const Name& lhs, const Name& rhs);
-    bool operator>= (const Name& lhs, const Name& rhs);
-    bool operator> (const Name& lhs, const Name& rhs);
-#endif
 
 }
 

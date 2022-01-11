@@ -6,9 +6,7 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
 #include <filesystem>
 
 #if qPlatform_Windows
@@ -55,55 +53,9 @@ namespace Stroika::Foundation::IO::Network::SystemFirewall {
         nonvirtual String ToString () const;
 
     public:
-#if __cpp_impl_three_way_comparison < 201907
-        bool operator== (const Rule& rhs) const
-        {
-            if (fName != rhs.fName) {
-                return false;
-            }
-            if (fDescription != rhs.fDescription) {
-                return false;
-            }
-            if (fGroup != rhs.fGroup) {
-                return false;
-            }
-            if (fApplication != rhs.fApplication) {
-                return false;
-            }
-#if qPlatform_Windows
-            if (fProfileMask != rhs.fProfileMask) {
-                return false;
-            }
-            if (fDirection != rhs.fDirection) {
-                return false;
-            }
-            if (fProtocol != rhs.fProtocol) {
-                return false;
-            }
-#endif
-            if (fLocalPorts != rhs.fLocalPorts) {
-                return false;
-            }
-            if (fRemotePorts != rhs.fRemotePorts) {
-                return false;
-            }
-#if qPlatform_Windows
-            if (fAction != rhs.fAction) {
-                return false;
-            }
-#endif
-            if (fEnabled != rhs.fEnabled) {
-                return false;
-            }
-            return true;
-        }
-        bool operator!= (const Rule& rhs) const
-        {
-            return not(*this == rhs);
-        }
-#else
+        /**
+         */
         nonvirtual strong_ordering operator<=> (const Rule&) const = default;
-#endif
     };
 
     /**

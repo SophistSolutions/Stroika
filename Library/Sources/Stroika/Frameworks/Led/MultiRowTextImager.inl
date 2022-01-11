@@ -273,12 +273,10 @@ namespace Stroika::Frameworks::Led {
     {
         return (fSubRow);
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline bool MultiRowTextImager::RowReference::operator== (MultiRowTextImager::RowReference rhs) const
     {
         return this->GetPartitionMarker () == rhs.GetPartitionMarker () and this->GetSubRow () == rhs.GetSubRow ();
     }
-#endif
 
     /*
      ********************************************************************************
@@ -405,19 +403,6 @@ namespace Stroika::Frameworks::Led {
         AssertNotNull (row.GetPartitionMarker ());
         return GetPartitionElementCacheInfo (row.GetPartitionMarker ()).GetRowHeight (row.GetSubRow ());
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool operator== (MultiRowTextImager::RowReference lhs, MultiRowTextImager::RowReference rhs)
-    {
-        return (lhs.GetPartitionMarker () == rhs.GetPartitionMarker () and
-                lhs.GetSubRow () == rhs.GetSubRow ());
-    }
-    inline bool operator!= (MultiRowTextImager::RowReference lhs, MultiRowTextImager::RowReference rhs)
-    {
-        return (lhs.GetPartitionMarker () != rhs.GetPartitionMarker () or
-                lhs.GetSubRow () != rhs.GetSubRow ());
-    }
-#endif
 
 }
 

@@ -365,13 +365,11 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual ElementEqualityComparerType GetElementEqualsComparer () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          * @see comparisons section of @MutliSet documentation
          */
         nonvirtual bool operator== (const MultiSet& rhs) const;
-#endif
 
     public:
         /**
@@ -411,12 +409,6 @@ namespace Stroika::Foundation::Containers {
 
     protected:
         nonvirtual void _AssertRepValidType () const;
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        template <typename D, typename DT>
-        friend bool operator== (const MultiSet<D, DT>& lhs, const MultiSet<D, DT>& rhs);
-#endif
     };
 
     /**
@@ -485,15 +477,6 @@ namespace Stroika::Foundation::Containers {
     protected:
         struct _UniqueElementsHelper;
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     */
-    template <typename T, typename TRAITS>
-    bool operator== (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs);
-    template <typename T, typename TRAITS>
-    bool operator!= (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs);
-#endif
 
 }
 

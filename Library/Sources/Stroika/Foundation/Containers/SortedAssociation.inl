@@ -104,14 +104,12 @@ namespace Stroika::Foundation::Containers {
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetInOrderKeyComparer ();
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline strong_ordering SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::operator<=> (const SortedAssociation& rhs) const
     {
         // nb: no need to take into account comparison on values, because total ordering on keys sequences these elements
         return typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetInOrderKeyComparer ())}(*this, rhs);
     }
-#endif
 
 }
 

@@ -179,10 +179,6 @@ namespace Stroika::Foundation::Database::SQL {
     public:
         nonvirtual auto operator== (const Ptr& rhs) const;
         nonvirtual bool operator== (nullptr_t) const noexcept;
-#if __cpp_impl_three_way_comparison < 201907
-        nonvirtual bool operator!= (const Ptr& rhs) const;
-        nonvirtual bool operator!= (nullptr_t) const;
-#endif
 
     protected:
         shared_ptr<IRep> _fRep;

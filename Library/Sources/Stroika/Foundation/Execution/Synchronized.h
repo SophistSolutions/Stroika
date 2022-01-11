@@ -6,15 +6,12 @@
 
 #include "../StroikaPreComp.h"
 
+#include <compare>
 #include <functional>
 #include <mutex>
 #include <optional>
 #include <shared_mutex>
 #include <type_traits>
-
-#if defined(__cpp_impl_three_way_comparison)
-#include <compare>
-#endif
 
 #include "../Configuration/Common.h"
 #include "../Configuration/Empty.h"
@@ -423,7 +420,6 @@ namespace Stroika::Foundation::Execution {
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>* = nullptr>
         nonvirtual void unlock () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -441,7 +437,6 @@ namespace Stroika::Foundation::Execution {
         nonvirtual auto operator<=> (const Synchronized& rhs) const;
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>* = nullptr>
         nonvirtual auto operator<=> (const T& rhs) const;
-#endif
 
     public:
         /**
@@ -667,54 +662,6 @@ namespace Stroika::Foundation::Execution {
     private:
         friend class Synchronized;
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     */
-    template <typename T, typename TRAITS>
-    bool operator< (const Synchronized<T, TRAITS>& lhs, T rhs);
-    template <typename T, typename TRAITS>
-    bool operator< (T lhs, const Synchronized<T, TRAITS>& rhs);
-    template <typename T, typename TRAITS>
-    bool operator< (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
-
-    /**
-     */
-    template <typename T, typename TRAITS>
-    bool operator<= (const Synchronized<T, TRAITS>& lhs, T rhs);
-    template <typename T, typename TRAITS>
-    bool operator<= (T lhs, const Synchronized<T, TRAITS>& rhs);
-    template <typename T, typename TRAITS>
-    bool operator<= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
-
-    /**
-     */
-    template <typename T, typename TRAITS>
-    bool operator== (const Synchronized<T, TRAITS>& lhs, T rhs);
-    template <typename T, typename TRAITS>
-    bool operator== (T lhs, const Synchronized<T, TRAITS>& rhs);
-    template <typename T, typename TRAITS>
-    bool operator== (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
-
-    /**
-     */
-    template <typename T, typename TRAITS>
-    bool operator!= (const Synchronized<T, TRAITS>& lhs, T rhs);
-    template <typename T, typename TRAITS>
-    bool operator!= (T lhs, const Synchronized<T, TRAITS>& rhs);
-    template <typename T, typename TRAITS>
-    bool operator!= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
-
-    /**
-     */
-    template <typename T, typename TRAITS>
-    bool operator>= (const Synchronized<T, TRAITS>& lhs, T rhs);
-
-    /**
-     */
-    template <typename T, typename TRAITS>
-    bool operator> (const Synchronized<T, TRAITS>& lhs, T rhs);
-#endif
 
     /**
      */

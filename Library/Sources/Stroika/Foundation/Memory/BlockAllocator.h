@@ -141,30 +141,15 @@ namespace Stroika::Foundation::Memory {
           */
         static void Compact ();
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
         nonvirtual bool operator== (const BlockAllocator& rhs) const;
-#endif
 
     private:
         // ensure return value is >= sizeof (T), and has legit alignment for T
         static constexpr size_t AdjustSizeForPool_ ();
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    template <class T, class U>
-    bool operator== (const BlockAllocator<T>&, const BlockAllocator<U>&)
-    {
-        return true;
-    }
-    template <class T, class U>
-    bool operator!= (const BlockAllocator<T>&, const BlockAllocator<U>&)
-    {
-        return false;
-    }
-#endif
 
 }
 

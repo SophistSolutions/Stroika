@@ -48,7 +48,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         result += fLocalName;
         return result;
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering Name::operator<=> (const Name& rhs) const
     {
         return TWC_ (*this, rhs);
@@ -57,7 +56,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
     {
         return TWC_ (*this, rhs) == 0;
     }
-#endif
     inline Common::strong_ordering Name::TWC_ (const Name& lhs, const Name& rhs)
     {
         // Treat EITHER side missing namespace as 'wildcard' matching any namespace
@@ -71,38 +69,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         }
         return Common::ThreeWayCompare (lhs.fType, rhs.fType);
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ************** StructuredStreamEvents::Name comparison operators ***************
-     ********************************************************************************
-     */
-    inline bool operator< (const Name& lhs, const Name& rhs)
-    {
-        return Name::TWC_ (lhs, rhs) < 0;
-    }
-    inline bool operator<= (const Name& lhs, const Name& rhs)
-    {
-        return Name::TWC_ (lhs, rhs) <= 0;
-    }
-    inline bool operator== (const Name& lhs, const Name& rhs)
-    {
-        return Name::TWC_ (lhs, rhs) == 0;
-    }
-    inline bool operator!= (const Name& lhs, const Name& rhs)
-    {
-        return Name::TWC_ (lhs, rhs) != 0;
-    }
-    inline bool operator>= (const Name& lhs, const Name& rhs)
-    {
-        return Name::TWC_ (lhs, rhs) >= 0;
-    }
-    inline bool operator> (const Name& lhs, const Name& rhs)
-    {
-        return Name::TWC_ (lhs, rhs) > 0;
-    }
-#endif
 
 }
 

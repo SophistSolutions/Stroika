@@ -208,13 +208,6 @@ namespace Stroika::Foundation::Memory {
          */
         constexpr bool operator== (nullptr_t) const;
 
-#if __cpp_impl_three_way_comparison < 201907
-    public:
-        /**
-         */
-        constexpr bool operator!= (nullptr_t) const;
-#endif
-
     public:
         /**
          */

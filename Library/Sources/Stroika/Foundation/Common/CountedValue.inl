@@ -41,7 +41,6 @@ namespace Stroika::Foundation::Common {
         , fCount{src.fCount}
     {
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     template <typename TEST, enable_if_t<Configuration::has_spaceship_v<TEST>>*>
     constexpr auto CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator<=> (const CountedValue& rhs) const
@@ -58,49 +57,6 @@ namespace Stroika::Foundation::Common {
     {
         return fValue == rhs.fValue and fValue == rhs.fValue;
     }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ********************** Common::CountedValue operators **************************
-     ********************************************************************************
-     */
-    template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    inline bool operator< (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
-    {
-        Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.fValue, rhs.fValue);
-        if (cmp != Common::kEqual) {
-            return cmp < 0;
-        }
-        return Common::ThreeWayCompare (lhs.fCount, rhs.fCount) < 0;
-    }
-    template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    inline bool operator<= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
-    {
-        return operator< (lhs, rhs) or operator== (lhs, rhs);
-    }
-    template <typename VALUE_TYPE, typename COUNTER_TYPE, enable_if_t<Configuration::has_eq_v<VALUE_TYPE>>*>
-    inline bool operator== (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
-    {
-        return lhs.fValue == rhs.fValue and lhs.fValue == rhs.fValue;
-    }
-    template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    inline bool operator!= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
-    {
-        return not(lhs == rhs);
-    }
-    template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    inline bool operator>= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
-    {
-        return not(lhs < rhs);
-    }
-    template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    inline bool operator> (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
-    {
-        return not(lhs <= rhs);
-    }
-#endif
 
 }
 

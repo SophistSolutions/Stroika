@@ -72,38 +72,12 @@ namespace Stroika::Foundation::Streams {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fRep_.get () == nullptr;
     }
-#if __cpp_impl_three_way_comparison < 201907
-    template <typename ELEMENT_TYPE>
-    inline bool Stream<ELEMENT_TYPE>::Ptr::operator!= (nullptr_t) const
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
-        return fRep_.get () != nullptr;
-    }
-#endif
     template <typename ELEMENT_TYPE>
     inline Stream<ELEMENT_TYPE>::Ptr::operator bool () const
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fRep_.get () != nullptr;
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ********************************* Operators ************************************
-     ********************************************************************************
-     */
-    template <typename ELEMENT_TYPE>
-    inline bool operator== (nullptr_t, const typename Stream<ELEMENT_TYPE>::Ptr& s)
-    {
-        return s == nullptr;
-    }
-    template <typename ELEMENT_TYPE>
-    inline bool operator!= (nullptr_t, const typename Stream<ELEMENT_TYPE>::Ptr& s)
-    {
-        return s != nullptr;
-    }
-#endif
 
 }
 

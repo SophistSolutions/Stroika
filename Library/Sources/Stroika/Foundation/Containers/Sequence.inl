@@ -448,7 +448,6 @@ namespace Stroika::Foundation::Containers {
         _SafeReadRepAccessor<_IRep>{this};
 #endif
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename T>
     inline bool Sequence<T>::operator== (const Sequence& rhs) const
     {
@@ -459,45 +458,6 @@ namespace Stroika::Foundation::Containers {
     {
         return ThreeWayComparer<>{}(*this, rhs);
     }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ************************** Sequence<T> operators *******************************
-     ********************************************************************************
-     */
-    template <typename T>
-    inline bool operator< (const Sequence<T>& lhs, const Sequence<T>& rhs)
-    {
-        return typename Sequence<T>::template ThreeWayComparer<>{}(lhs, rhs) < 0;
-    }
-    template <typename T>
-    inline bool operator<= (const Sequence<T>& lhs, const Sequence<T>& rhs)
-    {
-        return typename Sequence<T>::template ThreeWayComparer<>{}(lhs, rhs) <= 0;
-    }
-    template <typename T>
-    inline bool operator== (const Sequence<T>& lhs, const Sequence<T>& rhs)
-    {
-        return typename Sequence<T>::template EqualsComparer<>{}(lhs, rhs);
-    }
-    template <typename T>
-    inline bool operator!= (const Sequence<T>& lhs, const Sequence<T>& rhs)
-    {
-        return not(lhs == rhs);
-    }
-    template <typename T>
-    inline bool operator>= (const Sequence<T>& lhs, const Sequence<T>& rhs)
-    {
-        return typename Sequence<T>::template ThreeWayComparer<>{}(lhs, rhs) >= 0;
-    }
-    template <typename T>
-    inline bool operator> (const Sequence<T>& lhs, const Sequence<T>& rhs)
-    {
-        return typename Sequence<T>::template ThreeWayComparer<>{}(lhs, rhs) > 0;
-    }
-#endif
 
 }
 

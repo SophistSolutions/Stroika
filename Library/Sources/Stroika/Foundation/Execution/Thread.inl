@@ -179,7 +179,6 @@ namespace Stroika::Foundation::Execution {
         }
         return fRep_->fRunnable_;
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline bool Thread::Ptr::operator== (const Ptr& rhs) const
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
@@ -195,50 +194,13 @@ namespace Stroika::Foundation::Execution {
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
         shared_lock<const AssertExternallySynchronizedMutex> critSec2{rhs};
-#if __cpp_lib_three_way_comparison < 201907
-        return Common::ThreeWayCompare (fRep_, rhs.fRep_);
-#else
         return fRep_ <=> rhs.fRep_;
-#endif
     }
     inline strong_ordering Thread::Ptr::operator<=> (nullptr_t) const
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
-#if __cpp_lib_three_way_comparison < 201907
-        return Common::ThreeWayCompare (fRep_, nullptr);
-#else
         return fRep_ <=> nullptr;
-#endif
     }
-#else
-    inline bool Thread::Ptr::operator< (const Ptr& rhs) const
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
-        return fRep_ < rhs.fRep_;
-    }
-    inline bool Thread::Ptr::operator== (const Ptr& rhs) const
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
-        shared_lock<const AssertExternallySynchronizedMutex> critSec2{rhs};
-        return fRep_ == rhs.fRep_;
-    }
-    inline bool Thread::Ptr::operator== (nullptr_t) const
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
-        return fRep_ == nullptr;
-    }
-    inline bool Thread::Ptr::operator!= (const Ptr& rhs) const
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
-        shared_lock<const AssertExternallySynchronizedMutex> critSec2{rhs};
-        return fRep_ != rhs.fRep_;
-    }
-    inline bool Thread::Ptr::operator!= (nullptr_t) const
-    {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
-        return fRep_ != nullptr;
-    }
-#endif
     inline Thread::Ptr::operator bool () const
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};

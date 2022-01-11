@@ -6,10 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
-
 #include <memory>
 
 #include "../../Foundation/Memory/SmallStackBuffer.h"
@@ -101,12 +98,7 @@ namespace Stroika::Frameworks::Led {
             size_t        fVirtualStart;
             size_t        fVirtualEnd;
 
-#if __cpp_impl_three_way_comparison >= 201907
             nonvirtual bool operator== (const ScriptRunElt& rhs) const = default;
-#else
-            nonvirtual bool operator== (const ScriptRunElt& rhs) const;
-            nonvirtual bool operator!= (const ScriptRunElt& rhs) const;
-#endif
         };
         struct LessThanVirtualStart;
 
@@ -125,10 +117,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual Led_tString GetVirtualText () const;
         nonvirtual Led_tString GetVirtualText (const ScriptRunElt& scriptRunElt) const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         nonvirtual bool operator== (const TextLayoutBlock& rhs) const;
-#endif
 
         // Debug support
     public:
@@ -138,10 +128,6 @@ namespace Stroika::Frameworks::Led {
         virtual void Invariant_ () const;
 #endif
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator== (const TextLayoutBlock& lhs, const TextLayoutBlock& rhs);
-#endif
 
     /*
     @CLASS:         TextLayoutBlock::LessThanVirtualStart

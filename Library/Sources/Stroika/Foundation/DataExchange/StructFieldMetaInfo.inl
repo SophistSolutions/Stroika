@@ -29,30 +29,7 @@ namespace Stroika::Foundation::DataExchange {
         , fTypeInfo{typeid (FIELD_VALUE_TYPE)}
     {
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ********************* StructFieldMetaInfo operators ****************************
-     ********************************************************************************
-     */
-    inline bool operator< (const StructFieldMetaInfo& lhs, const StructFieldMetaInfo& rhs)
-    {
-        if (lhs.fOffset < rhs.fOffset) {
-            return true;
-        }
-        else if (lhs.fOffset > rhs.fOffset) {
-            return false;
-        }
-        return lhs.fTypeInfo < rhs.fTypeInfo;
-    }
-    inline bool operator== (const StructFieldMetaInfo& lhs, const StructFieldMetaInfo& rhs)
-    {
-        return lhs.fOffset == rhs.fOffset and lhs.fTypeInfo == rhs.fTypeInfo;
-    }
-#endif
-
-#if __cpp_impl_three_way_comparison >= 201907 && qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
+#if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
     inline strong_ordering StructFieldMetaInfo::operator<=> (const StructFieldMetaInfo& rhs) const
     {
         auto r = fOffset <=> rhs.fOffset;
@@ -69,7 +46,6 @@ namespace Stroika::Foundation::DataExchange {
         }
         return r;
     }
-
     inline bool StructFieldMetaInfo::operator== (const StructFieldMetaInfo& rhs) const
     {
         return fOffset == rhs.fOffset and fTypeInfo == rhs.fTypeInfo;

@@ -355,14 +355,12 @@ namespace Stroika::Foundation::Containers {
     public:
         struct EqualsComparer;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          * simply indirect to @Set<>::EqualsComparer (always defined because Set<> knows how to compare T items.
          */
         nonvirtual bool operator== (const Set& rhs) const;
         nonvirtual bool operator== (const Iterable<value_type>& rhs) const;
-#endif
 
     public:
         /**
@@ -568,23 +566,6 @@ namespace Stroika::Foundation::Containers {
         nonvirtual bool operator() (const Set& lhs, const Iterable<value_type>& rhs) const;
         nonvirtual bool operator() (const Iterable<value_type>& lhs, const Set& rhs) const;
     };
-
-    /**
-     */
-#if __cpp_impl_three_way_comparison < 201907
-    template <typename T>
-    bool operator== (const Set<T>& lhs, const Set<T>& rhs);
-    template <typename T>
-    bool operator== (const Set<T>& lhs, const Iterable<T>& rhs);
-    template <typename T>
-    bool operator== (const Iterable<T>& lhs, const Set<T>& rhs);
-    template <typename T>
-    bool operator!= (const Set<T>& lhs, const Set<T>& rhs);
-    template <typename T>
-    bool operator!= (const Set<T>& lhs, const Iterable<T>& rhs);
-    template <typename T>
-    bool operator!= (const Iterable<T>& lhs, const Set<T>& rhs);
-#endif
 
     /**
      *  Alias for Set<>::Union

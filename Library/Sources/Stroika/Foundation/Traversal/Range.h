@@ -436,12 +436,10 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual  bool    Overlaps (const Range& rhs) const;
 #endif
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
         constexpr bool operator== (const Range& rhs) const;
-#endif
 
     public:
         /**
@@ -528,15 +526,6 @@ namespace Stroika::Foundation::Traversal {
         Openness fBeginOpenness_;
         Openness fEndOpenness_;
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     */
-    template <typename T, typename TRAITS>
-    bool operator== (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
-    template <typename T, typename TRAITS>
-    bool operator!= (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
-#endif
 
     /**
      *  Alias: T + RANGE => RANGE.Offset(T)

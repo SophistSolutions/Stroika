@@ -489,7 +489,6 @@ namespace Stroika::Foundation::Containers {
         [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
 #endif
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename T>
     inline bool Set<T>::operator== (const Set& rhs) const
     {
@@ -500,7 +499,6 @@ namespace Stroika::Foundation::Containers {
     {
         return EqualsComparer{}(*this, rhs);
     }
-#endif
 
     /*
      ********************************************************************************
@@ -557,44 +555,6 @@ namespace Stroika::Foundation::Containers {
     {
         return _SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<typename Iterable<T>::_IRep>{&lhs}._ConstGetRep ());
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ************************* Set<T> comparison operators **************************
-     ********************************************************************************
-     */
-    template <typename T>
-    inline bool operator== (const Set<T>& lhs, const Set<T>& rhs)
-    {
-        return typename Set<T>::EqualsComparer{}(lhs, rhs);
-    }
-    template <typename T>
-    inline bool operator== (const Set<T>& lhs, const Iterable<T>& rhs)
-    {
-        return typename Set<T>::EqualsComparer{}(lhs, rhs);
-    }
-    template <typename T>
-    inline bool operator== (const Iterable<T>& lhs, const Set<T>& rhs)
-    {
-        return typename Set<T>::EqualsComparer{}(lhs, rhs);
-    }
-    template <typename T>
-    inline bool operator!= (const Set<T>& lhs, const Set<T>& rhs)
-    {
-        return not typename Set<T>::EqualsComparer{}(lhs, rhs);
-    }
-    template <typename T>
-    inline bool operator!= (const Set<T>& lhs, const Iterable<T>& rhs)
-    {
-        return not typename Set<T>::EqualsComparer{}(lhs, rhs);
-    }
-    template <typename T>
-    inline bool operator!= (const Iterable<T>& lhs, const Set<T>& rhs)
-    {
-        return not typename Set<T>::EqualsComparer{}(lhs, rhs);
-    }
-#endif
 
     /*
      ********************************************************************************

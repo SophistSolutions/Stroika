@@ -50,14 +50,7 @@ namespace {
 
             static const ObjectVariantMapper kMapper;
 
-#if __cpp_impl_three_way_comparison >= 201907
             nonvirtual bool operator== (const Device& rhs) const = default;
-#else
-            nonvirtual bool operator== (const Device& rhs) const
-            {
-                return id == rhs.id and openPorts == rhs.openPorts and name == rhs.name and hardwareAddresses == rhs.hardwareAddresses;
-            }
-#endif
         };
     }
 

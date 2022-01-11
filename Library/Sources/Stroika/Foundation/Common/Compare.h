@@ -6,10 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
-
 #include <functional>
 #include <memory>
 #include <optional>
@@ -26,7 +23,7 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
-#if defined(__cpp_impl_three_way_comparison) && qCompilerAndStdLib_strong_ordering_equals_Buggy
+#if qCompilerAndStdLib_strong_ordering_equals_Buggy
 namespace std {
     inline bool operator== (const strong_ordering& lhs, const strong_ordering& rhs)
     {
@@ -45,18 +42,13 @@ namespace Stroika::Foundation::Common {
      *  __cpp_impl_three_way_comparison >= 201907
      *
      *  In Stroika, these defines are usable no matter what (in in C++ correspond to the C++ type/value)
+     * 
+     *  \todo DEPRECATE THESE NAMES AND USE C++ names directly --LGP 2022-01-10
      */
-#if __cpp_impl_three_way_comparison < 201907
-    using strong_ordering              = int;
-    constexpr strong_ordering kLess    = -1;
-    constexpr strong_ordering kEqual   = 0;
-    constexpr strong_ordering kGreater = 1;
-#else
     using strong_ordering              = std::strong_ordering;
     constexpr strong_ordering kLess    = strong_ordering::less;
     constexpr strong_ordering kEqual   = strong_ordering::equal;
     constexpr strong_ordering kGreater = strong_ordering::greater;
-#endif
 
     /**
      *  \brief like std::compare_three_way{} (lhs, rhs), except class templated on T1/T2 instead of function, so you can bind function object for example in templates expecting one
@@ -66,21 +58,6 @@ namespace Stroika::Foundation::Common {
      *  \note DO NOT SPECIALIZE ThreeWayComparer<>, since its just a utility which trivailly wraps
      *        std::compare_three_way in c++20, so just specialize std::compare_three_way<>::operator()...
      */
-#if __cpp_lib_three_way_comparison < 201907L
-    struct ThreeWayComparer {
-        template <class LT, class RT>
-        constexpr auto operator() (LT&& lhs, RT&& rhs) const
-        {
-            using CT = common_type_t<LT, RT>;
-            // ISSUE HERE - PRE C++20, no distinction made between strong_ordering, weak_ordering, and partial_ordering, because
-            // this counts on cooperation with various types and mechanismns like operator<=> = default which we don't have (and declared strong_ordering=int)
-            if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
-                return Stroika::Foundation::Common::kEqual;
-            }
-            return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? Stroika::Foundation::Common::kLess : Stroika::Foundation::Common::kGreater;
-        }
-    };
-#else
     struct ThreeWayComparer {
         template <class LT, class RT>
         constexpr auto operator() (LT&& lhs, RT&& rhs) const
@@ -88,7 +65,6 @@ namespace Stroika::Foundation::Common {
             return std::compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
         }
     };
-#endif
 
     /**
      *  \brief trivial wrapper calling ThreeWayComparer<TL,TR>{}(lhs,rhs) i.e. std::compare_three_way{} (lhs, rhs)
@@ -272,7 +248,6 @@ namespace Stroika::Foundation::Common {
     struct ExtractComparisonTraits<greater_equal<T>> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eInOrderOrEquals;
     };
-#if __cpp_lib_three_way_comparison >= 201907
     template <>
     struct ExtractComparisonTraits<ThreeWayComparer> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
@@ -281,7 +256,6 @@ namespace Stroika::Foundation::Common {
     struct ExtractComparisonTraits<std::compare_three_way> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
     };
-#endif
 
     /**
      *  \brief Checks (via ExtractComparisonTraits) if argument is an Equals comparer - one that takes two arguments of type T, and returns a bool, and compares

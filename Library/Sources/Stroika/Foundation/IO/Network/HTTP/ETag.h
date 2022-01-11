@@ -44,17 +44,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          */
         nonvirtual String ToString () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
         /**
          */
         nonvirtual strong_ordering operator<=> (const ETag& rhs) const = default;
-#endif
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator== (const ETag& lhs, const ETag& rhs);
-    bool operator!= (const ETag& lhs, const ETag& rhs);
-#endif
 
 }
 

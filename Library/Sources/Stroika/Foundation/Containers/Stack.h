@@ -160,7 +160,6 @@ namespace Stroika::Foundation::Containers {
         template <typename ELEMENT_COMPARER = Common::ThreeWayComparer>
         using ThreeWayComparer = typename Iterable<T>::template SequentialThreeWayComparer<ELEMENT_COMPARER>;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          * simply indirect to @Stack<>::EqualsComparer
@@ -172,7 +171,6 @@ namespace Stroika::Foundation::Containers {
          * simply indirect to @Stack<>::operator (only defined if ???comparethreeway?<T> is defined)
          */
         nonvirtual auto operator<=> (const Stack& rhs) const;
-#endif
 
     public:
         /**
@@ -221,16 +219,6 @@ namespace Stroika::Foundation::Containers {
         virtual value_type     Pop ()                                 = 0;
         virtual value_type     Top () const                           = 0;
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic comparison operator overloads with the obvious meaning, and simply indirect to @Bijection<>::EqualsComparer
-     */
-    template <typename T>
-    bool operator== (const Stack<T>& lhs, const Stack<T>& rhs);
-    template <typename T>
-    bool operator!= (const Stack<T>& lhs, const Stack<T>& rhs);
-#endif
 
 }
 

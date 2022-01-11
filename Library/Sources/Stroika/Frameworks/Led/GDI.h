@@ -14,11 +14,8 @@
  *  easily.
  */
 
-#if defined(__cpp_impl_three_way_comparison)
-#include <compare>
-#endif
-
 #include <algorithm>
+#include <compare>
 #include <cmath>
 #include <cstdlib>
 #include <map>
@@ -194,29 +191,11 @@ namespace Stroika::Frameworks::Led {
         COORD_TYPE v;
         COORD_TYPE h;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
         constexpr strong_ordering operator<=> (const Point_Base& rhs) const = default;
-#endif
     };
-#if __cpp_impl_three_way_comparison < 201907
-    template <typename COORD_TYPE>
-    bool operator== (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs);
-    template <typename COORD_TYPE>
-    bool operator!= (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs);
-    template <typename COORD_TYPE>
-    bool operator< (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs);
-    template <typename COORD_TYPE>
-    bool operator<= (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs);
-    template <typename COORD_TYPE>
-    bool operator> (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs);
-    template <typename COORD_TYPE>
-    bool operator>= (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs);
-    template <typename COORD_TYPE>
-    Point_Base<COORD_TYPE> operator+ (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs);
-#endif
 
     /*
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
@@ -267,19 +246,11 @@ namespace Stroika::Frameworks::Led {
         nonvirtual const Rect_Base<POINT_TYPE, SIZE_TYPE>& operator-= (const POINT_TYPE& delta);
         nonvirtual const Rect_Base<POINT_TYPE, SIZE_TYPE>& operator*= (const THIS_TYPE& intersectWith);
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
         constexpr strong_ordering operator<=> (const Rect_Base& rhs) const = default;
-#endif
         bool operator== (const Rect_Base& rhs) const;
-#if __cpp_impl_three_way_comparison < 201907
-        inline bool operator!= (const Rect_Base& rhs) const
-        {
-            return not(*this == rhs);
-        }
-#endif
     };
 
     /**
@@ -407,22 +378,12 @@ namespace Stroika::Frameworks::Led {
         nonvirtual COLORREF GetOSRep () const;
 #endif
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
         constexpr strong_ordering operator<=> (const Color& rhs) const = default;
         constexpr bool            operator== (const Color& rhs) const  = default;
-#else
-        bool operator== (const Color& rhs) const
-        {
-            return fRed == rhs.fRed and fGreen == rhs.fGreen and fBlue == rhs.fBlue;
-        }
-        bool operator!= (const Color& rhs) const
-        {
-            return not(*this == rhs);
-        }
-#endif
+
     private:
         ColorValue fRed;
         ColorValue fGreen;
@@ -554,9 +515,6 @@ namespace Stroika::Frameworks::Led {
         LineSpacing (Rule rule, TWIPS twips);
         LineSpacing (Rule rule, unsigned lineCount);
         bool operator== (LineSpacing rhs) const;
-#if __cpp_impl_three_way_comparison < 201907
-        bool operator!= (LineSpacing rhs) const;
-#endif
     };
 
     class IncrementalFontSpecification;
@@ -592,12 +550,6 @@ namespace Stroika::Frameworks::Led {
             {
                 return ::_tcscmp (fName, rhs.fName) == 0;
             }
-#if __cpp_impl_three_way_comparison < 201907
-            bool operator!= (const FontNameSpecifier& rhs) const
-            {
-                return not(*this == rhs);
-            }
-#endif
         };
 #elif qStroika_FeatureSupported_XWindows
         using FontNameSpecifier = Led_SDK_String;
@@ -675,12 +627,10 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void   SetFromOSRep (const string& osRep);
 #endif
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
         strong_ordering operator<=> (const FontSpecification& rhs) const;
-#endif
     public:
         /**
          */
@@ -840,9 +790,7 @@ namespace Stroika::Frameworks::Led {
                                                             // for. Makes MergeIn() just copy flat out!
 #endif
 
-#if __cpp_impl_three_way_comparison >= 201907
         bool operator<=> (const IncrementalFontSpecification& rhs) = delete;
-#endif
         bool operator== (const IncrementalFontSpecification& rhs) const;
 
     public:
@@ -867,10 +815,6 @@ namespace Stroika::Frameworks::Led {
         bool fFontSizeIncrementValid : 1;
         bool fTextColorValid : 1;
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator!= (const IncrementalFontSpecification& lhs, const IncrementalFontSpecification& rhs);
-#endif
 
     IncrementalFontSpecification Intersection (const IncrementalFontSpecification& lhs, const IncrementalFontSpecification& rhs);
 

@@ -102,7 +102,6 @@ namespace Stroika::Foundation::IO::Network {
         socklen_t                                           optvallen = sizeof (arg);
         _ref ().setsockopt (level, optname, &arg, optvallen);
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline bool Socket::Ptr::operator== (const Ptr& rhs) const
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
@@ -115,39 +114,6 @@ namespace Stroika::Foundation::IO::Network {
         shared_lock<const AssertExternallySynchronizedMutex> critSec2{rhs};
         return Common::ThreeWayCompare (_GetSharedRep (), rhs._GetSharedRep ());
     }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ****************************** Socket operators ********************************
-     ********************************************************************************
-     */
-    inline bool operator< (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
-    {
-        return Common::ThreeWayCompare (lhs._GetSharedRep (), rhs._GetSharedRep ()) < 0;
-    }
-    inline bool operator<= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
-    {
-        return Common::ThreeWayCompare (lhs._GetSharedRep (), rhs._GetSharedRep ()) <= 0;
-    }
-    inline bool operator== (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
-    {
-        return Common::ThreeWayCompare (lhs._GetSharedRep (), rhs._GetSharedRep ()) == 0;
-    }
-    inline bool operator!= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
-    {
-        return Common::ThreeWayCompare (lhs._GetSharedRep (), rhs._GetSharedRep ()) != 0;
-    }
-    inline bool operator>= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
-    {
-        return Common::ThreeWayCompare (lhs._GetSharedRep (), rhs._GetSharedRep ()) >= 0;
-    }
-    inline bool operator> (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
-    {
-        return Common::ThreeWayCompare (lhs._GetSharedRep (), rhs._GetSharedRep ()) > 0;
-    }
-#endif
 
 #if qPlatform_Windows
     /*

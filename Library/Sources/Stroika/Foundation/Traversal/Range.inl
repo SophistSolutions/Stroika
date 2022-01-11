@@ -383,7 +383,6 @@ namespace Stroika::Foundation::Traversal {
         }
         return out.str ();
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename T, typename TRAITS>
     constexpr bool Range<T, TRAITS>::operator== (const Range& rhs) const
     {
@@ -392,28 +391,6 @@ namespace Stroika::Foundation::Traversal {
         }
         return GetLowerBound () == rhs.GetLowerBound () and GetUpperBound () == rhs.GetUpperBound () and GetLowerBoundOpenness () == rhs.GetLowerBoundOpenness () and GetUpperBoundOpenness () == rhs.GetUpperBoundOpenness ();
     }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ********************* Range<T,TRAITS> Comparisons Operators ********************
-     ********************************************************************************
-     */
-    template <typename T, typename TRAITS>
-    inline bool operator== (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
-    {
-        if (lhs.empty ()) {
-            return rhs.empty ();
-        }
-        return lhs.GetLowerBound () == rhs.GetLowerBound () and lhs.GetUpperBound () == rhs.GetUpperBound () and lhs.GetLowerBoundOpenness () == rhs.GetLowerBoundOpenness () and lhs.GetUpperBoundOpenness () == rhs.GetUpperBoundOpenness ();
-    }
-    template <typename T, typename TRAITS>
-    inline bool operator!= (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
 
     /*
      ********************************************************************************

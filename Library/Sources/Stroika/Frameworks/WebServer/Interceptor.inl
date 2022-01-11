@@ -38,12 +38,10 @@ namespace Stroika::Frameworks::WebServer {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         fRep_->CompleteNormally (m);
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline bool Interceptor::operator== (const Interceptor& rhs) const
     {
         return fRep_ == rhs.fRep_;
     }
-#endif
     template <typename T>
     inline auto Interceptor::_GetRep () const -> const T&
     {
@@ -51,28 +49,6 @@ namespace Stroika::Frameworks::WebServer {
         EnsureMember (fRep_.get (), T);
         return *dynamic_cast<const T*> (fRep_.get ());
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ***************************** WebServer::operator== ****************************
-     ********************************************************************************
-     */
-    inline bool operator== (const Interceptor& lhs, const Interceptor& rhs)
-    {
-        return lhs.fRep_ == rhs.fRep_;
-    }
-
-    /*
-     ********************************************************************************
-     ***************************** WebServer::operator!= ****************************
-     ********************************************************************************
-     */
-    inline bool operator!= (const Interceptor& lhs, const Interceptor& rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
 
 }
 #endif /*_Stroika_Frameworks_WebServer_Interceptor_inl_*/

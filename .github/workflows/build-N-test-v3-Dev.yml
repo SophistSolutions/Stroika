@@ -1,7 +1,7 @@
 #
-# build-N-test-v2.1-Dev and build-N-test-v2.1-Release are neary
+# build-N-test-v3-Dev and build-N-test-v3-Release are neary
 # identical, but a few tests are commented out (to not needlessly stress CI system)
-# for v2.1-Dev builds
+# for v3-Dev builds
 #
 # NOTE: I've tried many tricks - none which seem to work - to get this working on one file with one
 # workflow and tests
@@ -11,13 +11,13 @@
 # but none seem to work
 #
 
-name: build-N-test-v2.1-Dev
+name: build-N-test-v3-Dev
 
 on:
   push:
     branches:
-      - v2.1-Dev
-      #- v2.1-Release
+      - v3-Dev
+      #- v3-Release
   workflow_dispatch:
     inputs:
       ignored:
@@ -25,7 +25,7 @@ on:
         required: false
         default: ""
 
-## NB: JOBS section IDENTICAL between v2.1-Dev and 2.1-Release files EXCEPT that on v2.1-Dev file
+## NB: JOBS section IDENTICAL between v3-Dev and v3-Release files EXCEPT that on v3-Dev file
 ## comment out all entries marked with includeInDevBranchBuilds: false
 jobs:
   build-n-test-Linux:
@@ -134,7 +134,7 @@ jobs:
     ### SEE
     ### https://stackoverflow.com/questions/65384420/how-to-make-a-github-action-matrix-element-conditional/65385385#65385385
     ###
-    #if: github.ref == 'refs/heads/v2.1-Release' || matrix.includeInDevBranchBuilds
+    #if: github.ref == 'refs/heads/v3-Release' || matrix.includeInDevBranchBuilds
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"

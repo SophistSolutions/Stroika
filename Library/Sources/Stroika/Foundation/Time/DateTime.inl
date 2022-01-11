@@ -84,7 +84,6 @@ namespace Stroika::Foundation::Time {
     {
         return fTimezone_;
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering DateTime::operator<=> (const DateTime& rhs) const
     {
         return ThreeWayComparer{}(*this, rhs);
@@ -93,7 +92,6 @@ namespace Stroika::Foundation::Time {
     {
         return ThreeWayComparer{}(*this, rhs) == 0;
     }
-#endif
 
     /*
      ********************************************************************************
@@ -104,38 +102,6 @@ namespace Stroika::Foundation::Time {
         : fCoerceToCommonTimezone{coerceToCommonTimezone}
     {
     }
-
-    /*
-     ********************************************************************************
-     ************************** DateTime operators **********************************
-     ********************************************************************************
-     */
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool operator< (const DateTime& lhs, const DateTime& rhs)
-    {
-        return DateTime::ThreeWayComparer{}(lhs, rhs) < 0;
-    }
-    inline bool operator<= (const DateTime& lhs, const DateTime& rhs)
-    {
-        return DateTime::ThreeWayComparer{}(lhs, rhs) <= 0;
-    }
-    inline bool operator== (const DateTime& lhs, const DateTime& rhs)
-    {
-        return DateTime::ThreeWayComparer{}(lhs, rhs) == 0;
-    }
-    inline bool operator!= (const DateTime& lhs, const DateTime& rhs)
-    {
-        return DateTime::ThreeWayComparer{}(lhs, rhs) != 0;
-    }
-    inline bool operator>= (const DateTime& lhs, const DateTime& rhs)
-    {
-        return DateTime::ThreeWayComparer{}(lhs, rhs) >= 0;
-    }
-    inline bool operator> (const DateTime& lhs, const DateTime& rhs)
-    {
-        return DateTime::ThreeWayComparer{}(lhs, rhs) > 0;
-    }
-#endif
 
 }
 

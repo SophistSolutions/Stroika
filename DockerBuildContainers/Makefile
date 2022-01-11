@@ -8,8 +8,8 @@ help:
 	@echo "make docker-images to create the docker images on your computer"
 	@echo
 	@echo "to run the image, use:"
-	@echo "    docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu1804-small   OR"
-	@echo "    docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests   ETC"
+	@echo "    docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu2004-small   OR"
+	@echo "    docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests   ETC"
 	@echo
 	@echo "n.b. you may need to use (add to run command)"
 	@echo "    --security-opt seccomp=unconfined"
@@ -20,16 +20,11 @@ help:
 
 build-images:
 ifeq ($(shell uname),Linux)
-	docker build -f Ubuntu1804-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-small .
 	docker build -f Ubuntu2004-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2004-small .
 	docker build -f Ubuntu2110-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2110-small .
-	docker build -f Ubuntu1804-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests .
 	docker build -f Ubuntu2004-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests .
 	docker build -f Ubuntu2110-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests .
-	docker build -f Centos-7-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-centos-7-small .
-	docker build -f Centos-8-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-centos-8-small .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev .
-	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-1804 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2004 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2110 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests .
 	 
@@ -58,14 +53,10 @@ endif
 
 tag-images:
 ifeq ($(shell uname),Linux)
-	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu1804-small sophistsolutionsinc/stroika-buildvm-ubuntu1804-small:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests  sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2004-small sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2110-small sophistsolutionsinc/stroika-buildvm-ubuntu2110-small:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-centos-7-small sophistsolutionsinc/stroika-buildvm-centos-7-small:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-centos-8-small sophistsolutionsinc/stroika-buildvm-centos-8-small:$(STROIKA_VERSION)
 	#docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
 endif
 ifeq (Windows,$(findstring Windows,$(OS)))
@@ -77,11 +68,8 @@ endif
 
 pull-base-images:
 ifeq ($(shell uname),Linux)
-	docker pull ubuntu:18.04
 	docker pull ubuntu:20.04
-	docker pull ubuntu:21.04
-	docker pull centos:centos7
-	docker pull centos:centos8
+	docker pull ubuntu:21.10
 endif
 ifeq (Windows,$(findstring Windows,$(OS)))
 	docker pull mcr.microsoft.com/windows/servercore:ltsc2019
@@ -91,14 +79,10 @@ endif
 push-images:
 	#if you get errors doing this (permission denied) make sure you ran docker login (as sophists - else no permission to push these)
 ifeq ($(shell uname),Linux)
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2110-small:latest
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests:latest
-	docker push sophistsolutionsinc/stroika-buildvm-centos-7-small:latest
-	docker push sophistsolutionsinc/stroika-buildvm-centos-8-small:latest
 	#no need to push this yet/now
 	#docker push sophistsolutionsinc/stroika-dev:latest
 endif
@@ -109,14 +93,10 @@ ifeq (Windows,$(findstring Windows,$(OS)))
 endif
 ifeq ($(STROIKA_VERSION_Final),true)
 ifeq ($(shell uname),Linux)
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2110-small:$(STROIKA_VERSION)
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests:$(STROIKA_VERSION)
-	docker push sophistsolutionsinc/stroika-buildvm-centos-7-small:$(STROIKA_VERSION)
-	docker push sophistsolutionsinc/stroika-buildvm-centos-8-small:$(STROIKA_VERSION)
 	#no need to push this yet/now
 	#docker push sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
 endif

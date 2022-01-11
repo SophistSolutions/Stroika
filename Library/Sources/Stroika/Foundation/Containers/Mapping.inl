@@ -452,13 +452,11 @@ namespace Stroika::Foundation::Containers {
         [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
 #endif
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator== (const Mapping& rhs) const
     {
         return EqualsComparer<>{}(*this, rhs);
     }
-#endif
 
     /*
      ********************************************************************************
@@ -619,24 +617,6 @@ namespace Stroika::Foundation::Containers {
         Assert (ri.Done ()); // cuz LHS done and both sides iterate at same pace, and we checked both same size
         return true;
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ******************** Mapping comparison operators ******************************
-     ********************************************************************************
-     */
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline bool operator== (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs)
-    {
-        return typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::template EqualsComparer<>{}(lhs, rhs);
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline bool operator!= (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
 
 }
 

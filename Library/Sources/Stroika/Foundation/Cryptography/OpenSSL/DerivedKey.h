@@ -6,10 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
-
 #include <optional>
 
 #include "../../Characters/String.h"
@@ -56,12 +53,10 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         DerivedKey (const BLOB& key, const BLOB& iv);
         DerivedKey (const pair<BLOB, BLOB>& keyAndIV);
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
         nonvirtual auto operator<=> (const DerivedKey& rhs) const = default;
-#endif
 
         /**
          */
@@ -79,10 +74,6 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         static BLOB NormalizePassword (const string& passwd);
         static BLOB NormalizePassword (const String& passwd);
     };
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator== (const DerivedKey& lhs, const DerivedKey& rhs);
-    bool operator!= (const DerivedKey& lhs, const DerivedKey& rhs);
-#endif
 
     /**
      *  WinCryptDeriveKey CAN be object sliced. Its a simple construction wrapper on a DerivedKey. WinCryptDeriveKey

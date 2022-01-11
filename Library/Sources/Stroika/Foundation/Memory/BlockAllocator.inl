@@ -435,13 +435,11 @@ namespace Stroika::Foundation::Memory {
     {
         return Math::RoundUpTo (sizeof (T), sizeof (void*));
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename T>
     inline bool BlockAllocator<T>::operator== (const BlockAllocator& rhs) const
     {
         return true;
     }
-#endif
 
 }
 

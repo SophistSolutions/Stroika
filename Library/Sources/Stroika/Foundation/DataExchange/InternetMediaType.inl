@@ -92,7 +92,6 @@ namespace Stroika::Foundation::DataExchange {
     {
         return As<String> ().As<wstring> ();
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering InternetMediaType::operator<=> (const InternetMediaType& rhs) const
     {
         return THREEWAYCOMPARE_ (rhs);
@@ -101,39 +100,6 @@ namespace Stroika::Foundation::DataExchange {
     {
         return THREEWAYCOMPARE_ (rhs) == 0;
     }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     *********************** InternetMediaType operators ****************************
-     ********************************************************************************
-     */
-    inline bool operator< (const InternetMediaType& lhs, const InternetMediaType& rhs)
-    {
-        return lhs.THREEWAYCOMPARE_ (rhs) < 0;
-    }
-    inline bool operator<= (const InternetMediaType& lhs, const InternetMediaType& rhs)
-    {
-        return lhs.THREEWAYCOMPARE_ (rhs) <= 0;
-    }
-    inline bool operator== (const InternetMediaType& lhs, const InternetMediaType& rhs)
-    {
-        return lhs.THREEWAYCOMPARE_ (rhs) == 0;
-    }
-    inline bool operator!= (const InternetMediaType& lhs, const InternetMediaType& rhs)
-    {
-        return lhs.THREEWAYCOMPARE_ (rhs) != 0;
-    }
-    inline bool operator>= (const InternetMediaType& lhs, const InternetMediaType& rhs)
-    {
-        return lhs.THREEWAYCOMPARE_ (rhs) >= 0;
-    }
-    inline bool operator> (const InternetMediaType& lhs, const InternetMediaType& rhs)
-    {
-        return lhs.THREEWAYCOMPARE_ (rhs) > 0;
-    }
-#endif
 
 }
 #endif /*_Stroika_Foundation_DataExchange_InternetMediaType_inl_*/

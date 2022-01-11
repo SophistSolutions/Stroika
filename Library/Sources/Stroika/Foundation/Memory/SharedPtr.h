@@ -6,11 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
-#include <compare>
-#endif
-
 #include <atomic>
+#include <compare>
 #include <cstdint>
 #include <type_traits>
 
@@ -275,7 +272,6 @@ namespace Stroika::Foundation::Memory {
          */
         nonvirtual ReferenceCountType use_count () const noexcept;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -286,21 +282,6 @@ namespace Stroika::Foundation::Memory {
         /**
          */
         constexpr strong_ordering operator<=> (const SharedPtr& rhs) const;
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    public:
-        nonvirtual bool operator< (const SharedPtr& rhs) const noexcept;
-        nonvirtual bool operator<= (const SharedPtr& rhs) const noexcept;
-        nonvirtual bool operator> (const SharedPtr& rhs) const noexcept;
-        nonvirtual bool operator>= (const SharedPtr& rhs) const noexcept;
-        nonvirtual bool operator== (const SharedPtr& rhs) const noexcept;
-        nonvirtual bool operator!= (const SharedPtr& rhs) const noexcept;
-
-    public:
-        nonvirtual bool operator== (nullptr_t) const noexcept;
-        nonvirtual bool operator!= (nullptr_t) const noexcept;
-#endif
 
     public:
         /**

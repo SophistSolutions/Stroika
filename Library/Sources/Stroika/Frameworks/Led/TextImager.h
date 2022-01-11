@@ -937,9 +937,6 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual bool operator== (const StandardTabStopList& rhs) const;
-#if __cpp_impl_three_way_comparison < 201907
-        nonvirtual bool operator!= (const StandardTabStopList& rhs) const;
-#endif
     };
 
     /*

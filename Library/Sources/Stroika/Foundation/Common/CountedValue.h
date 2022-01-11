@@ -6,10 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
-
 #include <utility>
 
 #include "../Configuration/Common.h"
@@ -67,7 +64,6 @@ namespace Stroika::Foundation::Common {
         ValueType   fValue;
         CounterType fCount;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -79,26 +75,7 @@ namespace Stroika::Foundation::Common {
          */
         template <typename TEST = VALUE_TYPE, enable_if_t<Configuration::has_eq_v<TEST>>* = nullptr>
         constexpr bool operator== (const CountedValue&) const;
-#endif
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obvious meaning, and simply indirect to @CountedValue<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer (const Version& rhs), and EqualsComparer
-     */
-    template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    bool operator< (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
-    template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    bool operator<= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
-    template <typename VALUE_TYPE, typename COUNTER_TYPE, enable_if_t<Configuration::has_eq_v<VALUE_TYPE>>* = nullptr>
-    bool operator== (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
-    template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    bool operator!= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
-    template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    bool operator> (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
-    template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    bool operator>= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
-#endif
 
 }
 

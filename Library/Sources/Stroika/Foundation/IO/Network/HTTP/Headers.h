@@ -421,12 +421,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          */
         nonvirtual String ToString () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
         nonvirtual bool operator== (const Headers& rhs) const;
-#endif
 
     private:
         enum class AddOrSet { eAdd,
@@ -452,12 +450,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         optional<CookieList>                     fSetCookieList_;    // store optional cuz often missing, and faster init
         optional<TransferEncodings>              fTransferEncoding_; // must acccess through property to access extended property handlers (except root getter/setter)
         optional<Containers::Set<String>>        fVary_;
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        friend bool operator== (const Headers& lhs, const Headers& rhs);
-        friend bool operator!= (const Headers& lhs, const Headers& rhs);
-#endif
     };
     template <>
     Association<String, String> Headers::As () const;
@@ -465,11 +457,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     Mapping<String, String> Headers::As () const;
     template <>
     Collection<KeyValuePair<String, String>> Headers::As () const;
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator== (const Headers& lhs, const Headers& rhs);
-    bool operator!= (const Headers& lhs, const Headers& rhs);
-#endif
 
 }
 

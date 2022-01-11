@@ -53,7 +53,6 @@ namespace Stroika::Foundation::Configuration {
     {
         return AsPrettyVersionString ();
     }
-#if __cpp_impl_three_way_comparison >= 201907
     constexpr bool Version::operator== (const Version& rhs) const
     {
         return make_signed_t<Binary32BitFullVersionType> (AsFullVersionNum ()) == make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());
@@ -62,39 +61,6 @@ namespace Stroika::Foundation::Configuration {
     {
         return make_signed_t<Binary32BitFullVersionType> (AsFullVersionNum ()) <=> make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());
     }
-#endif
-
-    /*
-     ********************************************************************************
-     ***************************** Version operators ********************************
-     ********************************************************************************
-     */
-#if __cpp_impl_three_way_comparison < 201907
-    constexpr bool operator< (const Version& lhs, const Version& rhs)
-    {
-        return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) < make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());
-    }
-    constexpr bool operator<= (const Version& lhs, const Version& rhs)
-    {
-        return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) <= make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());
-    }
-    constexpr bool operator== (const Version& lhs, const Version& rhs)
-    {
-        return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) == make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());
-    }
-    constexpr bool operator!= (const Version& lhs, const Version& rhs)
-    {
-        return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) != make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());
-    }
-    constexpr bool operator>= (const Version& lhs, const Version& rhs)
-    {
-        return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) >= make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());
-    }
-    constexpr bool operator> (const Version& lhs, const Version& rhs)
-    {
-        return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) > make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());
-    }
-#endif
 
 #if defined(__cplusplus)
 }

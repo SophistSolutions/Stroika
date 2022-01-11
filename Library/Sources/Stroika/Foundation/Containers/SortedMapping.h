@@ -134,13 +134,11 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          *  Compare sequentially using the associated GetInOrderKeyComparer ()  
          */
         nonvirtual strong_ordering operator<=> (const SortedMapping& rhs) const;
-#endif
 
     protected:
         /**
