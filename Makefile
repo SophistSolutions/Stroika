@@ -427,8 +427,11 @@ default-configurations:
 basic-unix-test-configurations:
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making basic-unix-test-configurations:"
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
+	./configure DEFAULT_CONFIG --compiler-driver g++-10 --config-tag Unix --only-if-has-compiler;\
 	./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler;\
+	./configure no-third-party-components --compiler-driver g++-10 --config-tag Unix --only-if-has-compiler --no-third-party-components;\
 	./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components;\
+	./configure only-zlib-system-third-party-component --compiler-driver g++-10 --config-tag Unix --only-if-has-compiler --LibCurl no --lzma no --zlib system --OpenSSL no --sqlite no --Xerces no --boost no;\
 	./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --LibCurl no --lzma no --zlib system --OpenSSL no --sqlite no --Xerces no --boost no;\
 	make --silent basic-unix-test-configurations_g++_versions_;\
 	make --silent basic-unix-test-configurations_clang++_versions_;\
@@ -470,25 +473,34 @@ basic-unix-test-configurations_clang++_versions_:
 	./configure clang++-13-release-libstdc++ --config-tag Unix --compiler-driver clang++-13 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
 
 basic-unix-test-configurations_sanitizer_configs_:
-	# A few sanitize/configs (must do explicit -g++-8 versions for ubuntu 1804 since its default g++ is 7 and not supported any longer)
+	# A few sanitize/configs (list explicit versions first as backup in case g++ doesn't work - enuf c++20 support - on this platform)
+	./configure g++-debug-sanitize_leak --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,leak --trace2file enable --compiler-driver g++-10
 	./configure g++-debug-sanitize_leak --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,leak --trace2file enable
+	./configure g++-debug-sanitize_address --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable --compiler-driver g++-10
 	./configure g++-debug-sanitize_address --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable
-	./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp";
+	./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp" --compiler-driver g++-10
+	./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp"
+	./configure g++-debug-sanitize_undefined --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable --compiler-driver g++-10
 	./configure g++-debug-sanitize_undefined --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable
+	./configure g++-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined --compiler-driver g++-10
 	./configure g++-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined
-	./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp";
+	./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp" --compiler-driver g++-10
+	./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp"
 
 basic-unix-test-configurations_valgrind_configs_:
+	# A few sanitize/configs (list explicit versions first as backup in case g++ doesn't work - enuf c++20 support - on this platform)
 	###Builds with a few special flags to make valgrind work better
 	#nb: using default installed C++ compiler cuz of matching installed libraries on host computer
+	./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none --compiler-driver g++-10
 	./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none
+	./configure valgrind-debug-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none --compiler-driver g++-10
 	./configure valgrind-debug-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none
 	##https://stroika.atlassian.net/browse/STK-674 - avoid warning
 	##https://stroika.atlassian.net/browse/STK-702 - avoid another warning (lto disable for valgrind)
+	./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable -lto disable --compiler-driver g++-10
 	./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable -lto disable
-	# A few valgrind (must do explicit -g++-8 versions for ubuntu 1804 since its default g++ is 7 and not supported any longer)
-	if [[ `lsb_release -rs 2>/dev/null` == '18.04' ]] ; then ./configure g++-8-valgrind-debug-SSLPurify --compiler-driver g++-8 --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none; fi;
-	if [[ `lsb_release -rs 2>/dev/null` != '18.04' ]] ; then ./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none; fi;
+	./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none --compiler-driver g++-10
+	./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none
 	
 
 

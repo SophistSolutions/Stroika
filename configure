@@ -2595,33 +2595,23 @@ if ($onlyGenerateIfCompilerExists) {
 		$generate = false;
 		$generateBecause = "compiler $COMPILER_DRIVER_CPlusPlus not present";
 	}
+	if ($generate && IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		if ($itsVersion < 10.0) {
+			$generate = false;
+			$generateBecause = "GCC (" . $COMPILER_DRIVER_CPlusPlus . ") versions < 10 (v=" . $itsVersion . ") dont adequately support spaceship operator";
+		}
+	}
+	if ($generate && IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		if ($itsVersion < 10.0) {
+			$generate = false;
+			$generateBecause = "Clang++ (" . $COMPILER_DRIVER_CPlusPlus . ") versions < 10 (v=" . $itsVersion . ") dont adequately support spaceship operator";
+		}
+	}
 	# if flag to use libc++ - check if right version is available (but not on XCode)
-	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && ($STDCXXLIB eq 'libc++') && index ($TARGET_PLATFORMS, "MacOS") == -1) {
-		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '7.0') {
-			if (! -e ('/usr/lib/llvm-6/include/c++/v1/cstddef')) {
-				$generate = false;
-				$generateBecause = "/usr/lib/llvm-6/include/c++/v1/cstddef not present";
-			}
-		}
-		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '8.0') {
-			if (! -e ('/usr/lib/llvm-7/include/c++/v1/cstddef')) {
-				$generate = false;
-				$generateBecause = "/usr/lib/llvm-7/include/c++/v1/cstddef not present";
-			}
-		}
-		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '9.0') {
-			if (! -e ('/usr/lib/llvm-8/include/c++/v1/cstddef')) {
-				$generate = false;
-				$generateBecause = "/usr/lib/llvm-8/include/c++/v1/cstddef not present";
-			}
-		}
-		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '10.0') {
-			if (! -e ('/usr/lib/llvm-9/include/c++/v1/cstddef')) {
-				$generate = false;
-				$generateBecause = "/usr/lib/llvm-9/include/c++/v1/cstddef not present";
-			}
-		}
-		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '11.0') {
+	if ($generate && IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && ($STDCXXLIB eq 'libc++') && index ($TARGET_PLATFORMS, "MacOS") == -1) {
+		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '11.0') {
 			if (! -e ('/usr/lib/llvm-10/include/c++/v1/cstddef')) {
 				$generate = false;
 				$generateBecause = "/usr/lib/llvm-10/include/c++/v1/cstddef not present";
@@ -2650,13 +2640,6 @@ if ($onlyGenerateIfCompilerExists) {
 				$generate = false;
 				$generateBecause = "/usr/lib/llvm-14/include/c++/v1/cstddef not present";
 			}
-		}
-	}
-	if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
-		if ($itsVersion < 8.0) {
-			$generate = false;
-			$generateBecause = "GCC (" . $COMPILER_DRIVER_CPlusPlus . ") versions < 8 (v=" . $itsVersion . ") are missing <filesystem> code and wont work with this version of Stroika";
 		}
 	}
 }
