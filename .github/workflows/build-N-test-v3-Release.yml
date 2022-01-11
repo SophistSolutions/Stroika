@@ -80,12 +80,12 @@ jobs:
 
           - displayTargetName: ubuntu-20.04-cross-compile-raspberrypi (Debug)
             os: unix
-            compiler: g++-9
+            compiler: g++-10
             runs_on: ubuntu-latest
             container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
             cpp_version: c++2a
             config_name: Debug
-            extra_config_args: --apply-default-release-flags --trace2file enable --compiler-driver arm-linux-gnueabihf-g++-9 --cross-compiling true
+            extra_config_args: --apply-default-release-flags --trace2file enable --compiler-driver arm-linux-gnueabihf-g++-10 --cross-compiling true
             includeInDevBranchBuilds: true
 
     ### ATTEMPT TO COMPRESS 2 workflow files into one, but so far not working
