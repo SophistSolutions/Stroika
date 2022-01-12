@@ -1072,8 +1072,10 @@ sub	SetDefaultForPlatform_
 	}
 	#autodetect ATLMFC (Express verison missing it)
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
-		system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2017/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
-		if ($? == 0) {
+		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+		my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
+		my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2017/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h'");
+		if (scalar(@files) != 0) {
 			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
 		}
 		else  {
@@ -1081,8 +1083,10 @@ sub	SetDefaultForPlatform_
 		}
 	}
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2019") {
-		system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2019/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
-		if ($? == 0) {
+		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+		my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
+		my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2019/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h'");
+		if (scalar(@files) != 0) {
 			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
 		}
 		else  {
@@ -1091,8 +1095,10 @@ sub	SetDefaultForPlatform_
 	}
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2022") {
 		# in VS2k22, separate checkboxes for ATL and MFC and we need MFC AND ATL
-		system ('ls -l /cygdrive/c/"Program Files/Microsoft Visual Studio"/2022/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
-		if ($? == 0) {
+		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+		my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
+		my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2022/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h'");
+		if (scalar(@files) != 0) {
 			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
 		}
 		else  {
