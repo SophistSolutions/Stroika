@@ -603,10 +603,7 @@ sub	SetInitialDefaults_
 	}
 	if ("$^O" eq "cygwin" or "$^O" eq "msys") {
 		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-		my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
-		if ("$^O" eq "msys") {
-			$PROGRAMFILESDIR2= "/c/Program Files (x86)/";
-		}
+		my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
 		if ($PROJECTPLATFORMSUBDIR eq "") {
 			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2022/*/VC'");
 			if (scalar(@files) != 0) {
