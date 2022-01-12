@@ -43,6 +43,12 @@ namespace Stroika::Foundation::Configuration {
     /**
      *  Utility to convert endianness. Logically this can be defined on any numeric
      *  integer type, but for now is restricted to uint16_t, uint32_t;
+     * 
+     *  \par Example Usage
+     *      \code
+     *          VerifyTestResult (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle) == 0xBBAA);
+     *          uint16_t useThisNumber = EndianConverter<uint16_t> (0xAABB, Endian::eBig, GetEndianness ());
+     *      \endcode
      */
     template <typename T>
     constexpr T EndianConverter (T value, Endian from, Endian to);
