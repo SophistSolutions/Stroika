@@ -640,43 +640,6 @@ sub	SetInitialDefaults_
 			}
 		}
 	}
-	if ("$^O" eq "mxxxxsys") {
-		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-		my $PROGRAMFILESDIR2= "/c/Program Files (x86)/";
-		# try vs 2k22
-		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2022/*/VC'");
-			if (scalar(@files) != 0) {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
-			}
-			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2022/*/VC'");
-			if (scalar(@files) != 0) {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
-			}
-		}
-		# try vs 2k19
-		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2019/*/VC'");
-			if (scalar(@files) != 0) {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
-			}
-			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2019/*/VC'");
-			if (scalar(@files) != 0) {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
-			}
-		}
-		# try vs 2k17
-		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2017/*/VC'");
-			if (scalar(@files) != 0) {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
-			}
-			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2017/*/VC'");
-			if (scalar(@files) != 0) {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
-			}
-		}
-	}
 
 	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 		$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
