@@ -12,7 +12,7 @@ endif
 CONFIGURATION_TAGS?=$(TAGS)
 
 
-APPLY_CONFIGS=$(or $(CONFIGURATION), $(shell ScriptsLib/GetConfigurations --config-tags "$(CONFIGURATION_TAGS)"))
+APPLY_CONFIGS=$(or $(CONFIGURATION), $(shell ../ScriptsLib/GetConfigurations --config-tags "$(CONFIGURATION_TAGS)"))
 
 
 
