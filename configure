@@ -355,7 +355,7 @@ sub     IsMSVCCompiler_
 	my $x = shift(@_);
 	return ($x =~ /.*cl.exe.*/);
    #bad way but best I know for now
-	# if ("$^O" eq "cygwin") {
+	# if ("$^O" eq "cygwin" or "$^O" eq "msys") {
 	# 	return true;
 	# }
 	# return false
@@ -594,51 +594,85 @@ sub	SetInitialDefaults_
 		elsif ("$^O" eq "darwin") {
 			$TARGET_PLATFORMS = 'MacOS POSIX';
 		}
-		elsif ("$^O" eq "cygwin") {
+		elsif ("$^O" eq "cygwin" or "$^O" eq "msys") {
 			$TARGET_PLATFORMS = 'Windows';
 		}
 	}
 	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 		$PROJECTPLATFORMSUBDIR = 'Unix';
 	}
-	if ("$^O" eq "cygwin") {
-
-		# try vs 2k22
+	if ("$^O" eq "cygwin" or "$^O" eq "msys") {
+		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+		my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
+		if ("$^O" eq "msys") {
+			$PROGRAMFILESDIR2= "/c/Program Files (x86)/";
+		}
 		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
-			system ('ls -l "/cygdrive/c/Program Files/Microsoft Visual Studio/"2022/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2022/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
 			}
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2022/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2022/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
 			}
 		}
 		# try vs 2k19
 		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2019/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2019/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
 			}
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2019/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2019/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
 			}
 		}
 		# try vs 2k17
 		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2017/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
 			}
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2017/*/VC'");
+			if (scalar(@files) != 0) {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
+			}
+		}
+	}
+	if ("$^O" eq "mxxxxsys") {
+		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+		my $PROGRAMFILESDIR2= "/c/Program Files (x86)/";
+		# try vs 2k22
+		if ($PROJECTPLATFORMSUBDIR eq "") {
+			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2022/*/VC'");
+			if (scalar(@files) != 0) {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
+			}
+			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2022/*/VC'");
+			if (scalar(@files) != 0) {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
+			}
+		}
+		# try vs 2k19
+		if ($PROJECTPLATFORMSUBDIR eq "") {
+			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2019/*/VC'");
+			if (scalar(@files) != 0) {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
+			}
+			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2019/*/VC'");
+			if (scalar(@files) != 0) {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
+			}
+		}
+		# try vs 2k17
+		if ($PROJECTPLATFORMSUBDIR eq "") {
+			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2017/*/VC'");
+			if (scalar(@files) != 0) {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
+			}
+			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2017/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
 			}
 		}
@@ -647,7 +681,7 @@ sub	SetInitialDefaults_
 	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 		$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
 	}
-	if ("$^O" eq "cygwin") {
+	if ("$^O" eq "cygwin" or "$^O" eq "msys") {
 		$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
 	}
 	if ("$^O" eq "darwin") {
@@ -936,10 +970,10 @@ sub	SetDefaultForCompilerDriver_
 			$AR = ReplaceLast_ ($ccLessArgs, 'clang', 'llvm-ar');
 		}
 	}
-	if (!(defined $AS) and (!("$^O" eq "cygwin"))) {
+	if (!(defined $AS) and (!("$^O" eq "cygwin" or "$^O" eq "msys"))) {
 		$AS = "as";
 	}
-	if (!(defined $AR) and (!("$^O" eq "cygwin"))) {
+	if (!(defined $AR) and (!("$^O" eq "cygwin" or "$^O" eq "msys"))) {
 		$AR = "ar";
 	}
 	if (!(defined $RANLIB)) {
@@ -953,7 +987,7 @@ sub	SetDefaultForCompilerDriver_
 			$ccLessArgs  =~ s/\ .*//;
 			$RANLIB = ReplaceLast_ ($ccLessArgs, 'clang', 'llvm-ranlib');
 		}
-		elsif (!("$^O" eq "cygwin")) {
+		elsif (!("$^O" eq "cygwin" or "$^O" eq "msys")) {
 			$RANLIB = "ranlib";
 		}
 	}
@@ -992,7 +1026,7 @@ sub	SetDefaultForCompilerDriver_
 	if (defined ($qCompiler_ValgrindDirectSignalHandler_Buggy) and $qCompiler_ValgrindDirectSignalHandler_Buggy) {
 		push (@useExtraCDefines, '#define qCompiler_ValgrindDirectSignalHandler_Buggy 1');
 	}
-	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin"))) {
+	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin" or "$^O" eq "msys"))) {
 		$FEATUREFLAG_librt = $LIBFEATUREFLAG_UseSystem;
 	}
 	if (!(defined $FEATUREFLAG_librt)) {
@@ -2163,7 +2197,7 @@ sub PostProcessOptions_ ()
 
 	
 	if (! defined $FEATUREFLAG_ActivePerl) {
-		if ($FEATUREFLAG_OpenSSL eq "use" && ("$^O" eq "cygwin")) {
+		if ($FEATUREFLAG_OpenSSL eq "use" && ("$^O" eq "cygwin" or "$^O" eq "msys")) {
 			$FEATUREFLAG_ActivePerl = "use";
 		}
 		else {
@@ -2171,7 +2205,7 @@ sub PostProcessOptions_ ()
 		}
 	}
 	if (! defined $FEATUREFLAG_WIX) {
-		if ("$^O" eq "cygwin") {
+		if ("$^O" eq "cygwin" or "$^O" eq "msys") {
 			$FEATUREFLAG_WIX = "use";
 		}
 		else {
