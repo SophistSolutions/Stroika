@@ -19,6 +19,9 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
+ifneq ($(CONFIGURATION),)
+include $(StroikaRoot)ScriptsLib/Makefile-CMake-Common.mk
+endif
 
 .PHONY:	all clean clobber check doBuilds_
 
@@ -60,11 +63,6 @@ FETCHURLS+=http://www.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
 FETCHURLS+=http://www-us.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
 
 
-ifeq (0,$(ENABLE_ASSERTIONS))
-CMAKE_CONFIGURATION:=Release
-else
-CMAKE_CONFIGURATION:=Debug
-endif
 
 
 
@@ -87,9 +85,6 @@ endif
 endif
 
 ifneq ($(CONFIGURATION),)
-CMAKE_PER_TARGET_BUILD_DIR:=../../Builds/$(CONFIGURATION)/ThirdPartyComponents/
-CMAKE_PER_TARGET_BUILD_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_PER_TARGET_BUILD_DIR) )
-CMAKE_PER_TARGET_BUILD_DIR:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(CMAKE_PER_TARGET_BUILD_DIR))
 CMAKE_CURRENT_SOURCE_DIR:=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 CMAKE_CURRENT_SOURCE_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_CURRENT_SOURCE_DIR) )
 CMAKE_CURRENT_SOURCE_DIR:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(CMAKE_CURRENT_SOURCE_DIR))
@@ -226,22 +221,9 @@ endif
 
 
 
-#### SEE IF OTHER GENERATORS WORK WELL/BETTER??? https://www.mankier.com/7/cmake-generators
-CMAKE_USE_GENERATOR=Unix Makefiles
-ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2022)
-CMAKE_USE_GENERATOR=Visual Studio 17 2022
-else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
-CMAKE_USE_GENERATOR=Visual Studio 16 2019
-else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2017)
-CMAKE_USE_GENERATOR=Visual Studio 15 2017
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-$(error "unsupported version of visual studio.net")
-endif
-
 
 ###NOTE - because we set network:BOOL:OFF - Xerces doesn't depend on CURL (but we could make it so if we wanted, but then update dependencies
 ### in ThirdPartyLibs/Makefile
-CMAKE_ARGS=
 CMAKE_ARGS+= -Dnetwork:BOOL=OFF
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 CMAKE_ARGS+= -Dtranscoder=windows
@@ -253,38 +235,6 @@ CMAKE_ARGS+= -Dtranscoder=gnuiconv
 endif
 CMAKE_ARGS+= -Dmessage-loader=inmemory
 CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
-CMAKE_ARGS+= -DCMAKE_INSTALL_PREFIX=$(CMAKE_PER_TARGET_BUILD_DIR)
-ifeq (Unix,$(ProjectPlatformSubdir))
-#for reasons I didn't investigate, CMAKE appears to require this to be a full path (CMAKE_C_COMPILER etc...) -- LGP 2019-01-04
-CMAKE_ARGS+= -DCMAKE_C_COMPILER="$(shell which $(CC))"
-CMAKE_ARGS+= -DCMAKE_CXX_COMPILER="$(shell which $(CXX))"
-CMAKE_ARGS+= -DCMAKE_AR="$(shell which $(AR))"
-CMAKE_ARGS+= -DCMAKE_RANLIB="$(shell which $(RANLIB))"
-else
-CMAKE_ARGS+= -DCMAKE_C_COMPILER="$(CC)"
-CMAKE_ARGS+= -DCMAKE_CXX_COMPILER="$(CXX)"
-endif
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2022)
-ifeq (x86_64,$(ARCH))
-CMAKE_ARGS+= -A x64
-else
-CMAKE_ARGS+= -A Win32
-endif
-else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
-ifeq (x86_64,$(ARCH))
-CMAKE_ARGS+= -A x64
-else
-CMAKE_ARGS+= -A Win32
-endif
-else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2017)
-ifeq (x86_64,$(ARCH))
-CMAKE_USE_GENERATOR = Visual Studio 15 2017 Win64
-endif
-else
-$(error "unsupported version of visual studio.net")
-endif
-endif
 
 ##
 ### Avoid compile error in time_t XMLDateTime::getEpoch(bool duration) const
@@ -296,16 +246,6 @@ CFLAGS += /DWIN32
 CXXFLAGS += /DWIN32
 endif
 
-#
-# A bit confusing how cmake uses the _DEBUG and _RELEASE flags on windows but not unix
-# No matter - set them all to the same thing
-#
-CMAKE_ARGS+= -DCMAKE_C_FLAGS='$(CFLAGS)'
-CMAKE_ARGS+= -DCMAKE_C_FLAGS_DEBUG='$(CFLAGS)'
-CMAKE_ARGS+= -DCMAKE_C_FLAGS_RELEASE='$(CFLAGS)'
-CMAKE_ARGS+= -DCMAKE_CXX_FLAGS='$(CXXFLAGS)'
-CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG='$(CXXFLAGS)'
-CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_RELEASE='$(CXXFLAGS)'
 
 
 #
