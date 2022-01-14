@@ -86,13 +86,10 @@ endif
 endif
 
 
-#
-# A bit confusing how cmake uses the _DEBUG and _RELEASE flags on windows but not unix
-# No matter - set them all to the same thing
-#
-CMAKE_ARGS+= -DCMAKE_C_FLAGS='$(CFLAGS)'
-CMAKE_ARGS+= -DCMAKE_C_FLAGS_DEBUG='$(CFLAGS)'
-CMAKE_ARGS+= -DCMAKE_C_FLAGS_RELEASE='$(CFLAGS)'
-CMAKE_ARGS+= -DCMAKE_CXX_FLAGS='$(CXXFLAGS)'
-CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG='$(CXXFLAGS)'
-CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_RELEASE='$(CXXFLAGS)'
+
+# For reasons not totally understood - probably just that the cmake in cygwin is quite old - it doesn't work right here.
+# so use the copy from visual studio which appears to be recent enough to know about the verison of visual studio it comes with ;-)
+#	--LGP 2018-12-15
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+PATH_ADJUSTMENT_PREFIX= PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" 
+endif
