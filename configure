@@ -153,7 +153,9 @@ my $FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_librt = undef;
 my $FEATUREFLAG_WIX = undef;
+my $TargettingValgrind = undef;
 my $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = undef;
+my $qCompiler_ValgrindDirectSignalHandler_Buggy = undef;
 my $qCompiler_HasNoMisleadingIndentation_Flag = undef;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS_LIB = true;
@@ -353,7 +355,7 @@ sub     IsMSVCCompiler_
 	my $x = shift(@_);
 	return ($x =~ /.*cl.exe.*/);
    #bad way but best I know for now
-	# if ("$^O" eq "cygwin") {
+	# if ("$^O" eq "cygwin" or "$^O" eq "msys") {
 	# 	return true;
 	# }
 	# return false
@@ -592,51 +594,45 @@ sub	SetInitialDefaults_
 		elsif ("$^O" eq "darwin") {
 			$TARGET_PLATFORMS = 'MacOS POSIX';
 		}
-		elsif ("$^O" eq "cygwin") {
+		elsif ("$^O" eq "cygwin" or "$^O" eq "msys") {
 			$TARGET_PLATFORMS = 'Windows';
 		}
 	}
 	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 		$PROJECTPLATFORMSUBDIR = 'Unix';
 	}
-	if ("$^O" eq "cygwin") {
-
-		# try vs 2k22
+	if ("$^O" eq "cygwin" or "$^O" eq "msys") {
+		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+		my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
 		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
-			system ('ls -l "/cygdrive/c/Program Files/Microsoft Visual Studio/"2022/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2022/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
 			}
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2022/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2022/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
 			}
 		}
 		# try vs 2k19
 		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2019/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2019/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
 			}
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2019/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2019/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
 			}
 		}
 		# try vs 2k17
 		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2017/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
 			}
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2017/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
 			}
 		}
@@ -645,7 +641,7 @@ sub	SetInitialDefaults_
 	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 		$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
 	}
-	if ("$^O" eq "cygwin") {
+	if ("$^O" eq "cygwin" or "$^O" eq "msys") {
 		$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
 	}
 	if ("$^O" eq "darwin") {
@@ -939,10 +935,10 @@ sub	SetDefaultForCompilerDriver_
 			$AR = ReplaceLast_ ($ccLessArgs, 'clang', 'llvm-ar');
 		}
 	}
-	if (!(defined $AS) and (!("$^O" eq "cygwin"))) {
+	if (!(defined $AS) and (!("$^O" eq "cygwin" or "$^O" eq "msys"))) {
 		$AS = "as";
 	}
-	if (!(defined $AR) and (!("$^O" eq "cygwin"))) {
+	if (!(defined $AR) and (!("$^O" eq "cygwin" or "$^O" eq "msys"))) {
 		$AR = "ar";
 	}
 	if (!(defined $RANLIB)) {
@@ -956,7 +952,7 @@ sub	SetDefaultForCompilerDriver_
 			$ccLessArgs  =~ s/\ .*//;
 			$RANLIB = ReplaceLast_ ($ccLessArgs, 'clang', 'llvm-ranlib');
 		}
-		elsif (!("$^O" eq "cygwin")) {
+		elsif (!("$^O" eq "cygwin" or "$^O" eq "msys")) {
 			$RANLIB = "ranlib";
 		}
 	}
@@ -985,11 +981,17 @@ sub	SetDefaultForCompilerDriver_
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (11.0 <= GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 12.0)) {
 			$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true;
 		}
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and ($TargettingValgrind == true)) {
+			$qCompiler_ValgrindDirectSignalHandler_Buggy = true;
+		}
 	}
 	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
 		push (@useExtraCDefines, '#define qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy 1');
 	}
-	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin"))) {
+	if (defined ($qCompiler_ValgrindDirectSignalHandler_Buggy) and $qCompiler_ValgrindDirectSignalHandler_Buggy) {
+		push (@useExtraCDefines, '#define qCompiler_ValgrindDirectSignalHandler_Buggy 1');
+	}
+	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin" or "$^O" eq "msys"))) {
 		$FEATUREFLAG_librt = $LIBFEATUREFLAG_UseSystem;
 	}
 	if (!(defined $FEATUREFLAG_librt)) {
@@ -1075,8 +1077,10 @@ sub	SetDefaultForPlatform_
 	}
 	#autodetect ATLMFC (Express verison missing it)
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
-		system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2017/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
-		if ($? == 0) {
+		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+		my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
+		my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2017/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h'");
+		if (scalar(@files) != 0) {
 			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
 		}
 		else  {
@@ -1084,8 +1088,10 @@ sub	SetDefaultForPlatform_
 		}
 	}
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2019") {
-		system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2019/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
-		if ($? == 0) {
+		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+		my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
+		my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2019/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h'");
+		if (scalar(@files) != 0) {
 			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
 		}
 		else  {
@@ -1094,8 +1100,10 @@ sub	SetDefaultForPlatform_
 	}
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2022") {
 		# in VS2k22, separate checkboxes for ATL and MFC and we need MFC AND ATL
-		system ('ls -l /cygdrive/c/"Program Files/Microsoft Visual Studio"/2022/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
-		if ($? == 0) {
+		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+		my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
+		my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2022/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h'");
+		if (scalar(@files) != 0) {
 			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
 		}
 		else  {
@@ -1270,6 +1278,7 @@ sub	ParseCommandLine_Remaining_
 			$var = $args[$i];
 			if ($var eq "enable") {
 				push (@useExtraCDefines, '#define qStroika_FeatureSupported_Valgrind 1');
+				$TargettingValgrind = true;
 			}
 			elsif ($var eq "disable") {
 				push (@useExtraCDefines, '#define qStroika_FeatureSupported_Valgrind 0');
@@ -2159,7 +2168,7 @@ sub PostProcessOptions_ ()
 
 	
 	if (! defined $FEATUREFLAG_ActivePerl) {
-		if ($FEATUREFLAG_OpenSSL eq "use" && ("$^O" eq "cygwin")) {
+		if ($FEATUREFLAG_OpenSSL eq "use" && ("$^O" eq "cygwin" or "$^O" eq "msys")) {
 			$FEATUREFLAG_ActivePerl = "use";
 		}
 		else {
@@ -2167,7 +2176,7 @@ sub PostProcessOptions_ ()
 		}
 	}
 	if (! defined $FEATUREFLAG_WIX) {
-		if ("$^O" eq "cygwin") {
+		if ("$^O" eq "cygwin" or "$^O" eq "msys") {
 			$FEATUREFLAG_WIX = "use";
 		}
 		else {
@@ -2575,6 +2584,9 @@ sub	WriteConfigFile_
 
 	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy)) {
 		print (OUT "    <qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy>$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy</qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy>\n");
+	}
+	if (defined ($qCompiler_ValgrindDirectSignalHandler_Buggy)) {
+		print (OUT "    <qCompiler_ValgrindDirectSignalHandler_Buggy>$qCompiler_ValgrindDirectSignalHandler_Buggy</qCompiler_ValgrindDirectSignalHandler_Buggy>\n");
 	}
 	if (defined ($qCompiler_HasNoMisleadingIndentation_Flag)) {
 		print (OUT "    <qCompiler_HasNoMisleadingIndentation_Flag>$qCompiler_HasNoMisleadingIndentation_Flag</qCompiler_HasNoMisleadingIndentation_Flag>\n");

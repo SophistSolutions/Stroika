@@ -19,7 +19,9 @@
  * Description:
  *
  *      This module defines support for POSIX (and std c++ defined) Signals (not to be confused
- *  with the 'Signals and slots' design pattern which is largely unrelated).
+ *  with the 'Signals and slots' design pattern which is largely unrelated). (POSIX) Signals have all sorts of tricky
+ *  rules for their manipulation/control. This doesn't eleminate those, but it makes most common cases much easier
+ *  to handle safely. In particular, many cases of signals can be 'handled' not as signals (safe signal handlers).
  *
  *
  * TODO:

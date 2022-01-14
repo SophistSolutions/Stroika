@@ -34,6 +34,7 @@ elif [ `uname -s` == "Darwin"  ] ; then
 fi
 case `uname` in
    CYGWIN*)  DistroBasedOn='cygwin' ;;
+   MSYS*)  DistroBasedOn='msys' ;;
 esac
 
 echo -n "Missing component $TOOL"
@@ -46,6 +47,8 @@ elif [ $TOOL == "7za" ] ; then
 		echo -n ": try apt-get install -y p7zip-full" && echo && exit 0
 	elif [ $DistroBasedOn == "cygwin" ] ; then
 		echo -n ": try cygwin setup, package name p7zip" && echo && exit 0
+	elif [ $DistroBasedOn == "msys" ] ; then
+		echo -n ": try pacman -S p7zip" && echo && exit 0
 	elif [ $DistroBasedOn == "Darwin" ] ; then
 		echo -n ": try brew install p7zip" && echo && exit 0
 	fi
@@ -82,4 +85,6 @@ elif [ $DistroBasedOn == "Debian" ] ; then
 	echo -n ": try apt-get install -y $TOOL" && echo && exit 0
 elif [ $DistroBasedOn == "cygwin" ] ; then
 	echo -n ": try cygwin setup, package name $TOOL" && echo && exit 0
+elif [ $DistroBasedOn == "msys" ] ; then
+	echo -n ": try pacman -S $TOOL" && echo && exit 0
 fi
