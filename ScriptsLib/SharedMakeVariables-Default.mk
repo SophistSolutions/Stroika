@@ -162,14 +162,17 @@ endif
 
 
 #	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)"; ur do export at end of this file...
-
+ifneq ($(TOOLS_PATH_ADDITIONS),)
+TOOLSET_CMD_ENV_SETS+=PATH="${TOOLS_PATH_ADDITIONS}:${PATH}" 
+endif
 ifeq ($(DETECTED_HOST_OS),MSYS)
-TOOLSET_CMD_ENV_SETS=\
-	export MSYS2_ARG_CONV_EXCL=*; 
-else
-TOOLSET_CMD_ENV_SETS=
+TOOLSET_CMD_ENV_SETS+=MSYS2_ARG_CONV_EXCL="*" 
 endif
 
+
+#  ifneq (${TOOLS_PATH_ADDITIONS_BUGWORKAROUND},)
+# export PATH:=${TOOLS_PATH_ADDITIONS}:${PATH}
+# endif
 
 #
 # This macro takes two arguments:
@@ -290,9 +293,3 @@ endif
 
 
 FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL=$(subst ",\",$1)
-
-
-
-# ifneq (${TOOLS_PATH_ADDITIONS_BUGWORKAROUND},)
-# export PATH:=${TOOLS_PATH_ADDITIONS_BUGWORKAROUND}:${PATH}
-# endif
