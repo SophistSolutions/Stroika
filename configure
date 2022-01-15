@@ -737,7 +737,7 @@ sub	SetDefaultForCompilerDriver_
 			$CPPSTD_VERSION_FLAG="--std=c++17"
 		}
 		elsif ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-			$CPPSTD_VERSION_FLAG="/std:c++latest"
+			$CPPSTD_VERSION_FLAG="-std:c++latest"
 		}
 	}
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
@@ -903,7 +903,7 @@ sub	SetDefaultForCompilerDriver_
 			}
 		}
 		if (IsMSVCCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
-			$COPTIMIZE_FLAGS = "/O2 /Oi /Oy";
+			$COPTIMIZE_FLAGS = "-O2 -Oi -Oy";
 		}
 		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_TRACE2FILE = 0;
@@ -912,8 +912,8 @@ sub	SetDefaultForCompilerDriver_
 		if ($isVisualStudio) {
 			#	/OPT:REF eliminates functions and or data that are never referenced
 			#	/OPT:ICF[=iterations] to perform identical COMDAT folding
-			$EXTRA_PREFIX_LINKER_ARGS .= " /OPT:REF";
-			$EXTRA_PREFIX_LINKER_ARGS .= " /OPT:ICF";
+			$EXTRA_PREFIX_LINKER_ARGS .= " -OPT:REF";
+			$EXTRA_PREFIX_LINKER_ARGS .= " -OPT:ICF";
 		}
 
 	}
@@ -1870,7 +1870,7 @@ sub GetDefaultCZZFLAGS_flags_
 		for my $i (split /:/, $INCLUDES_PATH) {
 			if ($isVisualStudio) {
 				my $wpath = trim (`cygpath --mixed \"$i\"`);
-				push @flags, "/I\"$wpath\"";
+				push @flags, "-I\"$wpath\"";
 			}
 			else {
 				push @flags, "-I$i";
@@ -1895,7 +1895,7 @@ sub GetDefaultCZZFLAGS_flags_
 		
 		if ($INCLUDE_SYMBOLS_LIB) {
 			if ($isVisualStudio) {
-				####? push @flags, "/Z7";
+				####? push @flags, "-Z7";
 			}
 			else {
 				push @flags, "-g";
@@ -1903,51 +1903,51 @@ sub GetDefaultCZZFLAGS_flags_
 		}
 		if ( $isVisualStudio ) {
 			if ($Windows_Exceptions_SupportStructuredExceptions == true) {
-				push @flags, "/EHa";
+				push @flags, "-EHa";
 			}
 			else {
-				push @flags, "/EHsc";
+				push @flags, "-EHsc";
 			}
-			push @flags, "/nologo";
-			push @flags, "/GR";			#  Enable Run-Time Type Information
-			push @flags, "/Gd";			#  Calling Convention - the default setting, specifies the __cdecl calling convention for all functions
-			push @flags, "/W4";			#  Warning Level (most less than WALL)
-			#push @flags, "/WX-";		#  (Dont) treat warnings as errors
-			#push @flags, "/JMC";		#  Just my code debugging (DONT TURN ON - let users add this but dont default on)
-			push @flags, "/Zc:inline";	#  Remove unreferenced code and data
-			push @flags, "/FC";			#  Use full paths in diagnostic messages
-			push @flags, "/bigobj";		# Avoid these failures - fatal error C1128: number of sections exceeded object file format limit: compile with /bigobj
+			push @flags, "-nologo";
+			push @flags, "-GR";			#  Enable Run-Time Type Information
+			push @flags, "-Gd";			#  Calling Convention - the default setting, specifies the __cdecl calling convention for all functions
+			push @flags, "-W4";			#  Warning Level (most less than WALL)
+			#push @flags, "-WX-";		#  (Dont) treat warnings as errors
+			#push @flags, "-JMC";		#  Just my code debugging (DONT TURN ON - let users add this but dont default on)
+			push @flags, "-Zc:inline";	#  Remove unreferenced code and data
+			push @flags, "-FC";			#  Use full paths in diagnostic messages
+			push @flags, "-bigobj";		# Avoid these failures - fatal error C1128: number of sections exceeded object file format limit: compile with /bigobj
 
-	#		push @flags, "/errorReport:prompt";	users can add this if desired
+	#		push @flags, "-errorReport:prompt";	users can add this if desired
 
-			###push @flags, "/experimental:module";
+			###push @flags, "-experimental:module";
 			
 			if ($ApplyDebugFlags == true) {
-				push @flags, "/RTCsu";		# 	Run-Time Error Checks - https://docs.microsoft.com/en-us/cpp/build/reference/rtc-run-time-error-checks?view=vs-2019
-				push @flags, "/GS";			#	Enable Security Check
-				push @flags, "/Oy-";		#	(Dont) omit frame pointers
-				push @flags, "/Od";			#	Disable Optimization
-				push @flags, "/MTd";		#	Multithreaded (Debug; but not dll)
+				push @flags, "-RTCsu";		# 	Run-Time Error Checks - https://docs.microsoft.com/en-us/cpp/build/reference/rtc-run-time-error-checks?view=vs-2019
+				push @flags, "-GS";			#	Enable Security Check
+				push @flags, "-Oy-";		#	(Dont) omit frame pointers
+				push @flags, "-Od";			#	Disable Optimization
+				push @flags, "-MTd";		#	Multithreaded (Debug; but not dll)
 			}
 			if ($ApplyReleaseFlags == true) {
-				push @flags, "/GS-";		#	Disable Security Check
-				push @flags, "/Gy";			#	Enable Function Level Linking
-				push @flags, "/Oy";			#	Omit frame pointers
-				push @flags, "/O2";			#	Maximum Optimization (Favor Speed)
-				push @flags, "/GL";			#	Whole Program Optimization
-				push @flags, "/Oi";			#	Enable Intrinsic Functions
-				push @flags, "/GF";			#	Enable String Pooling
-				push @flags, "/MT";			#	Multithreaded (not debug not dll)
+				push @flags, "-GS-";		#	Disable Security Check
+				push @flags, "-Gy";			#	Enable Function Level Linking
+				push @flags, "-Oy";			#	Omit frame pointers
+				push @flags, "-O2";			#	Maximum Optimization (Favor Speed)
+				push @flags, "-GL";			#	Whole Program Optimization
+				push @flags, "-Oi";			#	Enable Intrinsic Functions
+				push @flags, "-GF";			#	Enable String Pooling
+				push @flags, "-MT";			#	Multithreaded (not debug not dll)
 			}
-			##push @flags, "/fp:precise";	#vs2k sample projects define this, but maybe can use default?
+			##push @flags, "-fp:precise";	#vs2k sample projects define this, but maybe can use default?
 		
 			if ($INCLUDE_SYMBOLS_LIB) {
 				if ($WinFlag_DebugProgramDatabase) {
-					push @flags, "/Zi";		#	Program Database (Debug Information)
-					push @flags, "/FS";		# 	Force Synchronous PDB Writes (needed for parallel make/build)
+					push @flags, "-Zi";		#	Program Database (Debug Information)
+					push @flags, "-FS";		# 	Force Synchronous PDB Writes (needed for parallel make/build)
 				}
 				else {
-					push @flags, "/Z7";		#	Use intra-obj file debug info format 
+					push @flags, "-Z7";		#	Use intra-obj file debug info format 
 				}
 			}
 		}
@@ -1956,15 +1956,15 @@ sub GetDefaultCZZFLAGS_flags_
 		push @flags, "-D_GLIBCXX_DEBUG";
 	}
 	if ( $isVisualStudio ) {
-		push @flags, "/D_UNICODE";
-		push @flags, "/DUNICODE";
-		push @flags, "/D_WINDOWS";	# just because visual studio .net sample projects defined this
+		push @flags, "-D_UNICODE";
+		push @flags, "-DUNICODE";
+		push @flags, "-D_WINDOWS";	# just because visual studio .net sample projects defined this
 		
 		if ($ApplyDebugFlags == true) {
-			push @flags, "/D_DEBUG";
+			push @flags, "-D_DEBUG";
 		}
 		if ($ApplyReleaseFlags == true) {
-			push @flags, "/DNDEBUG";
+			push @flags, "-DNDEBUG";
 		}
 	}
 	{
@@ -1977,7 +1977,7 @@ sub GetDefaultCZZFLAGS_flags_
 		# It has ONE possible disadvantage, which is confusing some tools that preparse the the (like visual studio code) but we must just find some way
 		# to get them to also know about these defines (TBD)
 		#		--LGP 2019-02-10
-		my $dashFlag=$isVisualStudio? "/D" : "-D";
+		my $dashFlag="-D";
 		push @flags, $dashFlag . "qDebug=" . ZERO_OR_1_ ($ENABLE_ASSERTIONS);
 		push @flags, $dashFlag . "qHasFeature_LibCurl=" . ZERO_OR_1_ (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseSystem));
 		push @flags, $dashFlag . "qHasFeature_OpenSSL=" . ZERO_OR_1_ (($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseSystem));
@@ -2068,9 +2068,9 @@ sub PostProcessOptions_ ()
 			$EXTRA_PREFIX_LINKER_ARGS .= " -flto";
 		}
 		if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus)) {
-			push @CFLAGS, "/GL";			#	Whole Program Optimization
-			push @CXXFLAGS, "/GL";			#	Whole Program Optimization
-			$EXTRA_PREFIX_LINKER_ARGS .= " /LTCG";
+			push @CFLAGS, "-GL";			#	Whole Program Optimization
+			push @CXXFLAGS, "-GL";			#	Whole Program Optimization
+			$EXTRA_PREFIX_LINKER_ARGS .= " -LTCG";
 		}
 	}
 	if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1)) {
@@ -2149,7 +2149,7 @@ sub PostProcessOptions_ ()
 			if (not ($EXTRA_SUFFIX_LINKER_ARGS eq "")) {
 				$EXTRA_SUFFIX_LINKER_ARGS .= " ";
 			}
-			$EXTRA_SUFFIX_LINKER_ARGS .= "/FORCE:MULTIPLE";
+			$EXTRA_SUFFIX_LINKER_ARGS .= "-FORCE:MULTIPLE";
 		}
 	}
 
@@ -2290,12 +2290,12 @@ sub PostProcessOptions_ ()
 
 
 	if ($isVisualStudio) {
-		$EXTRA_PREFIX_LINKER_ARGS .= " /nologo";
+		$EXTRA_PREFIX_LINKER_ARGS .= " -nologo";
 		my $WIN_LIBCOMPATIBLE_ARCH = $ARCH;
 		if ($WIN_LIBCOMPATIBLE_ARCH eq "x86_64") {
 			$WIN_LIBCOMPATIBLE_ARCH = "x64";
 		}
-		$EXTRA_PREFIX_LINKER_ARGS .= " /MACHINE:${WIN_LIBCOMPATIBLE_ARCH}";
+		$EXTRA_PREFIX_LINKER_ARGS .= " -MACHINE:${WIN_LIBCOMPATIBLE_ARCH}";
 	}
 
 
@@ -2332,7 +2332,7 @@ sub PostProcessOptions_ ()
 
 	if ($INCLUDE_SYMBOLS_EXE) {
 		if ($isVisualStudio) {
-			$EXTRA_PREFIX_LINKER_ARGS .= " /DEBUG";
+			$EXTRA_PREFIX_LINKER_ARGS .= " -DEBUG";
 		}
 		elsif ($PROJECTPLATFORMSUBDIR eq 'Unix') {
 			$EXTRA_PREFIX_LINKER_ARGS .= " -g";
