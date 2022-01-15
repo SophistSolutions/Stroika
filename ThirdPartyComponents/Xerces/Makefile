@@ -205,9 +205,9 @@ $(ZIPPEDFILE):
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "Xerces ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p $@
-ifeq ($(shell uname -s),Darwin)
+ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
-else ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
+else ifeq ($(DETECTED_HOST_OS),Cygwin)
 	@PWD=`pwd` tar xf $(ZIPPEDFILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
 else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
@@ -227,7 +227,7 @@ endif
 CMAKE_ARGS+= -Dnetwork:BOOL=OFF
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 CMAKE_ARGS+= -Dtranscoder=windows
-else ifeq ($(shell uname -s),Darwin)
+else ifeq ($(DETECTED_HOST_OS),Darwin)
 #AVOID Undefined symbols for architecture x86_64:  "_CFRelease", etc.... Avoid library dependency
 CMAKE_ARGS+= -Dtranscoder=iconv
 else

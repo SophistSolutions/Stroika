@@ -24,6 +24,28 @@ SHELL?=/bin/bash
 
 .DEFAULT_GOAL := all
 
+
+#
+# Based on https://stackoverflow.com/questions/714100/os-detecting-makefile/52062069#52062069
+#	Enumeration of common DETECTED_HOST_OS to check for if #if code
+#			Windows (not sure what this means, cuz not cygwin or msys and running make?)
+#			Cygwin
+#			MSYS
+#			Linux
+#			Darwin
+#
+ifeq '$(findstring ;,$(PATH))' ';'
+    DETECTED_HOST_OS := Windows
+else
+    DETECTED_HOST_OS := $(shell uname 2>/dev/null || echo Unknown)
+    DETECTED_HOST_OS := $(patsubst CYGWIN%,Cygwin,$(DETECTED_HOST_OS))
+    DETECTED_HOST_OS := $(patsubst MSYS%,MSYS,$(DETECTED_HOST_OS))
+    DETECTED_HOST_OS := $(patsubst MINGW%,MSYS,$(DETECTED_HOST_OS))
+endif
+# $(info DETECTED_HOST_OS = $(DETECTED_HOST_OS))
+
+
+
 .PHONY:			all clean clobber check
 
 ##

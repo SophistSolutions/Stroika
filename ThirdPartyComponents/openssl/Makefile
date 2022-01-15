@@ -77,7 +77,7 @@ ifeq (armhf,$(ARCH))
 # OpenSSL 3.0 automatically considers the TARGETMACHINE to be this HOST compiling machine and generates -m64 lines that break
 # the compile - this works around that issue for at least this configuration
 CONFIG_ARGS+=	linux-generic32
-else ifeq ($(shell uname -s),Darwin)
+else ifeq ($(DETECTED_HOST_OS),Darwin)
 CONFIG_ARGS+=	darwin64-$(ARCH)-cc
 endif
 endif
@@ -378,9 +378,9 @@ endif
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p $@
-ifeq ($(shell uname -s),Darwin)
+ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
-else ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
+else ifeq (Cygwin,$(DETECTED_HOST_OS))
 	@PWD=`pwd` tar xf $(ZIPPEDFILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
 else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
