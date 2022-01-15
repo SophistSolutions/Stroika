@@ -161,6 +161,16 @@ ifndef HTMLViewCompiler
 endif
 
 
+#	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)"; ur do export at end of this file...
+
+ifeq ($(DETECTED_HOST_OS),MSYS)
+TOOLSET_CMD_ENV_SETS=\
+	export MSYS2_ARG_CONV_EXCL=*; 
+else
+TOOLSET_CMD_ENV_SETS=
+endif
+
+
 #
 # This macro takes two arguments:
 #	$1 input src name
@@ -174,7 +184,7 @@ DEFAULT_CC_LINE=\
 		-o $2
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 DEFAULT_CC_LINE=\
-	"$(CC)" \
+	$(TOOLSET_CMD_ENV_SETS)"$(CC)" \
 		$(CFLAGS) \
 		-c $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		-Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
@@ -195,7 +205,7 @@ DEFAULT_CXX_LINE=\
 		-o $2
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 DEFAULT_CXX_LINE=\
-	"$(CXX)" \
+	$(TOOLSET_CMD_ENV_SETS)"$(CXX)" \
 		$(CXXFLAGS) \
 		-c $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		-Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
@@ -223,7 +233,7 @@ ifeq (-GL,$(findstring -GL,$(CXXFLAGS)))
 LIBTOOLFLAGS += -LTCG
 endif
 DEFAULT_LIBRARY_GEN_LINE+=\
-	"$(LIBTOOL)" \
+	$(TOOLSET_CMD_ENV_SETS)"$(LIBTOOL)" \
 		-OUT:$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		${LIBTOOLFLAGS} \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2)
@@ -234,7 +244,7 @@ endif
 # This macro takes a single argument - the output filename for the link command
 #
 DEFAULT_LINK_LINE=\
-	"$(Linker)" \
+	$(TOOLSET_CMD_ENV_SETS)"$(Linker)" \
 		$(EXTRA_PREFIX_LINKER_ARGS) \
 		$(LIBS_PATH_DIRECTIVES) \
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
@@ -253,9 +263,8 @@ MIDL_FLAGS+=	-char signed
 #MIDL_FLAGS+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)Library/Sources)
 
 DEFAULT_MIDL_LINE=\
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
-		"$(MIDL)" \
-			/iid $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$4)\
+	$(TOOLSET_CMD_ENV_SETS)"$(MIDL)" \
+			-iid $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$4)\
 			$(MIDL_FLAGS)\
 			-h $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$3) \
 			-tlb $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
@@ -273,8 +282,7 @@ RC_FLAGS+=	-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)
 RC_FLAGS+=	-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)Library/Sources)"
 
 DEFAULT_RC_LINE=\
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
-		"$(RC)" \
+	$(TOOLSET_CMD_ENV_SETS)"$(RC)" \
 			$(RC_FLAGS)\
 			-Fo $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
 			$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1)
@@ -285,6 +293,6 @@ FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL=$(subst ",\",$1)
 
 
 
-ifneq (${TOOLS_PATH_ADDITIONS_BUGWORKAROUND},)
-export PATH:=${TOOLS_PATH_ADDITIONS_BUGWORKAROUND}:${PATH}
-endif
+# ifneq (${TOOLS_PATH_ADDITIONS_BUGWORKAROUND},)
+# export PATH:=${TOOLS_PATH_ADDITIONS_BUGWORKAROUND}:${PATH}
+# endif
