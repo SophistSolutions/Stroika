@@ -141,7 +141,7 @@ $(TARGETDIR)ActiveLedIt.cab: $(TARGETEXE)
 	@echo ".Set DiskDirectory1=AAA">> $(ObjDir)CabBld/CabBld.ddf
 	@echo "SophistSolutions.ActiveLedIt.dll" >> $(ObjDir)CabBld/CabBld.ddf
 	@echo ActiveLedIt.inf >> $(ObjDir)CabBld/CabBld.ddf
-	@cd $(ObjDir)/CabBld && makecab /F CabBld.ddf > ../CAB-Build.OUT 2>&1
+	@cd $(ObjDir)/CabBld && $(TOOLSET_CMD_ENV_SETS)makecab /F CabBld.ddf > ../CAB-Build.OUT 2>&1
 	@mv $(ObjDir)/CabBld/AAA/ActiveLedIt.cab $@
 
 
