@@ -43,7 +43,7 @@ ifeq (Windows,$(findstring Windows,$(OS)))
 	# as of 2021-09-20 - on new laptop  fails to build with -m, but works without (crazy buggy docker)
 	docker build --network "Default Switch" -f Windows-Cygwin-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 .
 	docker build --network "Default Switch" -f Windows-Cygwin-VS2k22/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 .
-	#docker build -f Windows-MinGW-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-mingw-vs2k19 .
+	docker build -f Windows-MSYS-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 .
 endif
 
 
@@ -71,7 +71,7 @@ endif
 ifeq (Windows,$(findstring Windows,$(OS)))
 	docker tag sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:latest sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:latest sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:$(STROIKA_VERSION)
-	#docker tag sophistsolutionsinc/stroika-buildvm-windows-mingw-vs2k19 $(STROIKA_VERSION)
+	docker tag sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 $(STROIKA_VERSION)
 endif
 
 
@@ -105,7 +105,7 @@ endif
 ifeq (Windows,$(findstring Windows,$(OS)))
 	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:latest
 	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:latest
-	#docker push sophistsolutionsinc/stroika-buildvm-windows-mingw-vs2k19:latest
+	docker push sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19:latest
 endif
 ifeq ($(STROIKA_VERSION_Final),true)
 ifeq ($(shell uname),Linux)
@@ -123,6 +123,6 @@ endif
 ifeq (Windows,$(findstring Windows,$(OS)))
 	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:$(STROIKA_VERSION)
-	#docker push sophistsolutionsinc/stroika-buildvm-windows-mingw-vs2k19:$(STROIKA_VERSION)
+	docker push sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19:$(STROIKA_VERSION)
 endif
 endif
