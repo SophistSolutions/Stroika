@@ -67,8 +67,8 @@ RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tl
   msys ' '; `
   msys 'pacman --noconfirm -Syuu'; `
   msys 'pacman --noconfirm -Syuu'; `
-  msys 'pacman --noconfirm -Scc';`
-  msys 'pacman --noconfirm -S base-devel git';
+  msys 'pacman --noconfirm -Scc'; `
+  msys 'pacman --noconfirm -S base-devel git unzip p7zip';
 
 
 # Set PATH variable (to include MSYS)
@@ -85,7 +85,8 @@ COPY Windows-Cygwin-VS2k19/FixupPath.bat ./
 # # Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, 
 # # and much worse with windows (in part due to available shell commands)
 # CMD ["cmd", "/c", "call FixupPath.bat && echo see Getting-Started-With-Stroika.md && cmd"]
-CMD ["cmd", "/c", "echo see Getting-Started-With-Stroika.md && cmd"]
+# CMD ["cmd", "/c", "echo see Getting-Started-With-Stroika.md && cmd"]
+CMD ["bash.exe", "-l"]
 
 # ### NOTE TO RUN
 # ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19

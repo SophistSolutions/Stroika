@@ -3,6 +3,7 @@
 ## Git clone
 
 git clone https://github.com/SophistSolutions/Stroika.git
+cd Stroika
 
 ## Optionally enable VS2k tools (not needed for stroika)
 
