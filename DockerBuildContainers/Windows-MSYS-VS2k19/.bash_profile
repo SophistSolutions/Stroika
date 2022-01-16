@@ -1,0 +1,1 @@
+echo "See Getting-Started-With-Stroika.md"

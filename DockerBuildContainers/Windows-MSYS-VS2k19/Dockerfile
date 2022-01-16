@@ -67,8 +67,8 @@ RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tl
   msys ' '; `
   msys 'pacman --noconfirm -Syuu'; `
   msys 'pacman --noconfirm -Syuu'; `
-  msys 'pacman --noconfirm -Scc'; `
-  msys 'pacman --noconfirm -S base-devel git unzip p7zip';
+  msys 'pacman --noconfirm -S base-devel git unzip p7zip'; `
+  msys 'pacman --noconfirm -Scc'; 
 
 
 # Set PATH variable (to include MSYS)
@@ -78,9 +78,9 @@ RUN  `
     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
 
 
+COPY Windows-MSYS-VS2k19/Getting-Started-With-Stroika.md c:/msys64
+COPY Windows-MSYS-VS2k19/.bash_profile c:/msys64/
 
-COPY Windows-Cygwin-VS2k19/Getting-Started-With-Stroika.md ./
-COPY Windows-Cygwin-VS2k19/FixupPath.bat ./
 
 # # Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, 
 # # and much worse with windows (in part due to available shell commands)
