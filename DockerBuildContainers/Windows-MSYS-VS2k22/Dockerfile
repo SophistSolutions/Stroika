@@ -82,8 +82,8 @@ RUN  `
     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
 
 
-COPY Windows-MSYS-VS2k19/Getting-Started-With-Stroika.md c:/msys64
-COPY Windows-MSYS-VS2k19/.bash_profile c:/msys64/
+COPY Windows-MSYS-VS2k22/Getting-Started-With-Stroika.md c:/msys64
+COPY Windows-MSYS-VS2k22/.bash_profile c:/msys64/
 
 
 # # Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, 
@@ -93,6 +93,6 @@ COPY Windows-MSYS-VS2k19/.bash_profile c:/msys64/
 CMD ["bash.exe", "-l"]
 
 # ### NOTE TO RUN
-# ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
-# ###     docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+# ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+# ###     docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
 # ###     see ScriptsLib/RunLocalWindowsDockerRegressionTests
