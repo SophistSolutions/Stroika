@@ -147,10 +147,15 @@ TOOLSET_CMD_ENV_SETS+=PATH="${TOOLS_PATH_ADDITIONS}:${PATH}"
 endif
 ifeq ($(DETECTED_HOST_OS),MSYS)
 # See https://www.msys2.org/docs/filesystem-paths/
-TOOLSET_CMD_ENV_SETS+=MSYS2_ARG_CONV_EXCL="*" 
-TOOLSET_CMD_ENV_SETS+=MSYS2_ENV_CONV_EXCL="*" 
+# TOOLSET_CMD_ENV_SETS+=MSYS2_ARG_CONV_EXCL="*" 
+# TOOLSET_CMD_ENV_SETS+=MSYS2_ENV_CONV_EXCL="*" 
 endif
 
+ifeq ($(DETECTED_HOST_OS),MSYS)
+# See https://www.msys2.org/docs/filesystem-paths/
+export MSYS2_ARG_CONV_EXCL=*
+export MSYS2_ENV_CONV_EXCL=*
+endif
 
 #  ifneq (${TOOLS_PATH_ADDITIONS_BUGWORKAROUND},)
 # export PATH:=${TOOLS_PATH_ADDITIONS}:${PATH}
