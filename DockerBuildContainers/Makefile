@@ -44,6 +44,7 @@ ifeq (Windows,$(findstring Windows,$(OS)))
 	docker build --network "Default Switch" -f Windows-Cygwin-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 .
 	docker build --network "Default Switch" -f Windows-Cygwin-VS2k22/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 .
 	docker build -f Windows-MSYS-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 .
+	docker build -f Windows-MSYS-VS2k22/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 .
 endif
 
 
@@ -72,6 +73,7 @@ ifeq (Windows,$(findstring Windows,$(OS)))
 	docker tag sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:latest sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:latest sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 $(STROIKA_VERSION)
+	docker tag sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 $(STROIKA_VERSION)
 endif
 
 
@@ -106,6 +108,7 @@ ifeq (Windows,$(findstring Windows,$(OS)))
 	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:latest
 	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:latest
 	docker push sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19:latest
+	docker push sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:latest
 endif
 ifeq ($(STROIKA_VERSION_Final),true)
 ifeq ($(shell uname),Linux)
@@ -124,5 +127,6 @@ ifeq (Windows,$(findstring Windows,$(OS)))
 	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19:$(STROIKA_VERSION)
+	docker push sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:$(STROIKA_VERSION)
 endif
 endif
