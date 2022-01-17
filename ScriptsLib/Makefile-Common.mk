@@ -43,4 +43,4 @@ DETECTED_HOST_OS:=$(shell $(StroikaRoot)/ScriptsLib/DetectedHostOS)
 ## sometimes cause trouble (not 100% sure why - this is a bit of a hack)
 ##
 STRIP_INCLUDE_COMPILER_FLAGS= \
-	$(shell  echo '$1' | sed 's/\/I"[^"]*"//g')
+	$(shell  echo '$1' | sed 's/[\/\-]I"[^"]*"//g')
