@@ -16,4 +16,4 @@ if [[ $DETECTED_HOST_OS =~ "cygwin" ]] ; then DETECTED_HOST_OS="Cygwin"; fi;
 if [[ $DETECTED_HOST_OS =~ "MSYS" ]] ; then DETECTED_HOST_OS="MSYS"; fi;
 if [[ $DETECTED_HOST_OS =~ "MINGW" ]] ; then DETECTED_HOST_OS="MSYS"; fi;
 
-echo -n ${DETECTED_HOST_OS}
+echo ${DETECTED_HOST_OS}
