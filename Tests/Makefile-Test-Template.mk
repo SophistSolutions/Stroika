@@ -31,6 +31,7 @@ Objs	=	\
 include $(StroikaRoot)/ScriptsLib/SharedBuildRules-Default.mk
 
 
+
 all:	$(ObjDir) $(TARGETEXE)
 
 

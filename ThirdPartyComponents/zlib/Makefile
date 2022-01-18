@@ -133,7 +133,6 @@ ifeq ($(CONFIGURATION),)
 endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
-	    $(TOOLSET_CMD_ENV_SETS)\
 		export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; \
 		export ASFLAGS="$(ASFLAGS_)"; \
 		export AS="$(AS)"; \

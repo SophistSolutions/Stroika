@@ -21,6 +21,9 @@ $(error("be sure to include SharedMakeVariables-Default.mk before including Make
 endif
 
 
+$(call PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED)
+
+
 ####
 #### Now set a bunch of CMAKE_... variables 
 #### Generally set in such a way that their values are re-evaluated, so they can refer to stuff like CFLAGS

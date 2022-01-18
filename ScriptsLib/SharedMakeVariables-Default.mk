@@ -141,15 +141,28 @@ ifndef HTMLViewCompiler
 endif
 
 
-#	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)"; ur do export at end of this file...
+#
+# Big picture point of this - is to add tools stored in non-standard locations (like some SDK subdirectory)
+# into the path, so they can be invoked. We use an absolute paths for the commands we invoke (like CC)
+# but these in turn sometimes invoke other things (like C-Pre-Processor) and so we must make sure they have
+# their path variable setup properly to find those things (cmake maybe a better modern example).
+#
+# Note - before Stroika 2.1r1, we would annotate each needed cmake or cc etc line with 
+# something lile:
+#		PATH=${TOOLS_PATH_ADDITIONS}:${PATH})
+# which also works, but this is slightly simpler, and less reliant to careful scripting
+# at the point of call (bash is a shitty language).
+#
+# @todo if needed, could make this somehow conditional, or embed a conditional in impl of
+# PATH_FOR_TOOLPATH_ADDITION_IF_NEED
+#
 ifneq ($(TOOLS_PATH_ADDITIONS),)
-TOOLSET_CMD_ENV_SETS+=PATH="${TOOLS_PATH_ADDITIONS}:${PATH}" 
+PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED=\
+$(eval export PATH=${TOOLS_PATH_ADDITIONS}:${shell echo $$PATH})
 endif
-ifeq ($(DETECTED_HOST_OS),MSYS)
-# See https://www.msys2.org/docs/filesystem-paths/
-# TOOLSET_CMD_ENV_SETS+=MSYS2_ARG_CONV_EXCL="*" 
-# TOOLSET_CMD_ENV_SETS+=MSYS2_ENV_CONV_EXCL="*" 
-endif
+
+
+
 
 ifeq ($(DETECTED_HOST_OS),MSYS)
 # See https://www.msys2.org/docs/filesystem-paths/
@@ -174,7 +187,7 @@ DEFAULT_CC_LINE=\
 		-o $2
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 DEFAULT_CC_LINE=\
-	$(TOOLSET_CMD_ENV_SETS)"$(CC)" \
+	"$(CC)" \
 		$(CFLAGS) \
 		-c $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		-Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
@@ -195,7 +208,7 @@ DEFAULT_CXX_LINE=\
 		-o $2
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 DEFAULT_CXX_LINE=\
-	$(TOOLSET_CMD_ENV_SETS)"$(CXX)" \
+	"$(CXX)" \
 		$(CXXFLAGS) \
 		-c $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		-Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
@@ -223,7 +236,7 @@ ifeq (-GL,$(findstring -GL,$(CXXFLAGS)))
 LIBTOOLFLAGS += -LTCG
 endif
 DEFAULT_LIBRARY_GEN_LINE+=\
-	$(TOOLSET_CMD_ENV_SETS)"$(LIBTOOL)" \
+	"$(LIBTOOL)" \
 		-OUT:$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		${LIBTOOLFLAGS} \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2)
@@ -234,7 +247,7 @@ endif
 # This macro takes a single argument - the output filename for the link command
 #
 DEFAULT_LINK_LINE=\
-	$(TOOLSET_CMD_ENV_SETS)"$(Linker)" \
+	"$(Linker)" \
 		$(EXTRA_PREFIX_LINKER_ARGS) \
 		$(LIBS_PATH_DIRECTIVES) \
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
@@ -253,7 +266,7 @@ MIDL_FLAGS+=	-char signed
 #MIDL_FLAGS+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)Library/Sources)
 
 DEFAULT_MIDL_LINE=\
-	$(TOOLSET_CMD_ENV_SETS)"$(MIDL)" \
+	"$(MIDL)" \
 			-iid $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$4)\
 			$(MIDL_FLAGS)\
 			-h $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$3) \
@@ -272,7 +285,7 @@ RC_FLAGS+=	-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)
 RC_FLAGS+=	-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)Library/Sources)"
 
 DEFAULT_RC_LINE=\
-	$(TOOLSET_CMD_ENV_SETS)"$(RC)" \
+	"$(RC)" \
 			$(RC_FLAGS)\
 			-Fo $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
 			$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1)

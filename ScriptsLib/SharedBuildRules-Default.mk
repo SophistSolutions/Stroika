@@ -8,6 +8,14 @@ endif
 .SUFFIXES:	${OBJ_SUFFIX} .cpp .i .h .swsp .a
 
 
+# 
+# Though it might make sense to spread this around to just the makefiles that need it, that would be onerous
+# and involve patching many files, so just apply it here where its likely included by all relevant
+# makefiles (and those not including this includefile can replate/call this directly themselves)
+#
+$(call PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED)
+
+
 $(ObjDir):
 	@mkdir -p $(ObjDir)
 
