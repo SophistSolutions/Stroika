@@ -108,10 +108,10 @@ endif
 
 ### makefile forces /Zi (at least during configure) and that's not compile with /GL (whole program optimization) and so compiler/config process
 ### errors out
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CFLAGS:=$(filter-out /GL, $(CFLAGS))
-CXXFLAGS:=$(filter-out /GL, $(CXXFLAGS))
-endif
+# ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+# CFLAGS:=$(filter-out -GL, $(CFLAGS))
+# CXXFLAGS:=$(filter-out -GL, $(CXXFLAGS))
+# endif
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -134,6 +134,15 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 CFLAGS:=$(call STRIP_INCLUDE_COMPILER_FLAGS,$(CFLAGS))
 CXXFLAGS:=$(call STRIP_INCLUDE_COMPILER_FLAGS,$(CXXFLAGS))
 endif
+
+
+# Avoid having warnings leak from here to linking code when Xerces is used --LGP 2022-01-18
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifneq (findstring VisualStudio.Net,"-GL"),)
+CXXFLAGS+= -wd4702 
+endif
+endif
+
 
 
 all:
