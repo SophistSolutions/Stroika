@@ -266,9 +266,9 @@ CFLAGS:=$(filter-out -flto, $(CFLAGS))
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 
 
-# Avoid having warnings leak from here to linking code when Xerces is used --LGP 2022-01-18
+# Avoid having warnings leak from here to linking code when openssl is used --LGP 2022-01-18
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifneq ($(findstring VisualStudio.Net,"-GL"),)
+ifneq ($(findstring -GL,$(CXXFLAGS)),)
 CXXFLAGS+= -wd4702 -wd4706
 endif
 endif
