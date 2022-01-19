@@ -164,15 +164,15 @@ endif
 
 
 
+#
+# Workaround MSYS compatabilty issues with microsoft visual C++ tools
+#
 ifeq ($(DETECTED_HOST_OS),MSYS)
 # See https://www.msys2.org/docs/filesystem-paths/
 export MSYS2_ARG_CONV_EXCL=*
 export MSYS2_ENV_CONV_EXCL=*
 endif
 
-#  ifneq (${TOOLS_PATH_ADDITIONS_BUGWORKAROUND},)
-# export PATH:=${TOOLS_PATH_ADDITIONS}:${PATH}
-# endif
 
 #
 # This macro takes two arguments:
