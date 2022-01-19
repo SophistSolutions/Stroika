@@ -105,9 +105,12 @@ endif
 # A bit confusing how cmake uses the _DEBUG and _RELEASE flags on windows but not unix
 # No matter - set them all to the same thing
 #
+#	With Xerces, we get link errors if we don't include the _DEBUG and _RELEASE versions
+#		-- LGP 2022-01-19
+#
 CMAKE_ARGS+= -DCMAKE_C_FLAGS='$(CFLAGS)'
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS='$(CXXFLAGS)'
 CMAKE_ARGS+= -DCMAKE_C_FLAGS_DEBUG='$(CFLAGS)'
 CMAKE_ARGS+= -DCMAKE_C_FLAGS_RELEASE='$(CFLAGS)'
-CMAKE_ARGS+= -DCMAKE_CXX_FLAGS='$(CXXFLAGS)'
 CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG='$(CXXFLAGS)'
 CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_RELEASE='$(CXXFLAGS)'
