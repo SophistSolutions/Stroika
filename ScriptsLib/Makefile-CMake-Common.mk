@@ -53,7 +53,6 @@ CMAKE_PER_TARGET_BUILD_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_PER_
 CMAKE_PER_TARGET_BUILD_DIR:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(CMAKE_PER_TARGET_BUILD_DIR))
 
 #### SEE IF OTHER GENERATORS WORK WELL/BETTER??? https://www.mankier.com/7/cmake-generators
-CMAKE_USE_GENERATOR=Unix Makefiles
 ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2022)
 CMAKE_USE_GENERATOR=Visual Studio 17 2022
 else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
@@ -62,6 +61,8 @@ else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2017)
 CMAKE_USE_GENERATOR=Visual Studio 15 2017
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 $(error "unsupported version of visual studio.net")
+else
+CMAKE_USE_GENERATOR=Unix Makefiles
 endif
 
 
