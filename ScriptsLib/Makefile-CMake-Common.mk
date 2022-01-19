@@ -31,6 +31,17 @@ $(call PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED)
 ####
 
 
+#
+# Apparently under docker with MSYS2, we get a tmp and TMP and temp and TEMP environment variables set (at least under some
+# circumstances). This causes a failure/crash inside the MSFT CMake (as of vs2k19 - 2022-01-19). Only seems to be an issue
+# running under docker. Anyhow, this appears a safe workaround.
+#
+ifeq ($(DETECTED_HOST_OS),MSYS)
+undefine temp
+undefine tmp
+endif
+
+
 ifeq (0,$(ENABLE_ASSERTIONS))
 CMAKE_CONFIGURATION:=Release
 else
