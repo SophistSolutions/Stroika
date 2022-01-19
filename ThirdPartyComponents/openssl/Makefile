@@ -270,7 +270,7 @@ CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifneq ($(findstring -GL,$(CXXFLAGS)),)
 CFLAGS+= -wd4702 -wd4706
-CXXFLAGS+= -wd4702 -wd4706
+CXXFLAGS+= -wd4701 -wd4702 -wd4706
 endif
 endif
 
