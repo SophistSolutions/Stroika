@@ -190,6 +190,12 @@ my $STDCXXLIB = undef;
 my $TOOLS_PATH_ADDITIONS = undef;
 
 
+if ("$^O" eq "msys") {
+	$ENV{'MSYS2_ARG_CONV_EXCL'} = '*';
+	$ENV{'MSYS2_ENV_CONV_EXCL'} = '*';
+}
+
+
 
 # More standard to have false, true is the value used in VS2k project files (through 2.1a2)
 # for a while in Stroika based apps /EHa versus /EHsc - https://docs.microsoft.com/en-us/cpp/build/reference/eh-exception-handling-model?view=vs-2019
