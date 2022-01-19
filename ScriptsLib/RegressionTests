@@ -34,13 +34,18 @@ VER=`ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 
 mkdir -p Tests/HistoricalRegressionTestResults
 
+export HOST_OS_DETECTED=`ScriptsLib/DetectedHostOS`
 
-if [ "$(uname -s)" == "Darwin" ] ; then
-	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="MacOS_XCode11"; fi
+if [ "$HOST_OS_DETECTED" == "Darwin" ] ; then
+	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="MacOS_XCode13"; fi
     echo "USING MacOS($USE_TEST_BASENAME)..."
 fi
-if [ `uname -s | cut -b 1-6` == "CYGWIN" ] ; then
-	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Windows_VS2k17"; fi
+if [ "$HOST_OS_DETECTED" == "Cygwin"  ] ; then
+	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Windows_Cygwin_VS2k19"; fi
+    echo "USING Visual Studio ($USE_TEST_BASENAME)..."
+fi
+if [ "$HOST_OS_DETECTED" == "MSYS"  ] ; then
+	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Windows_MSYS_VS2k19"; fi
     echo "USING Visual Studio ($USE_TEST_BASENAME)..."
 fi
 
@@ -52,7 +57,7 @@ else
 	ARM_TEST_MACHINE_AVAIL=0
 fi
 
-if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Linux"; fi
+if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="$HOST_OS_DETECTED"; fi
 TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VER-OUT.txt
 
 
