@@ -269,6 +269,7 @@ CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 # Avoid having warnings leak from here to linking code when openssl is used --LGP 2022-01-18
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifneq ($(findstring -GL,$(CXXFLAGS)),)
+CFLAGS+= -wd4702 -wd4706
 CXXFLAGS+= -wd4702 -wd4706
 endif
 endif
