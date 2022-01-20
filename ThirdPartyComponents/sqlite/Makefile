@@ -41,10 +41,10 @@ AMALGAMATION_WITH_VERSION=sqlite-amalgamation-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(AMALGAMATION_WITH_VERSION).zip
 
 FETCHURLS=
+FETCHURLS+=https://www.sqlite.org/2022/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2021/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2020/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2019/$(AMALGAMATION_WITH_VERSION).zip
-FETCHURLS+=https://www.sqlite.org/2018/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://github.com/azadkuh/sqlite-amalgamation/archive/${MAPPED_VERSION}.zip
 
 
