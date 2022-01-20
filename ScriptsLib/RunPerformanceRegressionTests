@@ -30,7 +30,7 @@ elif [ "$DETECTED_HOST_OS" == "Linux" ] ; then
 	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-10-release-c++17/Tests/$PERF_TEST"; fi
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="linux-g++-7.3-x64"; fi
     CMDRUN_PREFIX="nice -10 taskset -c 0 "
-elif [ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ] ; then
+elif [[ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]] ; then
     # Do something under Windows NT platform
     EXE2=${EXE-"Builds/Release-x86_64/Tests/$PERF_TEST"}
     EXE=${EXE-"Builds/Release-x86/Tests/$PERF_TEST"}
