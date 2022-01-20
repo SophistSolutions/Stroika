@@ -107,14 +107,6 @@ CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 endif
 
 
-### makefile forces /Zi (at least during configure) and that's not compile with /GL (whole program optimization) and so compiler/config process
-### errors out
-# ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-# CFLAGS:=$(filter-out -GL, $(CFLAGS))
-# CXXFLAGS:=$(filter-out -GL, $(CXXFLAGS))
-# endif
-
-
 ifeq (Unix,$(ProjectPlatformSubdir))
 #@todo fixup - bug workaround - configure autodetects -posix and se we have to add it in here. Must find
 # some way we can ADD these params to CFLAGS without REPLACING
