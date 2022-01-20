@@ -343,7 +343,7 @@ jobs:
       - name: Git Checkout
         shell: "bash"
         run: |
-          docker exec buildContainer sh -c "git clone https://github.com/SophistSolutions/Stroika.git && cd Stroika && git checkout ${{ steps.extract_branch.outputs.branch }}"
+          docker exec buildContainer sh -c "git clone https://github.com/SophistSolutions/Stroika.git --branch ${{ steps.extract_branch.outputs.branch }}"
       - name: Configure
         shell: "bash"
         run: |
