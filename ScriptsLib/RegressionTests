@@ -40,7 +40,7 @@ if [ "$DETECTED_HOST_OS" == "Darwin" ] ; then
 	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="MacOS_XCode13"; fi
     echo "USING MacOS($USE_TEST_BASENAME)..."
 fi
-if [ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ] ; then
+if [[ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]] ; then
 	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Windows_${DETECTED_HOST_OS}_VS2k19"; fi
     echo "USING Visual Studio ($USE_TEST_BASENAME)..."
 fi
