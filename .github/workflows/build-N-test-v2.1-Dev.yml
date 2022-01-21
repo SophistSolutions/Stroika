@@ -363,10 +363,18 @@ jobs:
         run: |
           docker exec --workdir c:/Stroika buildContainer sh -c "./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
           docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/${{ matrix.config_name }}.xml
+      - name: Buildxxx1
+        shell: "bash"
+        run: |
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c "pwd && ls -l"
+      - name: Buildxxx2
+        shell: "bash"
+        run: |
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c -l "pwd && ls -l"
       - name: Build
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c -l "make all"
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c "make all"
       - name: Run-Tests
         shell: "bash"
         run: |
