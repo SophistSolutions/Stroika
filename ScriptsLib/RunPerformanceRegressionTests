@@ -34,7 +34,7 @@ elif [[ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]] ; th
     # Do something under Windows NT platform
     EXE2=${EXE-"Builds/Release-x86_64/Tests/$PERF_TEST"}
     EXE=${EXE-"Builds/Release-x86/Tests/$PERF_TEST"}
-	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="Windows-vs2k19"; fi
+	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="Windows-${DETECTED_HOST_OS}-vs2k"; fi
     USE_TEST_BASENAME_APP="x86-"
     USE_TEST_BASENAME_APP2="x86_64-"
     CMDRUN_PREFIX=""
