@@ -18,10 +18,28 @@ Building with Stroika requires
 - Download and run [https://aka.ms/vs/17/release/vs_community.exe](https://aka.ms/vs/17/release/vs_community.exe)
 - Install the C++ related workloads
   - Desktop Development with C++ (suggested/sufficient to get started)
+- On the Individual Components page
+  - select MFC (latest or whatever platform/toolsets you are targetting) if you want to build the LedIt, LedLineIt, and ActiveLedIt samples
 
 ### Cygwin
 
+#### Via Chocolatey
+
 - TBD
+
+#### Via https://cygwin.com/
+
+- Download and install [https://cygwin.com/setup-x86_64.exe](https://cygwin.com/setup-x86_64.exe)
+- Add packages
+  - make
+  - p7zip
+  - git
+  - wget
+  - patch
+  - pkg-config
+  - automake
+  - dos2unix
+  - unzip
 
 ### MSYS
 
