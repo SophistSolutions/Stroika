@@ -43,7 +43,7 @@ $DOCKER exec \
     bash -l -c "export PARALELLMAKEFLAG=-j8; cd c:/Stroika; ./ScriptsLib/RegressionTests"
 
 $DOCKER stop $CONTAINER_NAME
-echo "Done with build, so copying out results to (Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VERSION-OUT.txt Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VERSION.txt)"
+echo "Done with build, so copying out results to (Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VERSION-OUT.txt Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-x86-$VERSION.txt Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-x86_64-$VERSION.txt)"
 $DOCKER cp $CONTAINER_NAME:Stroika/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VERSION-OUT.txt Tests/HistoricalRegressionTestResults/
 $DOCKER cp $CONTAINER_NAME:Stroika/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-x86-$VERSION.txt Tests/HistoricalPerformanceRegressionTestResults/
 $DOCKER cp $CONTAINER_NAME:Stroika/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-x86_64-$VERSION.txt Tests/HistoricalPerformanceRegressionTestResults/
