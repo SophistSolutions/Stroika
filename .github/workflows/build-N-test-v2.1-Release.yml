@@ -304,24 +304,24 @@ jobs:
             config_name: Release
             extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: false
-          - displayTargetName: windows-MSYS-x86-Debug
+          - displayTargetName: windows-msys-x86-Debug
             os: windows
             runs_on: windows-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-MSYS-vs2k19
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
             config_name: Debug
             extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
             includeInDevBranchBuilds: false
-          - displayTargetName: windows-MSYS-x86-Release
+          - displayTargetName: windows-msys-x86-Release
             os: windows
             runs_on: windows-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-MSYS-vs2k19
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
             config_name: Release
             extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: false
-          - displayTargetName: windows-MSYS-x86_64-Release
+          - displayTargetName: windows-msys-x86_64-Release
             os: windows
             runs_on: windows-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-MSYS-vs2k19
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
             config_name: Release
             extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: true
