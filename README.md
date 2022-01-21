@@ -2,7 +2,7 @@
 
 Stroika is a modern, portable, thread-savvy, C++ application framework. It makes writing high performance C++ applications easier by providing safe, flexible, modular building blocks which can be easily combined.
 
-Stroika works ***with*** the standard c++ library, layered on top, and prodivdes simpler to use (higher level) classes, with more safety checking guarantees, and wider domain of applicability (because it doesn't need to wait for a committee to agree on every last detail, and 'good now', trumps 'great maybe someday').
+Stroika works ***with*** the standard C++ library, layered on top, and prodivdes simpler to use (higher level) classes, with more safety checking guarantees, and wider domain of applicability (because it doesn't need to wait for a committee to agree on every last detail, and 'good now', trumps 'great maybe someday').
 
 Stylistically, Stroika differs from boost, in that it embraces object oriented abstractions over templates more, despite their slight performance overheads (see [Stroika-Approach-To-Performance.md](Documentation/Stroika-Approach-To-Performance.md)) because the abstraction of type hierarchies is so much better suited to how people reason.
 
@@ -51,7 +51,7 @@ Stroika's biggest strength is also its biggest weakness:
 
 - Stroika v3 development has started, and requires C++20 or later.
 
-- Stroika v2.1 is stable (in maintainance), and requires C++17 or later. Version 2.1 also conditionally supports many c++20 features (such as three-way-comparison etc, if available).
+- Stroika v2.1 is stable (in maintainance), and requires C++17 or later. Version 2.1 also conditionally supports many C++20 features (such as three-way-comparison etc, if available).
 
 - Stroika v2.0 is very stable, and requires C++14 or later. Stroika v2.0 is used to power a wide variety of open source and commercial applications.
 
