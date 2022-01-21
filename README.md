@@ -1,6 +1,6 @@
 ﻿# Stroika v2.1
 
-Stroika is a modern, portable, thread-savvy C++ application framework. It makes applications easier to write by providing safe, flexible, modular building blocks which can be easily combined because they are designed to fit together.
+Stroika is a modern, portable, thread-savvy, C++ application framework. It makes writing high performance C++ applications easier by providing safe, flexible, modular building blocks which can be easily combined.
 
 It is comprised of 2 layers, the [Foundation](Library/Sources/Stroika/Foundation/ReadMe.md), which provides directly usable classes, and a series of domain specific [Framework](Library/Sources/Stroika/Frameworks/ReadMe.md)s which provide a rich collection of code in different domains.
 
@@ -9,7 +9,7 @@ It is comprised of 2 layers, the [Foundation](Library/Sources/Stroika/Foundation
 The Frameworks depend on the Foundation; Foundation modules frequently depend on each other; but Foundation layer code contains no dependencies outside of the Foundation (except on std-c++ layer libraries, and various ThirdPartyComponent libraries, like openssl).
 
 - Nearly all public interfaces and methods are well documented; implementations are clear and well commented.
-- An elaborate system of built-in assertions (including thread-safety assertions) helps document and enforce usage patterns (without performance cost in production builds).
+- Thoroughly integrated assertions (including thread-safety assertions) help document and enforce usage patterns (without performance cost in production builds).
 - Each release is tested with Valgrind, Google Sanitizers, Github CodeQL, and a variety of platforms and compilers, as well as a large body of regression tests (including most documentation examples) to help assure library correctness.
 - [Sample applications](Samples/ReadMe.md) help show common use cases (like building a web server into your app to deliver web-service content and APIs).
 - [Quick start using pre-built Docker containers](/Documentation/Building%20Stroika.md#build-with-docker) (for Windows, and Linux).
