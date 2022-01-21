@@ -302,7 +302,7 @@ jobs:
             runs_on: windows-latest
             container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
             config_name: Release
-            extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
+            extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: false
           - displayTargetName: windows-msys-x86-Debug
             os: windows
@@ -323,7 +323,7 @@ jobs:
             runs_on: windows-latest
             container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
             config_name: Release
-            extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
+            extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: true
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
