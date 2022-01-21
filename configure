@@ -1774,7 +1774,7 @@ sub     CHECK_FEATURE_OPTION
 sub	CHECK_OPTIONS_
 {
 	if ($PROJECTPLATFORMSUBDIR eq "") {
-		die ("Cannot identify ProjectPlatformSubdir");
+		die ("Cannot identify ProjectPlatformSubdir! Either explicitly supply the --platform argument (configure --help); or make sure you have Visual Studio.net installed");
 	}
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2012") {
 		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2012");
@@ -1785,7 +1785,7 @@ sub	CHECK_OPTIONS_
 	my @validProjectPlatfromSubDirs = ("Unix", "VisualStudio.Net-2017", "VisualStudio.Net-2019", "VisualStudio.Net-2022");
 	my %params = map { $_ => 1 } @validProjectPlatfromSubDirs;
 	if (not exists ($params{$PROJECTPLATFORMSUBDIR})) {
-		die ("Unrecognized --platfrom argument: valid ones include: " . join(",", @validProjectPlatfromSubDirs));
+		die ("Unrecognized --platform argument: valid ones include: " . join(",", @validProjectPlatfromSubDirs));
 	}
 	if ($TARGET_PLATFORMS eq "") {
 		die ("Cannot identify TARGET_PLATFORMS");
