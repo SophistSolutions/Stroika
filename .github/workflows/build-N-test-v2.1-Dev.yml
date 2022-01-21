@@ -283,34 +283,48 @@ jobs:
       matrix:
         # Add to extra_config_args for build speed: --Xerces no --OpenSSL no --lzma no --boost no
         include:
-          - displayTargetName: windows-x86-Debug
+          - displayTargetName: windows-cygwin-x86-Debug
             os: windows
             runs_on: windows-latest
             container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
             config_name: Debug
             extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
             includeInDevBranchBuilds: true
-          # - displayTargetName: windows-x86-Release
+          # - displayTargetName: windows-cygwin-x86-Release
           #   os: windows
           #   runs_on: windows-latest
           #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
           #   config_name: Release
           #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
-          # - displayTargetName: windows-x86_64-Debug
+          # - displayTargetName: windows-cygwin-x86_64-Release
           #   os: windows
           #   runs_on: windows-latest
           #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+          #   config_name: Release
+          #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
+          #   includeInDevBranchBuilds: false
+          # - displayTargetName: windows-MSYS-x86-Debug
+          #   os: windows
+          #   runs_on: windows-latest
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-MSYS-vs2k19
           #   config_name: Debug
-          #   extra_config_args: --arch x86_64 --apply-default-debug-flags --trace2file enable
+          #   extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
           #   includeInDevBranchBuilds: false
-          # - displayTargetName: windows-x86_64-Release
+          # - displayTargetName: windows-MSYS-x86-Release
           #   os: windows
           #   runs_on: windows-latest
-          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-MSYS-vs2k19
           #   config_name: Release
           #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
+          - displayTargetName: windows-MSYS-x86_64-Release
+            os: windows
+            runs_on: windows-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-MSYS-vs2k19
+            config_name: Release
+            extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
+            includeInDevBranchBuilds: true
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
