@@ -11,8 +11,9 @@ ifneq ($(CONFIGURATION),)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 # because we list multiple targets in PRODUCED_OUTPUT_ARTIFACTS, all of which are built with the same script
 .NOTPARALLEL:
