@@ -326,8 +326,8 @@ jobs:
             extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: true
     env:
-      # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
-      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+      # vm has 2 virtual CPUs, but 8GB ram, so jobs=2 (empirical), and QUICK_BUILD avoids some internal testing
+      MAKEFLAGS: "--jobs=2 QUICK_BUILD=1"
       ARTIFACTS_DIR: "c:/Artifacts/"
     steps:
       - uses: actions/checkout@v2
