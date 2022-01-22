@@ -136,7 +136,7 @@ jobs:
     ###
     #if: github.ref == 'refs/heads/v2.1-Release' || matrix.includeInDevBranchBuilds
     env:
-      # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
+      # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
     container: ${{ matrix.container_image }}
     steps:
@@ -213,7 +213,7 @@ jobs:
             extra_config_args: --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: false
     env:
-      # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
+      # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
     steps:
       - uses: actions/checkout@v2
@@ -326,8 +326,8 @@ jobs:
             extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: true
     env:
-      # vm has 2 virtual CPUs, but 8GB ram, so jobs=2 (empirical), and QUICK_BUILD avoids some internal testing
-      MAKEFLAGS: "--jobs=2 QUICK_BUILD=1"
+      # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
+      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
       ARTIFACTS_DIR: "c:/Artifacts/"
     steps:
       - uses: actions/checkout@v2
@@ -366,11 +366,11 @@ jobs:
       - name: Build
         shell: "bash"
         run: |
-          docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c -l "cd c:/Stroika && make all"
+          docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c "cd c:/Stroika && make all"
       - name: Run-Tests
         shell: "bash"
         run: |
-          docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c -l "cd c:/Stroika && make run-tests"
+          docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c "cd c:/Stroika && make run-tests"
       - name: Build System Info
         shell: "bash"
         run: |
@@ -380,7 +380,7 @@ jobs:
         shell: "bash"
         # due to flaws in docker (windows must stop) - and cp no wildcards
         run: |
-          docker exec --workdir c:/Stroika buildContainer bash -c 'mkdir TRACE_LOGS && cp $TEMP/Trace*.txt TRACE_LOGS/'
+          docker exec buildContainer bash -c 'cd c:/Stroika && mkdir TRACE_LOGS && cp $TEMP/Trace*.txt TRACE_LOGS/'
           docker stop buildContainer
           docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
           docker cp buildContainer:Stroika/TRACE_LOGS $ARTIFACTS_DIR 2> /dev/null
@@ -455,5 +455,3 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
-
-

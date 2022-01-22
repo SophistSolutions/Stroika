@@ -34,13 +34,13 @@ jobs:
       matrix:
         # Add to extra_config_args for build speed: --Xerces no --OpenSSL no --lzma no --boost no
         include:
-          - displayTargetName: windows-cygwin-x86-Debug
-            os: windows
-            runs_on: windows-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
-            config_name: Debug
-            extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
-            includeInDevBranchBuilds: true
+          # - displayTargetName: windows-cygwin-x86-Debug
+          #   os: windows
+          #   runs_on: windows-latest
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+          #   config_name: Debug
+          #   extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
+          #   includeInDevBranchBuilds: true
           # - displayTargetName: windows-cygwin-x86-Release
           #   os: windows
           #   runs_on: windows-latest
@@ -74,7 +74,7 @@ jobs:
             runs_on: windows-latest
             container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
             config_name: Release
-            extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
+            extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable --boost no --Xerces no
             includeInDevBranchBuilds: true
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=2 (empirical), and QUICK_BUILD avoids some internal testing
@@ -117,11 +117,11 @@ jobs:
       - name: Build
         shell: "bash"
         run: |
-          docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c -l "cd c:/Stroika && make all"
+          docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c "cd c:/Stroika && make all"
       - name: Run-Tests
         shell: "bash"
         run: |
-          docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c -l "cd c:/Stroika && make run-tests"
+          docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c "cd c:/Stroika && make run-tests"
       - name: Build System Info
         shell: "bash"
         run: |
