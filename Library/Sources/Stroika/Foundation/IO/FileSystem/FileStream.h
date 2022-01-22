@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_FileSystem_FileStream_h_
 #define _Stroika_Foundation_IO_FileSystem_FileStream_h_ 1
@@ -12,8 +12,6 @@
  *  \file
  *
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
- * TODO:
  */
 
 namespace Stroika::Foundation::IO::FileSystem {

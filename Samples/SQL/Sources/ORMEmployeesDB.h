@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Samples_SQL_ORMEmployeesDB_h_
 #define _Samples_SQL_ORMEmployeesDB_h_ 1
