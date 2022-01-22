@@ -48,36 +48,36 @@ jobs:
           #   extra_config_args: --apply-default-debug-flags --trace2file enable
 
           ## centos 8
-          - displayTargetName: centos-8
-            os: unix
-            compiler: g++
-            runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-centos-8-small
-            cpp_version: c++17
-            config_name: Release
-            extra_config_args: --apply-default-release-flags --trace2file enable
-            includeInDevBranchBuilds: true
+          # - displayTargetName: centos-8
+          #   os: unix
+          #   compiler: g++
+          #   runs_on: ubuntu-latest
+          #   container_image: sophistsolutionsinc/stroika-buildvm-centos-8-small
+          #   cpp_version: c++17
+          #   config_name: Release
+          #   extra_config_args: --apply-default-release-flags --trace2file enable
+          #   includeInDevBranchBuilds: true
 
           ## ubuntu 18.04
-          - displayTargetName: ubuntu-18.04-g++-8 (Debug)
-            os: unix
-            compiler: g++-8
-            runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
-            cpp_version: c++17
-            config_name: Debug
-            extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
-            includeInDevBranchBuilds: true
+          # - displayTargetName: ubuntu-18.04-g++-8 (Debug)
+          #   os: unix
+          #   compiler: g++-8
+          #   runs_on: ubuntu-latest
+          #   container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
+          #   cpp_version: c++17
+          #   config_name: Debug
+          #   extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
+          #   includeInDevBranchBuilds: true
 
-          - displayTargetName: ubuntu-18.04-cross-compile-raspberrypi (Debug)
-            os: unix
-            compiler: g++-8
-            runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
-            cpp_version: c++17
-            config_name: Debug
-            extra_config_args: --apply-default-release-flags --trace2file enable --compiler-driver arm-linux-gnueabihf-g++-8 --cross-compiling true
-            includeInDevBranchBuilds: true
+          # - displayTargetName: ubuntu-18.04-cross-compile-raspberrypi (Debug)
+          #   os: unix
+          #   compiler: g++-8
+          #   runs_on: ubuntu-latest
+          #   container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
+          #   cpp_version: c++17
+          #   config_name: Debug
+          #   extra_config_args: --apply-default-release-flags --trace2file enable --compiler-driver arm-linux-gnueabihf-g++-8 --cross-compiling true
+          #   includeInDevBranchBuilds: true
 
           # ubuntu 20.04
           # - displayTargetName: ubuntu-20.04-g++-9 (Debug)
@@ -100,15 +100,15 @@ jobs:
           #   extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
           #   includeInDevBranchBuilds: false
 
-          - displayTargetName: ubuntu-20.04-g++-10
-            os: unix
-            compiler: g++-10
-            runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
-            cpp_version: c++17
-            config_name: Release
-            extra_config_args: --apply-default-release-flags --trace2file enable
-            includeInDevBranchBuilds: true
+          # - displayTargetName: ubuntu-20.04-g++-10
+          #   os: unix
+          #   compiler: g++-10
+          #   runs_on: ubuntu-latest
+          #   container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+          #   cpp_version: c++17
+          #   config_name: Release
+          #   extra_config_args: --apply-default-release-flags --trace2file enable
+          #   includeInDevBranchBuilds: true
 
           # - displayTargetName: ubuntu-20.04-g++-10-c++2a
           #   os: unix
@@ -200,12 +200,12 @@ jobs:
       matrix:
         # Add to extra_config_args for build speed: --Xerces no --OpenSSL no --lzma no --boost no
         include:
-          - displayTargetName: MacOS-Debug
-            os: macos-latest
-            runs_on: macos-latest
-            config_name: Debug
-            extra_config_args: --apply-default-debug-flags --trace2file enable
-            includeInDevBranchBuilds: true
+          # - displayTargetName: MacOS-Debug
+          #   os: macos-latest
+          #   runs_on: macos-latest
+          #   config_name: Debug
+          #   extra_config_args: --apply-default-debug-flags --trace2file enable
+          #   includeInDevBranchBuilds: true
           # - displayTargetName: MacOS
           #   os: macos-latest
           #   runs_on: macos-latest
@@ -311,20 +311,20 @@ jobs:
             config_name: Debug
             extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
             includeInDevBranchBuilds: false
-          - displayTargetName: windows-msys-x86-Release
-            os: windows
-            runs_on: windows-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
-            config_name: Release
-            extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
-            includeInDevBranchBuilds: false
-          - displayTargetName: windows-msys-x86_64-Release
-            os: windows
-            runs_on: windows-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
-            config_name: Release
-            extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
-            includeInDevBranchBuilds: true
+          # - displayTargetName: windows-msys-x86-Release
+          #   os: windows
+          #   runs_on: windows-latest
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
+          #   config_name: Release
+          #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
+          #   includeInDevBranchBuilds: false
+          # - displayTargetName: windows-msys-x86_64-Release
+          #   os: windows
+          #   runs_on: windows-latest
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
+          #   config_name: Release
+          #   extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
+          #   includeInDevBranchBuilds: true
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=2 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=2 QUICK_BUILD=1"
