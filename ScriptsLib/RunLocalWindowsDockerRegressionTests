@@ -15,7 +15,6 @@ CONTAINER_NAME="${CONTAINER_NAME:-DockerWindowsStroikaRegressionTester1}"
 USE_TEST_BASENAME="${USE_TEST_BASENAME:-Windows_VS2k22-In-Docker}"
 BRANCH="${BRANCH:-v2.1-Dev}"
 VERSION=`./ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
-# not sure why cygwin path setup with broken docker, but this works around it, for now... LGP 2020-02-25
 DOCKER="${DOCKER:-docker.exe}"
 
 [[ "$($DOCKER ps -a | grep $CONTAINER_NAME)" ]] && $DOCKER rm -f $CONTAINER_NAME
