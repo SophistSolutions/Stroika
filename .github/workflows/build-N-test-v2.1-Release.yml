@@ -366,11 +366,11 @@ jobs:
       - name: Build
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make all
+          docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c -l "cd c:/Stroika && make all"
       - name: Run-Tests
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make run-tests
+          docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c -l "cd c:/Stroika && make run-tests"
       - name: Build System Info
         shell: "bash"
         run: |
@@ -426,10 +426,11 @@ jobs:
     - name: Install tools required to build Stroika
       run: |
         sudo apt-get install -y libtool-bin pkg-config cmake automake autoconf libtool-bin libasan5 libubsan1
+        sudo apt-get install -y g++-10
 
     - name: Configure
       run: |
-        ./configure Release --cppstd-version c++17 --apply-default-release-flags
+        ./configure Release --compiler-driver g++-10 --cppstd-version c++20 --apply-default-release-flags
         cat ConfigurationFiles/Release.xml
 
     # Break out third-party-components to do clean so we dont run out of disk space, and break out TPC AND library
