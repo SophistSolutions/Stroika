@@ -125,6 +125,10 @@ jobs:
       - name: Build
         shell: "bash"
         run: |
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c -l "cd c:/Stroika && make all || true"
+      - name: Build2
+        shell: "bash"
+        run: |
           docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c "make all || true"
       - name: Build System Info
         shell: "bash"
