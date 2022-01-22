@@ -28,7 +28,7 @@ Though this is anecdotal, it may still help. I've been hired dozens of times to 
 
 - 20-30% of the time, learning and understanding the code
 - 1% identifying the bottlenecks
-- 60-70% refactoring the code so that the bottlenecks take place is modular, replacable chunks
+- 60-70% refactoring the code so that the bottlenecks take place in modular, replacable chunks
 - 1% - actually rewriting those peices to be optimal
 
-If you can make the 'learning and undestanding the code' bit faster, and the 'refactoring the code so that the bottlenecks take place is modular, replacable chunks' part pre-done, optimizing bottlenecks becomes cheap and easy.
+If you can make the 'learning and undestanding the code' bit faster, and the 'refactoring the code so that the bottlenecks take place in modular, replacable chunks' part pre-done, optimizing bottlenecks becomes cheap and easy.
