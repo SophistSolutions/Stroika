@@ -2,11 +2,14 @@
 
 # EXAMPLE RUN:
 #       ./ScriptsLib/RunLocalWindowsDockerRegressionTests
-#       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 USE_TEST_BASENAME=Windows_CYGWIN_VS2k19-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
-#       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 USE_TEST_BASENAME=Windows_CYGWIN_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
-#       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 USE_TEST_BASENAME=Windows_MSYS_VS2k19-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
-#       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 USE_TEST_BASENAME=Windows_MSYS_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
-#       
+#       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 USE_TEST_BASENAME=Windows_cygwin_vs2k19-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
+#       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 USE_TEST_BASENAME=Windows_cygwin_vsk22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
+#       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 USE_TEST_BASENAME=Windows_MSYS_vs2k19-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
+#       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 USE_TEST_BASENAME=Windows_MSYS_vsk22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
+#
+#       Images=( cygwin-vs2k19 cygwin-vs2k22 msys-vs2k19 msys-vs2k22 )
+#       for var in "${Images[@]}" ; do CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${var} USE_TEST_BASENAME=Windows_${var}-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests ; done
+#
 CONTAINER_IMAGE="${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22}"
 CONTAINER_NAME="${CONTAINER_NAME:-DockerWindowsStroikaRegressionTester1}"
 USE_TEST_BASENAME="${USE_TEST_BASENAME:-Windows_VS2k22-In-Docker}"
@@ -21,7 +24,7 @@ DOCKER="${DOCKER:-docker.exe}"
 
 # FYI possible error: https://stackoverflow.com/questions/67162945/docker-for-windows-the-requested-resource-is-in-use-error-when-mem-limit-is-set
 
-echo "Running docker build (usually takes about 3 hrs)"
+echo "Running docker build (${CONTAINER_IMAGE} for ${USE_TEST_BASENAME})(usually takes about 3 hrs)"
 $DOCKER run \
     --detach \
     --interactive \
