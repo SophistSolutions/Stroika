@@ -292,6 +292,12 @@ export CFLAGS
 export CXXFLAGS
 export LDFLAGS
 
+
+ifeq ($(DETECTED_HOST_OS),MSYS)
+.SHELL=bash
+.SHELLFLAGS= -c -l
+endif
+
 doBuilds_:
 	@
 	@#Run openssl configure scripts
