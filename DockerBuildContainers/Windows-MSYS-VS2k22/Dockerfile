@@ -83,7 +83,7 @@ RUN  `
 
 
 COPY Windows-MSYS-VS2k22/Getting-Started-With-Stroika.md c:/msys64
-COPY Windows-MSYS-VS2k22/.bash_profile Windows-MSYS-VS2k22/.bashrc c:/msys64/
+COPY Windows-MSYS-VS2k22/.bash_profile Windows-MSYS-VS2k22/.profile c:/msys64/
 
 
 # # Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, 
