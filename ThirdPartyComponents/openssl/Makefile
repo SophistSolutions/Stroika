@@ -245,6 +245,14 @@ endif
 endif
 endif
 
+
+#
+# Just for test apps that get built. DONT include LIB_DEPENDENCIES because that includes other third party components
+# Unsure about most of this... --LGP 2022-01-22
+#LDFLAGS:=$(EXTRA_PREFIX_LINKER_ARGS) $(LIBS_PATH_DIRECTIVES) $(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)
+LDFLAGS:=$(EXTRA_PREFIX_LINKER_ARGS) $(LIBS_PATH_DIRECTIVES) $(EXTRA_SUFFIX_LINKER_ARGS)
+
+
 #
 # openssl with sanitizers doesn't work (causes issues with building libcurl)
 # see ... IntermediateFiles\Debug\ThirdPartyComponents\curl\config.log for failure this causes (could fix by having this patch pkgconfig file)
@@ -252,7 +260,6 @@ endif
 #
 CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
-
 
 ###
 ### got error building openssl wihtout this filter-out with clang-7 release builds - not sure it was the same message though
@@ -283,6 +290,7 @@ endif
 #
 export CFLAGS
 export CXXFLAGS
+export LDFLAGS
 
 doBuilds_:
 	@
