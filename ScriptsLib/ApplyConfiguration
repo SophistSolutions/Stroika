@@ -302,7 +302,7 @@ sub WriteStroikaConfigMakeHeader
 			if (length ($tmp) > 0 && substr ($tmp, -1) eq "\\") {
 				$tmp .= "\"";
 			}
-			print (OUT "/LIBPATH:\"$tmp\" ");
+			print (OUT "-LIBPATH:\"$tmp\" ");
 		}
 		else {
 			print (OUT "-L$l ");
@@ -414,7 +414,7 @@ sub WriteStroikaConfigMakeHeader
 		{
 			# Not a great way to test, but hopefully adequate for now
 			# esp since not critical always right -- LGP 2019-09-17
-			if (index($CXXFLAGS, "/Zi") != -1 || index($CXXFLAGS, "/Zl") != -1) {
+			if (index($CXXFLAGS, "-Zi") != -1 || index($CXXFLAGS, "-Zl") != -1) {
 				print (OUT "WIN_USE_PROGRAM_DATABASE=1\n");
 			}
 		}
@@ -513,7 +513,7 @@ sub WriteVS2kIntellisenseConfigFile
 	local @words = split / /, $CPPFLAGS;
 	local $defs2Print = "";
 	foreach my $element (@words) {
-		if (index ($element, "/D") == 0) {
+		if (index ($element, "-D") == 0) {
 			if ($defs2Print ne "") {
 				$defs2Print .= ';'
 			}
