@@ -74,7 +74,7 @@ jobs:
             runs_on: windows-latest
             container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
             config_name: Release
-            extra_config_args: --arch x86_64 --apply-default-debug-flags --trace2file enable --boost no --Xerces no
+            extra_config_args: --arch x86_64 --apply-default-debug-flags --trace2file enable
             includeInDevBranchBuilds: true
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=2 (empirical), and QUICK_BUILD avoids some internal testing
