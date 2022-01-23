@@ -430,7 +430,7 @@ jobs:
 
     - name: Configure
       run: |
-        ./configure Release --compiler-driver g++-10 --cppstd-version c++20 --apply-default-release-flags
+        ./configure Release --compiler-driver g++-10 --cppstd-version c++20 --apply-default-release-flags --lto disable
         cat ConfigurationFiles/Release.xml
 
     # Break out third-party-components to do clean so we dont run out of disk space, and break out TPC AND library
