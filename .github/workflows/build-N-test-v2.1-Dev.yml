@@ -119,7 +119,7 @@ jobs:
         run: |
           # docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c "cd c:/Stroika && make third-party-components || true"
           #docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c -l "cd c:/Stroika && make all"
-          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make all
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer bash -c "make all"
       - name: Run-Tests
         shell: "bash"
         run: |
