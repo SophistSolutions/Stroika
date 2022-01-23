@@ -108,21 +108,21 @@ jobs:
       - name: Git Checkout
         shell: "bash"
         run: |
-          docker exec buildContainer sh -c "git clone https://github.com/SophistSolutions/Stroika.git --branch ${{ steps.extract_branch.outputs.branch }}"
+          docker exec buildContainer bash -c "git clone https://github.com/SophistSolutions/Stroika.git --branch ${{ steps.extract_branch.outputs.branch }}"
       - name: Configure
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika buildContainer sh -c "./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
+          docker exec --workdir c:/Stroika buildContainer bash -c "./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
           docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/${{ matrix.config_name }}.xml
       - name: Build
         shell: "bash"
         run: |
-          docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c -l "cd c:/Stroika && make third-party-components || true"
-          docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c "cd c:/Stroika && make all || true"
+          docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer bash -c "cd c:/Stroika && make third-party-components || true"
+          docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer bash -c -l "cd c:/Stroika && make all || true"
       - name: Run-Tests
         shell: "bash"
         run: |
-          docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer sh -c "cd c:/Stroika && make run-tests || true"
+          docker exec --env MAKEFLAGS="$MAKEFLAGS" buildContainer bash -c "cd c:/Stroika && make run-tests || true"
       - name: Build System Info
         shell: "bash"
         run: |
