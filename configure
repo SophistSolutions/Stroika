@@ -355,7 +355,7 @@ sub     IsMSVCCompiler_
 	my $x = shift(@_);
 	return ($x =~ /.*cl.exe.*/);
    #bad way but best I know for now
-	# if ("$^O" eq "cygwin") {
+	# if ("$^O" eq "cygwin" or "$^O" eq "msys") {
 	# 	return true;
 	# }
 	# return false
@@ -594,51 +594,45 @@ sub	SetInitialDefaults_
 		elsif ("$^O" eq "darwin") {
 			$TARGET_PLATFORMS = 'MacOS POSIX';
 		}
-		elsif ("$^O" eq "cygwin") {
+		elsif ("$^O" eq "cygwin" or "$^O" eq "msys") {
 			$TARGET_PLATFORMS = 'Windows';
 		}
 	}
 	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 		$PROJECTPLATFORMSUBDIR = 'Unix';
 	}
-	if ("$^O" eq "cygwin") {
-
-		# try vs 2k22
+	if ("$^O" eq "cygwin" or "$^O" eq "msys") {
+		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+		my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
 		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
-			system ('ls -l "/cygdrive/c/Program Files/Microsoft Visual Studio/"2022/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2022/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
 			}
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2022/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2022/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
 			}
 		}
 		# try vs 2k19
 		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2019/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2019/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
 			}
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2019/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2019/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
 			}
 		}
 		# try vs 2k17
 		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2017/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
 			}
-			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >/dev/null 2> /dev/null');
-			if ($? == 0) {
+			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2017/*/VC'");
+			if (scalar(@files) != 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
 			}
 		}
@@ -647,7 +641,7 @@ sub	SetInitialDefaults_
 	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 		$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
 	}
-	if ("$^O" eq "cygwin") {
+	if ("$^O" eq "cygwin" or "$^O" eq "msys") {
 		$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
 	}
 	if ("$^O" eq "darwin") {
@@ -737,10 +731,15 @@ sub	SetDefaultForCompilerDriver_
 	no warnings;	#@todo fix - not sure why we get warning on use of $CPPSTD_VERSION_FLAG
 	if ($CPPSTD_VERSION_FLAG eq '') {
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
-			$CPPSTD_VERSION_FLAG="--std=c++17"
+			if (GetGCCVersion_ ($COMPILER_DRIVER) < 10) {
+				$CPPSTD_VERSION_FLAG="--std=c++2a"
+			}
+			else {
+				$CPPSTD_VERSION_FLAG="--std=c++20"
+			}
 		}
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
-			$CPPSTD_VERSION_FLAG="--std=c++17"
+			$CPPSTD_VERSION_FLAG="--std=c++20"
 		}
 		elsif ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 			$CPPSTD_VERSION_FLAG="/std:c++latest"
@@ -936,10 +935,10 @@ sub	SetDefaultForCompilerDriver_
 			$AR = ReplaceLast_ ($ccLessArgs, 'clang', 'llvm-ar');
 		}
 	}
-	if (!(defined $AS) and (!("$^O" eq "cygwin"))) {
+	if (!(defined $AS) and (!("$^O" eq "cygwin" or "$^O" eq "msys"))) {
 		$AS = "as";
 	}
-	if (!(defined $AR) and (!("$^O" eq "cygwin"))) {
+	if (!(defined $AR) and (!("$^O" eq "cygwin" or "$^O" eq "msys"))) {
 		$AR = "ar";
 	}
 	if (!(defined $RANLIB)) {
@@ -953,7 +952,7 @@ sub	SetDefaultForCompilerDriver_
 			$ccLessArgs  =~ s/\ .*//;
 			$RANLIB = ReplaceLast_ ($ccLessArgs, 'clang', 'llvm-ranlib');
 		}
-		elsif (!("$^O" eq "cygwin")) {
+		elsif (!("$^O" eq "cygwin" or "$^O" eq "msys")) {
 			$RANLIB = "ranlib";
 		}
 	}
@@ -992,7 +991,7 @@ sub	SetDefaultForCompilerDriver_
 	if (defined ($qCompiler_ValgrindDirectSignalHandler_Buggy) and $qCompiler_ValgrindDirectSignalHandler_Buggy) {
 		push (@useExtraCDefines, '#define qCompiler_ValgrindDirectSignalHandler_Buggy 1');
 	}
-	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin"))) {
+	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin" or "$^O" eq "msys"))) {
 		$FEATUREFLAG_librt = $LIBFEATUREFLAG_UseSystem;
 	}
 	if (!(defined $FEATUREFLAG_librt)) {
@@ -1078,8 +1077,10 @@ sub	SetDefaultForPlatform_
 	}
 	#autodetect ATLMFC (Express verison missing it)
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
-		system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2017/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
-		if ($? == 0) {
+		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+		my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
+		my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2017/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h'");
+		if (scalar(@files) != 0) {
 			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
 		}
 		else  {
@@ -1087,8 +1088,10 @@ sub	SetDefaultForPlatform_
 		}
 	}
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2019") {
-		system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2019/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
-		if ($? == 0) {
+		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+		my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
+		my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2019/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h'");
+		if (scalar(@files) != 0) {
 			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
 		}
 		else  {
@@ -1097,8 +1100,10 @@ sub	SetDefaultForPlatform_
 	}
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2022") {
 		# in VS2k22, separate checkboxes for ATL and MFC and we need MFC AND ATL
-		system ('ls -l /cygdrive/c/"Program Files/Microsoft Visual Studio"/2022/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
-		if ($? == 0) {
+		my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+		my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
+		my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2022/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h'");
+		if (scalar(@files) != 0) {
 			$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
 		}
 		else  {
@@ -2163,7 +2168,7 @@ sub PostProcessOptions_ ()
 
 	
 	if (! defined $FEATUREFLAG_ActivePerl) {
-		if ($FEATUREFLAG_OpenSSL eq "use" && ("$^O" eq "cygwin")) {
+		if ($FEATUREFLAG_OpenSSL eq "use" && ("$^O" eq "cygwin" or "$^O" eq "msys")) {
 			$FEATUREFLAG_ActivePerl = "use";
 		}
 		else {
@@ -2171,7 +2176,7 @@ sub PostProcessOptions_ ()
 		}
 	}
 	if (! defined $FEATUREFLAG_WIX) {
-		if ("$^O" eq "cygwin") {
+		if ("$^O" eq "cygwin" or "$^O" eq "msys") {
 			$FEATUREFLAG_WIX = "use";
 		}
 		else {
@@ -2602,33 +2607,23 @@ if ($onlyGenerateIfCompilerExists) {
 		$generate = false;
 		$generateBecause = "compiler $COMPILER_DRIVER_CPlusPlus not present";
 	}
+	if ($generate && IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		if ($itsVersion < 10.0) {
+			$generate = false;
+			$generateBecause = "GCC (" . $COMPILER_DRIVER_CPlusPlus . ") versions < 10 (v=" . $itsVersion . ") dont adequately support spaceship operator";
+		}
+	}
+	if ($generate && IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		if ($itsVersion < 10.0) {
+			$generate = false;
+			$generateBecause = "Clang++ (" . $COMPILER_DRIVER_CPlusPlus . ") versions < 10 (v=" . $itsVersion . ") dont adequately support spaceship operator";
+		}
+	}
 	# if flag to use libc++ - check if right version is available (but not on XCode)
-	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && ($STDCXXLIB eq 'libc++') && index ($TARGET_PLATFORMS, "MacOS") == -1) {
-		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '7.0') {
-			if (! -e ('/usr/lib/llvm-6/include/c++/v1/cstddef')) {
-				$generate = false;
-				$generateBecause = "/usr/lib/llvm-6/include/c++/v1/cstddef not present";
-			}
-		}
-		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '8.0') {
-			if (! -e ('/usr/lib/llvm-7/include/c++/v1/cstddef')) {
-				$generate = false;
-				$generateBecause = "/usr/lib/llvm-7/include/c++/v1/cstddef not present";
-			}
-		}
-		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '9.0') {
-			if (! -e ('/usr/lib/llvm-8/include/c++/v1/cstddef')) {
-				$generate = false;
-				$generateBecause = "/usr/lib/llvm-8/include/c++/v1/cstddef not present";
-			}
-		}
-		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '10.0') {
-			if (! -e ('/usr/lib/llvm-9/include/c++/v1/cstddef')) {
-				$generate = false;
-				$generateBecause = "/usr/lib/llvm-9/include/c++/v1/cstddef not present";
-			}
-		}
-		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '11.0') {
+	if ($generate && IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && ($STDCXXLIB eq 'libc++') && index ($TARGET_PLATFORMS, "MacOS") == -1) {
+		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '11.0') {
 			if (! -e ('/usr/lib/llvm-10/include/c++/v1/cstddef')) {
 				$generate = false;
 				$generateBecause = "/usr/lib/llvm-10/include/c++/v1/cstddef not present";
@@ -2657,13 +2652,6 @@ if ($onlyGenerateIfCompilerExists) {
 				$generate = false;
 				$generateBecause = "/usr/lib/llvm-14/include/c++/v1/cstddef not present";
 			}
-		}
-	}
-	if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
-		if ($itsVersion < 8.0) {
-			$generate = false;
-			$generateBecause = "GCC (" . $COMPILER_DRIVER_CPlusPlus . ") versions < 8 (v=" . $itsVersion . ") are missing <filesystem> code and wont work with this version of Stroika";
 		}
 	}
 }

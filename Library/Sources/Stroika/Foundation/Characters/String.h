@@ -6,9 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
 #include <locale>
 #include <string>
 #include <string_view>
@@ -1200,7 +1198,6 @@ namespace Stroika::Foundation::Characters {
     public:
         struct ThreeWayComparer;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -1216,7 +1213,6 @@ namespace Stroika::Foundation::Characters {
         nonvirtual bool operator== (const wchar_t* rhs) const;
         nonvirtual bool operator== (const wstring& rhs) const;
         nonvirtual bool operator== (const wstring_view& rhs) const;
-#endif
 
     public:
         /**
@@ -1576,27 +1572,6 @@ namespace Stroika::Foundation::Characters {
      *        so it will work in some overload contexts where sv would fail.
      */
     String operator"" _k (const wchar_t* s, size_t len);
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const String& lhs, const String& rhs);
-    bool operator< (const String& lhs, const wchar_t* rhs);
-    bool operator< (const wchar_t* lhs, const String& rhs);
-    bool operator<= (const String& lhs, const String& rhs);
-    bool operator<= (const String& lhs, const wchar_t* rhs);
-    bool operator<= (const wchar_t* lhs, const String& rhs);
-    bool operator== (const String& lhs, const String& rhs);
-    bool operator== (const String& lhs, const wchar_t* rhs);
-    bool operator== (const wchar_t* lhs, const String& rhs);
-    bool operator!= (const String& lhs, const String& rhs);
-    bool operator!= (const String& lhs, const wchar_t* rhs);
-    bool operator!= (const wchar_t* lhs, const String& rhs);
-    bool operator>= (const String& lhs, const String& rhs);
-    bool operator>= (const String& lhs, const wchar_t* rhs);
-    bool operator>= (const wchar_t* lhs, const String& rhs);
-    bool operator> (const String& lhs, const String& rhs);
-    bool operator> (const String& lhs, const wchar_t* rhs);
-    bool operator> (const wchar_t* lhs, const String& rhs);
-#endif
 
     /**
      *  Basic operator overload with the obvious meaning, and simply indirect to @String::Concatenate (const String& rhs)

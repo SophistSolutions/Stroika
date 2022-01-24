@@ -43,16 +43,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     {
         return As<String> ();
     }
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool operator== (const ETag& lhs, const ETag& rhs)
-    {
-        return lhs.fWeak == rhs.fWeak and lhs.fValue == rhs.fValue;
-    }
-    inline bool operator!= (const ETag& lhs, const ETag& rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
 
 }
 

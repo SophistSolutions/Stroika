@@ -131,12 +131,10 @@ namespace Stroika::Foundation::Containers {
         template <typename ELEMENT_EQUALS_COMPARER = equal_to<T>>
         struct EqualsComparer;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
         constexpr bool operator== (const DataHyperRectangle& rhs) const;
-#endif
 
     protected:
         /**
@@ -207,17 +205,6 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T, size_t N>
     using DataHyperRectangleN = typename Private_DataHyperRectangle_::template NTemplate<T, DataHyperRectangle>::template Helper_<make_index_sequence<N>>::CombinedType;
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obvious meaning, and simply indirect to 
-     *  @Sequence<>::EqualsComparer
-     */
-    template <typename T, typename... INDEXES>
-    bool operator== (const DataHyperRectangle<T, INDEXES...>& lhs, const DataHyperRectangle<T, INDEXES...>& rhs);
-    template <typename T, typename... INDEXES>
-    bool operator!= (const DataHyperRectangle<T, INDEXES...>& lhs, const DataHyperRectangle<T, INDEXES...>& rhs);
-#endif
 
 }
 

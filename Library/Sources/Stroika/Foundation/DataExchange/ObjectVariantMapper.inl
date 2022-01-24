@@ -85,9 +85,9 @@ namespace Stroika::Foundation::DataExchange {
     {
         Require (type_index{typeid (T)} == forTypeInfo);
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering ObjectVariantMapper::TypeMappingDetails::operator<=> (const TypeMappingDetails& rhs) const
     {
+        // NOT SURE WHY THIS CHEKC FAILS ON XCODE 13 @todo
 #if __cpp_lib_three_way_comparison >= 201907
         return std::compare_three_way{}(fForType, rhs.fForType);
 #else
@@ -104,12 +104,6 @@ namespace Stroika::Foundation::DataExchange {
         return strong_ordering::equal;
 #endif
     }
-#else
-    inline bool ObjectVariantMapper::TypeMappingDetails::operator< (const TypeMappingDetails& rhs) const
-    {
-        return fForType < rhs.fForType;
-    }
-#endif
     inline bool ObjectVariantMapper::TypeMappingDetails::operator== (const TypeMappingDetails& rhs) const
     {
         return fForType == rhs.fForType;

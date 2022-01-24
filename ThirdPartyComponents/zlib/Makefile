@@ -19,6 +19,16 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
+ifneq ($(CONFIGURATION),)
+
+include $(StroikaRoot)ScriptsLib/Makefile-CMake-Common.mk
+
+CMAKE_PER_TARGET_BUILD_DIR:=../../Builds/$(CONFIGURATION)/ThirdPartyComponents/
+CMAKE_PER_TARGET_BUILD_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_PER_TARGET_BUILD_DIR) )
+CMAKE_PER_TARGET_BUILD_DIR:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(CMAKE_PER_TARGET_BUILD_DIR))
+endif
+
+
 # last stable version
 #VERSION=1.2.8
 # crashes in regtest for inflate on Win32 (but not Win64), 1.2.9 thru 1.2.11
@@ -65,8 +75,6 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 
 
 
-
-
 all:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
@@ -90,16 +98,28 @@ $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
-ifeq (Unix,$(ProjectPlatformSubdir))
-	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Configure (see $(OUTPUT_WORKDIR_PRETTYNAME)/CONFIGURE-OUT.txt) ..."
-	@echo "export CC=$(CC); export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; AR="$(AR)"; RANLIB="$(RANLIB)"; cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ./configure" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE-OUT.txt
-	@(export CC="$(CC)"; export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; export AR="$(AR)"; export RANLIB="$(RANLIB)"; cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ./configure) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE-OUT.txt 2>&1
+	$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
+
+	../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Configure (see $(OUTPUT_WORKDIR_PRETTYNAME)CONFIGURE-OUT.txt) ..."
+	echo 'cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_); $(PATH_ADJUSTMENT_PREFIX) cmake $(CMAKE_ARGS) .' > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE-OUT.txt 2>&1
+	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_); $(PATH_ADJUSTMENT_PREFIX) cmake $(CMAKE_ARGS) . >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE-OUT.txt 2>&1
+
+	../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(OUTPUT_WORKDIR_PRETTYNAME)BUILD-OUT.txt) ..."
+	echo 'cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_); $(PATH_ADJUSTMENT_PREFIX) cmake --build . --config $(CMAKE_CONFIGURATION) --target install' > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
+	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_); $(PATH_ADJUSTMENT_PREFIX) cmake --build . --config $(CMAKE_CONFIGURATION) --target install >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+	# Cannot figure out how to get just static libs built, and gen same names - for DEBUG and NODEBUG builds
+ifeq ($(CMAKE_CONFIGURATION),Debug)
+	rm -f $(CMAKE_PER_TARGET_BUILD_DIR)/bin/zlibd.dll
+	rm -f $(CMAKE_PER_TARGET_BUILD_DIR)/lib/zlibd.lib
+	mv $(CMAKE_PER_TARGET_BUILD_DIR)/lib/zlibstaticd.lib $(CMAKE_PER_TARGET_BUILD_DIR)/lib/zlib.lib
 endif
-	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(OUTPUT_WORKDIR_PRETTYNAME)/BUILD-OUT.txt) ..."
-	@make doBuildInternal_ > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/${OUTPUT_LIB_} $(PER_CONFIGURATION_BUILDS_DIR)lib/
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
+ifeq ($(CMAKE_CONFIGURATION),Release)
+	rm -f $(CMAKE_PER_TARGET_BUILD_DIR)/bin/zlib.dll
+	rm -f $(CMAKE_PER_TARGET_BUILD_DIR)/lib/zlib.lib
+	mv $(CMAKE_PER_TARGET_BUILD_DIR)/lib/zlibstatic.lib $(CMAKE_PER_TARGET_BUILD_DIR)/lib/zlib.lib
+endif
+endif
 
 
 $(ZIPPEDFILE):
@@ -127,23 +147,23 @@ endif
 endif
 
 
-doBuildInternal_:
-ifeq ($(CONFIGURATION),)
-	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
-endif
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
-		export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; \
-		export ASFLAGS="$(ASFLAGS_)"; \
-		export AS="$(AS)"; \
-		export CC="$(CC)"; \
-		export AR="$(LIBTOOL)"; \
-		export OBJA="$(OBJA_)"; \
-		env --unset=MAKEFLAGS --unset=MFLAGS \
-		  $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) nmake -E -f win32/Makefile.msc zlib.lib
-else
-	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory static
-endif
+# doBuildInternal_:
+# ifeq ($(CONFIGURATION),)
+# 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+# endif
+# ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+# 	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
+# 		export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; \
+# 		export ASFLAGS="$(ASFLAGS_)"; \
+# 		export AS="$(AS)"; \
+# 		export CC="$(CC)"; \
+# 		export AR="$(LIBTOOL)"; \
+# 		export OBJA="$(OBJA_)"; \
+# 		env --unset=MAKEFLAGS --unset=MFLAGS \
+# 		  $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) nmake -E -f win32/Makefile.msc zlib.lib
+# else
+# 	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory static
+# endif
 
 
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
@@ -152,6 +172,8 @@ ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPED
 ifeq ($(shell uname -s),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
 else ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
+	@PWD=`pwd` tar xf $(ZIPPEDFILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
+else ifeq (MSYS,$(findstring MSYS,$(shell uname)))
 	@PWD=`pwd` tar xf $(ZIPPEDFILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
 else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1

@@ -198,7 +198,6 @@ namespace Stroika::Foundation::Execution {
         NoteLockStateChanged_ (L"Unlocked");
         fMutex_.unlock ();
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>*>
     inline bool Synchronized<T, TRAITS>::operator== (const Synchronized& rhs) const
@@ -225,7 +224,6 @@ namespace Stroika::Foundation::Execution {
     {
         return load () <=> rhs;
     }
-#endif
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
     inline bool Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
@@ -477,126 +475,6 @@ namespace Stroika::Foundation::Execution {
     {
         rwref () = std::move (v);
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     *********************************** operator< **********************************
-     ********************************************************************************
-     */
-    template <typename T, typename TRAITS>
-    inline bool operator< (const Synchronized<T, TRAITS>& lhs, T rhs)
-    {
-        return lhs.load () < rhs;
-    }
-    template <typename T, typename TRAITS>
-    inline bool operator< (T lhs, const Synchronized<T, TRAITS>& rhs)
-    {
-        return lhs < rhs.load ();
-    }
-    template <typename T, typename TRAITS>
-    inline bool operator< (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
-    {
-        // preload to avoid possible deadlock
-        auto l = lhs.load ();
-        auto r = rhs.load ();
-        return l < r;
-    }
-
-    /*
-     ********************************************************************************
-     ********************************** operator<= **********************************
-     ********************************************************************************
-     */
-    template <typename T, typename TRAITS>
-    inline bool operator<= (const Synchronized<T, TRAITS>& lhs, T rhs)
-    {
-        return lhs.load () <= rhs;
-    }
-    template <typename T, typename TRAITS>
-    inline bool operator<= (T lhs, const Synchronized<T, TRAITS>& rhs)
-    {
-        return lhs <= rhs.load ();
-    }
-    template <typename T, typename TRAITS>
-    inline bool operator<= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
-    {
-        // preload to avoid possible deadlock
-        auto l = lhs.load ();
-        auto r = rhs.load ();
-        return l <= r;
-    }
-
-    /*
-     ********************************************************************************
-     ********************************** operator== **********************************
-     ********************************************************************************
-     */
-    template <typename T, typename TRAITS>
-    inline bool operator== (const Synchronized<T, TRAITS>& lhs, T rhs)
-    {
-        return lhs.load () == rhs;
-    }
-    template <typename T, typename TRAITS>
-    inline bool operator== (T lhs, const Synchronized<T, TRAITS>& rhs)
-    {
-        return lhs == rhs.load ();
-    }
-    template <typename T, typename TRAITS>
-    inline bool operator== (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
-    {
-        // preload to avoid possible deadlock
-        auto l = lhs.load ();
-        auto r = rhs.load ();
-        return l == r;
-    }
-
-    /*
-     ********************************************************************************
-     ********************************** operator!= **********************************
-     ********************************************************************************
-     */
-    template <typename T, typename TRAITS>
-    inline bool operator!= (const Synchronized<T, TRAITS>& lhs, T rhs)
-    {
-        return lhs.load () != rhs;
-    }
-    template <typename T, typename TRAITS>
-    inline bool operator!= (T lhs, const Synchronized<T, TRAITS>& rhs)
-    {
-        return lhs != rhs.load ();
-    }
-    template <typename T, typename TRAITS>
-    inline bool operator!= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
-    {
-        // preload to avoid possible deadlock
-        auto l = lhs.load ();
-        auto r = rhs.load ();
-        return l != r;
-    }
-
-    /*
-     ********************************************************************************
-     ********************************** operator>= **********************************
-     ********************************************************************************
-     */
-    template <typename T, typename TRAITS>
-    inline bool operator>= (const Synchronized<T, TRAITS>& lhs, T rhs)
-    {
-        return lhs.load () >= rhs;
-    }
-
-    /*
-     ********************************************************************************
-     *********************************** operator> **********************************
-     ********************************************************************************
-     */
-    template <typename T, typename TRAITS>
-    inline bool operator> (const Synchronized<T, TRAITS>& lhs, T rhs)
-    {
-        return lhs.load () > rhs;
-    }
-#endif
 
     /*
      ********************************************************************************

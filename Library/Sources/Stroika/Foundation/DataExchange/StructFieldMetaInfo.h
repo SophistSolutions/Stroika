@@ -6,10 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
-
 #include <type_traits>
 #include <typeindex>
 
@@ -54,14 +51,14 @@ namespace Stroika::Foundation::DataExchange {
         template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
         StructFieldMetaInfo (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
 
-#if __cpp_impl_three_way_comparison >= 201907 && !qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
+#if !qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
     public:
         /**
          */
         nonvirtual strong_ordering operator<=> (const StructFieldMetaInfo& rhs) const = default;
 #endif
 
-#if __cpp_impl_three_way_comparison >= 201907 && qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
+#if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
     public:
         /**
          */
@@ -79,17 +76,6 @@ namespace Stroika::Foundation::DataExchange {
          */
         nonvirtual Characters::String ToString () const;
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const StructFieldMetaInfo& lhs, const StructFieldMetaInfo& rhs);
-    bool operator== (const StructFieldMetaInfo& lhs, const StructFieldMetaInfo& rhs);
-#endif
-
-    /**
-     ************* DEPREACATED MACRO --- USE StructFieldMetaInfo{} CTOR DIRECTLY - SINCE Stroika 2.1b12
-     */
-#define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER) \
-    Stroika::Foundation::DataExchange::StructFieldMetaInfo { &CLASS::MEMBER }
 
 }
 

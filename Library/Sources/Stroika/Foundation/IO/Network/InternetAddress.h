@@ -6,10 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
-
 #include <optional>
 
 #if qPlatform_POSIX
@@ -275,7 +272,6 @@ namespace Stroika::Foundation::IO::Network {
         template <typename T>
         nonvirtual T As (ByteOrder byteOrder) const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -285,7 +281,6 @@ namespace Stroika::Foundation::IO::Network {
         /**
          */
         nonvirtual bool operator== (const InternetAddress& rhs) const;
-#endif
 
     public:
         /**
@@ -369,26 +364,7 @@ namespace Stroika::Foundation::IO::Network {
             array<uint8_t, 16> fArray_16_uint_;
             array<byte, 16>    fArray_16_byte_;
         };
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        friend bool operator< (const InternetAddress& lhs, const InternetAddress& rhs);
-        friend bool operator<= (const InternetAddress& lhs, const InternetAddress& rhs);
-        friend bool operator== (const InternetAddress& lhs, const InternetAddress& rhs);
-        friend bool operator!= (const InternetAddress& lhs, const InternetAddress& rhs);
-        friend bool operator>= (const InternetAddress& lhs, const InternetAddress& rhs);
-        friend bool operator> (const InternetAddress& lhs, const InternetAddress& rhs);
-#endif
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const InternetAddress& lhs, const InternetAddress& rhs);
-    bool operator<= (const InternetAddress& lhs, const InternetAddress& rhs);
-    bool operator== (const InternetAddress& lhs, const InternetAddress& rhs);
-    bool operator!= (const InternetAddress& lhs, const InternetAddress& rhs);
-    bool operator>= (const InternetAddress& lhs, const InternetAddress& rhs);
-    bool operator> (const InternetAddress& lhs, const InternetAddress& rhs);
-#endif
 
     /**
      *  IN_ADDR_ANY

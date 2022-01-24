@@ -6,9 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
 
 #include "../Configuration/Common.h"
 
@@ -66,12 +64,7 @@ namespace Stroika::Foundation::Execution {
             ValueType I{};
             ValueType D{};
 
-#if __cpp_impl_three_way_comparison >= 201907
             nonvirtual strong_ordering operator<=> (const ControlParams& rhs) const = default;
-#else
-            nonvirtual bool operator== (const ControlParams& rhs) const;
-            nonvirtual bool operator!= (const ControlParams& rhs) const;
-#endif
 
             /**
              *  @see Characters::ToString ();

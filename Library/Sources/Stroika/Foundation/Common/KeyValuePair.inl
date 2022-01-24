@@ -113,7 +113,6 @@ namespace Stroika::Foundation::Common {
         fValue = forward<VALUE_TYPE2> (rhs.fValue);
         return *this;
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename KEY_TYPE, typename VALUE_TYPE>
     template <typename T1, typename T2, enable_if_t<Configuration::has_spaceship_v<T1> and Configuration::has_spaceship_v<T2>>*>
     constexpr inline auto KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator<=> (const KeyValuePair& rhs) const
@@ -130,49 +129,6 @@ namespace Stroika::Foundation::Common {
     {
         return fKey == rhs.fKey and fValue == rhs.fValue;
     }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ********************** KeyValuePair comparison operators ***********************
-     ********************************************************************************
-     */
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    inline bool operator< (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
-    {
-        strong_ordering cmp = Common::ThreeWayCompare (lhs.fKey, rhs.fKey);
-        if (cmp != kEqual) {
-            return cmp < 0;
-        }
-        return Common::ThreeWayCompare (lhs.fValue, rhs.fValue) < 0;
-    }
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    inline bool operator<= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
-    {
-        return operator< (lhs, rhs) or operator== (lhs, rhs);
-    }
-    template <typename KEY_TYPE, typename VALUE_TYPE, enable_if_t<Configuration::has_eq_v<KEY_TYPE> and Configuration::has_eq_v<VALUE_TYPE>>*>
-    inline bool operator== (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
-    {
-        return lhs.fKey == rhs.fKey and lhs.fValue == rhs.fValue;
-    }
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    inline bool operator!= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
-    {
-        return not(lhs == rhs);
-    }
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    inline bool operator>= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
-    {
-        return not(lhs < rhs);
-    }
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    inline bool operator> (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
-    {
-        return not(lhs <= rhs);
-    }
-#endif
 
 }
 

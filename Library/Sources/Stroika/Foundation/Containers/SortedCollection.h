@@ -156,7 +156,6 @@ namespace Stroika::Foundation::Containers {
         using inherited::Remove;
         nonvirtual void Remove (ArgByValueType<T> item);
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          *  Compare sequentially using the associated GetInOrderComparer ()  
@@ -168,7 +167,6 @@ namespace Stroika::Foundation::Containers {
          *  Compare sequentially using the associated GetInOrderComparer ()  
          */
         nonvirtual strong_ordering operator<=> (const SortedCollection& rhs) const;
-#endif
 
     protected:
         /**

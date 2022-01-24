@@ -71,9 +71,7 @@ namespace {
             Association<int, int>       m{pair<int, int>{1, 2}, pair<int, int>{2, 4}};
             SortedAssociation<int, int> ms{m};
             VerifyTestResult (ms.size () == 2);
-#if __cpp_impl_three_way_comparison >= 201907
             VerifyTestResult ((*ms.begin () == pair<int, int>{1, 2}));
-#endif
         }
     }
 }

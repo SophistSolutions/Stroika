@@ -6,11 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
-#include <cstdint>
-
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
+#include <cstdint>
 
 #include "../Characters/String.h"
 
@@ -120,7 +117,6 @@ namespace Stroika::Foundation::Configuration {
          */
         nonvirtual Characters::String ToString () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -130,20 +126,7 @@ namespace Stroika::Foundation::Configuration {
         /**
          */
         constexpr strong_ordering operator<=> (const Version& rhs) const;
-#endif
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obvious meaning, and simply indirect to @Version::ThreeWayComparer ()
-     */
-    constexpr bool operator< (const Version& lhs, const Version& rhs);
-    constexpr bool operator<= (const Version& lhs, const Version& rhs);
-    constexpr bool operator== (const Version& lhs, const Version& rhs);
-    constexpr bool operator!= (const Version& lhs, const Version& rhs);
-    constexpr bool operator>= (const Version& lhs, const Version& rhs);
-    constexpr bool operator> (const Version& lhs, const Version& rhs);
-#endif
 
 }
 

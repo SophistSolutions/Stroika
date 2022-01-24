@@ -39,10 +39,8 @@ namespace Stroika::Foundation::Configuration {
         using has_minus_t = decltype (std::declval<T> () - std::declval<T> ());
         template <typename T>
         using has_plus_t = decltype (std::declval<T> () + std::declval<T> ());
-#if __cpp_impl_three_way_comparison >= 201907
         template <typename T>
         using has_spaceship_t = decltype (std::declval<T> () <=> std::declval<T> ());
-#endif
         // Subtle - but begin () doesn't work with rvalues, so must use declval<T&> -- LGP 2021-11-26
         template <typename T>
         using has_beginend_t = decltype (static_cast<bool> (begin (declval<T&> ()) != end (declval<T&> ())));
@@ -347,14 +345,12 @@ namespace Stroika::Foundation::Configuration {
      * 
      *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
      */
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename T>
     constexpr inline bool has_spaceship_v = is_detected_v<Private_::has_spaceship_t, T>;
     template <typename T, typename U>
     constexpr inline bool has_spaceship_v<std::pair<T, U>> = has_spaceship_v<T>and has_spaceship_v<U>;
     template <typename... Ts>
     constexpr inline bool has_spaceship_v<std::tuple<Ts...>> = (has_spaceship_v<Ts> and ...);
-#endif
 
     /**
      *  \brief check if the given type T has a const size() method which can be called to return a size_t.

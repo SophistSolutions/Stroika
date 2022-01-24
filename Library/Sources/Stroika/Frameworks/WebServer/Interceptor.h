@@ -72,13 +72,11 @@ namespace Stroika::Frameworks::WebServer {
          */
         nonvirtual void CompleteNormally (Message* m) const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          *  Two interceptors are equal if they have the same address, or are copies of one another by copy constructor or assignment.
          */
         nonvirtual bool operator== (const Interceptor& rhs) const;
-#endif
 
     protected:
         /**
@@ -91,11 +89,6 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         class MyRep_;
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        friend bool operator== (const Interceptor& lhs, const Interceptor& rhs);
-#endif
     };
 
     /**
@@ -129,17 +122,6 @@ namespace Stroika::Frameworks::WebServer {
          */
         virtual void CompleteNormally (Message* m) const;
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Two interceptors are equal if they have the same address, or are copies of one another by copy constructor or assignment.
-     */
-    bool operator== (const Interceptor& lhs, const Interceptor& rhs);
-
-    /**
-     */
-    bool operator!= (const Interceptor& lhs, const Interceptor& rhs);
-#endif
 
 }
 

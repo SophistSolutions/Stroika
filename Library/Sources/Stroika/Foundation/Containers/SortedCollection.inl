@@ -114,7 +114,6 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadRepAccessor<_IRep>{this}._GetRep ().Remove (item);
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename T>
     inline bool SortedCollection<T>::operator== (const SortedCollection& rhs) const
     {
@@ -125,7 +124,6 @@ namespace Stroika::Foundation::Containers {
     {
         return typename Iterable<T>::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetInOrderComparer ())}(*this, rhs);
     }
-#endif
 
 }
 

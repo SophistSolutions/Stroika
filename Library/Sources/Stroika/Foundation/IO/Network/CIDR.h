@@ -6,9 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
 
 #include "../../Characters/String.h"
 #include "../../Traversal/DiscreteRange.h"
@@ -82,12 +80,10 @@ namespace Stroika::Foundation::IO::Network {
          */
         nonvirtual Traversal::DiscreteRange<InternetAddress> GetRange () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
         nonvirtual strong_ordering operator<=> (const CIDR& rhs) const;
-#endif
 
     public:
         /**

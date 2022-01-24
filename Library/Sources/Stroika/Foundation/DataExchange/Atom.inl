@@ -92,7 +92,6 @@ namespace Stroika::Foundation::DataExchange {
     {
         return GetPrintName ();
     }
-#if __cpp_impl_three_way_comparison >= 201907
     template <typename ATOM_MANAGER>
     inline strong_ordering Atom<ATOM_MANAGER>::operator<=> (const Atom& rhs) const
     {
@@ -103,45 +102,6 @@ namespace Stroika::Foundation::DataExchange {
     {
         return fValue_ == rhs.fValue_;
     }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ****************************** Atom operators **********************************
-     ********************************************************************************
-     */
-    template <typename ATOM_MANAGER>
-    inline bool operator< (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
-    {
-        return lhs.fValue_ < rhs.fValue_;
-    }
-    template <typename ATOM_MANAGER>
-    inline bool operator<= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
-    {
-        return lhs.fValue_ <= rhs.fValue_;
-    }
-    template <typename ATOM_MANAGER>
-    inline bool operator== (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
-    {
-        return lhs.fValue_ == rhs.fValue_;
-    }
-    template <typename ATOM_MANAGER>
-    inline bool operator!= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
-    {
-        return lhs.fValue_ != rhs.fValue_;
-    }
-    template <typename ATOM_MANAGER>
-    inline bool operator>= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
-    {
-        return lhs.fValue_ >= rhs.fValue_;
-    }
-    template <typename ATOM_MANAGER>
-    inline bool operator> (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
-    {
-        return lhs.fValue_ > rhs.fValue_;
-    }
-#endif
 
 }
 

@@ -6,11 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
-#include <compare>
-#endif
-
 #include <array>
+#include <compare>
 #include <memory>
 #include <vector>
 
@@ -299,7 +296,6 @@ namespace Stroika::Foundation::Memory {
          */
         nonvirtual size_t GetSize () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -309,7 +305,6 @@ namespace Stroika::Foundation::Memory {
         /**
          */
         nonvirtual bool operator== (const BLOB& rhs) const;
-#endif
 
     private:
         static Common::strong_ordering TWC_ (const BLOB& lhs, const BLOB& rhs); // utility code share between c++17 and c++20 versions
@@ -343,16 +338,6 @@ namespace Stroika::Foundation::Memory {
          *  Trivial alias BLOB ({*this, rhs});
          */
         nonvirtual BLOB operator+ (const BLOB& rhs) const;
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        friend bool operator< (const BLOB& lhs, const BLOB& rhs);
-        friend bool operator<= (const BLOB& lhs, const BLOB& rhs);
-        friend bool operator!= (const BLOB& lhs, const BLOB& rhs);
-        friend bool operator>= (const BLOB& lhs, const BLOB& rhs);
-        friend bool operator> (const BLOB& lhs, const BLOB& rhs);
-        friend bool operator== (const BLOB& lhs, const BLOB& rhs);
-#endif
 
     private:
         struct BasicRep_;
@@ -399,17 +384,6 @@ namespace Stroika::Foundation::Memory {
 
         nonvirtual const _IRep& operator= (const _IRep&) = delete;
     };
-
-    /**
-     */
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const BLOB& lhs, const BLOB& rhs);
-    bool operator<= (const BLOB& lhs, const BLOB& rhs);
-    bool operator!= (const BLOB& lhs, const BLOB& rhs);
-    bool operator>= (const BLOB& lhs, const BLOB& rhs);
-    bool operator> (const BLOB& lhs, const BLOB& rhs);
-    bool operator== (const BLOB& lhs, const BLOB& rhs);
-#endif
 
 }
 

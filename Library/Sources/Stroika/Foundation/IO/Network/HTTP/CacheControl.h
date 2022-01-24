@@ -127,9 +127,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         struct MaxStale {
             //An optional value in seconds indicates the upper limit of staleness the client will accept.
             optional<int> fAmount;
-#if __cpp_impl_three_way_comparison >= 201907
             nonvirtual strong_ordering operator<=> (const MaxStale&) const = default;
-#endif
         };
         optional<MaxStale> fMaxStale;
 
@@ -150,7 +148,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          */
         nonvirtual Characters::String ToString () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -160,7 +157,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          */
         nonvirtual bool operator== (const CacheControl&) const = default;
-#endif
+
     public:
         /**
          *  \par Example Usage (@see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#caching_static_assets)
@@ -221,11 +218,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     inline constexpr const CacheControl CacheControl::kMustRevalidatePrivate{.fCacheability = CacheControl::ePrivate, .fMustRevalidate = true};
 #else
     inline constexpr const CacheControl CacheControl::kMustRevalidatePrivate{CacheControl::ePrivate, nullopt, true};
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator== (const CacheControl& lhs, const CacheControl& rhs);
-    bool operator!= (const CacheControl& lhs, const CacheControl& rhs);
 #endif
 
 }

@@ -260,37 +260,6 @@ namespace Stroika::Foundation::Time {
     inline constexpr Date Date::kMin{Date::kMinJulianRep};
     inline constexpr Date Date::kMax{UINT_MAX - 1};
 
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ************************* Time::Date operators *********************************
-     ********************************************************************************
-     */
-    constexpr inline bool operator< (const Date& lhs, const Date& rhs)
-    {
-        return Common::ThreeWayCompare (lhs.GetJulianRep (), rhs.GetJulianRep ()) < 0;
-    }
-    constexpr inline bool operator<= (const Date& lhs, const Date& rhs)
-    {
-        return Common::ThreeWayCompare (lhs.GetJulianRep (), rhs.GetJulianRep ()) <= 0;
-    }
-    constexpr inline bool operator== (const Date& lhs, const Date& rhs)
-    {
-        return Common::ThreeWayCompare (lhs.GetJulianRep (), rhs.GetJulianRep ()) == 0;
-    }
-    constexpr inline bool operator!= (const Date& lhs, const Date& rhs)
-    {
-        return Common::ThreeWayCompare (lhs.GetJulianRep (), rhs.GetJulianRep ()) != 0;
-    }
-    constexpr inline bool operator>= (const Date& lhs, const Date& rhs)
-    {
-        return Common::ThreeWayCompare (lhs.GetJulianRep (), rhs.GetJulianRep ()) >= 0;
-    }
-    constexpr inline bool operator> (const Date& lhs, const Date& rhs)
-    {
-        return Common::ThreeWayCompare (lhs.GetJulianRep (), rhs.GetJulianRep ()) > 0;
-    }
-#endif
 }
 
 namespace Stroika::Foundation::Configuration {

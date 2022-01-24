@@ -1,7 +1,7 @@
 #
-# build-N-test-v2.1-Dev and build-N-test-v2.1-Release are neary
+# build-N-test-v3-Dev and build-N-test-v3-Release are neary
 # identical, but a few tests are commented out (to not needlessly stress CI system)
-# for v2.1-Dev builds
+# for v3-Dev builds
 #
 # NOTE: I've tried many tricks - none which seem to work - to get this working on one file with one
 # workflow and tests
@@ -11,13 +11,13 @@
 # but none seem to work
 #
 
-name: build-N-test-v2.1-Release
+name: build-N-test-v3-Release
 
 on:
   push:
     branches:
-      #- v2.1-Dev
-      - v2.1-Release
+      #- v3-Dev
+      - v3-Release
   workflow_dispatch:
     inputs:
       ignored:
@@ -25,7 +25,7 @@ on:
         required: false
         default: ""
 
-## NB: JOBS section IDENTICAL between v2.1-Dev and 2.1-Release files EXCEPT that on v2.1-Dev file
+## NB: JOBS section IDENTICAL between v3-Dev and v3-Release files EXCEPT that on v3-Dev file
 ## comment out all entries marked with includeInDevBranchBuilds: false
 jobs:
   build-n-test-Linux:
@@ -43,59 +43,17 @@ jobs:
           #   compiler: g++-8
           #   runs_on: windows-latest
           #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
-          #   cpp_version: c++17
+          #   cpp_version: c++20
           #   config_name: Debug
           #   extra_config_args: --apply-default-debug-flags --trace2file enable
 
-          ## centos 8
-          - displayTargetName: centos-8
-            os: unix
-            compiler: g++
-            runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-centos-8-small
-            cpp_version: c++17
-            config_name: Release
-            extra_config_args: --apply-default-release-flags --trace2file enable
-            includeInDevBranchBuilds: true
-
-          ## ubuntu 18.04
-          - displayTargetName: ubuntu-18.04-g++-8 (Debug)
-            os: unix
-            compiler: g++-8
-            runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
-            cpp_version: c++17
-            config_name: Debug
-            extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
-            includeInDevBranchBuilds: true
-
-          - displayTargetName: ubuntu-18.04-cross-compile-raspberrypi (Debug)
-            os: unix
-            compiler: g++-8
-            runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
-            cpp_version: c++17
-            config_name: Debug
-            extra_config_args: --apply-default-release-flags --trace2file enable --compiler-driver arm-linux-gnueabihf-g++-8 --cross-compiling true
-            includeInDevBranchBuilds: true
-
           # ubuntu 20.04
-          - displayTargetName: ubuntu-20.04-g++-9 (Debug)
-            os: unix
-            compiler: g++-9
-            runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
-            cpp_version: c++17
-            config_name: Debug
-            extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
-            includeInDevBranchBuilds: false
-
           - displayTargetName: ubuntu-20.04-g++-10 (Debug)
             os: unix
             compiler: g++-10
             runs_on: ubuntu-latest
             container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
-            cpp_version: c++17
+            cpp_version: c++20
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
             includeInDevBranchBuilds: false
@@ -105,36 +63,36 @@ jobs:
             compiler: g++-10
             runs_on: ubuntu-latest
             container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
-            cpp_version: c++17
+            cpp_version: c++20
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: true
-
-          - displayTargetName: ubuntu-20.04-g++-10-c++2a
-            os: unix
-            compiler: g++-10
-            runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
-            cpp_version: c++2a
-            config_name: Release
-            extra_config_args: --apply-default-release-flags --trace2file enable
-            includeInDevBranchBuilds: false
 
           - displayTargetName: ubuntu-20.04-clang++-10
             os: unix
             compiler: clang++-10
             runs_on: ubuntu-latest
             container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
-            cpp_version: c++17
+            cpp_version: c++20
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: false
+
+          - displayTargetName: ubuntu-20.04-cross-compile-raspberrypi (Debug)
+            os: unix
+            compiler: g++-10
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            cpp_version: c++2a
+            config_name: Debug
+            extra_config_args: --apply-default-release-flags --trace2file enable --compiler-driver arm-linux-gnueabihf-g++-10 --cross-compiling true
+            includeInDevBranchBuilds: true
 
     ### ATTEMPT TO COMPRESS 2 workflow files into one, but so far not working
     ### SEE
     ### https://stackoverflow.com/questions/65384420/how-to-make-a-github-action-matrix-element-conditional/65385385#65385385
     ###
-    #if: github.ref == 'refs/heads/v2.1-Release' || matrix.includeInDevBranchBuilds
+    #if: github.ref == 'refs/heads/v3-Release' || matrix.includeInDevBranchBuilds
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
@@ -411,11 +369,11 @@ jobs:
 
     - name: Install tools required to build Stroika
       run: |
-        sudo apt-get install -y libtool-bin pkg-config cmake automake autoconf libtool-bin libasan5 libubsan1
+        sudo apt-get install -y libtool-bin pkg-config cmake automake autoconf libtool-bin libasan5 libubsan1 g++-10
 
     - name: Configure
       run: |
-        ./configure Release --cppstd-version c++17 --apply-default-release-flags
+        ./configure Release --compiler-driver g++-10 --cppstd-version c++20 --apply-default-release-flags
         cat ConfigurationFiles/Release.xml
 
     # Break out third-party-components to do clean so we dont run out of disk space, and break out TPC AND library
@@ -440,5 +398,3 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
-
-

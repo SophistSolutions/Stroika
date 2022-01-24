@@ -192,16 +192,6 @@ namespace Stroika::Foundation::Streams {
          */
         nonvirtual bool operator== (nullptr_t) const;
 
-#if __cpp_impl_three_way_comparison < 201907
-    public:
-        /**
-         *  \brief return true iff stream ptr is not nullptr
-         *
-         *  @see reset()
-         */
-        nonvirtual bool operator!= (nullptr_t) const;
-#endif
-
     protected:
         /**
          *  \brief protected access to underlying stream smart pointer

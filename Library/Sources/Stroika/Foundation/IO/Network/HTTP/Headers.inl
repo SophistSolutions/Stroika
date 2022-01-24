@@ -41,7 +41,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     {
         return As<Collection<KeyValuePair<String, String>>> ();
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline bool Headers::operator== (const Headers& rhs) const
     {
         using ExtrasComparer = Collection<KeyValuePair<String, String>>::SequentialEqualsComparer<>;
@@ -62,33 +61,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
             ;
         // clang-format on
     }
-#endif
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool operator== (const Headers& lhs, const Headers& rhs)
-    {
-        using ExtrasComparer = Collection<KeyValuePair<String, String>>::SequentialEqualsComparer<>;
-        // clang-format off
-        return 
-            ExtrasComparer{}(lhs.fExtraHeaders_, rhs.fExtraHeaders_)
-            and lhs.fCacheControl_ == rhs.fCacheControl_ 
-            and lhs.fContentLength_ == rhs.fContentLength_ 
-            and lhs.fContentType_ == rhs.fContentType_ 
-            and lhs.fCookieList_ == rhs.fCookieList_ 
-            and lhs.fDate_ == rhs.fDate_ 
-            and lhs.fETag_ == rhs.fETag_ 
-            and lhs.fHost_ == rhs.fHost_ 
-            and lhs.fIfNoneMatch_ == rhs.fIfNoneMatch_
-            and lhs.fSetCookieList_ == rhs.fSetCookieList_
-            and lhs.fTransferEncoding_ == rhs.fTransferEncoding_
-            and lhs.fVary_ == rhs.fVary_
-            ;
-        // clang-format on
-    }
-    inline bool operator!= (const Headers& lhs, const Headers& rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
 
 }
 

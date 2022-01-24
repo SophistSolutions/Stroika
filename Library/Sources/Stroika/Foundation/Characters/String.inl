@@ -614,7 +614,6 @@ namespace Stroika::Foundation::Characters {
         size_t to = (count == npos) ? thisLen : (from + min (thisLen, count));
         return SubString_ (accessor, thisLen, from, to);
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering String::operator<=> (const String& rhs) const
     {
         return ThreeWayComparer{}(*this, rhs);
@@ -647,7 +646,6 @@ namespace Stroika::Foundation::Characters {
     {
         return EqualsComparer{}(*this, rhs);
     }
-#endif
 
     /*
      ********************************************************************************
@@ -927,130 +925,6 @@ namespace Stroika::Foundation::Characters {
         // forever-lifetime C++ constant.
         return String::FromASCII (str, str + len);
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     *********************************** operator< **********************************
-     ********************************************************************************
-     */
-    inline bool operator< (const String& lhs, const String& rhs)
-    {
-        return String::ThreeWayComparer{}(lhs, rhs) < 0;
-    }
-    inline bool operator< (const String& lhs, const wchar_t* rhs)
-    {
-        return String::ThreeWayComparer{}(lhs, rhs) < 0;
-    }
-    inline bool operator< (const wchar_t* lhs, const String& rhs)
-    {
-        RequireNotNull (lhs);
-        return String::ThreeWayComparer{}(lhs, rhs) < 0;
-    }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     *********************************** operator<= *********************************
-     ********************************************************************************
-     */
-    inline bool operator<= (const String& lhs, const String& rhs)
-    {
-        return String::ThreeWayComparer{}(lhs, rhs) <= 0;
-    }
-    inline bool operator<= (const String& lhs, const wchar_t* rhs)
-    {
-        return String::ThreeWayComparer{}(lhs, rhs) <= 0;
-    }
-    inline bool operator<= (const wchar_t* lhs, const String& rhs)
-    {
-        return String::ThreeWayComparer{}(lhs, rhs) <= 0;
-    }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     *********************************** operator== *********************************
-     ********************************************************************************
-     */
-    inline bool operator== (const String& lhs, const String& rhs)
-    {
-        return String::EqualsComparer{}(lhs, rhs);
-    }
-    inline bool operator== (const String& lhs, const wchar_t* rhs)
-    {
-        return String::EqualsComparer{}(lhs, rhs);
-    }
-    inline bool operator== (const wchar_t* lhs, const String& rhs)
-    {
-        RequireNotNull (lhs);
-        return String::EqualsComparer{}(lhs, rhs);
-    }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     *********************************** operator!= *********************************
-     ********************************************************************************
-     */
-    inline bool operator!= (const String& lhs, const String& rhs)
-    {
-        return not(lhs == rhs);
-    }
-    inline bool operator!= (const String& lhs, const wchar_t* rhs)
-    {
-        return not(lhs == rhs);
-    }
-    inline bool operator!= (const wchar_t* lhs, const String& rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     *********************************** operator>= *********************************
-     ********************************************************************************
-     */
-    inline bool operator>= (const String& lhs, const String& rhs)
-    {
-        return String::ThreeWayComparer{}(lhs, rhs) >= 0;
-    }
-    inline bool operator>= (const String& lhs, const wchar_t* rhs)
-    {
-        return String::ThreeWayComparer{}(lhs, rhs) >= 0;
-    }
-    inline bool operator>= (const wchar_t* lhs, const String& rhs)
-    {
-        RequireNotNull (lhs);
-        return String::ThreeWayComparer{}(lhs, rhs) >= 0;
-    }
-#endif
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     *********************************** operator> **********************************
-     ********************************************************************************
-     */
-    inline bool operator> (const String& lhs, const String& rhs)
-    {
-        return String::ThreeWayComparer{}(lhs, rhs) > 0;
-    }
-    inline bool operator> (const String& lhs, const wchar_t* rhs)
-    {
-        return String::ThreeWayComparer{}(lhs, rhs) > 0;
-    }
-    inline bool operator> (const wchar_t* lhs, const String& rhs)
-    {
-        RequireNotNull (lhs);
-        return String::ThreeWayComparer{}(lhs, rhs) > 0;
-    }
-#endif
 
     /*
      ********************************************************************************

@@ -6,9 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
 
 #include "../Common/Compare.h"
 #include "../Configuration/Common.h"
@@ -64,7 +62,6 @@ namespace Stroika::Foundation::Math {
          */
         nonvirtual constexpr RepType AsGradians () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          *
@@ -74,7 +71,6 @@ namespace Stroika::Foundation::Math {
          *      
          */
         nonvirtual partial_ordering operator<=> (const Angle& rhs) const = default;
-#endif
 
     public:
         nonvirtual const Angle& operator+= (const Angle& rhs);
@@ -85,18 +81,6 @@ namespace Stroika::Foundation::Math {
     private:
         double fAngleInRadians_;
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obvious meaning, and simply indirect to @Common::ThreeWayCompare ()
-     */
-    constexpr bool operator< (const Angle& lhs, const Angle& rhs);
-    constexpr bool operator<= (const Angle& lhs, const Angle& rhs);
-    constexpr bool operator== (const Angle& lhs, const Angle& rhs);
-    constexpr bool operator!= (const Angle& lhs, const Angle& rhs);
-    constexpr bool operator>= (const Angle& lhs, const Angle& rhs);
-    constexpr bool operator> (const Angle& lhs, const Angle& rhs);
-#endif
 
     /**
      */

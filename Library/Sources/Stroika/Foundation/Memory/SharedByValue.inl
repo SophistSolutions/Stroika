@@ -155,13 +155,6 @@ namespace Stroika::Foundation::Memory {
     {
         return fSharedImpl_ == nullptr;
     }
-#if __cpp_impl_three_way_comparison < 201907
-    template <typename T, typename TRAITS>
-    constexpr bool SharedByValue<T, TRAITS>::operator!= (nullptr_t) const
-    {
-        return fSharedImpl_ != nullptr;
-    }
-#endif
     template <typename T, typename TRAITS>
     inline typename SharedByValue<T, TRAITS>::element_copier_type SharedByValue<T, TRAITS>::GetDefaultCopier () const
     {

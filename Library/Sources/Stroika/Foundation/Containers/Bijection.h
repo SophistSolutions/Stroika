@@ -453,7 +453,6 @@ namespace Stroika::Foundation::Containers {
         template <typename CONTAINER_PAIR_RANGE_DOMAIN>
         nonvirtual CONTAINER_PAIR_RANGE_DOMAIN As () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
@@ -463,7 +462,6 @@ namespace Stroika::Foundation::Containers {
          *  \note   Not to be confused with EqualityComparerType and GetEqualsComparer () which compares ELEMENTS of Bijection<> for equality.
          */
         nonvirtual bool operator== (const Bijection& rhs) const;
-#endif
 
     public:
         /**
@@ -526,14 +524,6 @@ namespace Stroika::Foundation::Containers {
 
     protected:
         nonvirtual void _AssertRepValidType () const;
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wnon-template-friend\"");
-        template <typename D, typename R>
-        friend bool operator== (const Bijection<D, R>& lhs, const Bijection<D, R>& rhs);
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wnon-template-friend\"");
-#endif
     };
 
     /**
@@ -593,16 +583,6 @@ namespace Stroika::Foundation::Containers {
         nonvirtual Iterable<DOMAIN_TYPE> _PreImage_Reference_Implementation () const;
         nonvirtual Iterable<RANGE_TYPE> _Image_Reference_Implementation () const;
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic comparison operator overloads with the obvious meaning, and simply indirect to @Bijection<>::EqualsComparer
-     */
-    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    nonvirtual bool operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs);
-    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    bool operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs);
-#endif
 
 }
 

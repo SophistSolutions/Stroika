@@ -6,11 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
-#include <compare>
-#endif
-
 #include <climits>
+#include <compare>
 #include <ctime>
 #include <locale>
 #include <string>
@@ -502,7 +499,6 @@ namespace Stroika::Foundation::Time {
          */
         nonvirtual Duration Difference (const DateTime& rhs) const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -512,7 +508,6 @@ namespace Stroika::Foundation::Time {
         /**
          */
         nonvirtual bool operator== (const DateTime& rhs) const;
-#endif
 
     public:
         struct ThreeWayComparer;
@@ -521,16 +516,6 @@ namespace Stroika::Foundation::Time {
         optional<Timezone>  fTimezone_;
         Date                fDate_;
         optional<TimeOfDay> fTimeOfDay_; // for now - still can be 'empty' - but API (as of v2.1d4) disallows passing in or getting out empty TimeOfDay
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        friend bool operator< (const DateTime& lhs, const DateTime& rhs);
-        friend bool operator<= (const DateTime& lhs, const DateTime& rhs);
-        friend bool operator== (const DateTime& lhs, const DateTime& rhs);
-        friend bool operator!= (const DateTime& lhs, const DateTime& rhs);
-        friend bool operator>= (const DateTime& lhs, const DateTime& rhs);
-        friend bool operator> (const DateTime& lhs, const DateTime& rhs);
-#endif
     };
 
     class DateTime::FormatException : public Execution::RuntimeErrorException<> {
@@ -585,15 +570,6 @@ namespace Stroika::Foundation::Time {
         nonvirtual Common::strong_ordering operator() (const DateTime& lhs, const DateTime& rhs) const;
         bool                               fCoerceToCommonTimezone;
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const DateTime& lhs, const DateTime& rhs);
-    bool operator<= (const DateTime& lhs, const DateTime& rhs);
-    bool operator== (const DateTime& lhs, const DateTime& rhs);
-    bool operator!= (const DateTime& lhs, const DateTime& rhs);
-    bool operator>= (const DateTime& lhs, const DateTime& rhs);
-    bool operator> (const DateTime& lhs, const DateTime& rhs);
-#endif
 
     /**
      *  Syntactic sugar on Add()

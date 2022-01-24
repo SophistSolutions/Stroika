@@ -6,10 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
-
 #include <istream>
 
 #include "../../Configuration/Common.h"
@@ -29,7 +26,6 @@ namespace Stroika::Foundation::DataExchange::XML {
         wstring fURI;    // required non-null
         wstring fPrefix; // can be nullptr
 
-#if __cpp_impl_three_way_comparison >= 201907
 #if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
 #endif
@@ -37,13 +33,7 @@ namespace Stroika::Foundation::DataExchange::XML {
 #if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
 #endif
-#endif
     };
-#if __cpp_impl_three_way_comparison < 201907
-    // order by URI, but equal requires both equal
-    bool operator< (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs);
-    bool operator== (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs);
-#endif
 
     /**
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
@@ -65,17 +55,7 @@ namespace Stroika::Foundation::DataExchange::XML {
 
     private:
         vector<NamespaceDefinition> fNamespaces;
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        friend bool operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
-        friend bool operator== (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
-#endif
     };
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
-    bool operator== (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
-#endif
 
 }
 

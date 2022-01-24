@@ -32,17 +32,10 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     {
         return fCipher_;
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline auto CipherAlgorithm::operator<=> (const CipherAlgorithm& rhs) const
     {
         return fCipher_ <=> rhs.fCipher_;
     }
-#else
-    inline auto CipherAlgorithm::operator< (const CipherAlgorithm& rhs) const
-    {
-        return fCipher_ < rhs.fCipher_;
-    }
-#endif
     inline bool CipherAlgorithm::operator== (const CipherAlgorithm& rhs) const
     {
         return fCipher_ == rhs.fCipher_;

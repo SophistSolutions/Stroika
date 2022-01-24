@@ -6,10 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
-
 #include <string>
 
 #include "../../Characters/String.h"
@@ -324,7 +321,6 @@ namespace Stroika::Foundation::IO::Network {
          */
         nonvirtual URI Combine (const URI& uri) const;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
@@ -334,7 +330,6 @@ namespace Stroika::Foundation::IO::Network {
         /**
          */
         nonvirtual bool operator== (const URI& rhs) const;
-#endif
 
     private:
         static Common::strong_ordering TWC_ (const URI& lhs, const URI& rhs); // utility code share between c++17 and c++20 versions
@@ -354,16 +349,6 @@ namespace Stroika::Foundation::IO::Network {
         String               fPath_;      // Can be empty string, but documented as always 'present' even as empty so model that way
         optional<String>     fQuery_;     // ditto
         optional<String>     fFragment_;  // ditto
-
-    private:
-#if __cpp_impl_three_way_comparison < 201907
-        friend bool operator< (const URI& lhs, const URI& rhs);
-        friend bool operator<= (const URI& lhs, const URI& rhs);
-        friend bool operator== (const URI& lhs, const URI& rhs);
-        friend bool operator!= (const URI& lhs, const URI& rhs);
-        friend bool operator>= (const URI& lhs, const URI& rhs);
-        friend bool operator> (const URI& lhs, const URI& rhs);
-#endif
     };
 
     template <>
@@ -387,15 +372,6 @@ namespace Stroika::Foundation::IO::Network {
     String URI::GetAbsPath () const;
     template <>
     optional<String> URI::GetAbsPath () const;
-
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const URI& lhs, const URI& rhs);
-    bool operator<= (const URI& lhs, const URI& rhs);
-    bool operator== (const URI& lhs, const URI& rhs);
-    bool operator!= (const URI& lhs, const URI& rhs);
-    bool operator>= (const URI& lhs, const URI& rhs);
-    bool operator> (const URI& lhs, const URI& rhs);
-#endif
 
 }
 

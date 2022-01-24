@@ -57,11 +57,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         Common::ReadOnlyProperty<String> pName;
 
     public:
-#if __cpp_impl_three_way_comparison >= 201907
         nonvirtual auto operator<=> (const CipherAlgorithm& rhs) const;
-#else
-        nonvirtual auto operator< (const CipherAlgorithm& rhs) const;
-#endif
         nonvirtual bool operator== (const CipherAlgorithm& rhs) const;
 
     public:

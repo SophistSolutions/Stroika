@@ -6,11 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
-#include <limits>
-
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
+#include <limits>
 
 #include "../Common/Compare.h"
 #include "../Configuration/Common.h"
@@ -348,7 +345,6 @@ namespace Stroika::Foundation::Containers {
         template <typename ELEMENT_COMPARER = Common::ThreeWayComparer>
         using ThreeWayComparer = typename Iterable<value_type>::template SequentialThreeWayComparer<ELEMENT_COMPARER>;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          * simply indirect to @Sequence<>::EqualsComparer (only defined if equal_to<T> is defined)
@@ -360,7 +356,6 @@ namespace Stroika::Foundation::Containers {
          * simply indirect to @Sequence<>::operator (only defined if ???comparethreeway?<T> is defined)
          */
         nonvirtual auto operator<=> (const Sequence& rhs) const;
-#endif
 
     public:
         /**
@@ -687,25 +682,6 @@ namespace Stroika::Foundation::Containers {
     private:
         friend Sequence<T>;
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obvious meaning, and simply indirect to 
-     *  @Sequence<>::ThreeWayComparer and equal_to<Sequence<>>
-     */
-    template <typename T>
-    bool operator< (const Sequence<T>& lhs, const Sequence<T>& rhs);
-    template <typename T>
-    bool operator<= (const Sequence<T>& lhs, const Sequence<T>& rhs);
-    template <typename T>
-    bool operator== (const Sequence<T>& lhs, const Sequence<T>& rhs);
-    template <typename T>
-    bool operator!= (const Sequence<T>& lhs, const Sequence<T>& rhs);
-    template <typename T>
-    bool operator>= (const Sequence<T>& lhs, const Sequence<T>& rhs);
-    template <typename T>
-    bool operator> (const Sequence<T>& lhs, const Sequence<T>& rhs);
-#endif
 
 }
 

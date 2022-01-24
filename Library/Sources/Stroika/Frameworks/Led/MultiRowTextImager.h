@@ -84,19 +84,13 @@ namespace Stroika::Frameworks::Led {
             nonvirtual PartitionMarker* GetPartitionMarker () const;
             nonvirtual size_t           GetSubRow () const;
 
-#if __cpp_impl_three_way_comparison >= 201907
         public:
             nonvirtual bool operator== (RowReference rhs) const;
-#endif
         private:
             PartitionMarker* fPartitionMarker;
             size_t           fSubRow;
         };
         friend class RowReference;
-#if __cpp_impl_three_way_comparison < 201907
-        friend bool operator== (RowReference lhs, RowReference rhs);
-        friend bool operator!= (RowReference lhs, RowReference rhs);
-#endif
 
     public:
         nonvirtual PartitionElementCacheInfo GetPartitionElementCacheInfo (Partition::PartitionMarker* pm) const;

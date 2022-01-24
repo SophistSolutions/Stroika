@@ -235,7 +235,6 @@ namespace Stroika::Foundation::Containers {
         template <typename ELEMENT_COMPARER = Common::ThreeWayComparer>
         using ThreeWayComparer = typename Iterable<T>::template SequentialThreeWayComparer<ELEMENT_COMPARER>;
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          * simply indirect to @Queue<>::EqualsComparer (only defined if equal_to<T> is defined)
@@ -247,7 +246,6 @@ namespace Stroika::Foundation::Containers {
          * simply indirect to @Queue<>::ThreeWayComparer (only defined if T::operator<=> is defined)
          */
         nonvirtual auto operator<=> (const Queue& rhs) const;
-#endif
 
     protected:
         /**
@@ -293,15 +291,6 @@ namespace Stroika::Foundation::Containers {
         virtual value_type           Head () const                             = 0;
         virtual optional<value_type> HeadIf () const                           = 0;
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     */
-    template <typename T>
-    bool operator== (const Queue<T>& lhs, const Queue<T>& rhs);
-    template <typename T>
-    bool operator!= (const Queue<T>& lhs, const Queue<T>& rhs);
-#endif
 
 }
 

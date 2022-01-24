@@ -258,7 +258,6 @@ namespace Stroika::Foundation::IO::Network {
             return tmp;
         }
     }
-#if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering InternetAddress::operator<=> (const InternetAddress& rhs) const
     {
         return TWC_ (*this, rhs);
@@ -267,7 +266,6 @@ namespace Stroika::Foundation::IO::Network {
     {
         return TWC_ (*this, rhs) == 0;
     }
-#endif
     inline Common::strong_ordering InternetAddress::TWC_ (const InternetAddress& lhs, const InternetAddress& rhs)
     {
         if (auto cmp = Common::ThreeWayCompare (lhs.fAddressFamily_, rhs.fAddressFamily_); cmp != Common::kEqual) {
@@ -287,38 +285,6 @@ namespace Stroika::Foundation::IO::Network {
         //AssertNotReached ();  @todo - this really should be an assertion failure, but tricky cuz constexpr function could fix with template)
         return Common::kEqual;
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    /*
-     ********************************************************************************
-     ************************* InternetAddress operators ****************************
-     ********************************************************************************
-     */
-    inline bool operator< (const InternetAddress& lhs, const InternetAddress& rhs)
-    {
-        return InternetAddress::TWC_ (lhs, rhs) < 0;
-    }
-    inline bool operator<= (const InternetAddress& lhs, const InternetAddress& rhs)
-    {
-        return InternetAddress::TWC_ (lhs, rhs) <= 0;
-    }
-    inline bool operator== (const InternetAddress& lhs, const InternetAddress& rhs)
-    {
-        return InternetAddress::TWC_ (lhs, rhs) == 0;
-    }
-    inline bool operator!= (const InternetAddress& lhs, const InternetAddress& rhs)
-    {
-        return InternetAddress::TWC_ (lhs, rhs) != 0;
-    }
-    inline bool operator>= (const InternetAddress& lhs, const InternetAddress& rhs)
-    {
-        return InternetAddress::TWC_ (lhs, rhs) >= 0;
-    }
-    inline bool operator> (const InternetAddress& lhs, const InternetAddress& rhs)
-    {
-        return InternetAddress::TWC_ (lhs, rhs) > 0;
-    }
-#endif
 
     namespace V4 {
         constexpr InternetAddress kAddrAny{in_addr{}};

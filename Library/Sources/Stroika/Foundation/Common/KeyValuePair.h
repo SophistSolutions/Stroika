@@ -6,9 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#if defined(__cpp_impl_three_way_comparison)
 #include <compare>
-#endif
 
 #include <type_traits>
 #include <utility>
@@ -92,7 +90,6 @@ namespace Stroika::Foundation::Common {
         KeyType   fKey{};
         ValueType fValue{};
 
-#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          *  Define operator<=> in the obvious way key <=> key first, and then if equal, compare values.
@@ -108,26 +105,7 @@ namespace Stroika::Foundation::Common {
          */
         template <typename T1 = KEY_TYPE, typename T2 = VALUE_TYPE, enable_if_t<Configuration::has_eq_v<T1> and Configuration::has_eq_v<T2>>* = nullptr>
         constexpr bool operator== (const KeyValuePair&) const;
-#endif
     };
-
-#if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obvious meaning, and simply indirect to @KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer (const Version& rhs), and EqualsComparer
-     */
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    bool operator< (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    bool operator<= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
-    template <typename KEY_TYPE, typename VALUE_TYPE, enable_if_t<Configuration::has_eq_v<KEY_TYPE> and Configuration::has_eq_v<VALUE_TYPE>>* = nullptr>
-    bool operator== (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    bool operator!= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    bool operator>= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    bool operator> (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
-#endif
 
 }
 
