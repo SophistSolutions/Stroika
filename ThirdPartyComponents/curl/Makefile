@@ -18,10 +18,9 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 
-VERSION=7.80.0
+VERSION=7.81.0
+#VERSION=7.80.0
 #VERSION=7.79.1
-#VERSION=7.78.0
-#VERSION=7.77.0
 BASENAME=curl-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
@@ -91,7 +90,7 @@ endif
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine  $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p ORIGS && rm -rf $@ && mkdir -p $@
-ifeq ($(shell uname -s),Darwin)
+ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
 else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
@@ -173,7 +172,7 @@ LIBCURL_CONFIGURE += --enable-optimize
 LIBCURL_CONFIGURE += --disable-curldebug
 endif
 
-ifeq ($(shell uname), Darwin)
+ifeq ($(DETECTED_HOST_OS), Darwin)
 # https://stroika.atlassian.net/browse/STK-759
 ### On M1 Mac (even if running under rosetta) - really just one mac tested - 
 ### Get error:
@@ -228,7 +227,7 @@ LIBCURL_CONFIGURE +=  LIBS='-ldl'
 LIBCURL_CONFIGURE +=  LIBS='-ldl -lpthread'
 endif
 
-ifeq ($(shell uname), Darwin)
+ifeq ($(DETECTED_HOST_OS), Darwin)
 # https://stroika.atlassian.net/browse/STK-759
 # Undefined symbols for architecture x86_64: "_SCDynamicStoreCopyProxies", referenced from:  _Curl_resolv in libcurl.a(libcurl_la-hostip.o)
 LIBCURL_CONFIGURE +=  LIBS='-framework Foundation -framework SystemConfiguration'

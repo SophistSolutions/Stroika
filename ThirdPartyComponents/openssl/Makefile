@@ -77,7 +77,7 @@ ifeq (armhf,$(ARCH))
 # OpenSSL 3.0 automatically considers the TARGETMACHINE to be this HOST compiling machine and generates -m64 lines that break
 # the compile - this works around that issue for at least this configuration
 CONFIG_ARGS+=	linux-generic32
-else ifeq ($(shell uname -s),Darwin)
+else ifeq ($(DETECTED_HOST_OS),Darwin)
 CONFIG_ARGS+=	darwin64-$(ARCH)-cc
 endif
 endif
@@ -245,6 +245,14 @@ endif
 endif
 endif
 
+
+#
+# Just for test apps that get built. DONT include LIB_DEPENDENCIES because that includes other third party components
+# Unsure about most of this... --LGP 2022-01-22
+#LDFLAGS:=$(EXTRA_PREFIX_LINKER_ARGS) $(LIBS_PATH_DIRECTIVES) $(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)
+LDFLAGS:=$(EXTRA_PREFIX_LINKER_ARGS) $(LIBS_PATH_DIRECTIVES) $(EXTRA_SUFFIX_LINKER_ARGS)
+
+
 #
 # openssl with sanitizers doesn't work (causes issues with building libcurl)
 # see ... IntermediateFiles\Debug\ThirdPartyComponents\curl\config.log for failure this causes (could fix by having this patch pkgconfig file)
@@ -252,7 +260,6 @@ endif
 #
 CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
-
 
 ###
 ### got error building openssl wihtout this filter-out with clang-7 release builds - not sure it was the same message though
@@ -266,13 +273,13 @@ CFLAGS:=$(filter-out -flto, $(CFLAGS))
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 
 
-###
-### Not critical todo, but leaving /GL in here produces warnings when the module is used (in vs2k17 and vs2k19)
-###     EG   c:\sandbox\stroika\devroot\intermediatefiles\release-u-32\thirdpartycomponents\openssl\crypto\x509v3\v3_utl.c(405): warning C4706: assignment within conditional expression [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\29\Test29.vcxproj]
-###		-- LGP 2019-09-26
-###
-CFLAGS:=$(filter-out /GL, $(CFLAGS))
-CXXFLAGS:=$(filter-out /GL, $(CXXFLAGS))
+# Avoid having warnings leak from here to linking code when openssl is used --LGP 2022-01-18
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifneq ($(findstring -GL,$(CXXFLAGS)),)
+CFLAGS+= -wd4701 -wd4702 -wd4706
+CXXFLAGS+= -wd4701 -wd4702 -wd4706
+endif
+endif
 
 #
 # from https://wiki.openssl.org/index.php/Compilation_and_Installation: -anythingelse, +anythingelse	Compiler options, will become part of CFLAGS.
@@ -283,6 +290,13 @@ CXXFLAGS:=$(filter-out /GL, $(CXXFLAGS))
 #
 export CFLAGS
 export CXXFLAGS
+export LDFLAGS
+
+
+ifeq ($(DETECTED_HOST_OS),MSYS)
+.SHELL=bash
+.SHELLFLAGS= -c -l
+endif
 
 doBuilds_:
 	@
@@ -378,9 +392,9 @@ endif
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p $@
-ifeq ($(shell uname -s),Darwin)
+ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
-else ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
+else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	@PWD=`pwd` tar xf $(ZIPPEDFILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
 else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
@@ -393,4 +407,3 @@ ifeq ($@, $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_))
 	@$(ECHO) "done"
 endif
 endif
-

@@ -80,10 +80,10 @@ $(ObjDir)ActiveLedIt_h.h $(ObjDir)ActiveLedIt_i.c:	$(ObjDir)ActiveLedIt.tlb
 $(Objs):	$(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
 
 
-MIDL_FLAGS +=	/env win32
-RC_FLAGS+=	/I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(ObjDir))"
+MIDL_FLAGS +=	-env win32
+RC_FLAGS+=	-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(ObjDir))"
 # not sure if TLBID matters, but old msbuild script set it
-EXTRA_SUFFIX_LINKER_ARGS+=/TLBID:1
+EXTRA_SUFFIX_LINKER_ARGS+=-TLBID:1
 
 $(ObjDir)ActiveLedIt.tlb:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)Sources/ActiveLedIt.odl` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
@@ -94,7 +94,7 @@ $(ObjDir)ActiveLedIt.tlb:
 
 
 # English US culture
-RC_FLAGS += /l 0x0409
+RC_FLAGS += -l 0x0409
 
 $(ObjDir)ActiveLedIt.res:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running RC compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)Sources/ActiveLedIt.rc` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)RC-Build.out`" ..."
@@ -111,7 +111,7 @@ EXTRA_SUFFIX_LINKER_ARGS+= /FORCE:MULTIPLE
 endif
 
 # without this the regsvr32 will fail; tried adding explict dllexport() in c++ code but couldnt find the right syntax to make it work
-EXTRA_SUFFIX_LINKER_ARGS += /DEF:Sources/ActiveLedIt.def
+EXTRA_SUFFIX_LINKER_ARGS += -DEF:Sources/ActiveLedIt.def
 
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs) $(ObjDir)ActiveLedIt.tlb
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "

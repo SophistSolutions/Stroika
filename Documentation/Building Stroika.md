@@ -10,7 +10,7 @@ This build process is cross-platform. It supports cross-compiling, and builds on
 
 ---
 
-## Quick Start
+## <a name="Quick-Start">Quick Start</a>
 
 ```bash
 wget https://github.com/SophistSolutions/Stroika/archive/v2.1-Release.tar.gz
@@ -60,6 +60,8 @@ It takes a while to build all of Stroika (10-20 minutes per configuration), so a
 ### Install required tools
 
 This mostly conists of GNU make, and perl (see details below depending on your platform). After that, the Stroika build process will prompt you for anything else you need.
+
+You may find it helpful to review the instructions in [./InstallingDevEnvironment.md](InstallingDevEnvironment.md)
 
 #### Required for ALL platforms
 

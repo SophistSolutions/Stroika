@@ -1,0 +1,19 @@
+#!/bin/bash
+shopt -s nocasematch
+
+#
+# Based on https://stackoverflow.com/questions/714100/os-detecting-makefile/52062069#52062069
+#	Enumeration of common DETECTED_HOST_OS to check for if #if code
+#			Windows (not sure what this means, cuz not cygwin or msys and running make?)
+#			Cygwin
+#			MSYS
+#			Linux
+#			Darwin
+#
+DETECTED_HOST_OS=`uname 2>/dev/null` || echo Unknown
+
+if [[ $DETECTED_HOST_OS =~ "cygwin" ]] ; then DETECTED_HOST_OS="Cygwin"; fi;
+if [[ $DETECTED_HOST_OS =~ "MSYS" ]] ; then DETECTED_HOST_OS="MSYS"; fi;
+if [[ $DETECTED_HOST_OS =~ "MINGW" ]] ; then DETECTED_HOST_OS="MSYS"; fi;
+
+echo ${DETECTED_HOST_OS}

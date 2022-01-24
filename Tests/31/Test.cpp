@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 //  TEST    Foundation::Cryptography
 #include "Stroika/Foundation/StroikaPreComp.h"
@@ -541,9 +541,11 @@ namespace {
                 shared_ptr<OpenSSL::LibraryContext::TemporarilyAddProvider> providerAdder;
                 try {
 #if qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
+                    DISABLE_COMPILER_MSC_WARNING_START (4127); //warning C4127: conditional expression is constant
                     if (not(Debug::kBuiltWithAddressSanitizer and provider == OpenSSL::LibraryContext::kLegacyProvider)) {
                         providerAdder = make_shared<OpenSSL::LibraryContext::TemporarilyAddProvider> (&OpenSSL::LibraryContext::sDefault, provider);
                     }
+                    DISABLE_COMPILER_MSC_WARNING_END (4127);
 #else
                     providerAdder = make_shared<OpenSSL::LibraryContext::TemporarilyAddProvider> (&OpenSSL::LibraryContext::sDefault, provider);
 #endif

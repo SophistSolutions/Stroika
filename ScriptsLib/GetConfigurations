@@ -89,8 +89,8 @@ if [ "$CONFIG_TAG_RESTRICTION" == "" ] ; then
   	NEW_CONFIGS="$RAW_CONFIGS"
   fi
   if [ $ALLDEFAULT -eq 1 ]; then
-    UNAME=`uname -o 2>/dev/null || uname`
-    if [ $UNAME == "" ]; then
+    UNAME=`$MY_PATH/DetectedHostOS`
+    if [ "$UNAME" == "" ]; then
       UNAME=`uname`
     fi
     NEW_CONFIGS=""

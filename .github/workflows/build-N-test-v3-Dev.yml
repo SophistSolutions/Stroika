@@ -94,7 +94,7 @@ jobs:
     ###
     #if: github.ref == 'refs/heads/v3-Release' || matrix.includeInDevBranchBuilds
     env:
-      # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
+      # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
     container: ${{ matrix.container_image }}
     steps:
@@ -171,7 +171,7 @@ jobs:
           #   extra_config_args: --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
     env:
-      # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
+      # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
     steps:
       - uses: actions/checkout@v2
@@ -241,36 +241,50 @@ jobs:
       matrix:
         # Add to extra_config_args for build speed: --Xerces no --OpenSSL no --lzma no --boost no
         include:
-          - displayTargetName: windows-x86-Debug
+          - displayTargetName: windows-cygwin-x86-Debug
             os: windows
             runs_on: windows-latest
             container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
             config_name: Debug
             extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
             includeInDevBranchBuilds: true
-          # - displayTargetName: windows-x86-Release
+          # - displayTargetName: windows-cygwin-x86-Release
           #   os: windows
           #   runs_on: windows-latest
           #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
           #   config_name: Release
           #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
-          # - displayTargetName: windows-x86_64-Debug
+          # - displayTargetName: windows-cygwin-x86_64-Release
           #   os: windows
           #   runs_on: windows-latest
           #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+          #   config_name: Release
+          #   extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
+          #   includeInDevBranchBuilds: false
+          # - displayTargetName: windows-msys-x86-Debug
+          #   os: windows
+          #   runs_on: windows-latest
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
           #   config_name: Debug
-          #   extra_config_args: --arch x86_64 --apply-default-debug-flags --trace2file enable
+          #   extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
           #   includeInDevBranchBuilds: false
-          # - displayTargetName: windows-x86_64-Release
+          # - displayTargetName: windows-msys-x86-Release
           #   os: windows
           #   runs_on: windows-latest
-          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
           #   config_name: Release
           #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
+          - displayTargetName: windows-msys-x86_64-Release
+            os: windows
+            runs_on: windows-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
+            config_name: Release
+            extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
+            includeInDevBranchBuilds: true
     env:
-      # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
+      # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
       ARTIFACTS_DIR: "c:/Artifacts/"
     steps:
@@ -301,7 +315,7 @@ jobs:
       - name: Git Checkout
         shell: "bash"
         run: |
-          docker exec buildContainer sh -c "git clone https://github.com/SophistSolutions/Stroika.git && cd Stroika && git checkout ${{ steps.extract_branch.outputs.branch }}"
+          docker exec --workdir c:/ buildContainer git clone https://github.com/SophistSolutions/Stroika.git --branch ${{ steps.extract_branch.outputs.branch }}
       - name: Configure
         shell: "bash"
         run: |
@@ -324,7 +338,7 @@ jobs:
         shell: "bash"
         # due to flaws in docker (windows must stop) - and cp no wildcards
         run: |
-          docker exec --workdir c:/Stroika buildContainer bash -c 'mkdir TRACE_LOGS && cp $TEMP/Trace*.txt TRACE_LOGS/'
+          docker exec --workdir c:/Stroika buildContainer sh -c 'mkdir TRACE_LOGS && cp $TEMP/Trace*.txt TRACE_LOGS/'
           docker stop buildContainer
           docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
           docker cp buildContainer:Stroika/TRACE_LOGS $ARTIFACTS_DIR 2> /dev/null
@@ -373,7 +387,7 @@ jobs:
 
     - name: Configure
       run: |
-        ./configure Release --compiler-driver g++-10 --cppstd-version c++20 --apply-default-release-flags
+        ./configure Release --compiler-driver g++-10 --cppstd-version c++20 --apply-default-release-flags --lto disable
         cat ConfigurationFiles/Release.xml
 
     # Break out third-party-components to do clean so we dont run out of disk space, and break out TPC AND library

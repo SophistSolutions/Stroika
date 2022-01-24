@@ -14,7 +14,7 @@ if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=
 
 
 if [ "$BUILD_EXTRA_COMPILERS_IF_MISSING" == "" ] ; then 
-	if [ $CONTINUE -eq 0 ]  && [ "$BUILD_CONFIGURATIONS_MAKEFILE_TARGET" != "default-configurations" ] && [ "$(uname -s)" == "Linux" ]; then
+	if [ $CONTINUE -eq 0 ]  && [ "$BUILD_CONFIGURATIONS_MAKEFILE_TARGET" != "default-configurations" ] && [ "$DETECTED_HOST_OS" == "Linux" ]; then
 		if [ -w /private-compiler-builds/ ]; then
 			BUILD_EXTRA_COMPILERS_IF_MISSING=1
 		fi
@@ -34,13 +34,14 @@ VER=`ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 
 mkdir -p Tests/HistoricalRegressionTestResults
 
+DETECTED_HOST_OS=`ScriptsLib/DetectedHostOS`
 
-if [ "$(uname -s)" == "Darwin" ] ; then
-	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="MacOS_XCode11"; fi
+if [ "$DETECTED_HOST_OS" == "Darwin" ] ; then
+	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="MacOS_XCode13"; fi
     echo "USING MacOS($USE_TEST_BASENAME)..."
 fi
-if [ `uname -s | cut -b 1-6` == "CYGWIN" ] ; then
-	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Windows_VS2k17"; fi
+if [[ "$DETECTED_HOST_OS" == "Cygwin" || "$DETECTED_HOST_OS" == "MSYS" ]] ; then
+	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Windows_${DETECTED_HOST_OS}_VS2k19"; fi
     echo "USING Visual Studio ($USE_TEST_BASENAME)..."
 fi
 
@@ -52,7 +53,7 @@ else
 	ARM_TEST_MACHINE_AVAIL=0
 fi
 
-if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Linux"; fi
+if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="$DETECTED_HOST_OS"; fi
 TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VER-OUT.txt
 
 
@@ -93,7 +94,8 @@ echo "$PREFIX_OUT_LABEL" "    CONTINUE=$CONTINUE" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    BUILD_EXTRA_COMPILERS_IF_MISSING=$BUILD_EXTRA_COMPILERS_IF_MISSING" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    RASPBERRYPI_REMOTE_WITH_LOGIN=$RASPBERRYPI_REMOTE_WITH_LOGIN" >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "    ARM_TEST_MACHINE_AVAIL=$ARM_TEST_MACHINE_AVAIL" >>$TEST_OUT_FILE 2>&1
-echo "$PREFIX_OUT_LABEL" "    uname=`uname -a`" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    DETECTED_HOST_OS=$DETECTED_HOST_OS" >>$TEST_OUT_FILE 2>&1
+echo "$PREFIX_OUT_LABEL" "    uname -a=`uname -a`" >>$TEST_OUT_FILE 2>&1
 GIT_COMMIT=`git describe --tags`
 if [ $? -eq 0 ] ; then
 	echo "$PREFIX_OUT_LABEL" "    GIT COMMIT: $GIT_COMMIT" >>$TEST_OUT_FILE 2>&1
@@ -135,7 +137,7 @@ RASPBERRYPIVALGRINDCONFIGS=`ScriptsLib/GetConfigurations --quiet --config-tags "
 
 echo $RASPBERRYPIVALGRINDCONFIGS > /tmp/raspvalconfigs.txt
 ScriptsLib/GetConfigurations --quiet --config-tags "valgrind"  > /tmp/allvalgrindconfigs.txt
-if [ `uname -s | cut -b 1-6` != "CYGWIN" ] ; then
+if [ "$DETECTED_HOST_OS" == "Linux" ] ; then
 	LOCAL_CONFIGS=`comm -23 <(ScriptsLib/GetConfigurations --quiet --all-default) <(echo $RASPBERRYPICONFIGS)`
 	LOCAL_VALGRIND_CONFIGS=`comm -23 <(sort /tmp/allvalgrindconfigs.txt) <(sort /tmp/raspvalconfigs.txt)`
 	#provide better defaults for these flags

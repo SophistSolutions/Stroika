@@ -24,6 +24,18 @@ SHELL?=/bin/bash
 
 .DEFAULT_GOAL := all
 
+
+#
+# Based on https://stackoverflow.com/questions/714100/os-detecting-makefile/52062069#52062069
+#	Enumeration of common DETECTED_HOST_OS to check for if #if code
+#			Cygwin
+#			MSYS
+#			Linux
+#			Darwin
+#
+DETECTED_HOST_OS:=$(shell $(StroikaRoot)/ScriptsLib/DetectedHostOS)
+
+
 .PHONY:			all clean clobber check
 
 ##
@@ -31,4 +43,4 @@ SHELL?=/bin/bash
 ## sometimes cause trouble (not 100% sure why - this is a bit of a hack)
 ##
 STRIP_INCLUDE_COMPILER_FLAGS= \
-	$(shell  echo '$1' | sed 's/\/I"[^"]*"//g')
+	$(shell  echo '$1' | sed 's/[\/\-]I"[^"]*"//g')

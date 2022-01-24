@@ -7,7 +7,6 @@
 # NB: Invididual makefiles will OFTEN override these values - adding INCLUDES ot the list
 
 
-
 ifndef StroikaRoot
 $(error("StroikaRoot must be defined and included before this file"))
 endif
@@ -143,6 +142,39 @@ endif
 
 
 #
+# Big picture point of this - is to add tools stored in non-standard locations (like some SDK subdirectory)
+# into the path, so they can be invoked. We use an absolute paths for the commands we invoke (like CC)
+# but these in turn sometimes invoke other things (like C-Pre-Processor) and so we must make sure they have
+# their path variable setup properly to find those things (cmake maybe a better modern example).
+#
+# Note - before Stroika 2.1r1, we would annotate each needed cmake or cc etc line with 
+# something lile:
+#		PATH=${TOOLS_PATH_ADDITIONS}:${PATH})
+# which also works, but this is slightly simpler, and less reliant to careful scripting
+# at the point of call (bash is a shitty language).
+#
+# @todo if needed, could make this somehow conditional, or embed a conditional in impl of
+# PATH_FOR_TOOLPATH_ADDITION_IF_NEED
+#
+ifneq ($(TOOLS_PATH_ADDITIONS),)
+PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED=\
+$(eval export PATH=${TOOLS_PATH_ADDITIONS}:${shell echo $$PATH})
+endif
+
+
+
+
+#
+# Workaround MSYS compatabilty issues with microsoft visual C++ tools
+#
+ifeq ($(DETECTED_HOST_OS),MSYS)
+# See https://www.msys2.org/docs/filesystem-paths/
+export MSYS2_ARG_CONV_EXCL=*
+export MSYS2_ENV_CONV_EXCL=*
+endif
+
+
+#
 # This macro takes two arguments:
 #	$1 input src name
 #	$2 OUTFILE OBJ name
@@ -158,7 +190,7 @@ DEFAULT_CC_LINE=\
 	"$(CC)" \
 		$(CFLAGS) \
 		-c $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
-		/Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
+		-Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
 		| sed -n '1!p'
 endif
 
@@ -179,7 +211,7 @@ DEFAULT_CXX_LINE=\
 	"$(CXX)" \
 		$(CXXFLAGS) \
 		-c $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
-		/Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
+		-Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
 		| sed -n '1!p'
 endif
 
@@ -198,14 +230,16 @@ ifneq ($(RANLIB),)
 DEFAULT_LIBRARY_GEN_LINE+=	"$(RANLIB)" $1
 endif
 ifneq ($(LIBTOOL),)
-LIBTOOLFLAGS += /nologo
-LIBTOOLFLAGS += /MACHINE:${WIN_LIBCOMPATIBLE_ARCH}
-ifeq (/GL,$(findstring /GL,$(CXXFLAGS)))
-LIBTOOLFLAGS += /LTCG
+LIBTOOLFLAGS += -nologo
+LIBTOOLFLAGS += -MACHINE:${WIN_LIBCOMPATIBLE_ARCH}
+ifeq (-GL,$(findstring -GL,$(CXXFLAGS)))
+LIBTOOLFLAGS += -LTCG
 endif
 DEFAULT_LIBRARY_GEN_LINE+=\
-	export PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
-		"$(LIBTOOL)" /OUT:$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) ${LIBTOOLFLAGS}  $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2)
+	"$(LIBTOOL)" \
+		-OUT:$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
+		${LIBTOOLFLAGS} \
+		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2)
 endif
 
 
@@ -225,20 +259,19 @@ DEFAULT_LINK_LINE=\
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 MIDL_FLAGS=	${CPPFLAGS}
-MIDL_FLAGS+=	/nologo
-MIDL_FLAGS+=	/W1
-MIDL_FLAGS+=	/char signed
-#MIDL_FLAGS+=	/I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION))
-#MIDL_FLAGS+=	/I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)Library/Sources)
+MIDL_FLAGS+=	-nologo
+MIDL_FLAGS+=	-W1
+MIDL_FLAGS+=	-char signed
+#MIDL_FLAGS+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION))
+#MIDL_FLAGS+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)Library/Sources)
 
 DEFAULT_MIDL_LINE=\
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
-		"$(MIDL)" \
-			/iid $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$4)\
+	"$(MIDL)" \
+			-iid $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$4)\
 			$(MIDL_FLAGS)\
-			/h $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$3) \
-			/tlb $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
-			/target "NT60" \
+			-h $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$3) \
+			-tlb $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
+			-target "NT60" \
 			$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1)
 endif
 
@@ -247,23 +280,16 @@ endif
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 RC_FLAGS=	${CPPFLAGS}
-RC_FLAGS+=	/nologo
-RC_FLAGS+=	/I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION))"
-RC_FLAGS+=	/I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)Library/Sources)"
+RC_FLAGS+=	-nologo
+RC_FLAGS+=	-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION))"
+RC_FLAGS+=	-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)Library/Sources)"
 
 DEFAULT_RC_LINE=\
-	PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
-		"$(RC)" \
+	"$(RC)" \
 			$(RC_FLAGS)\
-			/Fo $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
+			-Fo $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
 			$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1)
 endif
 
 
 FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL=$(subst ",\",$1)
-
-
-
-ifneq (${TOOLS_PATH_ADDITIONS_BUGWORKAROUND},)
-export PATH:=${TOOLS_PATH_ADDITIONS_BUGWORKAROUND}:${PATH}
-endif
