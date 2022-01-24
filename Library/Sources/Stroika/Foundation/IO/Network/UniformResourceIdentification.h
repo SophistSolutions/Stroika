@@ -161,7 +161,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual bool operator== (const SchemeType& rhs) const;
 
     private:
-        static Common::strong_ordering TWC_ (const SchemeType& lhs, const SchemeType& rhs); // utility code share between c++17 and c++20 versions
+        static strong_ordering TWC_ (const SchemeType& lhs, const SchemeType& rhs); // utility code share between c++17 and c++20 versions
 
     public:
         nonvirtual optional<PortType> GetDefaultPort () const;
@@ -272,7 +272,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual bool operator== (const Host& rhs) const;
 
     private:
-        static Common::strong_ordering TWC_ (const Host& lhs, const Host& rhs); // utility code share between c++17 and c++20 versions
+        static strong_ordering TWC_ (const Host& lhs, const Host& rhs); // utility code share between c++17 and c++20 versions
 
     public:
         /**
@@ -373,7 +373,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual bool operator== (const UserInfo& rhs) const;
 
     private:
-        static Common::strong_ordering TWC_ (const UserInfo& lhs, const UserInfo& rhs); // utility code share between c++17 and c++20 versions
+        static strong_ordering TWC_ (const UserInfo& lhs, const UserInfo& rhs); // utility code share between c++17 and c++20 versions
 
     public:
         /**
@@ -500,7 +500,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual bool operator== (const Authority& rhs) const;
 
     private:
-        static Common::strong_ordering TWC_ (const Authority& lhs, const Authority& rhs); // utility code share between c++17 and c++20 versions
+        static strong_ordering TWC_ (const Authority& lhs, const Authority& rhs); // utility code share between c++17 and c++20 versions
 
     public:
         /**
@@ -570,7 +570,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual bool operator== (const Query& rhs) const;
 
     private:
-        static Common::strong_ordering TWC_ (const Query& lhs, const Query& rhs); // utility code share between c++17 and c++20 versions
+        static strong_ordering TWC_ (const Query& lhs, const Query& rhs); // utility code share between c++17 and c++20 versions
 
     public:
         /**

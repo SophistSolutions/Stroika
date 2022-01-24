@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Common {
     constexpr inline auto KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator<=> (const KeyValuePair& rhs) const
     {
         auto cmp = fKey <=> rhs.fKey;
-        if (cmp != Common::kEqual) {
+        if (cmp != strong_ordering::equal) {
             return cmp;
         }
         return fValue <=> rhs.fValue;

@@ -15,8 +15,8 @@
  */
 
 #include <algorithm>
-#include <compare>
 #include <cmath>
+#include <compare>
 #include <cstdlib>
 #include <map>
 #include <string>
@@ -250,7 +250,7 @@ namespace Stroika::Frameworks::Led {
         /**
          */
         constexpr strong_ordering operator<=> (const Rect_Base& rhs) const = default;
-        bool operator== (const Rect_Base& rhs) const;
+        bool                      operator== (const Rect_Base& rhs) const;
     };
 
     /**
@@ -631,6 +631,7 @@ namespace Stroika::Frameworks::Led {
         /**
          */
         strong_ordering operator<=> (const FontSpecification& rhs) const;
+
     public:
         /**
          */

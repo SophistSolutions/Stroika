@@ -142,7 +142,7 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual bool operator== (const InternetMediaType& rhs) const;
 
     private:
-        nonvirtual Common::strong_ordering THREEWAYCOMPARE_ (const InternetMediaType& rhs) const;
+        nonvirtual strong_ordering THREEWAYCOMPARE_ (const InternetMediaType& rhs) const;
 
     public:
         /**

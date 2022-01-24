@@ -6,8 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
-#include <compare>
 #include <climits>
+#include <compare>
 #include <string>
 
 #include "../Characters/String.h"

@@ -254,7 +254,7 @@ Calling comparison functions is simple.
 This works beautifully. Just writing code naturally as
 
 ```C++
-    if (L"aa" < String (L"ss")) {
+    if (L"aa" < String{L"ss"}) {
     }
 ```
 
@@ -263,15 +263,6 @@ All the various operators should just work with no effort, on both C++ 17, and w
 #### Using possibly explicit comparison functor
 
 To support the C++20 compare_three_way function object (compatibly with C++17), it intoduces its own copy of this in the 'Common' namespace, along with:
-
-```C++
-  Common::strong_ordering   (alias for std::strong_ordering)
-  Common::kLess             (alias for std::strong_ordering::less)
-  Common::kEqual            (alias for std::strong_ordering::equal)
-  Common::kGreater          (alias for std::strong_ordering::greater)
-```
-
-For code which assumes C++20 or later, just use the appropriate C++20 types/values/classes, with no need for the C++17-compatability helpers.
 
 Then to make use of these explicit function compare objects (the most common case) where the comparison function is not parameterized:
 
@@ -286,7 +277,7 @@ or
 
 ```C++
 auto compareFunc = Common::compare_three_way<T,T>{};
-if (compareFunc(t1, t2) == Common::kLess) {
+if (compareFunc(t1, t2) == strong_ordering::less) {
   ...
 }
 ```
@@ -309,7 +300,7 @@ For the more complicated case of passing in explicit parameters, you use the nes
   }
 
   var cmp3 = String::ThreeWayComparer{String::CaseInsensivie};
-  if (cmp2(s1, s2) == Common::kEqual) { // can say == 0, if C++20 or later
+  if (cmp2(s1, s2) == strong_ordering::equal) { // can say == 0, if C++20 or later
     // REACHED
   }
 ```

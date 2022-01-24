@@ -451,8 +451,8 @@ namespace Stroika::Foundation::DataExchange {
      */
     struct VariantValue::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr ThreeWayComparer (bool exactTypeMatchOnly = false);
-        nonvirtual Common::strong_ordering operator() (const VariantValue& lhs, const VariantValue& rhs) const;
-        bool                               fExactTypeMatchOnly;
+        nonvirtual strong_ordering operator() (const VariantValue& lhs, const VariantValue& rhs) const;
+        bool                       fExactTypeMatchOnly;
     };
 
 }

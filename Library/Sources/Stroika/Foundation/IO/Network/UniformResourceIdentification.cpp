@@ -88,7 +88,7 @@ optional<PortType> SchemeType::GetDefaultPort () const
     return kPredefined_.Lookup (*this);
 }
 
-Common::strong_ordering SchemeType::TWC_ (const SchemeType& lhs, const SchemeType& rhs)
+strong_ordering SchemeType::TWC_ (const SchemeType& lhs, const SchemeType& rhs)
 {
     using namespace Characters;
     return String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(lhs, rhs);
@@ -327,21 +327,21 @@ String Query::ToString () const
     return Characters::ToString (fMap_);
 }
 
-Common::strong_ordering Query::TWC_ (const Query& lhs, const Query& rhs)
+strong_ordering Query::TWC_ (const Query& lhs, const Query& rhs)
 {
     // Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive
 
     // comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
     // So pick a preferred ordering (alphabetical) - and compare one after the other
     for (String i : (Set<String>{lhs.GetMap ().Keys ()} + Set<String>{rhs.GetMap ().Keys ()}).OrderBy (less<String>{})) {
-        optional<String>        lhsVal = lhs.GetMap ().Lookup (i);
-        optional<String>        rhsVal = rhs.GetMap ().Lookup (i);
-        Common::strong_ordering cmp    = Common::ThreeWayCompare (lhsVal, rhsVal);
-        if (cmp != Common::kEqual) {
+        optional<String> lhsVal = lhs.GetMap ().Lookup (i);
+        optional<String> rhsVal = rhs.GetMap ().Lookup (i);
+        strong_ordering  cmp    = Common::ThreeWayCompare (lhsVal, rhsVal);
+        if (cmp != strong_ordering::equal) {
             return cmp;
         }
     }
-    return Common::kEqual;
+    return strong_ordering::equal;
 }
 
 /*

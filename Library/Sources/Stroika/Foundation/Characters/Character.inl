@@ -166,7 +166,7 @@ namespace Stroika::Foundation::Characters {
                 return Common::ThreeWayCompare (static_cast<SIGNED_WCHART_> (lhs.GetCharacterCode ()), static_cast<SIGNED_WCHART_> (rhs.GetCharacterCode ()));
             default:
                 AssertNotReached ();
-                return Common::kEqual;
+                return strong_ordering::equal;
         }
     }
 

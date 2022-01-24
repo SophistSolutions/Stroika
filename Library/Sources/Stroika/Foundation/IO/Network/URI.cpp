@@ -350,25 +350,25 @@ URI URI::Combine (const URI& uri) const
     return result;
 }
 
-Common::strong_ordering URI::TWC_ (const URI& lhs, const URI& rhs)
+strong_ordering URI::TWC_ (const URI& lhs, const URI& rhs)
 {
     using namespace UniformResourceIdentification;
-    if (auto cmp = Common::ThreeWayCompare (lhs.GetScheme (), rhs.GetScheme ()); cmp != Common::kEqual) {
+    if (auto cmp = Common::ThreeWayCompare (lhs.GetScheme (), rhs.GetScheme ()); cmp != strong_ordering::equal) {
         return cmp;
     }
-    if (auto cmp = Common::ThreeWayCompare (lhs.GetAuthority (), rhs.GetAuthority ()); cmp != Common::kEqual) {
+    if (auto cmp = Common::ThreeWayCompare (lhs.GetAuthority (), rhs.GetAuthority ()); cmp != strong_ordering::equal) {
         return cmp;
     }
-    if (auto cmp = Common::ThreeWayCompare (lhs.GetPath (), rhs.GetPath ()); cmp != Common::kEqual) {
+    if (auto cmp = Common::ThreeWayCompare (lhs.GetPath (), rhs.GetPath ()); cmp != strong_ordering::equal) {
         return cmp;
     }
-    if (auto cmp = Common::ThreeWayCompare (lhs.GetQuery (), rhs.GetQuery ()); cmp != Common::kEqual) {
+    if (auto cmp = Common::ThreeWayCompare (lhs.GetQuery (), rhs.GetQuery ()); cmp != strong_ordering::equal) {
         return cmp;
     }
-    if (auto cmp = Common::ThreeWayCompare (lhs.GetFragment (), rhs.GetFragment ()); cmp != Common::kEqual) {
+    if (auto cmp = Common::ThreeWayCompare (lhs.GetFragment (), rhs.GetFragment ()); cmp != strong_ordering::equal) {
         return cmp;
     }
-    return Common::kEqual;
+    return strong_ordering::equal;
 }
 
 /*

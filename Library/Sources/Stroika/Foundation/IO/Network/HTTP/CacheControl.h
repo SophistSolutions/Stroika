@@ -126,7 +126,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          */
         struct MaxStale {
             //An optional value in seconds indicates the upper limit of staleness the client will accept.
-            optional<int> fAmount;
+            optional<int>              fAmount;
             nonvirtual strong_ordering operator<=> (const MaxStale&) const = default;
         };
         optional<MaxStale> fMaxStale;

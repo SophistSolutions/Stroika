@@ -567,8 +567,8 @@ namespace Stroika::Foundation::Time {
 
         /**
          */
-        nonvirtual Common::strong_ordering operator() (const DateTime& lhs, const DateTime& rhs) const;
-        bool                               fCoerceToCommonTimezone;
+        nonvirtual strong_ordering operator() (const DateTime& lhs, const DateTime& rhs) const;
+        bool                       fCoerceToCommonTimezone;
     };
 
     /**
