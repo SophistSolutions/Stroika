@@ -133,11 +133,7 @@ Traversal::Iterator<Character> String::_IRep::MakeIterator () const
             return fCurIdx == rrhs->fCurIdx;
         }
     };
-#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-    _SharedPtrIRep sharedContainerRep = dynamic_pointer_cast<_SharedPtrIRep::element_type> (const_cast<String::_IRep*> (this)->shared_from_this ());
-#else
     _SharedPtrIRep sharedContainerRep = const_cast<String::_IRep*> (this)->shared_from_this ();
-#endif
     return Iterator<Character>{Iterator<Character>::MakeSmartPtr<MyIterRep_> (sharedContainerRep)};
 }
 

@@ -485,11 +485,7 @@ namespace Stroika::Foundation::Containers {
             {
             }
         };
-#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        auto rep = dynamic_pointer_cast<_IRep> (const_cast<_IRep*> (this)->shared_from_this ());
-#else
         auto rep = const_cast<_IRep*> (this)->shared_from_this ();
-#endif
         return MyIterable_{Bijection<DOMAIN_TYPE, RANGE_TYPE>{rep}};
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
@@ -532,11 +528,7 @@ namespace Stroika::Foundation::Containers {
             {
             }
         };
-#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        auto rep = dynamic_pointer_cast<_IRep> (const_cast<_IRep*> (this)->shared_from_this ());
-#else
         auto rep = const_cast<_IRep*> (this)->shared_from_this ();
-#endif
         return MyIterable_{Bijection<DOMAIN_TYPE, RANGE_TYPE>{rep}};
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>

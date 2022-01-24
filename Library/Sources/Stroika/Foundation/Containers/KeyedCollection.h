@@ -541,12 +541,7 @@ namespace Stroika::Foundation::Containers {
      *  the KeyedCollection<KEY_TYPE, T, TRAITS> container API.
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    class KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep : public Iterable<T>::_IRep
-#if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        ,
-                                                        public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep>
-#endif
-    {
+    class KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep : public Iterable<T>::_IRep, public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep> {
     protected:
         using _IRepSharedPtr = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRepSharedPtr;
 

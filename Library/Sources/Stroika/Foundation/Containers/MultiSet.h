@@ -423,12 +423,8 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T, typename TRAITS>
     class MultiSet<T, TRAITS>::_IRep
-        : public Iterable<CountedValue<T>>::_IRep
-#if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        ,
-          public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename MultiSet<T, TRAITS>::_IRep>
-#endif
-    {
+        : public Iterable<CountedValue<T>>::_IRep,
+          public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename MultiSet<T, TRAITS>::_IRep> {
     private:
         using inherited = typename Iterable<CountedValue<T>>::_IRep;
 
