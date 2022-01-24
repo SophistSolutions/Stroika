@@ -54,8 +54,8 @@
 #define qLed_Version_FinalBuild kStroika_Version_FinalBuild
 
 // MAJOR VERSION OF LED is 2 + VERSION OF STROIKA
-#if kStroika_Version_Major == 2 && kStroika_Version_Minor == 1
-#define qLed_MajorMinorVersionString "4.1"
+#if kStroika_Version_Major == 3 && kStroika_Version_Minor == 0
+#define qLed_MajorMinorVersionString "5.0"
 #else
 #warning "Led version needs manual update here..."
 #define qLed_MajorMinorVersionString "4.1"
