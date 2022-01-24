@@ -58,14 +58,14 @@ RUN %TEMP%\vs_buildtools.exe `
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 ARG MSYS_LatestRelease=https://github.com/msys2/msys2-installer/releases/download/nightly-x86_64/msys2-base-x86_64-latest.sfx.exe
-
+ARG MSYS_20220118=https://github.com/msys2/msys2-installer/releases/download/2022-01-18/msys2-base-x86_64-20220118.sfx.exe
 #
 # note: rebaseall to try and address
 # occasionally getting
 #       wget 3470 child_info_fork::abort: \??\C:\msys64\usr\bin\msys-crypto-1.1.dll: Loaded to different address: parent(0x478B980000) != child(0x400000
 # 
 RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; `
-  Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_LatestRelease" -OutFile msys2.exe; `
+  Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20220118" -OutFile msys2.exe; `
   .\msys2.exe -y -oC:\; `
   Remove-Item msys2.exe ; `
   function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } `
