@@ -347,7 +347,7 @@ jobs:
         run: docker pull ${{ matrix.container_image }}
       - name: Start docker build environment
         run: |
-          docker run --tty --memory 5G --cpus 2 --storage-opt 'size=50GB' --detach --name buildContainer ${{ matrix.container_image }}
+          docker run --memory 5G --cpus 2 --storage-opt 'size=50GB' --detach --name buildContainer ${{ matrix.container_image }}
       - name: Print Info about docker system
         shell: "bash"
         run: |
