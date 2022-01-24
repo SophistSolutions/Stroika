@@ -69,6 +69,8 @@ FETCHURLS+=http://artfiles.org/openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=https://ftp.heanet.ie/mirrors/ftp.openssl.org/source/$(BASENAME).tar.gz
 
 
+SHELL=/bin/bash
+
 
 CONFIG_ARGS=
 
@@ -294,8 +296,7 @@ export LDFLAGS
 
 
 ifeq ($(DETECTED_HOST_OS),MSYS)
-.SHELL=bash
-.SHELLFLAGS= -c -l
+.SHELLFLAGS= -c -i
 endif
 
 doBuilds_:
