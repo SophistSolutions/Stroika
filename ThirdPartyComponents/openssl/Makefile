@@ -298,7 +298,8 @@ export LDFLAGS
 #@ todo explain
 ifeq ($(DETECTED_HOST_OS),MSYS)
 #.SHELLFLAGS= -c -i
-.SHELLFLAGS= -rcfile /etc/bash.bashrc -c
+#.SHELLFLAGS= -rcfile /etc/bash.bashrc -c
+export BASH_ENV=/etc/profile
 endif
 
 doBuilds_:
