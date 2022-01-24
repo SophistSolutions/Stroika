@@ -295,8 +295,10 @@ export CXXFLAGS
 export LDFLAGS
 
 
+#@ todo explain
 ifeq ($(DETECTED_HOST_OS),MSYS)
-.SHELLFLAGS= -c -i
+#.SHELLFLAGS= -c -i
+.SHELLFLAGS= -rcfile /etc/bash.bashrc -c
 endif
 
 doBuilds_:
