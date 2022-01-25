@@ -295,10 +295,20 @@ export CXXFLAGS
 export LDFLAGS
 
 
-#@ todo explain
+#
+# Running on MSYS in interactive mode, this isn't needed. The library builds fine. But it fails badly
+# otherwise. Apparently, this is something todo with running the /etc/profile script which sets a bunch of path
+# and other variables.
+#
+# I tried many other tricks (like setting .SHELLFLAGS), but this appears to work best (setting -i or -l .SHELLFLAGS also works
+# but creates other problems)
+#		--LGP 2022-01-24
+# 
 ifeq ($(DETECTED_HOST_OS),MSYS)
-#.SHELLFLAGS= -c -i
-#.SHELLFLAGS= -rcfile /etc/bash.bashrc -c
+# From https://linux.die.net/man/1/bash
+#		When bash is started non-interactively, to run a shell script, for example, it looks
+#		for the variable BASH_ENV in the environment, expands its value if it appears there, 
+#		and uses the expanded value as the name of a file to read and execute.
 export BASH_ENV=/etc/profile
 endif
 
