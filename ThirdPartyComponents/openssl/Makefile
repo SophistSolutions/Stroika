@@ -294,7 +294,6 @@ export CFLAGS
 export CXXFLAGS
 export LDFLAGS
 
-
 #
 # Running on MSYS in interactive mode, this isn't needed. The library builds fine. But it fails badly
 # otherwise. Apparently, this is something todo with running the /etc/profile script which sets a bunch of path
