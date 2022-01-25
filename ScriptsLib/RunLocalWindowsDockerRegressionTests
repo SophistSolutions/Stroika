@@ -4,8 +4,8 @@
 #       ./ScriptsLib/RunLocalWindowsDockerRegressionTests
 #       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 USE_TEST_BASENAME=Windows_cygwin_vs2k19-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
 #       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 USE_TEST_BASENAME=Windows_cygwin_vsk22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
-#       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 USE_TEST_BASENAME=Windows_MSYS_vs2k19-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
-#       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 USE_TEST_BASENAME=Windows_MSYS_vsk22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
+#       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 USE_TEST_BASENAME=Windows_msys_vs2k19-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
+#       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 USE_TEST_BASENAME=Windows_msys_vsk22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
 #
 #       Images=( cygwin-vs2k19 cygwin-vs2k22 msys-vs2k19 msys-vs2k22 )
 #       for var in "${Images[@]}" ; do CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${var} USE_TEST_BASENAME=Windows_${var}-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests ; done
