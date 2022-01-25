@@ -34,12 +34,9 @@ ARG VS_16_11_7=https://download.visualstudio.microsoft.com/download/pr/c91ba3a2-
 ARG VS_16_11_8=https://download.visualstudio.microsoft.com/download/pr/b763973d-da6e-4025-834d-d8bc48e7d37f/4c9d3173a35956d1cf87e0fa8a9c79a0195e6e2acfe39f1ab92522d54a3bebb9/vs_BuildTools.exe
 ARG VS_16_11_9=https://download.visualstudio.microsoft.com/download/pr/9a26f37e-6001-429b-a5db-c5455b93953c/f1c4f7b32e6da59b0a80c3a800d702211551738bcec68331aee1ab06d859be3d/vs_BuildTools.exe
 
-
-
 SHELL ["powershell"]
 RUN Invoke-WebRequest "$env:VS_16_11_9" `
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
-
 SHELL ["cmd", "/S", "/C"]
 RUN %TEMP%\vs_buildtools.exe `
     --add Microsoft.VisualStudio.Workload.VCTools `
@@ -56,13 +53,8 @@ RUN %TEMP%\vs_buildtools.exe `
 
 # Install MSYS
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
-
 ARG MSYS_LatestRelease=https://github.com/msys2/msys2-installer/releases/download/nightly-x86_64/msys2-base-x86_64-latest.sfx.exe
 ARG MSYS_20220118=https://github.com/msys2/msys2-installer/releases/download/2022-01-18/msys2-base-x86_64-20220118.sfx.exe
-#
-# note: rebaseall to try and address occasionally getting
-#       wget 3470 child_info_fork::abort: \??\C:\msys64\usr\bin\msys-crypto-1.1.dll: Loaded to different address: parent(0x478B980000) != child(0x400000
-# 
 RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; `
   Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20220118" -OutFile msys2.exe; `
   .\msys2.exe -y -oC:\; `
@@ -72,8 +64,7 @@ RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tl
   msys 'pacman --noconfirm -Syuu'; `
   msys 'pacman --noconfirm -Syuu'; `
   msys 'pacman --noconfirm -S base-devel git unzip p7zip'; `
-  msys 'pacman --noconfirm -Scc'; `
-  msys 'exec ash -c /bin/rebaseall'
+  msys 'pacman --noconfirm -Scc';
 
 
 # Set PATH variable (to include MSYS)
@@ -84,12 +75,12 @@ RUN  `
 
 
 COPY Windows-MSYS-VS2k19/Getting-Started-With-Stroika.md c:/msys64
-COPY Windows-MSYS-VS2k19/.bash_profile Windows-MSYS-VS2k19/.bashrc c:/msys64/
+COPY Windows-MSYS-VS2k22/.bash_profile c:/msys64/
 
 
 CMD ["bash.exe", "-l"]
 
 # ### NOTE TO RUN
-# ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
-# ###     docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+# ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
+# ###     docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
 # ###     see ScriptsLib/RunLocalWindowsDockerRegressionTests
