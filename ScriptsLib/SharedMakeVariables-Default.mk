@@ -165,12 +165,12 @@ endif
 
 
 #
-# Workaround MSYS compatabilty issues with microsoft visual C++ tools
+# Workaround MSYS compatabilty issues with microsoft visual C++ tools.
+#		Note: MSYS2_ENV_CONV_EXCL doesn't appear necessary (as of 2022-01-25)
 #
 ifeq ($(DETECTED_HOST_OS),MSYS)
 # See https://www.msys2.org/docs/filesystem-paths/
 export MSYS2_ARG_CONV_EXCL=*
-export MSYS2_ENV_CONV_EXCL=*
 endif
 
 
