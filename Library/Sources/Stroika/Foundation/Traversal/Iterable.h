@@ -1294,11 +1294,7 @@ namespace Stroika::Foundation::Traversal {
      *  Most abstract Containers in Stroika subclass of Iterable<T>.
      */
     template <typename T>
-    class Iterable<T>::_IRep
-#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        : public IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename Iterable<T>::_IRep>
-#endif
-    {
+    class Iterable<T>::_IRep {
     protected:
         _IRep () = default;
 

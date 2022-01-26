@@ -1,6 +1,4 @@
-﻿# escape=`
-
-# SEE https://hub.docker.com/_/microsoft-windows-servercore for list of versions
+﻿# SEE https://hub.docker.com/_/microsoft-windows-servercore for list of versions
 #ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:2004
 #ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
 #ARG BASE_IMAGE=mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019
@@ -14,17 +12,17 @@ FROM ${BASE_IMAGE}
 # List of workloads and components to add from
 # https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?vs-2019&view=vs-2019
 #
-#    --add Microsoft.VisualStudio.Component.VC.CoreBuildTools `
-#    --add Microsoft.VisualStudio.Component.UniversalBuildTools `
-#    --add Microsoft.VisualStudio.Component.VC.ATLMFC `
+#    --add Microsoft.VisualStudio.Component.VC.CoreBuildTools \
+#    --add Microsoft.VisualStudio.Component.UniversalBuildTools \
+#    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
 #
 
 # # From hints on https://docs.microsoft.com/en-us/visualstudio/install/build-tools-container?view=vs-2022
-#    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 `
-#    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 `
-#    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 `
-#    --remove Microsoft.VisualStudio.Component.Windows81SDK `
-#    --quiet --wait --norestart --noUpdateInstaller --nocache modify `
+#    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
+#    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 \
+#    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
+#    --remove Microsoft.VisualStudio.Component.Windows81SDK \
+#    --quiet --wait --norestart --noUpdateInstaller --nocache modify \
 
 #
 # VS versions
@@ -39,60 +37,52 @@ ARG VS_17_0_4=https://download.visualstudio.microsoft.com/download/pr/99fe5fea-e
 ARG VS_17_0_5=https://download.visualstudio.microsoft.com/download/pr/ce8663b0-08ed-410a-9f5d-4f9469d1b2cb/0279f6067c003f8b81621502fa95a1df377b1fdd7769a8e80ff63df26756d4e2/vs_BuildTools.exe
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_17_0_5" `
+RUN Invoke-WebRequest "$env:VS_17_0_5" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
-
 SHELL ["cmd", "/S", "/C"]
-RUN %TEMP%\vs_buildtools.exe `
-    --installPath "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools" `
-    --includeRecommended `
-    --add Microsoft.VisualStudio.Workload.VCTools `
-    --add Microsoft.VisualStudio.Workload.UniversalBuildTools `
-    --add Microsoft.VisualStudio.Component.VC.ATLMFC `
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 `
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 `
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 `
-    --remove Microsoft.VisualStudio.Component.Windows81SDK `
-    --quiet --wait --norestart --noUpdateInstaller `
+RUN %TEMP%\vs_buildtools.exe \
+    --installPath "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools" \
+    --includeRecommended \
+    --add Microsoft.VisualStudio.Workload.VCTools \
+    --add Microsoft.VisualStudio.Workload.UniversalBuildTools \
+    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
+    --remove Microsoft.VisualStudio.Component.Windows81SDK \
+    --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0
-
 
 
 # Install MSYS
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
-
 ARG MSYS_LatestRelease=https://github.com/msys2/msys2-installer/releases/download/nightly-x86_64/msys2-base-x86_64-latest.sfx.exe
-
-RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; `
-  Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_LatestRelease" -OutFile msys2.exe; `
-  .\msys2.exe -y -oC:\; `
-  Remove-Item msys2.exe ; `
-  function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } `
-  msys ' '; `
-  msys 'pacman --noconfirm -Syuu'; `
-  msys 'pacman --noconfirm -Syuu'; `
-  msys 'pacman --noconfirm -S base-devel git unzip p7zip'; `
-  msys 'pacman --noconfirm -Scc'; 
-
+ARG MSYS_20220118=https://github.com/msys2/msys2-installer/releases/download/2022-01-18/msys2-base-x86_64-20220118.sfx.exe
+RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
+  Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20220118" -OutFile msys2.exe; \
+  .\msys2.exe -y -oC:\; \
+  Remove-Item msys2.exe ; \
+  function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
+  msys ' '; \
+  msys 'pacman --noconfirm -Syuu'; \
+  msys 'pacman --noconfirm -Syuu'; \
+  msys 'pacman --noconfirm -S base-devel git unzip p7zip'; \
+  msys 'pacman --noconfirm -Scc';
 
 # Set PATH variable (to include MSYS)
 SHELL ["powershell"]
-RUN  `
-    $env:PATH =  $env:PATH + ';c:\msys64\usr\bin';   `
+RUN  \
+    $env:PATH =  $env:PATH + ';c:\msys64\usr\bin';   \
     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
 
 
 COPY Windows-MSYS-VS2k22/Getting-Started-With-Stroika.md c:/msys64
-COPY Windows-MSYS-VS2k22/.bash_profile Windows-MSYS-VS2k22/.bashrc c:/msys64/
+COPY Windows-MSYS-VS2k22/.bash_profile c:/msys64/
 
 
-# # Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, 
-# # and much worse with windows (in part due to available shell commands)
-# CMD ["cmd", "/c", "call FixupPath.bat && echo see Getting-Started-With-Stroika.md && cmd"]
-# CMD ["cmd", "/c", "echo see Getting-Started-With-Stroika.md && cmd"]
 CMD ["bash.exe", "-l"]
 
 # ### NOTE TO RUN
-# ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
-# ###     docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+# ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
+# ###     docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
 # ###     see ScriptsLib/RunLocalWindowsDockerRegressionTests

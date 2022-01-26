@@ -1,6 +1,4 @@
-﻿# escape=`
-
-# SEE https://hub.docker.com/_/microsoft-windows-servercore for list of versions
+﻿# SEE https://hub.docker.com/_/microsoft-windows-servercore for list of versions
 #ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:2004
 #ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
 #ARG BASE_IMAGE=mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019
@@ -14,9 +12,9 @@ FROM ${BASE_IMAGE}
 # List of workloads and components to add from
 # https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?vs-2019&view=vs-2019
 #
-#    --add Microsoft.VisualStudio.Component.VC.CoreBuildTools `
-#    --add Microsoft.VisualStudio.Component.UniversalBuildTools `
-#    --add Microsoft.VisualStudio.Component.VC.ATLMFC `
+#    --add Microsoft.VisualStudio.Component.VC.CoreBuildTools \
+#    --add Microsoft.VisualStudio.Component.UniversalBuildTools \
+#    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
 #
 
 #
@@ -34,61 +32,53 @@ ARG VS_16_11_7=https://download.visualstudio.microsoft.com/download/pr/c91ba3a2-
 ARG VS_16_11_8=https://download.visualstudio.microsoft.com/download/pr/b763973d-da6e-4025-834d-d8bc48e7d37f/4c9d3173a35956d1cf87e0fa8a9c79a0195e6e2acfe39f1ab92522d54a3bebb9/vs_BuildTools.exe
 ARG VS_16_11_9=https://download.visualstudio.microsoft.com/download/pr/9a26f37e-6001-429b-a5db-c5455b93953c/f1c4f7b32e6da59b0a80c3a800d702211551738bcec68331aee1ab06d859be3d/vs_BuildTools.exe
 
-
-
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_16_11_9" `
+RUN Invoke-WebRequest "$env:VS_16_11_9" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
-
 SHELL ["cmd", "/S", "/C"]
-RUN %TEMP%\vs_buildtools.exe `
-    --add Microsoft.VisualStudio.Workload.VCTools `
-    --add Microsoft.VisualStudio.Workload.UniversalBuildTools `
-    --add Microsoft.VisualStudio.Component.VC.ATLMFC `
-    --includeRecommended `
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 `
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 `
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 `
-    --remove Microsoft.VisualStudio.Component.Windows81SDK `
-    --quiet --wait --norestart --noUpdateInstaller `
+RUN %TEMP%\vs_buildtools.exe \
+    --add Microsoft.VisualStudio.Workload.VCTools \
+    --add Microsoft.VisualStudio.Workload.UniversalBuildTools \
+    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
+    --includeRecommended \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
+    --remove Microsoft.VisualStudio.Component.Windows81SDK \
+    --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0
 
 
 # Install MSYS
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
-
 ARG MSYS_LatestRelease=https://github.com/msys2/msys2-installer/releases/download/nightly-x86_64/msys2-base-x86_64-latest.sfx.exe
-
-RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; `
-  Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_LatestRelease" -OutFile msys2.exe; `
-  .\msys2.exe -y -oC:\; `
-  Remove-Item msys2.exe ; `
-  function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } `
-  msys ' '; `
-  msys 'pacman --noconfirm -Syuu'; `
-  msys 'pacman --noconfirm -Syuu'; `
-  msys 'pacman --noconfirm -S base-devel git unzip p7zip'; `
-  msys 'pacman --noconfirm -Scc'; 
+ARG MSYS_20220118=https://github.com/msys2/msys2-installer/releases/download/2022-01-18/msys2-base-x86_64-20220118.sfx.exe
+RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
+  Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20220118" -OutFile msys2.exe; \
+  .\msys2.exe -y -oC:\; \
+  Remove-Item msys2.exe ; \
+  function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
+  msys ' '; \
+  msys 'pacman --noconfirm -Syuu'; \
+  msys 'pacman --noconfirm -Syuu'; \
+  msys 'pacman --noconfirm -S base-devel git unzip p7zip'; \
+  msys 'pacman --noconfirm -Scc';
 
 
 # Set PATH variable (to include MSYS)
 SHELL ["powershell"]
-RUN  `
-    $env:PATH =  $env:PATH + ';c:\msys64\usr\bin';   `
+RUN  \
+    $env:PATH =  $env:PATH + ';c:\msys64\usr\bin';   \
     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
 
 
 COPY Windows-MSYS-VS2k19/Getting-Started-With-Stroika.md c:/msys64
-COPY Windows-MSYS-VS2k19/.bash_profile Windows-MSYS-VS2k19/.bashrc c:/msys64/
+COPY Windows-MSYS-VS2k22/.bash_profile c:/msys64/
 
 
-# # Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, 
-# # and much worse with windows (in part due to available shell commands)
-# CMD ["cmd", "/c", "call FixupPath.bat && echo see Getting-Started-With-Stroika.md && cmd"]
-# CMD ["cmd", "/c", "echo see Getting-Started-With-Stroika.md && cmd"]
 CMD ["bash.exe", "-l"]
 
 # ### NOTE TO RUN
-# ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
-# ###     docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+# ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
+# ###     docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
 # ###     see ScriptsLib/RunLocalWindowsDockerRegressionTests

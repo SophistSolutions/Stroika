@@ -262,13 +262,13 @@ jobs:
           #   config_name: Release
           #   extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
-          # - displayTargetName: windows-msys-x86-Debug
-          #   os: windows
-          #   runs_on: windows-latest
-          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
-          #   config_name: Debug
-          #   extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
-          #   includeInDevBranchBuilds: false
+          - displayTargetName: windows-msys-x86-Debug
+            os: windows
+            runs_on: windows-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
+            config_name: Debug
+            extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
+            includeInDevBranchBuilds: true
           # - displayTargetName: windows-msys-x86-Release
           #   os: windows
           #   runs_on: windows-latest
@@ -276,13 +276,13 @@ jobs:
           #   config_name: Release
           #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
-          - displayTargetName: windows-msys-x86_64-Release
-            os: windows
-            runs_on: windows-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
-            config_name: Release
-            extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
-            includeInDevBranchBuilds: true
+          # - displayTargetName: windows-msys-x86_64-Release
+          #   os: windows
+          #   runs_on: windows-latest
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
+          #   config_name: Release
+          #   extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
+          #   includeInDevBranchBuilds: false
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
@@ -304,8 +304,11 @@ jobs:
       - name: docker pull ${{ matrix.container_image }}
         run: docker pull ${{ matrix.container_image }}
       - name: Start docker build environment
+        ### ash rebaseall nonsense to try and workaround sporadic failure on MSYS
+        ### without this rebaseall, about 30% of the time we get a failure in wget wget 3470 child_info_fork::abort: \??\C:\msys64\usr\bin\msys-crypto-1.1.dll: Loaded to different address: parent(0x478B980000) != child(0x400000
+        ### and with this hack, it hasn't happened in 5 tries --LGP 2022-01-26
         run: |
-          docker run --tty --memory 5G --cpus 2 --storage-opt 'size=50GB' --detach --name buildContainer ${{ matrix.container_image }}
+          docker run --interactive --memory 5G --cpus 2 --storage-opt 'size=50GB' --detach --name buildContainer ${{ matrix.container_image }} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
       - name: Print Info about docker system
         shell: "bash"
         run: |

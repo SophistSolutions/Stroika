@@ -190,9 +190,12 @@ my $STDCXXLIB = undef;
 my $TOOLS_PATH_ADDITIONS = undef;
 
 
+#
+# Workaround MSYS compatabilty issues with microsoft visual C++ tools.
+#		Note: MSYS2_ENV_CONV_EXCL doesn't appear necessary (as of 2022-01-25)
+#
 if ("$^O" eq "msys") {
 	$ENV{'MSYS2_ARG_CONV_EXCL'} = '*';
-	$ENV{'MSYS2_ENV_CONV_EXCL'} = '*';
 }
 
 
@@ -1340,7 +1343,7 @@ sub	ParseCommandLine_Remaining_
 			$var = $args[$i];
 			$FEATUREFLAG_ActivePerl = $var;
 		}
-		elsif ((lc ($var) eq "-WIX") or (lc ($var) eq "--WIX")) {
+		elsif ((lc ($var) eq "-wix") or (lc ($var) eq "--wix")) {
 			$i++;
 			$var = $args[$i];
 			$FEATUREFLAG_WIX = $var;

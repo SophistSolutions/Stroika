@@ -436,11 +436,7 @@ namespace Stroika::Foundation::Containers {
             {
             }
         };
-#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        auto rep = dynamic_pointer_cast<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep> (const_cast<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ());
-#else
         auto rep = const_cast<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
-#endif
         return MyIterable_{KeyedCollection<T, KEY_TYPE, TRAITS>{rep}};
     }
 

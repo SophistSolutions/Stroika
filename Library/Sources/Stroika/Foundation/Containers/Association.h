@@ -573,12 +573,8 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep
-        : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep
-#if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        ,
-          public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep>
-#endif
-    {
+        : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep,
+          public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep> {
     private:
         using inherited = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep;
 

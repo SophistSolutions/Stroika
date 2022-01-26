@@ -500,11 +500,7 @@ namespace Stroika::Foundation::Containers {
             {
             }
         };
-#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        auto rep = dynamic_pointer_cast<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep> (const_cast<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep*> (this)->shared_from_this ());
-#else
         auto rep = const_cast<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep*> (this)->shared_from_this ();
-#endif
         return MyIterable_{Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> (rep)};
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -545,11 +541,7 @@ namespace Stroika::Foundation::Containers {
             {
             }
         };
-#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        auto rep = dynamic_pointer_cast<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep> (const_cast<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep*> (this)->shared_from_this ());
-#else
         auto rep = const_cast<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep*> (this)->shared_from_this ();
-#endif
         return MyIterable_{Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>{rep}};
     }
 

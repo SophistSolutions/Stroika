@@ -84,8 +84,8 @@ namespace Stroika::Foundation::Memory {
      * 
      *  \note Performance
      *      o   Copying a BLOB is just copying a shared_ptr
-     *      o   Allocation should be extremely cheap, due to the use of enabled_shared_from_this 
-     *          (which combines the two pointer allocations into one) and Memory::UseBlockAllocationIfAppropriate<>
+     *      o   Allocation should be extremely cheap, due to the use of make_shared<> or allocate_shared<> or 
+     *          Memory::UseBlockAllocationIfAppropriate<>
      *          which should use the block allocation storage mechansism, which is generally a lock free very fast allocator.
      *          And the use of SmallStackBuffer<64> means that allocation of BLOBs of size <= 64 should requite no calls to the
      *          global ::operator new/malloc/free/delete
@@ -373,10 +373,8 @@ namespace Stroika::Foundation::Memory {
 
     /**
      * This abstract interface defines the behavior of a BLOB.
-     *
-     *  \note   we use enable_shared_from_this<> for performance reasons, not for any semantic purpose
      */
-    struct BLOB::_IRep : conditional_t<kBLOBUsesStroikaSharedPtr, Memory::enable_shared_from_this<BLOB::_IRep>, enable_shared_from_this<BLOB::_IRep>> {
+    struct BLOB::_IRep {
         _IRep ()                                                  = default;
         _IRep (const _IRep&)                                      = delete;
         virtual ~_IRep ()                                         = default;

@@ -2,8 +2,8 @@
 
 ## Major Release Versions
 
+- v2.1\* - requires C++17 or later; stable, and in maintainance
 - v2.0\* - requires C++14 or later; stable, and in maintainance
-- v2.1\* - requires C++17 or later; where new development happens mainly
 
 ## Branches</h3>
 

@@ -69,6 +69,8 @@ FETCHURLS+=http://artfiles.org/openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=https://ftp.heanet.ie/mirrors/ftp.openssl.org/source/$(BASENAME).tar.gz
 
 
+SHELL=/bin/bash
+
 
 CONFIG_ARGS=
 
@@ -260,6 +262,7 @@ LDFLAGS:=$(EXTRA_PREFIX_LINKER_ARGS) $(LIBS_PATH_DIRECTIVES) $(EXTRA_SUFFIX_LINK
 #
 CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
+LDFLAGS:=$(filter-out -fsanitize=%, $(LDFLAGS))
 
 ###
 ### got error building openssl wihtout this filter-out with clang-7 release builds - not sure it was the same message though
@@ -292,10 +295,21 @@ export CFLAGS
 export CXXFLAGS
 export LDFLAGS
 
-
+#
+# Running on MSYS in interactive mode, this isn't needed. The library builds fine. But it fails badly
+# otherwise. Apparently, this is something todo with running the /etc/profile script which sets a bunch of path
+# and other variables.
+#
+# I tried many other tricks (like setting .SHELLFLAGS), but this appears to work best (setting -i or -l .SHELLFLAGS also works
+# but creates other problems)
+#		--LGP 2022-01-24
+# 
 ifeq ($(DETECTED_HOST_OS),MSYS)
-.SHELL=bash
-.SHELLFLAGS= -c -l
+# From https://linux.die.net/man/1/bash
+#		When bash is started non-interactively, to run a shell script, for example, it looks
+#		for the variable BASH_ENV in the environment, expands its value if it appears there, 
+#		and uses the expanded value as the name of a file to read and execute.
+export BASH_ENV=/etc/profile
 endif
 
 doBuilds_:

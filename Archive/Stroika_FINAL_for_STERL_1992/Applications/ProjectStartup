@@ -1,8 +1,0 @@
-#
-# WILL NEED TO FIX THESE SCRIPTS SOON!!!
-#Execute "{StroikaSources}ProjectStartup"
-#Execute "raptor:lewis_Stroika:Stroika_mac:ProjectStartup"
-Execute "{Stroika_src}ProjectStartup"
-
-UnSet ProgramName
-Set ProjectName	"Stroika_Apps"; Export ProjectName;

@@ -1,6 +1,4 @@
-﻿# escape=`
-
-# SEE https://hub.docker.com/_/microsoft-windows-servercore for list of versions
+﻿# SEE https://hub.docker.com/_/microsoft-windows-servercore for list of versions
 #ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:2004
 #ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
 #ARG BASE_IMAGE=mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019
@@ -14,9 +12,9 @@ FROM ${BASE_IMAGE}
 # List of workloads and components to add from
 # https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?vs-2019&view=vs-2019
 #
-#    --add Microsoft.VisualStudio.Component.VC.CoreBuildTools `
-#    --add Microsoft.VisualStudio.Component.UniversalBuildTools `
-#    --add Microsoft.VisualStudio.Component.VC.ATLMFC `
+#    --add Microsoft.VisualStudio.Component.VC.CoreBuildTools \
+#    --add Microsoft.VisualStudio.Component.UniversalBuildTools \
+#    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
 #
 
 #
@@ -36,20 +34,20 @@ ARG VS_16_11_9=https://download.visualstudio.microsoft.com/download/pr/9a26f37e-
 
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_16_11_9" `
+RUN Invoke-WebRequest "$env:VS_16_11_9" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 
 SHELL ["cmd", "/S", "/C"]
-RUN %TEMP%\vs_buildtools.exe `
-    --add Microsoft.VisualStudio.Workload.VCTools `
-    --add Microsoft.VisualStudio.Workload.UniversalBuildTools `
-    --add Microsoft.VisualStudio.Component.VC.ATLMFC `
-    --includeRecommended `
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 `
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 `
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 `
-    --remove Microsoft.VisualStudio.Component.Windows81SDK `
-    --quiet --wait --norestart --noUpdateInstaller `
+RUN %TEMP%\vs_buildtools.exe \
+    --add Microsoft.VisualStudio.Workload.VCTools \
+    --add Microsoft.VisualStudio.Workload.UniversalBuildTools \
+    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
+    --includeRecommended \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
+    --remove Microsoft.VisualStudio.Component.Windows81SDK \
+    --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0
 
 
@@ -74,8 +72,8 @@ RUN md c:\tools\cygwin && cd c:\tools\cygwin && curl -Sso cygwinsetup.exe https:
 ## Sometimes helpful
 ## cyg-get gdb
 SHELL ["powershell"]
-RUN  `
-    $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin';   `
+RUN  \
+    $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin';   \
     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
 
 COPY Windows-Cygwin-VS2k19/Getting-Started-With-Stroika.md ./
