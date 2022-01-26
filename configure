@@ -1338,7 +1338,7 @@ sub	ParseCommandLine_Remaining_
 			$var = $args[$i];
 			$FEATUREFLAG_ActivePerl = $var;
 		}
-		elsif ((lc ($var) eq "-WIX") or (lc ($var) eq "--WIX")) {
+		elsif ((lc ($var) eq "-wix") or (lc ($var) eq "--wix")) {
 			$i++;
 			$var = $args[$i];
 			$FEATUREFLAG_WIX = $var;
