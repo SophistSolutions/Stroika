@@ -345,8 +345,10 @@ jobs:
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
       - name: docker pull ${{ matrix.container_image }}
         run: docker pull ${{ matrix.container_image }}
-      ### ash rebaseall nonsense to try and workaround sporadic failure on MSYS
       - name: Start docker build environment
+        ### ash rebaseall nonsense to try and workaround sporadic failure on MSYS
+        ### without this rebaseall, about 30% of the time we get a failure in wget wget 3470 child_info_fork::abort: \??\C:\msys64\usr\bin\msys-crypto-1.1.dll: Loaded to different address: parent(0x478B980000) != child(0x400000
+        ### and with this hack, it hasn't happened in 5 tries --LGP 2022-01-26
         run: |
           docker run --interactive --memory 5G --cpus 2 --storage-opt 'size=50GB' --detach --name buildContainer ${{ matrix.container_image }} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
       - name: Print Info about docker system
