@@ -346,8 +346,9 @@ jobs:
       - name: docker pull ${{ matrix.container_image }}
         run: docker pull ${{ matrix.container_image }}
       - name: Start docker build environment
+      ### ash rebaseall nonsense to try and workaround sporadic failure on MSYS
         run: |
-          docker run --interactive --memory 5G --cpus 2 --storage-opt 'size=50GB' --detach --name buildContainer ${{ matrix.container_image }}
+          docker run --interactive --memory 5G --cpus 2 --storage-opt 'size=50GB' --detach --name buildContainer ${{ matrix.container_image }} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
       - name: Print Info about docker system
         shell: "bash"
         run: |
