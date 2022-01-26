@@ -262,6 +262,7 @@ LDFLAGS:=$(EXTRA_PREFIX_LINKER_ARGS) $(LIBS_PATH_DIRECTIVES) $(EXTRA_SUFFIX_LINK
 #
 CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
+LDFLAGS:=$(filter-out -fsanitize=%, $(LDFLAGS))
 
 ###
 ### got error building openssl wihtout this filter-out with clang-7 release builds - not sure it was the same message though
