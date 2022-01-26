@@ -85,12 +85,6 @@ namespace Stroika::Foundation::DataExchange {
     bool operator== (const StructFieldMetaInfo& lhs, const StructFieldMetaInfo& rhs);
 #endif
 
-    /**
-     ************* DEPREACATED MACRO --- USE StructFieldMetaInfo{} CTOR DIRECTLY - SINCE Stroika 2.1b12
-     */
-#define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER) \
-    Stroika::Foundation::DataExchange::StructFieldMetaInfo { &CLASS::MEMBER }
-
 }
 
 /*
