@@ -32,3 +32,15 @@ Though this is anecdotal, it may still help. I've been hired dozens of times to 
 - 1% - actually rewriting those peices to be optimal
 
 If you can make the 'learning and undestanding the code' bit faster, and the 'refactoring the code so that the bottlenecks take place in modular, replacable chunks' part pre-done, optimizing bottlenecks becomes cheap and easy.
+
+## Why this is unconventional thinking
+
+In C++, there is a heavy emphasis on the idea that all abstractions should be light weight, and (nearly or really) zero cost.
+
+This is not necessarily a bad thing for a language, but for the reasons outlined above, it IS a bad thing (or the wrong emphasis) for application developers.
+
+You want to **first and foremost** keep the code clean and simple. And then only for the 'modularly isolated' parts where performance is critical
+drop down to possibly using lower level features and lighter weight abstractions.
+
+This thinking of lowest-possible-cost abstractions permeats most other C++ libraries (e.g. boost). That makes them very good for that
+narrow peice of code that you must optimize, but less of a good choice to write the other 99% of your application.
