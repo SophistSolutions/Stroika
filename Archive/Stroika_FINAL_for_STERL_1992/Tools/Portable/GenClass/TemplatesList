@@ -1,6 +1,0 @@
-!Sequence InfoDependency
-!Sequence RenameRecord
-!Mapping_HashTable	String	InfoRecord
-Sequence String "String.hh"
-!Mapping	String	Sequence(String)
-!Set ExpandedRecord
