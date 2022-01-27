@@ -279,7 +279,7 @@ format-code:
 #	to make sure each configuraiton is checked at least once before build, so we get easier to understand error messages
 #	(tool x missing instead of xxx failed)
 #
-check-prerequisite-tools:Rw
+check-prerequisite-tools:
 	@$(MAKE) --no-print-directory check-prerequisite-tools-common CONFIGURATION=$$i
 ifeq ($(CONFIGURATION),)
 	@#no need to run apply-configurations-if-needed, but  looks neater in output if we run first, and then do checks
