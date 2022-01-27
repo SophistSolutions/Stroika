@@ -1,14 +1,14 @@
 StroikaRoot=$(abspath ../../../../)/
 
 ifneq ($(CONFIGURATION),)
-	ifneq ($(MAKECMDGOALS),clean)
-	ifneq ($(MAKECMDGOALS),clobber)
-		ifeq ($(wildcard $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk),)
-		$(error "Missing $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk")
-		endif
-	endif
-	endif
-	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),clobber)
+ifeq ($(wildcard $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk),)
+$(shell $(MAKE) --directory $(StroikaRoot) --no-print-directory CONFIGURATION=$(CONFIGURATION) --silent apply-configuration)
+endif
+endif
+endif
+-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
 SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Frameworks/
