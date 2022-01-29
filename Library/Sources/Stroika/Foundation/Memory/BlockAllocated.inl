@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Memory {
     {
 #if qAllowBlockAllocation
         if (p != nullptr) {
-            (p)->~T ();
+            destroy_at (p);
             BlockAllocator<T>{}.deallocate (p, 1);
         }
 #else

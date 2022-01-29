@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Execution {
     void ModuleInitializer<MODULE_DATA>::End ()
     {
         if (--sInitCnt_ == 0) {
-            reinterpret_cast<MODULE_DATA*> (&sActualModuleInitializer_Storage_)->~MODULE_DATA ();
+            destroy_at (reinterpret_cast<MODULE_DATA*> (&sActualModuleInitializer_Storage_));
         }
     }
     template <typename MODULE_DATA>

@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Memory {
     template <typename OTHERT>
     inline void STLAllocator<T, BASE_ALLOCATOR>::destroy (OTHERT* p)
     {
-        p->~OTHERT ();
+        destroy_at (p);
     }
     template <typename T, typename BASE_ALLOCATOR>
     template <typename... ARGS>
