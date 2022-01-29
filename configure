@@ -575,7 +575,7 @@ sub     FillInToolsPathAdditionsIfNeeded_
 	if ($includeAutomaticDependencies) {
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 			my $x = GetMSVCVarName_ ("TOOLS_PATH_ADDITIONS");
-			$TOOLS_PATH_ADDITIONS = trim ($x);
+			$TOOLS_PATH_ADDITIONS =  trim (`cygpath --mixed --path \"$x)\"`);
 		}
 		else {
 			$TOOLS_PATH_ADDITIONS = "";
