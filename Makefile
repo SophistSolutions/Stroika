@@ -279,7 +279,7 @@ format-code:
 #	to make sure each configuraiton is checked at least once before build, so we get easier to understand error messages
 #	(tool x missing instead of xxx failed)
 #
-check-prerequisite-tools:Rw
+check-prerequisite-tools:
 	@$(MAKE) --no-print-directory check-prerequisite-tools-common CONFIGURATION=$$i
 ifeq ($(CONFIGURATION),)
 	@#no need to run apply-configurations-if-needed, but  looks neater in output if we run first, and then do checks
@@ -303,7 +303,7 @@ check-prerequisite-tools-common:
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type tr 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool tr && exit 1)"
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(pkg-config --version 1> /dev/null 2> /dev/null && type pkg-config 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool pkg-config && exit 1)"
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type realpath 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool realpath && exit 1)"
-	@if [[ "$(DETECTED_HOST_OS)" = "Cygwin" || "$(UNAMDETECTED_HOST_OSE_DASH_O_)" = "MSYS" ]] ; then\
+	@if [[ "$(DETECTED_HOST_OS)" = "Cygwin" || "$(DETECTED_HOST_OS)" = "MSYS" ]] ; then\
 		ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type dos2unix 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool dos2unix && exit 1)";\
 		ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type unix2dos 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool unix2dos && exit 1)";\
 	fi
@@ -486,37 +486,20 @@ basic-unix-test-configurations_sanitizer_configs_:
 	./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp"
 
 basic-unix-test-configurations_valgrind_configs_:
-	# A few sanitize/configs (list explicit versions first as backup in case g++ doesn't work - enuf c++20 support - on this platform)
 	###Builds with a few special flags to make valgrind work better
 	#nb: using default installed C++ compiler cuz of matching installed libraries on host computer
-	./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none --compiler-driver g++-10
 	./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none
-	./configure valgrind-debug-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none --compiler-driver g++-10
 	./configure valgrind-debug-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none
-	##https://stroika.atlassian.net/browse/STK-674 - avoid warning
-	##https://stroika.atlassian.net/browse/STK-702 - avoid another warning (lto disable for valgrind)
-	./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable -lto disable --compiler-driver g++-10
-	./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable -lto disable
-	./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none --compiler-driver g++-10
-	./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none
-	
-
+	./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable
+	# A few valgrind (must do explicit -g++-8 versions for ubuntu 1804 since its default g++ is 7 and not supported any longer)
+	if [[ `lsb_release -rs 2>/dev/null` == '18.04' ]] ; then ./configure g++-8-valgrind-debug-SSLPurify --compiler-driver g++-8 --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none; fi;
+	if [[ `lsb_release -rs 2>/dev/null` != '18.04' ]] ; then ./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none; fi;
 
 raspberrypi-cross-compile-test-configurations:
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making raspberrypi-cross-compile-test-configurations:"
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	#\
-	# --append-CXXFLAGS -Wno-psabi JUST FOR ARM GCC6 and GCC7 - https://stroika.atlassian.net/browse/STK-627\
-	#./configure raspberrypi-g++-7 --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --sanitize none --append-CXXFLAGS -Wno-psabi;\
-	#qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy - SEE https://stroika.atlassian.net/browse/STK-500 - RETEST WHEN WE HAVE GCC8\
-	#./configure raspberrypi-g++-7-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --append-run-prefix 'LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.4' --append-CXXFLAGS -Wno-psabi;\
-	./configure raspberrypi-g++-7-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --append-CXXFLAGS -Wno-psabi;\
-	#./configure raspberrypi-valgrind-g++-7-SSLPurify-NoBlockAlloc --config-tag Unix --config-tag raspberrypi --config-tag valgrind --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-7' --valgrind enable --block-allocation disable --openssl use --openssl-extraargs purify --cross-compiling true --append-CXXFLAGS -Wno-psabi;\
-	#\
-	# --append-CXXFLAGS -Wno-psabi JUST FOR ARM GCC6 and GCC7 - https://stroika.atlassian.net/browse/STK-627 \
-	#qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy - SEE https://stroika.atlassian.net/browse/STK-500 - RETEST WHEN WE HAVE GCC8\
-	#./configure raspberrypi-g++-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-8' --cross-compiling true --append-run-prefix 'LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5' --append-CXXFLAGS -Wno-psabi;\
-	#./configure raspberrypi-g++-8-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-8' --sanitize none,address --cross-compiling true --append-run-prefix 'LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5';\
+	# --append-CXXFLAGS -Wno-psabi JUST FOR ARM GCC8 - https://stroika.atlassian.net/browse/STK-627 \
 	./configure raspberrypi-g++-8-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-8' --sanitize none,address --cross-compiling true;\
 	./configure raspberrypi-g++-8-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-8' --cross-compiling true --append-CXXFLAGS -Wno-psabi;\
 	##Couldn't get tsan to link (/usr/bin/arm-linux-gnueabihf-ld: cannot find -ltsan) - so retry on next ubuntu release\

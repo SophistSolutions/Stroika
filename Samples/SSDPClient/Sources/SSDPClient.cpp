@@ -55,7 +55,7 @@ namespace {
     {
         cout << "Listening..." << endl;
         l->AddOnFoundCallback ([] (const SSDP::Advertisement& d) {
-            lock_guard<mutex> critSection (kStdOutMutex_);
+            lock_guard<mutex> critSection{kStdOutMutex_};
             cout << "\tFound device (NOTIFY):" << endl;
             cout << "\t\tUSN:      " << d.fUSN.AsUTF8 () << endl;
             if (d.fAlive.has_value ()) {
@@ -78,7 +78,7 @@ namespace {
     {
         cout << "Searching for '" << searchFor.AsUTF8 () << "'..." << endl;
         searcher->AddOnFoundCallback ([] (const SSDP::Advertisement& d) {
-            lock_guard<mutex> critSection (kStdOutMutex_);
+            lock_guard<mutex> critSection{kStdOutMutex_};
             cout << "\tFound device (MATCHED SEARCH):" << endl;
             cout << "\t\tUSN:      " << d.fUSN.AsUTF8 () << endl;
             cout << "\t\tLocation: " << Characters::ToString (d.fLocation).AsUTF8 () << endl;

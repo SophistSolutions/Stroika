@@ -1,14 +1,14 @@
 StroikaRoot=$(abspath ../../../../)/
 
 ifneq ($(CONFIGURATION),)
-	ifneq ($(MAKECMDGOALS),clean)
-	ifneq ($(MAKECMDGOALS),clobber)
-		ifeq ($(wildcard $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk),)
-		$(error "Missing $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk")
-		endif
-	endif
-	endif
-	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),clobber)
+ifeq ($(wildcard $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk),)
+$(shell $(MAKE) --directory $(StroikaRoot) --no-print-directory CONFIGURATION=$(CONFIGURATION) --silent apply-configuration)
+endif
+endif
+endif
+-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
@@ -72,7 +72,11 @@ ifneq ($(MAKECMDGOALS),clobber)
 $(shell $(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Computing $(CachedOBJSFile_)" 1>&2)
 $(shell mkdir -p $(shell dirname $(CachedOBJSFile_)) )
 # REDIRECT to avoid: warning: jobserver unavailable: using -j1.  Add '+' to parent make rule.; not good solution cuz hides errors
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+$(file > $(CachedOBJSFile_),$(shell cygpath --mixed $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null))))
+else
 $(file > $(CachedOBJSFile_),$(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null)))
+endif
 endif
 endif
 endif

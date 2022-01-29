@@ -158,7 +158,7 @@ endif
 #
 ifneq ($(TOOLS_PATH_ADDITIONS),)
 PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED=\
-$(eval export PATH=${TOOLS_PATH_ADDITIONS}:${shell echo $$PATH})
+$(eval export PATH=$(shell cygpath --unix --path "${TOOLS_PATH_ADDITIONS}"):${shell echo $$PATH})
 endif
 
 

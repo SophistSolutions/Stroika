@@ -12,7 +12,7 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
-CXXFLAGS+=/Fd$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Frameworks.pdb)
+CXXFLAGS+=-Fd$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Frameworks.pdb)
 endif
 
 vpath %cpp $(SrcDir)
@@ -31,10 +31,10 @@ Objs+= $(ObjDir)Windows_FileRegistration${OBJ_SUFFIX}
 endif
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CXXFLAGS += /D_WINDOWS 
-CXXFLAGS += /DWIN32 
-CXXFLAGS += /DSTRICT
-CXXFLAGS += /D_WIN32_WINNT=0x0501 
+CXXFLAGS += -D_WINDOWS 
+CXXFLAGS += -DWIN32 
+CXXFLAGS += -DSTRICT
+CXXFLAGS += -D_WIN32_WINNT=0x0501 
 endif
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk

@@ -113,6 +113,9 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Label="PropertySheets" >
+    <Import Project="$(ProjectDir)\..\..\..\..\Library\Projects\VisualStudio.Net\Microsoft.Cpp.stroika.AllConfigs.props" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>

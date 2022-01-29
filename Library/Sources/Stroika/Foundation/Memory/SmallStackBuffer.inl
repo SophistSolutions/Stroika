@@ -407,7 +407,7 @@ namespace Stroika::Foundation::Memory {
     inline void SmallStackBuffer<T, BUF_SIZE>::DestroyElts_ (T* start, T* end) noexcept
     {
         for (auto i = start; i != end; ++i) {
-            i->~T ();
+            destroy_at (i);
         }
     }
     template <typename T, size_t BUF_SIZE>
