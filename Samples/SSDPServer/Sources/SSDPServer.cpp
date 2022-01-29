@@ -44,14 +44,14 @@ namespace {
                     // IO::Network::GetPrimaryInternetAddress ()
                     Connection conn{acceptedSocketConnection,
                                     Sequence<Interceptor>{
-                                        Interceptor (
+                                        Interceptor{
                                             [=] (Message* m) {
                                                 RequireNotNull (m);
                                                 Response& response           = m->rwResponse ();
                                                 response.rwHeaders ().server = L"stroika-ssdp-server-demo"sv;
                                                 response.write (Stroika::Frameworks::UPnP::Serialize (dd));
                                                 response.contentType = DataExchange::InternetMediaTypes::kXML;
-                                            })}};
+                                            }}}};
                     conn.remainingConnectionLimits = HTTP::KeepAlive{0, 0}; // disable keep-alives
                     conn.ReadAndProcessMessage ();
                 });
@@ -92,7 +92,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         deviceInfo.fSerialNumber     = L"manufacturer's serial number"sv;
         deviceInfo.fUDN              = L"uuid:" + d.fDeviceID;
 
-        WebServerForDeviceDescription_ deviceWS (portForOurWS, deviceInfo);
+        WebServerForDeviceDescription_ deviceWS{portForOurWS, deviceInfo};
         BasicServer                    b{d, deviceInfo, BasicServer::FrequencyInfo ()};
         Execution::WaitableEvent{}.Wait (); // wait forever - til user hits ctrl-c
     }
