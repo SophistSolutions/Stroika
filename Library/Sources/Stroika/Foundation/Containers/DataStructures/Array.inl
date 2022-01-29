@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 *lhs++ = *rhs++;
             }
         }
-        fItems_[--fLength_].T::~T ();
+        destroy_at (&fItems_[--fLength_]);
         Invariant ();
     }
     template <typename T>
