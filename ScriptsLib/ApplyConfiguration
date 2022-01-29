@@ -23,6 +23,12 @@ my $intermediateFiles	=	"IntermediateFiles/";
 my $activeConfiguration	=	$ARGV[0];
 
 
+my $PATH_SEPERATOR=":";
+if ("$^O" eq "cygwin" or "$^O" eq "msys") {
+	$PATH_SEPERATOR=";";
+}
+
+
 my $PROJECTPLATFORMSUBDIR='';
 my $TARGET_PLATFORMS='';
 my $BUILD_TOOLS_ROOT=undef;
@@ -294,7 +300,7 @@ sub WriteStroikaConfigMakeHeader
 
 	print (OUT "\n\n");
 	print (OUT "LIBS_PATH_DIRECTIVES=");
-	for my $l (split /:/, $LIBS_PATH) {
+	for my $l (split /$PATH_SEPERATOR/, $LIBS_PATH) {
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 			my $tmp		=	trim (`cygpath --ignore --mixed "$l"`);
 			my $len = length ($tmp);
@@ -308,6 +314,7 @@ sub WriteStroikaConfigMakeHeader
 			print (OUT "-L$l ");
 		}
 	}
+
 	print (OUT "\n");
 	print (OUT "LIB_DEPENDENCIES=$LIB_DEPENDENCIES");
 	print (OUT "\n");
@@ -395,11 +402,6 @@ sub WriteStroikaConfigMakeHeader
 			if (not ($tmp eq "")) {
 				$tmp		=	trim (`cygpath --ignore --mixed "$tmp"`);
 			}
-		}
-		{
-			my $LIBS_PATH = GetConfigurationParameter($activeConfiguration, "LIBS_PATH");
-			my $tmp		=	trim (`cygpath --ignore --mixed --path "$LIBS_PATH"`);
-			print (OUT "WIN_LIBS_PATH=$tmp \n");		#nb: space important if $tmp ends in backslash
 		}
 		{
 			# Not a great way to test, but hopefully adequate for now

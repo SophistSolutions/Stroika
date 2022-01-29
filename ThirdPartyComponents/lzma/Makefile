@@ -168,7 +168,7 @@ else
 			AR='$(LIBTOOL)' \
 			ProjectPlatformSubdir='$(ProjectPlatformSubdir)' \
 			INCLUDE='$(INCLUDES_PATH)' \
-			LIB='$(WIN_LIBS_PATH)' \
+			LIB='$(LIBS_PATH)' \
 			LIBS='oleaut32.lib ole32.lib user32.lib' \
 			ARCRATEFLAGS='-nologo' \
 			ARTARGETPREFIX=-out: \
