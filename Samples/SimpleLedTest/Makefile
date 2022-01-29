@@ -29,10 +29,10 @@ endif
 
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CXXFLAGS += /D_WINDOWS 
-CXXFLAGS += /DWIN32 
-CXXFLAGS += /DSTRICT
-CXXFLAGS += /D_WIN32_WINNT=0x0501
+CXXFLAGS += -D_WINDOWS 
+CXXFLAGS += -DWIN32 
+CXXFLAGS += -DSTRICT
+CXXFLAGS += -D_WIN32_WINNT=0x0501
 Objs += ${RC_OUTPUT_}
 endif
 
@@ -54,7 +54,7 @@ check:
 
 
 # English US culture
-RC_FLAGS += /l 0x0409
+RC_FLAGS += -l 0x0409
 
 $(ObjDir)Test.res:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running RC compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)Sources/LedIt.rc` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)RC-Build.out`" ..."
@@ -66,7 +66,7 @@ $(ObjDir)Test.res:
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-EXTRA_SUFFIX_LINKER_ARGS+= /SUBSYSTEM:Windows
+EXTRA_SUFFIX_LINKER_ARGS+= -SUBSYSTEM:Windows
 endif
 
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
