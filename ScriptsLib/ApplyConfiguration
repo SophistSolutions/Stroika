@@ -531,7 +531,27 @@ sub WriteVS2kIntellisenseConfigFile
 	}
 	print (OUT "    <NMakePreprocessorDefinitions>$defs2Print</NMakePreprocessorDefinitions>\n");
 	print (OUT "    <NMakeIncludeSearchPath>$paths2Print</NMakeIncludeSearchPath>\n");
+
 	print (OUT "  </PropertyGroup>\n");
+
+	##EXPERIMENTAL
+	# Define configuration variables so visual studio knows how to run cygwin or msys
+	# for the make without requiring the user to add it to their user/system path
+	# by default
+	#
+	print (OUT "  <PropertyGroup Label=\"UserMacros\">\n");
+	print (OUT "    <StroikaBuildToolsExtraPath>c:\\msys\\usr\\bin;c:\\msys64\\usr\\bin;c:\\cygwin\\bin;c:\\cygwin64\\bin</StroikaBuildToolsExtraPath>\n");
+	print (OUT "    <JOBS_FLAG>-j 8</JOBS_FLAG>\n");
+	print (OUT "  </PropertyGroup>\n");
+### Unclear if/why this would be needed
+	print (OUT "  <ItemGroup>\n");
+	print (OUT "  <BuildMacro Include=\"StroikaBuildToolsExtraPath\">\n");
+	print (OUT "     <Value>\$(StroikaBuildToolsExtraPath)</Value>\n");
+	print (OUT "  </BuildMacro>\n");
+	print (OUT "  <BuildMacro Include=\"JOBS_FLAG\">\n");
+	print (OUT "     <Value>\$(JOBS_FLAG)</Value>\n");
+	print (OUT "  </BuildMacro>\n");
+	print (OUT "  </ItemGroup>\n");
 
 	print (OUT "</Project>\n");
 	print (OUT "\n");
