@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
         T* p = &fItems_[0];
         for (size_t i = fLength_; i > 0; --i, ++p) {
-            p->T::~T ();
+            destroy_at (p);
         }
         fLength_ = 0;
         Invariant ();
@@ -200,7 +200,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     {
                         T* end = &fItems_[fLength_];
                         for (T* p = &fItems_[0]; p != end; ++p) {
-                            p->T::~T ();
+                            destroy_at (p);
                         }
                     }
                     delete[](char*) fItems_;
@@ -250,7 +250,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
              */
             Assert (lhs < end);
             do {
-                lhs->T::~T ();
+                destroy_at (lhs);
             } while (++lhs < end);
         }
         else if (fLength_ < newLength) {
@@ -296,7 +296,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         else {
             Assert (cur >= end);
             while (cur-- > end) {
-                cur->T::~T ();
+                destroy_at (cur);
             }
         }
         fLength_ = newLength;
@@ -316,7 +316,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline Array<T>::~Array ()
     {
-        RemoveAll ();
+        RemoveAll (); // call destructors on elements
         delete[](char*) fItems_;
     }
     template <typename T>
