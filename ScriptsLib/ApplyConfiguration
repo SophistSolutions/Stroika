@@ -543,6 +543,18 @@ sub WriteVS2kIntellisenseConfigFile
 	print (OUT "    <StroikaBuildToolsExtraPath>c:\\msys\\usr\\bin;c:\\msys64\\usr\\bin;c:\\cygwin\\bin;c:\\cygwin64\\bin</StroikaBuildToolsExtraPath>\n");
 	print (OUT "    <JOBS_FLAG>-j 8</JOBS_FLAG>\n");
 	print (OUT "  </PropertyGroup>\n");
+
+	if ("$^O" == "msys") {
+		print (OUT "  <PropertyGroup Condition=\"'\$(Configuration)|\$(Platform)'=='$activeConfiguration|Win32'\">\n");
+		print (OUT "    <StroikaBuildToolsExtraPath>c:\\msys\\usr\\bin;c:\\msys64\\usr\\bin;</StroikaBuildToolsExtraPath>\n");
+		print (OUT "  </PropertyGroup>\n");
+	}
+	elsif ("$^O" == "cygwin") {
+		print (OUT "  <PropertyGroup Condition=\"'\$(Configuration)|\$(Platform)'=='$activeConfiguration|Win32'\">\n");
+		print (OUT "    <StroikaBuildToolsExtraPath>c:\\cygwin\\bin;c:\\cygwin64\\bin</StroikaBuildToolsExtraPath>\n");
+		print (OUT "  </PropertyGroup>\n");
+	}
+
 ### Unclear if/why this would be needed
 	print (OUT "  <ItemGroup>\n");
 	print (OUT "  <BuildMacro Include=\"StroikaBuildToolsExtraPath\">\n");
