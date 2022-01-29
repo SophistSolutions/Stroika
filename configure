@@ -2560,6 +2560,7 @@ sub	WriteConfigFile_
 	print (OUT "    <IncludeDebugSymbolsInLibraries>$INCLUDE_SYMBOLS_LIB</IncludeDebugSymbolsInLibraries>\n");
 	print (OUT "    <IncludeDebugSymbolsInExecutables>$INCLUDE_SYMBOLS_EXE</IncludeDebugSymbolsInExecutables>\n");
 
+	# Since Stroika 2.1r2, this is written out in cygpath mixed format on windows (and obvously stanard unix format on unix)
 	print (OUT "    <TOOLS_PATH_ADDITIONS>$TOOLS_PATH_ADDITIONS</TOOLS_PATH_ADDITIONS>\n");
 	
 	print (OUT "    <LIBS_PATH>$LIBS_PATH</LIBS_PATH>\n");
