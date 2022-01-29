@@ -30,6 +30,8 @@ Objs	=	\
 
 include $(StroikaRoot)/ScriptsLib/SharedBuildRules-Default.mk
 
+# ONLY depend on foundation library, not frameworks library
+StroikaLibs					=	$(StroikaFoundationLib)
 
 
 all:	$(ObjDir) $(TARGETEXE)
