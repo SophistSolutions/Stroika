@@ -16,6 +16,7 @@ endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 .PHONY:	all clean clobber check doBuilds_
 
