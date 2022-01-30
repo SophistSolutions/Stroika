@@ -161,6 +161,7 @@ my $FEATUREFLAG_librt = undef;
 my $FEATUREFLAG_WIX = undef;
 my $TargettingValgrind = undef;
 my $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = undef;
+my $qCompiler_ValgrindLTO_Buggy = undef;
 my $qCompiler_ValgrindDirectSignalHandler_Buggy = undef;
 my $qCompiler_HasNoMisleadingIndentation_Flag = undef;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
@@ -979,6 +980,9 @@ sub	SetDefaultForCompilerDriver_
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and ($TargettingValgrind == true)) {
 			$qCompiler_ValgrindDirectSignalHandler_Buggy = true;
 		}
+		if ($ENABLE_LTO and $TargettingValgrind) {
+			$qCompiler_ValgrindLTO_Buggy = true;
+		}
 	}
 	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
 		push (@useExtraCDefines, '#define qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy 1');
@@ -986,6 +990,8 @@ sub	SetDefaultForCompilerDriver_
 	if (defined ($qCompiler_ValgrindDirectSignalHandler_Buggy) and $qCompiler_ValgrindDirectSignalHandler_Buggy) {
 		push (@useExtraCDefines, '#define qCompiler_ValgrindDirectSignalHandler_Buggy 1');
 	}
+
+	
 	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin" or "$^O" eq "msys"))) {
 		$FEATUREFLAG_librt = $LIBFEATUREFLAG_UseSystem;
 	}
@@ -2606,7 +2612,9 @@ sub	WriteConfigFile_
 	if (defined ($qCompiler_HasNoMisleadingIndentation_Flag)) {
 		print (OUT "    <qCompiler_HasNoMisleadingIndentation_Flag>$qCompiler_HasNoMisleadingIndentation_Flag</qCompiler_HasNoMisleadingIndentation_Flag>\n");
 	}
-
+	if (defined ($qCompiler_ValgrindLTO_Buggy)) {
+		print (OUT "    <qCompiler_ValgrindLTO_Buggy>$qCompiler_ValgrindLTO_Buggy</qCompiler_ValgrindLTO_Buggy>\n");
+	}
 	print (OUT "</Configuration>\n");
 	close(OUT);
 }
