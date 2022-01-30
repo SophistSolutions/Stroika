@@ -9,6 +9,486 @@ especially those they need to be aware of when upgrading.
 
 ---
 
+
+### 2.1r2x candidate
+
++ attempt at using g++-10 for CodeQL
+
+- Build Scripts
+  - New DetectedHostOS script, and use to assign to new (make and script) variable DETECTED_HOST_OS, and used
+    in MANY places to simplify / unify code (findstrings and uname etc calls); simplify output of uname into categories
+
+  - MSYS2 support
+    - throughout all the scripts (esp configure and makefiles and projectfiles) - support either MSYS2 or Cygwin (on windows).
+    - lose support TOOLS_PATH_ADDITIONS_BUGWORKAROUND
+    - switch build scripts to use - intead of / even on windows for command line arguments since works much better with MSYS
+    - set MSYS2_ARG_CONV_EXCL=* for MSYS in a number of key scripts/places
+
+  - github actions
+    - rebaseall hack to try and workaround sporadic failure of msys under docker in github actions
+    - add (windows) builds of msys configurations
+
+  - configure
+    - use glob instead of ls to fix so works both with msys and cygwin
+    - better error messages from configure
+    - fixed typo in handling of configure --wix
+
+  - use  $(TOOLSET_CMD_ENV_SETS) for cab build tool in ActiveLedIt makefile (so owrks iwth msys)
+  - ScriptsLib/RunPerformanceRegressionTests sb same for cygwin and msys
+  - DockerFiles
+    - dockerfile cosmetic cleanups
+
+- Documentation
+
+- ThirdPartyComponents
+  - boost
+    - Cleanups to boost makefile, including getting it working with MSYS
+
+  - openssl
+    - version 3.0.1
+    - BASH_ENV hack for MSYS2
+    - added LDFLAGS override in openssl makefile, and filter-out workaround for ?? issue there
+
+
+  - Xerces
+    - refactor Xerces makefile os much of the CMake specific stuff now in ScriptsLib/Makefile-CMake-Common.mk
+    - many fixes for msys2
+
+  - zlib
+    - attempt at converting zlib makefile to using cmake (Makefile-CMake-Common.mk), but failed so gave up (for now)
+    - cleanups
+
+  - sqlite
+    - version 3.37.2
+  - curl
+    - version 7.81.0
+
+
+- Library
+  - Misc
+    - use std::destroy_at instead of ->~T()
+
+- Tests
+  - fixed Tests/Makefile-Test-Template.mk so only depends on StroikaFoundationLib
+
+
+- vs2k19 16.11.9 and vsk2k22 17.0.5
+- use new DETECTED_HOST_OS define from (now) Makefile-Common.mk instead of explicit calls to uname to simplify makefile scripts
+
+#if 0
+    
+    draft support for docker Windows-MSYS-VS2k19
+
+commit cf439c090a8b9411108c6795f286f246286f2fa8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 15 23:38:56 2022 +0000
+
+    a few docker windows container cleanups - esp in MSYS case
+
+commit 790643f0b5fbc95fea7f228db4c30f43164770f5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 16 03:26:56 2022 +0000
+
+    Improved dockerfile support for MSYS - close to working
+
+commit 224a9f3fc76de1f4cdc6bf0c8df6bc0acc7523b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 16 03:35:38 2022 +0000
+
+    fixed use of (TOOLSET_CMD_ENV_SETS) for zlib makefile
+
+commit 20d4b8f3bc0cfc16e1cd136e298fe58006337c52
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 16 15:25:16 2022 +0000
+
+    clenaup windows docker container readmes and added draft indows-MSYS-VS2k22 container
+
+commit 14f32eaf876c85c4524da680b1faba812976a608
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 16 22:36:06 2022 +0000
+
+    experiment with direcly doing export MSYS2 flags in ScriptsLib/SharedMakeVariables-Default.mk intead of adding to TOOLSET_CMD_ENV_SETS
+
+commit 7e75508e78067e736c7d69ded7bf1f0f9ae2458a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 17 00:48:08 2022 +0000
+
+    refactored ScriptsLib/Makefile-Common.mk to call new ScriptsLib/DetectedHostOS for DETECTED_HOST_OS variable
+
+commit 35d0085d4245ad9fdfc48a8fa2a8064d59790cfa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 17 00:59:58 2022 +0000
+
+    tweak ScriptsLib/GetConfigurations and ScriptsLib/DetectedHostOS (recent changes update)
+
+commit c8c13e5f0ef6c3a5a033f570d87256a77db45609
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 17 03:27:44 2022 +0000
+
+    fixed STRIP_INCLUDE_COMPILER_FLAGS for change to use of / vs - commandline args on windows
+
+commit b0b97dd622f4aeb1990bff71a99b5260d99ed087
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 18 20:40:36 2022 +0000
+
+    fixed xerces and openssl checks for /GL to -GL (makefile for recent option name change); then get rid of GL suppression and replace with -wd warning suppression (testing)
+
+commit 0eb83da4fded90dbd3cc1e9660c356a33e218437
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 18 21:31:46 2022 +0000
+
+    fixed a few places where we still used - intead of / for compiler swtiches; lose TOOLSET_CMD_ENV_SETS and replace it with PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED instead; ALL cleanups and simplifications, and I HOPE now enough to have make/build under MSYS
+
+commit cd9a039697ec4d1c85c58cd30c9cffea6b8c87bf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 19 14:01:03 2022 +0000
+
+    regressionetsts script uses ScriptsLib/DetectedHostOS (so gets better answer for MSYS)
+
+commit 076727ba46c77bc4f04985f914723f83634ccdf3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 19 17:21:41 2022 +0000
+
+    RunLocalWindowsDockerRegressionTests dosc about runnin gregtest with MSYS
+
+commit 1e07948a55def0b37e5277f5605ae78b3b65c9f1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 19 20:32:54 2022 +0000
+
+    Makefile check MSYS OR Cygwin on if check for tar workaround (needed on docker containers for some reason)
+
+commit ab2face90d130a5e969582e0e0346d10036e22ec
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 20 03:23:01 2022 +0000
+
+    use bash -l to workaround https://stroika.atlassian.net/browse/STK-762 - issue with docker MSYS
+
+commit 31389cdaac69ea9b2aaf797a1d15e80387fc88f1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 20 14:25:45 2022 +0000
+
+    fixed typo in recent checkins - use DETECTED_HOST_OS not HOST_OS_DETECTED
+
+commit 40b198258118dc45b6ecdf497f9a1d340f865be5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 21 01:21:36 2022 +0000
+
+    tweak performance warning thresholds to avoid noise for running under docker
+
+commit 3bca0dd1ca2517f4c4a56a1b884985a7a3d3052e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 21 01:21:44 2022 +0000
+
+    tweaked ScriptsLib/RunLocalWindowsDockerRegressionTests print of names
+    of performance results files
+
+commit 6c3a54608cc029a930064942e5e516d630b22775
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 21 03:13:19 2022 +0000
+
+    hopefully fixed issue with vs2k17 build (recent regression)
+
+commit af16394d3b3843bef84e43a99c324f3c6392ce46
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 21 03:57:56 2022 +0000
+
+    fixed .github action configuraitons for windows - mixup arch x86 vs x86_64 in a couple places
+
+commit 9e95d454ab43964083630a86ebb8ea3bec880af0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 21 14:25:49 2022 +0000
+
+    upped performance limits for runningunder docker (silence warnings)
+
+commit 6d68820f3dda1cd0811683259ecda9a7edd289f2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 21 14:57:14 2022 +0000
+
+    RunPerformanceRegressionTests script now includes DETECTED_HOST_OS in output
+
+commit 1fe8deaeb192c938bf0fe269319a0e9969235e78
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 21 16:06:48 2022 +0000
+
+    minor hacks to DEBUG .github actions file - to hlpe understand failure
+
+commit 1bc8058a54aa5005f5645b4807268666c07c5d00
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 21 16:37:20 2022 +0000
+
+    minor hacks to DEBUG .github actions file - to hlpe understand failure
+
+commit 49cec97273b99b1f2ac56885ef15f243b1b840e6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 22 05:09:32 2022 +0000
+
+    applied codeql fix (I did to github debug branch) to release branch github actions; and use sh -c -l on invole of make for windows to workaround some wierd issue with openssl
+
+commit 892a481964881b36b4a40c78d2a6753b5abf8dd7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 22 05:10:59 2022 +0000
+
+    hopefully restored .github/workflows/build-N-test-v2.1-Dev.yml to right code based on whats in release version of action
+
+commit a1ae547deb282ecd5bf1477b2955dcd8e0f831a9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 22 15:26:04 2022 +0000
+
+    Comments in ScriptsLib/RunLocalWindowsDockerRegressionTests how to run all (and changed names so easier to script run all)
+
+commit a13eb87e81f92f110f59639868d538bc1be21f78
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 22 19:15:20 2022 +0000
+
+    hopefully fixed issue with funny msys behavior when connecting (exec) instead of attaching to root login shell
+
+commit 364bcbb08bbeae48554f9ecb66080905a1a0d44a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 22 19:27:39 2022 +0000
+
+    more tweaks to .github action files - release for real and dev one just test code
+
+commit 0ae5ec5aa8faa619687ea949901dcf9f5ae5b9b7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 23 00:47:12 2022 +0000
+
+    fixed anohter couple places in ApplyConfiguration to use - not / for commandline args
+
+commit 0acf0139a75e9a224bee9c4d6a3f52cef0dc5856
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 23 01:21:13 2022 +0000
+
+    in openssl amkefile - include (manufacture) LDFLAGS for linking test apps
+
+commit 8db23196caa0d5b34edcc9285b2841f5637f7ad0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 23 01:21:48 2022 +0000
+
+    minor tweaks to build-N-test-v2.1-Dev.yml to mkae (hopefully) faster
+
+commit f76635952d4caddba451c38a55fa0b6aab899ec5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 23 01:24:47 2022 +0000
+
+    minor tewak to github owrkflwo to use bash no sh to see how much helps
+
+commit b6a4cec9fbd19c069abcaa00eec651b6c234f812
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 23 01:48:10 2022 +0000
+
+    disable LTO for github action build for code andalyze cuz doesnt help analysis and just slower
+
+commit 7830e56461e0af9cdc722bf834d95bcf5d8d23a4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 23 03:05:42 2022 +0000
+
+    in msys docker container, renamed .bashrc to .profile so should work if you invoke with sh instead of bash (untested)
+
+commit 06cb2a4ae1218fa02881263f90d25c1fb21ded5a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 23 03:29:56 2022 +0000
+
+    more tweaks to test github action file - use sh instead of bash
+
+commit 38d3c903ab121eeb3378e32fc019a01c53524b4b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 23 14:56:55 2022 +0000
+
+    Revert "in msys docker container, renamed .bashrc to .profile so should work if you invoke with sh instead of bash (untested)"
+    
+    This reverts commit 7830e56461e0af9cdc722bf834d95bcf5d8d23a4.
+    
+    No point in this - sh doesnt run .profile exect on login
+    (https://apple.stackexchange.com/questions/208408/profile-is-not-loaded-on-non-login-bin-sh)
+
+
+commit 9c3066e8da74e9c01302a74d060a7a177a6685f1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 23 17:43:45 2022 +0000
+
+    fixed typo in last github actions DEV test
+
+commit b9f5de8cb1590e40ded9b776fe200efdc42b52f1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 23 19:16:33 2022 +0000
+
+    try again using bash-c on make all call from github action
+
+commit 3386f32867d7ae87d5e24d30c7558c93ced5e259
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 23 19:17:25 2022 +0000
+
+    Revert "try again using bash-c on make all call from github action"
+    
+    This reverts commit b9f5de8cb1590e40ded9b776fe200efdc42b52f1.
+
+commit 7e20ed3a2b19555cec728cfa17bda2812d59f07a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 23 19:21:19 2022 +0000
+
+    re-apply github actions from release section to dev
+
+commit cca6c27c45c74a71dc959bd562de3ba89d0d97d4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 23 19:48:35 2022 +0000
+
+    fixed github actions regression - need sh invocation for configure script since windows doesnt support existing #! scripts - just unix does that
+
+commit 30156ebf1337511246c55d58189335d5581ead6e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 23 21:37:27 2022 +0000
+
+    need sh -c on one more .github action line due to wildcards
+
+commit 4452aa08cd72ba06987a5f256654758ffb63bcc3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 24 03:12:57 2022 +0000
+
+    switch includeInDevBranchBuilds in github actions for windows so we build DEBUG build for msys (cuz takes too long to build release build)
+
+commit 6852ba140441f75e29c22cb828523f2b7c52f6b7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 24 07:45:53 2022 +0000
+
+    openssl makefile - still having some trouble with MSYS under docker under github actions - set SHELL not .SHELL, and use -i instead of -l
+
+commit e7190f8d0ae553c7f56e80a7e32ea97349be24a1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 24 08:02:56 2022 +0000
+
+    msys docker file- do rebaseall in case that helps occaional fails from github action docker with msys
+
+commit 425f4d7a18e845cfd20f545a2069ebddca1ca063
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 24 08:23:44 2022 +0000
+
+    use latest stable instead of night build for msys in docker container
+
+commit 12e5b21b1d3c7b5bfaeacf29b16d6a3e343259e7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 24 09:00:34 2022 +0000
+
+    remove a few legacy references to qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+
+commit 3dcc2dbc995110a9f3e48be5fd49db3835136b67
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 24 09:16:09 2022 +0000
+
+    lose useless (probably performance counter productive) use of enable_shared_from_this with VariantValue and BLOB
+
+commit 42dfbce5f7f3b1c36db9ac33a0c4d616c593ae63
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 24 15:49:51 2022 +0000
+
+    docker calls on github (for windows) - try not using run --tty - since that maybe causing some of my github action flakies
+
+commit 2f4a75fc5f86c163f6759f99f93c69b7e410c40a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 26 14:03:46 2022 +0000
+
+    
+commit 2d8efb7acf66be79cb0443ccf29500d2d12601bb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 26 15:06:02 2022 +0000
+
+    lose deprecated Stroika_Foundation_DataExchange_StructFieldMetaInfo macro
+
+commit 4596d9bd9598f1b49dde4a3f90ab81236deaab71
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 26 15:18:34 2022 +0000
+
+    Lose Archived old code (revert in v3 branch)
+
+commit e5e3477fb7745b371a7c4eb45cb1f4b5256f33a1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 26 18:15:09 2022 +0000
+
+    https://stroika.atlassian.net/browse/STK-702 no longer exists so remove workaroun
+
+commit b7d1cfc695297edde1a51bdf366c3dec8edbb938
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 26 18:46:45 2022 +0000
+
+    no longer worakrounds for https://stroika.atlassian.net/browse/STK-674 - needed
+
+commit c0fcc9dc6a3d4c69eb3656ad9ae775c1b03d2aae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 26 22:01:19 2022 +0000
+
+    small makefile cleanups for raspberrypi configuraitons c ode
+
+commit bfa5540d98d82ec87e3e9acfcc5ded815b66efbf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 26 22:29:56 2022 +0000
+
+    fixed a number of visual studio SLN file issues (configuraitons)
+
+commit af302e0943f96e765a1cb7bc90892aad2cb772e5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 27 14:24:27 2022 +0000
+
+    tweak makefiles for foundation/framework so if Configuraiton.mk not there, run make apply-configuration instead of reporting erorr (and respect gnu make syntax rules and dont inetnd if defsevne though ti really looks better)
+
+commit aa8fd7a28289c4cd0fe51e2caecbaf2ea4d0ad35
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 29 02:08:03 2022 +0000
+
+    major cleanup of projects files for visual studio - setting  <ExecutablePath>;</ExecutablePath> and in ApplyConfigurations script setting JOBS_FLAGS and StroikaBuildToolsExtraPath variables into Microsoft.Cpp.stroika.AllConfigs.props (so net effect is with one config variable set in our script we can set path to cygwin or msys for vs project based builds
+
+commit 21988f61238023f394329c8f8b365b05ff5a610e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 29 02:52:46 2022 +0000
+
+    set StroikaBuildToolsExtraPath per configuraiton based on whether apply-configuraitons run as MSYS or cygwin
+
+commit 11ff69bb9d4f54bc2c18f652610de9f64bf05bae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 29 03:28:57 2022 +0000
+
+    more vs project file fixes - wrap import of Microsoft.Cpp.stroika.AllConfigs.props in Label=PropertySheets - so UI has properties page for users to edit
+
+commit 85520dd7c2417848d2bd295a736806ade3b9ebf7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 29 11:29:22 2022 +0000
+
+    write TOOLS_PATH_ADDITIONS to Configuration files as --mixed so that it works for either MSYS or Cygwin: I think fixes last failure interoperating between the two
+
+commit 8e2157c59ed5f148e9fcf215ccfbbbba1d38cf02
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 29 13:46:13 2022 +0000
+
+    fixed regression in last checkin for TOOLS_PATH_ADDITIONS - when assingin back to PATH in makefile must cygpath --unix
+
+commit 80dd92229fe087610cc0a086ebae64c1779c75e1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 29 15:38:11 2022 +0000
+
+    configure script (**not fully backward compatible**) now stored in config file as cygpath --mixed format (so that can be used on both msys and cygwin transparently) - and used that to delelete obsolete WIN_INCLUDES_PATH
+
+commit fb25fb27946064b2306b0d339c0ac94a904d984d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 29 17:28:23 2022 +0000
+
+    redid LIBS_PATH configure variable to be (on windows) in cygpath --mixed format, and lose obsoelte WIN_LIBS_PATH
+
+commit bee8378e36f0037ed776480dd185d6ee50b3bc6b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 29 18:42:51 2022 +0000
+
+    fixed one minor regression in vs props file for NMakePreprocessorDefinitions definition
+
+commit 915b8e4603b08e2f388ac312ca06c72241dbc059
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 29 20:34:52 2022 +0000
+
+    fixed CachedOBJSFile_ in makefiles to write objs in cygpath --mixed (on windows) - so cache file works beack and forth between cygwin and msys
+
+#endif
+
+
+
+----
+
 ### 2.1r1 {2022-01-08}
 
 #### TLDR

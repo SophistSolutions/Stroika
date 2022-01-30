@@ -7,7 +7,7 @@ Rough steps I go through do do each release (rough draft)
 Prepare them by doing
 
 ```bash
-git log --reverse v2.1-Dev > a
+git log --reverse v2.1-Release...HEAD > a
 ```
 
 Then summarize them into Release-Notes.md
