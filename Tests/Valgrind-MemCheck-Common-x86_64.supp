@@ -32,3 +32,10 @@
    Memcheck:Addr32
    fun:__wmemcmp_avx2_movbe
 }
+{
+   # Only happens on lto builds - appears to just be compiler 'issue' - probably not even bug - just mistake in valgrind because of reordering done in compiler
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   ...
+   fun:_ZN12_GLOBAL__N_132Test21_StringNumericConversions_Ev.lto_priv.*
+}
