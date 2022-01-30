@@ -980,7 +980,7 @@ sub	SetDefaultForCompilerDriver_
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and ($TargettingValgrind == true)) {
 			$qCompiler_ValgrindDirectSignalHandler_Buggy = true;
 		}
-		if ($ENABLE_LTO and $TargettingValgrind) {
+		if ($ENABLE_LTO == true and $TargettingValgrind == true) {
 			$qCompiler_ValgrindLTO_Buggy = true;
 		}
 	}
