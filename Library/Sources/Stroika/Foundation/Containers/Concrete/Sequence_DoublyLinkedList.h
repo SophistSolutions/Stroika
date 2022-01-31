@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      * \note Performance Notes:
      *      o   size () is O(N)
      *      o   Append () is O(N)
-     *      o   Prepend () is constant
+     *      o   Prepend () is constant complexity
      *      o   Indexing (GetAt/SetAt,operator[]) are O(N)
      */
     template <typename T>

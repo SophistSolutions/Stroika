@@ -25,9 +25,9 @@ namespace Stroika::Foundation::Containers::Concrete {
      *      Suitable for short lists, low memory overhead, where you can new entries, and remove from the start
      *      (or if array indexing is rare). To keep the order, but not use it much.
      * 
-     *      o   size () is constant
+     *      o   size () is O(N)
      *      o   Append () is O(N)
-     *      o   Prepend () is constant
+     *      o   Prepend () is constant complexity
      *      o   Indexing (GetAt/SetAt,operator[]) are O(N)
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
