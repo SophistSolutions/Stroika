@@ -197,6 +197,7 @@ my $LIB_DEPENDENCIES  = undef;	# space separated list
 my @LIB_DEPENDENCIES_ADD  = qw();
 my $STDCXXLIB = undef;
 my $TOOLS_PATH_ADDITIONS = undef;
+my $lsb_release = trim (`lsb_release -rs 2>/dev/null`);
 
 
 #
@@ -876,6 +877,10 @@ sub	SetDefaultForCompilerDriver_
 		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_ASSERTIONS = 0;
 		}
+		# https://stroika.atlassian.net/browse/STK-763
+		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS and $lsb_release == "20.04" and $TargettingValgrind == true) {
+			$ENABLE_LTO = false;
+		}
 		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS) {
 			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) ) {
 				if (trim(`awk -F= '/^NAME/{print $2}' /etc/os-release 2>/dev/null`) =~ /CentOS/) {
@@ -969,7 +974,7 @@ sub	SetDefaultForCompilerDriver_
 		$qCompiler_HasNoMisleadingIndentation_Flag = true;
 	}
 	
-	if (trim (`lsb_release -rs 2>/dev/null`) == "20.10" or trim (`lsb_release -rs 2>/dev/null`) == "21.04" or trim (`lsb_release -rs 2>/dev/null`) == "21.10") {
+	if ($lsb_release == "20.10" or $lsb_release == "21.04" or $lsb_release == "21.10") {
 		# so far only seen on ubuntu 20.10, clang++11, and g++10 - https://stroika.atlassian.net/browse/STK-717
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (10.0 <= GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0)) {
 			$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true;
