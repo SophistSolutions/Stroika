@@ -26,7 +26,7 @@ Note also - much of this (in perhaps more detail) can be gleaned (programaticall
 
 ## For MacOS
 
-- XCode (12 or later)
+- XCode (12 or later, but only tested with 13)
   - install from appstore
   - Then from command line
     - xcode-select –install

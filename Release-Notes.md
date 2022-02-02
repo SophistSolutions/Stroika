@@ -102,7 +102,7 @@ especially those they need to be aware of when upgrading.
 
 - Compilers Tested/Supported
   - g++ { 8, 9, 10, 11 }
-  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13; XCode: 12, 13 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13; XCode: 13 }
   - MSVC: { 15.9.41, 16.11.9, 17.0.5 }
 - OS/Platforms Tested/Supported
   - Windows
