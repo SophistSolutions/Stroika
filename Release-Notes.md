@@ -32,7 +32,7 @@ especially those they need to be aware of when upgrading.
       - fixed typo in handling of configure --wix
       - configure script (**not fully backward compatible**) now stored files/paths in config file as cygpath --mixed format 
         (so that can be used on both msys and cygwin transparently) - and used that to delelete obsolete WIN_xxx flags.
-    - use  $(TOOLSET_CMD_ENV_SETS) for cab build tool in ActiveLedIt makefile (so owrks iwth msys)
+    - use  $(TOOLSET_CMD_ENV_SETS) for cab build tool in ActiveLedIt makefile (so works with msys)
     - ScriptsLib/RunPerformanceRegressionTests sb same for cygwin and msys
     - tweaked ScriptsLib/RunLocalWindowsDockerRegressionTests print of names
       of performance results files
@@ -102,7 +102,7 @@ especially those they need to be aware of when upgrading.
 
 - Compilers Tested/Supported
   - g++ { 8, 9, 10, 11 }
-  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13; XCode: 13 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13; XCode: 12, 13 }
   - MSVC: { 15.9.41, 16.11.9, 17.0.5 }
 - OS/Platforms Tested/Supported
   - Windows
