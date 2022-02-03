@@ -45,7 +45,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
       Mapping<int,int> m = Mapping_Array<int,int>{};  // good while small
       ... while constructing map
       if (m.size () > 100) {
-        m = Mapping_stdmap<int,int>{m);
+        m = Mapping_stdmap<int,int>{m};
       }
       ... now switch to hash lookup once structure is stable
       m = Mapping_Hashtable<int,int>{m};
@@ -71,6 +71,11 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   void f(IT start, IT end) {...}
   ```
   and still have 'f' work with different types of containers.
+
+  Similarly, because Iterator\<T> has an operator bool (returns true on END) - this means (unlike STL containers but like ptr based null-checking) you can do)
+  ```
+  if (auto p = something_that_returns_iterator()) {}
+  ```
   
 
 - Stroika containers are lazy copied (copy-on-write - aka COW)
@@ -255,7 +260,7 @@ KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
 ---
 
 - Due to use of COW, const methods of reps need no locking (just use Debug::AssertExternallySyncrhonized).
-- Due to use of COW, non-const methods of reps ALSO don't need loocking, since the COW code assures there is only one reference at a time (and therefore one Envelope class, which itself asserts externally synchronized)
+- Due to use of COW, non-const methods of reps ALSO don't need locking, since the COW code assures there is only one reference at a time (and therefore one Envelope class, which itself asserts externally synchronized)
 
 - Generally have body functions of overloads have static_assert(TYPE REQUIREMENT) instead of using
   enable_if_t, just because enable_if_t tends to require more compiler bug workarounds, and produce
@@ -294,7 +299,7 @@ KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
 - Iterator Patching
   Before Stroika 2.1b14, updates to containers used to automatically update all existing running iterators. This was a nice, elegant feature. But it cost
   too much for its quite modest value.
-  - In made the backend implementations of containers significantly more complex, due to having to implement a patching strategy
+  - It made the backend implementations of containers significantly more complex, due to having to implement a patching strategy
     for all kinds of iterators, on all kinds of container modifying operations. This wasn't that hard (as it fell into a few cases), but it was some work.
     And it added a lot of template mixin mumbo-jumbo, just to get all containers tracking all their iterators.
   - It forced introduction of this concept of IteratorOwners (MAY still need that for other replacement debug checking - TBD - LGP 2021-10-05).
