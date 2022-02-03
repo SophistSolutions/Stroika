@@ -9,11 +9,11 @@ especially those they need to be aware of when upgrading.
 
 ---
 
-### 2.1r2x {2022-02-??}
+### 2.1r2 {2022-02-03}
 
 #### TLDR
 - On Windows, support using *either* Cygwin or MSYS (in fact can interoperate between the two). Support autodetect and configuring which used in Visual Studio Project/SLN files.
-- Improved documentation - especially around installing/building on windows
+- Improved documentation - especially around installing dependent tools and building on windows
 
 #### Change Details
 
@@ -62,6 +62,7 @@ especially those they need to be aware of when upgrading.
     + use g++-10 for CodeQL
 
 - Documentation
+  - Many cleanups, especially surrounding installation/building
 
 - Library
   - Miscellaneous
