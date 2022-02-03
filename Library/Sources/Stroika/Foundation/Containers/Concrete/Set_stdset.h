@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      * \note Performance Notes:
      *      Set_stdset<T> is a compact, and reasonable implementation of Set<>, and scales well.
      *
-     *      o   size () is constant
+     *      o   size () is constant complexity
      *      o   Uses Memory::BlockAllocatorOrStdAllocatorAsAppropriate
      *      o   Additions and Removals are generally O(ln(N))
      *

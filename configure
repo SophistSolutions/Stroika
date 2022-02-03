@@ -161,6 +161,7 @@ my $FEATUREFLAG_librt = undef;
 my $FEATUREFLAG_WIX = undef;
 my $TargettingValgrind = undef;
 my $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = undef;
+my $qCompiler_ValgrindLTO_Buggy = undef;
 my $qCompiler_ValgrindDirectSignalHandler_Buggy = undef;
 my $qCompiler_HasNoMisleadingIndentation_Flag = undef;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
@@ -196,6 +197,7 @@ my $LIB_DEPENDENCIES  = undef;	# space separated list
 my @LIB_DEPENDENCIES_ADD  = qw();
 my $STDCXXLIB = undef;
 my $TOOLS_PATH_ADDITIONS = undef;
+my $lsb_release = trim (`lsb_release -rs 2>/dev/null`);
 
 
 #
@@ -880,6 +882,10 @@ sub	SetDefaultForCompilerDriver_
 		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_ASSERTIONS = 0;
 		}
+		# https://stroika.atlassian.net/browse/STK-763
+		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS and $lsb_release == "20.04" and $TargettingValgrind == true) {
+			$ENABLE_LTO = false;
+		}
 		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS) {
 			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) ) {
 				if (trim(`awk -F= '/^NAME/{print $2}' /etc/os-release 2>/dev/null`) =~ /CentOS/) {
@@ -973,7 +979,7 @@ sub	SetDefaultForCompilerDriver_
 		$qCompiler_HasNoMisleadingIndentation_Flag = true;
 	}
 	
-	if (trim (`lsb_release -rs 2>/dev/null`) == "20.10" or trim (`lsb_release -rs 2>/dev/null`) == "21.04" or trim (`lsb_release -rs 2>/dev/null`) == "21.10") {
+	if ($lsb_release == "20.10" or $lsb_release == "21.04" or $lsb_release == "21.10") {
 		# so far only seen on ubuntu 20.10, clang++11, and g++10 - https://stroika.atlassian.net/browse/STK-717
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (10.0 <= GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0)) {
 			$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true;
@@ -984,6 +990,9 @@ sub	SetDefaultForCompilerDriver_
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and ($TargettingValgrind == true)) {
 			$qCompiler_ValgrindDirectSignalHandler_Buggy = true;
 		}
+		if ($ENABLE_LTO == true and $TargettingValgrind == true) {
+			$qCompiler_ValgrindLTO_Buggy = true;
+		}
 	}
 	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
 		push (@useExtraCDefines, '#define qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy 1');
@@ -991,6 +1000,8 @@ sub	SetDefaultForCompilerDriver_
 	if (defined ($qCompiler_ValgrindDirectSignalHandler_Buggy) and $qCompiler_ValgrindDirectSignalHandler_Buggy) {
 		push (@useExtraCDefines, '#define qCompiler_ValgrindDirectSignalHandler_Buggy 1');
 	}
+
+	
 	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin" or "$^O" eq "msys"))) {
 		$FEATUREFLAG_librt = $LIBFEATUREFLAG_UseSystem;
 	}
@@ -2611,7 +2622,9 @@ sub	WriteConfigFile_
 	if (defined ($qCompiler_HasNoMisleadingIndentation_Flag)) {
 		print (OUT "    <qCompiler_HasNoMisleadingIndentation_Flag>$qCompiler_HasNoMisleadingIndentation_Flag</qCompiler_HasNoMisleadingIndentation_Flag>\n");
 	}
-
+	if (defined ($qCompiler_ValgrindLTO_Buggy)) {
+		print (OUT "    <qCompiler_ValgrindLTO_Buggy>$qCompiler_ValgrindLTO_Buggy</qCompiler_ValgrindLTO_Buggy>\n");
+	}
 	print (OUT "</Configuration>\n");
 	close(OUT);
 }

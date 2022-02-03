@@ -272,6 +272,7 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("HasMakefileBugWorkaround_lto_skipping_undefined_incompatible");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qCompiler_HasNoMisleadingIndentation_Flag");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qCompiler_ValgrindLTO_Buggy");
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ActivePerl");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ATLMFC");

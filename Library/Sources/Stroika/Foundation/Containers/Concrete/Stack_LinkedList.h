@@ -27,6 +27,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      * \note Performance Notes:
      *      Very good low overhead implementation
      *
+     *      o   push/pop and top () are all constant complexity
      *      o   size () is O(N)
      *      o   Uses Memory::UseBlockAllocationIfAppropriate
      *

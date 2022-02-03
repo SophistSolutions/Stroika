@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      *      A good low overhead, fast implementation. Adds and removes by iterator from the middle of the collection are slow.
      *      And adds are generally fast, but occasionally (on realloc) very slow once.
      *
-     *      o   size () is constant
+     *      o   size () is constant complexity
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

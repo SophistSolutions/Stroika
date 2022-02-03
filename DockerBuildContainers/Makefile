@@ -61,10 +61,10 @@ ifeq (${HOST_OS_DETECTED},Linux)
 	#docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
 endif
 ifneq ($(findstring $(HOST_OS_DETECTED),MSYS-Cygwin),)
-	docker tag sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:latest sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:latest sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 $(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 $(STROIKA_VERSION)
+	docker tag sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:$(STROIKA_VERSION)
+	docker tag sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:$(STROIKA_VERSION)
+	docker tag sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19:$(STROIKA_VERSION)
+	docker tag sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:$(STROIKA_VERSION)
 endif
 
 

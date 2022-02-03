@@ -15,6 +15,10 @@ ifneq ($(CONFIGURATION),)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+
+# needed for vs2k17 build (doesnt appear otherwise)
+$(call PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED)
 
 
 .PHONY:	all clean clobber check doBuilds_
