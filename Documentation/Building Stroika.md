@@ -37,7 +37,7 @@ make --directory Stroika-Dev all run-tests CONFIGURATION=Debug -j10
 
 If you have a relatively standard POSIX like c++ build environement, you maybe done at this point. If you got errors, or want to know more, read on.
 
-### Build with Docker
+### <a name="build-with-docker">Build with Docker</a>
 
 If you are missing any components and just want a quick environment to test that has all the right build components installed, you can use the pre-built docker containers:
 

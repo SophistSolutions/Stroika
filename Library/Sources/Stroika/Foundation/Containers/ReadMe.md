@@ -85,7 +85,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 - <a name="Alternate-Backends-Feature"></a>Each Archetype container (access pattern) comes with multiple data structure backends, and you can start with the default (generally good), but when optimizing, transparently switch backends (data structure implementations) to easily adjust your performance characteristics
 - Linq-like rich variety of functional accessors, like Apply (), Find (), Where, Select (), Distinct (), OrderBy (), Accumulate (), Min/Max (), Any (), etc inherited from Iterable\<T>
 
-- Block-Allocation by default - even for STL-based containers. This helps make (much) use of Set_stdset\<T> faster than std::set\<T>, for example.
+- Block-Allocation by default - even for STL-based containers. This helps make use of Set_stdset\<T> (much) faster than std::set\<T>, for example.
 
 - Internal thread safety checks, (generally) assure threadsafe access (see Debug::AssertExternallySyncrhonized)
 
@@ -93,7 +93,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 ---
 
 - [Association\<KEY_TYPE, VALUE_TYPE>](Association.h)
-  - Allows for the association of two elements, and key and one or more values
+  - Allows for the association of two elements: a key and one or more associated values
   - Similar to Mapping<> - except multi-valued (like std::multimap)
   - Supported backends: Array, LinkedList, std::multimap
 - [Bijection\<DOMAIN_TYPE, RANGE_TYPE>](Bijection.h)
@@ -101,7 +101,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - Supported backends: LinkedList
 - [Collection\<T>](Collection.h)
   - a container to manage an un-ordered collection of items, without equality defined for T
-  - Supported backends: Array, LinkedList, std::fowrad_list, std::multiset
+  - Supported backends: Array, LinkedList, std::forward_list, std::multiset
 - [DataHyperRectange\< T, ... INDEXES>](DataHyperRectange.h)
   - a multi-dimensional Sequence\<T>
   - Aliases: Data-Cube, Date Cube, Hyper-Cube, Hypercube

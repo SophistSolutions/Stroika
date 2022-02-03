@@ -154,7 +154,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note   Most other containers (e.g. Set<>, Sequence<>) have the 'ITERABLE_OF_ADDABLE&& src' CTOR be explicit, whereas Collection does not.
          *          This is because converting to a Set or Sequence has some semantics, and the programmer should be clear on this. But a Collection<>
-         *          acts just like an interable (except that its modifyable). So allow this case to be non-explicit.
+         *          acts just like an Iterable<T> (except that its modifyable). So allow this case to be non-explicit.
          * 
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
