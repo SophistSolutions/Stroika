@@ -74,7 +74,7 @@ Roughly:
 - 7za, cmake (optionally - for building some optional components)
 
 
-You may find it helpful to review the instructions in [./Installing-Required-Tools.md](Installing-Required-Tools.md) which layout details per development platform.
+You may find it helpful to review the instructions in [Installing-Required-Tools.md](./Installing-Required-Tools.md) which layout details per development platform.
 
 ### Things to try (explore)
 
