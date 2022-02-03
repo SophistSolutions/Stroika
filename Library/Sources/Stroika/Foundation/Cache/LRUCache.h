@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Cache {
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *        o No comparison of LRUCache objects is currently supported. It might make sense, but would be of questionable use.
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#ExternallySynchronized">ExternallySynchronized</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  @see SynchronizedLRUCache<> - internally synchronized version
      */

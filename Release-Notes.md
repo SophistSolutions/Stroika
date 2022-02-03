@@ -1072,7 +1072,7 @@ especially those they need to be aware of when upgrading.
   - Debug
     - Change to AssertExternallySynchronizedLock: now extension point SharedContext/SetAssertExternallySynchronizedLockContext, to allow a set of objects to share a common 'these all must be accessed together' from within one thread (e.g. HTTP Connection Request/Response/Headers/etc)
     - Improved docs on AssertExternallySynchronizedLock, and improved DbgTrace messages for when this locker error detector finds a failure
-    - Debug/AssertExternallySynchronizedLock switched to using fowrad_list instead of multiset, as probably faster for common cases and closer to a lock-free implementation I may switch to soon)
+    - Debug/AssertExternallySynchronizedLock switched to using forward_list instead of multiset, as probably faster for common cases and closer to a lock-free implementation I may switch to soon)
     - Stroika_Foundation_Debug_ValgrindDisableHelgrind, and various related cleanups to helgrind usage/suppressions
   - Execution
     - Synchronized

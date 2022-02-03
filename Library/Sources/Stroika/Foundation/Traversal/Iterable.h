@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Traversal {
      *      We choose explicitly not to implement
      *          o   ToList/ToArray, no need because we have As<>, plus no List/Array classes (exactly).
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#ExternallySynchronized">ExternallySynchronized</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      */
     template <typename T>
