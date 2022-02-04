@@ -37,8 +37,8 @@
  *                          Verify (::OSSL_PROVIDER_unload (providerToMaybeRemove) == 1);
  *                      }
  *              Above involves two lookups instead of one. Could have Remove () optinally return iterator pointing to next element?
- *              But that only works for stdmap based impl… Could have optional return count of number of remaining with that key.
- *              Maybe too specific to this situation? But at least no cost (pass nullptr by default – add size_t* = nullptr arg 
+ *              But that only works for stdmap based implï¿½ Could have optional return count of number of remaining with that key.
+ *              Maybe too specific to this situation? But at least no cost (pass nullptr by default ï¿½ add size_t* = nullptr arg 
  *              to rep code and for stl can find quickly and for others need to hunt).
  *
  */
@@ -348,8 +348,7 @@ namespace Stroika::Foundation::Containers {
          * 
          * \note - for the argument 'key' overload, this is a change in Stroika 2.1b14: before it was legal and silently ignored if you removed an item that didn't exist.
          * 
-         *  Remove with iterator returns the adjusted iterator value, now pointing to the next value to use (as in save that iterator value, ++i) and remove the
-         *  i iterator value).
+         *  \param nextI - if provided (not null) - will be filled in with the next value after where iterator i is pointing - since i is invalidated by changing the container)
          *
          *  \note mutates container
          */

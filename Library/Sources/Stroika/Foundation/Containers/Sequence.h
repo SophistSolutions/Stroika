@@ -519,6 +519,8 @@ namespace Stroika::Foundation::Containers {
          *
          * The value pointed to by 'i' is updated - replaced with the value 'newValue'.
          *
+         *  \param nextI - if provided (not null) - will be filled in with the next value after where iterator i is pointing - since i is invalidated by changing the container)
+         *
          *  \note mutates container
          */
         nonvirtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI = nullptr);
