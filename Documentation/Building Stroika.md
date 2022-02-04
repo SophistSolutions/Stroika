@@ -170,7 +170,7 @@ The command-line used to generate the configuration is the first element of the 
 
 ### Configuration Basic Concepts
 
-- Each configuration has a name (e.g. Debug, Release-clang-7, Debug-raspberry-pi, Release-Centos-6, etc)
+- Each configuration has a name (e.g. Debug, Release-clang-7, Debug-raspberry-pi, etc)
 - Each configuration can have multiple 'tags' - like Unix, Windows, x86, arm, etc - which can be used to build sets of configurations
 - Each configuration defines CFLAGS and CXXFLAGS and (explain others) variables used in a regular makefile. You define (on the command line) variables (like 'assertions') which are used to generate to generate a bunch of other variables which appear in configuration files.
 

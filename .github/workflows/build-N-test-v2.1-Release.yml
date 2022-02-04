@@ -47,17 +47,6 @@ jobs:
           #   config_name: Debug
           #   extra_config_args: --apply-default-debug-flags --trace2file enable
 
-          ## centos 8
-          - displayTargetName: centos-8
-            os: unix
-            compiler: g++
-            runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-centos-8-small
-            cpp_version: c++17
-            config_name: Release
-            extra_config_args: --apply-default-release-flags --trace2file enable
-            includeInDevBranchBuilds: true
-
           ## ubuntu 18.04
           - displayTargetName: ubuntu-18.04-g++-8 (Debug)
             os: unix

@@ -43,11 +43,6 @@ VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed s/_/\./g)
 VERSION_WITH_2DOTS=$(shell echo $(VERSION_WITH_DOTS) | sed 's/\.[ab][0-9]//')
 ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
 
-# IF CENTOS, THEN USE OLDER BOOST - 1.76... - to avoid fail to compile...
-# still seems broken on centos7 with 1_78_0_b1
-ifneq (,$(wildcard /etc/redhat-release))
-    VERSION=1_76_0
-endif
 
 
 all:	
