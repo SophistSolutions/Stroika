@@ -73,7 +73,7 @@ jobs:
             compiler: clang++-10
             runs_on: ubuntu-latest
             container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
-            cpp_version: c++21
+            cpp_version: c++2a
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: true
