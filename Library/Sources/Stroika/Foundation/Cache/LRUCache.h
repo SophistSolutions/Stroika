@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Cache {
          *        you cannot specify some template parameters and then have deduction guides take effect).
          * 
          *  Note cannot move easily because this contains internal pointers (fCachedElts_First_): still declare move CTOR, but its not
-         *  noexept because its really copying...
+         *  noexcept because its really copying...
          */
         LRUCache (size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {}, size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{});
         LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {}, size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{});
