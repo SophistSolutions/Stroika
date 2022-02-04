@@ -261,7 +261,7 @@ namespace Stroika::Foundation::Cache {
         *v                                              = KeyValuePair_{key, value};
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    template <typename K1 , typename V1 , enable_if_t<is_same_v<K1, V1>>* >
+    template <typename K1, typename V1, enable_if_t<is_same_v<K1, V1>>*>
     inline void LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Add (typename Configuration::ArgByValueType<KEY> key)
     {
         Add (key, key);
@@ -305,7 +305,7 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::begin_ () const -> CacheIterator_
     {
-        LRUCache* ncThis = const_cast<LRUCache*> (this);
+        LRUCache* ncThis = const_cast<LRUCache*> (this); // https://stroika.atlassian.net/browse/STK-764
         return CacheIterator_{std::begin (ncThis->fCachedElts_First_), std::end (ncThis->fCachedElts_First_)};
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
