@@ -78,7 +78,7 @@ pull-base-images:
 ifeq (${HOST_OS_DETECTED},Linux)
 	docker pull ubuntu:18.04
 	docker pull ubuntu:20.04
-	docker pull ubuntu:21.04
+	docker pull ubuntu:21.10
 endif
 ifneq ($(findstring $(HOST_OS_DETECTED),MSYS-Cygwin),)
 	docker pull mcr.microsoft.com/windows/servercore:ltsc2019
