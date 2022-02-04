@@ -389,6 +389,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \note mutates container
+         * 
+         *  \param nextI - if provided (not null) - will be filled in with the next value after where iterator i is pointing - since i is invalidated by changing the container)
          */
         nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
 

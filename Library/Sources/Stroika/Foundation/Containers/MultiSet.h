@@ -247,6 +247,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  If using the item/count or just item overloads, then MultiSet<> requires that the removed items are present.
          *
+         *  \param nextI - if provided (not null) - will be filled in with the next value after where iterator i is pointing - since i is invalidated by changing the container)
+         *
          *  \note mutates container
          */
         nonvirtual void Remove (ArgByValueType<T> item, CounterType count = 1);

@@ -102,23 +102,6 @@ endif
 # autoconfigure sometimes detects multilib and then changes default libdir to lib64... - so override to look where rest of code looks for it
 CONFIG_ARGS+=	--libdir=lib
 
-#Attempt to wrokaround bug on centos6:
-#	(gdb) #0  0x0000000000000000 in ?? ()
-#	(gdb) #1  0x00007ffff7bd629c in _dlerror_run () from /lib64/libdl.so.2
-#	(gdb) #2  0x00007ffff7bd5ee1 in dlopen@@GLIBC_2.2.5 () from /lib64/libdl.so.2
-#	(gdb) #3  0x0000000000d0d4bd in dlfcn_load ()
-#	(gdb) #4  0x0000000000cd2348 in DSO_load ()
-#	(gdb) #5  0x0000000000c60d06 in ibm_4758_cca_init ()
-#
-# Note - this COULD be specific to the fact that we are using 
-#		-Wl,--rpath='$$ORIGIN/ii-esx-dynamic-libs' -Wl,--dynamic-linker='/opt/Analitiqa-II/ii-esx-dynamic-libs/ld-linux.so.2'
-#	in which case we really want the disabling specific to that configuraiton so we need
-#	https://stroika.atlassian.net/browse/STK-454 addressed. But - I don't think we really count on
-#	dso or engines, and you can always use --openssl=use-system
-#
-#CONFIG_ARGS+=	-no-dso		### EXPERIMENT TURNING THIS WORKAROUND OFF - 2019-09-25
-
-
 
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))

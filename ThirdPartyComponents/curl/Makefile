@@ -201,9 +201,6 @@ LIBCURL_CONFIGURE += --without-brotli
 endif
 endif
 
-#seems illrelevant for us one way or the other, but breaks building for centos5.8 - https://stroika.atlassian.net/browse/STK-419
-LIBCURL_CONFIGURE += --without-zsh-functions-dir
-
 
 ifeq ($(qFeatureFlag_OpenSSL), use)
 #Avoid:
