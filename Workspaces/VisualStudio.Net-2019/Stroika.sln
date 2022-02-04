@@ -2599,11 +2599,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared-Files", "Shared-File
 		..\..\DockerBuildContainers\Shared-Files\Getting-Started-With-Stroika.md = ..\..\DockerBuildContainers\Shared-Files\Getting-Started-With-Stroika.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Centos-7-Small", "Centos-7-Small", "{02483A36-F8B1-4458-AEA0-C5A108DD212B}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\DockerBuildContainers\Centos-7-Small\Dockerfile = ..\..\DockerBuildContainers\Centos-7-Small\Dockerfile
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Patches", "Patches", "{3DE81E1D-8804-4D2E-A5D6-8BAA3EDD9629}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\ThirdPartyComponents\zlib\Patches\LOSE_CANDAS_FLAGS.PATCH = ..\..\ThirdPartyComponents\zlib\Patches\LOSE_CANDAS_FLAGS.PATCH
