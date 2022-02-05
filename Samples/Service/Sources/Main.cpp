@@ -185,7 +185,7 @@ int main (int argc, const char* argv[])
     /*
      *  Create service handler instance.
      */
-    Main m (make_shared<Samples::Service::SampleAppServiceRep> (), serviceIntegrationRep);
+    Main m{make_shared<Samples::Service::SampleAppServiceRep> (), serviceIntegrationRep};
 
     /*
      *  Run request.
