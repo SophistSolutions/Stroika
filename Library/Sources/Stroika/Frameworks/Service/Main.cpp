@@ -93,7 +93,7 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
         for (const auto& i : kPairs_) {
             if (Execution::MatchesCommandLineArgument (si, i.first)) {
                 if (found) {
-                    Execution::Throw (Execution::InvalidCommandLineArgument (L"Only one major command-line option can be specified at a time"));
+                    Execution::Throw (Execution::InvalidCommandLineArgument{L"Only one major command-line option can be specified at a time"});
                 }
                 found           = true;
                 fMajorOperation = i.second;
@@ -135,28 +135,11 @@ bool Main::IServiceIntegrationRep::HandleCommandLineArgument (const String& s)
     return _GetAttachedAppRep ()->HandleCommandLineArgument (s);
 }
 
-void Main::IServiceIntegrationRep::_RunDirectly ()
-{
-}
-
 /*
  ********************************************************************************
  ********************************* Service::Main ********************************
  ********************************************************************************
  */
-const wchar_t Service::Main::CommandNames::kInstall[]             = L"Install";
-const wchar_t Service::Main::CommandNames::kUnInstall[]           = L"UnInstall";
-const wchar_t Service::Main::CommandNames::kRunAsService[]        = L"Run-As-Service";
-const wchar_t Service::Main::CommandNames::kRunDirectly[]         = L"Run-Directly";
-const wchar_t Service::Main::CommandNames::kStart[]               = L"Start";
-const wchar_t Service::Main::CommandNames::kStop[]                = L"Stop";
-const wchar_t Service::Main::CommandNames::kForcedStop[]          = L"ForcedStop";
-const wchar_t Service::Main::CommandNames::kRestart[]             = L"Restart";
-const wchar_t Service::Main::CommandNames::kForcedRestart[]       = L"ForcedRestart";
-const wchar_t Service::Main::CommandNames::kReloadConfiguration[] = L"Reload-Configuration";
-const wchar_t Service::Main::CommandNames::kPause[]               = L"Pause";
-const wchar_t Service::Main::CommandNames::kContinue[]            = L"Continue";
-
 shared_ptr<Main::IServiceIntegrationRep> Main::mkDefaultServiceIntegrationRep ()
 {
 #if qPlatform_POSIX
@@ -212,7 +195,11 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters:
             RunAsService ();
         } break;
         case CommandArgs::MajorOperation::eRunDirectly: {
-            RunDirectly ();
+            optional<Time::Duration> runFor;
+            if (args.fUnusedArguments.size () >= 1) {
+                runFor = Time::Duration{Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (args.fUnusedArguments[0])};
+            }
+            RunDirectly (runFor);
         } break;
         case CommandArgs::MajorOperation::eStart: {
             if (out != nullptr) {
@@ -302,10 +289,10 @@ void Main::RunAsService ()
     GetServiceRep_ ()._RunAsService ();
 }
 
-void Main::RunDirectly ()
+void Main::RunDirectly (const optional<Time::Duration>& runFor)
 {
     Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::RunDirectly"};
-    GetServiceRep_ ()._RunDirectly ();
+    GetServiceRep_ ()._RunDirectly (runFor);
 }
 
 void Main::ForcedRestart ([[maybe_unused]] Time::DurationSecondsType timeout, [[maybe_unused]] Time::DurationSecondsType unforcedStopTimeout)
@@ -346,7 +333,7 @@ void Main::Restart (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper traceCtx{L"Stroika::Frameworks::Service::Main::Restart", L"timeout = %e", timeout};
 
-    /////// WRONG HANDLING OF TIMEOUT
+    /////// @TODO FIX - WRONG HANDLING OF TIMEOUT
     Stop (timeout);
     Start (timeout);
 #if 0
@@ -431,11 +418,11 @@ void Main::LoggerServiceWrapper::_RunAsService ()
     Logger::Get ().Log (Logger::Priority::eNotice, L"Service stopped normally");
 }
 
-void Main::LoggerServiceWrapper::_RunDirectly ()
+void Main::LoggerServiceWrapper::_RunDirectly (const optional<Time::Duration>& runFor)
 {
     Logger::Get ().Log (Logger::Priority::eNotice, L"Service starting in Run-Direct (non service) mode.");
     try {
-        fDelegateTo_->_RunDirectly ();
+        fDelegateTo_->_RunDirectly (runFor);
     }
     catch (...) {
         String exceptMsg = Characters::ToString (current_exception ());
@@ -463,111 +450,6 @@ void Main::LoggerServiceWrapper::_ForcedStop (Time::DurationSecondsType timeout)
 pid_t Main::LoggerServiceWrapper::_GetServicePID () const
 {
     return fDelegateTo_->_GetServicePID ();
-}
-
-/*
- ********************************************************************************
- ******************* Service::Main::RunTilIdleService ***************************
- ********************************************************************************
- */
-void Main::RunTilIdleService::_Attach (const shared_ptr<IApplicationRep>& appRep)
-{
-    Require ((appRep == nullptr and fAppRep_ != nullptr) or
-             (fAppRep_ == nullptr and fAppRep_ != appRep));
-    fRunThread_.Abort ();
-    fRunThread_ = Execution::Thread::Ptr{};
-    fAppRep_    = appRep;
-}
-
-shared_ptr<Main::IApplicationRep> Main::RunTilIdleService::_GetAttachedAppRep () const
-{
-    return fAppRep_;
-}
-
-Set<Main::ServiceIntegrationFeatures> Main::RunTilIdleService::_GetSupportedFeatures () const
-{
-    return Set<Main::ServiceIntegrationFeatures> ();
-}
-
-Main::State Main::RunTilIdleService::_GetState () const
-{
-    //tmphack.... must think through states...
-    switch (fRunThread_.GetStatus ()) {
-        case Execution::Thread::Status::eRunning:
-            return Main::State::eRunning;
-    }
-    return Main::State::eStopped;
-}
-
-void Main::RunTilIdleService::_Install ()
-{
-    Execution::Throw (Execution::OperationNotSupportedException{L"Install"sv});
-}
-
-void Main::RunTilIdleService::_UnInstall ()
-{
-    Execution::Throw (Execution::OperationNotSupportedException{L"UnInstall"sv});
-}
-
-void Main::RunTilIdleService::_RunAsService ()
-{
-    RequireNotNull (fAppRep_); // must call Attach_ first
-    shared_ptr<IApplicationRep> appRep = fAppRep_;
-    fRunThread_                        = Execution::Thread::New (
-        [appRep] () {
-            appRep->MainLoop ([] () {});
-        },
-        Execution::Thread::eAutoStart, kServiceRunThreadName_);
-    float timeTilIdleHack = 3.0;
-    fRunThread_.Join (timeTilIdleHack); //tmphack
-}
-
-void Main::RunTilIdleService::_RunDirectly ()
-{
-    RequireNotNull (fAppRep_); // must call Attach_ first
-    shared_ptr<IApplicationRep> appRep = fAppRep_;
-    fRunThread_                        = Execution::Thread::New (
-        [appRep] () {
-            appRep->MainLoop ([] () {});
-        },
-        Execution::Thread::eAutoStart, kServiceRunThreadName_);
-    fRunThread_.Join ();
-}
-
-void Main::RunTilIdleService::_Start ([[maybe_unused]] Time::DurationSecondsType timeout)
-{
-    RequireNotNull (fAppRep_); // must call Attach_ first
-    shared_ptr<IApplicationRep> appRep = fAppRep_;
-    fRunThread_                        = Execution::Thread::New (
-        [appRep] () {
-            appRep->MainLoop ([] () {});
-        },
-        Execution::Thread::eAutoStart, kServiceRunThreadName_);
-}
-
-void Main::RunTilIdleService::_Stop (Time::DurationSecondsType timeout)
-{
-    // VERY WEAK TO WRONG IMPL
-    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"};
-    if (fRunThread_ != nullptr) {
-        fRunThread_.AbortAndWaitForDone (timeout);
-        fRunThread_ = nullptr;
-    }
-}
-
-void Main::RunTilIdleService::_ForcedStop (Time::DurationSecondsType timeout)
-{
-    // VERY WEAK TO WRONG IMPL
-    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"};
-    if (fRunThread_ != nullptr) {
-        fRunThread_.AbortAndWaitForDone (timeout);
-        fRunThread_ = nullptr;
-    }
-}
-
-pid_t Main::RunTilIdleService::_GetServicePID () const
-{
-    Execution::Throw (Execution::OperationNotSupportedException (L"GetServicePID"sv));
 }
 
 #if qPlatform_POSIX
@@ -690,7 +572,7 @@ void Main::BasicUNIXServiceImpl::_RunAsService ()
     fRunThread_.load ().Join ();
 }
 
-void Main::BasicUNIXServiceImpl::_RunDirectly ()
+void Main::BasicUNIXServiceImpl::_RunDirectly (const optional<Time::Duration>& runFor)
 {
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     RequireNotNull (appRep); // must call Attach_ first
@@ -699,7 +581,15 @@ void Main::BasicUNIXServiceImpl::_RunDirectly ()
             appRep->MainLoop ([] () {});
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_));
-    Thread::Ptr t = fRunThread_.load ();
+    Thread::Ptr        t = fRunThread_.load ();
+    Thread::CleanupPtr stopper{Thread::CleanupPtr::eAbortBeforeWaiting}; // another thread to stop the mainloop after runFor
+    if (runFor) {
+        stopper = Execution::Thread::New ([&] () {
+            Execution::Sleep (*runFor);
+            fRunThread_.Abort ();
+        },
+                                          Execution::Thread::eAutoStart);
+    }
     t.Join ();
 }
 
@@ -987,7 +877,7 @@ void Main::WindowsService::_RunAsService ()
     }
 }
 
-void Main::WindowsService::_RunDirectly ()
+void Main::WindowsService::_RunDirectly (const optional<Time::Duration>& runFor)
 {
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_                        = Execution::Thread::New (
@@ -995,6 +885,14 @@ void Main::WindowsService::_RunDirectly ()
             appRep->MainLoop ([] () {});
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_);
+    Thread::CleanupPtr stopper{Thread::CleanupPtr::eAbortBeforeWaiting}; // another thread to stop the mainloop after runFor
+    if (runFor) {
+        stopper = Execution::Thread::New ([&] () {
+            Execution::Sleep (*runFor);
+            fRunThread_.Abort ();
+        },
+                                          Execution::Thread::eAutoStart);
+    }
     fRunThread_.Join ();
 }
 

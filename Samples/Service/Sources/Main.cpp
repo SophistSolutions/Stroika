@@ -174,10 +174,6 @@ int main (int argc, const char* argv[])
      */
     Sequence<String>                         args                  = Execution::ParseCommandLine (argc, argv);
     shared_ptr<Main::IServiceIntegrationRep> serviceIntegrationRep = Main::mkDefaultServiceIntegrationRep ();
-    if (Execution::MatchesCommandLineArgument (args, L"run2Idle")) {
-        cerr << "Warning: RunTilIdleService not really done correctly yet - no notion of idle" << endl;
-        serviceIntegrationRep = make_shared<Main::RunTilIdleService> ();
-    }
 #if qUseLogger
     serviceIntegrationRep = make_shared<Main::LoggerServiceWrapper> (serviceIntegrationRep);
 #endif
