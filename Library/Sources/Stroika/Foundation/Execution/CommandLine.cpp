@@ -146,14 +146,14 @@ optional<String> Execution::MatchesCommandLineArgumentWithValue ([[maybe_unused]
 
 optional<String> Execution::MatchesCommandLineArgumentWithValue (const Iterable<String>& argList, const String& matchesArgPattern)
 {
-    auto i = argList.Find ([matchesArgPattern] (String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
+    auto i = argList.Find ([matchesArgPattern] (const String& i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
     if (i != argList.end ()) {
         ++i;
         if (i == argList.end ()) [[UNLIKELY_ATTR]] {
             Execution::Throw (InvalidCommandLineArgument{});
         }
         else {
-            return optional<String> (*i);
+            return optional<String>{*i};
         }
     }
     return nullopt;
