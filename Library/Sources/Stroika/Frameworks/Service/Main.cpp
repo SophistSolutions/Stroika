@@ -584,9 +584,9 @@ void Main::BasicUNIXServiceImpl::_RunDirectly (const optional<Time::Duration>& r
     Thread::Ptr        t = fRunThread_.load ();
     Thread::CleanupPtr stopper{Thread::CleanupPtr::eAbortBeforeWaiting}; // another thread to stop the mainloop after runFor
     if (runFor) {
-        stopper = Execution::Thread::New ([&] () {
+        stopper = Execution::Thread::New ([&t, &runFor] () {
             Execution::Sleep (*runFor);
-            fRunThread_.Abort ();
+            t.Abort ();
         },
                                           Execution::Thread::eAutoStart);
     }
