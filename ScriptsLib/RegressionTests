@@ -386,8 +386,8 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 	SAMPLE_APPS_2_TEST+=("Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/lzma1604.7z")
 	SAMPLE_APPS_2_TEST+=("Samples-Containers/Containers")
 	SAMPLE_APPS_2_TEST+=("Samples-Serialization/Serialization")
-	# cuz --run2idle not yet implemented
 	SAMPLE_APPS_2_TEST+=("Samples-Service/Service --status")
+	SAMPLE_APPS_2_TEST+=("Samples-Service/Service --run-directly 10")
 	SAMPLE_APPS_2_TEST+=("Samples-SQL/SQL")
 	SAMPLE_APPS_2_TEST+=("Samples-SSDPClient/SSDPClient --quit-after 10")
 	SAMPLE_APPS_2_TEST+=("Samples-SSDPServer/SSDPServer --quit-after 10")
