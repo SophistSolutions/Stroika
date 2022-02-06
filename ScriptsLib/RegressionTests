@@ -386,12 +386,13 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 	SAMPLE_APPS_2_TEST+=("Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/lzma1604.7z")
 	SAMPLE_APPS_2_TEST+=("Samples-Containers/Containers")
 	SAMPLE_APPS_2_TEST+=("Samples-Serialization/Serialization")
-	SAMPLE_APPS_2_TEST+=("Samples-Service/Service --status")	# cuz --run2idle not yet implemented
+	# cuz --run2idle not yet implemented
+	SAMPLE_APPS_2_TEST+=("Samples-Service/Service --status")
 	SAMPLE_APPS_2_TEST+=("Samples-SQL/SQL")
 	#SAMPLE_APPS_2_TEST+=("Samples-SSDPClient/SSDPClient -NOTHING CUZ NO RUNFORTIME ARG YET")
 	#SAMPLE_APPS_2_TEST+=("Samples-SSDPServer/SSDPServer -NOTHING CUZ NO RUNFORTIME ARG YET")
 	SAMPLE_APPS_2_TEST+=("Samples-SystemPerformanceClient/SystemPerformanceClient")
-	if [[ ("$EUID" -eq 0) || ($OSTYPE == "cygwin" || ($OSTYPE == "MSYS") ]] ; then
+	if [[ "$EUID" -eq 0 || $DETECTED_HOST_OS == "Cygwin" || $DETECTED_HOST_OS == "MSYS" ]] ; then
 		# requires root access on UNIX else fails
 		SAMPLE_APPS_2_TEST+=("Samples-Traceroute/Traceroute www.sophists.com")
 	fi
