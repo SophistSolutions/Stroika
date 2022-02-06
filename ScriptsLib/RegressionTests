@@ -389,7 +389,8 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 	SAMPLE_APPS_2_TEST+=("Samples-Service/Service --status")
 	SAMPLE_APPS_2_TEST+=("Samples-Service/Service --run-directly 10")
 	SAMPLE_APPS_2_TEST+=("Samples-SQL/SQL")
-	SAMPLE_APPS_2_TEST+=("Samples-SSDPClient/SSDPClient --quit-after 10")
+	SAMPLE_APPS_2_TEST+=("Samples-SSDPClient/SSDPClient -l --quit-after 10")
+	SAMPLE_APPS_2_TEST+=("Samples-SSDPClient/SSDPClient -s 'upnp:rootdevice' --quit-after 10")
 	SAMPLE_APPS_2_TEST+=("Samples-SSDPServer/SSDPServer --quit-after 10")
 	SAMPLE_APPS_2_TEST+=("Samples-SystemPerformanceClient/SystemPerformanceClient")
 	if [[ "$EUID" -eq 0 || $DETECTED_HOST_OS == "Cygwin" || $DETECTED_HOST_OS == "MSYS" ]] ; then
