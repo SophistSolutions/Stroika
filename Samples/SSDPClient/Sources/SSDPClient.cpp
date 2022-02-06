@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
+#include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 
@@ -99,15 +100,16 @@ int main (int argc, const char* argv[])
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
-    bool             listen = false;
-    optional<String> searchFor;
+    bool                      listen = false;
+    optional<String>          searchFor;
+    Time::DurationSecondsType quitAfter = numeric_limits<Time::DurationSecondsType>::max ();
 
     Sequence<String> args = Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end (); ++argi) {
         if (Execution::MatchesCommandLineArgument (*argi, L"l")) {
             listen = true;
         }
-        if (Execution::MatchesCommandLineArgument (*argi, L"s")) {
+        else if (Execution::MatchesCommandLineArgument (*argi, L"s")) {
             ++argi;
             if (argi != args.end ()) {
                 searchFor = *argi;
@@ -117,9 +119,19 @@ int main (int argc, const char* argv[])
                 return EXIT_FAILURE;
             }
         }
+        else if (Execution::MatchesCommandLineArgument (*argi, L"quit-after")) {
+            ++argi;
+            if (argi != args.end ()) {
+                quitAfter = Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (*argi);
+            }
+            else {
+                cerr << "Expected arg to -quit-after" << endl;
+                return EXIT_FAILURE;
+            }
+        }
     }
     if (not listen and not searchFor.has_value ()) {
-        cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR]" << endl;
+        cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR] [--quit-after N]" << endl;
         cerr << "   e.g. SSDPClient -l" << endl;
         cerr << "   e.g. SSDPClient -s \"upnp:rootdevice\"" << endl;
         return EXIT_FAILURE;
@@ -136,12 +148,16 @@ int main (int argc, const char* argv[])
         }
 
         if (listen or searchFor.has_value ()) {
-            Execution::WaitableEvent{}.Wait (); // wait forever - til user hits ctrl-c
+            Execution::WaitableEvent{}.Wait (quitAfter); // wait quitAfter seconds, or til user hits ctrl-c
         }
         else {
             cerr << "Specify -l to listen or -s STRING to search" << endl;
             return EXIT_FAILURE;
         }
+    }
+    catch (const Execution::TimeOutException&) {
+        cerr << "Timed out - so - exiting..." << endl;
+        return EXIT_SUCCESS;
     }
     catch (...) {
         String exceptMsg = Characters::ToString (current_exception ());
