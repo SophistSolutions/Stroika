@@ -85,6 +85,28 @@ And, first thing when you run docker image, cat /Getting-Started-With-Stroika.md
 cat /Getting-Started-With-Stroika.md
 ```
 
+## Docker Files
+
+- Basics
+  - Linux
+    - Ubuntu
+      -  [Ubuntu1804-Small/DockerFile](Ubuntu1804-Small/DockerFile)
+      -  [Ubuntu2004-Small/DockerFile](Ubuntu2004-Small/DockerFile)
+      -  [Ubuntu2110-Small/DockerFile](Ubuntu2110-Small/DockerFile)
+    - Windows
+      -  [Windows-Cygwin-VS2k19/DockerFile](Windows-Cygwin-VS2k19/DockerFile)
+      -  [Windows-Cygwin-VS2k22/DockerFile](Windows-Cygwin-VS2k22/DockerFile)
+      -  [Windows-MSYS-VS2k19/DockerFile](Windows-MSYS-VS2k19/DockerFile)
+      -  [Windows-MSYS-VS2k22/DockerFile](Windows-MSYS-VS2k22/DockerFile)
+- Derived
+  - Linux
+    - Ubuntu
+      -  [Ubuntu1804-RegressionTests/DockerFile](Ubuntu1804-RegressionTests/DockerFile)
+      -  [Ubuntu2004-RegressionTests/DockerFile](Ubuntu2004-RegressionTests/DockerFile)
+      -  [Ubuntu2110-RegressionTests/DockerFile](Ubuntu2110-RegressionTests/DockerFile)
+    - Stroika-Dev
+      -  [Stroika-Dev/DockerFile](Stroika-Dev/DockerFile)
+
 ## Create and setup for ssh Stroika-Dev images
 
 (used for LGP development - very optional)
