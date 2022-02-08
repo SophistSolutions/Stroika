@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <functional>
+#include <map>
 #include <optional>
 #include <thread>
 
@@ -853,8 +854,13 @@ namespace Stroika::Foundation::Execution {
         public:
             /**
              */
-            static IndexRegistrar& Get ();
+            static IndexRegistrar sThe;
+
+        private:
+            mutex                             fMutex_;
+            map<Thread::IDType, unsigned int> fShownThreadIDs_;
         };
+        inline IndexRegistrar IndexRegistrar::sThe;
 
         /**
          *  This object - while in existance, blocks delivery of all Interrupt Exceptions (InterruptException and AbortException)
