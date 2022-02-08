@@ -244,8 +244,26 @@ Thread::AbortException::AbortException ()
  ************************** Thread::IndexRegistrar ******************************
  ********************************************************************************
  */
-unsigned int Thread::IndexRegistrar::GetIndex (const Thread::IDType& threadID, bool* wasNew)
+Thread::IndexRegistrar::IndexRegistrar ()
 {
+    Assert (not fInitialized_);
+    fInitialized_ = true;
+}
+
+Thread::IndexRegistrar::~IndexRegistrar ()
+{
+    Assert ( fInitialized_);
+    fInitialized_ = false;
+}
+
+unsigned int Thread::IndexRegistrar::GetIndex (const IDType& threadID, bool* wasNew)
+{
+    if (not fInitialized_) {
+    if (wasNew != nullptr) {
+        *wasNew = false;
+    }
+        return 0;
+    }
     [[maybe_unused]] auto&& critSec          = lock_guard{fMutex_};
     auto                    i                = fShownThreadIDs_.find (threadID);
     unsigned int            threadIndex2Show = 0;

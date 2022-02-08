@@ -835,21 +835,32 @@ namespace Stroika::Foundation::Execution {
          *  Thread IDs tend to be long and not easy to read in trace output. This utility class just maps these long
          *  ids to a short index. Again - ONLY for easier / brevity in logging. But a common registry is maintained here
          *  to allow all the logging across Stroika to use the same shortened IDs.
+         * 
+         *  Note you can only reference the singleton sThe. This can be referenced before main, or after main safely,
+         *  but in those cases, there can be no threads, so it just returns zero (GetIndex).
+         * 
+         *  NOTE - this class is sligtly queer, in that it guarantees behavior of one of its methods BEFORE its
+         *  constructed and AFTER its been destroyed. This cannot be 100% true in general and might cause some problems
+         *  with sanitizers and the like. But I think this path will generally work and certainly tries to give reasonable
+         *  answers when called outside its lifetime (and should work due to only having a single singleton instance).
          *
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
          */
         class IndexRegistrar {
         protected:
-            IndexRegistrar () = default;
+            IndexRegistrar (const IndexRegistrar&) = delete;
+            IndexRegistrar ();
 
         public:
-            IndexRegistrar (const IndexRegistrar&) = delete;
+            ~IndexRegistrar ();
+
+        public:
             IndexRegistrar& operator= (const IndexRegistrar&) = delete;
 
         public:
             /**
              */
-            nonvirtual unsigned int GetIndex (const Thread::IDType& threadID, bool* wasNew = nullptr);
+            nonvirtual unsigned int GetIndex (const IDType& threadID, bool* wasNew = nullptr);
 
         public:
             /**
@@ -857,8 +868,9 @@ namespace Stroika::Foundation::Execution {
             static IndexRegistrar sThe;
 
         private:
-            mutex                             fMutex_;
-            map<Thread::IDType, unsigned int> fShownThreadIDs_;
+            bool                      fInitialized_{false};
+            mutex                     fMutex_;
+            map<IDType, unsigned int> fShownThreadIDs_;
         };
         inline IndexRegistrar IndexRegistrar::sThe;
 
