@@ -252,16 +252,16 @@ Thread::IndexRegistrar::IndexRegistrar ()
 
 Thread::IndexRegistrar::~IndexRegistrar ()
 {
-    Assert ( fInitialized_);
+    Assert (fInitialized_);
     fInitialized_ = false;
 }
 
 unsigned int Thread::IndexRegistrar::GetIndex (const IDType& threadID, bool* wasNew)
 {
     if (not fInitialized_) {
-    if (wasNew != nullptr) {
-        *wasNew = false;
-    }
+        if (wasNew != nullptr) {
+            *wasNew = false;
+        }
         return 0;
     }
     [[maybe_unused]] auto&& critSec          = lock_guard{fMutex_};
