@@ -244,6 +244,9 @@ Thread::AbortException::AbortException ()
  ************************** Thread::IndexRegistrar ******************************
  ********************************************************************************
  */
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
+IndexRegistrar IndexRegistrar::sThe;
+#endif
 Thread::IndexRegistrar::IndexRegistrar ()
 {
     Assert (not fInitialized_);

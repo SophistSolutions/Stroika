@@ -872,7 +872,9 @@ namespace Stroika::Foundation::Execution {
             mutex                     fMutex_;
             map<IDType, unsigned int> fShownThreadIDs_;
         };
+#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         inline IndexRegistrar IndexRegistrar::sThe;
+#endif
 
         /**
          *  This object - while in existance, blocks delivery of all Interrupt Exceptions (InterruptException and AbortException)
