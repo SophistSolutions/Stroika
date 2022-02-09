@@ -245,7 +245,7 @@ Thread::AbortException::AbortException ()
  ********************************************************************************
  */
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-IndexRegistrar IndexRegistrar::sThe;
+Thread::IndexRegistrar Thread::IndexRegistrar::sThe;
 #endif
 Thread::IndexRegistrar::IndexRegistrar ()
 {
