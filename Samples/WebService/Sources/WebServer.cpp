@@ -213,7 +213,7 @@ const WebServiceMethodDescription WebServer::Rep_::kPlus_
     L"plus"_k,
         Set<String>{HTTP::Methods::kPost},
 #if qCompilerAndStdLib_static_inline_order_of_construction_Buggy
-        InternetMediaType{InternetMediaTypes::Types::kApplication, L"json"sv}
+        InternetMediaType{InternetMediaTypes::Types::kApplication, L"json"sv},
 #else
         InternetMediaTypes::kJSON,
 #endif
@@ -228,7 +228,7 @@ const WebServiceMethodDescription WebServer::Rep_::kMinus
     L"minus"_k,
         Set<String>{HTTP::Methods::kPost},
 #if qCompilerAndStdLib_static_inline_order_of_construction_Buggy
-        InternetMediaType{InternetMediaTypes::Types::kApplication, L"json"sv}
+        InternetMediaType{InternetMediaTypes::Types::kApplication, L"json"sv},
 #else
         InternetMediaTypes::kJSON,
 #endif
@@ -243,7 +243,7 @@ const WebServiceMethodDescription WebServer::Rep_::kTimes
     L"times"_k,
         Set<String>{HTTP::Methods::kPost},
 #if qCompilerAndStdLib_static_inline_order_of_construction_Buggy
-        InternetMediaType{InternetMediaTypes::Types::kApplication, L"json"sv}
+        InternetMediaType{InternetMediaTypes::Types::kApplication, L"json"sv},
 #else
         InternetMediaTypes::kJSON,
 #endif
@@ -259,7 +259,7 @@ const WebServiceMethodDescription WebServer::Rep_::kDivide
     L"divide"_k,
         Set<String>{HTTP::Methods::kPost},
 #if qCompilerAndStdLib_static_inline_order_of_construction_Buggy
-        InternetMediaType{InternetMediaTypes::Types::kApplication, L"json"sv}
+        InternetMediaType{InternetMediaTypes::Types::kApplication, L"json"sv},
 #else
         InternetMediaTypes::kJSON,
 #endif
