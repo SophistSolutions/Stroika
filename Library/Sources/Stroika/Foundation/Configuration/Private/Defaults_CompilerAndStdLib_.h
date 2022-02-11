@@ -287,7 +287,6 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 
 #endif
 
-
 // I'm NOT sure if this is covering a Stroika bug, or if its a bug with vs2k17 compiler. It only breaks on vs2k17.
 // And I couldn't figure out what is promised by the language with a quick read of c++ spec, and search on stack overflow
 // The issue:
@@ -302,7 +301,6 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #endif
 
 #endif
-
 
 ///C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(246): error C2760: syntax error: unexpected token ';', expected ')'
 // You can use [[maybe_unused]] after the identifier, but not before the auto

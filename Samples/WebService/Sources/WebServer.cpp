@@ -189,80 +189,85 @@ public:
 /*
  *  Documentation on WSAPIs
  */
-const WebServiceMethodDescription WebServer::Rep_::kVariables_{
+const WebServiceMethodDescription WebServer::Rep_::kVariables_
+{
     L"variables"_k,
-    Set<String>{HTTP::Methods::kGet, HTTP::Methods::kPost, HTTP::Methods::kDelete},
+        Set<String>{HTTP::Methods::kGet, HTTP::Methods::kPost, HTTP::Methods::kDelete},
 #if qCompilerAndStdLib_static_inline_order_of_construction_Buggy
         InternetMediaTypes{InternetMediaTypes::Types::kApplication, L"json"sv};
 #else
         InternetMediaTypes::kJSON,
 #endif
     {},
-    Sequence<String>{
-        L"curl http://localhost:8080/variables -v --output -",
-        L"curl http://localhost:8080/variables/x -v --output -",
-        L"curl  -X POST http://localhost:8080/variables/x -v --output -",
-        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"value\": 3}' http://localhost:8080/variables/x --output -",
-        L"curl -H \"Content-Type: text/plain\" -X POST -d 3 http://localhost:8080/variables/x --output -"},
-    Sequence<String>{L"@todo - this is a rough draft (but functional). It could use alot of cleanup and review to see WHICH way I recommend using, and just provide the recommended ways in samples"},
+        Sequence<String>{
+            L"curl http://localhost:8080/variables -v --output -",
+            L"curl http://localhost:8080/variables/x -v --output -",
+            L"curl  -X POST http://localhost:8080/variables/x -v --output -",
+            L"curl -H \"Content-Type: application/json\" -X POST -d '{\"value\": 3}' http://localhost:8080/variables/x --output -",
+            L"curl -H \"Content-Type: text/plain\" -X POST -d 3 http://localhost:8080/variables/x --output -"},
+        Sequence<String>{L"@todo - this is a rough draft (but functional). It could use alot of cleanup and review to see WHICH way I recommend using, and just provide the recommended ways in samples"},
 };
 
-const WebServiceMethodDescription WebServer::Rep_::kPlus_{
+const WebServiceMethodDescription WebServer::Rep_::kPlus_
+{
     L"plus"_k,
-    Set<String>{HTTP::Methods::kPost},
+        Set<String>{HTTP::Methods::kPost},
 #if qCompilerAndStdLib_static_inline_order_of_construction_Buggy
         InternetMediaTypes{InternetMediaTypes::Types::kApplication, L"json"sv};
 #else
         InternetMediaTypes::kJSON,
 #endif
     {},
-    Sequence<String>{
-        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 3, \"arg2\": 5 }' http://localhost:8080/plus --output -",
-    },
-    Sequence<String>{L"add the two argument numbers"},
+        Sequence<String>{
+            L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 3, \"arg2\": 5 }' http://localhost:8080/plus --output -",
+        },
+        Sequence<String>{L"add the two argument numbers"},
 };
-const WebServiceMethodDescription WebServer::Rep_::kMinus{
+const WebServiceMethodDescription WebServer::Rep_::kMinus
+{
     L"minus"_k,
-    Set<String>{HTTP::Methods::kPost},
+        Set<String>{HTTP::Methods::kPost},
 #if qCompilerAndStdLib_static_inline_order_of_construction_Buggy
         InternetMediaTypes{InternetMediaTypes::Types::kApplication, L"json"sv};
 #else
         InternetMediaTypes::kJSON,
 #endif
     {},
-    Sequence<String>{
-        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 4.5, \"arg2\": -3.23 }' http://localhost:8080/minus --output -",
-    },
-    Sequence<String>{L"subtract the two argument numbers"},
+        Sequence<String>{
+            L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 4.5, \"arg2\": -3.23 }' http://localhost:8080/minus --output -",
+        },
+        Sequence<String>{L"subtract the two argument numbers"},
 };
-const WebServiceMethodDescription WebServer::Rep_::kTimes{
+const WebServiceMethodDescription WebServer::Rep_::kTimes
+{
     L"times"_k,
-    Set<String>{HTTP::Methods::kPost},
+        Set<String>{HTTP::Methods::kPost},
 #if qCompilerAndStdLib_static_inline_order_of_construction_Buggy
         InternetMediaTypes{InternetMediaTypes::Types::kApplication, L"json"sv};
 #else
         InternetMediaTypes::kJSON,
 #endif
     {},
-    Sequence<String>{
-        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + 4i\", \"arg2\": 3.2 }' http://localhost:8080/times --output -",
-        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": \"2 - i\" }' http://localhost:8080/times --output -",
-    },
-    Sequence<String>{L"multiply the two argument numbers"},
+        Sequence<String>{
+            L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + 4i\", \"arg2\": 3.2 }' http://localhost:8080/times --output -",
+            L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": \"2 - i\" }' http://localhost:8080/times --output -",
+        },
+        Sequence<String>{L"multiply the two argument numbers"},
 };
-const WebServiceMethodDescription WebServer::Rep_::kDivide{
+const WebServiceMethodDescription WebServer::Rep_::kDivide
+{
     L"divide"_k,
-    Set<String>{HTTP::Methods::kPost},
+        Set<String>{HTTP::Methods::kPost},
 #if qCompilerAndStdLib_static_inline_order_of_construction_Buggy
         InternetMediaTypes{InternetMediaTypes::Types::kApplication, L"json"sv};
 #else
         InternetMediaTypes::kJSON,
 #endif
     {},
-    Sequence<String>{
-        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": 0 }' http://localhost:8080/divide --output -",
-    },
-    Sequence<String>{L"divide the two argument numbers"},
+        Sequence<String>{
+            L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": 0 }' http://localhost:8080/divide --output -",
+        },
+        Sequence<String>{L"divide the two argument numbers"},
 };
 
 WebServer::WebServer (uint16_t portNumber, const shared_ptr<IWSAPI>& wsImpl)
