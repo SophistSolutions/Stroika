@@ -164,7 +164,7 @@ namespace CommonTests {
             void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, [[maybe_unused]] TEST_FUNCTION applyToContainer)
             {
                 Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::Test1_OldMiscBagTests_"};
-                CONCRETE_CONTAINER s = factory ();
+                CONCRETE_CONTAINER        s = factory ();
                 On_Container_<CONCRETE_CONTAINER> (s);
             }
         }

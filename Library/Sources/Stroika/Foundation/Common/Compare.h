@@ -46,9 +46,9 @@ namespace Stroika::Foundation::Common {
      *  \todo DEPRECATE THESE NAMES AND USE C++ names directly --LGP 2022-01-10
      */
     //    using  [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] strong_ordering              = std::strong_ordering;
-    constexpr std::strong_ordering  kLess [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]   = std::strong_ordering::less;
-    constexpr std::strong_ordering  kEqual [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]  = std::strong_ordering::equal;
-    constexpr std::strong_ordering  kGreater [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::greater;
+    constexpr std::strong_ordering kLess [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]    = std::strong_ordering::less;
+    constexpr std::strong_ordering kEqual [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]   = std::strong_ordering::equal;
+    constexpr std::strong_ordering kGreater [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::greater;
 
     /**
      *  \brief like std::compare_three_way{} (lhs, rhs), except class templated on T1/T2 instead of function, so you can bind function object for example in templates expecting one

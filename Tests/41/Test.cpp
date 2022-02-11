@@ -166,8 +166,8 @@ namespace {
 
             const unsigned int kRepeatCount_ = kVerySlow_ ? 20 : 250;
 
-            static constexpr initializer_list<int> kOrigValueInit_ = {1, 3, 4, 5, 6, 33, 12, 13};
-            static const initializer_list<int> kUpdateValueInit_ = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
+            static constexpr initializer_list<int> kOrigValueInit_   = {1, 3, 4, 5, 6, 33, 12, 13};
+            static const initializer_list<int>     kUpdateValueInit_ = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
 
             no_lock_ lock;
             //mutex lock;

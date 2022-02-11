@@ -318,7 +318,7 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
      */
     inline const Time::Duration Default<Time::Duration>::kLowerBound = Time::Duration::min ();
     inline const Time::Duration Default<Time::Duration>::kUpperBound = Time::Duration::max ();
-    inline Time::Duration Default<Time::Duration>::GetNext (Time::Duration i)
+    inline Time::Duration       Default<Time::Duration>::GetNext (Time::Duration i)
     {
         return Time::Duration{::nextafter (i.As<double> (), numeric_limits<double>::max ())};
     }

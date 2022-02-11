@@ -100,8 +100,8 @@ namespace Stroika::Foundation::Linguistics {
         nonvirtual String MakeNounSingular (const String& s) const;
 
     private:
-        Containers::Sequence<shared_ptr<const MessageUtilities>> fMessageHandlers_;
-        static inline Execution::Synchronized<shared_ptr<const MessageUtiltiesManager>> sTheMessageUtiltiesManager_;
+        Containers::Sequence<shared_ptr<const MessageUtilities>>                                                    fMessageHandlers_;
+        static inline Execution::Synchronized<shared_ptr<const MessageUtiltiesManager>>                             sTheMessageUtiltiesManager_;
         mutable Execution::Synchronized<optional<Common::KeyValuePair<locale, shared_ptr<const MessageUtilities>>>> fCached_;
     };
 

@@ -297,7 +297,7 @@ namespace Stroika::Frameworks::Led {
     private:
         bool fOwned;
 #elif qPlatform_Windows
-             operator HRGN () const;
+        operator HRGN () const;
         int  CombineRgn (Region* pRgn1, Region* pRgn2, int nCombineMode);
         BOOL PtInRegion (int x, int y) const;
         BOOL PtInRegion (POINT point) const;
@@ -910,11 +910,11 @@ namespace Stroika::Frameworks::Led {
     short     GetRectWidth (const Rect& r);
 #elif qPlatform_Windows
     Led_Point AsLedPoint (POINT p);
-    POINT     AsPOINT (Led_Point p);
-    Led_Rect  AsLedRect (RECT r);
-    RECT      AsRECT (Led_Rect p);
-    SIZE      AsSIZE (Led_Size s);
-    Led_Size  AsLedSize (SIZE s);
+    POINT AsPOINT (Led_Point p);
+    Led_Rect AsLedRect (RECT r);
+    RECT AsRECT (Led_Rect p);
+    SIZE AsSIZE (Led_Size s);
+    Led_Size AsLedSize (SIZE s);
 #elif qStroika_FeatureSupported_XWindows
     Led_Rect AsLedRect (const XRectangle& r);
     XRectangle AsXRect (const Led_Rect& r);
@@ -1047,29 +1047,29 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         nonvirtual void SetPort ();
 #elif qPlatform_Windows
-        nonvirtual BOOL     BitBlt (int x, int y, int nWidth, int nHeight, Tablet* pSrcDC, int xSrc, int ySrc, DWORD dwRop);
-        nonvirtual BOOL     CreateCompatibleDC (Tablet* pDC);
+        nonvirtual BOOL BitBlt (int x, int y, int nWidth, int nHeight, Tablet* pSrcDC, int xSrc, int ySrc, DWORD dwRop);
+        nonvirtual BOOL CreateCompatibleDC (Tablet* pDC);
         nonvirtual COLORREF SetTextColor (COLORREF crColor);
         nonvirtual COLORREF SetBkColor (COLORREF crColor);
-        nonvirtual BOOL     IsPrinting () const;
-        nonvirtual BOOL     RoundRect (int x1, int y1, int x2, int y2, int x3, int y3);
-        nonvirtual BOOL     TextOut (int x, int y, LPCTSTR lpszString, int nCount);
+        nonvirtual BOOL IsPrinting () const;
+        nonvirtual BOOL RoundRect (int x1, int y1, int x2, int y2, int x3, int y3);
+        nonvirtual BOOL TextOut (int x, int y, LPCTSTR lpszString, int nCount);
         //      nonvirtual  SIZE    GetTextExtent (LPCTSTR lpszString, int nCount) const;
-        nonvirtual int     SetBkMode (int nBkMode);
-        nonvirtual SIZE    GetWindowExt () const;
-        nonvirtual SIZE    GetViewportExt () const;
-        nonvirtual BOOL    Rectangle (int x1, int y1, int x2, int y2);
-        nonvirtual BOOL    Rectangle (const RECT& r);
-        nonvirtual BOOL    Rectangle (LPCRECT lpRect);
-        nonvirtual BOOL    GetTextMetrics (LPTEXTMETRIC lpMetrics) const;
+        nonvirtual int SetBkMode (int nBkMode);
+        nonvirtual SIZE GetWindowExt () const;
+        nonvirtual SIZE GetViewportExt () const;
+        nonvirtual BOOL Rectangle (int x1, int y1, int x2, int y2);
+        nonvirtual BOOL Rectangle (const RECT& r);
+        nonvirtual BOOL Rectangle (LPCRECT lpRect);
+        nonvirtual BOOL GetTextMetrics (LPTEXTMETRIC lpMetrics) const;
         nonvirtual HBITMAP SelectObject (HBITMAP hBitmap);
 #if defined(STRICT)
         nonvirtual HFONT SelectObject (HFONT hFont);
 #endif
         nonvirtual POINT SetWindowOrg (int x, int y);
-        nonvirtual int   GetDeviceCaps (int nIndex) const;
-        nonvirtual BOOL  Attach (HDC hDC, OwnDCControl ownsDC = eOwnsDC);
-        nonvirtual HDC   Detach ();
+        nonvirtual int GetDeviceCaps (int nIndex) const;
+        nonvirtual BOOL Attach (HDC hDC, OwnDCControl ownsDC = eOwnsDC);
+        nonvirtual HDC Detach ();
 #elif qStroika_FeatureSupported_XWindows
     public:
         nonvirtual void SetFont (const FontSpecification& fontSpec);
@@ -1156,9 +1156,9 @@ namespace Stroika::Frameworks::Led {
         GrafPtr fGrafPort;
 #elif qPlatform_Windows
     public:
-        HDC          m_hDC;       // The output DC (must be first data member)
-        HDC          m_hAttribDC; // The Attribute DC
-        BOOL         m_bPrinting;
+        HDC m_hDC;       // The output DC (must be first data member)
+        HDC m_hAttribDC; // The Attribute DC
+        BOOL m_bPrinting;
         OwnDCControl fOwnsDC;
 
     private:
@@ -1291,7 +1291,7 @@ namespace Stroika::Frameworks::Led {
         CGrafPtr  fOrigPort;
         GWorldPtr fOffscreenGWorld;
 #elif qPlatform_Windows
-        OT     fMemDC;
+        OT fMemDC;
         Bitmap fMemoryBitmap; // only can create / select inside loop cuz there is where we know the size.
         // but decare outside, so stays around for successive rows which are the same size.
         HBITMAP fOldBitmapInDC; // used for save/restore of bitmap associated with the DC.

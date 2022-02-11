@@ -133,10 +133,10 @@ public:
     Marker* fFirstSubMarker; // singly linked list of submarkers
     Marker* fNextSubMarker;  // (next link with same parent)
 
-    Marker* fParent{nullptr};
-    bool fIsHackMarker : 1 {false};
-    bool fIsDeletedMarker : 1 {false}; // true only for REAL markers who are deleted
-    bool fIsPreRemoved : 1 {false};
+    Marker*      fParent{nullptr};
+    bool         fIsHackMarker : 1 {false};
+    bool         fIsDeletedMarker : 1 {false}; // true only for REAL markers who are deleted
+    bool         fIsPreRemoved : 1 {false};
     size_t       fStart{0};
     size_t       fLength{0};
     MarkerOwner* fOwner{nullptr};

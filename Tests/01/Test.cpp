@@ -312,7 +312,7 @@ namespace {
             {
                 Debug::TraceContextBumper ctx{"SimpleBasic"};
                 constexpr int             kTotalEntries_{1000};
-                BloomFilter<int> f{BloomFilter<int>{kTotalEntries_}};
+                BloomFilter<int>          f{BloomFilter<int>{kTotalEntries_}};
                 for (auto i : Traversal::DiscreteRange<int>{1, kTotalEntries_}) {
                     if (i & 1) {
                         f.Add (i);

@@ -28,10 +28,10 @@ namespace Stroika::Foundation::Time {
     {
         Require (kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC));
     }
-    inline constexpr Timezone Timezone::kUTC{TZ_::eUTC};
-    inline constexpr Timezone Timezone::kLocalTime{TZ_::eLocalTime};
+    inline constexpr Timezone           Timezone::kUTC{TZ_::eUTC};
+    inline constexpr Timezone           Timezone::kLocalTime{TZ_::eLocalTime};
     inline constexpr optional<Timezone> Timezone::kUnknown{nullopt};
-    inline make_signed_t<time_t> Timezone::GetBiasFromUTC (const Date& date, const TimeOfDay& tod) const
+    inline make_signed_t<time_t>        Timezone::GetBiasFromUTC (const Date& date, const TimeOfDay& tod) const
     {
         // Cast to avoid warning, but no chance of overflow cuz GetBiasInMinutesFromUTC range restricted and time_t at least 4 bytes
         return static_cast<make_signed_t<time_t>> (60) * GetBiasInMinutesFromUTC (date, tod);

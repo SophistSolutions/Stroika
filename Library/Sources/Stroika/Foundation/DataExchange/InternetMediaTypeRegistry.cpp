@@ -811,4 +811,3 @@ bool InternetMediaTypeRegistry::IsA (const InternetMediaType& moreGeneralType, c
     // @todo temporary algorithm - works for old HealtFrame code but add some more general mechanism - configurable and based on /user/share/MIME
     return moreSpecificType.GetSubType<String> ().StartsWith (moreGeneralType.GetSubType<String> (), Characters::CompareOptions::eCaseInsensitive);
 }
-
