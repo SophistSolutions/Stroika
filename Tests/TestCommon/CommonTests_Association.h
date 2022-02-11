@@ -134,9 +134,6 @@ namespace CommonTests {
                     m.Remove (1);
                     VerifyTestResult (m.size () == 0);
                     for ([[maybe_unused]] auto i : m) {
-#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
-                        &i;
-#endif
                         VerifyTestResult (false);
                     }
                     m.Add (1, 2);
@@ -264,9 +261,6 @@ namespace CommonTests {
                         VerifyTestResult (a == K);
                         a = 0;
                         for ([[maybe_unused]] auto i : keys) {
-#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
-                            &i;
-#endif
                             a++;
                         }
                         VerifyTestResult (a == K);
@@ -298,9 +292,6 @@ namespace CommonTests {
                     m.Remove (1);
                     VerifyTestResult (m.size () == 0);
                     for ([[maybe_unused]] auto i : m) {
-#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
-                        &i;
-#endif
                         VerifyTestResult (false);
                     }
                     m.Add (1, 2);

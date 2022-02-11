@@ -503,9 +503,7 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename ITERABLE>
     constexpr bool IsIterable_v = has_beginend_v<ITERABLE>
-#if not qCompilerAndStdLib_template_value_type_ambiguous_confusion_Buggy
                                   and not is_same_v<ExtractValueType_t<ITERABLE>, void>
-#endif
         ;
 
 }

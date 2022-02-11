@@ -20,10 +20,6 @@ namespace Stroika::Foundation::Containers::Factory {
      ******************************* Stack_Factory<T> *******************************
      ********************************************************************************
      */
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-    template <typename T>
-    atomic<Stack<T> (*) ()> Stack_Factory<T>::sFactory_{nullptr};
-#endif
     template <typename T>
     inline Stack<T> Stack_Factory<T>::operator() () const
     {

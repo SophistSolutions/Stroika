@@ -28,21 +28,9 @@ namespace Stroika::Foundation::Time {
     {
         Require (kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC));
     }
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-    constexpr Timezone Timezone::kUTC{TZ_::eUTC};
-#else
     inline constexpr Timezone Timezone::kUTC{TZ_::eUTC};
-#endif
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-    constexpr Timezone Timezone::kLocalTime{TZ_::eLocalTime};
-#else
     inline constexpr Timezone Timezone::kLocalTime{TZ_::eLocalTime};
-#endif
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-    constexpr optional<Timezone> Timezone::kUnknown{nullopt};
-#else
     inline constexpr optional<Timezone> Timezone::kUnknown{nullopt};
-#endif
     inline make_signed_t<time_t> Timezone::GetBiasFromUTC (const Date& date, const TimeOfDay& tod) const
     {
         // Cast to avoid warning, but no chance of overflow cuz GetBiasInMinutesFromUTC range restricted and time_t at least 4 bytes

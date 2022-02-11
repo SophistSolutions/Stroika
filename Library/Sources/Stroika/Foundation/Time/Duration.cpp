@@ -37,9 +37,6 @@ Duration::FormatException::FormatException ()
     : inherited{L"Invalid Duration Format"sv}
 {
 }
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-const Duration::FormatException Duration::FormatException::kThe;
-#endif
 
 /*
  ********************************************************************************
@@ -633,15 +630,3 @@ namespace Stroika::Foundation::Math {
         return (v.As<DurationSecondsType> () < 0) ? -v : v;
     }
 }
-
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-/*
- ********************************************************************************
- ************************** Traversal::RangeTraits::Default *********************
- ********************************************************************************
- */
-namespace Stroika::Foundation::Traversal::RangeTraits {
-    const Time::Duration Default<Time::Duration>::kLowerBound = Time::Duration::min ();
-    const Time::Duration Default<Time::Duration>::kUpperBound = Time::Duration::max ();
-}
-#endif

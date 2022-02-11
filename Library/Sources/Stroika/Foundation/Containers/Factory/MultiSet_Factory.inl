@@ -21,10 +21,6 @@ namespace Stroika::Foundation::Containers::Factory {
      ************ MultiSet_Factory<T, TRAITS, EQUALS_COMPARER> **********************
      ********************************************************************************
      */
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-    template <typename T, typename TRAITS, typename EQUALS_COMPARER>
-    atomic<MultiSet<T, TRAITS> (*) (const EQUALS_COMPARER&)> MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::sFactory_{nullptr};
-#endif
     template <typename T, typename TRAITS, typename EQUALS_COMPARER>
     inline MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::MultiSet_Factory (const EQUALS_COMPARER& equalsComparer)
         : fEqualsComparer_{equalsComparer}

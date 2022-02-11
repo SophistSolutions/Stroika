@@ -20,10 +20,6 @@ namespace Stroika::Foundation::Containers::Factory {
      ************ SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS> ***************
      ********************************************************************************
      */
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
-    atomic<SortedMapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_INORDER_COMPARER&)> SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::sFactory_ (nullptr);
-#endif
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
     inline SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::SortedMapping_Factory (const KEY_INORDER_COMPARER& keyInOrderComparer)
         : fInOrderComparer_{keyInOrderComparer}

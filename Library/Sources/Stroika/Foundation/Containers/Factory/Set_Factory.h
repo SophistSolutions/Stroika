@@ -39,11 +39,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename EQUALS_COMPARER = equal_to<T>>
     class Set_Factory {
     private:
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-        static atomic<Set<T> (*) (const EQUALS_COMPARER&)> sFactory_;
-#else
         static inline atomic<Set<T> (*) (const EQUALS_COMPARER&)> sFactory_{nullptr};
-#endif
 
     public:
         static_assert (not is_reference_v<T> and not is_reference_v<EQUALS_COMPARER>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<>(), or remove_cvref_t");

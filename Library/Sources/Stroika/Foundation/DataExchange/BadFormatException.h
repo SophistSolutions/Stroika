@@ -49,9 +49,7 @@ namespace Stroika::Foundation::DataExchange {
     private:
         Characters::String fDetails_;
     };
-#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     inline const BadFormatException BadFormatException::kThe;
-#endif
 
 }
 

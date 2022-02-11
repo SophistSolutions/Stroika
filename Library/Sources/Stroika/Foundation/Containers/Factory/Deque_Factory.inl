@@ -20,10 +20,6 @@ namespace Stroika::Foundation::Containers::Factory {
      ******************************* Deque_Factory<T> *******************************
      ********************************************************************************
      */
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-    template <typename T>
-    atomic<Deque<T> (*) ()> Deque_Factory<T>::sFactory_ (nullptr);
-#endif
     template <typename T>
     inline Deque<T> Deque_Factory<T>::operator() () const
     {

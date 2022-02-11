@@ -312,11 +312,7 @@ namespace {
             {
                 Debug::TraceContextBumper ctx{"SimpleBasic"};
                 constexpr int             kTotalEntries_{1000};
-#if qCompilerAndStdLib_uniformInitializationsFailsOnIntSize_t_Buggy
-                BloomFilter<int> f{BloomFilter<int>{(int)kTotalEntries_}};
-#else
                 BloomFilter<int> f{BloomFilter<int>{kTotalEntries_}};
-#endif
                 for (auto i : Traversal::DiscreteRange<int>{1, kTotalEntries_}) {
                     if (i & 1) {
                         f.Add (i);

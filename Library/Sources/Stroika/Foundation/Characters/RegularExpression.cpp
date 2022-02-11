@@ -29,10 +29,6 @@ namespace {
  ********************** Characters::RegularExpression ***************************
  ********************************************************************************
  */
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-const RegularExpression RegularExpression::kNONE{L"(?!)"sv};
-const RegularExpression RegularExpression::kAny{L".*"sv};
-#endif
 RegularExpression::RegularExpression (const String& re, SyntaxType syntaxType, CompareOptions co)
     : fCompiledRegExp_{re.As<wstring> (), mkOption_ (syntaxType, co)}
 {

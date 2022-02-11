@@ -37,11 +37,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T>
     class Collection_Factory {
     private:
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-        static atomic<Collection<T> (*) ()> sFactory_;
-#else
         static inline atomic<Collection<T> (*) ()> sFactory_{nullptr};
-#endif
 
     public:
         static_assert (not is_reference_v<T>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");

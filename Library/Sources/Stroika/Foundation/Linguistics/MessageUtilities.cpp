@@ -105,9 +105,6 @@ String MessageUtilities_en::MakeNounSingular (const String& s) const
  ************************** MessageUtiltiesManager ******************************
  ********************************************************************************
  */
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-Execution::Synchronized<shared_ptr<const MessageUtiltiesManager>> MessageUtiltiesManager::sTheMessageUtiltiesManager_;
-#endif
 shared_ptr<const MessageUtilities> MessageUtiltiesManager::LookupHandler (const locale& l) const
 {
     optional<Common::KeyValuePair<locale, shared_ptr<const MessageUtilities>>> cachedVal = fCached_.load ();

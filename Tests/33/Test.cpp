@@ -761,7 +761,6 @@ namespace {
     }
 }
 
-#if !qCompilerAndStdLib_lambda_expand_in_namespace_Buggy
 namespace {
     namespace aaa {
         struct dev {
@@ -777,7 +776,6 @@ namespace {
         return mapper;
     }();
 }
-#endif
 
 namespace {
     void DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_ ()

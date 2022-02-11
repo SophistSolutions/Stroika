@@ -101,11 +101,7 @@ namespace Stroika::Foundation::Linguistics {
 
     private:
         Containers::Sequence<shared_ptr<const MessageUtilities>> fMessageHandlers_;
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-        static Execution::Synchronized<shared_ptr<const MessageUtiltiesManager>> sTheMessageUtiltiesManager_;
-#else
         static inline Execution::Synchronized<shared_ptr<const MessageUtiltiesManager>> sTheMessageUtiltiesManager_;
-#endif
         mutable Execution::Synchronized<optional<Common::KeyValuePair<locale, shared_ptr<const MessageUtilities>>>> fCached_;
     };
 

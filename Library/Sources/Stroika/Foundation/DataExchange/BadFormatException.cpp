@@ -69,9 +69,6 @@ namespace {
         return msg;
     }
 }
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-const DataExchange::BadFormatException DataExchange::BadFormatException::kThe;
-#endif
 
 DataExchange::BadFormatException::BadFormatException ()
     : inherited{mkMessage_ ()}

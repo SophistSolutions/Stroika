@@ -34,11 +34,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename INORDER_COMPARER = less<T>>
     class SortedCollection_Factory {
     private:
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-        static atomic<SortedCollection<T> (*) (const INORDER_COMPARER&)> sFactory_;
-#else
         static inline atomic<SortedCollection<T> (*) (const INORDER_COMPARER&)> sFactory_{nullptr};
-#endif
 
     public:
         static_assert (not is_reference_v<T> and not is_reference_v<INORDER_COMPARER>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");

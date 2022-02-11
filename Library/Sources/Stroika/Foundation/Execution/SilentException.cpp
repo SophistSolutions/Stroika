@@ -17,7 +17,3 @@ const char* SilentException::what () const noexcept
 {
     return "Silent Exception";
 }
-
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-const SilentException SilentException::kThe;
-#endif

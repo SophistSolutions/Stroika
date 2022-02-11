@@ -83,10 +83,6 @@ namespace {
  ******************* Cryptography::OpenSSL::LibraryContext **********************
  ********************************************************************************
  */
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-LibraryContext LibraryContext::sDefault;
-#endif
-
 LibraryContext::LibraryContext ()
     : pAvailableCipherAlgorithms{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
@@ -100,11 +96,7 @@ LibraryContext::LibraryContext ()
                   &cipherNames);
 #else
               ::EVP_CIPHER_do_all_sorted (
-#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
-                  [] (const ::EVP_CIPHER* ciph, const char*, const char*, void* arg) { AccumulateIntoSetOfCipherNames_ (ciph, reinterpret_cast<Set<String>*> (arg)); },
-#else
                   [] (const ::EVP_CIPHER* ciph, [[maybe_unused]] const char* from, [[maybe_unused]] const char* to, void* arg) { AccumulateIntoSetOfCipherNames_ (ciph, reinterpret_cast<Set<String>*> (arg)); },
-#endif
                   &cipherNames);
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -169,11 +161,7 @@ LibraryContext::LibraryContext ()
             &digestNames);
 #else
         ::EVP_MD_do_all_sorted (
-#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
-            [] (const ::EVP_MD* md, const char*, const char*, void* arg) { AccumulateIntoSetOfDigestNames_ (md, reinterpret_cast<Set<String>*> (arg)); },
-#else
             [] (const ::EVP_MD* md, [[maybe_unused]] const char* from, [[maybe_unused]] const char* to, void* arg) { AccumulateIntoSetOfDigestNames_ (md, reinterpret_cast<Set<String>*> (arg)); },
-#endif
             &digestNames);
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

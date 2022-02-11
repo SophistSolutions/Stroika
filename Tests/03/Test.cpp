@@ -69,15 +69,9 @@ namespace {
                 // Can implement getter/setters with this capture (wastes a bit of space)
                 : contentLength1{
                       [this] ([[maybe_unused]] const auto* property) {
-#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
-                          &property;
-#endif
                           return fContentLength_;
                       },
                       [this] ([[maybe_unused]] auto* property, const auto& contentLength) {
-#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
-                          &property;
-#endif
                           fContentLength_ = contentLength;
                       }}
                 // Can implement getter/setters with Memory::GetObjectOwningField - to save space, but counts on exact
@@ -158,9 +152,6 @@ namespace {
                 bool firstEventHanlderCalled{false};
                 h2.contentLength4.rwPropertyChangedHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
                     DbgTrace ("first event handler called");
-#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
-                    &changes;
-#endif
                     firstEventHanlderCalled = true;
                     return PropertyCommon::PropertyChangedEventResultType::eContinueProcessing;
                 });

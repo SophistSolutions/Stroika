@@ -13,9 +13,6 @@ using namespace Stroika::Foundation::Execution;
  ********************************* TimeOutException *****************************
  ********************************************************************************
  */
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-const TimeOutException TimeOutException::kThe;
-#endif
 TimeOutException::TimeOutException ()
     : TimeOutException{L"Timeout Expired"sv}
 {

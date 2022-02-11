@@ -59,11 +59,7 @@ namespace Stroika::Foundation::Memory {
         static_assert (is_convertible_v<Configuration::ExtractValueType_t<ITERATOR_OF_T>, T>);
         auto sz = static_cast<size_t> (distance (start, end));
         ReserveAtLeast (sz); // reserve not resize() so we can do uninitialized_copy (avoid constructing empty objects to be assigned over)
-#if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
-        Configuration::uninitialized_copy_MSFT_BWA (start, end, this->begin ());
-#else
         uninitialized_copy (start, end, this->begin ());
-#endif
         fSize_ = sz;
         Invariant ();
     }
@@ -91,11 +87,7 @@ namespace Stroika::Foundation::Memory {
             // This 'moving' is done via make_move_iterator () - rather that magically makes the uninitialized_copy really move instead of copying
             reserve (src.capacity ());
             size_t sz = src.size ();
-#if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
-            Configuration::uninitialized_copy_MSFT_BWA (std::make_move_iterator (src.begin ()), std::make_move_iterator (src.begin () + sz), this->begin ());
-#else
             uninitialized_copy (std::make_move_iterator (src.begin ()), std::make_move_iterator (src.begin () + sz), this->begin ());
-#endif
             fSize_ = sz;
         }
         else {
@@ -130,11 +122,7 @@ namespace Stroika::Foundation::Memory {
         DestroyElts_ (this->begin (), this->end ());
         fSize_ = 0;
         ReserveAtLeast (rhs.size ());
-#if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
-        Configuration::uninitialized_copy_MSFT_BWA (rhs.begin (), rhs.end (), this->begin ());
-#else
         uninitialized_copy (rhs.begin (), rhs.end (), this->begin ());
-#endif
         Invariant ();
         return *this;
     }
@@ -147,11 +135,7 @@ namespace Stroika::Foundation::Memory {
             DestroyElts_ (this->begin (), this->end ());
             fSize_ = 0;
             ReserveAtLeast (rhs.size ());
-#if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
-            Configuration::uninitialized_copy_MSFT_BWA (rhs.begin (), rhs.end (), this->begin ());
-#else
             uninitialized_copy (rhs.begin (), rhs.end (), this->begin ());
-#endif
             fSize_ = rhs.size ();
             Invariant ();
         }
@@ -247,11 +231,7 @@ namespace Stroika::Foundation::Memory {
 
                 // Initialize new memory from old
                 Assert (this->begin () != reinterpret_cast<T*> (newPtr));
-#if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
-                Configuration::uninitialized_copy_MSFT_BWA (this->begin (), this->end (), reinterpret_cast<T*> (newPtr));
-#else
                 uninitialized_copy (this->begin (), this->end (), reinterpret_cast<T*> (newPtr));
-#endif
 
                 // destroy objects in old memory
                 DestroyElts_ (this->begin (), this->end ());
@@ -338,11 +318,7 @@ namespace Stroika::Foundation::Memory {
     {
         size_t s = size ();
         if (s < capacity ()) {
-#if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
-            Configuration::uninitialized_copy_MSFT_BWA (&e, &e + 1, this->end ());
-#else
             uninitialized_copy (&e, &e + 1, this->end ());
-#endif
             ++this->fSize_;
         }
         else {
