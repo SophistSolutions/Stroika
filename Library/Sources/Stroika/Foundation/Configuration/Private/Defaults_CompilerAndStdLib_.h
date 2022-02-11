@@ -287,6 +287,23 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 
 #endif
 
+
+// I'm NOT sure if this is covering a Stroika bug, or if its a bug with vs2k17 compiler. It only breaks on vs2k17.
+// And I couldn't figure out what is promised by the language with a quick read of c++ spec, and search on stack overflow
+// The issue:
+// static inline obj = x;
+// static auto i = obj; // is that legal? In vs2k17 - for object with constructor etc - like string - it appears it may not be.
+//
+#ifndef qCompilerAndStdLib_static_inline_order_of_construction_Buggy
+#if defined(_MSC_VER)
+#define qCompilerAndStdLib_static_inline_order_of_construction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+#else
+#define qCompilerAndStdLib_static_inline_order_of_construction_Buggy 0
+#endif
+
+#endif
+
+
 ///C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(246): error C2760: syntax error: unexpected token ';', expected ')'
 // You can use [[maybe_unused]] after the identifier, but not before the auto
 #ifndef qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy

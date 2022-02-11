@@ -192,7 +192,11 @@ public:
 const WebServiceMethodDescription WebServer::Rep_::kVariables_{
     L"variables"_k,
     Set<String>{HTTP::Methods::kGet, HTTP::Methods::kPost, HTTP::Methods::kDelete},
-    InternetMediaTypes::kJSON,
+#if qCompilerAndStdLib_static_inline_order_of_construction_Buggy
+        InternetMediaTypes{InternetMediaTypes::Types::kApplication, L"json"sv};
+#else
+        InternetMediaTypes::kJSON,
+#endif
     {},
     Sequence<String>{
         L"curl http://localhost:8080/variables -v --output -",
@@ -206,7 +210,11 @@ const WebServiceMethodDescription WebServer::Rep_::kVariables_{
 const WebServiceMethodDescription WebServer::Rep_::kPlus_{
     L"plus"_k,
     Set<String>{HTTP::Methods::kPost},
-    InternetMediaTypes::kJSON,
+#if qCompilerAndStdLib_static_inline_order_of_construction_Buggy
+        InternetMediaTypes{InternetMediaTypes::Types::kApplication, L"json"sv};
+#else
+        InternetMediaTypes::kJSON,
+#endif
     {},
     Sequence<String>{
         L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 3, \"arg2\": 5 }' http://localhost:8080/plus --output -",
@@ -216,7 +224,11 @@ const WebServiceMethodDescription WebServer::Rep_::kPlus_{
 const WebServiceMethodDescription WebServer::Rep_::kMinus{
     L"minus"_k,
     Set<String>{HTTP::Methods::kPost},
-    InternetMediaTypes::kJSON,
+#if qCompilerAndStdLib_static_inline_order_of_construction_Buggy
+        InternetMediaTypes{InternetMediaTypes::Types::kApplication, L"json"sv};
+#else
+        InternetMediaTypes::kJSON,
+#endif
     {},
     Sequence<String>{
         L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 4.5, \"arg2\": -3.23 }' http://localhost:8080/minus --output -",
@@ -226,7 +238,11 @@ const WebServiceMethodDescription WebServer::Rep_::kMinus{
 const WebServiceMethodDescription WebServer::Rep_::kTimes{
     L"times"_k,
     Set<String>{HTTP::Methods::kPost},
-    InternetMediaTypes::kJSON,
+#if qCompilerAndStdLib_static_inline_order_of_construction_Buggy
+        InternetMediaTypes{InternetMediaTypes::Types::kApplication, L"json"sv};
+#else
+        InternetMediaTypes::kJSON,
+#endif
     {},
     Sequence<String>{
         L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + 4i\", \"arg2\": 3.2 }' http://localhost:8080/times --output -",
@@ -237,7 +253,11 @@ const WebServiceMethodDescription WebServer::Rep_::kTimes{
 const WebServiceMethodDescription WebServer::Rep_::kDivide{
     L"divide"_k,
     Set<String>{HTTP::Methods::kPost},
-    InternetMediaTypes::kJSON,
+#if qCompilerAndStdLib_static_inline_order_of_construction_Buggy
+        InternetMediaTypes{InternetMediaTypes::Types::kApplication, L"json"sv};
+#else
+        InternetMediaTypes::kJSON,
+#endif
     {},
     Sequence<String>{
         L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": 0 }' http://localhost:8080/divide --output -",
