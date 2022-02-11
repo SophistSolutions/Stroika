@@ -194,7 +194,7 @@ const WebServiceMethodDescription WebServer::Rep_::kVariables_
     L"variables"_k,
         Set<String>{HTTP::Methods::kGet, HTTP::Methods::kPost, HTTP::Methods::kDelete},
 #if qCompilerAndStdLib_static_inline_order_of_construction_Buggy
-        InternetMediaType{InternetMediaTypes::Types::kApplication, L"json"sv}
+        InternetMediaType{InternetMediaTypes::Types::kApplication, L"json"sv},
 #else
         InternetMediaTypes::kJSON,
 #endif
