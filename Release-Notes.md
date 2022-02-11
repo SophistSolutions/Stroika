@@ -7,6 +7,32 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+### REL 2.1r3 draft
+
+- Documentation
+  - Small docs cleanups (mostly typos, obsolete comments removeal)
+
+- Remove support for Centos, since Centos 8 no longer builds and both deprecated by IBM
+
+- Cleanups to LRUCache code - const_cast / threadsafety - Lookup method really should be const (though not the SynchronizedLRUCache subclass); and use NO_UNIQUE_ADDRESS_ATTR instead of subclassing trick for stats (clarity)
+
+-  Several more sample tests in SAMPLE_APPS_2_TEST (part of regression tests)
+
+- use winsymlinks:nativestrict in env variables to fix issues with ScriptsLib/MakeDirectorySymbolicLink
+
+    --quit-after support in SSDPClient, SSDPServer, and cleanup said in
+    WebServer/WebService samples, and re-enabled in regression tests the
+    calls to these first two.
+
+    Service Framework (and sample): lose Main::RunTilIdleService, but add const optional<Time::Duration>& runFor param to RunDirectly, and lose obsolete run2Idle commandline arg; --run-directly optional timeout arg (and used in regtests)
+
+- Minor (not totally backward compatible) chagne to Thread::IndexRegistrar (use sThe instead of ::Get) and static inline and store data directly in it rather than in GetIndex method - addressed (maybe) ASAN issue on windows during shutdown (maybe luck, maybe untrue) but cleaner code anyhow - try this way
+
+
+
+
+
 ---
 
 ### 2.1r2 {2022-02-03}

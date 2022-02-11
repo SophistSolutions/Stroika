@@ -244,34 +244,43 @@ Thread::AbortException::AbortException ()
  ************************** Thread::IndexRegistrar ******************************
  ********************************************************************************
  */
-unsigned int Thread::IndexRegistrar::GetIndex (const Thread::IDType& threadID, bool* wasNew)
-{
-    static mutex sMutex_;
-#if qCompilerAndStdLib_startupAppMagicStaticsNotWorkingFully_Buggy
-    static map<Thread::IDType, unsigned int>& sShownThreadIDs_ = *new map<Thread::IDType, unsigned int> ();
-#else
-    static map<Thread::IDType, unsigned int> sShownThreadIDs_;
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
+Thread::IndexRegistrar Thread::IndexRegistrar::sThe;
 #endif
-    [[maybe_unused]] auto&& critSec          = lock_guard{sMutex_};
-    auto                    i                = sShownThreadIDs_.find (threadID);
+Thread::IndexRegistrar::IndexRegistrar ()
+{
+    Assert (not fInitialized_);
+    fInitialized_ = true;
+}
+
+Thread::IndexRegistrar::~IndexRegistrar ()
+{
+    Assert (fInitialized_);
+    fInitialized_ = false;
+}
+
+unsigned int Thread::IndexRegistrar::GetIndex (const IDType& threadID, bool* wasNew)
+{
+    if (not fInitialized_) {
+        if (wasNew != nullptr) {
+            *wasNew = false;
+        }
+        return 0;
+    }
+    [[maybe_unused]] auto&& critSec          = lock_guard{fMutex_};
+    auto                    i                = fShownThreadIDs_.find (threadID);
     unsigned int            threadIndex2Show = 0;
-    if (i == sShownThreadIDs_.end ()) {
-        threadIndex2Show = static_cast<unsigned int> (sShownThreadIDs_.size ());
-        sShownThreadIDs_.insert (pair<Thread::IDType, unsigned int>{threadID, threadIndex2Show});
+    if (i == fShownThreadIDs_.end ()) {
+        threadIndex2Show = static_cast<unsigned int> (fShownThreadIDs_.size ());
+        fShownThreadIDs_.insert ({threadID, threadIndex2Show});
     }
     else {
         threadIndex2Show = i->second;
     }
     if (wasNew != nullptr) {
-        *wasNew = i == sShownThreadIDs_.end ();
+        *wasNew = i == fShownThreadIDs_.end ();
     }
     return threadIndex2Show;
-}
-
-Thread::IndexRegistrar& Thread::IndexRegistrar::Get ()
-{
-    static IndexRegistrar sThe_; // OK to return reference because this wont get destroyed or replaced (no set method)
-    return sThe_;
 }
 
 /*
@@ -385,7 +394,7 @@ Characters::String Thread::Ptr::Rep_::ToString () const
     sb += L"{";
     sb += L"id: " + Characters::ToString (GetID ()) + L", ";
     if (qStroika_Foundation_Debug_Trace_ShowThreadIndex) {
-        sb += L"index: " + Characters::ToString (static_cast<int> (IndexRegistrar::Get ().GetIndex (GetID ()))) + L", ";
+        sb += L"index: " + Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (GetID ()))) + L", ";
     }
     if (not fThreadName_.empty ()) {
         sb += L"name: '" + fThreadName_ + L"', ";
@@ -559,8 +568,8 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
             [[maybe_unused]] auto&& critSec = lock_guard{sThreadSupportStatsMutex_};
 #if qStroika_Foundation_Debug_Trace_ShowThreadIndex
             DbgTrace (L"Adding thread index %s to sRunningThreads_ (%s)",
-                      Characters::ToString (static_cast<int> (IndexRegistrar::Get ().GetIndex (thisThreadID))).c_str (),
-                      Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Select<int> ([] (IDType i) { return IndexRegistrar::Get ().GetIndex (i); })).c_str ());
+                      Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (thisThreadID))).c_str (),
+                      Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Select<int> ([] (IDType i) { return IndexRegistrar::sThe.GetIndex (i); })).c_str ());
 #else
             DbgTrace (L"Adding thread id %s to sRunningThreads_ (%s)", Characters::ToString (thisThreadID).c_str (), Characters::ToString (sRunningThreads_).c_str ());
 #endif
@@ -573,8 +582,8 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
                 [[maybe_unused]] auto&& critSec = lock_guard{sThreadSupportStatsMutex_};
 #if qStroika_Foundation_Debug_Trace_ShowThreadIndex
                 DbgTrace (L"removing thread index %s from sRunningThreads_ (%s)",
-                          Characters::ToString (static_cast<int> (IndexRegistrar::Get ().GetIndex (thisThreadID))).c_str (),
-                          Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Select<int> ([] (IDType i) { return IndexRegistrar::Get ().GetIndex (i); })).c_str ());
+                          Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (thisThreadID))).c_str (),
+                          Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Select<int> ([] (IDType i) { return IndexRegistrar::sThe.GetIndex (i); })).c_str ());
 #else
                 DbgTrace (L"removing thread id %s from sRunningThreads_ (%s)", Characters::ToString (thisThreadID).c_str (), Characters::ToString (sRunningThreads_).c_str ());
 #endif

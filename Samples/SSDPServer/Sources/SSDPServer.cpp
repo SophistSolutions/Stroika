@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
+#include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/Listener.h"
@@ -71,8 +72,25 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
+
+    Time::DurationSecondsType quitAfter    = numeric_limits<Time::DurationSecondsType>::max ();
+    uint16_t                  portForOurWS = 8080;
+
+    Sequence<String> args = Execution::ParseCommandLine (argc, argv);
+    for (auto argi = args.begin (); argi != args.end (); ++argi) {
+        if (Execution::MatchesCommandLineArgument (*argi, L"quit-after")) {
+            ++argi;
+            if (argi != args.end ()) {
+                quitAfter = Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (*argi);
+            }
+            else {
+                cerr << "Expected arg to -quit-after" << endl;
+                return EXIT_FAILURE;
+            }
+        }
+    }
+
     try {
-        uint16_t portForOurWS = 8080;
 
         Device d;
         d.fLocation.SetAuthority (URI::Authority{nullopt, portForOurWS});
@@ -94,7 +112,11 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
         WebServerForDeviceDescription_ deviceWS{portForOurWS, deviceInfo};
         BasicServer                    b{d, deviceInfo, BasicServer::FrequencyInfo ()};
-        Execution::WaitableEvent{}.Wait (); // wait forever - til user hits ctrl-c
+        Execution::WaitableEvent{}.Wait (quitAfter); // wait quitAfter seconds, or til user hits ctrl-c
+    }
+    catch (const Execution::TimeOutException&) {
+        cerr << "Timed out - so - exiting..." << endl;
+        return EXIT_SUCCESS;
     }
     catch (...) {
         String exceptMsg = Characters::ToString (current_exception ());

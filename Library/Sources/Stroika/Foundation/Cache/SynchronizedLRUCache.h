@@ -129,6 +129,7 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         *  \note - though this is not technically 'const' - it acts (from a thread safety point of view) as const, so its marked const
          *  @see LRUCache::Lookup ()
          */
         nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key) const;
