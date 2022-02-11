@@ -189,8 +189,7 @@ public:
 /*
  *  Documentation on WSAPIs
  */
-const WebServiceMethodDescription WebServer::Rep_::kVariables_
-{
+const WebServiceMethodDescription WebServer::Rep_::kVariables_{
     L"variables"_k,
         Set<String>{HTTP::Methods::kGet, HTTP::Methods::kPost, HTTP::Methods::kDelete},
         InternetMediaTypes::kJSON,
@@ -204,19 +203,17 @@ const WebServiceMethodDescription WebServer::Rep_::kVariables_
         Sequence<String>{L"@todo - this is a rough draft (but functional). It could use alot of cleanup and review to see WHICH way I recommend using, and just provide the recommended ways in samples"},
 };
 
-const WebServiceMethodDescription WebServer::Rep_::kPlus_
-{
+const WebServiceMethodDescription WebServer::Rep_::kPlus_{
     L"plus"_k,
         Set<String>{HTTP::Methods::kPost},
-        InternetMediaTypes{InternetMediaTypes::Types::kApplication, L"json"sv};
+        InternetMediaTypes::kJSON,
     {},
         Sequence<String>{
             L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 3, \"arg2\": 5 }' http://localhost:8080/plus --output -",
         },
         Sequence<String>{L"add the two argument numbers"},
 };
-const WebServiceMethodDescription WebServer::Rep_::kMinus
-{
+const WebServiceMethodDescription WebServer::Rep_::kMinus{
     L"minus"_k,
         Set<String>{HTTP::Methods::kPost},
         InternetMediaTypes::kJSON,
@@ -226,8 +223,7 @@ const WebServiceMethodDescription WebServer::Rep_::kMinus
         },
         Sequence<String>{L"subtract the two argument numbers"},
 };
-const WebServiceMethodDescription WebServer::Rep_::kTimes
-{
+const WebServiceMethodDescription WebServer::Rep_::kTimes{
     L"times"_k,
         Set<String>{HTTP::Methods::kPost},
         InternetMediaTypes::kJSON,
@@ -238,8 +234,7 @@ const WebServiceMethodDescription WebServer::Rep_::kTimes
         },
         Sequence<String>{L"multiply the two argument numbers"},
 };
-const WebServiceMethodDescription WebServer::Rep_::kDivide
-{
+const WebServiceMethodDescription WebServer::Rep_::kDivide{
     L"divide"_k,
         Set<String>{HTTP::Methods::kPost},
         InternetMediaTypes::kJSON,
