@@ -1168,7 +1168,7 @@ namespace {
         Verify (q.size () == 0);
         Thread::Ptr consumerThread = Thread::New (
             [&q] () {
-                Debug::TraceContextBumper ctx{"**inner thread"};   // for https://stroika.atlassian.net/browse/STK-767
+                Debug::TraceContextBumper ctx{"**inner thread"}; // for https://stroika.atlassian.net/browse/STK-767
                 while (true) {
                     Debug::TraceContextBumper ctx{"**inner thread loop"}; // for https://stroika.atlassian.net/browse/STK-767
                     function<void ()>         f = q.RemoveHead ();
