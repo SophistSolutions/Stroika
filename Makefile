@@ -512,6 +512,9 @@ basic-unix-test-configurations_sanitizer_configs_:
 	if [[ `lsb_release -rs 2>/dev/null` == '21.10' ]] ; then ./configure g++-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,address,undefined --lto disable; fi;
 	if [[ `lsb_release -rs 2>/dev/null` != '21.10' ]] ; then ./configure g++-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,address,undefined; fi;
 	./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp";
+	# OVERREIDE TSAN OPTIONS FILE FOR Ubuntu 21.10
+	if [[ `lsb_release -rs 2>/dev/null` == '21.10' ]] ; then ./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp"; fi;
+	if [[ `lsb_release -rs 2>/dev/null` == '21.10' ]] ; then ./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp"; fi;
 
 basic-unix-test-configurations_valgrind_configs_:
 	###Builds with a few special flags to make valgrind work better
