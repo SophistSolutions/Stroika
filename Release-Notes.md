@@ -10,6 +10,7 @@ especially those they need to be aware of when upgrading.
 ---
 
 ### 2.1r3x {2022-02-12x}
+-- AS OF FEB 9 - must review since then changes
 
 #### TLDR
 - Lose Centos support
