@@ -48,8 +48,8 @@ namespace {
             DbgTrace (L"s10=%s", Characters::ToString (s10).c_str ());
         }
         {
-            Set<int>    s{1, 2, 3};     // use the default Set<> representation - the best for type 'int'
-            s = Concrete::Set_LinkedList<int> {s};  // Force using a linked list to represent the set
+            Set<int> s{1, 2, 3};                  // use the default Set<> representation - the best for type 'int'
+            s = Concrete::Set_LinkedList<int>{s}; // Force using a linked list to represent the set
             // other set operations work the same, either way
             if (s.Contains (5)) {
                 Assert (false);
