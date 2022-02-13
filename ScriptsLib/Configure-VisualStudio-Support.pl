@@ -131,6 +131,9 @@ sub GetString2InsertIntoBatchFileToInitCompiles_
 		die ("hardwired/to fix logic about mapping config names to 32/64")
 	}
 	my $VSDIR_VC = "$VSDIR\\VC";
+	if (! (-e toCygPath_ ($VSDIR_VC))) {
+		die ("Couldn't find $VSDIR_VC: did you install visual studio desktop C++ support?")
+	}
 	my $result = "";
 	##pushd/popd needed cuz vcvars now changes directories (no idea why)
 	$result 	.=	"pushd %TEMP%\r\n";

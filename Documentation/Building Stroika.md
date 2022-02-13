@@ -13,14 +13,14 @@ This build process is cross-platform. It supports cross-compiling, and builds on
 ## <a name="Quick-Start">Quick Start</a>
 
 ```bash
-wget https://github.com/SophistSolutions/Stroika/archive/v2.1-Release.tar.gz
-tar xf v2.1-Release.tar.gz && mv Stroika-2.1-Release Stroika-Dev
+git clone https://github.com/SophistSolutions/Stroika.git Stroika-Dev
 ```
 
 or
 
 ```bash
-git clone https://github.com/SophistSolutions/Stroika.git Stroika-Dev
+wget https://github.com/SophistSolutions/Stroika/archive/v2.1-Release.tar.gz
+tar xf v2.1-Release.tar.gz && mv Stroika-2.1-Release Stroika-Dev
 ```
 
 followed by:
