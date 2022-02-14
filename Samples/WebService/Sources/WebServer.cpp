@@ -198,7 +198,7 @@ const WebServiceMethodDescription WebServer::Rep_::kVariables_
 #else
         InternetMediaTypes::kJSON,
 #endif
-    {},
+        {},
         Sequence<String>{
             L"curl http://localhost:8080/variables -v --output -",
             L"curl http://localhost:8080/variables/x -v --output -",
