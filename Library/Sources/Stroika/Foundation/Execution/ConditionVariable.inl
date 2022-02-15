@@ -131,6 +131,8 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION>
     void ConditionVariable<MUTEX, CONDITION_VARIABLE>::MutateDataNotifyAll (FUNCTION mutatorFunction)
     {
+        // See https://en.cppreference.com/w/cpp/thread/condition_variable for why we modify the data under the lock (maybe obvious)
+        // but call the notify_all() after releasing the lock - also https://stackoverflow.com/questions/35775501/c-should-condition-variable-be-notified-under-lock
         {
             QuickLockType quickLock{fMutex};
             mutatorFunction ();
@@ -141,6 +143,8 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION>
     void ConditionVariable<MUTEX, CONDITION_VARIABLE>::MutateDataNotifyOne (FUNCTION mutatorFunction)
     {
+        // See https://en.cppreference.com/w/cpp/thread/condition_variable for why we modify the data under the lock (maybe obvious)
+        // but call the notify_all() after releasing the lock - also https://stackoverflow.com/questions/35775501/c-should-condition-variable-be-notified-under-lock
         {
             QuickLockType quickLock{fMutex};
             mutatorFunction ();
