@@ -14,7 +14,7 @@
 #include "../Containers/Common.h"
 #include "../Execution/Common.h"
 #include "../Execution/Exceptions.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/StackBuffer.h"
 
 #include "CodePage.h"
 
@@ -2596,8 +2596,8 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 #if qDebug && qPlatform_Windows && 0
     // Assure my baked tables (and UTF8 converters) perform the same as the builtin Win32 API
     {
-        size_t                    tstCharCnt = *outCharCnt;
-        SmallStackBuffer<wchar_t> tstBuf (SmallStackBufferCommon::eUninitialized, *outCharCnt);
+        size_t               tstCharCnt = *outCharCnt;
+        StackBuffer<wchar_t> tstBuf{Memory::eUninitialized, *outCharCnt};
         Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, tstBuf, &tstCharCnt);
         Assert (tstCharCnt == *outCharCnt);
         Assert (memcmp (tstBuf, outChars, sizeof (wchar_t) * tstCharCnt) == 0);
@@ -2608,7 +2608,7 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const
 {
     // Not really right - but hopefully adquate for starters -- LGP 2011-09-06
-    SmallStackBuffer<char16_t> tmpBuf{SmallStackBufferCommon::eUninitialized, *outCharCnt};
+    StackBuffer<char16_t> tmpBuf{Memory::eUninitialized, *outCharCnt};
     MapToUNICODE (inMBChars, inMBCharCnt, tmpBuf, outCharCnt);
     for (size_t i = 0; i < *outCharCnt; ++i) {
         outChars[i] = tmpBuf[i];
@@ -2761,8 +2761,8 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 #if qDebug && qPlatform_Windows
     // Assure my baked tables perform the same as the builtin Win32 API
     {
-        size_t                 win32TstCharCnt = outBufferSize;
-        SmallStackBuffer<char> win32TstBuf (SmallStackBufferCommon::eUninitialized, win32TstCharCnt);
+        size_t            win32TstCharCnt = outBufferSize;
+        StackBuffer<char> win32TstBuf{Memory::eUninitialized, win32TstCharCnt};
 
         Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt, win32TstBuf, &win32TstCharCnt);
 
@@ -2779,7 +2779,7 @@ void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCn
 {
     // @todo fix weak implementation (slow)
     // First convert to char16_t, and then apply that overload
-    SmallStackBuffer<char16_t> char16Buf (SmallStackBufferCommon::eUninitialized, *outCharCnt);
+    StackBuffer<char16_t> char16Buf{Memory::eUninitialized, *outCharCnt};
     {
         char16_t* tmpOutCharsResult = char16Buf;
         UTFConvert::Convert (&inChars, inChars + inCharCnt, &tmpOutCharsResult, tmpOutCharsResult + char16Buf.size (), UTFConvert::lenientConversion);
@@ -3692,9 +3692,9 @@ wstring Characters::MapUNICODETextWithMaybeBOMTowstring (const char* start, cons
         return wstring{};
     }
     else {
-        size_t                    outBufSize = end - start;
-        SmallStackBuffer<wchar_t> wideBuf (SmallStackBufferCommon::eUninitialized, outBufSize);
-        size_t                    outCharCount = outBufSize;
+        size_t               outBufSize = end - start;
+        StackBuffer<wchar_t> wideBuf{Memory::eUninitialized, outBufSize};
+        size_t               outCharCount = outBufSize;
         MapSBUnicodeTextWithMaybeBOMToUNICODE (start, end - start, wideBuf, &outCharCount);
         Assert (outCharCount <= outBufSize);
         if (outCharCount == 0) {
@@ -3715,9 +3715,9 @@ wstring Characters::MapUNICODETextWithMaybeBOMTowstring (const char* start, cons
  */
 vector<byte> Characters::MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP)
 {
-    CodePageConverter      cpc (useCP, CodePageConverter::eHandleBOM);
-    size_t                 outCharCount = cpc.MapFromUNICODE_QuickComputeOutBufSize (start, end - start);
-    SmallStackBuffer<char> buf (SmallStackBufferCommon::eUninitialized, outCharCount);
+    CodePageConverter cpc (useCP, CodePageConverter::eHandleBOM);
+    size_t            outCharCount = cpc.MapFromUNICODE_QuickComputeOutBufSize (start, end - start);
+    StackBuffer<char> buf{Memory::eUninitialized, outCharCount};
     cpc.MapFromUNICODE (start, end - start, buf, &outCharCount);
     const byte* bs = reinterpret_cast<const byte*> (static_cast<const char*> (buf));
     return vector<byte> (bs, bs + outCharCount);

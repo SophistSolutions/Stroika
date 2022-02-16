@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "../../Foundation/Cache/LRUCache.h"
-#include "../../Foundation/Memory/SmallStackBuffer.h"
 
 #include "TextStore.h"
 

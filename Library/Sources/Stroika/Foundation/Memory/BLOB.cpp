@@ -152,7 +152,7 @@ namespace {
 }
 BLOB BLOB::Hex (const char* s, const char* e)
 {
-    SmallStackBuffer<byte> buf;
+    StackBuffer<byte> buf;
     for (const char* i = s; i < e; ++i) {
         if (isspace (*i)) {
             continue;

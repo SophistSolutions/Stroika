@@ -476,8 +476,8 @@ public:
         Assert (OurStuff (m)->fIsHackMarker);
 
         // Try unwinding tail recusion using explicit stack
-        size_t                    stackDepth = 0;
-        SmallStackBuffer<Marker*> stack (0);
+        size_t               stackDepth = 0;
+        StackBuffer<Marker*> stack{0};
 
     RoutineTop:
         // Do in TWO loops rather than one simply because it is much faster to check the tree
@@ -1541,9 +1541,9 @@ void ChunkedArrayTextStore::CollectAllMarkersInRangeInto_Helper_MO (size_t from,
 {
     ChunkedArrayMarkerOwnerHook* camoh = dynamic_cast<ChunkedArrayMarkerOwnerHook*> (owner->fTextStoreHook);
     AssertNotNull (camoh);
-    const Marker*                  belowHere  = &camoh->fRootMarker;
-    size_t                         stackDepth = 0;
-    SmallStackBuffer<StackContext> stack (0);
+    const Marker*             belowHere  = &camoh->fRootMarker;
+    size_t                    stackDepth = 0;
+    StackBuffer<StackContext> stack{0};
 
 RoutineTop:
     AssertNotNull (belowHere);
@@ -1639,8 +1639,8 @@ void ChunkedArrayTextStore::AdjustMarkersForInsertAfter1 (size_t after, size_t h
     AssertNotNull (startAt);
 
     // Try unwinding tail recusion using explicit stack
-    size_t                    stackDepth = 0;
-    SmallStackBuffer<Marker*> stack (0);
+    size_t               stackDepth = 0;
+    StackBuffer<Marker*> stack{0};
 
     Marker* mi = NULL; // declared up here instead of down below to avoid MSVC 2.1 compiler bug.
     // LGP 950527
@@ -1705,8 +1705,8 @@ void ChunkedArrayTextStore::AdjustMarkersForDeleteAfter1 (size_t after, size_t h
     AssertNotNull (startAt);
 
     // Try unwinding tail recusion using explicit stack
-    size_t                    stackDepth = 0;
-    SmallStackBuffer<Marker*> stack (0);
+    size_t               stackDepth = 0;
+    StackBuffer<Marker*> stack{0};
 
     Marker* mi = NULL; // declared up here instead of down below to avoid MSVC 2.1 compiler bug.
 // LGP 950527
@@ -1786,8 +1786,8 @@ bool ChunkedArrayTextStore::AllSubMarkersAreHackMarkerTrees (const Marker* m)
     Assert (OurStuff (m)->fIsHackMarker);
 
     // Try unwinding tail recusion using explicit stack
-    size_t                    stackDepth = 0;
-    SmallStackBuffer<Marker*> stack (0);
+    size_t               stackDepth = 0;
+    StackBuffer<Marker*> stack{0};
 
 RoutineTop:
     // Do in TWO loops rather than one simply because it is much faster to check the tree

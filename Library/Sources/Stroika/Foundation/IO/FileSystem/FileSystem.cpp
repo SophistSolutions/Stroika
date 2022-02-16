@@ -30,7 +30,6 @@
 #include "../../Execution/Finally.h"
 
 #include "../../IO/FileSystem/Exception.h"
-#include "../../Memory/SmallStackBuffer.h"
 
 #include "DirectoryIterable.h"
 #include "FileUtils.h"
@@ -48,9 +47,6 @@ using namespace Stroika::Foundation::IO::FileSystem;
 #if qPlatform_Windows
 using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
-
-using Memory::SmallStackBuffer;
-using Memory::SmallStackBufferCommon;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1

@@ -12,7 +12,6 @@
 #include "../../Characters/String.h"
 #include "../../Characters/StringBuilder.h"
 #include "../../Characters/ToString.h"
-#include "../../Memory/SmallStackBuffer.h"
 
 #include "PathName.h"
 

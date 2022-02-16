@@ -12,7 +12,7 @@
 #include <algorithm>
 
 #include "../Debug/Assertions.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/StackBuffer.h"
 #include "Common.h"
 
 namespace Stroika::Foundation::Math {
@@ -50,9 +50,9 @@ namespace Stroika::Foundation::Math {
     template <typename ITERATOR_OF_T, typename RESULT_TYPE>
     RESULT_TYPE Median (ITERATOR_OF_T start, ITERATOR_OF_T end)
     {
-        Require (start != end);                                // the median of no values would be undefined
-        Memory::SmallStackBuffer<RESULT_TYPE> tmp{start, end}; // copy cuz data modified
-        size_t                                size = distance (start, end);
+        Require (start != end);                           // the median of no values would be undefined
+        Memory::StackBuffer<RESULT_TYPE> tmp{start, end}; // copy cuz data modified
+        size_t                           size = distance (start, end);
         nth_element (tmp.begin (), tmp.begin () + size / 2, tmp.end ());
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\""); // warning with gcc cross-compile to raspberrypi - no idea why --LGP 2018-09-13
         RESULT_TYPE result{tmp[size / 2]};

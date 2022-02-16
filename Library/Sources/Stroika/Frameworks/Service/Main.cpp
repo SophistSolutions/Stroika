@@ -38,7 +38,6 @@
 #include "../../Foundation/Execution/TimeOutException.h"
 #include "../../Foundation/IO/FileSystem/PathName.h"
 #include "../../Foundation/IO/FileSystem/WellKnownLocations.h"
-#include "../../Foundation/Memory/SmallStackBuffer.h"
 #include "../../Foundation/Streams/iostream/FStreamSupport.h"
 
 #include "Main.h"

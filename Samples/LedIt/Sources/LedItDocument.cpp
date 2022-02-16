@@ -55,7 +55,7 @@ using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::Platform;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
-using Memory::SmallStackBuffer;
+using Memory::StackBuffer;
 
 #if qPlatform_MacOS
 class LedItDocumentWindow : public LWindow {
@@ -329,9 +329,9 @@ void LedItDocument::LoadFromFile (const string& fileName, FileFormat fileFormat)
 #if qPrintGLIBTraceMessages
     g_message ("DOING LedItDocument::LoadFromFile (path= '%s', format=%d)\n", fPathName.c_str (), fileFormat);
 #endif
-    size_t                 fileLen = 0;
-    SmallStackBuffer<char> fileData (fileLen);
-    int                    fd = ::open (fPathName.c_str (), O_RDONLY);
+    size_t            fileLen = 0;
+    StackBuffer<char> fileData{Memory::eUninitialized, fileLen};
+    int               fd = ::open (fPathName.c_str (), O_RDONLY);
     if (fd == -1) {
         Execution::Throw (bad_alloc{});
     }
@@ -1254,8 +1254,8 @@ void LedItDocument::Serialize (CArchive& ar)
         }
         CFile* file = ar.GetFile ();
         ASSERT_VALID (file);
-        DWORD                  nLen = static_cast<DWORD> (file->GetLength ()); // maybe should subtract current offset?
-        SmallStackBuffer<char> buf (nLen);
+        DWORD             nLen = static_cast<DWORD> (file->GetLength ()); // maybe should subtract current offset?
+        StackBuffer<char> buf{Memory::eUninitialized, nLen};
         if (ar.Read (buf, nLen) != nLen) {
             AfxThrowArchiveException (CArchiveException::endOfFile);
         }

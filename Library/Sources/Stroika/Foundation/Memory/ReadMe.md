@@ -17,12 +17,13 @@ in Stroika and CAN be used to greatly improve the efficiency of some memory acce
 - [BlockAllocated.h](BlockAllocated.h)
 - [BlockAllocator.h](BlockAllocator.h)
 - [Common.h](Common.h)
+- [InlineBuffer.h](InlineBuffer.h) - mix between vector<T> and array<T> (performance of array<> and closer to behavior of vector<T>)
 - [MemoryAllocator.h](MemoryAllocator.h)
 - [Optional.h](Optional.h) - a few handy optional<T> related helpers
 - [Platform/](Platform/ReadMe.md)
 - [SharedByValue.h](SharedByValue.h) - a utility class to implement Copy-On-Write (aka COW)
 - [SharedPtr.h](SharedPtr.h)
-- [SmallStackBuffer.h](SmallStackBuffer.h) - very efficient array like class (uses stack where practical instead of heap)
+- [StackBuffer.h](StackBuffer.h) - very efficient array like class (uses stack where practical instead of heap)
 
 OLD NOTES:
 

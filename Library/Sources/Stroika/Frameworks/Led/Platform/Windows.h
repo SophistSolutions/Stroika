@@ -23,7 +23,7 @@
 #include "../../../Foundation/Characters/Format.h"
 #include "../../../Foundation/Characters/LineEndings.h"
 #include "../../../Foundation/Debug/Trace.h"
-#include "../../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../../Foundation/Memory/StackBuffer.h"
 #include "../../../Foundation/Time/Realtime.h"
 
 #include "../TextInteractor.h"
@@ -2501,11 +2501,11 @@ namespace Stroika::Frameworks::Led::Platform {
         LPSTR lpText     = (LPSTR)lParam;
         Require (cchTextMax > 0); // cuz we require appending NUL character
 
-        size_t                              len = this->GetLength ();
-        Memory::SmallStackBuffer<Led_tChar> buf (len);
+        size_t                         len = this->GetLength ();
+        Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
         this->CopyOut (0, len, buf);
-        size_t                              len2 = 2 * len;
-        Memory::SmallStackBuffer<Led_tChar> buf2 (len2);
+        size_t                         len2 = 2 * len;
+        Memory::StackBuffer<Led_tChar> buf2{Memory::eUninitialized, len2};
         len2 = Characters::NLToNative<Led_tChar> (buf, len, buf2, len2);
 #if qWideCharacters
         // Assume they want ANSI code page text?
@@ -2531,8 +2531,8 @@ namespace Stroika::Frameworks::Led::Platform {
             */
         this->Replace (0, this->GetEnd (), LED_TCHAR_OF (""), 0);
         if (lpText != nullptr) {
-            size_t                              len = ::strlen (lpText);
-            Memory::SmallStackBuffer<Led_tChar> buf (len);
+            size_t                         len = ::strlen (lpText);
+            Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
 #if qWideCharacters
             // Assume they want ANSI code page text?
             len = static_cast<size_t> (::MultiByteToWideChar (CP_ACP, 0, lpText, static_cast<int> (len), buf, static_cast<int> (len)));
@@ -2720,8 +2720,8 @@ namespace Stroika::Frameworks::Led::Platform {
         Assert (wParam == 0);
         LPCTSTR text = (LPCTSTR)lParam;
 
-        size_t                              len = ::_tcslen (text);
-        Memory::SmallStackBuffer<Led_tChar> buf (len);
+        size_t                         len = ::_tcslen (text);
+        Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
 
 #if qWideCharacters == qSDK_UNICODE
         //::_tcscpy (buf, text);

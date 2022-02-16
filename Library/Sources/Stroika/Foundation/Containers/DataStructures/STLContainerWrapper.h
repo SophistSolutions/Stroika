@@ -9,7 +9,6 @@
 #include "../../Configuration/Common.h"
 #include "../../Configuration/Concepts.h"
 #include "../../Debug/AssertExternallySynchronizedMutex.h"
-#include "../../Memory/SmallStackBuffer.h"
 
 #include "../Common.h"
 

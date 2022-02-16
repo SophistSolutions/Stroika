@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Debug {
          *          OR
          *              --apply-default-debug-flags
          *
-         *  \note   BackTrace () Uses no Stroika classes internally (like String, SmallStackBuffer) etc, since
+         *  \note   BackTrace () Uses no Stroika classes internally (like String, InlineBuffer) etc, since
          *          doing so could create deadlocks in the likely use cases where one would want to call this, from
          *          a low level place where you might have locks.
          *

@@ -18,6 +18,7 @@
 #include "../Containers/Set.h"
 #include "../Execution/Synchronized.h"
 #include "../Memory/SharedByValue.h"
+#include "../Memory/StackBuffer.h"
 #include "../Traversal/Iterable.h"
 #include "SDKString.h"
 
@@ -1153,7 +1154,7 @@ namespace Stroika::Foundation::Characters {
          *  \note - this is a (compatible) change of behavior: before Stroika v2.1d23, this would assert out on invalid ASCII.
          * 
          *  Supported Types:
-         *      o   Memory::SmallStackBuffer<char>
+         *      o   Memory::StackBuffer<char>
          *      o   string
          */
         template <typename T = string>
@@ -1168,7 +1169,7 @@ namespace Stroika::Foundation::Characters {
          * If this source contains any invalid ASCII characters, this returns false, and otherwise true (with set into).
          * 
          *  Supported Types:
-         *      o   Memory::SmallStackBuffer<char>
+         *      o   Memory::StackBuffer<char>
          *      o   string
          */
         template <typename T = string>
@@ -1346,11 +1347,11 @@ namespace Stroika::Foundation::Characters {
     template <>
     bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, string* into);
     template <>
-    bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, Memory::SmallStackBuffer<char>* into);
+    bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, Memory::StackBuffer<char>* into);
     template <>
     bool String::AsASCIIQuietly (string* into) const;
     template <>
-    bool String::AsASCIIQuietly (Memory::SmallStackBuffer<char>* into) const;
+    bool String::AsASCIIQuietly (Memory::StackBuffer<char>* into) const;
 
     template <>
     pair<const Character*, const Character*> String::GetData () const;

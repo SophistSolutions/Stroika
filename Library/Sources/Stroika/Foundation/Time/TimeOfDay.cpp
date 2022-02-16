@@ -22,7 +22,6 @@
 #include "../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
 #include "../Linguistics/Words.h"
-#include "../Memory/SmallStackBuffer.h"
 
 #include "TimeOfDay.h"
 

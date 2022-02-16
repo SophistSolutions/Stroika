@@ -1045,7 +1045,7 @@ Led_FileFormat ActiveLedItControl::GuessFormatFromName (LPCTSTR name)
     return format;
 }
 
-void ActiveLedItControl::DoReadFile (LPCTSTR filename, Memory::SmallStackBuffer<char>* buffer, size_t* size)
+void ActiveLedItControl::DoReadFile (LPCTSTR filename, Memory::StackBuffer<char>* buffer, size_t* size)
 {
     DISABLE_COMPILER_MSC_WARNING_START (4996)
     int fd = ::_topen (filename, O_RDONLY | O_BINARY, _S_IREAD);
@@ -1106,8 +1106,8 @@ void ActiveLedItControl::LoadFile (LPCTSTR filename)
     fCommandHandler.Commit ();
     fEditor.Replace (0, fEditor.GetEnd (), LED_TCHAR_OF (""), 0);
 
-    Memory::SmallStackBuffer<char> buffer (0);
-    size_t                         size = 0;
+    Memory::StackBuffer<char> buffer{0};
+    size_t                    size = 0;
     DoReadFile (filename, &buffer, &size);
 
     StyledTextIOSrcStream_Memory                 source (buffer, size);
@@ -2067,8 +2067,8 @@ void ActiveLedItControl::SetHasHorizontalScrollBar (UINT bNewValue)
 
 BSTR ActiveLedItControl::GetBufferText ()
 {
-    size_t                              len = fEditor.GetLength ();
-    Memory::SmallStackBuffer<Led_tChar> buf (len + 1);
+    size_t                         len = fEditor.GetLength ();
+    Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len + 1};
     fEditor.CopyOut (0, len, buf);
     buf[len] = '\0';
     return CString (buf).AllocSysString ();
@@ -2080,8 +2080,8 @@ void ActiveLedItControl::SetBufferText (LPCTSTR text)
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
 #if _UNICODE
-        size_t                            len = text == NULL ? 0 : ::_tcslen (text);
-        Memory::SmallStackBuffer<wchar_t> buf (len + 1);
+        size_t                       len = text == NULL ? 0 : ::_tcslen (text);
+        Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, len + 1};
         buf[0] = 0xfeff;
         memcpy (&buf[1], text, len * sizeof (wchar_t));
         StyledTextIOSrcStream_Memory source (buf, (len + 1) * sizeof (wchar_t));
@@ -2100,11 +2100,11 @@ void ActiveLedItControl::SetBufferText (LPCTSTR text)
 BSTR ActiveLedItControl::GetBufferTextCRLF ()
 {
     try {
-        size_t                              len = fEditor.GetLength ();
-        Memory::SmallStackBuffer<Led_tChar> buf (len + 1);
+        size_t                         len = fEditor.GetLength ();
+        Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len + 1};
         fEditor.CopyOut (0, len, buf);
         buf[len] = '\0';
-        Memory::SmallStackBuffer<Led_tChar> buf2 (2 * len + 1);
+        Memory::StackBuffer<Led_tChar> buf2{Memory::eUninitialized, 2 * len + 1};
         len       = Characters::NLToNative<Led_tChar> (buf, len, buf2, 2 * len + 1);
         buf2[len] = '\0';
         return CString (buf2).AllocSysString ();
@@ -2135,8 +2135,8 @@ string ActiveLedItControl::GetBufferTextAsRTF_ ()
     StyledTextIOWriterSinkStream_Memory         sink;
     StyledTextIOWriter_RTF                      textWriter (&source, &sink);
     textWriter.Write ();
-    size_t                         len = sink.GetLength ();
-    Memory::SmallStackBuffer<char> buf (len + 1);
+    size_t                    len = sink.GetLength ();
+    Memory::StackBuffer<char> buf{Memory::eUninitialized, len + 1};
     memcpy (buf, sink.PeekAtData (), len);
     buf[len] = '\0';
     return string (static_cast<char*> (buf));
@@ -2167,8 +2167,8 @@ BSTR ActiveLedItControl::GetBufferTextAsHTML ()
         StyledTextIOWriterSinkStream_Memory         sink;
         StyledTextIOWriter_HTML                     textWriter (&source, &sink);
         textWriter.Write ();
-        size_t                         len = sink.GetLength ();
-        Memory::SmallStackBuffer<char> buf (len + 1);
+        size_t                    len = sink.GetLength ();
+        Memory::StackBuffer<char> buf{Memory::eUninitialized, len + 1};
         memcpy (buf, sink.PeekAtData (), len);
         buf[len] = '\0';
         return CString (buf).AllocSysString ();
@@ -3019,9 +3019,9 @@ HACCEL ActiveLedItControl::GetCurrentWin32AccelTable ()
                 if (fWin32AccelTable != NULL) {
                     size_t accelTableSize = static_cast<size_t> (::CopyAcceleratorTable (fWin32AccelTable, NULL, 0));
                     if (accelTableSize == static_cast<size_t> (::CopyAcceleratorTable (maybeNewAccelTable, NULL, 0))) {
-                        Memory::SmallStackBuffer<ACCEL> oldOne (accelTableSize);
+                        Memory::StackBuffer<ACCEL> oldOne{accelTableSize};
                         Verify (::CopyAcceleratorTable (fWin32AccelTable, oldOne, static_cast<int> (accelTableSize)) == static_cast<int> (accelTableSize));
-                        Memory::SmallStackBuffer<ACCEL> newOne (accelTableSize);
+                        Memory::StackBuffer<ACCEL> newOne{accelTableSize};
                         Verify (::CopyAcceleratorTable (maybeNewAccelTable, newOne, static_cast<int> (accelTableSize)) == static_cast<int> (accelTableSize));
                         if (::memcmp (oldOne, newOne, accelTableSize * sizeof (ACCEL)) == 0) {
                             keepOld = true;
@@ -3665,8 +3665,8 @@ BSTR ActiveLedItControl::GetSelText ()
         size_t s;
         size_t e;
         fEditor.GetSelection (&s, &e);
-        size_t                              len = e - s;
-        Memory::SmallStackBuffer<Led_tChar> buf (len + 1);
+        size_t                         len = e - s;
+        Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len + 1};
         fEditor.CopyOut (s, len, buf);
         buf[len] = '\0';
         return CString (buf).AllocSysString ();
@@ -3679,8 +3679,8 @@ BSTR ActiveLedItControl::GetSelText ()
 void ActiveLedItControl::SetSelText (LPCTSTR text)
 {
     try {
-        size_t                              len = ::_tcslen (text);
-        Memory::SmallStackBuffer<Led_tChar> buf (len + 1);
+        size_t                         len = ::_tcslen (text);
+        Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len + 1};
         len = Characters::NativeToNL<Led_tChar> (Led_SDKString2tString (text).c_str (), len, buf, len + 1);
         size_t s;
         size_t e;
@@ -3700,8 +3700,8 @@ BSTR ActiveLedItControl::GetSelTextAsRTF ()
         StyledTextIOWriterSinkStream_Memory         sink;
         StyledTextIOWriter_RTF                      textWriter (&source, &sink);
         textWriter.Write ();
-        size_t                         len = sink.GetLength ();
-        Memory::SmallStackBuffer<char> buf (len + 1);
+        size_t                    len = sink.GetLength ();
+        Memory::StackBuffer<char> buf{Memory::eUninitialized, len + 1};
         ::memcpy (buf, sink.PeekAtData (), len);
         buf[len] = '\0';
         return CString (buf).AllocSysString ();
@@ -3735,8 +3735,8 @@ BSTR ActiveLedItControl::GetSelTextAsHTML ()
         StyledTextIOWriterSinkStream_Memory         sink;
         StyledTextIOWriter_HTML                     textWriter (&source, &sink);
         textWriter.Write ();
-        size_t                         len = sink.GetLength ();
-        Memory::SmallStackBuffer<char> buf (len + 1);
+        size_t                    len = sink.GetLength ();
+        Memory::StackBuffer<char> buf{Memory::eUninitialized, len + 1};
         ::memcpy (buf, sink.PeekAtData (), len);
         buf[len] = '\0';
         return CString (buf).AllocSysString ();

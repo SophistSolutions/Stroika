@@ -533,7 +533,7 @@ namespace Stroika::Foundation::Characters {
         return AsASCIIQuietly (reinterpret_cast<const wchar_t*> (p.first), reinterpret_cast<const wchar_t*> (p.second), into);
     }
     template <>
-    inline bool String::AsASCIIQuietly (Memory::SmallStackBuffer<char>* into) const
+    inline bool String::AsASCIIQuietly (Memory::StackBuffer<char>* into) const
     {
         RequireNotNull (into);
         String::_SafeReadRepAccessor             thisAccessor{this};

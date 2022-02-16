@@ -14,7 +14,7 @@
 #include "../Configuration/TypeHints.h"
 #include "../Containers/Mapping.h"
 #include "../Debug/AssertExternallySynchronizedMutex.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/InlineBuffer.h"
 
 #include "Statistics.h"
 
@@ -267,10 +267,10 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual void ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
 
-        static constexpr size_t                                                      kPreallocatedHashtableSize_ = 5; // size where no memory allocation overhead for lrucache
-        Memory::SmallStackBuffer<vector<CacheElement_>, kPreallocatedHashtableSize_> fCachedElts_BUF_{};
-        Memory::SmallStackBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_First_{};
-        Memory::SmallStackBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_Last_{};
+        static constexpr size_t                                                  kPreallocatedHashtableSize_ = 5; // size where no memory allocation overhead for lrucache
+        Memory::InlineBuffer<vector<CacheElement_>, kPreallocatedHashtableSize_> fCachedElts_BUF_{};
+        Memory::InlineBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_First_{};
+        Memory::InlineBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_Last_{};
     };
 
 }

@@ -25,7 +25,7 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 
-using Memory::SmallStackBuffer;
+using Memory::StackBuffer;
 
 class My_CMDNUM_MAPPING : public MFC_CommandNumberMapping {
 public:
@@ -539,8 +539,8 @@ void LedLineItView::OnTypedNormalCharacter (Led_tChar theChar, bool optionPresse
         if (rowStart != prevRowStart) {
             size_t prevRowEnd = GetEndOfRowContainingPosition (prevRowStart);
             Assert (prevRowEnd >= prevRowStart);
-            size_t                      prevRowLen = prevRowEnd - prevRowStart;
-            SmallStackBuffer<Led_tChar> buf (prevRowLen);
+            size_t                 prevRowLen = prevRowEnd - prevRowStart;
+            StackBuffer<Led_tChar> buf{Memory::eUninitialized, prevRowLen};
             CopyOut (prevRowStart, prevRowLen, buf);
             size_t nTChars = 0;
             for (size_t i = 0; i < prevRowLen; ++i) {
@@ -724,9 +724,9 @@ void LedLineItView::OnGenRandomCombosCommand ()
         for (size_t i = GetStartOfRowContainingPosition (GetSelectionStart ());
              i < GetSelectionEnd () and lastStart != i;
              lastStart = i, i = GetStartOfNextRowFromRowContainingPosition (i)) {
-            size_t                      rowEnd = GetEndOfRowContainingPosition (i);
-            size_t                      rowLen = rowEnd - i;
-            SmallStackBuffer<Led_tChar> buf (rowLen + 1);
+            size_t                 rowEnd = GetEndOfRowContainingPosition (i);
+            size_t                 rowLen = rowEnd - i;
+            StackBuffer<Led_tChar> buf{Memory::eUninitialized, rowLen + 1};
             CopyOut (i, rowLen, buf);
             buf[rowLen] = '\0';
             srcFrags.push_back (static_cast<Led_tString> (buf));
@@ -808,9 +808,9 @@ void LedLineItView::OnShiftNCommand (bool shiftRight)
                 InteractiveReplace_ (pm->GetStart (), pm->GetStart (), LED_TCHAR_OF ("\t"), 1, false, false, eDefaultUpdate);
             }
             else {
-                size_t                      pmLength     = pm->GetLength ();
-                size_t                      lookAtLength = min<size_t> (pmLength - 1, kCharsPerTab);
-                SmallStackBuffer<Led_tChar> buf (lookAtLength);
+                size_t                 pmLength     = pm->GetLength ();
+                size_t                 lookAtLength = min<size_t> (pmLength - 1, kCharsPerTab);
+                StackBuffer<Led_tChar> buf{Memory::eUninitialized, lookAtLength};
                 CopyOut (pm->GetStart (), lookAtLength, buf);
                 size_t deleteLength = lookAtLength; // default to deleting all if all whitespace..
                 for (size_t i = 0; i < lookAtLength; ++i) {

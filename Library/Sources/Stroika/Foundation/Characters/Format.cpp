@@ -14,7 +14,7 @@
 #include "../Debug/Assertions.h"
 #include "../Debug/Trace.h"
 #include "../Math/Common.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/StackBuffer.h"
 
 #include "Format.h"
 
@@ -31,13 +31,13 @@ DISABLE_COMPILER_MSC_WARNING_START (6262)
 String Characters::FormatV (const wchar_t* format, va_list argsList)
 {
     RequireNotNull (format);
-    Memory::SmallStackBuffer<wchar_t, 10 * 1024> msgBuf (SmallStackBufferCommon::eUninitialized, 10 * 1024);
-    const wchar_t*                               useFormat = format;
-    wchar_t                                      newFormat[5 * 1024];
+    Memory::StackBuffer<wchar_t, 10 * 1024> msgBuf{Memory::eUninitialized, 10 * 1024};
+    const wchar_t*                          useFormat = format;
+    wchar_t                                 newFormat[5 * 1024];
     {
         size_t origFormatLen = wcslen (format);
         Require (origFormatLen < NEltsOf (newFormat) / 2); // just to be sure safe - this is already crazy-big for format string...
-        // Could use Memory::SmallStackBuffer<> but I doubt this will ever get triggered
+        // Could use Memory::StackBuffer<> but I doubt this will ever get triggered
         bool   lookingAtFmtCvt = false;
         size_t newFormatIdx    = 0;
         for (size_t i = 0; i < origFormatLen; ++i) {

@@ -33,7 +33,6 @@
 #include "../../IO/FileSystem/Exception.h"
 #include "../../IO/FileSystem/FileSystem.h"
 #include "../../IO/FileSystem/PathName.h"
-#include "../../Memory/SmallStackBuffer.h"
 #include "PathName.h"
 #include "WellKnownLocations.h"
 

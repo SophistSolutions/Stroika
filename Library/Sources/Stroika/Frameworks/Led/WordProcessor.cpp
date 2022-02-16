@@ -1783,10 +1783,10 @@ void WordProcessor::OnTypedNormalCharacter (Led_tChar theChar, bool optionPresse
         size_t        selStart           = GetSelectionStart ();
         {
             // Walk backwards and see if we can find a recent OPEN-quote
-            const size_t                        kScanBackSize = 1024;
-            size_t                              scanBackTo    = static_cast<size_t> (max (0, static_cast<int> (selStart) - static_cast<int> (kScanBackSize)));
-            Memory::SmallStackBuffer<Led_tChar> buf (kScanBackSize);
-            size_t                              scanBackCount = selStart - scanBackTo;
+            const size_t                   kScanBackSize = 1024;
+            size_t                         scanBackTo    = static_cast<size_t> (max (0, static_cast<int> (selStart) - static_cast<int> (kScanBackSize)));
+            Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, kScanBackSize};
+            size_t                         scanBackCount = selStart - scanBackTo;
             CopyOut (scanBackTo, scanBackCount, buf);
             for (size_t i = scanBackCount; i != 0; --i) {
                 if (buf[i - 1] == kSpecialCloseQuote) {
@@ -3417,9 +3417,9 @@ DistanceType WordProcessor::GetListLeaderLength (size_t paragraphMarkerPos) cons
         return 0;
     }
     else {
-        Memory::SmallStackBuffer<DistanceType> distanceResults (len);
-        FontSpecification                      nextCharsFontStyle = GetStyleInfo (paragraphMarkerPos);
-        FontSpecification                      useBulletFont      = GetStaticDefaultFont ();
+        Memory::StackBuffer<DistanceType> distanceResults{Memory::eUninitialized, len};
+        FontSpecification                 nextCharsFontStyle = GetStyleInfo (paragraphMarkerPos);
+        FontSpecification                 useBulletFont      = GetStaticDefaultFont ();
         useBulletFont.SetPointSize (max (static_cast<unsigned short> (14), nextCharsFontStyle.GetPointSize ()));
         MeasureSegmentWidth_ (useBulletFont, paragraphMarkerPos, paragraphMarkerPos + len,
                               leader.c_str (), distanceResults);
@@ -4345,8 +4345,8 @@ DistanceType WordProcessor::CalcSpaceToEat (size_t rowContainingCharPos) const
     Assert (rowEnd == GetEndOfRowContainingPosition (rowContainingCharPos));
 
     {
-        size_t                              lenOfText = rowEnd - rowStart;
-        Memory::SmallStackBuffer<Led_tChar> buf{lenOfText};
+        size_t                         lenOfText = rowEnd - rowStart;
+        Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, lenOfText};
         CopyOut (rowStart, lenOfText, buf);
         // Throw away trailing space characters
         while (rowStart < rowEnd) {
@@ -5560,7 +5560,7 @@ void WordProcessor::WPPartition::Invariant_ () const
         if (end > GetEnd ()) {
             --len; // Last partition extends past end of text
         }
-        Memory::SmallStackBuffer<Led_tChar> buf{len};
+        Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
         CopyOut (start, len, buf);
         for (size_t i = 1; i < len; ++i) {
             Assert (buf[i - 1] != '\n');
@@ -7249,9 +7249,9 @@ void Table::PerformLayout ()
             /*
              *  Compute REAL (non-merge) cells widths.
              */
-            size_t                                 cols = GetColumnCount (r);
-            Memory::SmallStackBuffer<DistanceType> realCellWidths (cols); // cell widths for this row - only for REAL (plain - non-merge) cells
-            DistanceType                           rowWidth = 0;
+            size_t                            cols = GetColumnCount (r);
+            Memory::StackBuffer<DistanceType> realCellWidths{cols}; // cell widths for this row - only for REAL (plain - non-merge) cells
+            DistanceType                      rowWidth = 0;
             {
                 size_t lastRealCellIdx = 0;
                 for (size_t c = 0; c < cols; ++c) {

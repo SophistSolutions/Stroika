@@ -48,6 +48,7 @@
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Math/Statistics.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Time/DateTime.h"
@@ -172,9 +173,9 @@ namespace {
     DurationSecondsType RunTest_ (function<void ()> t, unsigned int runCount)
     {
         runCount = Math::AtLeast<unsigned int> (runCount, 1);
-        const size_t                                  kNParts2Divide_{10};
-        Memory::SmallStackBuffer<DurationSecondsType> times (kNParts2Divide_);
-        unsigned int                                  actualRanCount{};
+        const size_t                             kNParts2Divide_{10};
+        Memory::StackBuffer<DurationSecondsType> times{kNParts2Divide_};
+        unsigned int                             actualRanCount{};
         for (size_t i = 0; i < kNParts2Divide_; ++i) {
             DurationSecondsType start = Time::GetTickCount ();
             for (unsigned int ii = 0; ii < Math::AtLeast<unsigned int> (runCount / kNParts2Divide_, 1); ++ii) {
@@ -1238,10 +1239,10 @@ namespace {
         }
         void Test_UTF82WString_codecvt_utf8 (const char* s, const char* e)
         {
-            mbstate_t                 mb{};
-            SmallStackBuffer<wchar_t> outBuf (e - s);
-            const char*               from_next;
-            wchar_t*                  to_next;
+            mbstate_t            mb{};
+            StackBuffer<wchar_t> outBuf{static_cast<size_t> (e - s)};
+            const char*          from_next;
+            wchar_t*             to_next;
             kConverter_.in (mb, s, e, from_next, outBuf.begin (), outBuf.end (), to_next);
         }
         constexpr char kS1_[] = "asdbf asdkfja sdflkja ls;dkfja s;ldkfj aslkd;fj alksdfj alskdfj aslk;df;j as;lkdfj aslk;dfj asl;dkfj asdf";

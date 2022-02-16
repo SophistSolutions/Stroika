@@ -13,6 +13,7 @@
 #include "../../Foundation/IO/Network/SocketStream.h"
 #include "../../Foundation/Memory/BLOB.h"
 #include "../../Foundation/Memory/Bits.h"
+#include "../../Foundation/Memory/StackBuffer.h"
 #include "../../Foundation/Streams/BufferedInputStream.h"
 #include "../../Foundation/Streams/BufferedOutputStream.h"
 #include "../../Foundation/Traversal/DiscreteRange.h"
@@ -220,9 +221,9 @@ namespace {
                         uint16_t startingAddress = checkedReadHelperPayload2Shorts (requestPayload, 1, 0x7d0).first;
                         uint16_t quantity        = checkedReadHelperPayload2Shorts (requestPayload, 1, 0x7d0).second;
                         Assert (quantity >= 1);
-                        uint16_t                  endInclusiveAddress = startingAddress + quantity - 1u;
-                        size_t                    quantityBytes       = (quantity + 7) / 8;
-                        SmallStackBuffer<uint8_t> results{quantityBytes};
+                        uint16_t             endInclusiveAddress = startingAddress + quantity - 1u;
+                        size_t               quantityBytes       = (quantity + 7) / 8;
+                        StackBuffer<uint8_t> results{quantityBytes};
                         (void)::memset (results.begin (), 0, quantityBytes); // for now - fill zeros for values not returned by backend
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"Processing kReadCoils_ (starting0Address: %d, quantity: %d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
@@ -254,10 +255,9 @@ namespace {
                         uint16_t startingAddress = checkedReadHelperPayload2Shorts (requestPayload, 1, 0x7d0).first;
                         uint16_t quantity        = checkedReadHelperPayload2Shorts (requestPayload, 1, 0x7d0).second;
                         Assert (quantity >= 1);
-                        uint16_t                  endInclusiveAddress = startingAddress + quantity - 1u;
-                        size_t                    quantityBytes       = (quantity + 7) / 8;
-                        SmallStackBuffer<uint8_t> results{quantityBytes};
-                        (void)::memset (results.begin (), 0, quantityBytes); // for now - fill zeros for values not returned by backend
+                        uint16_t             endInclusiveAddress = startingAddress + quantity - 1u;
+                        size_t               quantityBytes       = (quantity + 7) / 8;
+                        StackBuffer<uint8_t> results{quantityBytes}; // for now - fill zeros for values not returned by backend
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"Processing kReadDiscreteInputs_ (starting0Address: %d, quantity: %d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
@@ -287,9 +287,8 @@ namespace {
                         uint16_t startingAddress = checkedReadHelperPayload2Shorts (requestPayload, 1, 0x7d).first;
                         uint16_t quantity        = checkedReadHelperPayload2Shorts (requestPayload, 1, 0x7d).second;
                         Assert (quantity >= 1);
-                        uint16_t                   endInclusiveAddress = startingAddress + quantity - 1u;
-                        SmallStackBuffer<uint16_t> results{quantity};
-                        (void)::memset (results.begin (), 0, quantity * sizeof (uint16_t)); // for now - fill zeros for values not returned by backend
+                        uint16_t              endInclusiveAddress = startingAddress + quantity - 1u;
+                        StackBuffer<uint16_t> results{quantity}; // for now - fill zeros for values not returned by backend
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"Processing kReadHoldingResisters_ (starting0Address: %d, quantity: %d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
@@ -317,9 +316,8 @@ namespace {
                         uint16_t startingAddress = checkedReadHelperPayload2Shorts (requestPayload, 1, 0x7d).first;
                         uint16_t quantity        = checkedReadHelperPayload2Shorts (requestPayload, 1, 0x7d).second;
                         Assert (quantity >= 1);
-                        uint16_t                   endInclusiveAddress = startingAddress + quantity - 1u;
-                        SmallStackBuffer<uint16_t> results{quantity};
-                        (void)::memset (results.begin (), 0, quantity * sizeof (uint16_t)); // for now - fill zeros for values not returned by backend
+                        uint16_t              endInclusiveAddress = startingAddress + quantity - 1u;
+                        StackBuffer<uint16_t> results{quantity}; // for now - fill zeros for values not returned by backend
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"Processing kReadInputRegister_ (starting0Address: %d, quantity: %d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif

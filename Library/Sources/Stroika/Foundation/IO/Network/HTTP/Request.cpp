@@ -16,7 +16,6 @@
 #include "../../../Execution/Throw.h"
 #include "../../../IO/Network/HTTP/Headers.h"
 #include "../../../IO/Network/HTTP/Versions.h"
-#include "../../../Memory/SmallStackBuffer.h"
 
 #include "Request.h"
 

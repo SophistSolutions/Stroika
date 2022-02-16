@@ -5,6 +5,8 @@
 
 #include <cctype>
 
+#include "../../Foundation/Memory/StackBuffer.h"
+
 #include "Config.h"
 
 #include "TextStore.h"
@@ -40,15 +42,15 @@ void TextStore::VectorMarkerSink::Append (Marker* m)
 
 /*
  ********************************************************************************
- ******************* TextStore::SmallStackBufferMarkerSink **********************
+ *********************** TextStore::InlineBufferMarkerSink **********************
  ********************************************************************************
  */
 /*
-@METHOD:        TextStore::SmallStackBufferMarkerSink::Append
+@METHOD:        TextStore::InlineBufferMarkerSink::Append
 @DESCRIPTION:   <p>Don't call directly. Called as a by-product of TextStore::CollectAllMarkersInRange ().
-    This TextStore::VectorMarkerSink produces a @'Memory::SmallStackBuffer<T>' for such collect calls.</p>
+    This TextStore::VectorMarkerSink produces a @'Memory::StackBuffer<T>' for such collect calls.</p>
 */
-void TextStore::SmallStackBufferMarkerSink::Append (Marker* m)
+void TextStore::InlineBufferMarkerSink::Append (Marker* m)
 {
     RequireNotNull (m);
     AssertNotNull (fMarkers);
@@ -475,7 +477,7 @@ void TextStore::FindWordBreaks (size_t afterPosition, size_t* wordStartResult, s
     size_t endOfThisLine   = GetEndOfLineContainingPosition (afterPosition);
     size_t len             = endOfThisLine - startOfThisLine;
 
-    Memory::SmallStackBuffer<Led_tChar> buf (len);
+    Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
     CopyOut (startOfThisLine, len, buf);
 
     Assert (afterPosition >= startOfThisLine);
@@ -507,7 +509,7 @@ void TextStore::FindLineBreaks (size_t afterPosition, size_t* wordEndResult, boo
     size_t endOfThisLine   = GetEndOfLineContainingPosition (afterPosition);
     size_t len             = endOfThisLine - startOfThisLine;
 
-    Memory::SmallStackBuffer<Led_tChar> buf (len);
+    Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
     CopyOut (startOfThisLine, len, buf);
 
     Assert (afterPosition >= startOfThisLine);
@@ -630,7 +632,7 @@ size_t TextStore::Find (const SearchParameters& params, size_t searchFrom, size_
     size_t bufferEnd  = (searchTo == eUseSearchParameters) ? GetEnd () : searchTo;
     size_t searchIdx  = searchFrom; // index of where we are currently searching from
 
-    Memory::SmallStackBuffer<Led_tChar> lookingAtData (patternLen);
+    Memory::StackBuffer<Led_tChar> lookingAtData{Memory::eUninitialized, patternLen};
 
 searchSMORE:
     if (searchIdx + patternLen > bufferEnd) {
@@ -847,8 +849,8 @@ TextStore* TextStore::PeekAtTextStore () const
 */
 void TextStore::Invariant_ () const
 {
-    size_t                              len = GetLength ();
-    Memory::SmallStackBuffer<Led_tChar> buf (len);
+    size_t                         len = GetLength ();
+    Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
     CopyOut (0, len, buf);
     const Led_tChar* start   = buf;
     const Led_tChar* end     = &start[len];

@@ -12,7 +12,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-using Memory::SmallStackBuffer;
+using Memory::StackBuffer;
 
 using FontChangeStyleMarker = SyntaxColoringMarkerOwner::FontChangeStyleMarker;
 using ColoredStyleMarker    = SyntaxColoringMarkerOwner::ColoredStyleMarker;
@@ -31,8 +31,8 @@ void TrivialRGBSyntaxAnalyzer::AddMarkers (TextStore* ts, TextInteractor* /*inte
     RequireNotNull (ts);
     Require (lookBackStart <= lookBackTo);
 
-    size_t                      len = lookBackTo - lookBackStart;
-    SmallStackBuffer<Led_tChar> buf (len);
+    size_t                 len = lookBackTo - lookBackStart;
+    StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
     ts->CopyOut (lookBackStart, len, buf);
     for (size_t i = 0; i < len; ++i) {
         Led_tChar c = buf[i];
@@ -405,8 +405,8 @@ void TableDrivenKeywordSyntaxAnalyzer::AddMarkers (TextStore* ts, TextInteractor
     RequireNotNull (interactor);
     Require (lookBackStart <= lookBackTo);
 
-    size_t                      len = lookBackTo - lookBackStart;
-    SmallStackBuffer<Led_tChar> buf (len);
+    size_t                 len = lookBackTo - lookBackStart;
+    StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
     ts->CopyOut (lookBackStart, len, buf);
     for (size_t i = 0; i < len; ++i) {
         size_t kwl = fKeywordTable.KeywordLength (&buf[i], len - i);
@@ -594,8 +594,8 @@ void WindowedSyntaxColoringMarkerOwner::AboutToUpdateText (const UpdateInfo& upd
     // If we're deleting any NLs, set flag, so on later DidUpdate (), we will recheck all, cuz we must
     // also check newly scrolled onto screen rows.
     if (updateInfo.fTextModified) {
-        size_t                      len = updateInfo.fReplaceTo - updateInfo.fReplaceFrom;
-        SmallStackBuffer<Led_tChar> buf (len);
+        size_t                 len = updateInfo.fReplaceTo - updateInfo.fReplaceFrom;
+        StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
         fTextStore.CopyOut (updateInfo.fReplaceFrom, len, buf);
         for (size_t i = 0; i < len; ++i) {
             Led_tChar c = buf[i];

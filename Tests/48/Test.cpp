@@ -322,29 +322,51 @@ namespace {
 }
 
 namespace {
-    namespace Test9_SmallStackBuffer_ {
+    namespace Test9a_Buffer_ {
         void DoTest ()
         {
             {
-                SmallStackBuffer<int> x0{0};
-                SmallStackBuffer<int> x1{x0};
+                InlineBuffer<int> x0{0};
+                InlineBuffer<int> x1{x0};
                 x0 = x1;
             }
             {
                 // Test using String elements, since those will test construction/reserve logic
                 using Characters::String;
-                SmallStackBuffer<String> buf1{3};
+                InlineBuffer<String> buf1{3};
                 for (int i = 0; i < 1000; i++) {
                     buf1.push_back (String{L"hi mom"});
                 }
-                SmallStackBuffer<String> buf2{buf1};
+                InlineBuffer<String> buf2{buf1};
                 buf1.resize (0);
             }
             {
-                SmallStackBuffer<int> x0{4};
-                SmallStackBuffer<int> assign2;
+                InlineBuffer<int> x0{4};
+                InlineBuffer<int> assign2;
                 assign2 = x0;
                 VerifyTestResult (x0.size () == assign2.size ()); // test regression fixed 2019-03-20
+                VerifyTestResult (x0.size () == 4);
+            }
+        }
+    }
+    namespace Test9b_StackBuffer_ {
+        void DoTest ()
+        {
+            {
+                StackBuffer<int> x0{0};
+            }
+            {
+                // Test using String elements, since those will test construction/reserve logic
+                using Characters::String;
+                StackBuffer<String> buf1{3};
+                for (int i = 0; i < 1000; i++) {
+                    buf1.push_back (String{L"hi mom"});
+                }
+                buf1.resize (0);
+            }
+            {
+                StackBuffer<int> x0{4};
+                StackBuffer<int> assign2;
                 VerifyTestResult (x0.size () == 4);
             }
         }
@@ -477,7 +499,8 @@ namespace {
         Test_5_SharedPtr ();
         Test_6_Bits_ ();
         Test_7_BLOB_ ();
-        Test9_SmallStackBuffer_::DoTest ();
+        Test9a_Buffer_::DoTest ();
+        Test9b_StackBuffer_::DoTest ();
         Test10_OptionalSelfAssign_::DoTest ();
         Test11_ObjectFieldUtilities_::DoTest ();
         Test12_OffsetOf_::DoTest ();

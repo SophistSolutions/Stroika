@@ -7,7 +7,7 @@
 #include <cctype>
 
 #include "../../../Foundation/Characters/LineEndings.h"
-#include "../../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../../Foundation/Memory/StackBuffer.h"
 
 #include "StyledTextIO_MIMETextEnriched.h"
 
@@ -16,7 +16,7 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
-using Memory::SmallStackBuffer;
+using Memory::StackBuffer;
 
 /*
  ********************************************************************************
@@ -66,8 +66,8 @@ void StyledTextIOReader_MIMETextEnriched::Read ()
 
         // Handle text before <
         {
-            size_t                      len = currentOffset - lastOffset;
-            SmallStackBuffer<Led_tChar> buf (len);
+            size_t                 len = currentOffset - lastOffset;
+            StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
             GetSrcStream ().seek_to (lastOffset);
             GetSrcStream ().read (buf, len);
             len = Characters::NormalizeTextToNL<Led_tChar> (buf, len, buf, len);
@@ -75,8 +75,8 @@ void StyledTextIOReader_MIMETextEnriched::Read ()
                 // Strip xtra CRLF, and merge spaces - not really sure what should be done here.
                 // Just take a WILD STAB GUESS!!!
                 // LGP 951103
-                SmallStackBuffer<Led_tChar> buf2 (len);
-                size_t                      i2 = 0;
+                StackBuffer<Led_tChar> buf2{Memory::eUninitialized, len};
+                size_t                 i2 = 0;
                 for (size_t i = 0; i < len; ++i) {
                     Led_tChar prevChar = (i == 0) ? '\0' : buf[i - 1];
                     Led_tChar nextChar = (i == len - 1) ? '\0' : buf[i + 1];
@@ -116,8 +116,8 @@ void StyledTextIOReader_MIMETextEnriched::Read ()
                 GetSrcStream ().seek_to (currentOffset);
 
                 ScanFor (">");
-                size_t                 len = GetSrcStream ().current_offset () - currentOffset;
-                SmallStackBuffer<char> cmdBuf (len + 1);
+                size_t            len = GetSrcStream ().current_offset () - currentOffset;
+                StackBuffer<char> cmdBuf{Memory::eUninitialized, len + 1};
                 GetSrcStream ().seek_to (currentOffset);
                 GetSrcStream ().read (cmdBuf, len);
                 cmdBuf[len] = '\0';

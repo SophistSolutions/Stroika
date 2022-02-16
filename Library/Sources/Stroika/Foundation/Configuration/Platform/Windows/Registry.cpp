@@ -12,7 +12,7 @@
 #include "../../../Execution/DLLSupport.h"
 #include "../../../Execution/Platform/Windows/Exception.h"
 
-#include "../../../Memory/SmallStackBuffer.h"
+#include "../../../Memory/StackBuffer.h"
 
 #include "./Registry.h"
 
@@ -175,8 +175,8 @@ Traversal::Iterable<shared_ptr<RegistryKey>> RegistryKey::EnumerateSubKeys () co
     auto myContext        = make_shared<Context_> ();
     myContext->fParentKey = fKey_;
     auto getNext          = [myContext] () -> optional<shared_ptr<RegistryKey>> {
-        Memory::SmallStackBuffer<TCHAR> achKeyBuf{1024};
-        DWORD                           cbName = static_cast<DWORD> (achKeyBuf.size ()); // size of name string
+        Memory::StackBuffer<TCHAR> achKeyBuf{Memory::eUninitialized, 1024};
+        DWORD                      cbName = static_cast<DWORD> (achKeyBuf.size ()); // size of name string
     retry:
         auto retCode = ::RegEnumKeyEx (myContext->fParentKey, myContext->fCurIndex, achKeyBuf.begin (), &cbName, nullptr, nullptr, nullptr, nullptr);
         if (retCode == ERROR_NO_MORE_ITEMS) {
@@ -200,8 +200,8 @@ Containers::Mapping<Characters::String, DataExchange::VariantValue> RegistryKey:
 {
     Containers::Mapping<Characters::String, DataExchange::VariantValue> result;
     for (int i = 0;; ++i) {
-        Memory::SmallStackBuffer<TCHAR> achKeyBuf{1024};
-        DWORD                           cbName = static_cast<DWORD> (achKeyBuf.size ()); // size of name string
+        Memory::StackBuffer<TCHAR> achKeyBuf{Memory::eUninitialized, 1024};
+        DWORD                      cbName = static_cast<DWORD> (achKeyBuf.size ()); // size of name string
     retry:
         auto retCode = ::RegEnumValue (fKey_, i, achKeyBuf.begin (), &cbName, nullptr, nullptr, nullptr, nullptr);
         if (retCode == ERROR_NO_MORE_ITEMS) {

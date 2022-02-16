@@ -6,7 +6,7 @@
 #include "../../Containers/Common.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Throw.h"
-#include "../../Memory/SmallStackBuffer.h"
+#include "../../Memory/StackBuffer.h"
 
 #include "Utilities.h"
 
@@ -36,8 +36,8 @@ wstring Streams::iostream::ReadTextStream (istream& in)
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) [[UNLIKELY_ATTR]] {
         Execution::Throw (Execution::RuntimeErrorException{L"stream too large"sv});
     }
-    size_t                         bufLen = static_cast<size_t> (end - start);
-    Memory::SmallStackBuffer<byte> buf (Memory::SmallStackBufferCommon::eUninitialized, bufLen);
+    size_t                    bufLen = static_cast<size_t> (end - start);
+    Memory::StackBuffer<byte> buf{Memory::eUninitialized, bufLen};
     in.seekg (start, ios_base::beg);
     in.read (reinterpret_cast<char*> (buf.begin ()), bufLen);
     size_t readLen = static_cast<size_t> (in.gcount ());
@@ -59,8 +59,8 @@ wstring Streams::iostream::ReadTextStream (wistream& in)
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) [[UNLIKELY_ATTR]] {
         Execution::Throw (Execution::RuntimeErrorException{L"stream too large"sv});
     }
-    size_t                            bufLen = static_cast<size_t> (end - start);
-    Memory::SmallStackBuffer<wchar_t> buf (Memory::SmallStackBufferCommon::eUninitialized, bufLen);
+    size_t                       bufLen = static_cast<size_t> (end - start);
+    Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, bufLen};
     in.seekg (start, ios_base::beg);
     in.read (reinterpret_cast<wchar_t*> (buf.begin ()), bufLen);
     size_t readLen = static_cast<size_t> (in.gcount ());
@@ -87,8 +87,8 @@ vector<byte> Streams::iostream::ReadBytes (istream& in)
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) [[UNLIKELY_ATTR]] {
         Execution::Throw (RuntimeErrorException{L"stream too large"sv});
     }
-    size_t                 len = static_cast<size_t> (end - start);
-    SmallStackBuffer<byte> buf (Memory::SmallStackBufferCommon::eUninitialized, len);
+    size_t            len = static_cast<size_t> (end - start);
+    StackBuffer<byte> buf{Memory::eUninitialized, len};
     in.seekg (start, ios_base::beg);
     in.read (reinterpret_cast<char*> (buf.begin ()), len);
     size_t xxx = static_cast<size_t> (in.gcount ());

@@ -18,7 +18,6 @@
 #include "../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
 #include "../Linguistics/MessageUtilities.h"
-#include "../Memory/SmallStackBuffer.h"
 #include "DateTime.h"
 
 #include "Date.h"

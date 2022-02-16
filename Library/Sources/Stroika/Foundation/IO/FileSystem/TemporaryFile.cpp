@@ -31,7 +31,6 @@
 #include "../../Containers/Common.h"
 #include "../../Debug/Trace.h"
 #include "../../IO/FileSystem/FileSystem.h"
-#include "../../Memory/SmallStackBuffer.h"
 #include "FileUtils.h"
 #include "PathName.h"
 #include "WellKnownLocations.h"

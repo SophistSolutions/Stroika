@@ -13,7 +13,6 @@
 #include "../Execution/Common.h"
 #include "../Execution/Exceptions.h"
 #include "../Execution/OperationNotSupportedException.h"
-#include "../Memory/SmallStackBuffer.h"
 
 #include "TextWriter.h"
 

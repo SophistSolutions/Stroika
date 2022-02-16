@@ -838,7 +838,7 @@ size_t TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirect
                         positionInLine = min (positionInLine, GetTextStore ().GetLineLength (newLine)); // don't go past end of new line...
 #if qMultiByteCharacters
                         // Don't split a mbyte character
-                        Memory::SmallStackBuffer<Led_tChar> buf (positionInLine);
+                        Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, positionInLine};
                         CopyOut (GetTextStore ().GetStartOfLine (newLine), positionInLine, buf);
                         if (Led_FindPrevOrEqualCharBoundary (buf, buf + positionInLine) != buf + positionInLine) {
                             Assert (positionInLine > 0);
@@ -1266,8 +1266,8 @@ vector<Led_Rect> TextImager::GetRowHilightRects (const TextLayoutBlock& text, si
 */
 TextLayoutBlock_Copy TextImager::GetTextLayoutBlock (size_t rowStart, size_t rowEnd) const
 {
-    size_t                              rowLen = rowEnd - rowStart;
-    Memory::SmallStackBuffer<Led_tChar> rowBuf (rowLen);
+    size_t                         rowLen = rowEnd - rowStart;
+    Memory::StackBuffer<Led_tChar> rowBuf{Memory::eUninitialized, rowLen};
     CopyOut (rowStart, rowLen, rowBuf);
     TextLayoutBlock_Basic text (rowBuf, rowBuf + rowLen);
     return TextLayoutBlock_Copy (text);
@@ -1323,9 +1323,9 @@ vector<Led_Rect> TextImager::GetSelectionWindowRects (size_t from, size_t to) co
         TextLayoutBlock_Copy text = GetTextLayoutBlock (startOfRow, endOfRow);
 #else
         size_t rowLen = endOfRow - startOfRow;
-        Memory::SmallStackBuffer<Led_tChar> rowBuf (rowLen);
+        Memory::StackBuffer<Led_tChar> rowBuf{Memory::eUninitialized, rowLen};
         CopyOut (startOfRow, rowLen, rowBuf);
-        TextLayoutBlock_Basic text (rowBuf, rowBuf + rowLen);
+        TextLayoutBlock_Basic text{rowBuf, rowBuf + rowLen};
 #endif
 
         vector<Led_Rect> hilightRects = GetRowHilightRects (text, startOfRow, endOfRow, GetSelectionStart (), GetSelectionEnd ());
@@ -1832,15 +1832,15 @@ void TextImager::DrawSegment_ (Tablet* tablet, const FontSpecification& fontSpec
         /*
          *  Fill in the useVirtualText buffer with the text to draw.
          */
-        Memory::SmallStackBuffer<Led_tChar> useVirtualText (runLength);
+        Memory::StackBuffer<Led_tChar> useVirtualText{Memory::eUninitialized, runLength};
         (void)::memcpy (static_cast<Led_tChar*> (useVirtualText), &fullVirtualText[se.fVirtualStart], runLength * sizeof (Led_tChar));
 
         /*
          *  Process 'mapped display characters'
          */
-        Led_tChar*                          drawText    = useVirtualText;
-        size_t                              drawTextLen = runLength;
-        Memory::SmallStackBuffer<Led_tChar> mappedDisplayBuf (1);
+        Led_tChar*                     drawText    = useVirtualText;
+        size_t                         drawTextLen = runLength;
+        Memory::StackBuffer<Led_tChar> mappedDisplayBuf{1};
         if (ContainsMappedDisplayCharacters (drawText, drawTextLen)) {
             mappedDisplayBuf.GrowToSize (drawTextLen);
             ReplaceMappedDisplayCharacters (drawText, mappedDisplayBuf, drawTextLen);
@@ -1895,7 +1895,7 @@ void TextImager::MeasureSegmentWidth_ (const FontSpecification& fontSpec, size_t
     FontCacheInfoUpdater fontCacheUpdater (this, tablet, fontSpec);
 
     if (ContainsMappedDisplayCharacters (text, length)) {
-        Memory::SmallStackBuffer<Led_tChar> buf2 (length);
+        Memory::StackBuffer<Led_tChar> buf2{Memory::eUninitialized, length};
         ReplaceMappedDisplayCharacters (text, buf2, length);
         tablet->MeasureText (fCachedFontInfo, buf2, length, distanceResults);
         PatchWidthRemoveMappedDisplayCharacters (buf2, distanceResults, length);

@@ -33,7 +33,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
-#include "Stroika/Foundation/Memory/SmallStackBuffer.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include "Stroika/Foundation/Streams/iostream/SerializeItemToBLOB.h"
 
@@ -68,8 +68,8 @@ namespace {
                 using Encoding::Algorithm::LineBreak;
                 vector<byte> DecodeBase64_ATL_ (const string& s)
                 {
-                    int                            dataSize1 = ATL::Base64DecodeGetRequiredLength (static_cast<int> (s.length ()));
-                    Memory::SmallStackBuffer<byte> buf1 (dataSize1);
+                    int                       dataSize1 = ATL::Base64DecodeGetRequiredLength (static_cast<int> (s.length ()));
+                    Memory::StackBuffer<byte> buf1{static_cast<size_t> (dataSize1)};
                     if (ATL::Base64Decode (s.c_str (), static_cast<int> (s.length ()), reinterpret_cast<BYTE*> (buf1.begin ()), &dataSize1)) {
                         return vector<byte> (buf1.begin (), buf1.begin () + dataSize1);
                     }
@@ -79,8 +79,8 @@ namespace {
                 {
                     size_t totalSize = b.size ();
                     if (totalSize != 0) {
-                        Memory::SmallStackBuffer<char> relBuf (0);
-                        int                            relEncodedSize = ATL::Base64EncodeGetRequiredLength (static_cast<int> (totalSize));
+                        Memory::StackBuffer<char> relBuf{0};
+                        int                       relEncodedSize = ATL::Base64EncodeGetRequiredLength (static_cast<int> (totalSize));
                         relBuf.GrowToSize (relEncodedSize);
                         VerifyTestResult (ATL::Base64Encode (reinterpret_cast<const BYTE*> (Containers::Start (b)), static_cast<int> (totalSize), relBuf, &relEncodedSize));
                         relBuf[relEncodedSize] = '\0';

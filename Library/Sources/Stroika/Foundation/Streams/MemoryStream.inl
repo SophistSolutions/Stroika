@@ -235,7 +235,7 @@ namespace Stroika::Foundation::Streams {
     private:
         // @todo - COULD redo using
         //      constexpr size_t  USE_BUFFER_BYTES = 1024 - sizeof(recursive_mutex) - sizeof(byte*) - sizeof (BinaryInputStream::_IRep) - sizeof (Seekable::_IRep);
-        //      Memory::SmallStackBuffer < byte, USE_BUFFER_BYTES>  fData_;
+        //      Memory::InlineBuffer<byte,USE_BUFFER_BYTES>  fData_;
         // Or Stroika chunked array code
 
     private:

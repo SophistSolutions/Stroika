@@ -5,7 +5,7 @@
 
 #include <climits>
 
-#include "../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../Foundation/Memory/StackBuffer.h"
 
 #include "GDI.h"
 #include "Support.h"
@@ -572,8 +572,8 @@ void MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t start
     size_t                    endSubRow   = min (pmCacheInfo.GetRowCount () - 1, maxSubRow);
     *rowsDrawn                            = 0;
 
-    size_t                              partLen = end - start;
-    Memory::SmallStackBuffer<Led_tChar> partitionBuf (partLen);
+    size_t                         partLen = end - start;
+    Memory::StackBuffer<Led_tChar> partitionBuf{Memory::eUninitialized, partLen};
     CopyOut (start, partLen, partitionBuf);
 
     for (size_t subRow = startSubRow; subRow <= endSubRow; ++subRow) {

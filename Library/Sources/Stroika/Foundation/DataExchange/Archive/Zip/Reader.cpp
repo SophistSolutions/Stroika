@@ -2787,7 +2787,7 @@ public:
                 if (nameLen < 1) {
                     break;
                 }
-                Memory::SmallStackBuffer<char16_t> fileName (nameLen);
+                Memory::StackBuffer<char16_t> fileName {Memory::eUninitiialized, nameLen};
                 size_t z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&fileName[0]));
                 result.Add (String (&fileName[0]));
             }

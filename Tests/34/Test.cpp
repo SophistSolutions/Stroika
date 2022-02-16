@@ -16,7 +16,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
-#include "Stroika/Foundation/Memory/SmallStackBuffer.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
@@ -44,10 +44,10 @@ namespace {
     //  void    StreamUtils::WriteTextStream (const wstring& w, ostream& out)
     void WriteTextStream_ (const wstring& w, ostream& out)
     {
-        CodePageConverter              cpc (kCodePage_UTF8, CodePageConverter::eHandleBOM);
-        size_t                         sz = cpc.MapFromUNICODE_QuickComputeOutBufSize (w.c_str (), w.length ());
-        Memory::SmallStackBuffer<char> buf (sz + 1);
-        size_t                         charCnt = sz;
+        CodePageConverter         cpc (kCodePage_UTF8, CodePageConverter::eHandleBOM);
+        size_t                    sz = cpc.MapFromUNICODE_QuickComputeOutBufSize (w.c_str (), w.length ());
+        Memory::StackBuffer<char> buf{sz + 1};
+        size_t                    charCnt = sz;
         cpc.MapFromUNICODE (w.c_str (), w.length (), buf, &charCnt);
         Assert (charCnt <= sz);
         out.write (buf, charCnt);

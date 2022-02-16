@@ -15,7 +15,7 @@
 #endif
 
 #include "../../../Foundation/DataExchange/BadFormatException.h"
-#include "../../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../../Foundation/Memory/StackBuffer.h"
 
 #include "../StyledTextEmbeddedObjects.h"
 #include "../StyledTextImager.h"
@@ -834,8 +834,8 @@ string StyledTextIOReader::GrabString (size_t from, size_t to)
     }
     Require (from <= effectiveTo);
 
-    size_t                         strLen = effectiveTo - from;
-    Memory::SmallStackBuffer<char> buf (strLen + 1);
+    size_t                    strLen = effectiveTo - from;
+    Memory::StackBuffer<char> buf{Memory::eUninitialized, strLen + 1};
     GetSrcStream ().seek_to (from);
     if (GetSrcStream ().read (buf, strLen) != strLen) {
         GetSrcStream ().seek_to (onEntrySeekPos);

@@ -133,7 +133,7 @@ Memory::BLOB InputStream<byte>::Ptr::ReadAll (size_t upTo) const
     Debug::TraceContextBumper ctx{L"InputStream<byte>::Ptr::ReadAll", L"upTo: %llu", static_cast<unsigned long long> (upTo)};
 #endif
     Require (upTo >= 1);
-    vector<byte> r; // @todo Consider using SmallStackBuffer<>
+    vector<byte> r; // @todo Consider using StackBuffer<>
     if (IsSeekable ()) {
         /*
          * Avoid realloc's if not hard.

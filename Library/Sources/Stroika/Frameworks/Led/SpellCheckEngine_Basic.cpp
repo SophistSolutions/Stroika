@@ -11,7 +11,7 @@
 #include "../../Foundation/IO/FileSystem/FileInputStream.h"
 #include "../../Foundation/IO/FileSystem/FileOutputStream.h"
 #include "../../Foundation/Memory/BLOB.h"
-#include "../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../Foundation/Memory/StackBuffer.h"
 
 #include "SpellCheckEngine_Basic.h"
 
@@ -23,7 +23,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-using Memory::SmallStackBuffer;
+using Memory::StackBuffer;
 
 namespace {
 
@@ -866,7 +866,7 @@ void SpellCheckEngine_Basic::EditableDictionary::ReadFromBuffer (const Led_tChar
 
 vector<Led_tChar> SpellCheckEngine_Basic::EditableDictionary::SaveToBuffer () const
 {
-    SmallStackBuffer<Led_tChar> buf (1);
+    StackBuffer<Led_tChar> buf{1};
 
 #if qPlatform_Windows
     const Led_tChar kLineTerm[] = LED_TCHAR_OF ("\r\n");
@@ -1127,11 +1127,11 @@ void SpellCheckEngine_Basic_Simple::ReadFromUD ()
     try {
         Memory::BLOB b = IO::FileSystem::FileInputStream::New (filesystem::path (fUDName)).ReadAll ();
 #if qWideCharacters
-        size_t                      fileLen     = b.size ();
-        CodePage                    useCodePage = CodePagesGuesser ().Guess (b.begin (), fileLen);
-        CodePageConverter           cpc         = CodePageConverter (useCodePage, CodePageConverter::eHandleBOM);
-        size_t                      outCharCnt  = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (b.begin ()), fileLen);
-        SmallStackBuffer<Led_tChar> fileData2 (outCharCnt);
+        size_t                 fileLen     = b.size ();
+        CodePage               useCodePage = CodePagesGuesser ().Guess (b.begin (), fileLen);
+        CodePageConverter      cpc         = CodePageConverter (useCodePage, CodePageConverter::eHandleBOM);
+        size_t                 outCharCnt  = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (b.begin ()), fileLen);
+        StackBuffer<Led_tChar> fileData2{Memory::eUninitialized, outCharCnt};
         cpc.MapToUNICODE (reinterpret_cast<const char*> (b.begin ()), fileLen, static_cast<wchar_t*> (fileData2), &outCharCnt);
         fUD->ReadFromBuffer (static_cast<Led_tChar*> (fileData2), static_cast<Led_tChar*> (fileData2) + outCharCnt);
 #else
@@ -1150,9 +1150,9 @@ void SpellCheckEngine_Basic_Simple::WriteToUD ()
     IO::FileSystem::FileOutputStream::Ptr writer = IO::FileSystem::FileOutputStream::New (filesystem::path (fUDName));
 
 #if qWideCharacters
-    CodePageConverter      cpc        = CodePageConverter (kCodePage_UTF8, CodePageConverter::eHandleBOM);
-    size_t                 outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (Traversal::Iterator2Pointer (data.begin ()), data.size ());
-    SmallStackBuffer<char> fileData2 (outCharCnt);
+    CodePageConverter cpc        = CodePageConverter (kCodePage_UTF8, CodePageConverter::eHandleBOM);
+    size_t            outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (Traversal::Iterator2Pointer (data.begin ()), data.size ());
+    StackBuffer<char> fileData2{Memory::eUninitialized, outCharCnt};
     cpc.MapFromUNICODE (Traversal::Iterator2Pointer (data.begin ()), data.size (), fileData2, &outCharCnt);
     writer.Write (reinterpret_cast<const byte*> (static_cast<char*> (fileData2)), reinterpret_cast<const byte*> (static_cast<char*> (fileData2)) + outCharCnt);
 #else

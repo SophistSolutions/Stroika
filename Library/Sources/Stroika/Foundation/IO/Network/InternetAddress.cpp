@@ -17,7 +17,7 @@
 #include "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #include "Platform/Windows/WinSock.h"
 #endif
-#include "../../Memory/SmallStackBuffer.h"
+#include "../../Memory/StackBuffer.h"
 
 #include "InternetAddress.h"
 
@@ -80,9 +80,9 @@ namespace {
             default:
                 return NULL;
         }
-        Memory::SmallStackBuffer<wchar_t> buf (size + 1);
-        unsigned long                     s = size;
-        DWORD                             d = WSAAddressToStringW ((struct sockaddr*)&ss, sizeof (ss), NULL, buf.begin (), &s);
+        Memory::StackBuffer<wchar_t> buf{Memory::eUninitiialized, size + 1};
+        unsigned long                s = size;
+        DWORD                        d = WSAAddressToStringW ((struct sockaddr*)&ss, sizeof (ss), NULL, buf.begin (), &s);
         if (d == 0) {
             const wchar_t* si = buf.begin ();
             Assert (s <= size_t (size));
