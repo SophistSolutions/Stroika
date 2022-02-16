@@ -1,3 +1,9 @@
+## NOTE: ThreadSanitizerSuppressions_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp is the same as ThreadSanitizerSuppressions.supp with a few extras
+## appended. Cannot see how to load multiple .supp files from TSAN_OPTIONS=
+## and not sure we'll need this bug workaround file much longer??? --LGP 2022-02-15
+
+
+
 #workaround https://stroika.atlassian.net/browse/STK-673 - Ubuntu 1810 only
 race:__interceptor_pipe
 #workaround https://stroika.atlassian.net/browse/STK-673 - Ubuntu 1810 only
