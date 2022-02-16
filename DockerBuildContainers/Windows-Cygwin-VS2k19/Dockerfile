@@ -51,26 +51,23 @@ RUN %TEMP%\vs_buildtools.exe \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0
 
 
-# choco
+# install choco
 SHELL ["powershell"]
-RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
+ENV CHOCO_URL=https://chocolatey.org/install.ps1
+RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
+ [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'; \
+ iex ((New-Object System.Net.WebClient).DownloadString("$env:CHOCO_URL"));
 
-### WORKAROUND DOCKER/CYGWIN issue/regression
-###     https://github.com/moby/moby/issues/41058#issuecomment-653865175
-
-### @todo as of 2021-06-01 there appear several perhaps better workaroudns, so try them
-#### EG TRY:
-###         RUN choco install -y cygwin & powershell -Command "Get-ChildItem -Path C:\tools -Recurse -Attributes ReparsePoint | Remove-Item"
-###
-###     use cygwinsetup instead of choco intall / cyg-get
+# install cygwin
 SHELL ["cmd", "/S", "/C"]
-RUN md c:\tools\cygwin && cd c:\tools\cygwin && curl -Sso cygwinsetup.exe https://cygwin.com/setup-x86_64.exe && start /wait cygwinsetup -q --root C:\tools\cygwin -P default,make,unzip,git,wget,patch,pkg-config,dos2unix,p7zip -X --site http://ctm.crouchingtigerhiddenfruitbat.org/pub/cygwin/circa/64bit/2020/05/31/142136/
-
-#RUN choco install -y cyg-get
-#RUN cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
+RUN choco install -y cygwin
+RUN choco install -y cyg-get
+RUN cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip
 
 ## Sometimes helpful
 ## cyg-get gdb
+
+# Add cygwin to the path
 SHELL ["powershell"]
 RUN  \
     $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin';   \
