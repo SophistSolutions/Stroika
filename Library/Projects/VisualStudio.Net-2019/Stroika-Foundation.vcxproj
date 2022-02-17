@@ -641,6 +641,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Common.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\InlineBuffer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\ObjectFieldUtilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Optional.h" />
@@ -648,6 +649,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\StackBuffer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Copy.h" />
@@ -1087,6 +1089,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Common.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\InlineBuffer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\ObjectFieldUtilities.inl" />
@@ -1095,7 +1098,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\StackBuffer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedOutputStream.inl" />

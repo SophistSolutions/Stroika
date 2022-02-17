@@ -8,6 +8,10 @@
 
 #include "InlineBuffer.h"
 
+/// <summary>
+///  FILE DEPRECATED SINCE 2.1r4
+/// </summary>
+
 namespace Stroika::Foundation::Memory {
 
     using std::byte;
