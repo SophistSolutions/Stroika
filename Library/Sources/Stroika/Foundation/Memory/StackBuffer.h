@@ -53,6 +53,25 @@ namespace Stroika::Foundation::Memory {
      *          (void)::memset (useKey.begin (), 0, keyLen);
      *          (void)::memcpy (useKey.begin (), key.begin (), min (keyLen, key.size ()));
      *      \endcode
+     * 
+     *  \todo   MAYBE - add constexpr member saying kInlineControlSupported_ = true for ??? maybe gcc and msvc;
+     *          Maybe define:
+     *              #if defined(COMPILER_GCC) && defined(NDEBUG)
+     *              #define ALWAYS_INLINE inline __attribute__((__always_inline__))
+     *              #elif defined(COMPILER_MSVC) && defined(NDEBUG)
+     *              #define ALWAYS_INLINE __forceinline
+     *              #else
+     *              #define ALWAYS_INLINE inline
+     *              #endif
+     *          and declare ALL methods that could allocate memory with alloca and then in allocate check
+     *          if (kInlineControlSupported_) {
+     *              alloca()
+     *          }
+     *          else {
+     *              new bytes[] - or whatever it does now
+     *          }
+     *          // and simialar in delete. MAYBE have kMaxBytesAlloca and trakc how much we allocate and then switch to new
+     *          // in whcih case need flag for DTOR to delete.
      *
      *  \note   Future implementations of StackBuffer will REQUIRE they are actually allocated on the stack, and probably use alloca()
      *
@@ -64,7 +83,7 @@ namespace Stroika::Foundation::Memory {
      *          to BUF_SIZE
      *
      */
-    template <typename T, size_t BUF_SIZE = ((4096 / sizeof (T)) == 0 ? 1 : (4096 / sizeof (T)))>
+    template <typename T = std::byte, size_t BUF_SIZE = ((4096 / sizeof (T)) == 0 ? 1 : (4096 / sizeof (T)))>
     class StackBuffer {
     public:
         /**

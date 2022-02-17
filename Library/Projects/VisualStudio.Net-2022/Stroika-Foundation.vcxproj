@@ -184,6 +184,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Throw.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Users.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.cpp" />

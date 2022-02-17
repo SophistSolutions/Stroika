@@ -828,6 +828,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">

@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Memory {
      *          to BUF_SIZE
      *
      */
-    template <typename T, size_t BUF_SIZE = ((4096 / sizeof (T)) == 0 ? 1 : (4096 / sizeof (T)))>
+    template <typename T = std::byte, size_t BUF_SIZE = ((4096 / sizeof (T)) == 0 ? 1 : (4096 / sizeof (T)))>
     class InlineBuffer {
     public:
         /**
