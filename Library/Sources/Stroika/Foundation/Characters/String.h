@@ -371,7 +371,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          VerifyTestResult (string (u8"שלום") == String::FromUTF8 (u8"שלום").AsUTF8 ());
+         *          VerifyTestResult (string{u8"שלום"} == String::FromUTF8 (u8"שלום").AsUTF8 ());
          *      \endcode
          *
          *  \note   Reading improperly encoded text may result in a RuntimeException indicating inproperly encoded characters.

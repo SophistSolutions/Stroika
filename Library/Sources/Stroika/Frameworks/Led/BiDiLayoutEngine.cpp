@@ -336,7 +336,7 @@ Led_tString TextLayoutBlock::GetRealText () const
     const Led_tChar* s = nullptr;
     const Led_tChar* e = nullptr;
     PeekAtRealText_ (&s, &e);
-    return Led_tString (s, e);
+    return Led_tString{s, e};
 }
 
 Led_tString TextLayoutBlock::GetRealText (const ScriptRunElt& scriptRunElt) const
@@ -344,7 +344,7 @@ Led_tString TextLayoutBlock::GetRealText (const ScriptRunElt& scriptRunElt) cons
     const Led_tChar* s = nullptr;
     const Led_tChar* e = nullptr;
     PeekAtRealText (scriptRunElt, &s, &e);
-    return Led_tString (s, e);
+    return Led_tString{s, e};
 }
 
 void TextLayoutBlock::PeekAtVirtualText (const ScriptRunElt& scriptRunElt, const Led_tChar** startText, const Led_tChar** endText) const
@@ -363,7 +363,7 @@ Led_tString TextLayoutBlock::GetVirtualText () const
     const Led_tChar* s = nullptr;
     const Led_tChar* e = nullptr;
     PeekAtVirtualText_ (&s, &e);
-    return Led_tString (s, e);
+    return Led_tString{s, e};
 }
 
 Led_tString TextLayoutBlock::GetVirtualText (const ScriptRunElt& scriptRunElt) const
@@ -371,7 +371,7 @@ Led_tString TextLayoutBlock::GetVirtualText (const ScriptRunElt& scriptRunElt) c
     const Led_tChar* s = nullptr;
     const Led_tChar* e = nullptr;
     PeekAtVirtualText (scriptRunElt, &s, &e);
-    return Led_tString (s, e);
+    return Led_tString{s, e};
 }
 
 #if qDebug

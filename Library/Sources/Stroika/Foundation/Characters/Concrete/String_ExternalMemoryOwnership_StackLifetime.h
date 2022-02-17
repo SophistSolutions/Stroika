@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Characters::Concrete {
         *      void f (const wchar_t* cs)
         *          {
         *              F(L"FRED";);
-        *              F(String (L"FRED"));
+        *              F(String{L"FRED"});
         *              F(String_ExternalMemoryOwnership_StackLifetime (cs));
         *          }
         *

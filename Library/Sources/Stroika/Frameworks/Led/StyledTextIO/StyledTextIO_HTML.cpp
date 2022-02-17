@@ -771,12 +771,12 @@ void StyledTextIOReader_HTML::EmitText (const Led_tChar* text, size_t nBytes, bo
 {
     if (fComingTextIsTitle) {
         if (fSaveHTMLInfoInto != nullptr) {
-            fSaveHTMLInfoInto->fTitle += Led_tString (text, nBytes);
+            fSaveHTMLInfoInto->fTitle += Led_tString{text, nBytes};
         }
         return;
     }
     if (fHiddenTextMode) {
-        fHiddenTextAccumulation += Led_tString (text, nBytes);
+        fHiddenTextAccumulation += Led_tString{text, nBytes};
         return;
     }
 
@@ -1181,7 +1181,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
         fCurAHRefStart          = GetSrcStream ().current_offset ();
         fCurAHRefText           = tagText;
         fHiddenTextMode         = true;
-        fHiddenTextAccumulation = Led_tString ();
+        fHiddenTextAccumulation = Led_tString{};
     }
     else {
         if (fCurAHRefStart != size_t (-1)) {
@@ -1878,7 +1878,7 @@ bool StyledTextIOReader_HTML::ParseHTMLTagArgOut (const string& tagText, const s
                 return false;
             }
         }
-        tagName = string (tagText.c_str () + startOfArgName, (i - startOfArgName));
+        tagName = string{tagText.c_str () + startOfArgName, (i - startOfArgName)};
     }
 
     // Check each attr
@@ -1957,7 +1957,7 @@ bool StyledTextIOReader_HTML::ParseCSSTagArgOut (const string& text, const strin
                     return false;
                 }
             }
-            argName = string (text.c_str () + startOfArgName, (i - startOfArgName));
+            argName = string{text.c_str () + startOfArgName, (i - startOfArgName)};
         }
 
         while (i < len and isspace (text[i])) {
@@ -2341,7 +2341,7 @@ void StyledTextIOWriter_HTML::WriteBodyCharacter (WriterContext& writerContext, 
                 }
             }
             if (i == entityRefs.end ()) {
-                write (MapOutputTextFromWString (wstring (&unicodeC, 1)));
+                write (MapOutputTextFromWString (wstring{&unicodeC, 1}));
             }
         } break;
     }
@@ -2509,7 +2509,7 @@ static inline string PrintColorString (Color color)
     buf[6]        = NumToHexChar (blue % 16);
     buf[7]        = '"';
     buf[8]        = '\0';
-    string result = string (buf);
+    string result = string{buf};
 #if qStaticInitializerOfPairOfStringStringInternalCompilerBug
     for (auto i = kColorNameTable.begin (); i != kColorNameTable.end (); ++i) {
         if (Led_CasedStringsEqual (buf, "\"" + i->second + "\"")) {

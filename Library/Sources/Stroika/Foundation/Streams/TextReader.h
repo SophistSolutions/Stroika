@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Streams {
      *
      *  \par Example Usage
      *      \code
-     *          Assert (TextReader::New (String (L"hello world")).ReadAll () == L"hello world");
+     *          Assert (TextReader::New (String{L"hello world"}).ReadAll () == L"hello world");
      *      \endcode
      *
      *  \note   Reading improperly encoded text may result in a RuntimeException indicating inproperly encoded characters.

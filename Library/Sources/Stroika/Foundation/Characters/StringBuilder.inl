@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Characters {
             Append (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
         }
         else {
-            Append (String (s, e));
+            Append (String{s, e});
         }
     }
     inline void StringBuilder::Append (const char16_t* s)

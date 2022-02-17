@@ -1638,7 +1638,7 @@ Led_SDK_String ExtractFileSuffix (const Led_SDK_String& from)
 {
     size_t i = from.rfind ('.');
     if (i == Led_SDK_String::npos) {
-        return Led_SDK_String ();
+        return Led_SDK_String{};
     }
     else {
         Led_SDK_String suffix = from.substr (i);

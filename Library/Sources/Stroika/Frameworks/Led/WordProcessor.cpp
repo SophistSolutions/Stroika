@@ -3374,7 +3374,7 @@ Led_tString WordProcessor::GetListLeader (size_t paragraphMarkerPos) const
     }
     ParagraphInfo pi = fParagraphDatabase->GetParagraphInfo (paragraphMarkerPos);
     if (pi.GetListStyle () == eListStyle_None) {
-        return Led_tString ();
+        return Led_tString{};
     }
     else {
 #if qWideCharacters
@@ -3388,7 +3388,7 @@ Led_tString WordProcessor::GetListLeader (size_t paragraphMarkerPos) const
 #endif
         // In a future release, pay attention to RTF \levelfollowN (0 tab, 1 space, 2 nothing)
         // For now, sample RTF docs with MSWord 2k appear to write out 0 (tab) by default.
-        return Led_tString (&kBulletChar, 1) + LED_TCHAR_OF ("\t");
+        return Led_tString{&kBulletChar, 1} + LED_TCHAR_OF ("\t");
     }
 }
 

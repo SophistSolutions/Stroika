@@ -631,7 +631,7 @@ namespace {
                 }
                 if (lastCharNullRemappedToSpace) {
                     Assert (sb.length () > 0 and sb.GetAt (sb.length () - 1) == ' ');
-                    return String (sb.begin (), sb.end () - 1);
+                    return String{sb.begin (), sb.end () - 1};
                 }
                 else {
                     return sb.As<String> ();

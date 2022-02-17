@@ -401,7 +401,7 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                 if (suggestedCodePage != NULL) {
                     *suggestedCodePage = useCodePage;
                 }
-                CodePageConverter      cpc        = CodePageConverter (useCodePage, CodePageConverter::eHandleBOM);
+                CodePageConverter      cpc        = CodePageConverter{useCodePage, CodePageConverter::eHandleBOM};
                 size_t                 outCharCnt = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (rawBytes), nRawBytes + 1);
                 StackBuffer<Led_tChar> fileData2{Memory::eUninitialized, outCharCnt};
                 cpc.MapToUNICODE (reinterpret_cast<const char*> (rawBytes), nRawBytes, static_cast<wchar_t*> (fileData2), &outCharCnt);
@@ -499,7 +499,7 @@ void LedLineItDocument::Serialize (CArchive& ar)
 #endif
             charsToWrite = Characters::NLToNative<Led_tChar> (buf, charsToWrite, buf2, sizeof (buf2));
 #if qWideCharacters
-            CodePageConverter cpc = CodePageConverter (fCodePage);
+            CodePageConverter cpc = CodePageConverter{fCodePage};
             cpc.SetHandleBOM (firstTime); // only for the first block of text do we write a byte-order mark
             firstTime                    = false;
             size_t            outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (static_cast<Led_tChar*> (buf2), charsToWrite + 1);
@@ -535,7 +535,7 @@ void LedLineItDocument::Serialize (CArchive& ar)
         }
 
 #if qWideCharacters
-        CodePageConverter      cpc        = CodePageConverter (useCodePage, CodePageConverter::eHandleBOM);
+        CodePageConverter      cpc        = CodePageConverter{useCodePage, CodePageConverter::eHandleBOM};
         size_t                 outCharCnt = cpc.MapToUNICODE_QuickComputeOutBufSize (static_cast<char*> (buf), nLen + 1);
         StackBuffer<Led_tChar> result{Memory::eUninitialized, outCharCnt};
         cpc.MapToUNICODE (static_cast<char*> (buf), nLen, static_cast<wchar_t*> (result), &outCharCnt);

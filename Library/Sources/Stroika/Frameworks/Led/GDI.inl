@@ -1882,7 +1882,7 @@ namespace Stroika::Frameworks::Led {
         Str255 fontName;
         ::GetFontName (fFontSpecifier, fontName);
         size_t len = fontName[0];
-        return string ((const char*)&fontName[1], len);
+        return string{(const char*)&fontName[1], len};
 #elif qPlatform_Windows
             return fFontInfo.lfFaceName;
 #elif qStroika_FeatureSupported_XWindows

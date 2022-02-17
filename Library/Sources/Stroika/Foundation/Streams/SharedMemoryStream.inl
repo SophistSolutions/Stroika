@@ -253,7 +253,7 @@ namespace Stroika::Foundation::Streams {
         string AsString () const
         {
             [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
-            return string (reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_)));
+            return string{reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_))};
         }
 
     private:

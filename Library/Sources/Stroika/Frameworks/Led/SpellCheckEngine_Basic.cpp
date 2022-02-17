@@ -82,7 +82,7 @@ namespace {
             bool answer = _Right.compare (0, _Right.length (), fBase + _Left.fIndex, _Left.fWordLen) > 0;
 #endif
 #if qDebug
-            Led_tString left = Led_tString (fBase + _Left.fIndex, fBase + _Left.fIndex + _Left.fWordLen);
+            Led_tString left = Led_tString{fBase + _Left.fIndex, fBase + _Left.fIndex + _Left.fWordLen};
             Assert (answer == (left < _Right));
 #endif
             return (answer);
@@ -144,8 +144,8 @@ bool SpellCheckEngine_Basic::ScanForUndefinedWord (const Led_tChar* startBuf, co
 
     // preliminary implementation - shouldn't set output vars (wordStartResult/wordEndResult) result UNLESS WE are returning true...
     while (ScanForWord (startBuf, endBuf, cursor, wordStartResult, wordEndResult)) {
-        if (not LookupWord (Led_tString (*wordStartResult, *wordEndResult)) and
-            not OtherStringToIgnore (Led_tString (*wordStartResult, *wordEndResult))) {
+        if (not LookupWord (Led_tString{*wordStartResult, *wordEndResult}) and
+            not OtherStringToIgnore (Led_tString{*wordStartResult, *wordEndResult})) {
             return true;
         }
     }
@@ -238,7 +238,7 @@ bool SpellCheckEngine_Basic::LookupWord_ (const Led_tString& checkWord, Led_tStr
             else {
                 mustCheckLastSeg = true; // if we find a dash - we must check afer it as well
             }
-            Led_tString segWord = Led_tString (checkWord.substr (lastFoundAt, i - lastFoundAt));
+            Led_tString segWord = Led_tString{checkWord.substr (lastFoundAt, i - lastFoundAt)};
             Led_tString tmpMWR;
             if (segWord.empty ()) {
                 // if any segment is empty - thats not legit - so treat that as misspelled
@@ -315,7 +315,7 @@ bool SpellCheckEngine_Basic::LookupWordHelper_ (const Led_tString& checkWord, Le
 
         const InfoBlock* r = lower_bound (ibsStart, ibsEnd, checkWord, DictLookup_Compare (dictBufStart));
         if (r != ibsEnd) {
-            Led_tString x = Led_tString (dictBufStart + (*r).fIndex, dictBufStart + (*r).fIndex + (*r).fWordLen);
+            Led_tString x = Led_tString{dictBufStart + (*r).fIndex, dictBufStart + (*r).fIndex + (*r).fWordLen};
             if (x == checkWord) {
                 if (matchedWordResult != NULL) {
                     *matchedWordResult = x;
@@ -429,7 +429,7 @@ vector<Led_tString> SpellCheckEngine_Basic::GenerateSuggestions (const Led_tStri
         const Led_tChar* dictBufStart = dict->GetTextBase ();
         // Look at each word in the dictionary and assign each a score (see if they would be a good suggestion)
         for (const InfoBlock* ib = ibsStart; ib != ibsEnd; ++ib) {
-            Led_tString w = Led_tString (dictBufStart + (*ib).fIndex, dictBufStart + (*ib).fIndex + (*ib).fWordLen);
+            Led_tString w = Led_tString{dictBufStart + (*ib).fIndex, dictBufStart + (*ib).fIndex + (*ib).fWordLen};
             float       s = Heuristic (misspelledWord, w, scoreCutOff);
             AddToListsHelper (kMaxSug, topSugs, topSugScores, &scoreCutOff, s, w);
         }
@@ -698,7 +698,7 @@ void SpellCheckEngine_Basic::Invariant_ () const
                 Assert ((*i).fIndex < bufSize);
                 Assert ((*i).fIndex + (*i).fWordLen <= bufSize);
                 Assert ((*i).fWordLen > 0);
-                Led_tString w = Led_tString (dictBufStart + (*i).fIndex, dictBufStart + (*i).fIndex + (*i).fWordLen);
+                Led_tString w = Led_tString{dictBufStart + (*i).fIndex, dictBufStart + (*i).fIndex + (*i).fWordLen};
                 Assert (not w.empty ());
                 if (i != ibsStart) {
                     // Assure words in alphabetical order
@@ -759,7 +759,7 @@ void SpellCheckEngine_Basic::RegressionTest_1 ()
         const Led_tChar* wordEnd   = NULL;
         const Led_tChar* p         = NULL;
         bool             result    = tester.ScanForUndefinedWord (testText, testText + Led_tStrlen (testText), &p, &wordStart, &wordEnd);
-        Assert (result and Led_tString (wordStart, wordEnd) == LED_TCHAR_OF ("is"));
+        Assert (result and (Led_tString{wordStart, wordEnd} == LED_TCHAR_OF ("is")));
     }
 
     {
@@ -770,16 +770,16 @@ void SpellCheckEngine_Basic::RegressionTest_1 ()
         while (tester.ScanForUndefinedWord (testText, testText + Led_tStrlen (testText), &cursor,
                                             &wordStartResult, &wordEndResult)) {
             // we found a possible undefined word.
-            Led_tString word = Led_tString (wordStartResult, wordEndResult);
+            Led_tString word = Led_tString{wordStartResult, wordEndResult};
             ++nWordsFound;
             if (nWordsFound == 1) {
-                Assert (Led_tString (wordStartResult, wordEndResult) == LED_TCHAR_OF ("is"));
+                Assert ((Led_tString{wordStartResult, wordEndResult} == LED_TCHAR_OF ("is")));
             }
             if (nWordsFound == 2) {
-                Assert (Led_tString (wordStartResult, wordEndResult) == LED_TCHAR_OF ("very"));
+                Assert ((Led_tString{wordStartResult, wordEndResult} == LED_TCHAR_OF ("very")));
             }
             if (nWordsFound == 3) {
-                Assert (Led_tString (wordStartResult, wordEndResult) == LED_TCHAR_OF ("test"));
+                Assert ((Led_tString{wordStartResult, wordEndResult} == LED_TCHAR_OF ("test")));
             }
         }
         Assert (nWordsFound == 3);
@@ -849,7 +849,7 @@ void SpellCheckEngine_Basic::EditableDictionary::ReadFromBuffer (const Led_tChar
         const Led_tChar* wordStart = p;
         const Led_tChar* wordEnd   = min (i1, i2);
         if (wordStart != wordEnd) {
-            fSortedWordList.insert (Led_tString (wordStart, wordEnd));
+            fSortedWordList.insert (Led_tString{wordStart, wordEnd});
         }
 
         p = wordEnd;
@@ -1128,8 +1128,8 @@ void SpellCheckEngine_Basic_Simple::ReadFromUD ()
         Memory::BLOB b = IO::FileSystem::FileInputStream::New (filesystem::path (fUDName)).ReadAll ();
 #if qWideCharacters
         size_t                 fileLen     = b.size ();
-        CodePage               useCodePage = CodePagesGuesser ().Guess (b.begin (), fileLen);
-        CodePageConverter      cpc         = CodePageConverter (useCodePage, CodePageConverter::eHandleBOM);
+        CodePage               useCodePage = CodePagesGuesser{}.Guess (b.begin (), fileLen);
+        CodePageConverter      cpc         = CodePageConverter{useCodePage, CodePageConverter::eHandleBOM};
         size_t                 outCharCnt  = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (b.begin ()), fileLen);
         StackBuffer<Led_tChar> fileData2{Memory::eUninitialized, outCharCnt};
         cpc.MapToUNICODE (reinterpret_cast<const char*> (b.begin ()), fileLen, static_cast<wchar_t*> (fileData2), &outCharCnt);
@@ -1150,7 +1150,7 @@ void SpellCheckEngine_Basic_Simple::WriteToUD ()
     IO::FileSystem::FileOutputStream::Ptr writer = IO::FileSystem::FileOutputStream::New (filesystem::path (fUDName));
 
 #if qWideCharacters
-    CodePageConverter cpc        = CodePageConverter (kCodePage_UTF8, CodePageConverter::eHandleBOM);
+    CodePageConverter cpc        = CodePageConverter{kCodePage_UTF8, CodePageConverter::eHandleBOM};
     size_t            outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (Traversal::Iterator2Pointer (data.begin ()), data.size ());
     StackBuffer<char> fileData2{Memory::eUninitialized, outCharCnt};
     cpc.MapFromUNICODE (Traversal::Iterator2Pointer (data.begin ()), data.size (), fileData2, &outCharCnt);

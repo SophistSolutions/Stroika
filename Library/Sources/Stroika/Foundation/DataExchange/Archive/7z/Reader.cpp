@@ -167,7 +167,7 @@ public:
                 }
                 StackBuffer<char16_t>   fileName{Memory::eUninitialized, nameLen};
                 [[maybe_unused]] size_t z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&fileName[0]));
-                if (String (&fileName[0]) == fn) {
+                if (String{&fileName[0]} == fn) {
                     return i;
                 }
             }

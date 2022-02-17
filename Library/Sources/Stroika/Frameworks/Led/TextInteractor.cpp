@@ -127,7 +127,7 @@ namespace {
                         goto SecondTry;
                     }
 
-                    Led_tString undefinedWord = Led_tString (wordStart, wordEnd);
+                    Led_tString undefinedWord = Led_tString{wordStart, wordEnd};
                     if (fIgnoredWords.find (undefinedWord) != fIgnoredWords.end ()) {
                         // push startRegion a bit forward over this word, and try again, but don't
                         // set 'second try' flag cuz we haven't wrapped at the end of the document...
@@ -197,7 +197,7 @@ namespace {
             {
                 Memory::StackBuffer<Led_tChar> text{Memory::eUninitialized, origSelEnd - origSelStart + 1};
                 fTI.CopyOut (origSelStart, origSelEnd - origSelStart, text);
-                sp.fMatchString = Led_tString (text, origSelEnd - origSelStart);
+                sp.fMatchString = Led_tString{text, origSelEnd - origSelStart};
             }
             fTI.OnDoReplaceAllCommand (sp, changeTo);
         }
@@ -905,7 +905,7 @@ void TextInteractor::OnEnterFindString ()
 
     Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, selLength};
     CopyOut (selStart, selLength, buf);
-    parameters.fMatchString       = Led_tString (buf, selLength);
+    parameters.fMatchString       = Led_tString{buf, selLength};
     parameters.fRecentFindStrings = MergeRecentFindStrings (parameters.fMatchString, parameters.fRecentFindStrings);
     SetSearchParameters (parameters);
 }

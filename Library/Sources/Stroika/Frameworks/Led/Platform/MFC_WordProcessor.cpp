@@ -465,11 +465,11 @@ Led_SDK_String Led_MFC_ControlItem::GetObjClassName () const
     GetClassID (&clsid);
     LPOLESTR oleStr = NULL;
     if (::ProgIDFromCLSID (clsid, &oleStr) == S_OK) {
-        Led_SDK_String result = Led_SDK_String (::CString (oleStr));
+        Led_SDK_String result = Led_SDK_String{::CString (oleStr)};
         ::CoTaskMemFree (oleStr);
         return result;
     }
-    return Led_SDK_String ();
+    return Led_SDK_String{};
 }
 
 struct MyOLEStream_output : OLESTREAM {

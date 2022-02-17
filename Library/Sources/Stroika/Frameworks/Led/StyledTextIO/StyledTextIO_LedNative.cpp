@@ -216,7 +216,7 @@ inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortDa
     fsp.SetPointSize (fontSize);
     {
         size_t fontNameLen = srcData.NameLenFromRecordLen (srcData.fThisRecordLength);
-        fsp.SetFontName (Led_ANSI2SDKString (string (srcData.fFontName, fontNameLen)));
+        fsp.SetFontName (Led_ANSI2SDKString (string{srcData.fFontName, fontNameLen}));
     }
     return (StandardStyledTextImager::InfoSummaryRecord (fsp, BufToUInt32 (&srcData.fLength)));
 }
@@ -341,7 +341,7 @@ inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortDa
     fsp.SetPointSize (fontSize);
     {
         size_t fontNameLen = srcData.NameLenFromRecordLen (srcData.fThisRecordLength);
-        fsp.SetFontName (Led_ANSI2SDKString (string (srcData.fFontName, fontNameLen)));
+        fsp.SetFontName (Led_ANSI2SDKString (string{srcData.fFontName, fontNameLen}));
     }
     return (StandardStyledTextImager::InfoSummaryRecord (fsp, BufToUInt32 (&srcData.fLength)));
 }

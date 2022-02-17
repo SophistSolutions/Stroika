@@ -138,7 +138,7 @@ inline bool IsJapaneseBOLChar (wchar_t c)
 {
     char   mbyteChars[2];
     size_t nBytesInThisChar = 2;
-    CodePageConverter (Characters::kCodePage_SJIS).MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
+    CodePageConverter{Characters::kCodePage_SJIS}.MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
     Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
     if (nBytesInThisChar == 0) {
         return 0; // if No SJIS code page, not much we can do!
@@ -149,7 +149,7 @@ inline bool IsJapaneseEOLChar (wchar_t c)
 {
     char   mbyteChars[2];
     size_t nBytesInThisChar = 2;
-    CodePageConverter (Characters::kCodePage_SJIS).MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
+    CodePageConverter{Characters::kCodePage_SJIS}.MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
     Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
     if (nBytesInThisChar == 0) {
         return 0; // if No SJIS code page, not much we can do!
@@ -160,7 +160,7 @@ inline unsigned GetJapaneseKutenRow (wchar_t c)
 {
     char   mbyteChars[2];
     size_t nBytesInThisChar = 2;
-    CodePageConverter (Characters::kCodePage_SJIS).MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
+    CodePageConverter{Characters::kCodePage_SJIS}.MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
     Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
     if (nBytesInThisChar == 0) {
         return 0; // if No SJIS code page, not much we can do!

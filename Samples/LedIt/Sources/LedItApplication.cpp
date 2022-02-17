@@ -386,7 +386,7 @@ public:
 #if qPlatform_MacOS
         const short    kPictHeight = 273;
         const short    kPictWidth  = 437;
-        Led_SDK_String verStr      = Led_SDK_String (qLed_ShortVersionString) + kUNICODE_NAME_ADORNER " (" + __DATE__ + ")";
+        Led_SDK_String verStr      = Led_SDK_String{qLed_ShortVersionString} + kUNICODE_NAME_ADORNER " (" + __DATE__ + ")";
         const int      kVERWidth   = 230;
         SimpleLayoutHelper (kPictHeight, kPictWidth, Led_Rect (159, 15, 17, 142), Led_Rect (159, 227, 17, 179), verStr);
 #elif qPlatform_Windows
@@ -455,7 +455,7 @@ public:
 
         /* a pixmap widget to contain the pixmap */
         GtkWidget*     pixmapwid = gtk_pixmap_new (pixmap, mask);
-        Led_SDK_String verStr    = Led_SDK_String (qLed_ShortVersionString) + " (" + __DATE__ + ")";
+        Led_SDK_String verStr    = Led_SDK_String{qLed_ShortVersionString} + " (" + __DATE__ + ")";
 
         GtkWidget* label = gtk_label_new (verStr.c_str ());
 
@@ -1309,7 +1309,7 @@ BOOL LedItApplication::InitInstance ()
 #define CSIDL_FLAG_CREATE 0x8000 // new for Win2K, or this in to force creation of folder
 #endif
         Verify (::SHGetSpecialFolderPath (NULL, defaultPath, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, true));
-        fSpellCheckEngine->SetUserDictionary (Led_SDK_String (defaultPath) + Led_SDK_TCHAROF ("\\My LedIt Dictionary.txt"));
+        fSpellCheckEngine->SetUserDictionary (Led_SDK_String{defaultPath} + Led_SDK_TCHAROF ("\\My LedIt Dictionary.txt"));
     }
 #endif
 
@@ -1698,13 +1698,13 @@ void LedItApplication::OnNewDocumentCommand ()
     TextStore&     ts = wp->GetTextStore ();
     ts.Replace (ts.GetStart (), ts.GetEnd (), LED_TCHAR_OF (""), 0);
     wp->SetDefaultFont (wp->GetStaticDefaultFont ());
-    fDocument->fPathName = string ();
+    fDocument->fPathName = string{};
     UpdateFrameWindowTitle ();
 }
 
 void LedItApplication::OnOpenDocumentCommand ()
 {
-    LedItFilePickBox filePickerDlg (GTK_WINDOW (fAppWindow), Led_SDK_TCHAROF ("Open new document"), false, Led_SDK_String (), eUnknownFormat);
+    LedItFilePickBox filePickerDlg (GTK_WINDOW (fAppWindow), Led_SDK_TCHAROF ("Open new document"), false, Led_SDK_String{}, eUnknownFormat);
     if (filePickerDlg.DoModal ()) {
         try {
             LoadFromFile (filePickerDlg.GetFileName (), filePickerDlg.GetFileFormat ());

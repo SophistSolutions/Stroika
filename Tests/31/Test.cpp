@@ -104,7 +104,7 @@ namespace {
                             return result;
                         }
                     }
-                    return string ();
+                    return string{};
                 }
             }
 #endif

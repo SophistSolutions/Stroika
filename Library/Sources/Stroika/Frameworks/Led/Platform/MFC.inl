@@ -843,7 +843,7 @@ namespace Stroika::Frameworks::Led::Platform {
                     TextInteractor::InteractiveModeUpdater iuMode{*this};
                     AssertNotNull (sCurrentDragInfo);
                     TextInteractor::UndoableContextHelper undoContext (*this,
-                                                                       sCurrentDragInfo->fWeRecievedDrop ? Led_SDK_String () : GetCommandNames ().fDragCommandName,
+                                                                       sCurrentDragInfo->fWeRecievedDrop ? Led_SDK_String{} : GetCommandNames ().fDragCommandName,
                                                                        sCurrentDragInfo->fOrigSelection.GetStart (),
                                                                        sCurrentDragInfo->fOrigSelection.GetEnd (),
                                                                        true);

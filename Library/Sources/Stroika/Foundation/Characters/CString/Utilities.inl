@@ -270,7 +270,7 @@ namespace Stroika::Foundation::Characters::CString {
         unsigned long long int String2UInt_ (const wstring& s);
         inline long long int   String2Int_ (const char* s)
         {
-            return String2Int_ (string (s));
+            return String2Int_ (string{s});
         }
         inline long long int String2Int_ (const wchar_t* s)
         {
@@ -278,11 +278,11 @@ namespace Stroika::Foundation::Characters::CString {
         }
         inline unsigned long long int String2UInt_ (const char* s)
         {
-            return String2UInt_ (string (s));
+            return String2UInt_ (string{s});
         }
         inline unsigned long long int String2UInt_ (const wchar_t* s)
         {
-            return String2UInt_ (wstring (s));
+            return String2UInt_ (wstring{s});
         }
         DISABLE_COMPILER_MSC_WARNING_START (4018)
         template <typename T, typename STRING_ARG>

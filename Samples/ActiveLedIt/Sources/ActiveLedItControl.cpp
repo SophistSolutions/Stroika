@@ -136,13 +136,13 @@ bool COMBased_SpellCheckEngine::LookupWord_ (const Led_tString& checkWord, Led_t
 {
     CComVariant comMissingWord;
     CComVariant result;
-    CComVariant checkWordCCV = CComVariant (checkWord.c_str ());
+    CComVariant checkWordCCV = CComVariant{checkWord.c_str ()};
     Led_ThrowIfErrorHRESULT (fEngine.Invoke2 (CA2W ("LookupWord"), &checkWordCCV, matchedWordResult == NULL ? NULL : &comMissingWord, &result));
     if (SUCCEEDED (result.ChangeType (VT_BOOL)) and
         result.boolVal) {
         if (matchedWordResult != NULL) {
             if (SUCCEEDED (comMissingWord.ChangeType (VT_BSTR))) {
-                *matchedWordResult = Led_tString (comMissingWord.bstrVal);
+                *matchedWordResult = Led_tString{comMissingWord.bstrVal};
             }
             else {
                 // even if MW found - if call requested matchedWord and COM didn't provide - treat that as failure...
@@ -170,7 +170,7 @@ TextBreaks* COMBased_SpellCheckEngine::PeekAtTextBreaksUsed ()
 void COMBased_SpellCheckEngine::FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
                                                 size_t* wordStartResult, size_t* wordEndResult, bool* wordReal) const
 {
-    Led_tString        text = Led_tString (startOfText, startOfText + lengthOfText);
+    Led_tString        text = Led_tString{startOfText, startOfText + lengthOfText};
     CComVariant        wordInfoResult;
     CComPtr<IDispatch> engine                               = fEngine;
     CComVariant        textOffsetToStartLookingForWordAsCCV = textOffsetToStartLookingForWord;
@@ -884,7 +884,7 @@ void ActiveLedItControl::ExchangeTextAsRTFBlob (CPropExchange* pPX)
                 const byte*                data = reinterpret_cast<byte*> (hdl.GetPointer ());
                 if (data != NULL) {
                     size_t size = *(size_t*)data;
-                    string s    = string (((const char*)data) + sizeof (size_t), size);
+                    string s    = string{((const char*)data) + sizeof (size_t), size};
                     SetBufferTextAsRTF (Led_ANSI2SDKString (s).c_str ());
                 }
                 ::GlobalFree (hglobal);
@@ -1500,7 +1500,7 @@ void ActiveLedItControl::OnAboutBoxCommand ()
 #endif
                 ::SetWindowText (w,
                                  (
-                                     Led_SDK_String (_T (qLed_ShortVersionString) kUNICODE_NAME_ADORNER _T (" (") _T (__DATE__) _T (")")))
+                                     Led_SDK_String{_T (qLed_ShortVersionString) kUNICODE_NAME_ADORNER _T (" (") _T (__DATE__) _T (")")})
                                      .c_str ());
             }
 
@@ -2139,7 +2139,7 @@ string ActiveLedItControl::GetBufferTextAsRTF_ ()
     Memory::StackBuffer<char> buf{Memory::eUninitialized, len + 1};
     memcpy (buf, sink.PeekAtData (), len);
     buf[len] = '\0';
-    return string (static_cast<char*> (buf));
+    return string{static_cast<char*> (buf)};
 }
 
 void ActiveLedItControl::SetBufferTextAsRTF (LPCTSTR text)
@@ -2171,7 +2171,7 @@ BSTR ActiveLedItControl::GetBufferTextAsHTML ()
         Memory::StackBuffer<char> buf{Memory::eUninitialized, len + 1};
         memcpy (buf, sink.PeekAtData (), len);
         buf[len] = '\0';
-        return CString (buf).AllocSysString ();
+        return CString{buf}.AllocSysString ();
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
     Assert (false); /*NOTREACHED*/
@@ -3334,7 +3334,7 @@ IDispatch* ActiveLedItControl::OLE_MakeSeparatorToolbarItem ()
 
 CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinToolbarName)
 {
-    if (wstring (builtinToolbarName) == L"Standard") {
+    if (wstring{builtinToolbarName} == L"Standard") {
         CComPtr<IDispatch> newTB = MakeNewToolbar ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
@@ -3351,7 +3351,7 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
         return newTB;
     }
 
-    if (wstring (builtinToolbarName) == L"StandardToolsOnly") { // not including format bar - assumes will be added separately
+    if (wstring{builtinToolbarName} == L"StandardToolsOnly") { // not including format bar - assumes will be added separately
         CComPtr<IDispatch> newTB = MakeNewToolbar ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
@@ -3370,7 +3370,7 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
         return newTB;
     }
 
-    if (wstring (builtinToolbarName) == L"FormatBar") {
+    if (wstring{builtinToolbarName} == L"FormatBar") {
         CComPtr<IDispatch> newTB = MakeNewToolbar ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
@@ -3383,7 +3383,7 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
         return newTB;
     }
 
-    if (wstring (builtinToolbarName) == L"EditBar") {
+    if (wstring{builtinToolbarName} == L"EditBar") {
         CComPtr<IDispatch> newTB = MakeNewToolbar ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
@@ -3399,7 +3399,7 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
         return newTB;
     }
 
-    if (wstring (builtinToolbarName) == L"SelectBar") {
+    if (wstring{builtinToolbarName} == L"SelectBar") {
         CComPtr<IDispatch> newTB = MakeNewToolbar ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
@@ -3412,7 +3412,7 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
         return newTB;
     }
 
-    if (wstring (builtinToolbarName) == L"InsertBar") {
+    if (wstring{builtinToolbarName} == L"InsertBar") {
         CComPtr<IDispatch> newTB = MakeNewToolbar ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
@@ -3425,7 +3425,7 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
         return newTB;
     }
 
-    if (wstring (builtinToolbarName) == L"CharacterFormatBar") {
+    if (wstring{builtinToolbarName} == L"CharacterFormatBar") {
         CComPtr<IDispatch> newTB = MakeNewToolbar ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
@@ -3443,7 +3443,7 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
         return newTB;
     }
 
-    if (wstring (builtinToolbarName) == L"ParagraphFormatBar") {
+    if (wstring{builtinToolbarName} == L"ParagraphFormatBar") {
         CComPtr<IDispatch> newTB = MakeNewToolbar ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
@@ -3569,7 +3569,7 @@ CComPtr<IDispatch> ActiveLedItControl::mkIconElement (const ToolBarIconSpec& s)
     CComQIPtr<IALIconButtonToolbarElement> iconButton = item;
 #endif
 
-    Led_ThrowIfErrorHRESULT (iconButton->put_Command (CComVariant (s.fCmdName)));
+    Led_ThrowIfErrorHRESULT (iconButton->put_Command (CComVariant{s.fCmdName}));
     Led_ThrowIfErrorHRESULT (iconButton->put_ButtonStyle (s.fButtonStyle));
     return item;
 }
@@ -3583,7 +3583,7 @@ CComPtr<IDispatch> ActiveLedItControl::mkIconElement (int iconResID, CComPtr<IDi
     CComQIPtr<IALIconButtonToolbarElement> iconButton = item;
 #endif
 
-    Led_ThrowIfErrorHRESULT (iconButton->put_Command (CComVariant (cmdList)));
+    Led_ThrowIfErrorHRESULT (iconButton->put_Command (CComVariant{cmdList}));
     return item;
 }
 

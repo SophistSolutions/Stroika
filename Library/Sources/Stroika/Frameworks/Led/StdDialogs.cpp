@@ -435,7 +435,7 @@ Led_tString LedDialogWidget::GetText () const
     StackBuffer<Led_tChar> buf2{Memory::eUninitialized, len2};
     len2       = Characters::NLToNative<Led_tChar> (buf, len, buf2, len2);
     buf2[len2] = '\0';
-    return Led_tString (buf2);
+    return Led_tString{buf2};
 }
 
 void LedDialogWidget::SetText (const Led_tString& t)
@@ -1198,7 +1198,7 @@ Led_SDK_String Led_StdDialogHelper::GetItemText (DialogItemID itemID) const
     ::GetDialogItem (GetDialogPtr (), itemID, &itemType, &itemHandle, &itemRect);
     Str255 textPStr;
     ::GetDialogItemText (itemHandle, textPStr);
-    return Led_SDK_String ((char*)&textPStr[1], textPStr[0]);
+    return Led_SDK_String{(char*)&textPStr[1], textPStr[0]};
 #elif qPlatform_Windows
     Led_SDK_Char widgetText[2 * 1024]; // sb big enough for the most part???
     (void)::GetDlgItemText (GetHWND (), itemID, widgetText, static_cast<UINT> (Memory::NEltsOf (widgetText)));
@@ -2949,7 +2949,7 @@ void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::OnOK ()
     {
         Str255 textPStr;
         ::GetDialogItemText (itemHandle, textPStr);
-        fURLText = Led_SDK_String ((char*)&textPStr[1], textPStr[0]);
+        fURLText = Led_SDK_String{(char*)&textPStr[1], textPStr[0]};
     }
 #elif qPlatform_Windows
     Led_SDK_Char bufText[1024];

@@ -63,8 +63,8 @@ void StyledTextIOReader_PlainText::Read ()
     }
 #endif
 #if qWideCharacters
-    CodePage                       useCodePage = CodePagesGuesser ().Guess (buf, len);
-    CodePageConverter              cpc         = CodePageConverter (useCodePage);
+    CodePage                       useCodePage = CodePagesGuesser{}.Guess (buf, len);
+    CodePageConverter              cpc         = CodePageConverter{useCodePage};
     size_t                         outCharCnt  = cpc.MapToUNICODE_QuickComputeOutBufSize (static_cast<const char*> (buf), len + 1);
     Memory::StackBuffer<Led_tChar> wbuf{Memory::eUninitialized, outCharCnt};
     cpc.SetHandleBOM (true);
@@ -119,7 +119,7 @@ void StyledTextIOWriter_PlainText::Write ()
 #if qWideCharacters
         Memory::StackBuffer<char> ansiBuf{Memory::eUninitialized, bytesRead * sizeof (Led_tChar)};
         size_t                    nChars = bytesRead * sizeof (Led_tChar);
-        CodePageConverter (GetDefaultSDKCodePage ()).MapFromUNICODE (buf2, bytesRead, ansiBuf, &nChars);
+        CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (buf2, bytesRead, ansiBuf, &nChars);
         bytesRead = nChars;
         write (ansiBuf, bytesRead);
 #else

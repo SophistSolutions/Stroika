@@ -607,7 +607,7 @@ namespace {
         StackBuffer<char> buf{sz + 1};
         size_t            charCnt = sz;
         cpc.MapFromUNICODE (w.c_str (), w.length (), buf, &charCnt);
-        VerifyTestResult (string (buf.begin (), buf.begin () + charCnt) == "﻿<PHRMode");
+        VerifyTestResult ((string{buf.begin (), buf.begin () + charCnt} == "﻿<PHRMode"));
     }
 }
 
@@ -1457,8 +1457,8 @@ namespace {
 #if __cpp_char8_t < 201811L
         {
             VerifyTestResult (u8"שלום" == String::FromUTF8 (u8"שלום").AsUTF8 ());
-            VerifyTestResult (string (u8"phred") == String::FromUTF8 (string (u8"phred")).AsUTF8 ());
-            VerifyTestResult (string (u8"שלום") == String::FromUTF8 (string (u8"שלום")).AsUTF8 ());
+            VerifyTestResult ((string{u8"phred"} == String::FromUTF8 (string (u8"phred")).AsUTF8 ()));
+            VerifyTestResult ((string{u8"שלום"} == String::FromUTF8 (string (u8"שלום")).AsUTF8 ()));
         }
         {
             VerifyTestResult (string (u8"phred") == String::FromUTF8 (u8"phred").AsUTF8<string> ());

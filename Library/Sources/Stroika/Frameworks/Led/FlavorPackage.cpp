@@ -311,7 +311,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (
     if (suggestedCodePage != nullptr) {
         *suggestedCodePage = useCodePage;
     }
-    CodePageConverter              cpc        = CodePageConverter (useCodePage, CodePageConverter::eHandleBOM);
+    CodePageConverter              cpc        = CodePageConverter{useCodePage, CodePageConverter::eHandleBOM};
     size_t                         outCharCnt = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (rawBytes), nRawBytes + 1);
     Memory::StackBuffer<Led_tChar> fileData2{outCharCnt};
     cpc.MapToUNICODE (reinterpret_cast<const char*> (rawBytes), nRawBytes, static_cast<wchar_t*> (fileData2), &outCharCnt);

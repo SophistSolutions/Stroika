@@ -1491,8 +1491,8 @@ namespace {
             &failedTests);
         Tester (
             L"Collection<string> basics",
-            [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
-            [] () { Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([] (Collection<string>* c) { c->Add (string ()); }); }, L"Collection<string>",
+            [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string{}); }); }, L"vector<string>",
+            [] () { Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([] (Collection<string>* c) { c->Add (string{}); }); }, L"Collection<string>",
             9600,
             0.6,
             &failedTests);
@@ -1505,22 +1505,22 @@ namespace {
             using Containers::Concrete::Collection_stdmultiset;
             Tester (
                 L"Collection_LinkedList<string> basics",
-                [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
-                [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_LinkedList<string>> ([] (Collection_LinkedList<string>* c) { c->Add (string ()); }); }, L"Collection_LinkedList<string>",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string{}); }); }, L"vector<string>",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_LinkedList<string>> ([] (Collection_LinkedList<string>* c) { c->Add (string{}); }); }, L"Collection_LinkedList<string>",
                 9600,
                 0.6,
                 &failedTests);
             Tester (
                 L"Collection_stdforward_list<string> basics",
-                [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
-                [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_stdforward_list<string>> ([] (Collection_stdforward_list<string>* c) { c->Add (string ()); }); }, L"Collection_stdforward_list<string>",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string{}); }); }, L"vector<string>",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_stdforward_list<string>> ([] (Collection_stdforward_list<string>* c) { c->Add (string{}); }); }, L"Collection_stdforward_list<string>",
                 9600,
                 0.6,
                 &failedTests);
             Tester (
                 L"Collection_stdmultiset<string> basics",
-                [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string ()); }); }, L"vector<string>",
-                [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_stdmultiset<string>> ([] (Collection_stdmultiset<string>* c) { c->Add (string ()); }); }, L"Collection_stdmultiset<string>",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string{}); }); }, L"vector<string>",
+                [] () { Test_CollectionVectorAdditionsAndCopies_<Collection_stdmultiset<string>> ([] (Collection_stdmultiset<string>* c) { c->Add (string{}); }); }, L"Collection_stdmultiset<string>",
                 9600,
                 1.3,
                 &failedTests);

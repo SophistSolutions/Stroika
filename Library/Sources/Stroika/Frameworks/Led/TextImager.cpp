@@ -426,16 +426,16 @@ static int FAR PASCAL EnumFontCallback (const LOGFONT* lplf, const TEXTMETRIC* /
         switch (potentialResult.fDesiredCharset) {
             case SHIFTJIS_CHARSET: {
                 if (
-                    potentialResult.fBestFont.lfFaceName == Led_SDK_String (Led_SDK_TCHAROF ("MS P Gothic")) or
-                    potentialResult.fBestFont.lfFaceName == Led_SDK_String (Led_SDK_TCHAROF ("MS Gothic")) or
-                    potentialResult.fBestFont.lfFaceName == Led_SDK_String (Led_SDK_TCHAROF ("MS PGothic"))) {
+                    potentialResult.fBestFont.lfFaceName == Led_SDK_String{Led_SDK_TCHAROF ("MS P Gothic")} or
+                    potentialResult.fBestFont.lfFaceName == Led_SDK_String{Led_SDK_TCHAROF ("MS Gothic")} or
+                    potentialResult.fBestFont.lfFaceName == Led_SDK_String{Led_SDK_TCHAROF ("MS PGothic")}) {
                     potentialResult.fIsFavoriteForCharset = true;
                 }
             } break;
             case CHINESEBIG5_CHARSET: {
                 if (
-                    potentialResult.fBestFont.lfFaceName == Led_SDK_String (Led_SDK_TCHAROF ("MS HEI")) or
-                    potentialResult.fBestFont.lfFaceName == Led_SDK_String (Led_SDK_TCHAROF ("MingLiU"))) {
+                    potentialResult.fBestFont.lfFaceName == Led_SDK_String{Led_SDK_TCHAROF ("MS HEI")} or
+                    potentialResult.fBestFont.lfFaceName == Led_SDK_String{Led_SDK_TCHAROF ("MingLiU")}) {
                     potentialResult.fIsFavoriteForCharset = true;
                 }
             } break;

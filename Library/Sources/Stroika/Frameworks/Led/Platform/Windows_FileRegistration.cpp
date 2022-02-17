@@ -86,10 +86,10 @@ Led_SDK_String Win32FileAssociationRegistrationHelper::GetAssociatedDefaultIcon 
         ThrowIfRegError (::RegQueryValue (progIDKey, Led_SDK_TCHAROF ("DefaultIcon"), NULL, &itemLen));
         StackBuffer<Led_SDK_Char> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
         ThrowIfRegError (::RegQueryValue (progIDKey, Led_SDK_TCHAROF ("DefaultIcon"), buf, &itemLen));
-        return Led_SDK_String (buf);
+        return Led_SDK_String{buf};
     }
     catch (...) {
-        return Led_SDK_String ();
+        return Led_SDK_String{};
     }
 }
 
@@ -104,10 +104,10 @@ Led_SDK_String Win32FileAssociationRegistrationHelper::GetAssociatedEditCommand 
         ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), NULL, &itemLen));
         StackBuffer<Led_SDK_Char> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
         ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), buf, &itemLen));
-        return Led_SDK_String (buf);
+        return Led_SDK_String{buf};
     }
     catch (...) {
-        return Led_SDK_String ();
+        return Led_SDK_String{};
     }
 }
 
@@ -122,10 +122,10 @@ Led_SDK_String Win32FileAssociationRegistrationHelper::GetAssociatedOpenCommand 
         ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), NULL, &itemLen));
         StackBuffer<Led_SDK_Char> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
         ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), buf, &itemLen));
-        return Led_SDK_String (buf);
+        return Led_SDK_String{buf};
     }
     catch (...) {
-        return Led_SDK_String ();
+        return Led_SDK_String{};
     }
 }
 

@@ -396,7 +396,7 @@ namespace Stroika::Foundation::Characters {
         }
 #endif
         DISABLE_COMPILER_MSC_WARNING_START (4244) // 'argument': conversion from 'const wchar_t' to 'const _Elem', possible loss of data
-        return string (s.begin (), s.end ());
+        return string{s.begin (), s.end ()};
         DISABLE_COMPILER_MSC_WARNING_END (4244)
     }
     inline string WideStringToUTF8 (const wstring& ws)

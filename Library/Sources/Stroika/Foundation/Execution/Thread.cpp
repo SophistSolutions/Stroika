@@ -417,7 +417,7 @@ void Thread::Ptr::Rep_::ApplyThreadName2OSThreadObject ()
                 DWORD  dwThreadID; // thread ID (-1=caller thread)
                 DWORD  dwFlags;    // reserved for future use, must be zero
             };
-            string          useThreadName = String (fThreadName_).AsNarrowSDKString ();
+            string          useThreadName = String{fThreadName_}.AsNarrowSDKString ();
             THREADNAME_INFO info;
             {
                 info.dwType     = 0x1000;
@@ -432,7 +432,7 @@ void Thread::Ptr::Rep_::ApplyThreadName2OSThreadObject ()
         //
         // according to http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html - the length max is 15 characters
         constexpr size_t kMaxNameLen_{16 - 1}; // 16 chars including nul byte
-        string           narrowThreadName = String (fThreadName_).AsNarrowSDKString ();
+        string           narrowThreadName = String{fThreadName_}.AsNarrowSDKString ();
         if (narrowThreadName.length () > kMaxNameLen_) {
             narrowThreadName.erase (kMaxNameLen_);
         }
