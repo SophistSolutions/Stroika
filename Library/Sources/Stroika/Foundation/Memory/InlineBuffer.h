@@ -34,7 +34,9 @@ namespace Stroika::Foundation::Memory {
      *  wisely, and you always end up with fixed sized objects. Pick poorly, and it will still work, but allocating the
      *  data on the free store.
      *
-     *  typically sizeof(InlineBuffer<T,BUF_SIZE>) will come to roughly BUF_SIZE.
+     *  typically sizeof(InlineBuffer<T,BUF_SIZE>) will come to roughly BUF_SIZE*sizeof(T).
+     * 
+     *  \see also StackBuffer<T,BUF_SIZE> - similar, but less flexible, and could someday be more performant.
      *
      *  All allocated objects are default initialized, unless they are allocated through a call to resize_uninitialized(), or
      *  the constructor with the argument eUninitialized

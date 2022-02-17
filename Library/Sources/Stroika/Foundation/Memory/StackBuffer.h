@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Memory {
     using std::byte;
 
     /**
-     *  \brief Store variable sized array on the stack (\see also Buffer<T,BUF_SIZE>)
+     *  \brief Store variable sized array on the stack (\see also InlineBuffer<T,BUF_SIZE>)
      * 
      *  Typically, StackBuffer<> combines the performance of using a stack buffer to store arrays with
      *  the safety and flexability of using the free store (malloc).
@@ -32,12 +32,13 @@ namespace Stroika::Foundation::Memory {
      *  std::vector, but performance more like std::array.
      *
      *  Since StackBuffer is just intended for local stack use, the objects cannot be copied or moved.
+     *  (we may not achieve this, but the intent is to try to get this working with alloca).
      *
      *  All allocated objects are default initialized, unless they are allocated through a call to resize_uninitialized(), or
      *  the constructor with the argument eUninitialized
      *
-     *  \note Before Stroika 2.1r4, this class didn't actually require being on the stack, but since Stroika 2.1r4,
-     *        it really DOES require being allocated on the stack. Use Buffer<T,BUF_SIZE> if you want the older
+     *  \note Before Stroika 2.1r4, this class (really SmallStackBuffer) didn't actually require being on the stack, but since Stroika 2.1r4,
+     *        it really DOES require being allocated on the stack. Use InlineBuffer<T,BUF_SIZE> if you want the older
      *        buffer behavior.
      *
      *  \par Example Usage
