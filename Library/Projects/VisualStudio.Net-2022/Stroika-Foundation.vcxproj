@@ -56,7 +56,7 @@
     <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\..\Library\Sources\Stroika\Foundation\ CONFIGURATION=$(CONFIGURATION) all $(JOBS_FLAG) --silent</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>make --directory $(ProjectDir)\..\..\..\Library\Sources\Stroika\Foundation\ CONFIGURATION=$(CONFIGURATION) clean --silent</NMakeCleanCommandLine>
     <OutDir>$(ProjectDir)\..\..\..\Builds\$(Configuration)</OutDir>
-    <IntDir>$(ProjectDir)\..\..\..\IntermediateFiles\Stroika-Foundation\$(Configuration)</IntDir>
+    <IntDir>$(ProjectDir)\..\..\..\IntermediateFiles\$(Configuration)\Stroika-Foundation\</IntDir>
     <NMakeIncludeSearchPath>$(ProjectDir)\..\..\..\Library\Sources\;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <AdditionalOptions>/std:c++latest</AdditionalOptions>
     <ExecutablePath>$(StroikaBuildToolsExtraPath);$(CommonExecutablePath)</ExecutablePath>
