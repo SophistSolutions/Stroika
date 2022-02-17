@@ -31,5 +31,3 @@ make CONFIGURATION=Debug all -j8
 ~~~
 make all -j8
 ~~~
-
-for now, not enuf disk space on windows docker containers, and broken resetting size

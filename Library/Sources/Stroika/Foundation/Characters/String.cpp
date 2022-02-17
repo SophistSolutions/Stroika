@@ -21,7 +21,7 @@
 #include "../Math/Common.h"
 #include "../Memory/BlockAllocated.h"
 #include "../Memory/Common.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/StackBuffer.h"
 
 #include "Concrete/Private/String_BufferedStringRep.h"
 #include "RegularExpression.h"
@@ -34,8 +34,7 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
-using Memory::SmallStackBuffer;
-using Memory::SmallStackBufferCommon;
+using Memory::StackBuffer;
 using Traversal::Iterator;
 
 namespace {
@@ -227,9 +226,9 @@ String String::FromUTF8 (const char* from, const char* to)
     RequireNotNull (from);
     RequireNotNull (to);
     Require (from <= to);
-    size_t                    cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<char, wchar_t> (from, to);
-    SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
-    wchar_t*                  outStr = buf.begin ();
+    size_t               cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<char, wchar_t> (from, to);
+    StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
+    wchar_t*             outStr = buf.begin ();
     UTFConvert::Convert (&from, to, &outStr, buf.end (), UTFConvert::lenientConversion);
     return String{buf.begin (), outStr};
 }
@@ -308,8 +307,8 @@ String String::FromASCII (const char* from, const char* to)
 {
     RequireNotNull (from);
     Require (from <= to);
-    SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, static_cast<size_t> (to - from)};
-    wchar_t*                  pOut = buf.begin ();
+    StackBuffer<wchar_t> buf{Memory::eUninitialized, static_cast<size_t> (to - from)};
+    wchar_t*             pOut = buf.begin ();
     for (const char* i = from; i != to; ++i, pOut++) {
         if (not isascii (*i)) {
             Execution::Throw (Execution::RuntimeErrorException{L"Error converting non-ascii text to String"sv});
@@ -337,10 +336,10 @@ String String::FromISOLatin1 (const char* start, const char* end)
      *  From http://unicodebook.readthedocs.io/encodings.html
      *      "For example, ISO-8859-1 are the first 256 Unicode code points (U+0000-U+00FF)."
      */
-    const char*               s = start;
-    const char*               e = end;
-    SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, static_cast<size_t> (e - s)};
-    wchar_t*                  pOut = buf.begin ();
+    const char*          s = start;
+    const char*          e = end;
+    StackBuffer<wchar_t> buf{Memory::eUninitialized, static_cast<size_t> (e - s)};
+    wchar_t*             pOut = buf.begin ();
     for (const char* i = s; i != e; ++i, pOut++) {
         *pOut = *i;
     }
@@ -382,9 +381,9 @@ String::_SharedPtrIRep String::mk_ (const char16_t* from, const char16_t* to)
         return mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to));
     }
     else {
-        size_t                    cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<char16_t, wchar_t> (from, to);
-        SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
-        wchar_t*                  outStr = buf.begin ();
+        size_t               cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<char16_t, wchar_t> (from, to);
+        StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
+        wchar_t*             outStr = buf.begin ();
         UTFConvert::Convert (&from, to, &outStr, buf.end (), UTFConvert::lenientConversion);
         return mk_ (buf.begin (), outStr);
     }
@@ -399,9 +398,9 @@ String::_SharedPtrIRep String::mk_ (const char32_t* from, const char32_t* to)
         return mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to));
     }
     else {
-        size_t                    cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<char32_t, wchar_t> (from, to);
-        SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
-        wchar_t*                  outStr = buf.begin ();
+        size_t               cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<char32_t, wchar_t> (from, to);
+        StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
+        wchar_t*             outStr = buf.begin ();
         UTFConvert::Convert (&from, to, &outStr, buf.end (), UTFConvert::lenientConversion);
         return mk_ (buf.begin (), outStr);
     }
@@ -1124,11 +1123,11 @@ void String::AsUTF8 (string* into) const
     _SafeReadRepAccessor                     accessor{this};
     pair<const Character*, const Character*> lhsD = accessor._ConstGetRep ().GetData ();
     Assert (sizeof (Character) == sizeof (wchar_t));
-    const wchar_t*         wcp        = (const wchar_t*)lhsD.first;
-    const wchar_t*         wcpe       = (const wchar_t*)lhsD.second;
-    size_t                 cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, char> (wcp, wcpe);
-    SmallStackBuffer<char> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
-    char*                  outStr = buf.begin ();
+    const wchar_t*    wcp        = (const wchar_t*)lhsD.first;
+    const wchar_t*    wcpe       = (const wchar_t*)lhsD.second;
+    size_t            cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, char> (wcp, wcpe);
+    StackBuffer<char> buf{Memory::eUninitialized, cvtBufSize};
+    char*             outStr = buf.begin ();
     UTFConvert::Convert (&wcp, wcpe, &outStr, buf.end (), UTFConvert::lenientConversion);
     into->assign (buf.begin (), outStr);
 }
@@ -1141,11 +1140,11 @@ void String::AsUTF8 (u8string* into) const
     _SafeReadRepAccessor                     accessor{this};
     pair<const Character*, const Character*> lhsD = accessor._ConstGetRep ().GetData ();
     Assert (sizeof (Character) == sizeof (wchar_t));
-    const wchar_t*            wcp        = (const wchar_t*)lhsD.first;
-    const wchar_t*            wcpe       = (const wchar_t*)lhsD.second;
-    size_t                    cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, char8_t> (wcp, wcpe);
-    SmallStackBuffer<char8_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
-    char8_t*                  outStr = buf.begin ();
+    const wchar_t*       wcp        = (const wchar_t*)lhsD.first;
+    const wchar_t*       wcpe       = (const wchar_t*)lhsD.second;
+    size_t               cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, char8_t> (wcp, wcpe);
+    StackBuffer<char8_t> buf{Memory::eUninitialized, cvtBufSize};
+    char8_t*             outStr = buf.begin ();
     UTFConvert::Convert (&wcp, wcpe, &outStr, buf.end (), UTFConvert::lenientConversion);
     into->assign (buf.begin (), outStr);
 }
@@ -1164,10 +1163,10 @@ void String::AsUTF16 (u16string* into) const
     }
     else {
         Assert (sizeof (Character) == sizeof (wchar_t));
-        const wchar_t*             wcp        = (const wchar_t*)cp;
-        size_t                     cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, char16_t> (wcp, wcp + n);
-        SmallStackBuffer<char16_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
-        char16_t*                  outStr = buf.begin ();
+        const wchar_t*        wcp        = (const wchar_t*)cp;
+        size_t                cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, char16_t> (wcp, wcp + n);
+        StackBuffer<char16_t> buf{Memory::eUninitialized, cvtBufSize};
+        char16_t*             outStr = buf.begin ();
         UTFConvert::Convert (&wcp, wcp + n, &outStr, buf.end (), UTFConvert::lenientConversion);
         into->assign (buf.begin (), outStr);
     }
@@ -1186,10 +1185,10 @@ void String::AsUTF32 (u32string* into) const
     }
     else {
         Assert (sizeof (Character) == sizeof (wchar_t));
-        const wchar_t*             wcp        = (const wchar_t*)cp;
-        size_t                     cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, char32_t> (wcp, wcp + n);
-        SmallStackBuffer<char32_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
-        char32_t*                  outStr = buf.begin ();
+        const wchar_t*        wcp        = (const wchar_t*)cp;
+        size_t                cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, char32_t> (wcp, wcp + n);
+        StackBuffer<char32_t> buf{Memory::eUninitialized, cvtBufSize};
+        char32_t*             outStr = buf.begin ();
         UTFConvert::Convert (&wcp, wcp + n, &outStr, buf.end (), UTFConvert::lenientConversion);
         into->assign (buf.begin (), outStr);
     }
@@ -1224,7 +1223,7 @@ void String::AsASCII (string* into) const
 }
 
 template <>
-void String::AsASCII (Memory::SmallStackBuffer<char>* into) const
+void String::AsASCII (Memory::StackBuffer<char>* into) const
 {
     if (not AsASCIIQuietly (into)) {
         Execution::Throw (Execution::RuntimeErrorException{L"Error converting non-ascii text to string"sv});
@@ -1247,7 +1246,7 @@ bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, s
 }
 
 template <>
-bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, Memory::SmallStackBuffer<char>* into)
+bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, Memory::StackBuffer<char>* into)
 {
     RequireNotNull (into);
     into->clear ();

@@ -11,7 +11,6 @@
 #include "../../Execution/RequiredComponentMissingException.h"
 #include "../../Memory/Common.h"
 #include "../../Memory/MemoryAllocator.h"
-#include "../../Memory/SmallStackBuffer.h"
 
 #include "../BadFormatException.h"
 

@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Memory {
 
     /**
      *  \brief - like std::memcmp() - except count is in units of T (not bytes) and this function is
-     *           constexpr.
+     *           constexpr, and this function allows nullptr arguments (if count == 0).
      *
      *      \req  (count == 0 or lhs != nullptr);
      *      \req  (count == 0 or rhs != nullptr);
@@ -108,6 +108,24 @@ namespace Stroika::Foundation::Memory {
     size_t OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
     template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
     size_t constexpr OffsetOf_Constexpr (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
+
+    /**
+     *  \brief UninitializedConstructorFlag::eUninitialized is a flag to some memory routines to allocate without initializing
+     * 
+     *  This is mainly used as a performance tweek, for objects that don't need to be initialized, and can just be copied into.
+     * 
+     *  \note the APIS that use this typically require  static_assert (is_trivially_default_constructible_v<T>);
+     */
+    enum class UninitializedConstructorFlag { eUninitialized };
+
+    /**
+     *  \brief UninitializedConstructorFlag::eUninitialized is a flag to some memory routines to allocate without initializing
+     * 
+     *  This is mainly used as a performance tweek, for objects that don't need to be initialized, and can just be copied into.
+     * 
+     *  \note the APIS that use this typically require  static_assert (is_trivially_default_constructible_v<T>);
+     */
+    constexpr UninitializedConstructorFlag eUninitialized = UninitializedConstructorFlag::eUninitialized;
 
 }
 

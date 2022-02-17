@@ -72,7 +72,14 @@ Building with Stroika requires
 #### Via Chocolatey
 
 - [https://chocolatey.org/](https://chocolatey.org/)
-  TBD
+  
+
+  This assumes you've first installed choco (see above link)
+
+  ~~~
+  choco install cygwin cyg-get
+  cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip
+  ~~~
 
 ### MSYS
 

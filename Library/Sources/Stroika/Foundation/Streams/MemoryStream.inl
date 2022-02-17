@@ -229,13 +229,13 @@ namespace Stroika::Foundation::Streams {
         string AsString () const
         {
             lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-            return string (reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_)));
+            return string{reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_))};
         }
 
     private:
         // @todo - COULD redo using
         //      constexpr size_t  USE_BUFFER_BYTES = 1024 - sizeof(recursive_mutex) - sizeof(byte*) - sizeof (BinaryInputStream::_IRep) - sizeof (Seekable::_IRep);
-        //      Memory::SmallStackBuffer < byte, USE_BUFFER_BYTES>  fData_;
+        //      Memory::InlineBuffer<byte,USE_BUFFER_BYTES>  fData_;
         // Or Stroika chunked array code
 
     private:

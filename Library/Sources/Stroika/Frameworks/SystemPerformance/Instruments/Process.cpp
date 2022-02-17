@@ -631,7 +631,7 @@ namespace {
                 }
                 if (lastCharNullRemappedToSpace) {
                     Assert (sb.length () > 0 and sb.GetAt (sb.length () - 1) == ' ');
-                    return String (sb.begin (), sb.end () - 1);
+                    return String{sb.begin (), sb.end () - 1};
                 }
                 else {
                     return sb.As<String> ();
@@ -1290,7 +1290,7 @@ namespace {
                     }
                     fActualNumElts_ = returnLength / sizeof (SYSTEM_PROCESS_INFORMATION);
                 }
-                SmallStackBuffer<byte>            fBuf_;
+                Buffer<byte>                      fBuf_;
                 const SYSTEM_PROCESS_INFORMATION* GetProcessInfo () const
                 {
                     return reinterpret_cast<const SYSTEM_PROCESS_INFORMATION*> (fBuf_.begin ());
@@ -1584,8 +1584,8 @@ namespace {
                                     goto SkipCmdLine_;
                                 }
                                 {
-                                    size_t                          strLen = commandLine.Length / sizeof (WCHAR); // length field in bytes
-                                    Memory::SmallStackBuffer<WCHAR> commandLineContents (strLen + 1);
+                                    size_t                     strLen = commandLine.Length / sizeof (WCHAR); // length field in bytes
+                                    Memory::StackBuffer<WCHAR> commandLineContents{strLen + 1};
                                     /* read the command line */
                                     if (not ::ReadProcessMemory (hProcess, commandLine.Buffer, commandLineContents.begin (), commandLine.Length, NULL)) {
                                         goto SkipCmdLine_;

@@ -443,7 +443,7 @@ Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
          *  @todo   See todo in header: the first/last digit range could use '.' or ',' and I'm not sure atof is as flexible
          *  test/verify!!!
          */
-        InternalNumericFormatType_ n = atof (string (firstDigitI, lastDigitI).c_str ());
+        InternalNumericFormatType_ n = atof (string{firstDigitI, lastDigitI}.c_str ());
         switch (*lastDigitI) {
             case 'Y':
                 curVal += n * kSecondsPerYear_;
@@ -506,17 +506,17 @@ namespace {
             {
                 char buf[1024] = "3.1340000";
                 TrimTrailingZerosInPlace_ (buf);
-                Assert (string (buf) == "3.134");
+                Assert (string{buf} == "3.134");
             }
             {
                 char buf[1024] = "300";
                 TrimTrailingZerosInPlace_ (buf);
-                Assert (string (buf) == "300");
+                Assert (string{buf} == "300");
             }
             {
                 char buf[1024] = "300.0";
                 TrimTrailingZerosInPlace_ (buf);
-                Assert (string (buf) == "300");
+                Assert (string{buf} == "300");
             }
         }
     } s_Tester_;

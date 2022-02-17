@@ -1,3 +1,9 @@
+## NOTE: ThreadSanitizerSuppressions_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp is the same as ThreadSanitizerSuppressions.supp with a few extras
+## appended. Cannot see how to load multiple .supp files from TSAN_OPTIONS=
+## and not sure we'll need this bug workaround file much longer??? --LGP 2022-02-15
+
+
+
 #workaround https://stroika.atlassian.net/browse/STK-673 - Ubuntu 1810 only
 race:__interceptor_pipe
 #workaround https://stroika.atlassian.net/browse/STK-673 - Ubuntu 1810 only
@@ -39,10 +45,3 @@ signal:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHan
 # Ideally, we would match on having ONE of these in one stack, and the other in the other stack, but could come in either order
 deadlock:Stroika::Foundation::Debug::AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex
 deadlock:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_
-
-# https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
-# MAYBE only affects Ubuntu 21.10 (of remaining systems I test on) - must test more - used to have elaborate workaround
-# TO REPRODUCE: TSAN_OPTIONS=suppressions=/Sandbox/Stroika-Dev/Tests/ThreadSanitizerSuppressions.supp Builds/g++-release-sanitize_thread_undefined/Tests/Test38
-mutex:pthread_mutex_lock
-race:Stroika::Foundation::Execution::WaitableEvent::WE_::Set
-deadlock:pthread_mutex_lock

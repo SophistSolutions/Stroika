@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Memory {
      *      o   Allocation should be extremely cheap, due to the use of make_shared<> or allocate_shared<> or 
      *          Memory::UseBlockAllocationIfAppropriate<>
      *          which should use the block allocation storage mechansism, which is generally a lock free very fast allocator.
-     *          And the use of SmallStackBuffer<64> means that allocation of BLOBs of size <= 64 should requite no calls to the
+     *          And the use of InlineBuffer<64> means that allocation of BLOBs of size <= 64 should requite no calls to the
      *          global ::operator new/malloc/free/delete
      */
     class BLOB : private Debug::AssertExternallySynchronizedMutex {

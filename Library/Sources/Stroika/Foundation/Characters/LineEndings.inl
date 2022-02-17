@@ -12,7 +12,7 @@
 #include "../Characters/CString/Utilities.h"
 #include "../Characters/String.h"
 #include "../Containers/Common.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Characters {
 
@@ -138,9 +138,9 @@ namespace Stroika::Foundation::Characters {
     template <typename TCHAR>
     inline basic_string<TCHAR> NLToCRLF (const basic_string<TCHAR>& text)
     {
-        size_t                          outBufSize = (text.length () + 1) * 2;
-        Memory::SmallStackBuffer<TCHAR> outBuf (Memory::SmallStackBufferCommon::eUninitialized, outBufSize);
-        size_t                          newSize = NLToCRLF<TCHAR> (Containers::Start (text), text.length (), outBuf.begin (), outBufSize);
+        size_t                     outBufSize = (text.length () + 1) * 2;
+        Memory::StackBuffer<TCHAR> outBuf{Memory::eUninitialized, outBufSize};
+        size_t                     newSize = NLToCRLF<TCHAR> (Containers::Start (text), text.length (), outBuf.begin (), outBufSize);
         Assert (newSize < outBufSize);
         outBuf[newSize] = '\0';
         return basic_string<TCHAR> (outBuf);
@@ -181,9 +181,9 @@ namespace Stroika::Foundation::Characters {
     template <typename TCHAR>
     inline basic_string<TCHAR> NativeToNL (const basic_string<TCHAR>& text)
     {
-        size_t                          outBufSize = text.length () + 1;
-        Memory::SmallStackBuffer<TCHAR> outBuf (Memory::SmallStackBufferCommon::eUninitialized, outBufSize);
-        size_t                          newSize = NativeToNL<TCHAR> (Containers::Start (text), text.length (), outBuf.begin (), outBufSize);
+        size_t                     outBufSize = text.length () + 1;
+        Memory::StackBuffer<TCHAR> outBuf{Memory::eUninitialized, outBufSize};
+        size_t                     newSize = NativeToNL<TCHAR> (Containers::Start (text), text.length (), outBuf.begin (), outBufSize);
         Assert (newSize < outBufSize);
         outBuf[newSize] = '\0';
         return basic_string<TCHAR> (outBuf);
@@ -222,9 +222,9 @@ namespace Stroika::Foundation::Characters {
     template <typename TCHAR>
     inline basic_string<TCHAR> NLToNative (const basic_string<TCHAR>& text)
     {
-        size_t                          outBufSize = (text.length () + 1) * 2;
-        Memory::SmallStackBuffer<TCHAR> outBuf (Memory::SmallStackBufferCommon::eUninitialized, outBufSize);
-        size_t                          newSize = NLToNative<TCHAR> (Containers::Start (text), text.length (), outBuf.begin (), outBufSize);
+        size_t                     outBufSize = (text.length () + 1) * 2;
+        Memory::StackBuffer<TCHAR> outBuf{Memory::eUninitialized, outBufSize};
+        size_t                     newSize = NLToNative<TCHAR> (Containers::Start (text), text.length (), outBuf.begin (), outBufSize);
         Assert (newSize < outBufSize);
         outBuf[newSize] = '\0';
         return basic_string<TCHAR> (outBuf);

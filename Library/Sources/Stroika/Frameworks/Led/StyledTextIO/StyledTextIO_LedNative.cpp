@@ -31,7 +31,7 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
-using Memory::SmallStackBuffer;
+using Memory::StackBuffer;
 
 /**
  *  @todo   Must fix to properly support 32-bit and 64-bit safety
@@ -216,7 +216,7 @@ inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortDa
     fsp.SetPointSize (fontSize);
     {
         size_t fontNameLen = srcData.NameLenFromRecordLen (srcData.fThisRecordLength);
-        fsp.SetFontName (Led_ANSI2SDKString (string (srcData.fFontName, fontNameLen)));
+        fsp.SetFontName (Led_ANSI2SDKString (string{srcData.fFontName, fontNameLen}));
     }
     return (StandardStyledTextImager::InfoSummaryRecord (fsp, BufToUInt32 (&srcData.fLength)));
 }
@@ -341,7 +341,7 @@ inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortDa
     fsp.SetPointSize (fontSize);
     {
         size_t fontNameLen = srcData.NameLenFromRecordLen (srcData.fThisRecordLength);
-        fsp.SetFontName (Led_ANSI2SDKString (string (srcData.fFontName, fontNameLen)));
+        fsp.SetFontName (Led_ANSI2SDKString (string{srcData.fFontName, fontNameLen}));
     }
     return (StandardStyledTextImager::InfoSummaryRecord (fsp, BufToUInt32 (&srcData.fLength)));
 }
@@ -419,13 +419,13 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
         Execution::Throw (DataExchange::BadFormatException::kThe);
     }
     {
-        SmallStackBuffer<char> buf (totalTextLength);
+        StackBuffer<char> buf{Memory::eUninitialized, totalTextLength};
         if (GetSrcStream ().read (buf, totalTextLength) != totalTextLength) {
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 #if qWideCharacters
-        size_t                      nChars = totalTextLength;
-        SmallStackBuffer<Led_tChar> unicodeText (nChars);
+        size_t                 nChars = totalTextLength;
+        StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
 #if 1
         CodePageConverter (GetDefaultSDKCodePage ()).MapToUNICODE (buf, totalTextLength, unicodeText, &nChars);
         GetSinkStream ().AppendText (unicodeText, nChars, NULL);
@@ -446,7 +446,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
         }
         vector<StandardStyledTextImager::InfoSummaryRecord> styleRunInfo;
         {
-            SmallStackBuffer<PortableStyleRunData_Version4> portableStyleRuns (nStyleRuns);
+            StackBuffer<PortableStyleRunData_Version4> portableStyleRuns{Memory::eUninitialized, nStyleRuns};
             if (GetSrcStream ().read (portableStyleRuns, nStyleRuns * sizeof (PortableStyleRunData_Version4)) != nStyleRuns * sizeof (PortableStyleRunData_Version4)) {
                 Execution::Throw (DataExchange::BadFormatException::kThe);
             }
@@ -522,13 +522,13 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
         Execution::Throw (DataExchange::BadFormatException::kThe);
     }
     {
-        SmallStackBuffer<char> buf (totalTextLength);
+        StackBuffer<char> buf{Memory::eUninitialized, totalTextLength};
         if (GetSrcStream ().read (buf, totalTextLength) != totalTextLength) {
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 #if qWideCharacters
-        size_t                      nChars = totalTextLength;
-        SmallStackBuffer<Led_tChar> unicodeText (nChars);
+        size_t                 nChars = totalTextLength;
+        StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
 #if 1
         CodePageConverter (GetDefaultSDKCodePage ()).MapToUNICODE (buf, totalTextLength, unicodeText, &nChars);
         GetSinkStream ().AppendText (unicodeText, nChars, NULL);
@@ -543,8 +543,8 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
 
     // Read Style Runs
     {
-        size_t                 howManyBytesOfStyleInfo = InputStandardFromSrcStream_ULONG (GetSrcStream ());
-        SmallStackBuffer<char> portableStyleRunsBuffer (howManyBytesOfStyleInfo);
+        size_t            howManyBytesOfStyleInfo = InputStandardFromSrcStream_ULONG (GetSrcStream ());
+        StackBuffer<char> portableStyleRunsBuffer{Memory::eUninitialized, howManyBytesOfStyleInfo};
         if (GetSrcStream ().read (portableStyleRunsBuffer, howManyBytesOfStyleInfo) != howManyBytesOfStyleInfo) {
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
@@ -637,13 +637,13 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
         Execution::Throw (DataExchange::BadFormatException::kThe);
     }
     {
-        SmallStackBuffer<char> buf (totalTextLength);
+        StackBuffer<char> buf{Memory::eUninitialized, totalTextLength};
         if (GetSrcStream ().read (buf, totalTextLength) != totalTextLength) {
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 #if qWideCharacters
-        size_t                      nChars = totalTextLength;
-        SmallStackBuffer<Led_tChar> unicodeText (nChars);
+        size_t                 nChars = totalTextLength;
+        StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
 #if 1
         CodePageConverter (GetDefaultSDKCodePage ()).MapToUNICODE (buf, totalTextLength, unicodeText, &nChars);
         GetSinkStream ().AppendText (unicodeText, nChars, NULL);
@@ -658,8 +658,8 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
 
     // Read Style Runs
     {
-        size_t                 howManyBytesOfStyleInfo = InputStandardFromSrcStream_ULONG (GetSrcStream ());
-        SmallStackBuffer<char> portableStyleRunsBuffer (howManyBytesOfStyleInfo);
+        size_t            howManyBytesOfStyleInfo = InputStandardFromSrcStream_ULONG (GetSrcStream ());
+        StackBuffer<char> portableStyleRunsBuffer{Memory::eUninitialized, howManyBytesOfStyleInfo};
         if (GetSrcStream ().read (portableStyleRunsBuffer, howManyBytesOfStyleInfo) != howManyBytesOfStyleInfo) {
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
@@ -741,7 +741,7 @@ SimpleEmbeddedObjectStyleMarker* StyledTextIOReader_LedNativeFileFormat::Interna
         if (GetSrcStream ().read (&howManyBytes, sizeof (howManyBytes)) != sizeof (howManyBytes)) {
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
-        SmallStackBuffer<char> pictBuf (howManyBytes);
+        StackBuffer<char> pictBuf{Memory::eUninitialized, howManyBytes};
         if (GetSrcStream ().read (pictBuf, howManyBytes) != howManyBytes) {
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
@@ -749,7 +749,7 @@ SimpleEmbeddedObjectStyleMarker* StyledTextIOReader_LedNativeFileFormat::Interna
     }
 #endif
 
-    SmallStackBuffer<char> dataBuf (howManyBytes);
+    StackBuffer<char> dataBuf{Memory::eUninitialized, howManyBytes};
     if (GetSrcStream ().read (dataBuf, howManyBytes) != howManyBytes) {
         Execution::Throw (DataExchange::BadFormatException::kThe);
     }
@@ -875,15 +875,15 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
     size_t totalTextLength = GetSrcStream ().GetTotalTextLength ();
     {
         // write a length-of-text count, and then the text
-        SmallStackBuffer<Led_tChar> buf (totalTextLength);
+        StackBuffer<Led_tChar> buf{Memory::eUninitialized, totalTextLength};
         if (GetSrcStream ().readNTChars (buf, totalTextLength) != totalTextLength) {
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 #if qWideCharacters
-        size_t                 nChars = totalTextLength * sizeof (wchar_t);
-        SmallStackBuffer<char> result (nChars);
+        size_t            nChars = totalTextLength * sizeof (wchar_t);
+        StackBuffer<char> result{Memory::eUninitialized, nChars};
 #if 1
-        CodePageConverter (GetDefaultSDKCodePage ()).MapFromUNICODE (buf, totalTextLength, result, &nChars);
+        CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (buf, totalTextLength, result, &nChars);
 #else
         nChars = WideCharToMultiByte (CP_ACP, 0, buf, totalTextLength, result, nChars, NULL, NULL);
 #endif

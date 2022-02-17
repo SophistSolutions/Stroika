@@ -12,7 +12,6 @@
 #include "../../Debug/Assertions.h"
 #include "../../Execution/Common.h"
 #include "../../Execution/Synchronized.h"
-#include "../../Memory/SmallStackBuffer.h"
 
 #include "Exception.h"
 

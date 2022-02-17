@@ -51,7 +51,7 @@ namespace Stroika::Foundation::DataExchange {
      *      We chose to have this return Memory::BLOB instead of an abstract template type which was often
      *      Memory::BLOB but could be something more efficient, because I'm still supporting C++17 (no concepts)
      *      and I think Memory::BLOB can be made VERY NEARLY as efficient (by having a constructor which uses
-     *      block allocation and pre-storages (SmallStackBuffer) the space for small objects (small strings and ints etc)
+     *      block allocation and pre-storages (InlineBuffer) the space for small objects (small strings and ints etc)
      *      (maybe do this performance tweak for Stroika 2.1b6?)
      * 
      *  @todo Consider using other tricks like serialize to JSON if the converters for that are defined, or with operator<< if those are defined.

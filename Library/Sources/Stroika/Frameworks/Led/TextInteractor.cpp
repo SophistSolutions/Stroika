@@ -127,7 +127,7 @@ namespace {
                         goto SecondTry;
                     }
 
-                    Led_tString undefinedWord = Led_tString (wordStart, wordEnd);
+                    Led_tString undefinedWord = Led_tString{wordStart, wordEnd};
                     if (fIgnoredWords.find (undefinedWord) != fIgnoredWords.end ()) {
                         // push startRegion a bit forward over this word, and try again, but don't
                         // set 'second try' flag cuz we haven't wrapped at the end of the document...
@@ -167,11 +167,11 @@ namespace {
         virtual void DoIgnoreAll () override
         {
             {
-                size_t                              origSelStart = fTI.GetSelectionStart ();
-                size_t                              origSelEnd   = fTI.GetSelectionEnd ();
-                Memory::SmallStackBuffer<Led_tChar> text (origSelEnd - origSelStart + 1);
+                size_t                         origSelStart = fTI.GetSelectionStart ();
+                size_t                         origSelEnd   = fTI.GetSelectionEnd ();
+                Memory::StackBuffer<Led_tChar> text{Memory::eUninitialized, origSelEnd - origSelStart + 1};
                 fTI.CopyOut (origSelStart, origSelEnd - origSelStart, text);
-                Led_tString ignoredWord = Led_tString (text, origSelEnd - origSelStart);
+                Led_tString ignoredWord = Led_tString{text, origSelEnd - origSelStart};
                 fIgnoredWords.insert (ignoredWord);
             }
             DoIgnore ();
@@ -182,9 +182,9 @@ namespace {
             size_t                           origSelEnd   = fTI.GetSelectionEnd ();
             TextInteractor::SearchParameters sp;
             {
-                Memory::SmallStackBuffer<Led_tChar> text (origSelEnd - origSelStart + 1);
+                Memory::StackBuffer<Led_tChar> text{Memory::eUninitialized, origSelEnd - origSelStart + 1};
                 fTI.CopyOut (origSelStart, origSelEnd - origSelStart, text);
-                sp.fMatchString = Led_tString (text, origSelEnd - origSelStart);
+                sp.fMatchString = Led_tString{text, origSelEnd - origSelStart};
             }
             fTI.SetSelection (origSelStart, origSelStart); // cuz OnDoReplaceCommand () looks from selectionEND
             fTI.OnDoReplaceCommand (sp, changeTo);
@@ -195,9 +195,9 @@ namespace {
             size_t                           origSelEnd   = fTI.GetSelectionEnd ();
             TextInteractor::SearchParameters sp;
             {
-                Memory::SmallStackBuffer<Led_tChar> text (origSelEnd - origSelStart + 1);
+                Memory::StackBuffer<Led_tChar> text{Memory::eUninitialized, origSelEnd - origSelStart + 1};
                 fTI.CopyOut (origSelStart, origSelEnd - origSelStart, text);
-                sp.fMatchString = Led_tString (text, origSelEnd - origSelStart);
+                sp.fMatchString = Led_tString{text, origSelEnd - origSelStart};
             }
             fTI.OnDoReplaceAllCommand (sp, changeTo);
         }
@@ -903,9 +903,9 @@ void TextInteractor::OnEnterFindString ()
     size_t selEnd    = GetSelectionEnd ();
     size_t selLength = selEnd - selStart;
 
-    Memory::SmallStackBuffer<Led_tChar> buf (selLength);
+    Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, selLength};
     CopyOut (selStart, selLength, buf);
-    parameters.fMatchString       = Led_tString (buf, selLength);
+    parameters.fMatchString       = Led_tString{buf, selLength};
     parameters.fRecentFindStrings = MergeRecentFindStrings (parameters.fMatchString, parameters.fRecentFindStrings);
     SetSearchParameters (parameters);
 }
@@ -2848,7 +2848,7 @@ bool TextInteractor::PasteLooksLikeSmartCNP (SmartCNPInfo* scnpInfo) const
         size_t         length     = clipData.GetFlavorSize (kTEXTClipFormat);
         Led_ClipFormat textFormat = kTEXTClipFormat;
 
-        Memory::SmallStackBuffer<char> buf (length); // could use bufsize=(len+1)/sizeof (Led_tChar)
+        Memory::StackBuffer<char> buf{Memory::eUninitialized, length}; // could use bufsize=(len+1)/sizeof (Led_tChar)
         length = clipData.ReadFlavorData (textFormat, length, buf);
         if (doSmartCNP) {
             Led_tChar* buffp   = reinterpret_cast<Led_tChar*> (static_cast<char*> (buf));

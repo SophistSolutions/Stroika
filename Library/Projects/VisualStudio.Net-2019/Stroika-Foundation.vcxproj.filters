@@ -228,9 +228,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
@@ -239,9 +236,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp">
-      <Filter>Sources\Memory</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
@@ -351,9 +345,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\ResourceNotFoundException.cpp">
       <Filter>Sources\Execution\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
@@ -422,12 +413,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.cpp">
       <Filter>Sources\Characters</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp">
-      <Filter>Sources\Memory</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime.cpp">
       <Filter>Sources\Characters\Concrete</Filter>
@@ -828,6 +813,21 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.cpp">
+      <Filter>Sources\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.cpp">
+      <Filter>Sources\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp">
+      <Filter>Sources\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp">
+      <Filter>Sources\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp">
+      <Filter>Sources\Memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -835,15 +835,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Trace.h">
       <Filter>Sources\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.h">
-      <Filter>Sources\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.h">
-      <Filter>Sources\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h">
-      <Filter>Sources\Memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.h">
       <Filter>Sources\Configuration</Filter>
@@ -855,9 +846,6 @@
       <Filter>Sources\Time</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Optional.h">
-      <Filter>Sources\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.h">
       <Filter>Sources\Memory\Platform\Windows</Filter>
     </ClInclude>
@@ -869,9 +857,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Common.h">
       <Filter>Sources\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Common.h">
-      <Filter>Sources\Memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Common.h">
       <Filter>Sources\Containers</Filter>
@@ -941,9 +926,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.h">
       <Filter>Sources\Characters\Platform\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.h">
-      <Filter>Sources\Memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.h">
       <Filter>Sources\Debug</Filter>
@@ -1076,9 +1058,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\ResourceNotFoundException.h">
       <Filter>Sources\Execution\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.h">
-      <Filter>Sources\Memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.h">
       <Filter>Sources\IO\Network</Filter>
@@ -1325,15 +1304,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\ReBin.h">
       <Filter>Sources\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.h">
-      <Filter>Sources\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.h">
-      <Filter>Sources\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Bits.h">
-      <Filter>Sources\Memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.h">
       <Filter>Sources\Characters</Filter>
@@ -1989,9 +1959,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookie.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\ObjectFieldUtilities.h">
-      <Filter>Sources\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Property.h">
       <Filter>Sources\Common</Filter>
     </ClInclude>
@@ -2109,19 +2076,49 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_stdmultiset.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Bits.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Common.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\InlineBuffer.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\ObjectFieldUtilities.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Optional.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\StackBuffer.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
-      <Filter>Sources\Memory</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
       <Filter>Sources\Debug</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.inl">
-      <Filter>Sources\Memory</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.inl">
-      <Filter>Sources\Memory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.inl">
       <Filter>Sources\Characters</Filter>
@@ -2138,9 +2135,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Math\Common.inl">
       <Filter>Sources\Math</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\Common.inl">
-      <Filter>Sources\Memory</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Common.inl">
       <Filter>Sources\Containers</Filter>
     </None>
@@ -2149,9 +2143,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Character.inl">
       <Filter>Sources\Characters</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\Optional.inl">
-      <Filter>Sources\Memory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig-ReadMe.md">
       <Filter>Sources\Configuration</Filter>
@@ -2179,9 +2170,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.inl">
       <Filter>Sources\Characters\Platform\Windows</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.inl">
-      <Filter>Sources\Memory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.inl">
       <Filter>Sources\Characters</Filter>
@@ -2280,9 +2268,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Math\ReadMe.md">
       <Filter>Sources\Math</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\ReadMe.md">
-      <Filter>Sources\Memory</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\ReadMe.md">
       <Filter>Sources\Streams</Filter>
     </None>
@@ -2324,9 +2309,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\WindowsResourceManager.inl">
       <Filter>Sources\Execution\Resources\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.inl">
-      <Filter>Sources\Memory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.inl">
       <Filter>Sources\IO\Network</Filter>
@@ -2585,15 +2567,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Math\ReBin.inl">
       <Filter>Sources\Math</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.inl">
-      <Filter>Sources\Memory</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.inl">
-      <Filter>Sources\Memory</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\Bits.inl">
-      <Filter>Sources\Memory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.inl">
       <Filter>Sources\Characters</Filter>
@@ -3042,9 +3015,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Math\Optimization\Makefile">
       <Filter>Sources\Math\Optimization</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\Makefile">
-      <Filter>Sources\Memory</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\Makefile">
       <Filter>Sources\Streams</Filter>
     </None>
@@ -3321,9 +3291,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookie.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\ObjectFieldUtilities.inl">
-      <Filter>Sources\Memory</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\Property.inl">
       <Filter>Sources\Common</Filter>
     </None>
@@ -3464,6 +3431,48 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_stdmultiset.inl">
       <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\Bits.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\Common.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\InlineBuffer.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\Makefile">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\ObjectFieldUtilities.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\Optional.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\ReadMe.md">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.inl">
+      <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\StackBuffer.inl">
+      <Filter>Sources\Memory</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

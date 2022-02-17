@@ -56,7 +56,7 @@ namespace Stroika::Frameworks::Led {
                                             )
                     ) {
                 // we found a possible undefined word.
-                Led_tString word    =   Led_tString (wordStartResult, wordEndResult);
+                Led_tString word    =   Led_tString{wordStartResult, wordEndResult};
             }
             // no more undefined words.
         </code>

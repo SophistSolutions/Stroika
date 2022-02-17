@@ -3,7 +3,7 @@
  */
 #include "../../../Foundation/StroikaPreComp.h"
 
-#include "../../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../../Foundation/Memory/StackBuffer.h"
 
 #include "Windows_FileRegistration.h"
 
@@ -12,7 +12,7 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::Platform;
 
-using Memory::SmallStackBuffer;
+using Memory::StackBuffer;
 
 #if qPlatform_Windows
 
@@ -68,12 +68,12 @@ Led_SDK_String Win32FileAssociationRegistrationHelper::GetAssociatedProgID () co
     try {
         LONG itemLen = 0;
         ThrowIfRegError (::RegQueryValue (HKEY_CLASSES_ROOT, fFileSuffix.c_str (), NULL, &itemLen));
-        SmallStackBuffer<Led_SDK_Char> buf (itemLen + 1);
+        StackBuffer<Led_SDK_Char> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
         ThrowIfRegError (::RegQueryValue (HKEY_CLASSES_ROOT, fFileSuffix.c_str (), buf, &itemLen));
-        return Led_SDK_String (buf);
+        return Led_SDK_String{buf};
     }
     catch (...) {
-        return Led_SDK_String ();
+        return Led_SDK_String{};
     }
 }
 
@@ -84,12 +84,12 @@ Led_SDK_String Win32FileAssociationRegistrationHelper::GetAssociatedDefaultIcon 
         KeyHolder      progIDKey (HKEY_CLASSES_ROOT, progID.c_str ());
         LONG           itemLen = 0;
         ThrowIfRegError (::RegQueryValue (progIDKey, Led_SDK_TCHAROF ("DefaultIcon"), NULL, &itemLen));
-        SmallStackBuffer<Led_SDK_Char> buf (itemLen + 1);
+        StackBuffer<Led_SDK_Char> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
         ThrowIfRegError (::RegQueryValue (progIDKey, Led_SDK_TCHAROF ("DefaultIcon"), buf, &itemLen));
-        return Led_SDK_String (buf);
+        return Led_SDK_String{buf};
     }
     catch (...) {
-        return Led_SDK_String ();
+        return Led_SDK_String{};
     }
 }
 
@@ -102,12 +102,12 @@ Led_SDK_String Win32FileAssociationRegistrationHelper::GetAssociatedEditCommand 
         KeyHolder      openKey (shellKey, Led_SDK_TCHAROF ("edit"));
         LONG           itemLen = 0;
         ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), NULL, &itemLen));
-        SmallStackBuffer<Led_SDK_Char> buf (itemLen + 1);
+        StackBuffer<Led_SDK_Char> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
         ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), buf, &itemLen));
-        return Led_SDK_String (buf);
+        return Led_SDK_String{buf};
     }
     catch (...) {
-        return Led_SDK_String ();
+        return Led_SDK_String{};
     }
 }
 
@@ -120,12 +120,12 @@ Led_SDK_String Win32FileAssociationRegistrationHelper::GetAssociatedOpenCommand 
         KeyHolder      openKey (shellKey, Led_SDK_TCHAROF ("open"));
         LONG           itemLen = 0;
         ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), NULL, &itemLen));
-        SmallStackBuffer<Led_SDK_Char> buf (itemLen + 1);
+        StackBuffer<Led_SDK_Char> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
         ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), buf, &itemLen));
-        return Led_SDK_String (buf);
+        return Led_SDK_String{buf};
     }
     catch (...) {
-        return Led_SDK_String ();
+        return Led_SDK_String{};
     }
 }
 

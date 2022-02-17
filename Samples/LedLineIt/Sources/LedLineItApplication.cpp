@@ -374,7 +374,7 @@ BOOL LedLineItApplication::InitInstance ()
         // and other spellchecking options (see SPR#1591)
         TCHAR defaultPath[MAX_PATH + 1];
         Verify (::SHGetSpecialFolderPath (NULL, defaultPath, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, true));
-        fSpellCheckEngine->SetUserDictionary (Led_SDK_String (defaultPath) + Led_SDK_TCHAROF ("\\My LedLineIt Dictionary.txt"));
+        fSpellCheckEngine->SetUserDictionary (Led_SDK_String{defaultPath} + Led_SDK_TCHAROF ("\\My LedLineIt Dictionary.txt"));
     }
 #endif
 #endif

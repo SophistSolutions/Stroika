@@ -88,12 +88,12 @@ void FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
     Require (start <= end);
     size_t length = end - start;
 #if qPlatform_MacOS || qStroika_FeatureSupported_XWindows
-    Memory::SmallStackBuffer<Led_tChar> buf (length);
+    Memory::StackBuffer<Led_tChar> buf{length};
 #elif qPlatform_Windows
-    Memory::SmallStackBuffer<Led_tChar> buf (2 * length + 1);
+    Memory::StackBuffer<Led_tChar> buf{2 * length + 1};
 #endif
     if (length != 0) {
-        Memory::SmallStackBuffer<Led_tChar> buf2 (length);
+        Memory::StackBuffer<Led_tChar> buf2{length};
         GetTextStore ().CopyOut (start, length, buf2);
 #if qPlatform_MacOS || qStroika_FeatureSupported_XWindows
         length = Characters::NLToNative<Led_tChar> (buf2, length, buf, length);
@@ -139,9 +139,9 @@ bool FlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavorPackage& flav
 bool FlavorPackageInternalizer::InternalizeFlavor_TEXT (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
 {
     if (flavorPackage.GetFlavorAvailable_TEXT ()) {
-        size_t                         length     = flavorPackage.GetFlavorSize (kTEXTClipFormat);
-        Led_ClipFormat                 textFormat = kTEXTClipFormat;
-        Memory::SmallStackBuffer<char> buf (length * sizeof (Led_tChar)); // data read from flavor package is just an array of bytes (not Led_tChar)
+        size_t                    length     = flavorPackage.GetFlavorSize (kTEXTClipFormat);
+        Led_ClipFormat            textFormat = kTEXTClipFormat;
+        Memory::StackBuffer<char> buf{length * sizeof (Led_tChar)}; // data read from flavor package is just an array of bytes (not Led_tChar)
         // but allocate enuf space for converting TO UNICODE - in case of
         // qWorkAroundWin95BrokenUNICODESupport workaround below - we may
         // want to copy UNICODE chars in there instead.
@@ -175,8 +175,8 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
 {
     // For now, we ignore any files beyond the first one (Mac&PC)...LGP 960522
     if (flavorPackage.GetFlavorAvailable (kFILEClipFormat)) {
-        size_t                         fileSpecBufferLength = flavorPackage.GetFlavorSize (kFILEClipFormat);
-        Memory::SmallStackBuffer<char> fileSpecBuffer (fileSpecBufferLength);
+        size_t                    fileSpecBufferLength = flavorPackage.GetFlavorSize (kFILEClipFormat);
+        Memory::StackBuffer<char> fileSpecBuffer{fileSpecBufferLength};
         fileSpecBufferLength = flavorPackage.ReadFlavorData (kFILEClipFormat, fileSpecBufferLength, fileSpecBuffer);
 
 // Unpack the filename
@@ -311,14 +311,14 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (
     if (suggestedCodePage != nullptr) {
         *suggestedCodePage = useCodePage;
     }
-    CodePageConverter                   cpc        = CodePageConverter (useCodePage, CodePageConverter::eHandleBOM);
-    size_t                              outCharCnt = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (rawBytes), nRawBytes + 1);
-    Memory::SmallStackBuffer<Led_tChar> fileData2 (outCharCnt);
+    CodePageConverter              cpc        = CodePageConverter{useCodePage, CodePageConverter::eHandleBOM};
+    size_t                         outCharCnt = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (rawBytes), nRawBytes + 1);
+    Memory::StackBuffer<Led_tChar> fileData2{outCharCnt};
     cpc.MapToUNICODE (reinterpret_cast<const char*> (rawBytes), nRawBytes, static_cast<wchar_t*> (fileData2), &outCharCnt);
     size_t charsRead = outCharCnt;
     Assert (charsRead <= nRawBytes);
 #else
-    Memory::SmallStackBuffer<Led_tChar> fileData2 (nRawBytes);
+    Memory::StackBuffer<Led_tChar> fileData2{nRawBytes};
     memcpy (fileData2, (char*)rawBytes, nRawBytes);
     size_t charsRead = nRawBytes;
 #endif

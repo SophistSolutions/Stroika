@@ -756,12 +756,12 @@ bool StyledTextIOReader_HTML::LookingAt (const char* text) const
 Led_tString StyledTextIOReader_HTML::MapInputTextToTString (const string& text)
 {
 #if qWideCharacters
-    Memory::SmallStackBuffer<Led_tChar> wBuf (text.length () + 1);
-    CodePageConverter                   cpc (kCodePage_ANSI);
-    size_t                              outCharCnt = text.length ();
+    Memory::StackBuffer<Led_tChar> wBuf{Memory::eUninitialized, text.length () + 1};
+    CodePageConverter              cpc{kCodePage_ANSI};
+    size_t                         outCharCnt = text.length ();
     cpc.MapToUNICODE (text.c_str (), text.length (), wBuf, &outCharCnt);
     wBuf[outCharCnt] = '\0';
-    return Led_tString (wBuf);
+    return Led_tString{wBuf};
 #else
     return text;
 #endif
@@ -771,12 +771,12 @@ void StyledTextIOReader_HTML::EmitText (const Led_tChar* text, size_t nBytes, bo
 {
     if (fComingTextIsTitle) {
         if (fSaveHTMLInfoInto != nullptr) {
-            fSaveHTMLInfoInto->fTitle += Led_tString (text, nBytes);
+            fSaveHTMLInfoInto->fTitle += Led_tString{text, nBytes};
         }
         return;
     }
     if (fHiddenTextMode) {
-        fHiddenTextAccumulation += Led_tString (text, nBytes);
+        fHiddenTextAccumulation += Led_tString{text, nBytes};
         return;
     }
 
@@ -785,7 +785,7 @@ void StyledTextIOReader_HTML::EmitText (const Led_tChar* text, size_t nBytes, bo
         return;
     }
 
-    Memory::SmallStackBuffer<Led_tChar> outBuf (nBytes);
+    Memory::StackBuffer<Led_tChar> outBuf{Memory::eUninitialized, nBytes};
     nBytes = Characters::NormalizeTextToNL<Led_tChar> (text, nBytes, outBuf, nBytes);
 
     if (not skipNLCheck and fNormalizeInputWhitespace) {
@@ -861,9 +861,9 @@ void StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* text
 #if qWideCharacters
             EmitText (&result, 1);
 #else
-            CodePageConverter              cpc (kInternalCodePageToMapTo);
-            size_t                         outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (&result, 1);
-            Memory::SmallStackBuffer<char> buf (outCharCnt);
+            CodePageConverter         cpc (kInternalCodePageToMapTo);
+            size_t                    outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (&result, 1);
+            Memory::StackBuffer<char> buf{Memory::eUninitialized, outCharCnt};
             cpc.MapFromUNICODE (&result, 1, buf, &outCharCnt);
             EmitText (buf, outCharCnt);
 #endif
@@ -876,9 +876,9 @@ void StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* text
 #if qWideCharacters
                     EmitText (&(*i).fCharValue, 1);
 #else
-                    CodePageConverter              cpc (kInternalCodePageToMapTo);
-                    size_t                         outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (&(*i).fCharValue, 1);
-                    Memory::SmallStackBuffer<char> buf (outCharCnt);
+                    CodePageConverter         cpc (kInternalCodePageToMapTo);
+                    size_t                    outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (&(*i).fCharValue, 1);
+                    Memory::StackBuffer<char> buf{Memory::eUninitialized, outCharCnt};
                     cpc.MapFromUNICODE (&(*i).fCharValue, 1, buf, &outCharCnt);
                     EmitText (buf, outCharCnt);
 #endif
@@ -1181,7 +1181,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
         fCurAHRefStart          = GetSrcStream ().current_offset ();
         fCurAHRefText           = tagText;
         fHiddenTextMode         = true;
-        fHiddenTextAccumulation = Led_tString ();
+        fHiddenTextAccumulation = Led_tString{};
     }
     else {
         if (fCurAHRefStart != size_t (-1)) {
@@ -1191,9 +1191,9 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
             if (EmbeddedObjectCreatorRegistry::Get ().Lookup (StandardURLStyleMarker::kEmbeddingTag, &assoc)) {
                 AssertNotNull (assoc.fReadFromMemory);
 #if qWideCharacters
-                CodePageConverter              cpc (kCodePage_ANSI);
-                size_t                         outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (fHiddenTextAccumulation.c_str (), fHiddenTextAccumulation.length ());
-                Memory::SmallStackBuffer<char> buf (outCharCnt);
+                CodePageConverter         cpc (kCodePage_ANSI);
+                size_t                    outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (fHiddenTextAccumulation.c_str (), fHiddenTextAccumulation.length ());
+                Memory::StackBuffer<char> buf{Memory::eUninitialized, outCharCnt};
                 cpc.MapFromUNICODE (fHiddenTextAccumulation.c_str (), fHiddenTextAccumulation.length (), buf, &outCharCnt);
                 buf[outCharCnt] = '\0';
                 Led_URLD urld   = Led_URLD (tagValue.c_str (), buf);
@@ -1878,7 +1878,7 @@ bool StyledTextIOReader_HTML::ParseHTMLTagArgOut (const string& tagText, const s
                 return false;
             }
         }
-        tagName = string (tagText.c_str () + startOfArgName, (i - startOfArgName));
+        tagName = string{tagText.c_str () + startOfArgName, (i - startOfArgName)};
     }
 
     // Check each attr
@@ -1957,7 +1957,7 @@ bool StyledTextIOReader_HTML::ParseCSSTagArgOut (const string& text, const strin
                     return false;
                 }
             }
-            argName = string (text.c_str () + startOfArgName, (i - startOfArgName));
+            argName = string{text.c_str () + startOfArgName, (i - startOfArgName)};
         }
 
         while (i < len and isspace (text[i])) {
@@ -2341,7 +2341,7 @@ void StyledTextIOWriter_HTML::WriteBodyCharacter (WriterContext& writerContext, 
                 }
             }
             if (i == entityRefs.end ()) {
-                write (MapOutputTextFromWString (wstring (&unicodeC, 1)));
+                write (MapOutputTextFromWString (wstring{&unicodeC, 1}));
             }
         } break;
     }
@@ -2509,7 +2509,7 @@ static inline string PrintColorString (Color color)
     buf[6]        = NumToHexChar (blue % 16);
     buf[7]        = '"';
     buf[8]        = '\0';
-    string result = string (buf);
+    string result = string{buf};
 #if qStaticInitializerOfPairOfStringStringInternalCompilerBug
     for (auto i = kColorNameTable.begin (); i != kColorNameTable.end (); ++i) {
         if (Led_CasedStringsEqual (buf, "\"" + i->second + "\"")) {

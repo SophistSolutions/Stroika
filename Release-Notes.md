@@ -7,31 +7,79 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+---
 
-### REL 2.1r3 draft
+### 2.1r3 {2022-02-15}
 
+#### TLDR
+- Lose Centos support
+- Improve MSYS support, regression tests, samples, and documentation
+
+#### Change Details
 - Documentation
   - Small docs cleanups (mostly typos, obsolete comments removeal)
+  - install cygwin via choco install
+- Build System Tests And Tools
+  - Docker & Regression Tests & Build System
+    - Remove support for Centos, since Centos 8 no longer builds and both deprecated by IBM
+  - Scripts
+    - use winsymlinks:nativestrict in env variables to fix issues with ScriptsLib/MakeDirectorySymbolicLink (helps MSYS/Cygwin interop)
+  - RegressionTests
+    - Several more sample tests in SAMPLE_APPS_2_TEST (part of regression tests)
+  - Valgrind etc
+    - updated Tests/Valgrind-Helgrind-qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp with one more (rarely needed) workaround for ununtu 21.10 helgrind (basically useless at this point on unubut 20.10)
+  - Supported Compiler Versions
+    - vs2k19 16.11.10
+    - vsk2k22 17.0.6
+- Library
+  - Foundation
+    - Cache
+      - Cleanups to LRUCache code - const_cast / threadsafety - Lookup method really should be const (though not the SynchronizedLRUCache subclass); and use NO_UNIQUE_ADDRESS_ATTR instead of subclassing trick for stats (clarity)
+    - Execution
+      - Minor (not totally backward compatible) chagne to Thread::IndexRegistrar (use sThe instead of ::Get) and static inline and store data directly in it rather than in GetIndex method - addressed (maybe) ASAN issue on windows during shutdown (maybe luck, maybe untrue) but cleaner code anyhow - try this way
+  - Frameworks
+    - Service
+      - Service Framework (and sample): lose Main::RunTilIdleService, but add const optional<Time::Duration>& runFor param to RunDirectly, and lose obsolete run2Idle commandline arg; --run-directly optional timeout arg (and used in regtests)
 
-- Remove support for Centos, since Centos 8 no longer builds and both deprecated by IBM
+- Samples
+  \--quit-after support in SSDPClient, SSDPServer, and cleanup said in WebServer/WebService samples, and re-enabled in regression tests the
+  calls to these first two.
 
-- Cleanups to LRUCache code - const_cast / threadsafety - Lookup method really should be const (though not the SynchronizedLRUCache subclass); and use NO_UNIQUE_ADDRESS_ATTR instead of subclassing trick for stats (clarity)
+#### Release-Validation
 
--  Several more sample tests in SAMPLE_APPS_2_TEST (part of regression tests)
-
-- use winsymlinks:nativestrict in env variables to fix issues with ScriptsLib/MakeDirectorySymbolicLink
-
-    --quit-after support in SSDPClient, SSDPServer, and cleanup said in
-    WebServer/WebService samples, and re-enabled in regression tests the
-    calls to these first two.
-
-    Service Framework (and sample): lose Main::RunTilIdleService, but add const optional<Time::Duration>& runFor param to RunDirectly, and lose obsolete run2Idle commandline arg; --run-directly optional timeout arg (and used in regtests)
-
-- Minor (not totally backward compatible) chagne to Thread::IndexRegistrar (use sThe instead of ::Get) and static inline and store data directly in it rather than in GetIndex method - addressed (maybe) ASAN issue on windows during shutdown (maybe luck, maybe untrue) but cleaner code anyhow - try this way
-
-
-
-
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13; XCode: 13 }
+  - MSVC: { 15.9.41, 16.11.10, 17.0.6 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Moneterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 21.10], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - vs2k19 and vs2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+  - WSL-Regression tests
+    - Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure
 
 ---
 

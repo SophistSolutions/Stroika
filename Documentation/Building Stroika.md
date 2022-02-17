@@ -13,14 +13,14 @@ This build process is cross-platform. It supports cross-compiling, and builds on
 ## <a name="Quick-Start">Quick Start</a>
 
 ```bash
-wget https://github.com/SophistSolutions/Stroika/archive/v2.1-Release.tar.gz
-tar xf v2.1-Release.tar.gz && mv Stroika-2.1-Release Stroika-Dev
+git clone https://github.com/SophistSolutions/Stroika.git Stroika-Dev
 ```
 
 or
 
 ```bash
-git clone https://github.com/SophistSolutions/Stroika.git Stroika-Dev
+wget https://github.com/SophistSolutions/Stroika/archive/v2.1-Release.tar.gz
+tar xf v2.1-Release.tar.gz && mv Stroika-2.1-Release Stroika-Dev
 ```
 
 followed by:
@@ -54,6 +54,13 @@ Windows:
 docker run -it sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
 cat Getting-Started-With-Stroika.md
 ```
+
+Or - a couple other docker run variants that may help with windows
+```bash
+docker run --mount type=bind,source=c:/Sandbox,target=c:/Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
+docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+```
+
 
 ### **_Note_**
 

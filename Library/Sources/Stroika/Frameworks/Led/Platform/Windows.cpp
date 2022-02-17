@@ -119,7 +119,7 @@ namespace Stroika::Frameworks::Led::Platform {
 // Avoid splitting mbyte characters
 #if qMultiByteCharacters
         if (newSelStart > newRowStart) {
-            Memory::SmallStackBuffer<Led_tChar> buf (newRowLen);
+            Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, newRowLen};
             ti.CopyOut (newRowStart, newRowLen, buf);
             const char* text  = buf;
             size_t      index = newSelStart - newRowStart;

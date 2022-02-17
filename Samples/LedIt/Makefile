@@ -77,7 +77,6 @@ MIDL_FLAGS +=	-env win32
 
 $(ObjDir)LedIt.tlb:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)Sources/LedIt.odl` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
-	echo PATH=$$PATH
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_MIDL_LINE,$(SrcDir)Sources/LedIt.odl,$(ObjDir)LedIt.tlb,$(ObjDir)LedIt_h.h,$(ObjDir)LedIt_i.c)';\
 	fi

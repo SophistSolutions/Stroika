@@ -839,7 +839,7 @@ namespace Stroika::Frameworks::Led::Platform {
                     TextInteractor::InteractiveModeUpdater iuMode{*this};
                     AssertNotNull (sCurrentDragInfo);
                     TextInteractor::UndoableContextHelper undoContext (*this,
-                                                                       sCurrentDragInfo->fWeRecievedDrop ? Led_SDK_String () : GetCommandNames ().fDragCommandName,
+                                                                       sCurrentDragInfo->fWeRecievedDrop ? Led_SDK_String{} : GetCommandNames ().fDragCommandName,
                                                                        sCurrentDragInfo->fOrigSelection.GetStart (),
                                                                        sCurrentDragInfo->fOrigSelection.GetEnd (),
                                                                        true);
@@ -1003,9 +1003,9 @@ namespace Stroika::Frameworks::Led::Platform {
         bool                         doSmartCNP = this->GetSmartCutAndPasteMode () and flavors.GetFlavorAvailable_TEXT ();
         TextInteractor::SmartCNPInfo smartCNPInfo;
         if (doSmartCNP) {
-            size_t                              length     = flavors.GetFlavorSize (kTEXTClipFormat);
-            Led_ClipFormat                      textFormat = kTEXTClipFormat;
-            Memory::SmallStackBuffer<Led_tChar> buf (length); // really could use smaller buffer
+            size_t                         length     = flavors.GetFlavorSize (kTEXTClipFormat);
+            Led_ClipFormat                 textFormat = kTEXTClipFormat;
+            Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, length}; // really could use smaller buffer
             length = flavors.ReadFlavorData (textFormat, length, buf);
             if (doSmartCNP) {
                 size_t nTChars = length / sizeof (Led_tChar);
@@ -1384,7 +1384,7 @@ namespace Stroika::Frameworks::Led::Platform {
         using namespace Stroika::Foundation;
         ASSERT_VALID (this);
 
-        Memory::SmallStackBuffer<Led_tChar> buf (nLen);
+        Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, nLen};
         if (ar.Read (buf, nLen * sizeof (Led_tChar)) != nLen * sizeof (Led_tChar)) {
             AfxThrowArchiveException (CArchiveException::endOfFile);
         }
@@ -1407,10 +1407,10 @@ namespace Stroika::Frameworks::Led::Platform {
         using namespace Foundation;
         ASSERT_VALID (this);
 
-        size_t                              nLen = this->GetLength ();
-        Memory::SmallStackBuffer<Led_tChar> buf (nLen);
+        size_t                         nLen = this->GetLength ();
+        Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, nLen};
         this->CopyOut (0, nLen, buf);
-        Memory::SmallStackBuffer<Led_tChar> buf2 (2 * nLen);
+        Memory::StackBuffer<Led_tChar> buf2{Memory::eUninitialized, 2 * nLen};
         nLen = Characters::NLToNative<Led_tChar> (buf, nLen, buf2, 2 * nLen);
         ar.Write (buf2, static_cast<UINT> (nLen * sizeof (Led_tChar)));
 

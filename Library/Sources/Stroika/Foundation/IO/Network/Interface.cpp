@@ -52,7 +52,6 @@
 #include "../../IO/FileSystem/FileInputStream.h"
 #include "../../IO/Network/DNS.h"
 #include "../../Memory/Optional.h"
-#include "../../Memory/SmallStackBuffer.h"
 #include "../../Streams/MemoryStream.h"
 
 #include "Socket.h"
@@ -764,7 +763,7 @@ namespace {
         KeyedCollection<Interface, String> results{[] (const Interface& i) { return i.fInternalInterfaceID; }};
         ULONG                              flags  = GAA_FLAG_INCLUDE_PREFIX | GAA_FLAG_INCLUDE_GATEWAYS;
         ULONG                              family = AF_UNSPEC; // Both IPv4 and IPv6 addresses
-        Memory::SmallStackBuffer<byte>     buf;
+        Memory::StackBuffer<byte>          buf;
     Again:
         ULONG                 ulOutBufLen = static_cast<ULONG> (buf.GetSize ());
         PIP_ADAPTER_ADDRESSES pAddresses  = reinterpret_cast<PIP_ADAPTER_ADDRESSES> (buf.begin ());

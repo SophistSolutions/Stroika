@@ -7,7 +7,6 @@
 #include "../StroikaPreComp.h"
 
 #include "../../Foundation/Cache/LRUCache.h"
-#include "../../Foundation/Memory/SmallStackBuffer.h"
 
 /*
 @MODULE:    PartitioningTextImager
@@ -322,7 +321,7 @@ namespace Stroika::Frameworks::Led {
             COMPARE_ITEM fValidFor;
 
         public:
-            Foundation::Memory::SmallStackBuffer<DistanceType> fMeasurementsCache; // for just the given PM
+            Foundation::Memory::InlineBuffer<DistanceType> fMeasurementsCache; // for just the given PM
 
         private:
             friend struct CacheEltLRUCacheTraits;

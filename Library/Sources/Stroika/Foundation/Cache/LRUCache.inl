@@ -86,8 +86,8 @@ namespace Stroika::Foundation::Cache {
         , fKeyEqualsComparer_{keyEqualsComparer}
         , fHashFunction_{hashFunction}
         , fCachedElts_BUF_{hashTableSize}
-        , fCachedElts_First_{Memory::SmallStackBufferCommon::eUninitialized, hashTableSize}
-        , fCachedElts_Last_{Memory::SmallStackBufferCommon::eUninitialized, hashTableSize}
+        , fCachedElts_First_{Memory::eUninitialized, hashTableSize}
+        , fCachedElts_Last_{Memory::eUninitialized, hashTableSize}
     {
         Require (hashTableSize >= 1);
         Require (maxCacheSize >= 1);

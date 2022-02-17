@@ -31,6 +31,8 @@ namespace {
         /*
          *  A Collection is the simplest form of Stroika container. You can add things, and remove them, and iterate over them.
          *  The order items appear (in iteration) is undefined.
+         *  There are almost no requirements on the type of things you can add to a collection (except thqt it must be copyable). In particular,
+         *  there is no need for comparison operators etc to be defined.
          *  View the class declaration, with all the methods well documented, must with examples of usage.
          */
         Collection<int> c;

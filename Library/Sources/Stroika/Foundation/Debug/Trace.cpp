@@ -22,6 +22,7 @@
 #include "../Execution/Thread.h"
 #include "../IO/FileSystem/PathName.h"
 #include "../Memory/Common.h"
+#include "../Memory/StackBuffer.h"
 #include "../Time/Realtime.h"
 
 #if qTraceToFile
@@ -37,8 +38,7 @@ using namespace Characters;
 using namespace Debug;
 using namespace Execution;
 
-using Memory::SmallStackBuffer;
-using Memory::SmallStackBufferCommon;
+using Memory::StackBuffer;
 
 /*
  * TODO:
@@ -474,8 +474,8 @@ void Emitter::DoEmit_ (const wchar_t* p) noexcept
 void Emitter::DoEmit_ (const char* p, const char* e) noexcept
 {
     try {
-        size_t                 len = e - p;
-        SmallStackBuffer<char> buf (SmallStackBufferCommon::eUninitialized, len + 1);
+        size_t            len = e - p;
+        StackBuffer<char> buf{Memory::eUninitialized, len + 1};
         (void)::memcpy (buf.begin (), p, len);
         buf.begin ()[len] = '\0';
         DoEmit_ (buf.begin ());
@@ -488,8 +488,8 @@ void Emitter::DoEmit_ (const char* p, const char* e) noexcept
 void Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
 {
     try {
-        size_t                    len = e - p;
-        SmallStackBuffer<wchar_t> buf (SmallStackBufferCommon::eUninitialized, len + 1);
+        size_t               len = e - p;
+        StackBuffer<wchar_t> buf{Memory::eUninitialized, len + 1};
         (void)::memcpy (buf.begin (), p, len * sizeof (wchar_t));
         buf.begin ()[len] = '\0';
         DoEmit_ (buf.begin ());

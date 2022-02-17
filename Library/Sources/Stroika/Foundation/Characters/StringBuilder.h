@@ -7,7 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Debug/AssertExternallySynchronizedMutex.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/InlineBuffer.h"
 
 #include "String.h"
 
@@ -199,8 +199,8 @@ namespace Stroika::Foundation::Characters {
         nonvirtual void reserve (size_t newCapacity);
 
     private:
-        mutable Memory::SmallStackBuffer<wchar_t> fData_{0};   // maybe nul-terminated
-        size_t                                    fLength_{0}; // seperate from SmallStackBuffer<>::size ()
+        mutable Memory::InlineBuffer<wchar_t> fData_{0};   // maybe nul-terminated
+        size_t                                fLength_{0}; // seperate from Buffer<>::size ()
     };
 
 }

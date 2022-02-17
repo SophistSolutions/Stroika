@@ -421,7 +421,7 @@ protected:
 
 private:
     nonvirtual Led_FileFormat GuessFormatFromName (LPCTSTR name);
-    nonvirtual void           DoReadFile (LPCTSTR filename, Memory::SmallStackBuffer<char>* buffer, size_t* size);
+    nonvirtual void           DoReadFile (LPCTSTR filename, Memory::StackBuffer<char>* buffer, size_t* size);
     nonvirtual void           WriteBytesToFile (LPCTSTR filename, const void* buffer, size_t size);
 
     // Dispatch and event IDs

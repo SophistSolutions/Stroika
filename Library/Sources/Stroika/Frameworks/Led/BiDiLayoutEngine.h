@@ -9,7 +9,7 @@
 #include <compare>
 #include <memory>
 
-#include "../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../Foundation/Memory/InlineBuffer.h"
 
 /*
 @MODULE:    BiDiLayout
@@ -185,10 +185,10 @@ namespace Stroika::Frameworks::Led {
         virtual vector<ScriptRunElt> GetScriptRuns () const override;
 
     private:
-        size_t                                          fTextLength;
-        Foundation::Memory::SmallStackBuffer<Led_tChar> fRealText;
-        Foundation::Memory::SmallStackBuffer<Led_tChar> fVirtualText;
-        vector<ScriptRunElt>                            fScriptRuns;
+        size_t                                      fTextLength;
+        Foundation::Memory::InlineBuffer<Led_tChar> fRealText;
+        Foundation::Memory::InlineBuffer<Led_tChar> fVirtualText;
+        vector<ScriptRunElt>                        fScriptRuns;
     };
 
     /*
@@ -254,11 +254,11 @@ namespace Stroika::Frameworks::Led {
         virtual vector<ScriptRunElt> GetScriptRuns () const override;
 
     private:
-        const TextLayoutBlock&                          fSubsetOf;
-        size_t                                          fStart;
-        size_t                                          fEnd;
-        vector<ScriptRunElt>                            fScriptRuns;
-        Foundation::Memory::SmallStackBuffer<Led_tChar> fRealText;
+        const TextLayoutBlock&                      fSubsetOf;
+        size_t                                      fStart;
+        size_t                                      fEnd;
+        vector<ScriptRunElt>                        fScriptRuns;
+        Foundation::Memory::InlineBuffer<Led_tChar> fRealText;
     };
 
 }

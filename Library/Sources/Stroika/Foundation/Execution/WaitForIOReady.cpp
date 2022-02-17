@@ -15,7 +15,7 @@
 #endif
 
 #include "../Memory/BLOB.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/StackBuffer.h"
 #include "../Time/Realtime.h"
 
 #include "Exceptions.h"
@@ -34,7 +34,7 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Execution::WaitForIOReady_Support;
 
-using Memory::SmallStackBuffer;
+using Memory::StackBuffer;
 using Time::DurationSecondsType;
 
 namespace {
@@ -136,7 +136,7 @@ auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfM
 {
     DurationSecondsType time2Wait = Math::AtLeast<Time::DurationSecondsType> (timeoutAt - Time::GetTickCount (), 0);
     Thread::CheckForInterruption ();
-    SmallStackBuffer<pollfd> pollData;
+    StackBuffer<pollfd> pollData;
     {
         pollData.GrowToSize_uninitialized (end - start);
         size_t idx = 0;
