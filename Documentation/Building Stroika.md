@@ -448,7 +448,14 @@ But - even with just plain make, you need some sort of configure script to estab
 
 ---
 
-## Common Errors
+## Common Errors (FAQ)
+
+- When installing a new version of some compilers like Visual Studio, you must rebuild
+  your configuration files with
+  ~~~
+  make reconfigure
+  ~~~
+  since the configuration file may contain absolute paths (with version info) to particular compilers or libraries.
 
 - Tar failure
 
