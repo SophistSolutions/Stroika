@@ -69,10 +69,9 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
 SHELL ["cmd", "/S", "/C"]
 RUN choco install -y cygwin
 RUN choco install -y cyg-get
-RUN cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip
-
-## Sometimes helpful
-## cyg-get gdb
+# doxygen for generating docs - optional
+# gdb for debugging - optional
+RUN cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip doxygen
 
 # Add cygwin to the path
 SHELL ["powershell"]
