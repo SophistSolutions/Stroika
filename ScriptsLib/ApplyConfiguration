@@ -181,6 +181,7 @@ mkdir ($intermediateFiles);
 #
 my $configFileMakeName	=	"$intermediateFiles$activeConfiguration/Configuration.mk";
 my $vs2kIntellisenseCng	=	"Library/Projects/VisualStudio.Net/Microsoft.Cpp.stroika.AllConfigs.props";
+my $vsCodeCppExtensionCng	=	".vscode/c_cpp_properties.json";
 
 
 my $stkRoot	=	trim(`realpath .`);
@@ -563,6 +564,65 @@ sub WriteVS2kIntellisenseConfigFile
 	close(OUT);
 }
 
+sub WriteVSCodeCPPExtensionConfigFile
+{
+	local $nConfigs = `jq ".configurations | length" < $vsCodeCppExtensionCng`;
+	local $indexOfNewConfig = $nConfigs;
+	## would be nice to find faster way todo this
+	for my $i (0 .. $nConfigs) {
+		local $x = `jq ".configurations[$i].name | select (. == \\\"$activeConfiguration\\\")" < $vsCodeCppExtensionCng`;
+		if ($x ne "") {
+			$indexOfNewConfig = $i;
+		}
+	}
+	# print "indexOfNewConfig: $indexOfNewConfig\n";
+	local $newCfgObj = "{";
+	$newCfgObj .= " name: \\\"$activeConfiguration\\\"";
+	{
+		# print ("CXXFLAGS=$CXXFLAGS\n");
+		local $std = "c++17";
+		local $l = index($CXXFLAGS, "--std=");
+		if ($l != -1) {
+			$std = substr ($CXXFLAGS, $l + 6);
+		}
+		local $l = index($CXXFLAGS, "-std:");
+		# print ("l=$l\n");
+		if ($l != -1) {
+			$std = substr ($CXXFLAGS, $l+5);
+			# print ("111-std=$std\n");
+		}
+		local $l = index($std, " ");
+		if ($l != -1) {
+			$std = substr ($std, 0, $l);
+		}
+		if ($std eq "c++latest") {
+			$std = "c++20";
+		}
+		$newCfgObj .= " ,cppStandard: \\\"$std\\\"";
+	}
+	{
+		$newCfgObj .= " ,includePath: [";
+		local $first = true;
+		foreach my $element (split /$PATH_SEPERATOR/, $INCLUDES_PATH) {
+			if ($first) {
+				$first = false;
+			}
+			else {
+			$newCfgObj .= " , ";
+			}
+			$newCfgObj .= "\\\"$element\\\"";
+			$paths2Print .= $element;
+		}
+		$newCfgObj .= "]";
+	}
+	$newCfgObj .= "}";
+	local $r = ` jq ".configurations[$indexOfNewConfig]=$newCfgObj" < $vsCodeCppExtensionCng`;
+	# print ("r: $r\n");
+	open(FH, '>', $vsCodeCppExtensionCng) or die $!;
+	print FH $r;
+	close(FH);
+}
+
 
 
 #print ("OS: $^O\n");
@@ -595,3 +655,7 @@ if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 	WriteVS2kIntellisenseConfigFile ();
 	print("done\n");
 }
+
+print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Updating \"$vsCodeCppExtensionCng\" ... ");
+WriteVSCodeCPPExtensionConfigFile
+print("done\n");
