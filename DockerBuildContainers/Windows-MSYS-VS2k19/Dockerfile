@@ -62,7 +62,7 @@ RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tl
   msys ' '; \
   msys 'pacman --noconfirm -Syuu'; \
   msys 'pacman --noconfirm -Syuu'; \
-  msys 'pacman --noconfirm -S base-devel git unzip p7zip doxygen'; \
+  msys 'pacman --noconfirm -S base-devel git unzip p7zip doxygen mingw-w64-x86_64-jq'; \
   msys 'pacman --noconfirm -Scc';
 # doxygen for generating docs - optional
 # gdb for debugging - optional

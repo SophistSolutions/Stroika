@@ -64,7 +64,7 @@ RUN choco install -y cygwin
 RUN choco install -y cyg-get
 # doxygen for generating docs - optional
 # gdb for debugging - optional
-RUN cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip doxygen
+RUN cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip doxygen jq
 
 # Add cygwin to the path
 SHELL ["powershell"]
