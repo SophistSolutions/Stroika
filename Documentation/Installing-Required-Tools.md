@@ -68,6 +68,7 @@ Building with Stroika requires
   - automake
   - dos2unix
   - unzip
+  - jq
 
 #### Via Chocolatey
 
@@ -78,7 +79,7 @@ Building with Stroika requires
 
   ~~~
   choco install cygwin cyg-get
-  cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip
+  cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip doxygen jq
   ~~~
 
 ### MSYS
@@ -90,7 +91,7 @@ Note - we've only tested building (from MSYS) using Visual Studio. We've not yet
 - pacman -Syu
   
   Note - this closes the shell window when its done, so start a new shell window when it completes
-- pacman --noconfirm -S --needed base-devel git unzip p7zip
+- pacman --noconfirm -S --needed base-devel git unzip p7zip doxygen mingw-w64-x86_64-jq
 
 ---
 
@@ -103,7 +104,6 @@ Note - we've only tested building (from MSYS) using Visual Studio. We've not yet
     - Stroika v2.1 is currently tested with clang6, clang-7, clang-8, clang-9, clang-10, clang-11, clang-12
 - automake (if building curl)
 - libtool (gnu version) – (if building curl)
-
 
 ---
 
