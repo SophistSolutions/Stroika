@@ -10,6 +10,9 @@
 
 /**
  * TODO:
+ * 
+ *      @todo   SEE https://stroika.atlassian.net/browse/STK-768 - major refactor of this module
+ * 
  *      @todo   Add Int2String () module? Like FloatConversion::ToString, and this String2Int?
  *
  *      @todo   DOCUMENT BEHAVIOR OF STRING2INT() for bad strings. What does it do?
