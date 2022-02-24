@@ -45,7 +45,7 @@ public:
     virtual VariantValue Read ([[maybe_unused]] const Streams::InputStream<Character>::Ptr& in) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx ("DataExchange::XML::Reader::Rep_::Read");
+        Debug::TraceContextBumper ctx{"DataExchange::XML::Reader::Rep_::Read"};
 #endif
 // TODO - USE SAXREADER HERE!!!
 #if qHasFeature_Xerces
