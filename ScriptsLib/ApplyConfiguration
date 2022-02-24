@@ -623,7 +623,6 @@ sub WriteVSCodeCPPExtensionConfigFile
 		$newCfgObj .= "]";
 	}
 	{
-
 		$newCfgObj .= " ,defines: [";
 		local $first = true;
 		foreach my $element (split / /, $CPPFLAGS) {
@@ -640,6 +639,10 @@ sub WriteVSCodeCPPExtensionConfigFile
 		}
 		$newCfgObj .= "]";
 	}
+	{
+		$newCfgObj .= " ,compilerPath: \\\"$COMPILER_DRIVER_CPlusPlus\\\"";
+	}
+
 	$newCfgObj .= "}";
 	local $r = ` jq ".configurations[$indexOfNewConfig]=$newCfgObj" < $vsCodeCppExtensionCng`;
 	# print ("r: $r\n");
