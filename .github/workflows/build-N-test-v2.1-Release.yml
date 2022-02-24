@@ -157,6 +157,8 @@ jobs:
           make clean
       - name: Make libraries
         run: make libraries
+      - name: Make Documentation
+        run: make documentation
       # DISABLED DUE TO SPACE ISSUES
       # - name: Make all
       #   run: make all
