@@ -177,6 +177,12 @@ jobs:
           name: Sample apps (${{ matrix.displayTargetName }})
           path: |
             Builds/${{ matrix.config_name }}/Samples-*
+      - name: Archive Documentation Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Doxygen Documentation
+          path: |
+            Builds/Stroika-Doxygen-Help.tar.gz
       - name: Archive Log Results
         uses: actions/upload-artifact@v2
         with:
