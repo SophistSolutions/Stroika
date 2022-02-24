@@ -14,7 +14,6 @@ CompileTimeFlagChecker_HEADER (Stroika::Foundation::IO::Network::Transfer, qHasF
 namespace Stroika::Foundation::IO::Network::Transfer {
 
 #if qHasFeature_LibCurl
-
     inline void ThrowIfError (CURLcode status)
     {
         if (status != CURLE_OK) [[UNLIKELY_ATTR]] {
