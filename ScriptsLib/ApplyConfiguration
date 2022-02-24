@@ -571,6 +571,9 @@ sub WriteVSCodeCPPExtensionConfigFile
 		print ("SKIPPED SINCE jq not installed ... ");
 		return;
 	}
+	if (!(-e $vsCodeCppExtensionCng)) {
+		`echo "{\\\"configurations\\\":[]}" > $vsCodeCppExtensionCng`;
+	}
 	local $nConfigs = `jq ".configurations | length" < $vsCodeCppExtensionCng`;
 	local $indexOfNewConfig = $nConfigs;
 	## would be nice to find faster way todo this
