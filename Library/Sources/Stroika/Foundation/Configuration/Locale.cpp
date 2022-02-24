@@ -83,7 +83,7 @@ optional<Characters::String> Configuration::FindLocaleNameQuietly (const Charact
     Require (iso2LetterTerritoryCode.length () == 2); // may lift this in the future and make it optional
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Configuration::FindLocaleName");
+    Debug::TraceContextBumper ctx{"Configuration::FindLocaleName"};
     DbgTrace (L"(%s,%s)", iso2LetterLanguageCode.c_str (), iso2LetterTerritoryCode.c_str ());
 #endif
 
