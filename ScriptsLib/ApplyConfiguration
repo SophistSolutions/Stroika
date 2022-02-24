@@ -566,6 +566,11 @@ sub WriteVS2kIntellisenseConfigFile
 
 sub WriteVSCodeCPPExtensionConfigFile
 {
+	local $jq = `which jq`;
+	if ($jq eq "") {
+		print ("...SKIPPED SINCE jq not installed...");
+		return;
+	}
 	local $nConfigs = `jq ".configurations | length" < $vsCodeCppExtensionCng`;
 	local $indexOfNewConfig = $nConfigs;
 	## would be nice to find faster way todo this
@@ -608,10 +613,27 @@ sub WriteVSCodeCPPExtensionConfigFile
 				$first = false;
 			}
 			else {
-			$newCfgObj .= " , ";
+				$newCfgObj .= " , ";
 			}
 			$newCfgObj .= "\\\"$element\\\"";
-			$paths2Print .= $element;
+		}
+		$newCfgObj .= "]";
+	}
+	{
+
+		$newCfgObj .= " ,defines: [";
+		local $first = true;
+		foreach my $element (split / /, $CPPFLAGS) {
+		 	if (index ($element, "-D") == 0) {
+				if ($first) {
+					$first = false;
+				}
+				else {
+					$newCfgObj .= " , ";
+				}
+				local $v = substr($element, 2);
+				$newCfgObj .= "\\\"$v\\\"";
+			}
 		}
 		$newCfgObj .= "]";
 	}
