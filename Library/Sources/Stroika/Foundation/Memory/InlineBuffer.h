@@ -47,22 +47,23 @@ namespace Stroika::Foundation::Memory {
      *  \par Example Usage
      *      @see Samples/SimpleService project
      *      \code
-     *          Memory::Buffer<byte> useKey{keyLen};  // no need to default initialize cuz done automatically
+     *          Memory::InlineBuffer<byte> useKey{keyLen};  // no need to default initialize cuz done automatically
      *          (void)::memcpy (useKey.begin (), key.begin (), min (keyLen, key.size ()));
      *      \endcode
      * OR
      *      \code
-     *          Memory::InlineBuffer<byte> useKey{Memory::Buffer::eUninitiialized, keyLen};
+     *          Memory::InlineBuffer<byte> useKey{Memory::eUninitiialized, keyLen};
      *          (void)::memset (useKey.begin (), 0, keyLen);
      *          (void)::memcpy (useKey.begin (), key.begin (), min (keyLen, key.size ()));
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
-     *  \note   Buffer<T> can roughly be used as a replacement for vector<> - behiing similarly, except that its optimized
-     *          for the case where its used as an automatic variable with a template specifying the right size on the stack for the buffer.
+     *  \note   InlineBuffer<T> can roughly be used as a replacement for vector<> - behaving similarly, except that its optimized
+     *          for the case where the caller statically knows GENERALLY the right size for the buffer, in which case it can be
+     *          allocated more cheaply.
      *
-     *          The objects CAN be copied, and will properly construct/destruct array members as they are added/removed.
+     *          InlineBuffer<T> CAN be copied, and will properly construct/destruct array members as they are added/removed.
      *          (new feature as of Stroika v2.1b6).
      *
      *  \note   We do not provide an operator[] overload because this creates ambiguity with the operator* overload.
