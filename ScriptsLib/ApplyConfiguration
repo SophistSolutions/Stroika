@@ -568,7 +568,7 @@ sub WriteVSCodeCPPExtensionConfigFile
 {
 	local $jq = `which jq`;
 	if ($jq eq "") {
-		print ("...SKIPPED SINCE jq not installed...");
+		print ("SKIPPED SINCE jq not installed ... ");
 		return;
 	}
 	local $nConfigs = `jq ".configurations | length" < $vsCodeCppExtensionCng`;
@@ -679,5 +679,5 @@ if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 }
 
 print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Updating \"$vsCodeCppExtensionCng\" ... ");
-WriteVSCodeCPPExtensionConfigFile
+WriteVSCodeCPPExtensionConfigFile ();
 print("done\n");
