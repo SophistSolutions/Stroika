@@ -52,6 +52,7 @@ help:
 	@$(ECHO) "    reconfigure:                 -    Rebuild configuration files from the command-lines that built them before"
 	@$(ECHO) "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)"
 	@$(ECHO) "    project-files:               -    Alias for project-files-visual-studio project-files-qt-creator"
+	@$(ECHO) "    project-files-vs-code:       -    Builds project files for visual studio code"
 	@$(ECHO) "    project-files-visual-studio: -    Builds project files for visual studio.net"
 	@$(ECHO) "    project-files-qt-creator(*): -    Builds project project-files-qt-creator (also project-files-qt-creator-load"
 	@$(ECHO) "                                      project-files-qt-creator-save)"
@@ -184,12 +185,17 @@ third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-
 endif
 
 
-project-files:	project-files-visual-studio project-files-qt-creator
+# As of Stroika 2.1r4, no longer automatically run project-files-qt-creator since I'm not sure its widely used
+# anymore, and we may just deprecate (I no longer update the project files)
+project-files:	project-files-visual-studio project-files-vs-code
 
+project-files-vs-code:
+	@$(ECHO) "Creating default visual-studio-code configuration files:"
+	@cp --update .config-default.json .config.json
+	@$(MAKE) --silent apply-configurations MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 project-files-visual-studio:
 	@$(MAKE) --directory Tests --no-print-directory project-files
-
 
 project-files-qt-creator:	project-files-qt-creator-load
 
@@ -198,7 +204,6 @@ project-files-qt-creator-load:
 	@$(ECHO) -n "Loading qt-creator project files ... "
 	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp Library/Projects/QtCreator/$$i .; done;
 	@$(ECHO) "done"
-
 
 project-files-qt-creator-save:
 	@$(ECHO) -n "Saving qt-creator project files ... "
