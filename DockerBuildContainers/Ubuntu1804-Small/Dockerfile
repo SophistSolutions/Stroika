@@ -33,6 +33,9 @@ RUN apt-get install -y automake autoconf libtool-bin
 #Not really a Stroika dependency, but its how we download/fetch stroika
 RUN apt-get install -y git
 
+#needed for ApplyConfiguration to update vs-code configuration files
+RUN apt-get install -y jq
+
 #Only needed to use sanitizer builds
 RUN apt-get install -y libasan5 libubsan1
 
