@@ -1,14 +1,14 @@
 ﻿# SEE https://hub.docker.com/_/microsoft-windows-servercore for list of versions
+#
 #ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:2004
 #ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
 #ARG BASE_IMAGE=mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019
-##### ltsc2019 not working on github actions - LGP 2022-02-23
-# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019
-###### ltsc2022 not working (yet) on github actions - LGP 2021-12-23
-#ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019   ##### ltsc2019 not working on github actions - LGP 2022-02-23
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022   ##### ltsc2022 not working (yet) on github actions - LGP 2021-12-23
+#
 
 ### LGP TRY/TESTING -LGP 2022-02-23
-ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022
+ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
 
 FROM ${BASE_IMAGE}
 
@@ -81,7 +81,8 @@ RUN  \
 
 
 COPY Windows-MSYS-VS2k19/Getting-Started-With-Stroika.md c:/msys64
-COPY Windows-MSYS-VS2k22/.bash_profile c:/msys64/
+COPY Windows-MSYS-VS2k19/.bashrc c:/msys64/
+COPY Windows-MSYS-VS2k19/.bash_profile c:/msys64/
 
 
 CMD ["bash.exe", "-l"]
