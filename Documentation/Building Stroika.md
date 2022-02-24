@@ -37,6 +37,16 @@ make --directory Stroika-Dev all run-tests CONFIGURATION=Debug -j10
 
 If you have a relatively standard POSIX like c++ build environement, you maybe done at this point. If you got errors, or want to know more, read on.
 
+### <a name="build-with-IDE">Build with IDE</a>
+
+Some project files are pre-checked in. For example, look in 
+ [Workspaces/VisualStudio.Net-2022/](../Workspaces/VisualStudio.Net-2022/) or [Workspaces/VSCode/](../Workspaces/VSCode/). But some files/configuration/defaults maybe needed by some of these tools so perhaps run:
+
+```bash
+make project-files
+```
+to build some of them.
+
 ### <a name="build-with-docker">Build with Docker</a>
 
 If you are missing any components and just want a quick environment to test that has all the right build components installed, you can use the pre-built docker containers:
