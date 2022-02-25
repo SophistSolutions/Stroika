@@ -34,6 +34,9 @@ RUN apt-get install -y cmake
 #required to build libcurl
 RUN apt-get install -y automake autoconf libtool-bin
 
+#Not required, but if you want to generate docs
+RUN apt-get install -y doxygen
+
 #needed for ApplyConfiguration to update vs-code configuration files
 RUN apt-get install -y jq
 

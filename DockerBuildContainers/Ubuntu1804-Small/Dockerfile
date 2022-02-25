@@ -30,6 +30,9 @@ RUN apt-get install -y cmake
 #required to build libcurl
 RUN apt-get install -y automake autoconf libtool-bin
 
+#Not required, but if you want to generate docs
+RUN apt-get install -y doxygen
+
 #Not really a Stroika dependency, but its how we download/fetch stroika
 RUN apt-get install -y git
 
