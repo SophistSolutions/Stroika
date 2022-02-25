@@ -78,6 +78,10 @@ elif [ $TOOL == "sed" ] ||  [ $TOOL == "gsed" ] ; then
 	if [ $DistroBasedOn == "Darwin" ] ; then
 		echo -n ": try brew install gnu-sed" && echo && exit 0
 	fi
+elif [ $TOOL == "jq" ] ; then
+	if [ $DistroBasedOn == "msys" ] ; then
+	echo -n ": try pacman -S mingw-w64-x86_64-jq" && echo && exit 0
+	fi
 fi
 if [ $DistroBasedOn == "Darwin" ] ; then
 	echo -n ": try brew install $TOOL" && echo && exit 0
