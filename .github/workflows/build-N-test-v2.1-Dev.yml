@@ -367,7 +367,7 @@ jobs:
       - name: Build
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" --env BASH_ENV="$BASH_ENV" buildContainer make all
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" --env BASH_ENV="$BASH_ENV" buildContainer bash -c "make all"
       - name: Run-Tests
         shell: "bash"
         run: |
