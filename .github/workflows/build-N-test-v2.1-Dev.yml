@@ -326,7 +326,6 @@ jobs:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
       ARTIFACTS_DIR: "c:/Artifacts/"
-      BASH_ENV: "/.bashrc"
     steps:
       - uses: actions/checkout@v2
       # https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
@@ -362,16 +361,16 @@ jobs:
       - name: Configure
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika --env BASH_ENV="$BASH_ENV" buildContainer sh -c "./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
-          docker exec --workdir c:/Stroika --env BASH_ENV="$BASH_ENV" buildContainer cat ConfigurationFiles/${{ matrix.config_name }}.xml
+          docker exec --workdir c:/Stroika buildContainer sh -c "./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
+          docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/${{ matrix.config_name }}.xml
       - name: Build
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" --env BASH_ENV="$BASH_ENV" buildContainer bash -c "make all"
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make all
       - name: Run-Tests
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" --env BASH_ENV="$BASH_ENV" buildContainer make run-tests
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make run-tests
       - name: Build System Info
         shell: "bash"
         run: |
