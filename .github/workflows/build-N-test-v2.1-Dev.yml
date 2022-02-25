@@ -362,16 +362,16 @@ jobs:
       - name: Configure
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika buildContainer sh -c "./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
-          docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/${{ matrix.config_name }}.xml
+          docker exec --workdir c:/Stroika --env BASH_ENV="$BASH_ENV" buildContainer sh -c "./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
+          docker exec --workdir c:/Stroika --env BASH_ENV="$BASH_ENV" buildContainer cat ConfigurationFiles/${{ matrix.config_name }}.xml
       - name: Build
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make all
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" --env BASH_ENV="$BASH_ENV" buildContainer make all
       - name: Run-Tests
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make run-tests
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" --env BASH_ENV="$BASH_ENV" buildContainer make run-tests
       - name: Build System Info
         shell: "bash"
         run: |
