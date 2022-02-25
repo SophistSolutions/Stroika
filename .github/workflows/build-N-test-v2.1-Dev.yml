@@ -44,7 +44,7 @@ jobs:
           #   os: windows
           #   compiler: g++-8
           #   runs_on: windows-2022
-          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
           #   cpp_version: c++17
           #   config_name: Debug
           #   extra_config_args: --apply-default-debug-flags --trace2file enable
@@ -282,45 +282,52 @@ jobs:
       matrix:
         # Add to extra_config_args for build speed: --Xerces no --OpenSSL no --lzma no --boost no
         include:
-          - displayTargetName: windows-cygwin-x86-Debug
+          - displayTargetName: windows-vs2k19-cygwin-x86-Debug
             os: windows
             runs_on: windows-2022
             container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
             config_name: Debug
             extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
             includeInDevBranchBuilds: true
-          # - displayTargetName: windows-cygwin-x86-Release
-          #   os: windows
-          #   runs_on: windows-2022
-          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
-          #   config_name: Release
-          #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
-          #   includeInDevBranchBuilds: false
-          # - displayTargetName: windows-cygwin-x86_64-Release
-          #   os: windows
-          #   runs_on: windows-2022
-          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
-          #   config_name: Release
-          #   extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
-          #   includeInDevBranchBuilds: false
-          - displayTargetName: windows-msys-x86-Debug
+          - displayTargetName: windows-vs2k22-cygwin-x86-Debug
             os: windows
             runs_on: windows-2022
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
             config_name: Debug
             extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
             includeInDevBranchBuilds: true
-          # - displayTargetName: windows-msys-x86-Release
+          # - displayTargetName: windows-vs2k22-cygwin-x86-Release
           #   os: windows
           #   runs_on: windows-2022
-          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
           #   config_name: Release
           #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
-          # - displayTargetName: windows-msys-x86_64-Release
+          # - displayTargetName: windows-vs2k22-cygwin-x86_64-Release
           #   os: windows
           #   runs_on: windows-2022
-          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+          #   config_name: Release
+          #   extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
+          #   includeInDevBranchBuilds: false
+          - displayTargetName: windows-vs2k22-msys-x86-Debug
+            os: windows
+            runs_on: windows-2022
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
+            config_name: Debug
+            extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
+            includeInDevBranchBuilds: true
+          # - displayTargetName: windows-vs2k22-msys-x86-Release
+          #   os: windows
+          #   runs_on: windows-2022
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
+          #   config_name: Release
+          #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
+          #   includeInDevBranchBuilds: false
+          # - displayTargetName: windows-vs2k22-msys-x86_64-Release
+          #   os: windows
+          #   runs_on: windows-2022
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
           #   config_name: Release
           #   extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
