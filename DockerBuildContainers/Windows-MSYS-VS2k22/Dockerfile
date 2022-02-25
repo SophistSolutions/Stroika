@@ -8,7 +8,8 @@
 #
 
 ### LGP TRY/TESTING -LGP 2022-02-23
-ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
+ARG BASE_IMAGE=mcr.microsoft.com/windows/server:ltsc2022
 
 FROM ${BASE_IMAGE}
 
@@ -72,19 +73,20 @@ RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tl
 # doxygen for generating docs - optional
 # gdb for debugging - optional
 
-# Set PATH variable (to include MSYS)
+# Set PATH variable (to include MSYS, and its mingw64 directory - for jq)
 SHELL ["powershell"]
 RUN  \
-    $env:PATH =  $env:PATH + ';c:\msys64\usr\bin';   \
+    $env:PATH =  $env:PATH + ';c:\msys64\usr\bin;c:\msys64\mingw64\bin;';   \
     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
 
 
-COPY Windows-MSYS-VS2k22/Getting-Started-With-Stroika.md c:/msys64
-COPY Windows-MSYS-VS2k22/.bashrc c:/msys64/
+COPY Windows-MSYS-VS2k22/Getting-Started-With-Stroika.md c:/msys64/
 COPY Windows-MSYS-VS2k22/.bash_profile c:/msys64/
 
+# MSYS defaults to ignorning the inherited path - see https://www.msys2.org/wiki/MSYS2-introduction/
+ENV MSYS2_PATH_TYPE=inherit
 
-CMD ["bash.exe", "-l"]
+CMD ["bash.exe", "--login"]
 
 # ### NOTE TO RUN
 # ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22

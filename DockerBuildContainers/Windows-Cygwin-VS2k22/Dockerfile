@@ -8,9 +8,11 @@
 #
 
 ### LGP TRY/TESTING -LGP 2022-02-23
-ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
+ARG BASE_IMAGE=mcr.microsoft.com/windows/server:ltsc2022
 
 FROM ${BASE_IMAGE}
+
 
 # Sometimes we get sporadic failures building, and I THINK this is due to running out of disk space in builder, so
 # adding this to the docker engine config may help:
