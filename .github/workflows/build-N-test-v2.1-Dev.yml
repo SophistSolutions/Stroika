@@ -326,6 +326,7 @@ jobs:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
       ARTIFACTS_DIR: "c:/Artifacts/"
+      BASH_ENV: "/.bashrc"
     steps:
       - uses: actions/checkout@v2
       # https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
