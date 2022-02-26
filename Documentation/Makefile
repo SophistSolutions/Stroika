@@ -7,7 +7,7 @@ MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 all:
 	@if [ ! -e $(StroikaRoot)/Builds/Stroika-Doxygen-Help.tar.gz ] ; then\
 		if which doxygen 2>&1 > /dev/null; then\
-			make --silent doxygen;\
+			$(MAKE) --silent doxygen;\
 		else\
 			$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && echo "Skipping build of documentation since Doxygen not installed";\
 		fi;\

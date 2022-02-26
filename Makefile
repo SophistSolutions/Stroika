@@ -434,17 +434,17 @@ basic-unix-test-configurations:
 	./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler;\
 	./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components;\
 	./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --LibCurl no --lzma no --zlib system --OpenSSL no --sqlite no --Xerces no --boost no;\
-	make --silent basic-unix-test-configurations_g++_versions_;\
-	make --silent basic-unix-test-configurations_clang++_versions_;\
+	$(MAKE) --silent basic-unix-test-configurations_g++_versions_;\
+	$(MAKE) --silent basic-unix-test-configurations_clang++_versions_;\
 	#\
 	#32-bit not working now - asm bug - must debug...\
 	#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args -m32 --static-link-gccruntime disable;\
 	#\
-	make --silent basic-unix-test-configurations_sanitizer_configs_;\
+	$(MAKE) --silent basic-unix-test-configurations_sanitizer_configs_;\
 	#\
 	./configure g++-optimized --only-if-has-compiler --config-tag Unix --apply-default-release-flags;\
 	#\
-	make --silent basic-unix-test-configurations_valgrind_configs_;\
+	$(MAKE) --silent basic-unix-test-configurations_valgrind_configs_;\
 
 
 basic-unix-test-configurations_g++_versions_:
