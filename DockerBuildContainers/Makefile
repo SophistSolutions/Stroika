@@ -31,7 +31,6 @@ ifeq (${HOST_OS_DETECTED},Linux)
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-1804 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2004 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2110 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests .
-	 
 endif
 ifneq ($(findstring $(HOST_OS_DETECTED),MSYS-Cygwin),)
 	# to build this you may need  --storage-opts "size 100GB", but that currently doesn't work with build, so set
@@ -82,7 +81,7 @@ ifeq (${HOST_OS_DETECTED},Linux)
 	docker pull ubuntu:21.10
 endif
 ifneq ($(findstring $(HOST_OS_DETECTED),MSYS-Cygwin),)
-	docker pull mcr.microsoft.com/windows/servercore:20H2
+	docker pull mcr.microsoft.com/windows/servercore:ltsc2022
 endif
 
 
