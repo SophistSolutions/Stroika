@@ -80,7 +80,7 @@ elif [ $TOOL == "sed" ] ||  [ $TOOL == "gsed" ] ; then
 	fi
 elif [ $TOOL == "jq" ] ; then
 	if [ $DistroBasedOn == "msys" ] ; then
-	echo -n ": try pacman -S mingw-w64-x86_64-jq" && echo && exit 0
+	echo -n ": try pacman -S mingw-w64-x86_64-jq; and maybe add export PATH='\$PATH:/mingw64/bin' to ~/.bashrc" && echo && exit 0
 	fi
 fi
 if [ $DistroBasedOn == "Darwin" ] ; then
