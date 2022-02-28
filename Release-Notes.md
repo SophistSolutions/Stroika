@@ -9,41 +9,79 @@ especially those they need to be aware of when upgrading.
 
 ---
 
-
-### START 2.1r4 release notes
+### 2.1r4x {2022-02-28x}  --DRAFT
 
 #### TLDR
-- Fixed issue with windows docker containers compatability (regression) with github actions (now always use servercore:ltsc2022 in containers and docker container windows actions)
+
+- Fixed issue (regression) with windows docker containers compatability with github actions. 
+  Now always use servercore:ltsc2022 in containers and docker container windows actions.
 - Greatly improved tooling support for Stroika builds from vscode
+- Renamed SmallStackBuffer<> to StackBuffer<> and or InlineBuffer<>
 
-#### DETAILS
+#### Change Details
 
+- Build System Tests And Tools
+  - Docker
+    - added echo warning in DockerBuildContainers/Makefile when building MSYS2 stuff so easier to workaround bug with docker
+    - redo Cygwin docker containers using choco instead of hack loading old private install/image of cygwin
+    - test using servercore:ltsc2022 for windows docker configs - see if owrks on github actions now
+    - try +ARG BASE_IMAGE=mcr.microsoft.com/windows/server:ltsc2022 for github actions compat; and for msys, use MSYS2_PATH_TYPE=inherit and set path in dockerfile (losing bashrc hack)
+      github actions: say use windows runninger windows-2022 not windows-latest, since currently windows-latest documented to be 2019, but may not really be? unclear - they maybe transitioning? but be celar about expections so we can match in docker container
+      docs on docker configs for windows: and trying servercore:ltsc2022 again (with 2022 .github action runner)
+  - Supported Compiler Versions
+    - support bug defines for _MSC_VER_2k22_17Pt1_
+    - added Xerces patch  Patches/Char16Test_IOSTREAMCHANGE.PATCH for compatability with Visual Studio .Net 2022 17.1.0 compiler
+  - Project Files
+    - no longer hake make project-files build project-files-qt-creator; added project-files-vs-code and make project-files does that now instead; and use command:cpptools.activeConfigName in tasks.json file instead of hardwired configuraitons; and new .config-default.json to workaround bug/issue with extension which loads the file failing if its missing (done when you say make project-files)
+    - VSCode
+      - include jq tool in docker containers and docs / scripts etc
+      - Used jq in ApplyConfiguration (WriteVSCodeCPPExtensionConfigFile) script to auto-add stuff to .vscode/c_cpp_properties.json
+      - big cleanup of ./vscode/tasks.json - using /.config.json for some falgs, and command:cpptools.activeConfigName for config name
+      - lose default .vscode/c_cpp_properties.json
 - Documentation
   - Doxygen
     - lose Documentation/Doxygen/RunDoxygen.pl and cleanup build of doxygen docs
     - added docs/docker file code about installing the right stuff by default, like doxygen
   - added FAQ entry on building
-- Docker
-  - added echo warning in DockerBuildContainers/Makefile when building MSYS2 stuff so easier to workaround bug with docker
-  - redo Cygwin docker containers using choco instead of hack loading old private install/image of cygwin
-  - test using servercore:ltsc2022 for windows docker configs - see if owrks on github actions now
-  - try +ARG BASE_IMAGE=mcr.microsoft.com/windows/server:ltsc2022 for github actions compat; and for msys, use MSYS2_PATH_TYPE=inherit and set path in dockerfile (losing bashrc hack)
-    github actions: say use windows runninger windows-2022 not windows-latest, since currently windows-latest documented to be 2019, but may not really be? unclear - they maybe transitioning? but be celar about expections so we can match in docker container
-    docs on docker configs for windows: and trying servercore:ltsc2022 again (with 2022 .github action runner)
+- Library
+  - Renanmed Memory::SmallStackBuffer -> Memory::InlineBuffer, and created Memory::StackBuffer (similar to SmallStackBuffer but REQUIRES on stack and no copying); **deprecated** old name, and deprecated SmallStackBufferCommon, and instead moved UninitializedConstructorFlag to Memory namespace (toplevel) and similarly for eUninitialized - now simpler, better documented; and used eUninitialized in ALOT of places it should have been, but wasn't til now (partly cuz PITA with other class prefix)
 
-- VSCode
-  - include jq tool in docker containers and docs / scripts etc
-  - Used jq in ApplyConfiguration (WriteVSCodeCPPExtensionConfigFile) script to auto-add stuff to .vscode/c_cpp_properties.json
-  - big cleanup of ./vscode/tasks.json - using /.config.json for some falgs, and command:cpptools.activeConfigName for config name
-  - lose default .vscode/c_cpp_properties.json
+#### Release-Validation
 
-- no longer hake make project-files build project-files-qt-creator; added project-files-vs-code and make project-files does that now instead; and use command:cpptools.activeConfigName in tasks.json file instead of hardwired configuraitons; and new .config-default.json to workaround bug/issue with extension which loads the file failing if its missing (done when you say make project-files)
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13; XCode: 13 }
+  - MSVC: { 15.9.41, 16.11.10, 17.1.0 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Moneterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 21.10], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - vs2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+  - WSL-Regression tests
+    - Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure
 
-- removed supurrious echo PATH from makefile
-- Renanmed Memory::SmallStackBuffer -> Memory::InlineBuffer, and created Memory::StackBuffer (similar to SmallStackBuffer but REQUIRES on stack and no copying); **deprecated** old name, and deprecated SmallStackBufferCommon, and instead moved UninitializedConstructorFlag to Memory namespace (toplevel) and similarly for eUninitialized - now simpler, better documented; and used eUninitialized in ALOT of places it should have been, but wasn't til now (partly cuz PITA with other class prefix)
-
-- support bug defines for _MSC_VER_2k22_17Pt1_
-- added Xerces patch  Patches/Char16Test_IOSTREAMCHANGE.PATCH for compatability with Visual Studio .Net 2022 17.1.0 compiler
 
 ---
 
