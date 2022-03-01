@@ -9,13 +9,13 @@ especially those they need to be aware of when upgrading.
 
 ---
 
-### 2.1r4x {2022-02-28x}  --DRAFT
+### 2.1r4 {2022-03-01}
 
 #### TLDR
 
 - Fixed issue (regression) with windows docker containers compatability with github actions. 
   Now always use servercore:ltsc2022 in containers and docker container windows actions.
-- Greatly improved tooling support for Stroika builds from vscode
+- Greatly improved tooling support for Stroika builds from Visual Studio Code
 - Renamed SmallStackBuffer<> to StackBuffer<> and or InlineBuffer<>
 
 #### Change Details
@@ -60,7 +60,7 @@ especially those they need to be aware of when upgrading.
     - WSL v2
   - MacOS
     - 11.4 (Big Sur) - x86_64
-    - 12.0 (Moneterey) - arm64/m1 chip
+    - 12.0 (Monterey) - arm64/m1 chip
   - Linux: { Ubuntu: [18.04, 20.04, 21.10], Raspbian(cross-compiled) }
 - Hardware Tested/Supported
   - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
