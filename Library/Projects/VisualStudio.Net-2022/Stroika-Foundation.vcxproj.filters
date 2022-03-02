@@ -828,6 +828,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -842,7 +845,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\StackBuffer.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.h">
@@ -2109,9 +2112,15 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.h">
       <Filter>Sources\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\InlineBuffer.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\StackBuffer.inl">
       <Filter>Sources\Memory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
@@ -3464,6 +3473,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.inl">
       <Filter>Sources\Debug</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\InlineBuffer.inl">
+      <Filter>Sources\Memory</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

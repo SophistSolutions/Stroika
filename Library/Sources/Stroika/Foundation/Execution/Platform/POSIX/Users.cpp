@@ -1,11 +1,11 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../../StroikaPreComp.h"
 
 #include <unistd.h>
 
-#include "../../../Memory/SmallStackBuffer.h"
+#include "../../../Memory/StackBuffer.h"
 #include "../../Exceptions.h"
 
 #include "Users.h"
@@ -15,8 +15,7 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Execution::Platform::POSIX;
 
 using Characters::String;
-using Memory::SmallStackBuffer;
-using Memory::SmallStackBufferCommon;
+using Memory::StackBuffer;
 
 /*
  ********************************************************************************
@@ -29,7 +28,7 @@ uid_t Platform::POSIX::UserName2UID (const String& name)
     if (bufsize == -1) { /* Value was indeterminate */
         bufsize = 16384; /* Should be more than enough */
     }
-    SmallStackBuffer<char> buf (SmallStackBufferCommon::eUninitialized, bufsize);
+    StackBuffer<char> buf{Memory::eUninitialized, bufsize};
 
     struct passwd pwd {
     };
@@ -55,7 +54,7 @@ String Platform::POSIX::uid_t2UserName (uid_t uid)
     if (bufsize == -1) { /* Value was indeterminate */
         bufsize = 16384; /* Should be more than enough */
     }
-    SmallStackBuffer<char> buf (SmallStackBufferCommon::eUninitialized, bufsize);
+    StackBuffer<char> buf{Memory::eUninitialized, bufsize};
 
     struct passwd pwd {
     };

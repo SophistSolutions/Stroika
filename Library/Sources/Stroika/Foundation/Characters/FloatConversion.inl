@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_FloatConversion_inl_
 #define _Stroika_Foundation_Characters_FloatConversion_inl_ 1
@@ -14,7 +14,7 @@
 
 #include "../Containers/Common.h"
 #include "../Memory/Optional.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Characters::FloatConversion {
 
@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     }
                 }
 
-                Memory::SmallStackBuffer<char> tmp;
+                Memory::StackBuffer<char> tmp;
                 if (*end != '\0') {
                     // remap addresses - copying to a temporary buffer, so we can nul-terminate string passed to strtod (etc)
                     size_t len = end - start;
@@ -229,7 +229,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     }
                 }
 
-                Memory::SmallStackBuffer<wchar_t> tmp;
+                Memory::StackBuffer<wchar_t> tmp;
                 if (*end != '\0') {
                     // remap addresses - copying to a temporary buffer, so we can nul-terminate string passed to strtod (etc)
                     size_t len = end - start;
@@ -263,9 +263,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         inline String ToString_OptimizedForCLocaleAndNoStreamFlags_ (FLOAT_TYPE f, int precision)
         {
             using namespace Memory;
-            size_t                 sz = precision + 100; // I think precision is enough
-            SmallStackBuffer<char> buf{SmallStackBuffer<char>::eUninitialized, sz};
-            ptrdiff_t              resultStrLen;
+            size_t            sz = precision + 100; // I think precision is enough
+            StackBuffer<char> buf{Memory::eUninitialized, sz};
+            ptrdiff_t         resultStrLen;
             if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy) {
                 auto mkFmtWithPrecisionArg_ = [] (char* formatBufferStart, [[maybe_unused]] char* formatBufferEnd, char _Spec) -> char* {
                     char* fmtPtr = formatBufferStart;
@@ -509,7 +509,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
              *  Most of the time we can do this very efficiently, because there are just ascii characters.
              *  Else, fallback on older algorithm that understands full unicode character set.
              */
-            Memory::SmallStackBuffer<char> asciiS;
+            Memory::StackBuffer<char> asciiS;
             if (String::AsASCIIQuietly (start, end, &asciiS)) {
                 auto b = asciiS.begin ();
                 auto e = asciiS.end ();
@@ -569,7 +569,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
              *  Most of the time we can do this very efficiently, because there are just ascii characters.
              *  Else, fallback on older algorithm that understands full unicode character set.
              */
-            Memory::SmallStackBuffer<char> asciiS;
+            Memory::StackBuffer<char> asciiS;
             if (String::AsASCIIQuietly (start, end, &asciiS)) {
                 auto b         = asciiS.begin ();
                 auto originalB = b; // needed to properly compute remainder

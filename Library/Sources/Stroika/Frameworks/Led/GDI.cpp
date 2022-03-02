@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../Foundation/StroikaPreComp.h"
 
@@ -11,7 +11,7 @@
 #include "../../Foundation/Characters/CodePage.h"
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/Execution/Throw.h"
-#include "../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../Foundation/Memory/StackBuffer.h"
 
 #include "GDI.h"
 
@@ -455,8 +455,8 @@ namespace {
         /*
          *  Cannot use ::GetStockObject (DEFAULT_PALETTE) - because - believe it or not - it returns a 20-entry pallete.
          */
-        Memory::SmallStackBuffer<char> palBuf (sizeof (LOGPALETTE) + sizeof (PALETTEENTRY) * 256);
-        LPLOGPALETTE                   lplgPal = reinterpret_cast<LPLOGPALETTE> (static_cast<char*> (palBuf));
+        Memory::StackBuffer<char> palBuf{sizeof (LOGPALETTE) + sizeof (PALETTEENTRY) * 256};
+        LPLOGPALETTE              lplgPal = reinterpret_cast<LPLOGPALETTE> (static_cast<char*> (palBuf));
 
         lplgPal->palVersion    = 0x300;
         lplgPal->palNumEntries = 256;
@@ -493,9 +493,9 @@ namespace {
         }
 
         // Create the header big enough to contain color table and bitmasks if needed
-        size_t                         nInfoSize = sizeof (BITMAPINFOHEADER) + sizeof (RGBQUAD) * (1 << wBits);
-        Memory::SmallStackBuffer<char> bmiBuf (nInfoSize);
-        LPBITMAPINFO                   pbmi = reinterpret_cast<LPBITMAPINFO> (static_cast<char*> (bmiBuf));
+        size_t                    nInfoSize = sizeof (BITMAPINFOHEADER) + sizeof (RGBQUAD) * (1 << wBits);
+        Memory::StackBuffer<char> bmiBuf{nInfoSize};
+        LPBITMAPINFO              pbmi = reinterpret_cast<LPBITMAPINFO> (static_cast<char*> (bmiBuf));
         (void)::memset (pbmi, 0, nInfoSize);
         pbmi->bmiHeader.biSize        = sizeof (BITMAPINFOHEADER);
         pbmi->bmiHeader.biWidth       = dwX;
@@ -518,9 +518,9 @@ namespace {
     HBITMAP Create16BitDIBSection (HDC refDC, DWORD dwX, DWORD dwY)
     {
         // Create the header big enough to contain color table and bitmasks if needed
-        size_t                         nInfoSize = sizeof (BITMAPINFOHEADER) + 3 * sizeof (DWORD);
-        Memory::SmallStackBuffer<char> bmiBuf (nInfoSize);
-        LPBITMAPINFO                   pbmi = reinterpret_cast<LPBITMAPINFO> (static_cast<char*> (bmiBuf));
+        size_t                    nInfoSize = sizeof (BITMAPINFOHEADER) + 3 * sizeof (DWORD);
+        Memory::StackBuffer<char> bmiBuf{nInfoSize};
+        LPBITMAPINFO              pbmi = reinterpret_cast<LPBITMAPINFO> (static_cast<char*> (bmiBuf));
         (void)::memset (pbmi, 0, nInfoSize);
         pbmi->bmiHeader.biSize     = sizeof (BITMAPINFOHEADER);
         pbmi->bmiHeader.biWidth    = dwX;
@@ -543,9 +543,9 @@ namespace {
     HBITMAP Create32BitDIBSection (HDC refDC, DWORD dwX, DWORD dwY)
     {
         // Create the header big enough to contain color table and bitmasks if needed
-        size_t                         nInfoSize = sizeof (BITMAPINFOHEADER) + 3 * sizeof (DWORD);
-        Memory::SmallStackBuffer<char> bmiBuf (nInfoSize);
-        LPBITMAPINFO                   pbmi = reinterpret_cast<LPBITMAPINFO> (static_cast<char*> (bmiBuf));
+        size_t                    nInfoSize = sizeof (BITMAPINFOHEADER) + 3 * sizeof (DWORD);
+        Memory::StackBuffer<char> bmiBuf{nInfoSize};
+        LPBITMAPINFO              pbmi = reinterpret_cast<LPBITMAPINFO> (static_cast<char*> (bmiBuf));
         (void)::memset (pbmi, 0, nInfoSize);
         pbmi->bmiHeader.biSize     = sizeof (BITMAPINFOHEADER);
         pbmi->bmiHeader.biWidth    = dwX;
@@ -1505,7 +1505,7 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics,
 #endif
 
 #if qPlatform_MacOS
-        Memory::SmallStackBuffer<short> shortOffsets (charsThisTime + 1);
+        Memory::StackBuffer<short> shortOffsets{charsThisTime + 1};
         Assert (Led_GetCurrentGDIPort () == *this);
         ::MeasureText (charsThisTime, &text[i], shortOffsets);
         for (size_t j = 0; j < charsThisTime; ++j) {
@@ -1552,7 +1552,7 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics,
                     }
                 }
 #else
-                Memory::SmallStackBuffer<int> logicalWidths (charsThisTime);
+                Memory::StackBuffer<int> logicalWidths{charsThisTime};
                 Verify (sUniscribeDLL.ScriptStringGetLogicalWidths (ssa, logicalWidths) == S_OK);
 
                 Assert (charsThisTime > 0);
@@ -1775,7 +1775,7 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
 #if qUseGetCharPlacementToImage && qWideCharacters
             {
                 size_t len = nextTabAt - textCursor;
-                Memory::SmallStackBuffer<wchar_t> glyphs (len);
+                Memory::StackBuffer<wchar_t> glyphs{len};
                 GCP_RESULTSW gcpResult;
                 memset (&gcpResult, 0, sizeof (gcpResult));
                 gcpResult.lStructSize = sizeof (GCP_RESULTS);
@@ -1791,7 +1791,7 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
 #if qUseFakeTTGetWPlacementToImage && qWideCharacters
             {
                 size_t len = nextTabAt - textCursor;
-                Memory::SmallStackBuffer<wchar_t> glyphs (len);
+                Memory::StackBuffer<wchar_t> glyphs{len};
                 if (Win9x_Workaround_GetCharPlacementFunction (m_hDC, textCursor, len, glyphs) != 0) {
                     Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, nullptr, glyphs, static_cast<UINT> (len), nullptr));
                     goto Succeeded_But_Need_To_Adjust_Width;

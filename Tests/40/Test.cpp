@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 //  TEST    Foundation::Execution::Threads
 #include "Stroika/Foundation/StroikaPreComp.h"
@@ -1114,7 +1114,6 @@ namespace {
 namespace {
     void RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_ ()
     {
-        // For fixed bug - https://stroika.atlassian.net/browse/STK-622
         Debug::TraceContextBumper ctx{"RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_"};
         enum {
             START = 0,
@@ -1163,14 +1162,16 @@ namespace {
 namespace {
     void RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_ ()
     {
-        // For fixed bug - https://stroika.atlassian.net/browse/STK-622
+        // https://stroika.atlassian.net/browse/STK-767 - ONCE saw hang in this routine under Ubuntu 21.10, TSAN, so adding TraceContextMbumper to debug
         Debug::TraceContextBumper        ctx{"RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_"};
         BlockingQueue<function<void ()>> q;
         Verify (q.size () == 0);
         Thread::Ptr consumerThread = Thread::New (
             [&q] () {
+                Debug::TraceContextBumper ctx1{"**inner thread"}; // for https://stroika.atlassian.net/browse/STK-767
                 while (true) {
-                    function<void ()> f = q.RemoveHead ();
+                    Debug::TraceContextBumper ctx2{"**inner thread loop"}; // for https://stroika.atlassian.net/browse/STK-767
+                    function<void ()>         f = q.RemoveHead ();
                     f ();
                 }
             },

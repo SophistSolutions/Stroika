@@ -2,7 +2,8 @@ Builds
 IntermediateFiles
 ConfigurationFiles
 .project
-.cproject
+.config.json
+cproject
 .externalToolBuilders
 *.sdf
 *.opensdf

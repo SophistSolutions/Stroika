@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../StroikaPreComp.h"
 
@@ -48,7 +48,7 @@ void Debug::DropIntoDebuggerIfPresent ()
     ssize_t n  = ::readlink (pathBuf, dataBuf, sizeof (dataBuf) - 1);
     n          = Math::PinInRange<size_t> (static_cast<size_t> (n), 0, sizeof (dataBuf) - 1);
     dataBuf[n] = '\0';
-    if (string (dataBuf).find ("gdb") != -1) {
+    if (string{dataBuf}.find ("gdb") != -1) {
         ::raise (SIGTRAP);
     }
 #else

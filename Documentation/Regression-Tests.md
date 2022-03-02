@@ -45,8 +45,7 @@ checkin from one spot.
   (on windows bash shell run; takes about 4 HRs)
 
   ```bash
-
-  USE_TEST_BASENAME=Windows_VS2k17 PLATFORM=VisualStudio.Net-2017 \
+  USE_TEST_BASENAME=Windows_`./ScriptsLib/DetectedHostOS`_VS2k17 PLATFORM=VisualStudio.Net-2017 \
       ./ScriptsLib/RegressionTests
   ```
 
@@ -55,7 +54,7 @@ checkin from one spot.
   (on windows bash shell run; takes about 4 HRs)
 
   ```bash
-  USE_TEST_BASENAME=Windows_VS2k19 PLATFORM=VisualStudio.Net-2019 \
+  USE_TEST_BASENAME=Windows_`./ScriptsLib/DetectedHostOS`_VS2k19 PLATFORM=VisualStudio.Net-2019 \
       ./ScriptsLib/RegressionTests
   ```
 
@@ -65,7 +64,7 @@ checkin from one spot.
   (note this done on my laptop, not windows-dev-vm)
 
   ```bash
-  USE_TEST_BASENAME=Windows_VS2k22 PLATFORM=VisualStudio.Net-2022 \
+  USE_TEST_BASENAME=Windows_`./ScriptsLib/DetectedHostOS`_VS2k22 PLATFORM=VisualStudio.Net-2022 \
       ./ScriptsLib/RegressionTests
   ```
 
@@ -136,36 +135,13 @@ checkin from one spot.
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
-- \$TEST_TARGET=Centos7_x86_64
-
-  (remote execute on machine hercules using docker and copy back results; takes about 30 minutes)
-
-  ```bash
-  RUN_IN_DOCKER=1 \
-      USE_TEST_BASENAME=Centos7_x86_64 \
-      CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-centos-7-small \
-      MACHINE=Hercules \
-      CMD2RUN="scl enable devtoolset-8 ScriptsLib/RegressionTests" \
-      ./ScriptsLib/RunRemoteRegressionTests
-  ```
-
-- \$TEST_TARGET=Centos8_x86_64
-
-  (remote execute on machine hercules using docker and copy back results; takes about 30 minutes)
-
-  ```bash
-  RUN_IN_DOCKER=1 \
-      USE_TEST_BASENAME=Centos8_x86_64 \
-      CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-centos-8-small \
-      MACHINE=Hercules \
-      ./ScriptsLib/RunRemoteRegressionTests
-  ```
-
 - Must be done on Windows machine (currently doesnt work on - even windows - vm)
 
   ```sh
-   CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 USE_TEST_BASENAME=Windows_VS2k19-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
-   CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 USE_TEST_BASENAME=Windows_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
+   CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 USE_TEST_BASENAME=Windows_Cygwin_VS2k19-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
+   CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 USE_TEST_BASENAME=Windows_Cygwin_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
+   CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 USE_TEST_BASENAME=Windows_MSYS_VS2k19-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
+   CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 USE_TEST_BASENAME=Windows_MSYS_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
   ```
 
 - WSL (tested on Ubuntu 20.04) test

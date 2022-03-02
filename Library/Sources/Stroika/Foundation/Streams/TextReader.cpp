@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../StroikaPreComp.h"
 
@@ -7,7 +7,8 @@
 #include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Execution/Common.h"
 #include "../Execution/OperationNotSupportedException.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/InlineBuffer.h"
+#include "../Memory/StackBuffer.h"
 
 #include "TextReader.h"
 
@@ -17,8 +18,8 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
 
 using Characters::String;
-using Memory::SmallStackBuffer;
-using Memory::SmallStackBufferCommon;
+using Memory::InlineBuffer;
+using Memory::StackBuffer;
 
 namespace {
     using MyWCharTConverterType_ = codecvt<wchar_t, char, mbstate_t>;
@@ -70,12 +71,12 @@ protected:
          *
          *  Since number of wchar_ts filled always <= number of bytes read, we can read up to that # of bytes from upstream binary stream.
          */
-        SmallStackBuffer<wchar_t, 8 * 1024>                 outBuf{SmallStackBufferCommon::eUninitialized, size_t (intoEnd - intoStart)};
+        StackBuffer<wchar_t, 8 * 1024>                      outBuf{Memory::eUninitialized, static_cast<size_t> (intoEnd - intoStart)};
         wchar_t*                                            outCursor = begin (outBuf);
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         {
-            SmallStackBuffer<byte, 8 * 1024> inBuf{SmallStackBufferCommon::eUninitialized, size_t (intoEnd - intoStart)}; // wag at size
-            size_t                           inBytes = _fSource.Read (begin (inBuf), end (inBuf));
+            StackBuffer<byte, 8 * 1024> inBuf{Memory::eUninitialized, size_t (intoEnd - intoStart)}; // wag at size
+            size_t                      inBytes = _fSource.Read (begin (inBuf), end (inBuf));
         again:
             const char* firstB = reinterpret_cast<const char*> (begin (inBuf));
             const char* endB   = firstB + inBytes;
@@ -136,8 +137,8 @@ protected:
         //      o   save existing decode state
         //      o   decode and see if at least one character
         //      o   fall through to _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream
-        SmallStackBuffer<byte> inBuf{SmallStackBufferCommon::eUninitialized, 10}; // enuf to get at least one charcter decoded (wag at number - but enuf for BOM+one char)
-        optional<size_t>       inBytes = _fSource.ReadNonBlocking (begin (inBuf), end (inBuf));
+        StackBuffer<byte> inBuf{Memory::eUninitialized, 10}; // enuf to get at least one charcter decoded (wag at number - but enuf for BOM+one char)
+        optional<size_t>  inBytes = _fSource.ReadNonBlocking (begin (inBuf), end (inBuf));
         if (inBytes) {
             if (*inBytes == 0) {
                 return 0; // EOF - other than zero read bytes COULD mean unknown if EOF or not
@@ -341,8 +342,8 @@ private:
     }
 
 private:
-    bool                      fReadAheadAllowed_{false};
-    SmallStackBuffer<wchar_t> fCache_; // Cache uses wchar_t instead of Character so can use resize_uninitialized () - requires is_trivially_constructible
+    bool                  fReadAheadAllowed_{false};
+    InlineBuffer<wchar_t> fCache_; // Cache uses wchar_t instead of Character so can use resize_uninitialized () - requires is_trivially_constructible
 };
 
 class TextReader::IterableAdapterStreamRep_ final : public InputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedMutex {

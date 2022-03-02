@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_CodePage_h_
 #define _Stroika_Foundation_Characters_CodePage_h_ 1
@@ -320,7 +320,7 @@ namespace Stroika::Foundation::Characters {
          *  \par Example Usage
          *      \code
          *          size_t                    cvtBufSize = UTFConvert::QuickComputeConversionOutputBufferSize<char8_t, wchar_t> (from, to);
-         *          SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
+         *          StackBuffer<wchar_t>      buf{Memory::eUninitialized, cvtBufSize};
          *          wchar_t*                  outStr = buf.begin ();
          *          UTFConvert::Convert<char8_t, wchar_t> (&from, to, &outStr, buf.end (), UTFConvert::lenientConversion);
          *          return String{buf.begin (), outStr};

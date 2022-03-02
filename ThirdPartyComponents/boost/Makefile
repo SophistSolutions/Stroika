@@ -20,6 +20,7 @@ ifneq ($(CONFIGURATION),)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 .PHONY:	all clean clobber check bootstrap_ configureAndBuild_
@@ -41,21 +42,6 @@ VERSION=1_78_0
 VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed s/_/\./g)
 VERSION_WITH_2DOTS=$(shell echo $(VERSION_WITH_DOTS) | sed 's/\.[ab][0-9]//')
 ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
-
-# IF CENTOS, THEN USE OLDER BOOST - 1.76... - to avoid fail to compile...
-# still seems broken on centos7 with 1_78_0_b1
-ifneq (,$(wildcard /etc/redhat-release))
-    VERSION=1_76_0
-endif
-
-
-ifneq (,$(findstring /cygdrive/,$(PATH)))
-    UNAME := Cygwin
-else ifneq (,$(findstring WINDOWS,$(PATH)))
-    UNAME := Windows
-else
-    UNAME := $(shell uname -s)
-endif
 
 
 
@@ -108,9 +94,9 @@ $(ZIPPEDFILE):
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "boost ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p $@
-ifeq ($(shell uname -s),Darwin)
+ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
-else ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
+else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	@PWD=`pwd` tar xf $(ZIPPEDFILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
 else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
@@ -127,6 +113,7 @@ else
 	@rm -rf $(PER_CONFIGURATION_BUILDS_DIR)include/boost
 	@rm -f $(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_*
 	@rm -rf $(PER_CONFIGURATION_BUILDS_DIR)share/boost-build
+	@rm -rf $(B2FullPath)
 endif
 
 
@@ -176,7 +163,10 @@ endif
 
 ScriptsLibPath=$(shell realpath ../../ScriptsLib)
 
-ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
+ifeq ($(DETECTED_HOST_OS),Cygwin)
+CXX:= $(shell cygpath --mixed "$(CXX)")
+B2FullPath:= $(shell cygpath --mixed "$(B2FullPath)")
+else ifeq ($(DETECTED_HOST_OS),MSYS)
 CXX:= $(shell cygpath --mixed "$(CXX)")
 B2FullPath:= $(shell cygpath --mixed "$(B2FullPath)")
 endif
@@ -204,14 +194,6 @@ CFLAGS:=$(filter-out -flto, $(CFLAGS))
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 endif
 
-### https://stroika.atlassian.net/browse/STK-711
-### WORKAROUND BUG BUILDING GCC-10/C++2a & this version of BOOST
-ifeq (1_72_0,$(VERSION))
-ifeq (g++-10,$(findstring g++-10,$(CXX)))
-CXXFLAGS:=$(filter-out --std=c++2a, $(CXXFLAGS)) --std=c++17
-endif
-endif
-
 
 ### Run b2.exe --help
 
@@ -226,7 +208,7 @@ TOOLSET_NAME=msvc-14.2
 else
 TOOLSET_NAME=msvc
 endif
-else ifeq ($(shell uname -s),Darwin)
+else ifeq ($(DETECTED_HOST_OS),Darwin)
 #using the name darwin caused errors with XCode 11.4, but otherwise appears to make sense (and we used til 11.4) -- LGP 2020-04-12
 #TOOLSET_NAME=darwin
 TOOLSET_NAME=clang-darwin
@@ -295,7 +277,7 @@ configureAndBuild_:
 	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ConfigureAndBuild-OUT.txt
 	@
 	@#https://stroika.atlassian.net/browse/STK-633
-ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
+ifeq ($(DETECTED_HOST_OS),Cygwin)
 	@MAXCHAR=120 && PWD=`realpath --canonicalize-missing $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)` && if [[ $${#PWD} -gt $$MAXCHAR ]] ; then $(ECHO) && ../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#PWD}: sometimes if its more than $$MAXCHAR characters on windows it may cause boost build problem (https://stroika.atlassian.net/browse/STK-633)" && ../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n; fi;
 endif
 	@

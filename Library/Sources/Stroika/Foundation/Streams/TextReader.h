@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_TextReader_h_
 #define _Stroika_Foundation_Streams_TextReader_h_ 1
@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Streams {
      *
      *  \par Example Usage
      *      \code
-     *          Assert (TextReader::New (String (L"hello world")).ReadAll () == L"hello world");
+     *          Assert (TextReader::New (String{L"hello world"}).ReadAll () == L"hello world");
      *      \endcode
      *
      *  \note   Reading improperly encoded text may result in a RuntimeException indicating inproperly encoded characters.

@@ -61,6 +61,12 @@ sub indexOf
 }
 
 
+my $PATH_SEPERATOR=":";
+if ("$^O" eq "cygwin" or "$^O" eq "msys") {
+	$PATH_SEPERATOR=";";
+}
+
+
 my @EXTRA_ARGS = ();
 
 
@@ -155,6 +161,7 @@ my $FEATUREFLAG_librt = undef;
 my $FEATUREFLAG_WIX = undef;
 my $TargettingValgrind = undef;
 my $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = undef;
+my $qCompiler_ValgrindLTO_Buggy = undef;
 my $qCompiler_ValgrindDirectSignalHandler_Buggy = undef;
 my $qCompiler_HasNoMisleadingIndentation_Flag = undef;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
@@ -180,15 +187,26 @@ my $EXTRA_SUFFIX_LINKER_ARGS = "";
 my $RUN_PREFIX = "";			# for now just used as prefix for stuff like LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3, esp for running tests
 my $CrossCompiling = "false";
 my $onlyGenerateIfCompilerExists = false;		## Looks for BOTH compiler and assocaited stdlib if std=libc++
-my $INCLUDES_PATH = undef;		# space separated list
+my @INCLUDES_PATH = qw();
+my $INCLUDES_PATH_SET = false;
 my @INCLUDES_PATH_ADD  = qw();
-my $LIBS_PATH = undef;			# space separated list
+my @LIBS_PATH = qw();
+my $LIBS_PATH_SET = false;
 my @LIBS_PATH_ADD  = qw();
 my $LIB_DEPENDENCIES  = undef;	# space separated list
 my @LIB_DEPENDENCIES_ADD  = qw();
 my $STDCXXLIB = undef;
 my $TOOLS_PATH_ADDITIONS = undef;
-my $TOOLS_PATH_ADDITIONS_BUGWORKAROUND = "";			# space separated list
+my $lsb_release = trim (`lsb_release -rs 2>/dev/null`);
+
+
+#
+# Workaround MSYS compatabilty issues with microsoft visual C++ tools.
+#		Note: MSYS2_ENV_CONV_EXCL doesn't appear necessary (as of 2022-01-25)
+#
+if ("$^O" eq "msys") {
+	$ENV{'MSYS2_ARG_CONV_EXCL'} = '*';
+}
 
 
 
@@ -249,9 +267,9 @@ sub	DoHelp_
 		print("	    --append-extra-prefix-linker-args {ARG}         /* Appends ARG to 'extra prefix linker args */\n");
 		print("	    --append-extra-suffix-linker-args {ARG}         /* Appends ARG to 'extra suffix linker args */\n");
 		print("	    --append-extra-compiler-and-linker-args {ARG}   /* Appends ARG to 'extra compiler' and 'extra linker' args */\n");
-		print("	    --includes-path {ARG}                           /* Sets INCLUDES_PATH variable (: separated, since unix standard and allows spaces) */\n");
+		print("	    --includes-path {ARG}                           /* Sets INCLUDES_PATH variable (: separated, since unix standard and allows spaces, ; separated on windows hosts) */\n");
 		print("	    --append-includes-path {ARG}                    /* Appends ARG to 'INCLUDES_PATH */\n");
-		print("	    --libs-path {ARG}                               /* Sets LIBS_PATH variable (':' separated, since unix standard and allows spaces) */\n");
+		print("	    --libs-path {ARG}                               /* Sets LIBS_PATH variable (':' separated, since unix standard and allows spaces; separated on windows hosts) */\n");
 		print("	    --append-libs-path {ARG}                        /* Appends ARG to 'LIBS_PATH */\n");
 		print("	    --lib-dependencies {ARG}                        /* Sets LIB_DEPENDENCIES variable (space separated) */\n");
 		print("	    --append-lib-dependencies {ARG}                 /* Appends ARG to 'LIB_DEPENDENCIES */\n");
@@ -381,7 +399,7 @@ sub     Get_MSVC_CL_Version_
 sub     FillDefaultIncludesPathIfNeeded_
 {
 	#IF we set include path  explicitly, then suppress adding include path automatically (based on features etc) - just explicitly added ones from the commandline
-	my $includeAutomaticDependencies = !defined ($INCLUDES_PATH);
+	my $includeAutomaticDependencies = not $INCLUDES_PATH_SET;
 	if ($includeAutomaticDependencies) {
 		if (
 			$FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP ||
@@ -396,27 +414,22 @@ sub     FillDefaultIncludesPathIfNeeded_
 		}
 		push @INCLUDES_PATH_ADD, trim (`realpath --canonicalize-missing Library/Sources/`) . "/";
 		push @INCLUDES_PATH_ADD, trim (`realpath --canonicalize-missing IntermediateFiles/$configurationName`) . "/";
-	}
-	if (!defined ($INCLUDES_PATH)) {
+		@INCLUDES_PATH = qw ();
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 			my $x = GetMSVCVarName_ ("INCLUDE");
-			$INCLUDES_PATH = trim (`cygpath --unix --path \"$x\"`);
-		}
-		else {
-			$INCLUDES_PATH = "";
+			for my $i (split /;/, $x) {
+				push @INCLUDES_PATH, $i;
+			}
 		}
 	}
 	my $var;
 	foreach $var (@INCLUDES_PATH_ADD) {
-		if (not ($INCLUDES_PATH eq "")) {
-			$INCLUDES_PATH .= ":";
-		}
-		$INCLUDES_PATH .= $var;
+		push @INCLUDES_PATH, $var;
 	}
 }
 sub     FillDefaultLibsPathIfNeeded_
 {
-	my $includeAutomaticDependencies = !defined ($LIBS_PATH);
+	my $includeAutomaticDependencies = not $LIBS_PATH_SET;
 	if ($includeAutomaticDependencies) {
 		if (
 			$FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP ||
@@ -429,22 +442,17 @@ sub     FillDefaultLibsPathIfNeeded_
 		) {
 			push @LIBS_PATH_ADD, trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/lib/`) . "/";
 		}
-	}
-	if (!defined ($LIBS_PATH)) {
+		@LIBS_PATH = qw ();
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 			my $x = GetMSVCVarName_ ("LIB");
-			$LIBS_PATH = trim (`cygpath --unix --path \"$x\"`);
-		}
-		else {
-			$LIBS_PATH = "";
+			for my $i (split /;/, $x) {
+				push @LIBS_PATH, $i;
+			}
 		}
 	}
 	my $var;
 	foreach $var (@LIBS_PATH_ADD) {
-		if (not ($LIBS_PATH eq "")) {
-			$LIBS_PATH .= ":";
-		}
-		$LIBS_PATH .= $var;
+		push @LIBS_PATH, $var;
 	}
 }
 sub		PortablyAddLibToLibDependencies_
@@ -567,13 +575,7 @@ sub     FillInToolsPathAdditionsIfNeeded_
 	if ($includeAutomaticDependencies) {
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 			my $x = GetMSVCVarName_ ("TOOLS_PATH_ADDITIONS");
-			$TOOLS_PATH_ADDITIONS = trim ($x);
-			my $v = Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus) ;
-			if (IsMSVCCompiler_ ($COMPILER_DRIVER_CPlusPlus) && 191627034 <= $v  && $v <= 191800000 ) {
-				## only need the one, but this is easiest way to get the right path
-				## $TOOLS_PATH_ADDITIONS_BUGWORKAROUND = '/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64';
-				$TOOLS_PATH_ADDITIONS_BUGWORKAROUND = $TOOLS_PATH_ADDITIONS;
-			}
+			$TOOLS_PATH_ADDITIONS =  trim (`cygpath --mixed --path \"$x)\"`);
 		}
 		else {
 			$TOOLS_PATH_ADDITIONS = "";
@@ -742,7 +744,7 @@ sub	SetDefaultForCompilerDriver_
 			$CPPSTD_VERSION_FLAG="--std=c++20"
 		}
 		elsif ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-			$CPPSTD_VERSION_FLAG="/std:c++latest"
+			$CPPSTD_VERSION_FLAG="-std:c++latest"
 		}
 	}
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
@@ -826,20 +828,10 @@ sub	SetDefaultForCompilerDriver_
 			if (!$sanitizerFlagsNoneSet) {
 				my %already = map { $_ => 1 } @sanitizerFlags;
 				if(!exists($already{'address'})) {
-					if (trim(`awk -F= '/^NAME/{print $2}' /etc/os-release 2>/dev/null`) =~ /CentOS/) {
-						#skip cuz broken on Centos7  - spurrious address-use-after-scope errors (I THINK)
-					}
-					else {
-						push @sanitizerFlags, 'address';
-					}
+					push @sanitizerFlags, 'address';
 				}
 				if(!exists($already{'undefined'})) {
-					if (trim(`awk -F= '/^NAME/{print $2}' /etc/os-release 2>/dev/null`) =~ /CentOS/) {
-						#skip cuz broken on Centos8  - spurrious warnings when run...
-					}
-					else {
-						push @sanitizerFlags, 'undefined';
-					}
+					push @sanitizerFlags, 'undefined';
 				}
 				$sanitizerFlagsIsDefined = true;
 			}
@@ -880,14 +872,13 @@ sub	SetDefaultForCompilerDriver_
 		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_ASSERTIONS = 0;
 		}
+		# https://stroika.atlassian.net/browse/STK-763
+		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS and $lsb_release == "20.04" and $TargettingValgrind == true) {
+			$ENABLE_LTO = false;
+		}
 		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS) {
 			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) ) {
-				if (trim(`awk -F= '/^NAME/{print $2}' /etc/os-release 2>/dev/null`) =~ /CentOS/) {
-					#skip cuz broken on Centos7  - generates link errors with boost (maybe an issue how I build boost)
-				}
-				else {
-					$ENABLE_LTO = true;
-				}
+				$ENABLE_LTO = true;
 			}
 			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 				# On ubuntu 18.04 gives error linking libcurl
@@ -908,7 +899,7 @@ sub	SetDefaultForCompilerDriver_
 			}
 		}
 		if (IsMSVCCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
-			$COPTIMIZE_FLAGS = "/O2 /Oi /Oy";
+			$COPTIMIZE_FLAGS = "-O2 -Oi -Oy";
 		}
 		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_TRACE2FILE = 0;
@@ -917,8 +908,8 @@ sub	SetDefaultForCompilerDriver_
 		if ($isVisualStudio) {
 			#	/OPT:REF eliminates functions and or data that are never referenced
 			#	/OPT:ICF[=iterations] to perform identical COMDAT folding
-			$EXTRA_PREFIX_LINKER_ARGS .= " /OPT:REF";
-			$EXTRA_PREFIX_LINKER_ARGS .= " /OPT:ICF";
+			$EXTRA_PREFIX_LINKER_ARGS .= " -OPT:REF";
+			$EXTRA_PREFIX_LINKER_ARGS .= " -OPT:ICF";
 		}
 
 	}
@@ -973,7 +964,7 @@ sub	SetDefaultForCompilerDriver_
 		$qCompiler_HasNoMisleadingIndentation_Flag = true;
 	}
 	
-	if (trim (`lsb_release -rs 2>/dev/null`) == "20.10" or trim (`lsb_release -rs 2>/dev/null`) == "21.04" or trim (`lsb_release -rs 2>/dev/null`) == "21.10") {
+	if ($lsb_release == "20.10" or $lsb_release == "21.04" or $lsb_release == "21.10") {
 		# so far only seen on ubuntu 20.10, clang++11, and g++10 - https://stroika.atlassian.net/browse/STK-717
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (10.0 <= GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0)) {
 			$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true;
@@ -984,6 +975,9 @@ sub	SetDefaultForCompilerDriver_
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and ($TargettingValgrind == true)) {
 			$qCompiler_ValgrindDirectSignalHandler_Buggy = true;
 		}
+		if ($ENABLE_LTO == true and $TargettingValgrind == true) {
+			$qCompiler_ValgrindLTO_Buggy = true;
+		}
 	}
 	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
 		push (@useExtraCDefines, '#define qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy 1');
@@ -991,6 +985,8 @@ sub	SetDefaultForCompilerDriver_
 	if (defined ($qCompiler_ValgrindDirectSignalHandler_Buggy) and $qCompiler_ValgrindDirectSignalHandler_Buggy) {
 		push (@useExtraCDefines, '#define qCompiler_ValgrindDirectSignalHandler_Buggy 1');
 	}
+
+	
 	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin" or "$^O" eq "msys"))) {
 		$FEATUREFLAG_librt = $LIBFEATUREFLAG_UseSystem;
 	}
@@ -1036,16 +1032,8 @@ sub	SetDefaultForCompilerDriver_
 	}
 
 	#https://stroika.atlassian.net/browse/STK-696
-	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && trim(`awk -F= '/^NAME/{print $2}' /etc/os-release 2> /dev/null`) =~ /CentOS/) {
-		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_No;
-	}
-	elsif (! defined $FEATUREFLAG_Xerces) {
+	if (! defined $FEATUREFLAG_Xerces) {
 		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
-	}
-
-	# This doesn't work with (at least how I've setup) centos8 under docker - not sure how to get the libs there...
-	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && trim(`awk -F= '/^NAME/{print $2}' /etc/os-release 2> /dev/null`) =~ /CentOS/) {
-		$STATIC_LINK_GCCRUNTIME = 0;
 	}
 
 	if ($MACOSX_DEPLOYMENT_TARGET ne "") {
@@ -1341,7 +1329,7 @@ sub	ParseCommandLine_Remaining_
 			$var = $args[$i];
 			$FEATUREFLAG_ActivePerl = $var;
 		}
-		elsif ((lc ($var) eq "-WIX") or (lc ($var) eq "--WIX")) {
+		elsif ((lc ($var) eq "-wix") or (lc ($var) eq "--wix")) {
 			$i++;
 			$var = $args[$i];
 			$FEATUREFLAG_WIX = $var;
@@ -1566,7 +1554,11 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-includes-path") or (lc ($var) eq "--includes-path")) {
 			$i++;
 			$var = $args[$i];
-			$INCLUDES_PATH = $var;
+			@INCLUDES_PATH = qw ();
+			for my $i (split /$PATH_SEPERATOR/, $var) {
+				push @INCLUDES_PATH, $i;
+			}
+			$INCLUDES_PATH_SET = true;
 		}
 		elsif ((lc ($var) eq "-append-includes-path") or (lc ($var) eq "--append-includes-path")) {
 			$i++;
@@ -1576,7 +1568,11 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-libs-path") or (lc ($var) eq "--libs-path")) {
 			$i++;
 			$var = $args[$i];
-			$LIBS_PATH = $var;
+			@LIBS_PATH = qw ();
+			for my $i (split /$PATH_SEPERATOR/, $var) {
+				push @LIBS_PATH, $i;
+			}
+			$LIBS_PATH_SET = true;
 		}
 		elsif ((lc ($var) eq "-append-libs-path") or (lc ($var) eq "--append-libs-path")) {
 			$i++;
@@ -1780,7 +1776,7 @@ sub     CHECK_FEATURE_OPTION
 sub	CHECK_OPTIONS_
 {
 	if ($PROJECTPLATFORMSUBDIR eq "") {
-		die ("Cannot identify ProjectPlatformSubdir");
+		die ("Cannot identify ProjectPlatformSubdir! Either explicitly supply the --platform argument (configure --help); or make sure you have Visual Studio.net installed");
 	}
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2012") {
 		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2012");
@@ -1791,7 +1787,7 @@ sub	CHECK_OPTIONS_
 	my @validProjectPlatfromSubDirs = ("Unix", "VisualStudio.Net-2017", "VisualStudio.Net-2019", "VisualStudio.Net-2022");
 	my %params = map { $_ => 1 } @validProjectPlatfromSubDirs;
 	if (not exists ($params{$PROJECTPLATFORMSUBDIR})) {
-		die ("Unrecognized --platfrom argument: valid ones include: " . join(",", @validProjectPlatfromSubDirs));
+		die ("Unrecognized --platform argument: valid ones include: " . join(",", @validProjectPlatfromSubDirs));
 	}
 	if ($TARGET_PLATFORMS eq "") {
 		die ("Cannot identify TARGET_PLATFORMS");
@@ -1871,15 +1867,13 @@ sub GetDefaultCZZFLAGS_flags_
 		}
 	}
 
-	if (defined $INCLUDES_PATH) {
-		for my $i (split /:/, $INCLUDES_PATH) {
-			if ($isVisualStudio) {
-				my $wpath = trim (`cygpath --mixed \"$i\"`);
-				push @flags, "/I\"$wpath\"";
-			}
-			else {
-				push @flags, "-I$i";
-			}
+	foreach (@INCLUDES_PATH) {
+		if ($isVisualStudio) {
+			my $wpath = trim (`cygpath --mixed \"$_\"`);		# c:/foo as opposed to c:\foo
+            push @flags, "-I\"$wpath\"";
+		}
+		else {
+			push @flags, "-I$_";
 		}
 	}
 	if (not ($CWARNING_FLAGS eq "")) {
@@ -1900,7 +1894,7 @@ sub GetDefaultCZZFLAGS_flags_
 		
 		if ($INCLUDE_SYMBOLS_LIB) {
 			if ($isVisualStudio) {
-				####? push @flags, "/Z7";
+				####? push @flags, "-Z7";
 			}
 			else {
 				push @flags, "-g";
@@ -1908,51 +1902,51 @@ sub GetDefaultCZZFLAGS_flags_
 		}
 		if ( $isVisualStudio ) {
 			if ($Windows_Exceptions_SupportStructuredExceptions == true) {
-				push @flags, "/EHa";
+				push @flags, "-EHa";
 			}
 			else {
-				push @flags, "/EHsc";
+				push @flags, "-EHsc";
 			}
-			push @flags, "/nologo";
-			push @flags, "/GR";			#  Enable Run-Time Type Information
-			push @flags, "/Gd";			#  Calling Convention - the default setting, specifies the __cdecl calling convention for all functions
-			push @flags, "/W4";			#  Warning Level (most less than WALL)
-			#push @flags, "/WX-";		#  (Dont) treat warnings as errors
-			#push @flags, "/JMC";		#  Just my code debugging (DONT TURN ON - let users add this but dont default on)
-			push @flags, "/Zc:inline";	#  Remove unreferenced code and data
-			push @flags, "/FC";			#  Use full paths in diagnostic messages
-			push @flags, "/bigobj";		# Avoid these failures - fatal error C1128: number of sections exceeded object file format limit: compile with /bigobj
+			push @flags, "-nologo";
+			push @flags, "-GR";			#  Enable Run-Time Type Information
+			push @flags, "-Gd";			#  Calling Convention - the default setting, specifies the __cdecl calling convention for all functions
+			push @flags, "-W4";			#  Warning Level (most less than WALL)
+			#push @flags, "-WX-";		#  (Dont) treat warnings as errors
+			#push @flags, "-JMC";		#  Just my code debugging (DONT TURN ON - let users add this but dont default on)
+			push @flags, "-Zc:inline";	#  Remove unreferenced code and data
+			push @flags, "-FC";			#  Use full paths in diagnostic messages
+			push @flags, "-bigobj";		# Avoid these failures - fatal error C1128: number of sections exceeded object file format limit: compile with /bigobj
 
-	#		push @flags, "/errorReport:prompt";	users can add this if desired
+	#		push @flags, "-errorReport:prompt";	users can add this if desired
 
-			###push @flags, "/experimental:module";
+			###push @flags, "-experimental:module";
 			
 			if ($ApplyDebugFlags == true) {
-				push @flags, "/RTCsu";		# 	Run-Time Error Checks - https://docs.microsoft.com/en-us/cpp/build/reference/rtc-run-time-error-checks?view=vs-2019
-				push @flags, "/GS";			#	Enable Security Check
-				push @flags, "/Oy-";		#	(Dont) omit frame pointers
-				push @flags, "/Od";			#	Disable Optimization
-				push @flags, "/MTd";		#	Multithreaded (Debug; but not dll)
+				push @flags, "-RTCsu";		# 	Run-Time Error Checks - https://docs.microsoft.com/en-us/cpp/build/reference/rtc-run-time-error-checks?view=vs-2019
+				push @flags, "-GS";			#	Enable Security Check
+				push @flags, "-Oy-";		#	(Dont) omit frame pointers
+				push @flags, "-Od";			#	Disable Optimization
+				push @flags, "-MTd";		#	Multithreaded (Debug; but not dll)
 			}
 			if ($ApplyReleaseFlags == true) {
-				push @flags, "/GS-";		#	Disable Security Check
-				push @flags, "/Gy";			#	Enable Function Level Linking
-				push @flags, "/Oy";			#	Omit frame pointers
-				push @flags, "/O2";			#	Maximum Optimization (Favor Speed)
-				push @flags, "/GL";			#	Whole Program Optimization
-				push @flags, "/Oi";			#	Enable Intrinsic Functions
-				push @flags, "/GF";			#	Enable String Pooling
-				push @flags, "/MT";			#	Multithreaded (not debug not dll)
+				push @flags, "-GS-";		#	Disable Security Check
+				push @flags, "-Gy";			#	Enable Function Level Linking
+				push @flags, "-Oy";			#	Omit frame pointers
+				push @flags, "-O2";			#	Maximum Optimization (Favor Speed)
+				push @flags, "-GL";			#	Whole Program Optimization
+				push @flags, "-Oi";			#	Enable Intrinsic Functions
+				push @flags, "-GF";			#	Enable String Pooling
+				push @flags, "-MT";			#	Multithreaded (not debug not dll)
 			}
-			##push @flags, "/fp:precise";	#vs2k sample projects define this, but maybe can use default?
+			##push @flags, "-fp:precise";	#vs2k sample projects define this, but maybe can use default?
 		
 			if ($INCLUDE_SYMBOLS_LIB) {
 				if ($WinFlag_DebugProgramDatabase) {
-					push @flags, "/Zi";		#	Program Database (Debug Information)
-					push @flags, "/FS";		# 	Force Synchronous PDB Writes (needed for parallel make/build)
+					push @flags, "-Zi";		#	Program Database (Debug Information)
+					push @flags, "-FS";		# 	Force Synchronous PDB Writes (needed for parallel make/build)
 				}
 				else {
-					push @flags, "/Z7";		#	Use intra-obj file debug info format 
+					push @flags, "-Z7";		#	Use intra-obj file debug info format 
 				}
 			}
 		}
@@ -1961,15 +1955,15 @@ sub GetDefaultCZZFLAGS_flags_
 		push @flags, "-D_GLIBCXX_DEBUG";
 	}
 	if ( $isVisualStudio ) {
-		push @flags, "/D_UNICODE";
-		push @flags, "/DUNICODE";
-		push @flags, "/D_WINDOWS";	# just because visual studio .net sample projects defined this
+		push @flags, "-D_UNICODE";
+		push @flags, "-DUNICODE";
+		push @flags, "-D_WINDOWS";	# just because visual studio .net sample projects defined this
 		
 		if ($ApplyDebugFlags == true) {
-			push @flags, "/D_DEBUG";
+			push @flags, "-D_DEBUG";
 		}
 		if ($ApplyReleaseFlags == true) {
-			push @flags, "/DNDEBUG";
+			push @flags, "-DNDEBUG";
 		}
 	}
 	{
@@ -1982,7 +1976,7 @@ sub GetDefaultCZZFLAGS_flags_
 		# It has ONE possible disadvantage, which is confusing some tools that preparse the the (like visual studio code) but we must just find some way
 		# to get them to also know about these defines (TBD)
 		#		--LGP 2019-02-10
-		my $dashFlag=$isVisualStudio? "/D" : "-D";
+		my $dashFlag="-D";
 		push @flags, $dashFlag . "qDebug=" . ZERO_OR_1_ ($ENABLE_ASSERTIONS);
 		push @flags, $dashFlag . "qHasFeature_LibCurl=" . ZERO_OR_1_ (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseSystem));
 		push @flags, $dashFlag . "qHasFeature_OpenSSL=" . ZERO_OR_1_ (($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseSystem));
@@ -2073,9 +2067,9 @@ sub PostProcessOptions_ ()
 			$EXTRA_PREFIX_LINKER_ARGS .= " -flto";
 		}
 		if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus)) {
-			push @CFLAGS, "/GL";			#	Whole Program Optimization
-			push @CXXFLAGS, "/GL";			#	Whole Program Optimization
-			$EXTRA_PREFIX_LINKER_ARGS .= " /LTCG";
+			push @CFLAGS, "-GL";			#	Whole Program Optimization
+			push @CXXFLAGS, "-GL";			#	Whole Program Optimization
+			$EXTRA_PREFIX_LINKER_ARGS .= " -LTCG";
 		}
 	}
 	if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1)) {
@@ -2096,12 +2090,6 @@ sub PostProcessOptions_ ()
 			}
 			push @CFLAGS, $crap2Add2CZZFlags;
 			push @CXXFLAGS, $crap2Add2CZZFlags;
-		}
-
-		if ($STATIC_LINK_SANITIZERS == DEFAULT_BOOL_OPTIONS) {
-			if ($PROJECTPLATFORMSUBDIR eq 'Unix' && trim(`awk -F= '/^NAME/{print \$2}' /etc/os-release 2> /dev/null`) =~ /CentOS/) {
-				$STATIC_LINK_SANITIZERS = 0;	# missing on (my install of) centos8 - until I figure out how to detect/fix
-			}
 		}
 
 		if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1) and ($STATIC_LINK_SANITIZERS != 0)) {
@@ -2154,7 +2142,7 @@ sub PostProcessOptions_ ()
 			if (not ($EXTRA_SUFFIX_LINKER_ARGS eq "")) {
 				$EXTRA_SUFFIX_LINKER_ARGS .= " ";
 			}
-			$EXTRA_SUFFIX_LINKER_ARGS .= "/FORCE:MULTIPLE";
+			$EXTRA_SUFFIX_LINKER_ARGS .= "-FORCE:MULTIPLE";
 		}
 	}
 
@@ -2295,12 +2283,12 @@ sub PostProcessOptions_ ()
 
 
 	if ($isVisualStudio) {
-		$EXTRA_PREFIX_LINKER_ARGS .= " /nologo";
+		$EXTRA_PREFIX_LINKER_ARGS .= " -nologo";
 		my $WIN_LIBCOMPATIBLE_ARCH = $ARCH;
 		if ($WIN_LIBCOMPATIBLE_ARCH eq "x86_64") {
 			$WIN_LIBCOMPATIBLE_ARCH = "x64";
 		}
-		$EXTRA_PREFIX_LINKER_ARGS .= " /MACHINE:${WIN_LIBCOMPATIBLE_ARCH}";
+		$EXTRA_PREFIX_LINKER_ARGS .= " -MACHINE:${WIN_LIBCOMPATIBLE_ARCH}";
 	}
 
 
@@ -2337,7 +2325,7 @@ sub PostProcessOptions_ ()
 
 	if ($INCLUDE_SYMBOLS_EXE) {
 		if ($isVisualStudio) {
-			$EXTRA_PREFIX_LINKER_ARGS .= " /DEBUG";
+			$EXTRA_PREFIX_LINKER_ARGS .= " -DEBUG";
 		}
 		elsif ($PROJECTPLATFORMSUBDIR eq 'Unix') {
 			$EXTRA_PREFIX_LINKER_ARGS .= " -g";
@@ -2556,19 +2544,33 @@ sub	WriteConfigFile_
 		unshift(@CXXFLAGS, '-fstack-protector-all');
 	}
 
-	print (OUT "    <INCLUDES_PATH>$INCLUDES_PATH</INCLUDES_PATH>\n");
+	# Since Stroika 2.1r2, this is written out in cygpath mixed format on windows (and obvously stanard unix format on unix)
+	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+		for my $i (0 .. $#INCLUDES_PATH)
+		{
+			$INCLUDES_PATH[$i] = trim (`cygpath --mixed "$INCLUDES_PATH[$i]"`);
+		}
+	}
+	my $includesPathStr = join ($PATH_SEPERATOR, @INCLUDES_PATH);
+	print (OUT "    <INCLUDES_PATH>$includesPathStr</INCLUDES_PATH>\n");
 
 	print (OUT "    <CrossCompiling>$CrossCompiling</CrossCompiling>\n");
 
 	print (OUT "    <IncludeDebugSymbolsInLibraries>$INCLUDE_SYMBOLS_LIB</IncludeDebugSymbolsInLibraries>\n");
 	print (OUT "    <IncludeDebugSymbolsInExecutables>$INCLUDE_SYMBOLS_EXE</IncludeDebugSymbolsInExecutables>\n");
 
+	# Since Stroika 2.1r2, this is written out in cygpath mixed format on windows (and obvously stanard unix format on unix)
 	print (OUT "    <TOOLS_PATH_ADDITIONS>$TOOLS_PATH_ADDITIONS</TOOLS_PATH_ADDITIONS>\n");
-	if (not ($TOOLS_PATH_ADDITIONS_BUGWORKAROUND eq "")) {
-		print (OUT "    <TOOLS_PATH_ADDITIONS_BUGWORKAROUND>$TOOLS_PATH_ADDITIONS_BUGWORKAROUND</TOOLS_PATH_ADDITIONS_BUGWORKAROUND>\n");
-	}
 	
-	print (OUT "    <LIBS_PATH>$LIBS_PATH</LIBS_PATH>\n");
+	# Since Stroika 2.1r2, this is written out in cygpath mixed format on windows (and obvously stanard unix format on unix)
+	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+		for my $i (0 .. $#LIBS_PATH)
+		{
+			$LIBS_PATH[$i] = trim (`cygpath --mixed "$LIBS_PATH[$i]"`);
+		}
+	}
+	my $libsPathStr = join ($PATH_SEPERATOR, @LIBS_PATH);
+	print (OUT "    <LIBS_PATH>$libsPathStr</LIBS_PATH>\n");
 	print (OUT "    <LIB_DEPENDENCIES>$LIB_DEPENDENCIES</LIB_DEPENDENCIES>\n");
 	print (OUT "    <EXTRA_PREFIX_LINKER_ARGS>$EXTRA_PREFIX_LINKER_ARGS</EXTRA_PREFIX_LINKER_ARGS>\n");
 	print (OUT "    <EXTRA_SUFFIX_LINKER_ARGS>$EXTRA_SUFFIX_LINKER_ARGS</EXTRA_SUFFIX_LINKER_ARGS>\n");
@@ -2591,7 +2593,9 @@ sub	WriteConfigFile_
 	if (defined ($qCompiler_HasNoMisleadingIndentation_Flag)) {
 		print (OUT "    <qCompiler_HasNoMisleadingIndentation_Flag>$qCompiler_HasNoMisleadingIndentation_Flag</qCompiler_HasNoMisleadingIndentation_Flag>\n");
 	}
-
+	if (defined ($qCompiler_ValgrindLTO_Buggy)) {
+		print (OUT "    <qCompiler_ValgrindLTO_Buggy>$qCompiler_ValgrindLTO_Buggy</qCompiler_ValgrindLTO_Buggy>\n");
+	}
 	print (OUT "</Configuration>\n");
 	close(OUT);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
@@ -850,8 +850,8 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
         CComQIPtr<IALCommandList> builtins = GenerateBuiltinCommandsObject ();
 #endif
 
-        Memory::SmallStackBuffer<ACCEL> accels (fAccelerators.size ());
-        size_t                          goodKeysFound = 0;
+        Memory::StackBuffer<ACCEL> accels{fAccelerators.size ()};
+        size_t                     goodKeysFound = 0;
         for (vector<CComPtr<IDispatch>>::const_iterator i = fAccelerators.begin (); i != fAccelerators.end (); ++i) {
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALAcceleratorElement> ae = (IDispatch*)*i;

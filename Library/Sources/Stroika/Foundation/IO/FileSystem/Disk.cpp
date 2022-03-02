@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../StroikaPreComp.h"
 
@@ -12,7 +12,6 @@
 #include "../../Characters/String.h"
 #include "../../Characters/StringBuilder.h"
 #include "../../Characters/ToString.h"
-#include "../../Memory/SmallStackBuffer.h"
 
 #include "PathName.h"
 

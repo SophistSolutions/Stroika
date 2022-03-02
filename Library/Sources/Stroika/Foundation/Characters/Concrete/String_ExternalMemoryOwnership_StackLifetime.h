@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_String_ExternalMemoryOwnership_StackLifetime_h_
 #define _Stroika_Foundation_Characters_String_ExternalMemoryOwnership_StackLifetime_h_ 1
@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Characters::Concrete {
         *      void f (const wchar_t* cs)
         *          {
         *              F(L"FRED";);
-        *              F(String (L"FRED"));
+        *              F(String{L"FRED"});
         *              F(String_ExternalMemoryOwnership_StackLifetime (cs));
         *          }
         *

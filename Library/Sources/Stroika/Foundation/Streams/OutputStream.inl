@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_OutputStream_inl_
 #define _Stroika_Foundation_Streams_OutputStream_inl_ 1
@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Streams {
     template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>*>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteLn (const wchar_t* cStr) const
     {
-        Write (Characters::String (cStr));
+        Write (Characters::String{cStr});
     }
     template <typename ELEMENT_TYPE>
     template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>*>

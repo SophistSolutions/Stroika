@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_ExternallyOwnedMemoryInputStream_h_
 #define _Stroika_Foundation_Streams_ExternallyOwnedMemoryInputStream_h_ 1
@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Streams {
      *
      *  NB: Be VERY careful about using this. It can be assigned to a InputStream<ELEMENT_TYPE>::Ptr, and
      *  if any of its constructor arguments are destroyed, it will contain invalid memory references.
-     *  Use VERY CAREFULLY. If in doubt, use @MemoryStream<ELEMENT_TYPE> - which is MUCH safer.
+     *  Use VERY CAREFULLY. If in doubt, use @MemoryStream<ELEMENT_TYPE> - which is MUCH safer (because it copies its CTOR-argument data)
      *
      *  ExternallyOwnedMemoryInputStream is Seekable.
      *

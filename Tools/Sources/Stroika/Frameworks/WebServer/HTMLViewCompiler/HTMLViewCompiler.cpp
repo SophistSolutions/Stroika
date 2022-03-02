@@ -23,9 +23,7 @@ const wchar_t kMagicWriteChar = '='; // if first char after open tag - treat as 
 class CompilerApp {
 public:
     CompilerApp ()
-        : fInputFile ()
-        , fOutputFile ()
-        , fFormGeneratorName (SDKSTR ("Form_Generator"))
+        : fFormGeneratorName{SDKSTR ("Form_Generator")}
     {
     }
 

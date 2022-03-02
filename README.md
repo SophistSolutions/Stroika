@@ -1,16 +1,20 @@
 ﻿# Stroika v2.1
 
-Stroika is a modern, portable, thread-savvy C++ application framework. It makes applications easier to write by providing safe, flexible, modular building blocks which can be easily combined because they are designed to fit together.
+Stroika is a modern, portable, thread-savvy, C++ application framework. It makes writing high performance C++ applications easier by providing safe, flexible, modular building blocks which are easily combined.
 
-It is comprised of 2 layers, the [Foundation](Library/Sources/Stroika/Foundation/ReadMe.md), which provides directly usable classes, and a series of domain specific [Framework](Library/Sources/Stroika/Frameworks/ReadMe.md)s which provide a rich collection of code in different domains.
+Stroika works ***with*** the standard C++ library, layered on top, and prodivdes simpler to use (higher level) classes, with more safety checking guarantees, and wider domain of applicability.
+
+Stylistically, Stroika differs from boost, in that it (relatively) embraces object oriented abstractions over template-based genericity (see [Stroika-Approach-To-Performance.md](Documentation/Stroika-Approach-To-Performance.md)) because the abstraction of type hierarchies is so much better suited to how people reason. And Stroika emphasizes separation of interface from implementation, carefully documenting the interface in the headers, and separating the implementation to other files.
+
+Stroika is comprised of 2 layers, the [Foundation](Library/Sources/Stroika/Foundation/ReadMe.md), which provides directly usable classes, and a series of domain specific [Framework](Library/Sources/Stroika/Frameworks/ReadMe.md)s which provide a rich collection of code in different domains.
 
 ![alt text](Documentation/Images/AppLayersBlockDiagram.png "Title")
 
-The Frameworks depend on the Foundation; Foundation modules frequently depend on each other; but Foundation layer code contains no dependencies outside of the Foundation (except on std-c++ layer libraries, and various ThirdPartyComponent libraries, like openssl).
+The Frameworks depend on the Foundation; Foundation modules frequently depend on each other; but Foundation layer code contains no dependencies outside of the Foundation (except on std C++ libraries, and various ThirdPartyComponent libraries optionally included or referenced, like openssl).
 
 - Nearly all public interfaces and methods are well documented; implementations are clear and well commented.
-- An elaborate system of built-in assertions (including thread-safety assertions) helps document and enforce usage patterns (without performance cost in production builds).
-- Each release is tested with Valgrind, Google Sanitizers, Github CodeQL, and a variety of platforms and compilers, as well as a large body of regression tests (including most documentation examples) to help assure library correctness.
+- Thoroughly integrated assertions (including thread-safety assertions) help document and enforce usage patterns (without performance cost in production builds).
+- Each release is tested with Valgrind (helgrind, memcheck), Google Sanitizers (TSAN, UBSAN, and ASAN), Github CodeQL, and a variety of platforms and compilers, as well as a large body of regression tests (including most documentation examples) to help assure library correctness.
 - [Sample applications](Samples/ReadMe.md) help show common use cases (like building a web server into your app to deliver web-service content and APIs).
 - [Quick start using pre-built Docker containers](/Documentation/Building%20Stroika.md#build-with-docker) (for Windows, and Linux).
 
@@ -47,7 +51,7 @@ Stroika's biggest strength is also its biggest weakness:
 
 - Stroika v3 development has started, and requires C++20 or later.
 
-- Stroika v2.1 is stable (in maintainance), and requires C++17 or later. Version 2.1 also conditionally supports many c++20 features (such as three-way-comparison etc, if available).
+- Stroika v2.1 is stable (in maintainance), and requires C++17 or later. Version 2.1 also conditionally supports many C++20 features (such as three-way-comparison etc, if available).
 
 - Stroika v2.0 is very stable, and requires C++14 or later. Stroika v2.0 is used to power a wide variety of open source and commercial applications.
 
@@ -57,7 +61,7 @@ Stroika's biggest strength is also its biggest weakness:
 
 - Stroika v2.1
 
-  Regularly tested on x86, arm (+m1), gcc8 thru gcc11, clang 6 thru clang 12, Visual Studio.Net 2017, Visual Studio.Net 2019 and Visual Studio.Net 2022, XCode 13.
+  Tested on x86, arm (+m1), gcc8 thru gcc11, clang 6 thru clang 12, Visual Studio.Net 2017, Visual Studio.Net 2019 and Visual Studio.Net 2022, XCode 13.
 
 - Stroika v2.0
 

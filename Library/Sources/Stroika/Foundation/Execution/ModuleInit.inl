@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_ModuleInit_inl_
 #define _Stroika_Foundation_Execution_ModuleInit_inl_ 1
@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Execution {
     void ModuleInitializer<MODULE_DATA>::End ()
     {
         if (--sInitCnt_ == 0) {
-            reinterpret_cast<MODULE_DATA*> (&sActualModuleInitializer_Storage_)->~MODULE_DATA ();
+            destroy_at (reinterpret_cast<MODULE_DATA*> (&sActualModuleInitializer_Storage_));
         }
     }
     template <typename MODULE_DATA>

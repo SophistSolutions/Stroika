@@ -1,13 +1,25 @@
-﻿# escape=`
+﻿# See https://hub.docker.com/_/microsoft-windows
+#   for list of available windows server types.
+#
+#   It appears empirically, that nanoserver doesn't work with the visual studio installer.
+#   servercore is the next smallest, and that appears to work fine.
+#
+# SEE 
+#   https://hub.docker.com/_/microsoft-windows-servercore
+#   https://hub.docker.com/_/microsoft-dotnet-framework-sdk/
+#        for list of versions
+#
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:2004
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
+# ARG BASE_IMAGE=mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019  ## Referenced in https://docs.microsoft.com/en-us/visualstudio/install/build-tools-container?view=vs-2022
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019                          ## ltsc2019 not working on github actions - LGP 2022-02-23
 
-# SEE https://hub.docker.com/_/microsoft-windows-servercore for list of versions
-#ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:2004
-#ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
-#ARG BASE_IMAGE=mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019
-###### ltsc2022 not working (yet) on github actions - LGP 2021-12-23
-ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019
-#ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022
+## Seems to work now on github actions using runner=Windows-2022 --LGP 2022-02-25
+ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022
+
 FROM ${BASE_IMAGE}
+
+
 
 # Sometimes we get sporadic failures building, and I THINK this is due to running out of disk space in builder, so
 # adding this to the docker engine config may help:
@@ -21,17 +33,17 @@ FROM ${BASE_IMAGE}
 # List of workloads and components to add from
 # https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?vs-2019&view=vs-2019
 #
-#    --add Microsoft.VisualStudio.Component.VC.CoreBuildTools `
-#    --add Microsoft.VisualStudio.Component.UniversalBuildTools `
-#    --add Microsoft.VisualStudio.Component.VC.ATLMFC `
+#    --add Microsoft.VisualStudio.Component.VC.CoreBuildTools \
+#    --add Microsoft.VisualStudio.Component.UniversalBuildTools \
+#    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
 #
 
 # # From hints on https://docs.microsoft.com/en-us/visualstudio/install/build-tools-container?view=vs-2022
-#    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 `
-#    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 `
-#    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 `
-#    --remove Microsoft.VisualStudio.Component.Windows81SDK `
-#    --quiet --wait --norestart --noUpdateInstaller --nocache modify `
+#    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
+#    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 \
+#    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
+#    --remove Microsoft.VisualStudio.Component.Windows81SDK \
+#    --quiet --wait --norestart --noUpdateInstaller --nocache modify \
 
 #
 # VS versions
@@ -39,55 +51,46 @@ FROM ${BASE_IMAGE}
 #
 ARG VS_Latest=https://aka.ms/vs/17/release/vs_buildtools.exe
 ARG VS_17_0=https://download.visualstudio.microsoft.com/download/pr/8cea3871-c742-43fb-bf8b-8da0699ab4af/faa4a70c6431c2bc5e915c6ad07425c17fb1a96cd106405677aa08b6d949ba63/vs_BuildTools.exe
-ARG VS_17_0_1=https://download.visualstudio.microsoft.com/download/pr/8cea3871-c742-43fb-bf8b-8da0699ab4af/faa4a70c6431c2bc5e915c6ad07425c17fb1a96cd106405677aa08b6d949ba63/vs_BuildTools.exe
-ARG VS_17_0_2=https://download.visualstudio.microsoft.com/download/pr/a53da67f-8d8a-448c-b211-d234d17e6398/810b12ab293714c34c29654ef5089f11bdc49d180236b0f1927f599cdb01d5f3/vs_BuildTools.exe
-ARG VS_17_0_3=https://download.visualstudio.microsoft.com/download/pr/ab119488-4f37-455b-a5de-86064bd15c4e/aafa8b3da26e3103984b2ef6a5debb5cb86b407ec9a40eb94281660edb14ba5e/vs_BuildTools.exe
-ARG VS_17_0_4=https://download.visualstudio.microsoft.com/download/pr/99fe5fea-e07c-4e6e-87ef-32a88c6ec393/c4ea44aa066ea725a2fe1e0796857530cd2ae8954cf0d546590db20f8e5d771f/vs_BuildTools.exe
+ARG VS_17_1_0=https://download.visualstudio.microsoft.com/download/pr/c30a4f7e-41da-41a5-afe8-ac56abf2740f/c9c5c694fdfdf0b9295c10416d370e4e9d60f5220c2ab9eee9ee147052294d31/vs_BuildTools.exe
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_17_0_4" `
+RUN Invoke-WebRequest "$env:VS_17_1_0" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 
 SHELL ["cmd", "/S", "/C"]
-RUN %TEMP%\vs_buildtools.exe `
-    --installPath "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools" `
-    --includeRecommended `
-    --add Microsoft.VisualStudio.Workload.VCTools `
-    --add Microsoft.VisualStudio.Workload.UniversalBuildTools `
-    --add Microsoft.VisualStudio.Component.VC.ATLMFC `
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 `
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 `
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 `
-    --remove Microsoft.VisualStudio.Component.Windows81SDK `
-    --quiet --wait --norestart --noUpdateInstaller `
+RUN %TEMP%\vs_buildtools.exe \
+    --installPath "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools" \
+    --includeRecommended \
+    --add Microsoft.VisualStudio.Workload.VCTools \
+    --add Microsoft.VisualStudio.Workload.UniversalBuildTools \
+    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
+    --remove Microsoft.VisualStudio.Component.Windows81SDK \
+    --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0
 
 
-# choco
+# install choco
 SHELL ["powershell"]
-RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
+ENV CHOCO_URL=https://chocolatey.org/install.ps1
+RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
+ [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'; \
+ iex ((New-Object System.Net.WebClient).DownloadString("$env:CHOCO_URL"));
 
-### WORKAROUND DOCKER/CYGWIN issue/regression
-###     https://github.com/moby/moby/issues/41058#issuecomment-653865175
-
-### @todo as of 2021-06-01 there appear several perhaps better workaroudns, so try them
-#### EG TRY:
-###         RUN choco install -y cygwin & powershell -Command "Get-ChildItem -Path C:\tools -Recurse -Attributes ReparsePoint | Remove-Item"
-###
-###     use cygwinsetup instead of choco intall / cyg-get
+# install cygwin
 SHELL ["cmd", "/S", "/C"]
-RUN md c:\tools\cygwin && cd c:\tools\cygwin && curl -Sso cygwinsetup.exe https://cygwin.com/setup-x86_64.exe && start /wait cygwinsetup -q --root C:\tools\cygwin -P default,make,unzip,git,wget,patch,pkg-config,dos2unix,p7zip -X --site http://ctm.crouchingtigerhiddenfruitbat.org/pub/cygwin/circa/64bit/2020/05/31/142136/
+RUN choco install -y cygwin
+RUN choco install -y cyg-get
+# doxygen for generating docs - optional
+# gdb for debugging - optional
+RUN cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip doxygen jq
 
-#RUN choco install -y cygwin
-#RUN powershell -Command "Get-ChildItem -Path C:\tools -Recurse -Attributes ReparsePoint | Remove-Item"
-#RUN choco install -y cyg-get
-#RUN cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
-
-## Sometimes helpful
-## cyg-get gdb
+# Add cygwin to the path
 SHELL ["powershell"]
-RUN  `
-    $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin';   `
+RUN  \
+    $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin';   \
     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
 
 COPY Windows-Cygwin-VS2k22/Getting-Started-With-Stroika.md ./

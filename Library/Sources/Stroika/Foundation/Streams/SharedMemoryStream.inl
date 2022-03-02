@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_SharedMemoryStream_inl_
 #define _Stroika_Foundation_Streams_SharedMemoryStream_inl_ 1
@@ -253,7 +253,7 @@ namespace Stroika::Foundation::Streams {
         string AsString () const
         {
             [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
-            return string (reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_)));
+            return string{reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_))};
         }
 
     private:

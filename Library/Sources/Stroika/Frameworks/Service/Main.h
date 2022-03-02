@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Service_Main_h_
 #define _Stroika_Frameworks_Service_Main_h_ 1
@@ -166,9 +166,6 @@ namespace Stroika::Frameworks::Service {
         class LoggerServiceWrapper;
 
     public:
-        class RunTilIdleService;
-
-    public:
         class RunNoFrillsService;
 
 #if qPlatform_Windows
@@ -298,7 +295,7 @@ namespace Stroika::Frameworks::Service {
          *
          *  @see RunAsService
          */
-        nonvirtual void RunDirectly ();
+        nonvirtual void RunDirectly (const optional<Time::Duration>& runFor = {});
 
     public:
         /**
@@ -374,8 +371,8 @@ namespace Stroika::Frameworks::Service {
      */
     struct Main::CommandNames {
 
-        static const wchar_t kInstall[];
-        static const wchar_t kUnInstall[];
+        static inline const wchar_t kInstall[]   = L"Install";
+        static inline const wchar_t kUnInstall[] = L"UnInstall";
 
         /**
          *  The kRunAsService command is about the only command that tends to NOT be called by users on the command line.
@@ -384,7 +381,7 @@ namespace Stroika::Frameworks::Service {
          *  This is typically called INDRECTLY via a special fork/exec as a result of a kStart command, or its called from
          *  init as part of system startup.
          */
-        static const wchar_t kRunAsService[];
+        static inline const wchar_t kRunAsService[] = L"Run-As-Service";
 
         /**
          *  kRunDirectly is mostly a debug-handy/debug-friendly variant of RunAsService().
@@ -396,32 +393,34 @@ namespace Stroika::Frameworks::Service {
          *  This bypasses the backend service mechanism - and just runs the applicaiton-specific code (typically
          *  so that can be debugged, but possibly also for testing or other purposes).
          */
-        static const wchar_t kRunDirectly[];
+        static const inline wchar_t kRunDirectly[] = L"Run-Directly";
+
+        static const inline wchar_t kRunDirectlyFor[] = L"Run-Directly-For";
 
         /*
-            *  The kStart command tells the service to start running. It returns an error
-            *  if the service is already started.
-            */
-        static const wchar_t kStart[];
+         *  The kStart command tells the service to start running. It returns an error
+         *  if the service is already started.
+         */
+        static inline const wchar_t kStart[] = L"Start";
 
         /**
          *  The kStop command tells the service to start terminate
          */
-        static const wchar_t kStop[];
+        static inline const wchar_t kStop[] = L"Stop";
         //DOCUMENT EACH
         //NEATLY
         // KILL termiantes (kill-9)
         //
-        static const wchar_t kForcedStop[];
+        static inline const wchar_t kForcedStop[] = L"ForcedStop";
         // restart synonmy for stop (no error if not already running), and then start
-        static const wchar_t kRestart[];
-        static const wchar_t kForcedRestart[];
+        static inline const wchar_t kRestart[]       = L"Restart";
+        static inline const wchar_t kForcedRestart[] = L"ForcedRestart";
         // If service knows how to find its own config files - recheck them
-        static const wchar_t kReloadConfiguration[];
+        static inline const wchar_t kReloadConfiguration[] = L"Reload-Configuration";
         // SIGSTOP
-        static const wchar_t kPause[];
+        static inline const wchar_t kPause[] = L"Pause";
         // SIGCONT
-        static const wchar_t kContinue[];
+        static inline const wchar_t kContinue[] = L"Continue";
     };
 
     /**
@@ -437,7 +436,7 @@ namespace Stroika::Frameworks::Service {
             eInstall,
             eUnInstall,
             eRunServiceMain,
-            eRunDirectly,
+            eRunDirectly, // if provided, first fUnusedArguments treated as floating point number of seconds
             eStart,
             eStop,
             eForcedStop,
@@ -594,7 +593,7 @@ namespace Stroika::Frameworks::Service {
     protected:
         /**
          */
-        virtual void _RunDirectly () = 0;
+        virtual void _RunDirectly (const optional<Time::Duration>& runFor) = 0;
 
     protected:
         /**
@@ -638,7 +637,7 @@ namespace Stroika::Frameworks::Service {
         virtual void                                        _Install () override;
         virtual void                                        _UnInstall () override;
         virtual void                                        _RunAsService () override;
-        virtual void                                        _RunDirectly () override;
+        virtual void                                        _RunDirectly (const optional<Time::Duration>& runFor) override;
         virtual void                                        _Start (Time::DurationSecondsType timeout) override;
         virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
         virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
@@ -646,32 +645,6 @@ namespace Stroika::Frameworks::Service {
 
     private:
         shared_ptr<Main::IServiceIntegrationRep> fDelegateTo_; // no need to synchronize because all access to shared_ptr R/O after initialization
-    };
-
-    /**
-     *  Mostly for regression tests (and windoze)
-     */
-    class Main::RunTilIdleService : public Main::IServiceIntegrationRep {
-    public:
-        RunTilIdleService () = default;
-
-    protected:
-        virtual void                                        _Attach (const shared_ptr<IApplicationRep>& appRep) override;
-        virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
-        virtual State                                       _GetState () const override;
-        virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
-        virtual void                                        _Install () override;
-        virtual void                                        _UnInstall () override;
-        virtual void                                        _RunAsService () override;
-        virtual void                                        _RunDirectly () override;
-        virtual void                                        _Start (Time::DurationSecondsType timeout) override;
-        virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
-        virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
-        virtual pid_t                                       _GetServicePID () const override;
-
-    private:
-        shared_ptr<IApplicationRep> fAppRep_;
-        Execution::Thread::Ptr      fRunThread_;
     };
 
     /**
@@ -687,7 +660,7 @@ namespace Stroika::Frameworks::Service {
         virtual void                                        _Install () override;
         virtual void                                        _UnInstall () override;
         virtual void                                        _RunAsService () override;
-        virtual void                                        _RunDirectly () override;
+        virtual void                                        _RunDirectly (const optional<Time::Duration>& runFor) override;
         virtual void                                        _Start (Time::DurationSecondsType timeout) override;
         virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
         virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
@@ -714,7 +687,7 @@ namespace Stroika::Frameworks::Service {
         virtual void                                        _Install () override;
         virtual void                                        _UnInstall () override;
         virtual void                                        _RunAsService () override;
-        virtual void                                        _RunDirectly () override;
+        virtual void                                        _RunDirectly (const optional<Time::Duration>& runFor) override;
         virtual void                                        _Start (Time::DurationSecondsType timeout) override;
         virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
         virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
@@ -786,7 +759,7 @@ namespace Stroika::Frameworks::Service {
         virtual void                                        _Install () override;
         virtual void                                        _UnInstall () override;
         virtual void                                        _RunAsService () override;
-        virtual void                                        _RunDirectly () override;
+        virtual void                                        _RunDirectly (const optional<Time::Duration>& runFor) override;
         virtual void                                        _Start (Time::DurationSecondsType timeout) override;
         virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
         virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;

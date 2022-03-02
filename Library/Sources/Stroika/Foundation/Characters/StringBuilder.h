@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_StringBuilder_h_
 #define _Stroika_Foundation_Characters_StringBuilder_h_ 1
@@ -7,7 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Debug/AssertExternallySynchronizedMutex.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/InlineBuffer.h"
 
 #include "String.h"
 
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Characters {
      *  @see .Net StringBuilder - http://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx
      *  @see Java StringBuilder - http://docs.oracle.com/javase/7/docs/api/java/lang/StringBuilder.html
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#ExternallySynchronized">ExternallySynchronized</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     class StringBuilder : private Debug::AssertExternallySynchronizedMutex {
     public:
@@ -199,8 +199,8 @@ namespace Stroika::Foundation::Characters {
         nonvirtual void reserve (size_t newCapacity);
 
     private:
-        mutable Memory::SmallStackBuffer<wchar_t> fData_{0};   // maybe nul-terminated
-        size_t                                    fLength_{0}; // seperate from SmallStackBuffer<>::size ()
+        mutable Memory::InlineBuffer<wchar_t> fData_{0};   // maybe nul-terminated
+        size_t                                fLength_{0}; // seperate from Buffer<>::size ()
     };
 
 }

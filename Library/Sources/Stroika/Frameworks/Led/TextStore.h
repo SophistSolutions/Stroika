@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Led_TextStore_h_
 #define _Stroika_Frameworks_Led_TextStore_h_ 1
@@ -13,7 +13,7 @@
 
 #include "../../Foundation/Containers/Common.h"
 #include "../../Foundation/Memory/BlockAllocated.h"
-#include "../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../Foundation/Memory/InlineBuffer.h"
 
 /*
 @MODULE:    TextStore
@@ -288,19 +288,19 @@ namespace Stroika::Frameworks::Led {
         };
 
         /*
-        @CLASS:         TextStore::SmallStackBufferMarkerSink
+        @CLASS:         TextStore::InlineBufferMarkerSink
         @BASES:         @'TextStore::MarkerSink'
         @DESCRIPTION:
                 <p>A utility class which gathers all the markers passed to it into an array (vector).</p>
         */
-        class SmallStackBufferMarkerSink : public MarkerSink {
+        class InlineBufferMarkerSink : public MarkerSink {
         public:
-            SmallStackBufferMarkerSink ();
+            InlineBufferMarkerSink ();
 
             virtual void Append (Marker* m) override;
 
         public:
-            Foundation::Memory::SmallStackBuffer<Marker*> fMarkers;
+            Foundation::Memory::InlineBuffer<Marker*> fMarkers;
         };
 
     public:
@@ -470,10 +470,10 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void Cancel ();
 
     private:
-        TextStore&                 fTextStore;
-        SmallStackBufferMarkerSink fMarkerSink;
-        UpdateInfo                 fUpdateInfo;
-        bool                       fCanceled;
+        TextStore&             fTextStore;
+        InlineBufferMarkerSink fMarkerSink;
+        UpdateInfo             fUpdateInfo;
+        bool                   fCanceled;
     };
 
     // Helpers for MarkerSink classes
@@ -516,7 +516,7 @@ namespace Stroika::Frameworks::Led {
     @CLASS:         MarkersOfATypeMarkerSink2SmallStackBuffer<T>
     @BASES:         @'TextStore::MarkerSink'
     @DESCRIPTION:   <p>A MarkerSink template which grabs only Markers of subtype 'T' (using dynamic_cast<>).
-                Dumps results into a @'Memory::SmallStackBuffer<T>' named 'fResult'.</p>
+                Dumps results into a @'Memory::StackBuffer<T>' named 'fResult'.</p>
     */
     template <typename T>
     class MarkersOfATypeMarkerSink2SmallStackBuffer : public TextStore::MarkerSink {
@@ -525,7 +525,7 @@ namespace Stroika::Frameworks::Led {
 
         virtual void Append (Marker* m) override;
 
-        Foundation::Memory::SmallStackBuffer<T*> fResult;
+        Foundation::Memory::InlineBuffer<T*> fResult;
     };
 
 }

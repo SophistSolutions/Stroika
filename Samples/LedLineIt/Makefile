@@ -10,8 +10,9 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 SrcDir				=	$(StroikaRoot)Samples/LedLineIt/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-LedLineIt/
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 
 TARGETDIR	=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-LedLineIt/
@@ -41,10 +42,10 @@ endif
 
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CXXFLAGS += /D_WINDOWS 
-CXXFLAGS += /DWIN32 
-CXXFLAGS += /DSTRICT
-CXXFLAGS += /D_WIN32_WINNT=0x0501 
+CXXFLAGS += -D_WINDOWS 
+CXXFLAGS += -DWIN32 
+CXXFLAGS += -DSTRICT
+CXXFLAGS += -D_WIN32_WINNT=0x0501 
 endif
 
 
@@ -67,7 +68,7 @@ $(ObjDir)LedLineIt_h.h $(ObjDir)LedLineIt_i.c:	$(ObjDir)LedLineIt.tlb
 $(Objs):	$(ObjDir)LedLineIt_i.c $(ObjDir)LedLineIt_h.h
 
 
-MIDL_FLAGS +=	/env win32
+MIDL_FLAGS +=	-env win32
 
 
 $(ObjDir)LedLineIt.tlb:
@@ -79,7 +80,7 @@ $(ObjDir)LedLineIt.tlb:
 
 
 # English US culture
-RC_FLAGS += /l 0x0409
+RC_FLAGS += -l 0x0409
 
 $(ObjDir)LedLineIt.res:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running RC compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)Sources/LedLineIt.rc` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)RC-Build.out`" ..."
@@ -93,14 +94,14 @@ $(ObjDir)LedLineIt.res:
 # WORKAROUND https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
 # https://developercommunity.visualstudio.com/t/please-re-open-httpsdevelopercommunityvisualstudio/1440675
 ifneq ($(filter-out -fanitize=address, $(CXXFLAGS)), $(CXXFLAGS))
-EXTRA_SUFFIX_LINKER_ARGS+= /FORCE:MULTIPLE
+EXTRA_SUFFIX_LINKER_ARGS+= -FORCE:MULTIPLE
 endif
 
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-EXTRA_SUFFIX_LINKER_ARGS+= /SUBSYSTEM:Windows
-EXTRA_SUFFIX_LINKER_ARGS+= /ENTRY:wWinMainCRTStartup
+EXTRA_SUFFIX_LINKER_ARGS+= -SUBSYSTEM:Windows
+EXTRA_SUFFIX_LINKER_ARGS+= -ENTRY:wWinMainCRTStartup
 endif
 
 

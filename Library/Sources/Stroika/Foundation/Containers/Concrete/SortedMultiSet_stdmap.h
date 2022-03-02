@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../StroikaPreComp.h"
 
@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      * \note Performance Notes:
      *      Very good low overhead implementation
      *
-     *      o   size () is constant
+     *      o   size () is constant complexity
      *      o   Uses Memory::BlockAllocatorOrStdAllocatorAsAppropriate
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>

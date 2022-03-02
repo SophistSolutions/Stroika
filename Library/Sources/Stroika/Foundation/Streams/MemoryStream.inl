@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_MemoryStream_inl_
 #define _Stroika_Foundation_Streams_MemoryStream_inl_ 1
@@ -229,13 +229,13 @@ namespace Stroika::Foundation::Streams {
         string AsString () const
         {
             lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-            return string (reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_)));
+            return string{reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_))};
         }
 
     private:
         // @todo - COULD redo using
         //      constexpr size_t  USE_BUFFER_BYTES = 1024 - sizeof(recursive_mutex) - sizeof(byte*) - sizeof (BinaryInputStream::_IRep) - sizeof (Seekable::_IRep);
-        //      Memory::SmallStackBuffer < byte, USE_BUFFER_BYTES>  fData_;
+        //      Memory::InlineBuffer<byte,USE_BUFFER_BYTES>  fData_;
         // Or Stroika chunked array code
 
     private:

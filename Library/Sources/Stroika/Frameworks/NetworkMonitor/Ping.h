@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_NetworkMonitor_Ping_h_
 #define _Stroika_Frameworks_NetworkMonitor_Ping_h_ 1
@@ -15,7 +15,6 @@
 #include "../../Foundation/IO/Network/InternetAddress.h"
 #include "../../Foundation/IO/Network/InternetProtocol/ICMP.h"
 #include "../../Foundation/IO/Network/InternetProtocol/IP.h"
-#include "../../Foundation/Memory/SmallStackBuffer.h"
 #include "../../Foundation/Time/Duration.h"
 #include "../../Foundation/Traversal/Range.h"
 
@@ -120,7 +119,7 @@ namespace Stroika::Frameworks::NetworkMonitor::Ping {
         InternetAddress                                          fDestination_;
         Options                                                  fOptions_;
         size_t                                                   fICMPPacketSize_;
-        Memory::SmallStackBuffer<byte>                           fSendPacket_;
+        Memory::InlineBuffer<byte>                               fSendPacket_;
         IO::Network::ConnectionlessSocket::Ptr                   fSocket_;
         uint16_t                                                 fNextSequenceNumber_;
         Time::DurationSecondsType                                fPingTimeout_;

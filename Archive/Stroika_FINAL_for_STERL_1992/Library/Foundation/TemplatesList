@@ -1,8 +1,0 @@
-!Shared			StringRep
-!Shared	PathComponentRep
-!Sequence	PathComponent
-!Set_BitString	FileTypeX
-!Bag			OptionDefinition
-!Sequence		PeriodicTaskPtr	"PeriodicTask.hh"
-!Sequence		TaskPtr	"Task.hh"
-Sequence		String	"String.hh"

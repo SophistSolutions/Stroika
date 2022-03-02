@@ -1,22 +1,33 @@
-﻿# escape=`
+﻿# See https://hub.docker.com/_/microsoft-windows
+#   for list of available windows server types.
+#
+#   It appears empirically, that nanoserver doesn't work with the visual studio installer.
+#   servercore is the next smallest, and that appears to work fine.
+#
+# SEE 
+#   https://hub.docker.com/_/microsoft-windows-servercore
+#   https://hub.docker.com/_/microsoft-dotnet-framework-sdk/
+#        for list of versions
+#
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:2004
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
+# ARG BASE_IMAGE=mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019  ## Referenced in https://docs.microsoft.com/en-us/visualstudio/install/build-tools-container?view=vs-2022
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019                          ## ltsc2019 not working on github actions - LGP 2022-02-23
 
-# SEE https://hub.docker.com/_/microsoft-windows-servercore for list of versions
-#ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:2004
-#ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
-#ARG BASE_IMAGE=mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019
-###### ltsc2022 not working (yet) on github actions - LGP 2021-12-23
-ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019
-#ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022
+## Seems to work now on github actions using runner=Windows-2022 --LGP 2022-02-25
+ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022
+
 FROM ${BASE_IMAGE}
+
 
 
 #
 # List of workloads and components to add from
 # https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?vs-2019&view=vs-2019
 #
-#    --add Microsoft.VisualStudio.Component.VC.CoreBuildTools `
-#    --add Microsoft.VisualStudio.Component.UniversalBuildTools `
-#    --add Microsoft.VisualStudio.Component.VC.ATLMFC `
+#    --add Microsoft.VisualStudio.Component.VC.CoreBuildTools \
+#    --add Microsoft.VisualStudio.Component.UniversalBuildTools \
+#    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
 #
 
 #
@@ -32,49 +43,46 @@ ARG VS_16_11_3=https://download.visualstudio.microsoft.com/download/pr/22c17f05-
 ARG VS_16_11_5=https://download.visualstudio.microsoft.com/download/pr/5a50b8ac-2c22-47f1-ba60-70d4257a78fa/4e0f5197da02b62b9fa48f05b55f2e206265785a6f0bab7235ef88fbdbe49e5e/vs_BuildTools.exe
 ARG VS_16_11_7=https://download.visualstudio.microsoft.com/download/pr/c91ba3a2-4ed9-4ada-ac4a-01f62c9c86a9/5dc5c6649b2d35ab400df8536e8ee509304e48f560c431a264298feead70733c/vs_BuildTools.exe
 ARG VS_16_11_8=https://download.visualstudio.microsoft.com/download/pr/b763973d-da6e-4025-834d-d8bc48e7d37f/4c9d3173a35956d1cf87e0fa8a9c79a0195e6e2acfe39f1ab92522d54a3bebb9/vs_BuildTools.exe
-
+ARG VS_16_11_9=https://download.visualstudio.microsoft.com/download/pr/9a26f37e-6001-429b-a5db-c5455b93953c/f1c4f7b32e6da59b0a80c3a800d702211551738bcec68331aee1ab06d859be3d/vs_BuildTools.exe
+ARG VS_16_11_10=https://download.visualstudio.microsoft.com/download/pr/791f3d28-7e20-45d9-9373-5dcfbdd1f6db/d5eabc3f4472d5ab18662648c8b6a08ea0553699819b88f89d84ec42d12f6ad7/vs_BuildTools.exe
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_16_11_8" `
+RUN Invoke-WebRequest "$env:VS_16_11_10" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 
 SHELL ["cmd", "/S", "/C"]
-RUN %TEMP%\vs_buildtools.exe `
-    --add Microsoft.VisualStudio.Workload.VCTools `
-    --add Microsoft.VisualStudio.Workload.UniversalBuildTools `
-    --add Microsoft.VisualStudio.Component.VC.ATLMFC `
-    --includeRecommended `
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 `
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 `
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 `
-    --remove Microsoft.VisualStudio.Component.Windows81SDK `
-    --quiet --wait --norestart --noUpdateInstaller `
+RUN %TEMP%\vs_buildtools.exe \
+    --add Microsoft.VisualStudio.Workload.VCTools \
+    --add Microsoft.VisualStudio.Workload.UniversalBuildTools \
+    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
+    --includeRecommended \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
+    --remove Microsoft.VisualStudio.Component.Windows81SDK \
+    --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0
 
 
-# choco
+# install choco
 SHELL ["powershell"]
-RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
+ENV CHOCO_URL=https://chocolatey.org/install.ps1
+RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
+ [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'; \
+ iex ((New-Object System.Net.WebClient).DownloadString("$env:CHOCO_URL"));
 
-### WORKAROUND DOCKER/CYGWIN issue/regression
-###     https://github.com/moby/moby/issues/41058#issuecomment-653865175
-
-### @todo as of 2021-06-01 there appear several perhaps better workaroudns, so try them
-#### EG TRY:
-###         RUN choco install -y cygwin & powershell -Command "Get-ChildItem -Path C:\tools -Recurse -Attributes ReparsePoint | Remove-Item"
-###
-###     use cygwinsetup instead of choco intall / cyg-get
+# install cygwin
 SHELL ["cmd", "/S", "/C"]
-RUN md c:\tools\cygwin && cd c:\tools\cygwin && curl -Sso cygwinsetup.exe https://cygwin.com/setup-x86_64.exe && start /wait cygwinsetup -q --root C:\tools\cygwin -P default,make,unzip,git,wget,patch,pkg-config,dos2unix,p7zip -X --site http://ctm.crouchingtigerhiddenfruitbat.org/pub/cygwin/circa/64bit/2020/05/31/142136/
+RUN choco install -y cygwin
+RUN choco install -y cyg-get
+# doxygen for generating docs - optional
+# gdb for debugging - optional
+RUN cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip doxygen jq
 
-#RUN choco install -y cyg-get
-#RUN cyg-get default make unzip git wget patch pkg-config dos2unix p7zip
-
-## Sometimes helpful
-## cyg-get gdb
+# Add cygwin to the path
 SHELL ["powershell"]
-RUN  `
-    $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin';   `
+RUN  \
+    $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin';   \
     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
 
 COPY Windows-Cygwin-VS2k19/Getting-Started-With-Stroika.md ./

@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_DataStructures_STLContainerWrapper_h_
 #define _Stroika_Foundation_Containers_DataStructures_STLContainerWrapper_h_
@@ -9,7 +9,6 @@
 #include "../../Configuration/Common.h"
 #include "../../Configuration/Concepts.h"
 #include "../../Debug/AssertExternallySynchronizedMutex.h"
-#include "../../Memory/SmallStackBuffer.h"
 
 #include "../Common.h"
 

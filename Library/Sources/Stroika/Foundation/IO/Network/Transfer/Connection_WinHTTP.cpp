@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../../StroikaPreComp.h"
 
@@ -44,8 +44,7 @@ using namespace Stroika::Foundation::Time;
 #if qPlatform_Windows
 using Stroika::Foundation::Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
-using Stroika::Foundation::Memory::SmallStackBuffer;
-using Stroika::Foundation::Memory::SmallStackBufferCommon;
+using Stroika::Foundation::Memory::StackBuffer;
 
 CompileTimeFlagChecker_SOURCE (Stroika::Foundation::IO::Network::Transfer, qHasFeature_WinHTTP, qHasFeature_WinHTTP);
 
@@ -137,7 +136,7 @@ namespace {
         (void)::WinHttpQueryHeaders (hRequest, dwInfoLevel, pwszName, WINHTTP_NO_OUTPUT_BUFFER, &size, lpdwIndex);
         DWORD error = GetLastError ();
         if (error == ERROR_INSUFFICIENT_BUFFER) {
-            SmallStackBuffer<wchar_t> buf{SmallStackBuffer<wchar_t>::eUninitialized, size + 1};
+            StackBuffer<wchar_t> buf{Memory::eUninitialized, size + 1};
             (void)::memset (buf, 0, buf.GetSize ());
             ThrowIfZeroGetLastError (::WinHttpQueryHeaders (hRequest, dwInfoLevel, pwszName, buf, &size, lpdwIndex));
             return buf.begin ();
@@ -354,7 +353,7 @@ RetryWithAuth:
             // Check for available data.
             dwSize = 0;
             ThrowIfZeroGetLastError (::WinHttpQueryDataAvailable (hRequest, &dwSize));
-            SmallStackBuffer<byte> outBuffer (SmallStackBufferCommon::eUninitialized, dwSize);
+            StackBuffer<byte> outBuffer{Memory::eUninitialized, dwSize};
             memset (outBuffer, 0, dwSize);
             DWORD dwDownloaded = 0;
             ThrowIfZeroGetLastError (::WinHttpReadData (hRequest, outBuffer, dwSize, &dwDownloaded));
@@ -369,8 +368,8 @@ RetryWithAuth:
     //
     // probably should check header content-type for codepage, but this SB OK for now...
     {
-        SmallStackBuffer<byte> bytesArray{SmallStackBufferCommon::eUninitialized, totalBytes};
-        size_t                 iii = 0;
+        StackBuffer<byte> bytesArray{Memory::eUninitialized, totalBytes};
+        size_t            iii = 0;
         for (auto i = bytesRead.begin (); i != bytesRead.end (); ++i) {
             auto v2 = *i;
             for (auto ii = v2.begin (); ii != v2.end (); ++ii) {

@@ -51,6 +51,9 @@ endif
 VALGRIND_SUPPRESSIONS?= $(DEFAULT_VALGRIND_SUPPRESSIONS_)
 else ifeq (helgrind,$(VALGRIND))
 DEFAULT_VALGRIND_SUPPRESSIONS_=Valgrind-Helgrind-Common.supp
+ifeq ($(qCompiler_ValgrindLTO_Buggy),1)
+DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-Helgrind-qCompiler_lto_Buggy.supp
+endif
 ifneq (,$(wildcard Valgrind-Helgrind-Common-$(ARCH).supp))
 DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-Helgrind-Common-$(ARCH).supp
 endif

@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../StroikaPreComp.h"
 
@@ -38,7 +38,7 @@
 #endif
 #include "../IO/FileSystem/FileInputStream.h"
 #include "../IO/FileSystem/FileSystem.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/StackBuffer.h"
 #include "../Streams/TextReader.h"
 
 #include "SystemConfiguration.h"
@@ -58,8 +58,7 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Time;
 
-using Memory::SmallStackBuffer;
-using Memory::SmallStackBufferCommon;
+using Memory::StackBuffer;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -435,8 +434,8 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         LPFN_GLPI glpi = (LPFN_GLPI)::GetProcAddress (::GetModuleHandle (TEXT ("kernel32")), "GetLogicalProcessorInformation");
         DISABLE_COMPILER_MSC_WARNING_END (6387)
         AssertNotNull (glpi); // assume at least OS WinXP...
-        SmallStackBuffer<byte> buffer{SmallStackBufferCommon::eUninitialized, sizeof (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION)};
-        DWORD                  returnLength = 0;
+        StackBuffer<byte> buffer{Memory::eUninitialized, sizeof (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION)};
+        DWORD             returnLength = 0;
         while (true) {
             DWORD rc = glpi (reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION> (buffer.begin ()), &returnLength);
             if (FALSE == rc) {
@@ -687,10 +686,10 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
              *          such as Kernel32.dll, then call VerQueryValue to obtain the 
              *          \\StringFileInfo\\\\ProductVersion subblock of the file version information
              */
-            const wchar_t*         kkernel32_ = L"kernel32.dll";
-            DWORD                  dummy;
-            const auto             cbInfo = ::GetFileVersionInfoSizeExW (FILE_VER_GET_NEUTRAL, kkernel32_, &dummy);
-            SmallStackBuffer<char> buffer (cbInfo);
+            const wchar_t*    kkernel32_ = L"kernel32.dll";
+            DWORD             dummy;
+            const auto        cbInfo = ::GetFileVersionInfoSizeExW (FILE_VER_GET_NEUTRAL, kkernel32_, &dummy);
+            StackBuffer<char> buffer{Memory::eUninitialized, cbInfo};
             Verify (::GetFileVersionInfoExW (FILE_VER_GET_NEUTRAL, kkernel32_, dummy, static_cast<DWORD> (buffer.size ()), &buffer[0]));
             void* p    = nullptr;
             UINT  size = 0;
@@ -884,7 +883,7 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
     constexpr COMPUTER_NAME_FORMAT kUseNameFormat_ = ComputerNameNetBIOS; // total WAG -- LGP 2014-10-10
     DWORD                          dwSize          = 0;
     (void)::GetComputerNameEx (kUseNameFormat_, nullptr, &dwSize);
-    SmallStackBuffer<SDKChar> buf{SmallStackBufferCommon::eUninitialized, dwSize};
+    StackBuffer<SDKChar> buf{Memory::eUninitialized, dwSize};
     Execution::Platform::Windows::ThrowIfZeroGetLastError (::GetComputerNameEx (kUseNameFormat_, buf, &dwSize));
     result.fHostname = String::FromSDKString (buf);
 #else

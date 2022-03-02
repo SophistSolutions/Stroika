@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../StroikaPreComp.h"
 
@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      *          There maybe another (better) way, but this works.
      *
      * \note Performance Notes:
-     *      o   size () is constant
+     *      o   size () is constant complexity
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

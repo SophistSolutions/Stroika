@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Led_GDI_inl_
 #define _Stroika_Frameworks_Led_GDI_inl_ 1
@@ -1844,7 +1844,7 @@ namespace Stroika::Frameworks::Led {
         Str255 fontName;
         ::GetFontName (fFontSpecifier, fontName);
         size_t len = fontName[0];
-        return string ((const char*)&fontName[1], len);
+        return string{(const char*)&fontName[1], len};
 #elif qPlatform_Windows
             return fFontInfo.lfFaceName;
 #elif qStroika_FeatureSupported_XWindows

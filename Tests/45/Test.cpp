@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 //  TEST    Foundation::IO::Network::Transfer
 #include "Stroika/Foundation/StroikaPreComp.h"
@@ -168,11 +168,11 @@ namespace {
 
                 c.SetSchemeAndAuthority (URI{L"http://httpbin.org"});
                 BLOB roundTripTestData = [] () {
-                    Memory::SmallStackBuffer<byte> buf (Debug::IsRunningUnderValgrind () ? 100 : 1024);
+                    Memory::StackBuffer<byte> buf{Debug::IsRunningUnderValgrind () ? 100u : 1024u};
                     for (size_t i = 0; i < buf.GetSize (); ++i) {
                         buf[i] = static_cast<byte> (uniform_int_distribution<unsigned short> () (sRNG_));
                     }
-                    return BLOB (buf.begin (), buf.end ());
+                    return BLOB{buf.begin (), buf.end ()};
                 }();
                 optional<Response>                    optResp;
                 [[maybe_unused]] static constexpr int kMaxTryCount_{10}; // for some reason, this fails occasionally, due to network issues or overload of target machine
@@ -243,7 +243,7 @@ namespace {
                 static mt19937 sRNG_;
 
                 BLOB roundTripTestData = [] () {
-                    Memory::SmallStackBuffer<byte> buf (Debug::IsRunningUnderValgrind () ? 100 : 1024);
+                    Memory::StackBuffer<byte> buf{Debug::IsRunningUnderValgrind () ? 100u : 1024u};
                     for (size_t i = 0; i < buf.GetSize (); ++i) {
                         buf[i] = static_cast<byte> (uniform_int_distribution<unsigned short> () (sRNG_));
                     }

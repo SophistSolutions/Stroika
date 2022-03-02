@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../StroikaPreComp.h"
 
@@ -236,7 +236,7 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
         // WEAK but maybe effective way
         // http://www.linuxforums.org/forum/red-hat-fedora-linux/162483-changing-timezone-rhel-5-4-centos.html
         try {
-            DataExchange::INI::Profile p = DataExchange::INI::Reader{}.ReadProfile (IO::FileSystem::FileInputStream::New ( L"/etc/sysconfig/clock"sv));
+            DataExchange::INI::Profile p = DataExchange::INI::Reader{}.ReadProfile (IO::FileSystem::FileInputStream::New (L"/etc/sysconfig/clock"sv));
             if (auto o = p.fUnnamedSection.fProperties.Lookup (L"ZONE"sv)) {
                 result.fID =  *o;
             }

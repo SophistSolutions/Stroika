@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Set_h_
 #define _Stroika_Foundation_Containers_Set_h_ 1
@@ -290,6 +290,8 @@ namespace Stroika::Foundation::Containers {
          *  \req argument (i or item) is present in the Set.
          *
          *  @see RemoveIf () to remove without the requirement that the value exist in the Set
+         *
+         *  \param nextI - if provided (not null) - will be filled in with the next value after where iterator i is pointing - since i is invalidated by changing the container)
          *
          *  \note mutates container
          */

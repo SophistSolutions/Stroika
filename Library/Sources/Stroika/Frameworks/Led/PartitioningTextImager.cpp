@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 
 #include "PartitioningTextImager.h"
@@ -417,8 +417,8 @@ TextLayoutBlock_Copy PartitioningTextImager::GetTextLayoutBlock (size_t rowStart
         return inherited::GetTextLayoutBlock (rowStart, rowEnd);
     }
     else {
-        size_t                              rowLen = rowEnd - rowStart;
-        Memory::SmallStackBuffer<Led_tChar> rowBuf (rowLen);
+        size_t                         rowLen = rowEnd - rowStart;
+        Memory::StackBuffer<Led_tChar> rowBuf{Memory::eUninitialized, rowLen};
         CopyOut (rowStart, rowLen, rowBuf);
         return TextLayoutBlock_Copy (TextLayoutBlock_Basic (rowBuf, rowBuf + rowLen, GetPrimaryPartitionTextDirection (rowStart)));
     }
@@ -484,8 +484,8 @@ DistanceType PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, siz
         size_t rowEnd     = GetEndOfRowContainingPosition (startOfRow);
         Require (startOfRow <= from); //  WE REQUIRE from/to be contained within a single row!!!
         Require (to <= rowEnd);       //  ''
-        size_t                                 rowLen = rowEnd - startOfRow;
-        Memory::SmallStackBuffer<DistanceType> distanceVector (rowLen);
+        size_t                            rowLen = rowEnd - startOfRow;
+        Memory::StackBuffer<DistanceType> distanceVector{Memory::eUninitialized, rowLen};
         CalcSegmentSize_FillIn (startOfRow, rowEnd, distanceVector);
         Assert (to > startOfRow);                                                                 // but from could be == startOfRow, so must be careful of that...
         Assert (to - startOfRow - 1 < (GetEndOfRowContainingPosition (startOfRow) - startOfRow)); // now buffer overflows!
@@ -553,7 +553,7 @@ void PartitioningTextImager::CalcSegmentSize_FillIn (size_t rowStart, size_t row
     // we must re-snag the text to get the width/tab alignment of the initial segment (for reset tabstops)- a bit more complicated ...
     size_t len = rowEnd - rowStart;
 
-    Memory::SmallStackBuffer<Led_tChar> fullRowTextBuf (len);
+    Memory::StackBuffer<Led_tChar> fullRowTextBuf{Memory::eUninitialized, len};
     CopyOut (rowStart, len, fullRowTextBuf);
 
     MeasureSegmentWidth (rowStart, rowEnd, fullRowTextBuf, distanceVector);

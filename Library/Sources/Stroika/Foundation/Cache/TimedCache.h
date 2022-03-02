@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Cache_TimedCache_h_
 #define _Stroika_Foundation_Cache_TimedCache_h_ 1
@@ -230,7 +230,7 @@ namespace Stroika::Foundation::Cache {
      *  \note   This cache assumes one timeout for all items. To have timeouts vary by item,
      *          @see CallerStalenessCache.
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#ExternallySynchronized">ExternallySynchronized</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  @see SynchronizedTimedCache<> - for internally ynchonized implementation
      *

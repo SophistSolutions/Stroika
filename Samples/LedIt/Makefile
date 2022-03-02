@@ -73,7 +73,7 @@ $(ObjDir)LedIt_h.h $(ObjDir)LedIt_i.c:	$(ObjDir)LedIt.tlb
 $(Objs):	$(ObjDir)LedIt_i.c $(ObjDir)LedIt_h.h
 
 
-MIDL_FLAGS +=	/env win32
+MIDL_FLAGS +=	-env win32
 
 $(ObjDir)LedIt.tlb:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)Sources/LedIt.odl` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
@@ -97,14 +97,14 @@ $(ObjDir)LedIt.res:
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-EXTRA_SUFFIX_LINKER_ARGS+= /SUBSYSTEM:Windows
-EXTRA_SUFFIX_LINKER_ARGS+= /ENTRY:wWinMainCRTStartup
+EXTRA_SUFFIX_LINKER_ARGS+= -SUBSYSTEM:Windows
+EXTRA_SUFFIX_LINKER_ARGS+= -ENTRY:wWinMainCRTStartup
 endif
 
 # WORKAROUND https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
 # https://developercommunity.visualstudio.com/t/please-re-open-httpsdevelopercommunityvisualstudio/1440675
 ifneq ($(filter-out -fanitize=address, $(CXXFLAGS)), $(CXXFLAGS))
-EXTRA_SUFFIX_LINKER_ARGS+= /FORCE:MULTIPLE
+EXTRA_SUFFIX_LINKER_ARGS+= -FORCE:MULTIPLE
 endif
 
 

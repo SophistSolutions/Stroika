@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Collection_h_
 #define _Stroika_Foundation_Containers_Collection_h_ 1
@@ -154,7 +154,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note   Most other containers (e.g. Set<>, Sequence<>) have the 'ITERABLE_OF_ADDABLE&& src' CTOR be explicit, whereas Collection does not.
          *          This is because converting to a Set or Sequence has some semantics, and the programmer should be clear on this. But a Collection<>
-         *          acts just like an interable (except that its modifyable). So allow this case to be non-explicit.
+         *          acts just like an Iterable<T> (except that its modifyable). So allow this case to be non-explicit.
          * 
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
@@ -229,7 +229,9 @@ namespace Stroika::Foundation::Containers {
          * 
          *  This will reduce the size of the container by one.
          *
-         *  \note mutates container
+         *  \param nextI - if provided (not null) - will be filled in with the next value after where iterator i is pointing - since i is invalidated by changing the container)
+         *
+         *   \note mutates container
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual void Remove (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer = {});

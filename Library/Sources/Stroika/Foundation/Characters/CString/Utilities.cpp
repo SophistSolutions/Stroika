@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../StroikaPreComp.h"
 
@@ -17,7 +17,7 @@
 #include "../../Execution/Finally.h"
 #endif
 #include "../../Math/Common.h"
-#include "../../Memory/SmallStackBuffer.h"
+#include "../../Memory/StackBuffer.h"
 #include "../CodePage.h"
 
 #include "Utilities.h"
@@ -35,7 +35,7 @@ using namespace Stroika::Foundation::Characters::CString;
 string Characters::CString::FormatV (const char* format, va_list argsList)
 {
     RequireNotNull (format);
-    Memory::SmallStackBuffer<char, 10 * 1024> msgBuf (Memory::SmallStackBufferCommon::eUninitialized, 10 * 1024);
+    Memory::StackBuffer<char, 10 * 1024> msgBuf{Memory::eUninitialized, 10 * 1024};
     // SUBTLE: va_list looks like it is passed by value, but its not really,
     // and vswprintf, at least on GCC munges it. So we must use va_copy() to do this safely
     // @see http://en.cppreference.com/w/cpp/utility/variadic/va_copy
@@ -64,13 +64,13 @@ DISABLE_COMPILER_MSC_WARNING_START (6262)
 wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
 {
     RequireNotNull (format);
-    Memory::SmallStackBuffer<wchar_t, 10 * 1024> msgBuf (Memory::SmallStackBufferCommon::eUninitialized, 10 * 1024);
-    const wchar_t*                               useFormat = format;
-    wchar_t                                      newFormat[5 * 1024];
+    Memory::StackBuffer<wchar_t, 10 * 1024> msgBuf{Memory::eUninitialized, 10 * 1024};
+    const wchar_t*                          useFormat = format;
+    wchar_t                                 newFormat[5 * 1024];
     {
         size_t origFormatLen = ::wcslen (format);
         Require (origFormatLen < Memory::NEltsOf (newFormat) / 2); // just to be sure safe - this is already crazy-big for format string...
-        // Could use Memory::SmallStackBuffer<> but I doubt this will ever get triggered
+        // Could use Memory::StackBuffer<> but I doubt this will ever get triggered
         bool   lookingAtFmtCvt = false;
         size_t newFormatIdx    = 0;
         for (size_t i = 0; i < origFormatLen; ++i) {

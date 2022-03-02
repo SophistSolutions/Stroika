@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../Foundation/StroikaPreComp.h"
 
@@ -138,7 +138,7 @@ void LineBasedPartition::Invariant_ () const
         if (end > GetEnd ()) {
             --len; // Last partition extends past end of text
         }
-        Memory::SmallStackBuffer<Led_tChar> buf (len);
+        Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
         CopyOut (start, len, buf);
         for (size_t i = 1; i < len; ++i) {
             Assert (buf[i - 1] != '\n');

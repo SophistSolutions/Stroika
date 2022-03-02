@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 /*
  * Note - used PUBLIC DOMAIN http://sourceforge.net/projects/libb64/files/libb64/libb64/libb64-1.2.src.zip/download
@@ -14,7 +14,7 @@
 #include "../../../DataExchange/BadFormatException.h"
 #include "../../../Debug/Assertions.h"
 #include "../../../Memory/BLOB.h" // ONLY FOR QUICKHACK IMPL OF ENCODE...
-#include "../../../Memory/SmallStackBuffer.h"
+#include "../../../Memory/StackBuffer.h"
 
 #include "Base64.h"
 
@@ -142,10 +142,10 @@ Memory::BLOB Algorithm::DecodeBase64 (const string& s)
     if (s.empty ()) {
         return Memory::BLOB{};
     }
-    size_t                 dataSize1 = s.length ();
-    SmallStackBuffer<byte> buf1{SmallStackBufferCommon::eUninitialized, dataSize1}; // MUCH more than big enuf
-    base64_decodestate_    state{};
-    size_t                 r = base64_decode_block_ (reinterpret_cast<const signed char*> (Containers::Start (s)), s.length (), buf1.begin (), &state);
+    size_t              dataSize1 = s.length ();
+    StackBuffer<byte>   buf1{Memory::eUninitialized, dataSize1}; // MUCH more than big enuf
+    base64_decodestate_ state{};
+    size_t              r = base64_decode_block_ (reinterpret_cast<const signed char*> (Containers::Start (s)), s.length (), buf1.begin (), &state);
     Assert (r <= dataSize1);
     // @todo - should validate this produced a good result? - maybe check resulting state?
     return Memory::BLOB{buf1.begin (), buf1.begin () + r};
@@ -287,7 +287,7 @@ string Algorithm::EncodeBase64 (const Streams::InputStream<byte>::Ptr& from, Lin
     size_t srcLen = end - start;
     size_t bufSize = 4 * srcLen;
     Assert (bufSize >= srcLen); // no overflow!
-    SmallStackBuffer<signed char> data{SmallStackBufferCommon::eUninitialized, bufSize};
+    StackBuffer<signed char> data{Memory::eUninitialized, bufSize};
     size_t mostBytesCopied = base64_encode_block_ (start, srcLen, data.begin (), &state);
     size_t extraBytes = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
     size_t totalBytes = mostBytesCopied + extraBytes;
@@ -301,10 +301,10 @@ string Algorithm::EncodeBase64 (const Streams::InputStream<byte>::Ptr& from, Lin
     size_t             srcLen  = end - start;
     size_t             bufSize = 4 * srcLen;
     Assert (bufSize >= srcLen); // no overflow!
-    SmallStackBuffer<char> data{SmallStackBufferCommon::eUninitialized, bufSize};
-    size_t                 mostBytesCopied = base64_encode_block_ (start, srcLen, data.begin (), &state);
-    size_t                 extraBytes      = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
-    size_t                 totalBytes      = mostBytesCopied + extraBytes;
+    StackBuffer<char> data{Memory::eUninitialized, bufSize};
+    size_t            mostBytesCopied = base64_encode_block_ (start, srcLen, data.begin (), &state);
+    size_t            extraBytes      = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
+    size_t            totalBytes      = mostBytesCopied + extraBytes;
     Assert (totalBytes <= bufSize);
     return string{data.begin (), data.begin () + totalBytes};
 #endif
@@ -320,10 +320,10 @@ string Algorithm::EncodeBase64 (const Memory::BLOB& from, LineBreak lb)
     size_t             srcLen  = end - start;
     size_t             bufSize = 4 * srcLen;
     Assert (bufSize >= srcLen); // no overflow!
-    SmallStackBuffer<signed char> data{SmallStackBufferCommon::eUninitialized, bufSize};
-    size_t                        mostBytesCopied = base64_encode_block_ (start, srcLen, data.begin (), &state);
-    size_t                        extraBytes      = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
-    size_t                        totalBytes      = mostBytesCopied + extraBytes;
+    StackBuffer<signed char> data{Memory::eUninitialized, bufSize};
+    size_t                   mostBytesCopied = base64_encode_block_ (start, srcLen, data.begin (), &state);
+    size_t                   extraBytes      = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
+    size_t                   totalBytes      = mostBytesCopied + extraBytes;
     Assert (totalBytes <= bufSize);
     return string{data.begin (), data.begin () + totalBytes};
 }

@@ -1,0 +1,100 @@
+﻿# See https://hub.docker.com/_/microsoft-windows
+#   for list of available windows server types.
+#
+#   It appears empirically, that nanoserver doesn't work with the visual studio installer.
+#   servercore is the next smallest, and that appears to work fine.
+#
+# SEE 
+#   https://hub.docker.com/_/microsoft-windows-servercore
+#   https://hub.docker.com/_/microsoft-dotnet-framework-sdk/
+#        for list of versions
+#
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:2004
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
+# ARG BASE_IMAGE=mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019  ## Referenced in https://docs.microsoft.com/en-us/visualstudio/install/build-tools-container?view=vs-2022
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019                          ## ltsc2019 not working on github actions - LGP 2022-02-23
+
+## Seems to work now on github actions using runner=Windows-2022 --LGP 2022-02-25
+ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022
+
+FROM ${BASE_IMAGE}
+
+
+#
+# List of workloads and components to add from
+# https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-build-tools?vs-2019&view=vs-2019
+#
+#    --add Microsoft.VisualStudio.Component.VC.CoreBuildTools \
+#    --add Microsoft.VisualStudio.Component.UniversalBuildTools \
+#    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
+#
+
+# # From hints on https://docs.microsoft.com/en-us/visualstudio/install/build-tools-container?view=vs-2022
+#    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
+#    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 \
+#    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
+#    --remove Microsoft.VisualStudio.Component.Windows81SDK \
+#    --quiet --wait --norestart --noUpdateInstaller --nocache modify \
+
+#
+# VS versions
+#       https://docs.microsoft.com/en-us/visualstudio/releases/2022/release-history
+#
+ARG VS_Latest=https://aka.ms/vs/17/release/vs_buildtools.exe
+ARG VS_17_0=https://download.visualstudio.microsoft.com/download/pr/8cea3871-c742-43fb-bf8b-8da0699ab4af/faa4a70c6431c2bc5e915c6ad07425c17fb1a96cd106405677aa08b6d949ba63/vs_BuildTools.exe
+ARG VS_17_1_0=https://download.visualstudio.microsoft.com/download/pr/c30a4f7e-41da-41a5-afe8-ac56abf2740f/c9c5c694fdfdf0b9295c10416d370e4e9d60f5220c2ab9eee9ee147052294d31/vs_BuildTools.exe
+
+SHELL ["powershell"]
+RUN Invoke-WebRequest "$env:VS_17_1_0" \
+    -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
+SHELL ["cmd", "/S", "/C"]
+RUN %TEMP%\vs_buildtools.exe \
+    --installPath "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools" \
+    --includeRecommended \
+    --add Microsoft.VisualStudio.Workload.VCTools \
+    --add Microsoft.VisualStudio.Workload.UniversalBuildTools \
+    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 \
+    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
+    --remove Microsoft.VisualStudio.Component.Windows81SDK \
+    --quiet --wait --norestart --noUpdateInstaller \
+    || IF "%ERRORLEVEL%"=="3010" EXIT 0
+
+
+# Install MSYS
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+ARG MSYS_LatestRelease=https://github.com/msys2/msys2-installer/releases/download/nightly-x86_64/msys2-base-x86_64-latest.sfx.exe
+ARG MSYS_20220118=https://github.com/msys2/msys2-installer/releases/download/2022-01-18/msys2-base-x86_64-20220118.sfx.exe
+RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
+  Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20220118" -OutFile msys2.exe; \
+  .\msys2.exe -y -oC:\; \
+  Remove-Item msys2.exe ; \
+  function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
+  msys ' '; \
+  msys 'pacman --noconfirm -Syuu'; \
+  msys 'pacman --noconfirm -Syuu'; \
+  msys 'pacman --noconfirm -S base-devel git unzip p7zip doxygen mingw-w64-x86_64-jq'; \
+  msys 'pacman --noconfirm -Scc';
+# doxygen for generating docs - optional
+# gdb for debugging - optional
+
+# Set PATH variable (to include MSYS, and its mingw64 directory - for jq)
+SHELL ["powershell"]
+RUN  \
+    $env:PATH =  $env:PATH + ';c:\msys64\usr\bin;c:\msys64\mingw64\bin;';   \
+    [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
+
+
+COPY Windows-MSYS-VS2k22/Getting-Started-With-Stroika.md c:/msys64/
+COPY Windows-MSYS-VS2k22/.bash_profile c:/msys64/
+
+# MSYS defaults to ignorning the inherited path - see https://www.msys2.org/wiki/MSYS2-introduction/
+ENV MSYS2_PATH_TYPE=inherit
+
+CMD ["bash.exe", "--login"]
+
+# ### NOTE TO RUN
+# ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
+# ###     docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
+# ###     see ScriptsLib/RunLocalWindowsDockerRegressionTests

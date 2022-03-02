@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
@@ -28,6 +28,9 @@ namespace {
         /*
          *  Mapping which allows for the association of two elements: a key and
          *  a value. The key UNIQUELY specifies its associated value.
+         * 
+         *  This is much like std::map, except that Stroika Mapping's can be implemented with different data structures (e..g hash table
+         *  tree) and don't always require a less<> comparsion operator to be defined.
          */
         Mapping<int, int> m;
         m.Add (3, -3);

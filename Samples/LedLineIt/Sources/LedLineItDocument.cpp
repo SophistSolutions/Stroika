@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 
 #include "Stroika/Foundation/StroikaPreComp.h"
@@ -28,7 +28,7 @@ using Stroika::Foundation::Characters::kCodePage_INVALID;
 using Stroika::Foundation::Characters::kCodePage_UNICODE_WIDE;
 using Stroika::Foundation::Characters::kCodePage_UNICODE_WIDE_BIGENDIAN;
 using Stroika::Foundation::Characters::kCodePage_UTF7;
-using Stroika::Foundation::Memory::SmallStackBuffer;
+using Stroika::Foundation::Memory::StackBuffer;
 
 // special exception handling just for MFC library implementation
 // copied here so I could clone MFC code as needed - not well understood - UGH!!! - LGP 951227
@@ -401,18 +401,18 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                 if (suggestedCodePage != NULL) {
                     *suggestedCodePage = useCodePage;
                 }
-                CodePageConverter           cpc        = CodePageConverter (useCodePage, CodePageConverter::eHandleBOM);
-                size_t                      outCharCnt = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (rawBytes), nRawBytes + 1);
-                SmallStackBuffer<Led_tChar> fileData2 (outCharCnt);
+                CodePageConverter      cpc        = CodePageConverter{useCodePage, CodePageConverter::eHandleBOM};
+                size_t                 outCharCnt = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (rawBytes), nRawBytes + 1);
+                StackBuffer<Led_tChar> fileData2{Memory::eUninitialized, outCharCnt};
                 cpc.MapToUNICODE (reinterpret_cast<const char*> (rawBytes), nRawBytes, static_cast<wchar_t*> (fileData2), &outCharCnt);
                 size_t charsRead = outCharCnt;
                 Assert (charsRead <= nRawBytes);
                 charsRead = Characters::NormalizeTextToNL<Led_tChar> (fileData2, charsRead, fileData2, charsRead);
 
                 {
-                    SmallStackBuffer<Led_tChar> patchedData (charsRead + charsRead / fBreakWidths);
-                    size_t                      curLineSize = 0;
-                    size_t                      ourIdx      = 0;
+                    StackBuffer<Led_tChar> patchedData{Memory::eUninitialized, charsRead + charsRead / fBreakWidths};
+                    size_t                 curLineSize = 0;
+                    size_t                 ourIdx      = 0;
                     for (const Led_tChar* p = fileData2; p != fileData2 + charsRead; ++p) {
                         if (*p == '\n' or *p == '\r') {
                             curLineSize = 0;
@@ -432,9 +432,9 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                 return true;
 #else
                 // Copy byte by byte to a new buffer, and break lines that are too long - as I go....
-                SmallStackBuffer<byte> patchedBytes (nRawBytes + nRawBytes / fBreakWidths);
-                size_t                 curLineSize = 0;
-                size_t                 ourIdx      = 0;
+                StackBuffer<byte> patchedBytes{Memory::eUninitialized, nRawBytes + nRawBytes / fBreakWidths};
+                size_t            curLineSize = 0;
+                size_t            ourIdx      = 0;
                 for (const byte* p = reinterpret_cast<const byte*> (rawBytes); p != reinterpret_cast<const byte*> (rawBytes) + nRawBytes; ++p) {
                     if (*p == '\n' or *p == '\r') {
                         curLineSize = 0;
@@ -499,12 +499,12 @@ void LedLineItDocument::Serialize (CArchive& ar)
 #endif
             charsToWrite = Characters::NLToNative<Led_tChar> (buf, charsToWrite, buf2, sizeof (buf2));
 #if qWideCharacters
-            CodePageConverter cpc = CodePageConverter (fCodePage);
+            CodePageConverter cpc = CodePageConverter{fCodePage};
             cpc.SetHandleBOM (firstTime); // only for the first block of text do we write a byte-order mark
-            firstTime                         = false;
-            size_t                 outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (static_cast<Led_tChar*> (buf2), charsToWrite + 1);
-            SmallStackBuffer<char> buf3_ (outCharCnt);
-            size_t                 nBytesToWrite = 0;
+            firstTime                    = false;
+            size_t            outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (static_cast<Led_tChar*> (buf2), charsToWrite + 1);
+            StackBuffer<char> buf3_{Memory::eUninitialized, outCharCnt};
+            size_t            nBytesToWrite = 0;
             cpc.MapFromUNICODE (static_cast<Led_tChar*> (buf2), charsToWrite, static_cast<char*> (buf3_), &outCharCnt);
             nBytesToWrite = outCharCnt;
             char* buffp   = static_cast<char*> (buf3_);
@@ -518,8 +518,8 @@ void LedLineItDocument::Serialize (CArchive& ar)
     else {
         CFile* file = ar.GetFile ();
         ASSERT_VALID (file);
-        DWORD                  nLen = static_cast<DWORD> (file->GetLength ()); // maybe should subtract current offset?
-        SmallStackBuffer<char> buf (nLen);
+        DWORD             nLen = static_cast<DWORD> (file->GetLength ()); // maybe should subtract current offset?
+        StackBuffer<char> buf{Memory::eUninitialized, nLen};
         if (ar.Read (buf, nLen) != nLen) {
             AfxThrowArchiveException (CArchiveException::endOfFile);
         }
@@ -535,9 +535,9 @@ void LedLineItDocument::Serialize (CArchive& ar)
         }
 
 #if qWideCharacters
-        CodePageConverter           cpc        = CodePageConverter (useCodePage, CodePageConverter::eHandleBOM);
-        size_t                      outCharCnt = cpc.MapToUNICODE_QuickComputeOutBufSize (static_cast<char*> (buf), nLen + 1);
-        SmallStackBuffer<Led_tChar> result (outCharCnt);
+        CodePageConverter      cpc        = CodePageConverter{useCodePage, CodePageConverter::eHandleBOM};
+        size_t                 outCharCnt = cpc.MapToUNICODE_QuickComputeOutBufSize (static_cast<char*> (buf), nLen + 1);
+        StackBuffer<Led_tChar> result{Memory::eUninitialized, outCharCnt};
         cpc.MapToUNICODE (static_cast<char*> (buf), nLen, static_cast<wchar_t*> (result), &outCharCnt);
         nLen             = static_cast<DWORD> (outCharCnt);
         result[nLen]     = '\0'; // assure NUL-Term

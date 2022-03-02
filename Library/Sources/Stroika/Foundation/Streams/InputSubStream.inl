@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_InputSubStream_inl_
 #define _Stroika_Foundation_Streams_InputSubStream_inl_ 1
@@ -11,7 +11,7 @@
  */
 
 #include "../Debug/AssertExternallySynchronizedMutex.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Streams {
 
@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Streams {
                     SeekOffsetType realSeekOffset = realIn.GetOffset ();
                     if (realSeekOffset < *start) {
                         Assert (*start - realSeekOffset < sizeof (size_t)); // NYI crazy corner case
-                        Memory::SmallStackBuffer<ELEMENT_TYPE> buf{Memory::SmallStackBufferCommon::eUninitialized, static_cast<size_t> (*start - realSeekOffset)};
+                        Memory::StackBuffer<ELEMENT_TYPE> buf{static_cast<size_t> (*start - realSeekOffset)};
                         (void)realIn.ReadAll (buf.begin (), buf.end ()); // read exactly that many elements, and drop them on the floor
                     }
                 }

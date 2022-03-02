@@ -45,7 +45,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
       Mapping<int,int> m = Mapping_Array<int,int>{};  // good while small
       ... while constructing map
       if (m.size () > 100) {
-        m = Mapping_stdmap<int,int>{m);
+        m = Mapping_stdmap<int,int>{m};
       }
       ... now switch to hash lookup once structure is stable
       m = Mapping_Hashtable<int,int>{m};
@@ -71,14 +71,21 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   void f(IT start, IT end) {...}
   ```
   and still have 'f' work with different types of containers.
+
+  Similarly, because Iterator\<T> has an operator bool (returns true on END) - this means (unlike STL containers but like ptr based null-checking) you can do)
+  ```
+  if (auto p = something_that_returns_iterator()) {}
+  ```
   
 
 - Stroika containers are lazy copied (copy-on-write - aka COW)
-  - Performance tradeoff: some access patterns are slower due to extra vtable lookup per operation, but most common operations (copying etc) much faster, and abstraction allowing changing representations often makes faster still. Plus, if you use functional apis, these generally avoid much of the vtable lookup cost. And smart compiles (especially link time codegen) can avoid most of the cost.
-- A sensible taxonmy of containers based on access pattern, and for each, multiple backend data structures to implement them.
+  - Performance tradeoff: some access patterns are slower due to extra vtable lookup per operation, but most common operations (copying etc) much faster, and abstraction allowing changing representations often makes faster still. Plus, if you use functional apis, these generally avoid much of the vtable lookup cost. And smart compilers (especially link time codegen) can avoid most of the cost.
+- A sensible taxonmy of containers (Archetypes) based on access pattern, and for each, multiple backend data structures to implement them.
+
+- <a name="Alternate-Backends-Feature"></a>Each Archetype container (access pattern) comes with multiple data structure backends, and you can start with the default (generally good), but when optimizing, transparently switch backends (data structure implementations) to easily adjust your performance characteristics
 - Linq-like rich variety of functional accessors, like Apply (), Find (), Where, Select (), Distinct (), OrderBy (), Accumulate (), Min/Max (), Any (), etc inherited from Iterable\<T>
 
-- Block-Allocation by default - even for STL-based containers. This helps make (much) use of Set_stdset\<T> faster than std::set\<T>, for example.
+- Block-Allocation by default - even for STL-based containers. This helps make use of Set_stdset\<T> (much) faster than std::set\<T>, for example.
 
 - Internal thread safety checks, (generally) assure threadsafe access (see Debug::AssertExternallySyncrhonized)
 
@@ -86,7 +93,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 ---
 
 - [Association\<KEY_TYPE, VALUE_TYPE>](Association.h)
-  - Allows for the association of two elements, and key and one or more values
+  - Allows for the association of two elements: a key and one or more associated values
   - Similar to Mapping<> - except multi-valued (like std::multimap)
   - Supported backends: Array, LinkedList, std::multimap
 - [Bijection\<DOMAIN_TYPE, RANGE_TYPE>](Bijection.h)
@@ -94,7 +101,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
   - Supported backends: LinkedList
 - [Collection\<T>](Collection.h)
   - a container to manage an un-ordered collection of items, without equality defined for T
-  - Supported backends: Array, LinkedList, std::fowrad_list, std::multiset
+  - Supported backends: Array, LinkedList, std::forward_list, std::multiset
 - [DataHyperRectange\< T, ... INDEXES>](DataHyperRectange.h)
   - a multi-dimensional Sequence\<T>
   - Aliases: Data-Cube, Date Cube, Hyper-Cube, Hypercube
@@ -253,7 +260,7 @@ KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
 ---
 
 - Due to use of COW, const methods of reps need no locking (just use Debug::AssertExternallySyncrhonized).
-- Due to use of COW, non-const methods of reps ALSO don't need loocking, since the COW code assures there is only one reference at a time (and therefore one Envelope class, which itself asserts externally synchronized)
+- Due to use of COW, non-const methods of reps ALSO don't need locking, since the COW code assures there is only one reference at a time (and therefore one Envelope class, which itself asserts externally synchronized)
 
 - Generally have body functions of overloads have static_assert(TYPE REQUIREMENT) instead of using
   enable_if_t, just because enable_if_t tends to require more compiler bug workarounds, and produce
@@ -292,7 +299,7 @@ KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
 - Iterator Patching
   Before Stroika 2.1b14, updates to containers used to automatically update all existing running iterators. This was a nice, elegant feature. But it cost
   too much for its quite modest value.
-  - In made the backend implementations of containers significantly more complex, due to having to implement a patching strategy
+  - It made the backend implementations of containers significantly more complex, due to having to implement a patching strategy
     for all kinds of iterators, on all kinds of container modifying operations. This wasn't that hard (as it fell into a few cases), but it was some work.
     And it added a lot of template mixin mumbo-jumbo, just to get all containers tracking all their iterators.
   - It forced introduction of this concept of IteratorOwners (MAY still need that for other replacement debug checking - TBD - LGP 2021-10-05).

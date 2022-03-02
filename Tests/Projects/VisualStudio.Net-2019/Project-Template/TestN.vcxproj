@@ -52,9 +52,6 @@
   <ImportGroup Label="Shared">
   </ImportGroup>
 
-  <PropertyGroup Label="UserMacros">
-    <JOBS_FLAG>-j8</JOBS_FLAG>
-  </PropertyGroup>
   <Import Project="$(ProjectDir)\..\..\..\..\Library\Projects\VisualStudio.net\Microsoft.Cpp.stroika.AllConfigs.props" Condition="exists('$(ProjectDir)\..\..\..\..\Library\Projects\VisualStudio.net\Microsoft.Cpp.stroika.AllConfigs.props')" Label="Stroika-Configuration" />
   <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   <PropertyGroup Label="UserMacros">
@@ -65,8 +62,7 @@
     <NMakeCleanCommandLine>make --directory $(ProjectDir)\..\..\..\NNN\ CONFIGURATION=$(CONFIGURATION) clean --silent</NMakeCleanCommandLine>
     <OutDir>$(ProjectDir)\..\..\..\..\Builds\$(Configuration)\Tests\</OutDir>
     <IntDir>$(ProjectDir)\..\..\..\..\IntermediateFiles\$(Configuration)\Tests\NNN\</IntDir>
-  </PropertyGroup>
-  <PropertyGroup>
+    <ExecutablePath>$(StroikaBuildToolsExtraPath);$(CommonExecutablePath)</ExecutablePath>
     <NMakeIncludeSearchPath>$(ProjectDir)\..\..\..\..\Tests\NNN\;$(ProjectDir)\..\..\..\..\Library\Sources\;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <AdditionalOptions>/std:c++latest</AdditionalOptions>
   </PropertyGroup>

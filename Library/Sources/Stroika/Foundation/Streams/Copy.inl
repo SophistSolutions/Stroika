@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_Copy_inl_
 #define _Stroika_Foundation_Streams_Copy_inl_ 1
@@ -11,7 +11,7 @@
  */
 
 #include "../Execution/Thread.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Streams {
 
@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     void CopyAll_Buffered (typename InputStream<ELEMENT_TYPE>::Ptr from, typename OutputStream<ELEMENT_TYPE>::Ptr to, size_t bufferSize)
     {
-        Memory::SmallStackBuffer<ELEMENT_TYPE> buf{bufferSize};
+        Memory::StackBuffer<ELEMENT_TYPE> buf{bufferSize};
         while (size_t n = from.Read (buf.begin (), buf.end ())) {
             Assert (n <= buf.size ());
             to.Write (buf.begin (), buf.begin () + n);

@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../StroikaPreComp.h"
 
@@ -18,6 +18,7 @@
 #include "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "../../../Foundation/Debug/Assertions.h"
 #include "../../../Foundation/Execution/Sleep.h"
+#include "../../../Foundation/Memory/StackBuffer.h"
 
 #include "WMICollector.h"
 
@@ -109,10 +110,10 @@ optional<double> WMICollector::PerInstanceData_::PeekCurrentValue (const String&
 
 Mapping<String, double> WMICollector::PerInstanceData_::GetCurrentValues (const String& counterName)
 {
-    PDH_HCOUNTER                                        counter{*fCounters_.Lookup (counterName)};
-    DWORD                                               dwBufferSize{}; // Size of the pItems buffer
-    DWORD                                               dwItemCount{};  // Number of items in the pItems buffer
-    Memory::SmallStackBuffer<PDH_FMT_COUNTERVALUE_ITEM> items (0);
+    PDH_HCOUNTER                                   counter{*fCounters_.Lookup (counterName)};
+    DWORD                                          dwBufferSize{}; // Size of the pItems buffer
+    DWORD                                          dwItemCount{};  // Number of items in the pItems buffer
+    Memory::StackBuffer<PDH_FMT_COUNTERVALUE_ITEM> items{0};
     // Get the required size of the pItems buffer.
     PDH_STATUS status = ::PdhGetFormattedCounterArray (counter, PDH_FMT_DOUBLE, &dwBufferSize, &dwItemCount, nullptr);
     if (PDH_MORE_DATA == status) {
@@ -219,8 +220,8 @@ Set<String> WMICollector::GetAvailableInstaces ()
     PDH_STATUS pdhStatus = ::PdhEnumObjectItems (nullptr, nullptr, fObjectName_.c_str (), nullptr, &dwCounterListSize, nullptr, &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
     Assert (pdhStatus == PDH_MORE_DATA);
 
-    SmallStackBuffer<Characters::SDKChar> counterBuf (dwCounterListSize + 2);
-    SmallStackBuffer<Characters::SDKChar> instanceBuf (dwInstanceListSize + 2);
+    StackBuffer<Characters::SDKChar> counterBuf{dwCounterListSize + 2};
+    StackBuffer<Characters::SDKChar> instanceBuf{dwInstanceListSize + 2};
 
     pdhStatus = ::PdhEnumObjectItems (nullptr, nullptr, fObjectName_.c_str (), counterBuf.begin (), &dwCounterListSize, instanceBuf.begin (), &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
     if (pdhStatus != 0) {
@@ -246,8 +247,8 @@ Set<String> WMICollector::GetAvailableCounters ()
     PDH_STATUS pdhStatus = ::PdhEnumObjectItems (NULL, NULL, fObjectName_.c_str (), nullptr, &dwCounterListSize, nullptr, &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
     Assert (pdhStatus == PDH_MORE_DATA);
 
-    SmallStackBuffer<Characters::SDKChar> counterBuf (dwCounterListSize + 2);
-    SmallStackBuffer<Characters::SDKChar> instanceBuf (dwInstanceListSize + 2);
+    StackBuffer<Characters::SDKChar> counterBuf{dwCounterListSize + 2};
+    StackBuffer<Characters::SDKChar> instanceBuf{dwInstanceListSize + 2};
 
     pdhStatus = ::PdhEnumObjectItems (NULL, NULL, fObjectName_.c_str (), counterBuf.begin (), &dwCounterListSize, instanceBuf.begin (), &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
     if (pdhStatus != 0) {

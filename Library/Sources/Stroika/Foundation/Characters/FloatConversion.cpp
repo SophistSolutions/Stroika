@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../StroikaPreComp.h"
 
@@ -17,7 +17,6 @@
 #include "../Debug/Trace.h"
 #include "../Debug/Valgrind.h"
 #include "../Math/Common.h"
-#include "../Memory/SmallStackBuffer.h"
 
 #include "FloatConversion.h"
 

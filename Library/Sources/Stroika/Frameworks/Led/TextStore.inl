@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Framework_Led_TextStore_inl_
 #define _Stroika_Framework_Led_TextStore_inl_ 1
@@ -67,9 +67,9 @@ namespace Stroika::Frameworks::Led {
         RequireNotNull (fMarkers);
     }
 
-    //  class   TextStore::SmallStackBufferMarkerSink
-    inline TextStore::SmallStackBufferMarkerSink::SmallStackBufferMarkerSink ()
-        : fMarkers (0)
+    //  class   TextStore::InlineBufferMarkerSink
+    inline TextStore::InlineBufferMarkerSink::InlineBufferMarkerSink ()
+        : fMarkers{0}
     {
     }
 
@@ -295,8 +295,8 @@ namespace Stroika::Frameworks::Led {
         Assert (not Led_IsValidSecondByte ('\n'));
         size_t startOfFromLine = GetStartOfLineContainingPosition (charPos);
         Assert (startOfFromLine <= charPos);
-        size_t                              len = charPos - startOfFromLine;
-        Memory::SmallStackBuffer<Led_tChar> buf (len);
+        size_t                         len = charPos - startOfFromLine;
+        Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
         CopyOut (startOfFromLine, len, buf);
         Assert (Led_IsValidMultiByteString (buf, len)); // This check that the whole line from the beginning to the charPos point
                                                         // is valid makes sure that the from position doesn't split a double-byte

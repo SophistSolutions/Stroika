@@ -1,0 +1,143 @@
+
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   fun:_ZN12_GLOBAL__N_156RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_4DoItEv
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   fun:_ZN12_GLOBAL__N_148RegressionTest2_sqlite_EmployeesDB_with_threads_4DoItEv.lto_priv.0
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   ...
+   fun:_ZN12_GLOBAL__N_116WAITABLE_EVENTS_11NOTIMEOUTS_Ev
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Helgrind:UnlockForeign
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   ...
+   fun:_ZN12_GLOBAL__N_116WAITABLE_EVENTS_11NOTIMEOUTS_Ev
+   ...
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   fun:_ZZN12_GLOBAL__N_116WAITABLE_EVENTS_11NOTIMEOUTS_EvEN5FRED14DoItEPv
+   ...
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   ...
+   fun:_ZZN12_GLOBAL__N_116WAITABLE_EVENTS_11NOTIMEOUTS_EvEN5FRED24DoItEPv
+   ...
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:UnlockForeign
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   fun:_ZZN12_GLOBAL__N_116WAITABLE_EVENTS_11NOTIMEOUTS_EvEN5FRED14DoItEPv
+   ...
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:UnlockForeign
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   ...
+   fun:_ZZN12_GLOBAL__N_116WAITABLE_EVENTS_11NOTIMEOUTS_EvEN5FRED24DoItEPv
+   ...
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:UnlockForeign
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   ...
+   fun:_ZN12_GLOBAL__N_116WAITABLE_EVENTS_35PingBackAndForthWithSimpleTimeouts_Ev
+   ...
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   ...
+   fun:_ZN12_GLOBAL__N_116WAITABLE_EVENTS_35PingBackAndForthWithSimpleTimeouts_Ev
+   ...
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   fun:_ZZN12_GLOBAL__N_116WAITABLE_EVENTS_35PingBackAndForthWithSimpleTimeouts_*
+   ...
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:UnlockForeign
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   fun:_ZZN12_GLOBAL__N_116WAITABLE_EVENTS_35PingBackAndForthWithSimpleTimeouts_*
+   ...
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   ...
+   fun:_ZZN12_GLOBAL__N_116WAITABLE_EVENTS_35PingBackAndForthWithSimpleTimeouts_*
+   ...
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:UnlockForeign
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   ...
+   fun:_ZZN12_GLOBAL__N_116WAITABLE_EVENTS_35PingBackAndForthWithSimpleTimeouts_*
+   ...
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   fun:__run_exit_handlers
+   fun:exit
+   fun:__libc_start_call_main
+   fun:__libc_start_main@@GLIBC_2.34
+   fun:(below main)
+}
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   ...
+   fun:UnknownInlinedFun
+   ...
+}

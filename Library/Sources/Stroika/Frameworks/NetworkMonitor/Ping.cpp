@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../StroikaPreComp.h"
 
@@ -121,10 +121,10 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
     Time::DurationSecondsType pingTimeoutAfter = Time::GetTickCount () + fPingTimeout_;
     while (true) {
         ThrowTimeoutExceptionAfter (pingTimeoutAfter);
-        SocketAddress          fromAddress;
-        constexpr size_t       kExtraSluff_{100};                                                                                                // Leave a little extra room in case some packets return extra
-        SmallStackBuffer<byte> recv_buf (fICMPPacketSize_ + sizeof (ICMP::V4::PacketHeader) + 2 * sizeof (IP::V4::PacketHeader) + kExtraSluff_); // icmpPacketSize includes ONE ICMP header and payload, but we get 2 IP and 2 ICMP headers in TTL Exceeded response
-        size_t                 n = fSocket_.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress, fPingTimeout_);
+        SocketAddress     fromAddress;
+        constexpr size_t  kExtraSluff_{100};                                                                                                                       // Leave a little extra room in case some packets return extra
+        StackBuffer<byte> recv_buf{Memory::eUninitialized, fICMPPacketSize_ + sizeof (ICMP::V4::PacketHeader) + 2 * sizeof (IP::V4::PacketHeader) + kExtraSluff_}; // icmpPacketSize includes ONE ICMP header and payload, but we get 2 IP and 2 ICMP headers in TTL Exceeded response
+        size_t            n = fSocket_.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress, fPingTimeout_);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"got back packet from %s", Characters::ToString (fromAddress).c_str ());
 #endif

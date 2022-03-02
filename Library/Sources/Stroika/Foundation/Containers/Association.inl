@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Association_inl_
 #define _Stroika_Foundation_Containers_Association_inl_
@@ -471,11 +471,7 @@ namespace Stroika::Foundation::Containers {
             {
             }
         };
-#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        auto rep = dynamic_pointer_cast<typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep> (const_cast<typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep*> (this)->shared_from_this ());
-#else
         auto rep = const_cast<typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep*> (this)->shared_from_this ();
-#endif
         return MyIterable_{Association<KEY_TYPE, MAPPED_VALUE_TYPE> (rep)};
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -516,11 +512,7 @@ namespace Stroika::Foundation::Containers {
             {
             }
         };
-#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        auto rep = dynamic_pointer_cast<typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep> (const_cast<typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep*> (this)->shared_from_this ());
-#else
         auto rep = const_cast<typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep*> (this)->shared_from_this ();
-#endif
         return MyIterable_{Association<KEY_TYPE, MAPPED_VALUE_TYPE>{rep}};
     }
 

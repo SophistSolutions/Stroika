@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../StroikaPreComp.h"
 
@@ -52,7 +52,6 @@
 #include "../../IO/FileSystem/FileInputStream.h"
 #include "../../IO/Network/DNS.h"
 #include "../../Memory/Optional.h"
-#include "../../Memory/SmallStackBuffer.h"
 #include "../../Streams/MemoryStream.h"
 
 #include "Socket.h"
@@ -77,18 +76,6 @@ using namespace Stroika::Foundation::IO::Network;
 // support use of Iphlpapi - but better to reference here than in lib entry of project file cuz
 // easiser to see/modularize (and only pulled in if this module is referenced)
 #pragma comment(lib, "Iphlpapi.lib")
-#endif
-
-#if qPlatform_Linux
-// Hack for centos5 support:
-//      Overload with linux version so other one wins, but this gets called if other doesn't exist
-//      TRY --LGP 2015-05-19
-template <typename HACK = int>
-static __inline__ __u32 ethtool_cmd_speed (const struct ethtool_cmd* ep, HACK i = 0)
-{
-    //return (ep->speed_hi << 16) | ep->speed;
-    return ep->speed;
-}
 #endif
 
 namespace {
@@ -776,7 +763,7 @@ namespace {
         KeyedCollection<Interface, String> results{[] (const Interface& i) { return i.fInternalInterfaceID; }};
         ULONG                              flags  = GAA_FLAG_INCLUDE_PREFIX | GAA_FLAG_INCLUDE_GATEWAYS;
         ULONG                              family = AF_UNSPEC; // Both IPv4 and IPv6 addresses
-        Memory::SmallStackBuffer<byte>     buf;
+        Memory::StackBuffer<byte>          buf;
     Again:
         ULONG                 ulOutBufLen = static_cast<ULONG> (buf.GetSize ());
         PIP_ADAPTER_ADDRESSES pAddresses  = reinterpret_cast<PIP_ADAPTER_ADDRESSES> (buf.begin ());

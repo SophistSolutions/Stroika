@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../../Foundation/StroikaPreComp.h"
 
@@ -1390,7 +1390,7 @@ void StyledTextIOReader_RTF::ReaderContext::PutRawCharToDestination (char c)
 
     wchar_t outChar;
     size_t  nOutChars = 1;
-    CodePageConverter (codePage).MapToUNICODE (fMultiByteInputCharBuf, fMultiByteInputCharBuf[1] == 0 ? 1 : 2, &outChar, &nOutChars);
+    CodePageConverter{codePage}.MapToUNICODE (fMultiByteInputCharBuf, fMultiByteInputCharBuf[1] == 0 ? 1 : 2, &outChar, &nOutChars);
     Assert (nOutChars == 0 or nOutChars == 1);
     if (nOutChars == 1) {
         GetDestination ().AppendText (&outChar, 1);
@@ -4382,7 +4382,7 @@ void StyledTextIOWriter_RTF::WritePlainUnicodeCharCharacterHelper (wchar_t c)
 {
     char   mbCharBuf[2];
     size_t mbCharCount = 2;
-    CodePageConverter (fCurrentOutputCharSetEncoding).MapFromUNICODE (&c, 1, mbCharBuf, &mbCharCount);
+    CodePageConverter{fCurrentOutputCharSetEncoding}.MapFromUNICODE (&c, 1, mbCharBuf, &mbCharCount);
     Assert (mbCharCount == 1 or mbCharCount == 2);
 
     bool needToWriteUNICODE = c >= 0x80; //  write UNICODE if non-ascii

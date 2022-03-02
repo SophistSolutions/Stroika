@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Cache_LRUCache_h_
 #define _Stroika_Foundation_Cache_LRUCache_h_ 1
@@ -14,7 +14,7 @@
 #include "../Configuration/TypeHints.h"
 #include "../Containers/Mapping.h"
 #include "../Debug/AssertExternallySynchronizedMutex.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/InlineBuffer.h"
 
 #include "Statistics.h"
 
@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Cache {
      *
      *  \par Example Usage
      *      \code
-     *          LRUCache<string, string> tmp (3);
+     *          LRUCache<string, string> tmp{3};
      *          tmp.Add ("a", "1");
      *          tmp.Add ("b", "2");
      *          tmp.Add ("c", "3");
@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Cache {
      *  \par Example Usage
      *      \code
      *          // using C++17 deduction guides, and hash table of size 10
-     *          LRUCache tmp (pair<string, string>{}, 3, 10, hash<string>{});
+     *          LRUCache tmp{pair<string, string>{}, 3, 10, hash<string>{}};
      *          tmp.Add ("a", "1");
      *          tmp.Add ("b", "2");
      *          tmp.Add ("c", "3");
@@ -81,12 +81,12 @@ namespace Stroika::Foundation::Cache {
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *        o No comparison of LRUCache objects is currently supported. It might make sense, but would be of questionable use.
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#ExternallySynchronized">ExternallySynchronized</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  @see SynchronizedLRUCache<> - internally synchronized version
      */
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename KEY_HASH_FUNCTION = nullptr_t, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
-    class LRUCache : private Debug::AssertExternallySynchronizedMutex, private STATS_TYPE {
+    class LRUCache : private Debug::AssertExternallySynchronizedMutex {
     public:
         using KeyType = KEY;
 
@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Cache {
          *        you cannot specify some template parameters and then have deduction guides take effect).
          * 
          *  Note cannot move easily because this contains internal pointers (fCachedElts_First_): still declare move CTOR, but its not
-         *  noexept because its really copying...
+         *  noexcept because its really copying...
          */
         LRUCache (size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {}, size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{});
         LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {}, size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{});
@@ -162,10 +162,12 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          *  The value associated with KEY may not be present, so an missing optional value is returned.
+         * 
+         *  \note Unintuitively, Lookup () is non-const **intentionally** - because it updates internal data structures to track the most recently accessed item. This has implication for thread-safety!
          *
          *  @see LookupValue ()
          */
-        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key) const;
+        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key);
 
     public:
         /**
@@ -206,16 +208,12 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         *  Add the given value to the cache. This is rarely directly used.
+         *  Add the given value to the cache. This is rarely directly used. 
+         *  Typically you Lookup with something like LookupValue() which implcitly does the adds.
          */
         nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> value);
-
-        //Experimentally added in v2.1d6
         template <typename K1 = KEY, typename V1 = VALUE, enable_if_t<is_same_v<K1, V1>>* = nullptr>
-        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key)
-        {
-            Add (key, key);
-        }
+        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key);
 
     public:
         /**
@@ -239,6 +237,7 @@ namespace Stroika::Foundation::Cache {
     private:
         [[NO_UNIQUE_ADDRESS_ATTR]] const KeyEqualsCompareFunctionType fKeyEqualsComparer_;
         [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_HASH_FUNCTION            fHashFunction_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] STATS_TYPE                         fStats_;
 
         struct CacheElement_;
         struct CacheIterator_;
@@ -262,16 +261,16 @@ namespace Stroika::Foundation::Cache {
          * of this re-ordering, its illegal to do a Lookup while a @'LRUCache_<ELEMENT>::CacheIterator_' exists
          *       for this LRUCache_.
          */
-        nonvirtual optional<KeyValuePair_>* LookupElement_ (typename Configuration::ArgByValueType<KeyType> item) const;
+        nonvirtual optional<KeyValuePair_>* LookupElement_ (typename Configuration::ArgByValueType<KeyType> item);
 
         /*
          */
         nonvirtual void ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
 
-        static constexpr size_t                                                      kPreallocatedHashtableSize_ = 5; // size where no memory allocation overhead for lrucache
-        Memory::SmallStackBuffer<vector<CacheElement_>, kPreallocatedHashtableSize_> fCachedElts_BUF_{};
-        Memory::SmallStackBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_First_{};
-        Memory::SmallStackBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_Last_{};
+        static constexpr size_t                                                  kPreallocatedHashtableSize_ = 5; // size where no memory allocation overhead for lrucache
+        Memory::InlineBuffer<vector<CacheElement_>, kPreallocatedHashtableSize_> fCachedElts_BUF_{};
+        Memory::InlineBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_First_{};
+        Memory::InlineBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_Last_{};
     };
 
 }

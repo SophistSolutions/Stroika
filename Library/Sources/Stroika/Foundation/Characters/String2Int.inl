@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_String2Int_inl_
 #define _Stroika_Foundation_Characters_String2Int_inl_ 1
@@ -12,6 +12,7 @@
 #include <charconv>
 
 #include "../Configuration/Common.h"
+#include "../Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Characters {
 
@@ -61,7 +62,7 @@ namespace Stroika::Foundation::Characters {
              *  Most of the time we can do this very efficiently, because there are just ascii characters.
              *  Else, fallback on older algorithm that understands full unicode character set.
              */
-            Memory::SmallStackBuffer<char> asciiS;
+            Memory::StackBuffer<char> asciiS;
             if (String::AsASCIIQuietly (start, end, &asciiS)) {
                 T    r; // intentionally uninitialized
                 auto b = asciiS.begin ();

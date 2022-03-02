@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../StroikaPreComp.h"
 
@@ -22,6 +22,7 @@
 #include "../Execution/Thread.h"
 #include "../IO/FileSystem/PathName.h"
 #include "../Memory/Common.h"
+#include "../Memory/StackBuffer.h"
 #include "../Time/Realtime.h"
 
 #if qTraceToFile
@@ -37,8 +38,7 @@ using namespace Characters;
 using namespace Debug;
 using namespace Execution;
 
-using Memory::SmallStackBuffer;
-using Memory::SmallStackBufferCommon;
+using Memory::StackBuffer;
 
 /*
  * TODO:
@@ -314,25 +314,25 @@ namespace {
         if (qStroika_Foundation_Debug_Trace_ShowThreadIndex) {
             static atomic<int> sMinWidth_       = 4; // for MAIN
             bool               wasNew           = false;
-            unsigned int       threadIndex2Show = Thread::IndexRegistrar::Get ().GetIndex (threadID, &wasNew);
+            unsigned int       threadIndex2Show = Thread::IndexRegistrar::sThe.GetIndex (threadID, &wasNew);
             if (wasNew) {
                 if (threadIndex2Show >= 10000) {
                     sMinWidth_.store (5); // could enhance if we anticipate more threads
                 }
             }
             if (threadID == sMainThread_) {
-                static string kMAIN_{"MAIN"sv};
-                return pair<bool, string>{wasNew, kMAIN_};
+                static const string kMAIN_{"MAIN"sv};
+                return make_pair (wasNew, kMAIN_);
             }
             else {
                 char buf[1024];
                 (void)::snprintf (buf, Memory::NEltsOf (buf), "%.*d", sMinWidth_.load (), threadIndex2Show);
-                return pair<bool, string>{wasNew, buf};
+                return make_pair (wasNew, buf);
             }
         }
         else {
             // If this is deemed useful, then re-instate the mapping of threadID == sMainThread_ to "MAIN" with appropriate -- around it
-            return pair<bool, string>{false, Thread::FormatThreadID_A (threadID)};
+            return make_pair (false, Thread::FormatThreadID_A (threadID));
         }
     }
 }
@@ -346,21 +346,21 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferL
         char               buf[1024];
         Thread::IDType     threadID     = Execution::Thread::GetCurrentThreadID ();
         pair<bool, string> threadIDInfo = mkThreadLabelForThreadID_ (threadID);
-        Verify (snprintf (buf, Memory::NEltsOf (buf), "[%s][%08.3f]\t", threadIDInfo.second.c_str (), static_cast<double> (curRelativeTime)) > 0);
+        Verify (::snprintf (buf, Memory::NEltsOf (buf), "[%s][%08.3f]\t", threadIDInfo.second.c_str (), static_cast<double> (curRelativeTime)) > 0);
         if (threadIDInfo.first) {
-            char buf2[1024];
+            char buf2[1024]; // intentionally un-initialized
             Verify (snprintf (buf2, Memory::NEltsOf (buf2), "(NEW THREAD, index=%s Real Thread ID=%s)\t", threadIDInfo.second.c_str (), Thread::FormatThreadID_A (threadID).c_str ()) > 0);
 #if __STDC_WANT_SECURE_LIB__
-            strcat_s (buf, buf2);
+            (void)::strcat_s (buf, buf2);
 #else
-            strcat (buf, buf2);
+            (void)::strcat (buf, buf2);
 #endif
 #if qPlatform_POSIX
-            Verify (snprintf (buf2, Memory::NEltsOf (buf2), "(pthread_self=0x%lx)\t", (unsigned long)pthread_self ()) > 0);
+            Verify (::snprintf (buf2, Memory::NEltsOf (buf2), "(pthread_self=0x%lx)\t", (unsigned long)pthread_self ()) > 0);
 #if __STDC_WANT_SECURE_LIB__
-            strcat_s (buf, buf2);
+            (void)::strcat_s (buf, buf2);
 #else
-            strcat (buf, buf2);
+            (void)::strcat (buf, buf2);
 #endif
 #endif
         }
@@ -374,14 +374,14 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferL
 #endif
     if (bufferLastNChars == 0) {
         DoEmit_ (s, e);
-        fLastNCharBuf_Token_++; // even if not buffering, increment, so other buffers known to be invalid
+        ++fLastNCharBuf_Token_; // even if not buffering, increment, so other buffers known to be invalid
     }
     else {
         Assert ((e - s) > static_cast<ptrdiff_t> (bufferLastNChars));
         BufferNChars_ (bufferLastNChars, e - bufferLastNChars);
         DoEmit_ (s, e - bufferLastNChars);
         fLastNCharBuf_WriteTickcount_ = curRelativeTime;
-        fLastNCharBuf_Token_++; // even if not buffering, increment, so other buffers known to be invalid
+        ++fLastNCharBuf_Token_; // even if not buffering, increment, so other buffers known to be invalid
     }
     return fLastNCharBuf_Token_;
 }
@@ -390,7 +390,7 @@ void Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p)
 {
     Assert (bufferLastNChars < Memory::NEltsOf (fLastNCharBuf_CHAR_));
     fLastNCharBufCharCount_ = bufferLastNChars;
-    memcpy (fLastNCharBuf_CHAR_, p, bufferLastNChars); // no need to nul-terminate because fLastNCharBufCharCount_ stores length
+    (void)::memcpy (fLastNCharBuf_CHAR_, p, bufferLastNChars); // no need to nul-terminate because fLastNCharBufCharCount_ stores length
     fLastNCharBuf_WCHARFlag_ = false;
 }
 
@@ -398,7 +398,7 @@ void Emitter::BufferNChars_ (size_t bufferLastNChars, const wchar_t* p)
 {
     Assert (bufferLastNChars < Memory::NEltsOf (fLastNCharBuf_WCHAR_));
     fLastNCharBufCharCount_ = bufferLastNChars;
-    memcpy (fLastNCharBuf_WCHAR_, p, bufferLastNChars * sizeof (wchar_t)); // no need to nul-terminate because fLastNCharBufCharCount_ stores length
+    (void)::memcpy (fLastNCharBuf_WCHAR_, p, bufferLastNChars * sizeof (wchar_t)); // no need to nul-terminate because fLastNCharBufCharCount_ stores length
     fLastNCharBuf_WCHARFlag_ = true;
 }
 
@@ -474,8 +474,8 @@ void Emitter::DoEmit_ (const wchar_t* p) noexcept
 void Emitter::DoEmit_ (const char* p, const char* e) noexcept
 {
     try {
-        size_t                 len = e - p;
-        SmallStackBuffer<char> buf (SmallStackBufferCommon::eUninitialized, len + 1);
+        size_t            len = e - p;
+        StackBuffer<char> buf{Memory::eUninitialized, len + 1};
         (void)::memcpy (buf.begin (), p, len);
         buf.begin ()[len] = '\0';
         DoEmit_ (buf.begin ());
@@ -488,8 +488,8 @@ void Emitter::DoEmit_ (const char* p, const char* e) noexcept
 void Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
 {
     try {
-        size_t                    len = e - p;
-        SmallStackBuffer<wchar_t> buf (SmallStackBufferCommon::eUninitialized, len + 1);
+        size_t               len = e - p;
+        StackBuffer<wchar_t> buf{Memory::eUninitialized, len + 1};
         (void)::memcpy (buf.begin (), p, len * sizeof (wchar_t));
         buf.begin ()[len] = '\0';
         DoEmit_ (buf.begin ());
@@ -562,7 +562,7 @@ unsigned int TraceContextBumper::GetCount ()
 
 void TraceContextBumper::IncCount_ () noexcept
 {
-    tTraceContextDepth_++;
+    ++tTraceContextDepth_;
 }
 
 void TraceContextBumper::DecrCount_ () noexcept

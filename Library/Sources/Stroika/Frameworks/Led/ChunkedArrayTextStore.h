@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Framework_Led_ChunkedArrayTextStore_h_
 #define _Stroika_Framework_Led_ChunkedArrayTextStore_h_ 1
@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "../../Foundation/Cache/LRUCache.h"
-#include "../../Foundation/Memory/SmallStackBuffer.h"
 
 #include "TextStore.h"
 

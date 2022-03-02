@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../StroikaPreComp.h"
 
@@ -13,7 +13,6 @@
 #include "../Execution/Common.h"
 #include "../Execution/Exceptions.h"
 #include "../Execution/OperationNotSupportedException.h"
-#include "../Memory/SmallStackBuffer.h"
 
 #include "TextWriter.h"
 

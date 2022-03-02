@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Led_SpellCheckEngine_h_
 #define _Stroika_Frameworks_Led_SpellCheckEngine_h_ 1
@@ -56,7 +56,7 @@ namespace Stroika::Frameworks::Led {
                                             )
                     ) {
                 // we found a possible undefined word.
-                Led_tString word    =   Led_tString (wordStartResult, wordEndResult);
+                Led_tString word    =   Led_tString{wordStartResult, wordEndResult};
             }
             // no more undefined words.
         </code>

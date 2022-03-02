@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_String2Int_h_
 #define _Stroika_Foundation_Characters_String2Int_h_ 1
@@ -10,6 +10,9 @@
 
 /**
  * TODO:
+ * 
+ *      @todo   SEE https://stroika.atlassian.net/browse/STK-768 - major refactor of this module
+ * 
  *      @todo   Add Int2String () module? Like FloatConversion::ToString, and this String2Int?
  *
  *      @todo   DOCUMENT BEHAVIOR OF STRING2INT() for bad strings. What does it do?

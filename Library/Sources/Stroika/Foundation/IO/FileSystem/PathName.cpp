@@ -1,10 +1,10 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../StroikaPreComp.h"
 
 #include "../../Characters/String.h"
-#include "../../Memory/SmallStackBuffer.h"
+#include "../../Memory/StackBuffer.h"
 
 #include "PathName.h"
 
@@ -13,8 +13,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
-using Memory::SmallStackBuffer;
-using Memory::SmallStackBufferCommon;
+using Memory::StackBuffer;
 
 /*
  ********************************************************************************
@@ -27,7 +26,7 @@ String FileSystem::AssureDirectoryPathSlashTerminated (const String& dirPath)
         AssertNotReached (); // not sure if this is an error or not. Not sure how code used.
         // put assert in there to find out... Probably should THROW!
         //      -- LGP 2009-05-12
-        return String (&kPathComponentSeperator, &kPathComponentSeperator + 1);
+        return String{&kPathComponentSeperator, &kPathComponentSeperator + 1};
     }
     else {
         Character lastChar = dirPath[dirPath.size () - 1];
@@ -79,7 +78,7 @@ String FileSystem::AssureLongFileName (const String& fileName)
 #if qPlatform_Windows
     DWORD r = ::GetLongPathNameW (fileName.c_str (), nullptr, 0);
     if (r != 0) {
-        SmallStackBuffer<wchar_t> buf (SmallStackBufferCommon::eUninitialized, r);
+        StackBuffer<wchar_t> buf{Memory::eUninitialized, r};
         r = ::GetLongPathNameW (fileName.c_str (), buf, r);
         if (r != 0) {
             return static_cast<const wchar_t*> (buf);

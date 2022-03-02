@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_KeyedCollection_h_
 #define _Stroika_Foundation_Containers_KeyedCollection_h_ 1
@@ -396,6 +396,8 @@ namespace Stroika::Foundation::Containers {
          *  @see RemoveIf () for when the argument might not exist
          *
          *  \note mutates container
+         *
+         *  \param nextI - if provided (not null) - will be filled in with the next value after where iterator i is pointing - since i is invalidated by changing the container)
          */
         nonvirtual void Remove (const Iterator<value_type>& i, const Iterator<value_type>* nextI = nullptr);
         nonvirtual void Remove (ArgByValueType<KeyType> item);
@@ -539,12 +541,7 @@ namespace Stroika::Foundation::Containers {
      *  the KeyedCollection<KEY_TYPE, T, TRAITS> container API.
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    class KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep : public Iterable<T>::_IRep
-#if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        ,
-                                                        public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep>
-#endif
-    {
+    class KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep : public Iterable<T>::_IRep, public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep> {
     protected:
         using _IRepSharedPtr = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRepSharedPtr;
 

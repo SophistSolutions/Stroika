@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Memory_MemoryAllocator_inl_
 #define _Stroika_Foundation_Memory_MemoryAllocator_inl_ 1
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Memory {
     template <typename OTHERT>
     inline void STLAllocator<T, BASE_ALLOCATOR>::destroy (OTHERT* p)
     {
-        p->~OTHERT ();
+        destroy_at (p);
     }
     template <typename T, typename BASE_ALLOCATOR>
     template <typename... ARGS>

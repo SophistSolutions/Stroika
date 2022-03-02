@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Bijection_h_
 #define _Stroika_Foundation_Containers_Bijection_h_ 1
@@ -389,6 +389,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \note mutates container
+         * 
+         *  \param nextI - if provided (not null) - will be filled in with the next value after where iterator i is pointing - since i is invalidated by changing the container)
          */
         nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
 
@@ -534,12 +536,8 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     class Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep
-        : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep
-#if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        ,
-          public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep>
-#endif
-    {
+        : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep,
+          public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep> {
     private:
         using inherited = typename Iterable<value_type>::_IRep;
 

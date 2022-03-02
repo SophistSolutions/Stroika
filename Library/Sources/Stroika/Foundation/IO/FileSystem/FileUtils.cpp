@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../StroikaPreComp.h"
 
@@ -33,7 +33,6 @@
 #include "../../IO/FileSystem/Exception.h"
 #include "../../IO/FileSystem/FileSystem.h"
 #include "../../IO/FileSystem/PathName.h"
-#include "../../Memory/SmallStackBuffer.h"
 #include "PathName.h"
 #include "WellKnownLocations.h"
 

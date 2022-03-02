@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../StroikaPreComp.h"
 
@@ -11,7 +11,7 @@
 #include "../../Containers/Common.h"
 #include "../../Debug/Assertions.h"
 #include "../../Execution/Common.h"
-#include "../../Memory/SmallStackBuffer.h"
+#include "../../Memory/StackBuffer.h"
 
 #include "OpenSSLCryptoStream.h"
 
@@ -224,11 +224,11 @@ public:
     }
 
 private:
-    mutable recursive_mutex                                            fCriticalSection_;
-    Memory::SmallStackBuffer<byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH> fOutBuf_{_GetMinOutBufSize (kInBufSize_)};
-    byte*                                                              fOutBufStart_{nullptr};
-    byte*                                                              fOutBufEnd_{nullptr};
-    InputStream<byte>::Ptr                                             fRealIn_;
+    mutable recursive_mutex                                        fCriticalSection_;
+    Memory::InlineBuffer<byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH> fOutBuf_{_GetMinOutBufSize (kInBufSize_)};
+    byte*                                                          fOutBufStart_{nullptr};
+    byte*                                                          fOutBufEnd_{nullptr};
+    InputStream<byte>::Ptr                                         fRealIn_;
 };
 
 class OpenSSLOutputStream::Rep_ : public OutputStream<byte>::_IRep, private InOutStrmCommon_ {
@@ -281,9 +281,9 @@ public:
     {
         Require (start < end); // for OutputStream<byte> - this function requires non-empty write
         Require (IsOpenWrite ());
-        SmallStackBuffer<byte, 1000 + EVP_MAX_BLOCK_LENGTH> outBuf (SmallStackBufferCommon::eUninitialized, _GetMinOutBufSize (end - start));
-        [[maybe_unused]] auto&&                             critSec        = lock_guard{fCriticalSection_};
-        size_t                                              nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
+        StackBuffer<byte, 1000 + EVP_MAX_BLOCK_LENGTH> outBuf{Memory::eUninitialized, _GetMinOutBufSize (end - start)};
+        [[maybe_unused]] auto&&                        critSec        = lock_guard{fCriticalSection_};
+        size_t                                         nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
         Assert (nBytesEncypted <= outBuf.GetSize ());
         fRealOut_.Write (outBuf.begin (), outBuf.begin () + nBytesEncypted);
     }
@@ -324,8 +324,8 @@ namespace {
             Verify (::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (keyLen)) == 1);
         }
 
-        SmallStackBuffer<byte> useKey{SmallStackBufferCommon::eUninitialized, keyLen};
-        SmallStackBuffer<byte> useIV{SmallStackBufferCommon::eUninitialized, ivLen};
+        StackBuffer<byte> useKey{Memory::eUninitialized, keyLen};
+        StackBuffer<byte> useIV{Memory::eUninitialized, ivLen};
 
         (void)::memset (useKey.begin (), 0, keyLen);
         (void)::memset (useIV.begin (), 0, ivLen);

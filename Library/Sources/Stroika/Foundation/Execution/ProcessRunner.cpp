@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../StroikaPreComp.h"
 
@@ -31,7 +31,7 @@
 #include "../IO/FileSystem/FileSystem.h"
 #include "../IO/FileSystem/FileUtils.h"
 #include "../IO/FileSystem/PathName.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/StackBuffer.h"
 #include "../Streams/MemoryStream.h"
 #include "../Streams/TextReader.h"
 #include "../Streams/TextWriter.h"
@@ -49,7 +49,7 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 
 using Debug::TraceContextBumper;
-using Memory::SmallStackBuffer;
+using Memory::StackBuffer;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
@@ -603,10 +603,10 @@ namespace {
          *  but share copy of RAM, so they COULD have mutexes locked! And we could deadlock waiting on them, so after
          *  fork, we are VERY limited as to what we can safely do.
          */
-        const char*             thisEXEPath_cstr = nullptr;
-        char**                  thisEXECArgv     = nullptr;
-        SmallStackBuffer<char>  execDataArgsBuffer;
-        SmallStackBuffer<char*> execArgsPtrBuffer;
+        const char*        thisEXEPath_cstr = nullptr;
+        char**             thisEXECArgv     = nullptr;
+        StackBuffer<char>  execDataArgsBuffer;
+        StackBuffer<char*> execArgsPtrBuffer;
         {
             Sequence<String> commandLine{Execution::ParseCommandLine (cmdLine)};
             Sequence<size_t> argsIdx;

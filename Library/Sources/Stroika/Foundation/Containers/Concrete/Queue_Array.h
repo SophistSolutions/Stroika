@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../StroikaPreComp.h"
 
@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \brief   Queue_Array<T> is an Array-based concrete implementation of the Queue<T> container pattern.
      *
      * \note Performance Notes:
-     *      o   size () is constant
+     *      o   size () is constant complexity
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

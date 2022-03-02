@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../../Foundation/StroikaPreComp.h"
 
@@ -30,9 +30,9 @@ void StyledTextIOReader_STYLText::Read ()
     {
 #if 1
         // Read into a contiguous block of memory since it makes the dealing with CRLF
-        // strattling a buffer-bounary problem go away. Note that the SmallStackBuffer<>::GrowToSize()
+        // strattling a buffer-bounary problem go away. Note that the StackBuffer<>::GrowToSize()
         // code grows exponentially so that we minimize buffer copies on grows...
-        SmallStackBuffer<char> buf (totalRead);
+        StackBuffer<char> buf{Memory::eUninitialized, totalRead};
         while (true) {
             size_t kTryToReadThisTime = 16 * 1024;
             buf.GrowToSize (totalRead + kTryToReadThisTime);
@@ -52,14 +52,14 @@ void StyledTextIOReader_STYLText::Read ()
         size_t endPos = GetSrcStream ().current_offset ();
         Assert (endPos >= oldPos);
         GetSrcStream ().seek_to (oldPos);
-        size_t                 len = endPos - oldPos;
-        SmallStackBuffer<char> buf (len);
+        size_t            len = endPos - oldPos;
+        StackBuffer<char> buf{Memory::eUninitialized, len};
         if ((totalRead = GetSrcStream ().read (buf, len)) != len) {
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 #endif
 #if qWideCharacters
-        SmallStackBuffer<Led_tChar> tCharBuf (totalRead);
+        StackBuffer<Led_tChar> tCharBuf{Memory::eUninitialized, totalRead};
         CodePageConverter (GetDefaultSDKCodePage ()).MapToUNICODE (buf, totalRead, tCharBuf, &totalRead);
         totalRead = Characters::NormalizeTextToNL<Led_tChar> (tCharBuf, totalRead, tCharBuf, totalRead);
         GetSinkStream ().AppendText (tCharBuf, totalRead, NULL);

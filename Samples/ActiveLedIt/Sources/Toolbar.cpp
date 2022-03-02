@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
@@ -493,7 +493,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_Command (VARIANT* pVal)
         if (pVal == NULL) {
             return E_INVALIDARG;
         }
-        CComVariant (fCommand).Detach (pVal);
+        CComVariant{fCommand}.Detach (pVal);
         return S_OK;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ()
@@ -502,7 +502,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_Command (VARIANT* pVal)
 STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::put_Command (VARIANT val)
 {
     try {
-        fCommand = CComVariant (val);
+        fCommand = CComVariant{val};
         CheckFixButtonStyle ();
         UpdateButtonObj ();
         return S_OK;

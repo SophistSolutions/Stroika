@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../StroikaPreComp.h"
 
@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      * \note Performance Notes:
      *      o   Append/Prepend should perform well (typically constant time, but occasionally O(N))
      *      o   it is FAST to array index a Sequence_Array.
-     *      o   size () is constant
+     *      o   size () is constant complexity
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

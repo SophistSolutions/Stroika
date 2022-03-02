@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../../StroikaPreComp.h"
 
@@ -48,7 +48,7 @@ public:
     {
         static constexpr Execution::Activity kConstructingSSDPListener_{L"constucting SSDP Listener"sv};
         Execution::DeclareActivity           activity{&kConstructingSSDPListener_};
-        Socket::BindFlags                    bindFlags = Socket::BindFlags ();
+        Socket::BindFlags                    bindFlags = Socket::BindFlags{};
         bindFlags.fSO_REUSEADDR                        = true;
         if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);

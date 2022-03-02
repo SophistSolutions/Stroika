@@ -8,8 +8,8 @@
       "name": "(gdb-UNIX) Launch EXE",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/Builds/g++-10-debug-c++17/Tests/Test18",
-      //"program": "${workspaceFolder}/Builds/Debug/Samples-SystemPerformanceClient/SystemPerformanceClient",
+      "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test18",
+      //"program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-SystemPerformanceClient/SystemPerformanceClient",
       "args": ["-m"],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}",
@@ -39,9 +39,9 @@
       "name": "(Windows) Launch VisualStudio",
       "type": "cppvsdbg",
       "request": "launch",
-      //"program": "${workspaceFolder}/Builds/${input:CURRENT-CONFIGURATION}/Tests/Test01.exe",
-      //"program": "${workspaceFolder}/Builds/Debug-U-32/Samples-WebServer/WebServer.exe",
-      "program": "${workspaceFolder}/Builds/Debug-U-32/Samples-SystemPerformanceClient/SystemPerformanceClient.exe",
+      //"program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test01.exe",
+      //"program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-WebServer/WebServer.exe",
+      "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-SystemPerformanceClient/SystemPerformanceClient.exe",
       "args": ["-m"],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}",
@@ -51,7 +51,7 @@
         "moduleLoad": false,
         "trace": true
       },
-      "visualizerFile": "${workspaceFolder}/Library/Projects/VisualStudio.Net-2019/VisualStudio-Stroika-Foundation-Debugger-Template.natvis"
+      "visualizerFile": "${workspaceFolder}/Library/Projects/VisualStudio.Net-2022/VisualStudio-Stroika-Foundation-Debugger-Template.natvis"
     },
     {
       "name": "gdbserver remote Launch(not sure helpful right now)",

@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
@@ -64,11 +64,11 @@ int main (int argc, const char* argv[])
 
     try {
         WebServer myWebServer{portNumber, make_shared<WSImpl> ()}; // listen and dispatch while this object exists
-        Execution::WaitableEvent{}.Wait (quitAfter);               // wait forever - til user hits ctrl-c
+        Execution::WaitableEvent{}.Wait (quitAfter);               // wait quitAfter seconds, or til user hits ctrl-c
     }
     catch (const Execution::TimeOutException&) {
-        cerr << "Timed out - so - terminating..." << endl;
-        return EXIT_FAILURE;
+        cerr << "Timed out - so - exiting..." << endl;
+        return EXIT_SUCCESS;
     }
     catch (...) {
         cerr << "Error encountered: " << Characters::ToString (current_exception ()).AsNarrowSDKString () << " - terminating..." << endl;

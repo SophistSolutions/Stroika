@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../StroikaPreComp.h"
 
@@ -27,6 +27,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      * \note Performance Notes:
      *      Very good low overhead implementation
      *
+     *      o   push/pop and top () are all constant complexity
      *      o   size () is O(N)
      *      o   Uses Memory::UseBlockAllocationIfAppropriate
      *

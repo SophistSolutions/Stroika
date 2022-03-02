@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../StroikaPreComp.h"
 
@@ -16,7 +16,7 @@
 #include "../../Debug/Assertions.h"
 #include "../../Execution/Common.h"
 #include "../../Execution/Synchronized.h"
-#include "../../Memory/SmallStackBuffer.h"
+#include "../../Memory/StackBuffer.h"
 
 #include "Exception.h"
 
@@ -31,7 +31,7 @@ using namespace Stroika::Foundation::Cryptography::OpenSSL;
 using namespace Stroika::Foundation::Memory;
 
 using Memory::BLOB;
-using Memory::SmallStackBuffer;
+using Memory::StackBuffer;
 
 #if qHasFeature_OpenSSL && defined(_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
@@ -165,8 +165,8 @@ namespace {
     pair<BLOB, BLOB> mkEVP_BytesToKey_ (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
     {
         Require (nRounds >= 1);
-        SmallStackBuffer<byte> useKey{SmallStackBufferCommon::eUninitialized, cipherAlgorithm.KeyLength ()};
-        SmallStackBuffer<byte> useIV{SmallStackBufferCommon::eUninitialized, cipherAlgorithm.IVLength ()};
+        StackBuffer<byte> useKey{Memory::eUninitialized, cipherAlgorithm.KeyLength ()};
+        StackBuffer<byte> useIV{Memory::eUninitialized, cipherAlgorithm.IVLength ()};
         if (salt and salt->GetSize () != 8) [[UNLIKELY_ATTR]] {
             // Could truncate and fill to adapt to different sized salt...
             Execution::Throw (Execution::Exception{L"only 8-byte salt with EVP_BytesToKey"sv});
@@ -202,7 +202,7 @@ EVP_BytesToKey::EVP_BytesToKey (CipherAlgorithm cipherAlgorithm, DigestAlgorithm
 namespace {
     pair<BLOB, BLOB> mkPKCS5_PBKDF2_HMAC_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
     {
-        SmallStackBuffer<byte> outBuf{SmallStackBufferCommon::eUninitialized, keyLen + ivLen};
+        StackBuffer<byte> outBuf{Memory::eUninitialized, keyLen + ivLen};
         Assert (keyLen + ivLen < size_t (numeric_limits<int>::max ())); // for static cast below
         int a = ::PKCS5_PBKDF2_HMAC (
             reinterpret_cast<const char*> (passwd.begin ()),

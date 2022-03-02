@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroia_Foundation_Execution_Throw_inl_
 #define _Stroia_Foundation_Execution_Throw_inl_ 1

@@ -1,11 +1,11 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../Foundation/StroikaPreComp.h"
 
 #include <cctype>
 
-#include "../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../Foundation/Memory/StackBuffer.h"
 
 #include "WordWrappedTextImager.h"
 
@@ -70,7 +70,7 @@ void WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
     }
     Assert (end <= GetEnd ());
 
-    Memory::SmallStackBuffer<Led_tChar> buf (len);
+    Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
     CopyOut (start, len, buf);
 
     Tablet_Acquirer tablet (this);
@@ -78,7 +78,7 @@ void WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
     cacheInfo.Clear ();
 
     try {
-        Memory::SmallStackBuffer<DistanceType> distanceVector (len);
+        Memory::StackBuffer<DistanceType> distanceVector{Memory::eUninitialized, len};
         if (start != end) {
             MeasureSegmentWidth (start, end, buf, distanceVector);
         }

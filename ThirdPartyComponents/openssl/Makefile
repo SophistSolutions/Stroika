@@ -23,22 +23,8 @@ QUICK_BUILD ?= 1
 #
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
-
-# beta2 failed badly on unix (lib64 output directory - must look into why)
-
-# alpha17 - gets ASAN failures on Ubuntu 20.04 (I think just memory leaks) in Foundation::Cryptography  (../Builds/Debug/Tests/Test31), but its alpha, so ignore
-# alpha15 - started investigating fialures (on iwndows only) - issue is need to use legacy provider for some tests... working on it
-# alpha8 only tried on windows but seems same - must handle 'legacy' issue, and then re-run more carefully
-# alpha7 fails on openssl regtests win and unix in regtests - like below error message - but probably due to Review https://github.com/openssl/openssl/issues/9349 - add legacy provider (though unix also has asan issue so maybe more)
-# alpha6 fails on openssl regtests win and unix in regtests - like below error message - but probably due to Review https://github.com/openssl/openssl/issues/9349 - add legacy provider (though unix also has asan issue so maybe more)
-# alpha5 fails on openssl regtests (make tests hangs on unix after long time - after test 80-test_x509aux.t, tests seem to complete on windows, but regtests fail with error:03000086:digital envelope routines::initialization error)
-# alpha4 fails on openssl regtests (make tests hangs on unix)
-# alpha2 works mostly bug regtests fail with error:060000CA:digital envelope routines::fetch failed
-VERSION=3.0.0
-#VERSION=3.0.0-alpha17
-#VERSION=3.0.0-alpha17
-#VERSION=3.0.0-alpha15
-#VERSION=3.0.0-alpha8
+VERSION=3.0.1
+#VERSION=3.0.0
 
 #VERSION=1.1.1k
 #VERSION=1.1.1j
@@ -69,6 +55,8 @@ FETCHURLS+=http://artfiles.org/openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=https://ftp.heanet.ie/mirrors/ftp.openssl.org/source/$(BASENAME).tar.gz
 
 
+SHELL=/bin/bash
+
 
 CONFIG_ARGS=
 
@@ -77,7 +65,7 @@ ifeq (armhf,$(ARCH))
 # OpenSSL 3.0 automatically considers the TARGETMACHINE to be this HOST compiling machine and generates -m64 lines that break
 # the compile - this works around that issue for at least this configuration
 CONFIG_ARGS+=	linux-generic32
-else ifeq ($(shell uname -s),Darwin)
+else ifeq ($(DETECTED_HOST_OS),Darwin)
 CONFIG_ARGS+=	darwin64-$(ARCH)-cc
 endif
 endif
@@ -113,23 +101,6 @@ endif
 
 # autoconfigure sometimes detects multilib and then changes default libdir to lib64... - so override to look where rest of code looks for it
 CONFIG_ARGS+=	--libdir=lib
-
-#Attempt to wrokaround bug on centos6:
-#	(gdb) #0  0x0000000000000000 in ?? ()
-#	(gdb) #1  0x00007ffff7bd629c in _dlerror_run () from /lib64/libdl.so.2
-#	(gdb) #2  0x00007ffff7bd5ee1 in dlopen@@GLIBC_2.2.5 () from /lib64/libdl.so.2
-#	(gdb) #3  0x0000000000d0d4bd in dlfcn_load ()
-#	(gdb) #4  0x0000000000cd2348 in DSO_load ()
-#	(gdb) #5  0x0000000000c60d06 in ibm_4758_cca_init ()
-#
-# Note - this COULD be specific to the fact that we are using 
-#		-Wl,--rpath='$$ORIGIN/ii-esx-dynamic-libs' -Wl,--dynamic-linker='/opt/Analitiqa-II/ii-esx-dynamic-libs/ld-linux.so.2'
-#	in which case we really want the disabling specific to that configuraiton so we need
-#	https://stroika.atlassian.net/browse/STK-454 addressed. But - I don't think we really count on
-#	dso or engines, and you can always use --openssl=use-system
-#
-#CONFIG_ARGS+=	-no-dso		### EXPERIMENT TURNING THIS WORKAROUND OFF - 2019-09-25
-
 
 
 
@@ -245,6 +216,14 @@ endif
 endif
 endif
 
+
+#
+# Just for test apps that get built. DONT include LIB_DEPENDENCIES because that includes other third party components
+# Unsure about most of this... --LGP 2022-01-22
+#LDFLAGS:=$(EXTRA_PREFIX_LINKER_ARGS) $(LIBS_PATH_DIRECTIVES) $(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)
+LDFLAGS:=$(EXTRA_PREFIX_LINKER_ARGS) $(LIBS_PATH_DIRECTIVES) $(EXTRA_SUFFIX_LINKER_ARGS)
+
+
 #
 # openssl with sanitizers doesn't work (causes issues with building libcurl)
 # see ... IntermediateFiles\Debug\ThirdPartyComponents\curl\config.log for failure this causes (could fix by having this patch pkgconfig file)
@@ -252,7 +231,7 @@ endif
 #
 CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
-
+LDFLAGS:=$(filter-out -fsanitize=%, $(LDFLAGS))
 
 ###
 ### got error building openssl wihtout this filter-out with clang-7 release builds - not sure it was the same message though
@@ -266,13 +245,13 @@ CFLAGS:=$(filter-out -flto, $(CFLAGS))
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 
 
-###
-### Not critical todo, but leaving /GL in here produces warnings when the module is used (in vs2k17 and vs2k19)
-###     EG   c:\sandbox\stroika\devroot\intermediatefiles\release-u-32\thirdpartycomponents\openssl\crypto\x509v3\v3_utl.c(405): warning C4706: assignment within conditional expression [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\29\Test29.vcxproj]
-###		-- LGP 2019-09-26
-###
-CFLAGS:=$(filter-out /GL, $(CFLAGS))
-CXXFLAGS:=$(filter-out /GL, $(CXXFLAGS))
+# Avoid having warnings leak from here to linking code when openssl is used --LGP 2022-01-18
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifneq ($(findstring -GL,$(CXXFLAGS)),)
+CFLAGS+= -wd4701 -wd4702 -wd4706
+CXXFLAGS+= -wd4701 -wd4702 -wd4706
+endif
+endif
 
 #
 # from https://wiki.openssl.org/index.php/Compilation_and_Installation: -anythingelse, +anythingelse	Compiler options, will become part of CFLAGS.
@@ -283,6 +262,24 @@ CXXFLAGS:=$(filter-out /GL, $(CXXFLAGS))
 #
 export CFLAGS
 export CXXFLAGS
+export LDFLAGS
+
+#
+# Running on MSYS in interactive mode, this isn't needed. The library builds fine. But it fails badly
+# otherwise. Apparently, this is something todo with running the /etc/profile script which sets a bunch of path
+# and other variables.
+#
+# I tried many other tricks (like setting .SHELLFLAGS), but this appears to work best (setting -i or -l .SHELLFLAGS also works
+# but creates other problems)
+#		--LGP 2022-01-24
+# 
+ifeq ($(DETECTED_HOST_OS),MSYS)
+# From https://linux.die.net/man/1/bash
+#		When bash is started non-interactively, to run a shell script, for example, it looks
+#		for the variable BASH_ENV in the environment, expands its value if it appears there, 
+#		and uses the expanded value as the name of a file to read and execute.
+export BASH_ENV=/etc/profile
+endif
 
 doBuilds_:
 	@
@@ -378,9 +375,9 @@ endif
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p $@
-ifeq ($(shell uname -s),Darwin)
+ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
-else ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
+else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	@PWD=`pwd` tar xf $(ZIPPEDFILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
 else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
@@ -393,4 +390,3 @@ ifeq ($@, $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_))
 	@$(ECHO) "done"
 endif
 endif
-

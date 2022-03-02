@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Stack_inl_
 #define _Stroika_Foundation_Containers_Stack_inl_
@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Containers {
         : Stack{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
-        // sadly intrinsically expensive to copy an interable using the stack API
+        // sadly intrinsically expensive to copy an Iterable using the stack API
         // @todo find a more efficient way - for example - if there is a way to get a reverse-iterator from 'src' this can be much cheaper!
         vector<T> tmp;
         for (const auto& si : src) {
@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers {
         : Stack{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        // sadly intrinsically expensive to copy an interable using the stack API
+        // sadly intrinsically expensive to copy an Iterable using the stack API
         // @todo find a more efficient way - for example - if there is a way to get a reverse-iterator from 'src' this can be much cheaper!
         vector<T> tmp;
         for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {

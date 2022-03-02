@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../StroikaPreComp.h"
 
@@ -21,7 +21,6 @@
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
 #include "../../Foundation/IO/Network/HTTP/Methods.h"
-#include "../../Foundation/Memory/SmallStackBuffer.h"
 #include "../../Foundation/Streams/LoggingInputOutputStream.h"
 #include "../../Foundation/Streams/SplitterOutputStream.h"
 #include "../../Foundation/Time/DateTime.h"

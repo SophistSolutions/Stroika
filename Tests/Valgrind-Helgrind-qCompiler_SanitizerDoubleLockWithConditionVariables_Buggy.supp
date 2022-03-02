@@ -125,3 +125,8 @@
    ...
    fun:*RegressionTest22_SycnhonizedUpgradeLock_*
 }
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Race
+   fun:_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv
+}

@@ -13,7 +13,7 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
-CXXFLAGS+=/Fd$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Foundation.pdb
+CXXFLAGS+=-Fd$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Foundation.pdb
 endif
 
 vpath %cpp $(SrcDir)

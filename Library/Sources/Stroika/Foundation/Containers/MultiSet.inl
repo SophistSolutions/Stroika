@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_MultiSet_inl_
 #define _Stroika_Foundation_Containers_MultiSet_inl_
@@ -374,11 +374,7 @@ namespace Stroika::Foundation::Containers {
     inline Iterable<T> MultiSet<T, TRAITS>::Elements () const
     {
         _SafeReadRepAccessor<_IRep> accessor{this};
-#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        _IRepSharedPtr ss = dynamic_pointer_cast<typename _IRepSharedPtr::element_type> (const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ());
-#else
-        _IRepSharedPtr ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
-#endif
+        _IRepSharedPtr              ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
         AssertNotNull (ss.get ());
         return ss->Elements (ss);
     }
@@ -386,11 +382,7 @@ namespace Stroika::Foundation::Containers {
     inline Iterable<T> MultiSet<T, TRAITS>::UniqueElements () const
     {
         _SafeReadRepAccessor<_IRep> accessor{this};
-#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        _IRepSharedPtr ss = dynamic_pointer_cast<typename _IRepSharedPtr::element_type> (const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ());
-#else
-        _IRepSharedPtr ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
-#endif
+        _IRepSharedPtr              ss = const_cast<_IRep&> (accessor._ConstGetRep ()).shared_from_this ();
         AssertNotNull (ss.get ());
         return ss->UniqueElements (ss);
     }

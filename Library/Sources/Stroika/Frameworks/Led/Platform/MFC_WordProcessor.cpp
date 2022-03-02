@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../../Foundation/StroikaPreComp.h"
 
@@ -15,7 +15,7 @@ DISABLE_COMPILER_MSC_WARNING_START (5054)
 DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include "../../../Foundation/DataExchange/BadFormatException.h"
-#include "../../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../../Foundation/Memory/StackBuffer.h"
 
 #include "MFC_WordProcessor.h"
 
@@ -124,9 +124,9 @@ SimpleEmbeddedObjectStyleMarker* Led_MFC_ControlItem::mkLed_MFC_ControlItemStyle
     // Need todo try/catch eror handling...??? Or does caller delete embedding? On error? Decide!!!
     //&&&&&&&
     if (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0) {
-        Memory::SmallStackBuffer<char> buf (len);
-        CMemFile                       memFile ((unsigned char*)data, static_cast<UINT> (len));
-        CArchive                       archive (&memFile, CArchive::load);
+        Memory::StackBuffer<char> buf{Memory::eUninitialized, len};
+        CMemFile                  memFile ((unsigned char*)data, static_cast<UINT> (len));
+        CArchive                  archive (&memFile, CArchive::load);
         builtItem->Serialize (archive);
     }
     else if (memcmp (embeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0) {
@@ -465,11 +465,11 @@ Led_SDK_String Led_MFC_ControlItem::GetObjClassName () const
     GetClassID (&clsid);
     LPOLESTR oleStr = NULL;
     if (::ProgIDFromCLSID (clsid, &oleStr) == S_OK) {
-        Led_SDK_String result = Led_SDK_String (::CString (oleStr));
+        Led_SDK_String result = Led_SDK_String{::CString (oleStr)};
         ::CoTaskMemFree (oleStr);
         return result;
     }
-    return Led_SDK_String ();
+    return Led_SDK_String{};
 }
 
 struct MyOLEStream_output : OLESTREAM {

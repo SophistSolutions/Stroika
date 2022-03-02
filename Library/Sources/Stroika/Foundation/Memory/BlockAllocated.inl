@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Memory_BlockAllocated_inl_
 #define _Stroika_Foundation_Memory_BlockAllocated_inl_ 1
@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Memory {
     {
 #if qAllowBlockAllocation
         if (p != nullptr) {
-            (p)->~T ();
+            destroy_at (p);
             BlockAllocator<T>{}.deallocate (p, 1);
         }
 #else

@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../../StroikaPreComp.h"
 
@@ -16,7 +16,6 @@
 #include "../../../Execution/Throw.h"
 #include "../../../IO/Network/HTTP/Headers.h"
 #include "../../../IO/Network/HTTP/Versions.h"
-#include "../../../Memory/SmallStackBuffer.h"
 
 #include "Request.h"
 

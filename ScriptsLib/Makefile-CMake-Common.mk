@@ -21,11 +21,25 @@ $(error("be sure to include SharedMakeVariables-Default.mk before including Make
 endif
 
 
+$(call PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED)
+
+
 ####
 #### Now set a bunch of CMAKE_... variables 
 #### Generally set in such a way that their values are re-evaluated, so they can refer to stuff like CFLAGS
 #### and still have that set later in the makefile
 ####
+
+
+#
+# Apparently under docker with MSYS2, we get a tmp and TMP and temp and TEMP environment variables set (at least under some
+# circumstances). This causes a failure/crash inside the MSFT CMake (as of vs2k19 - 2022-01-19). Only seems to be an issue
+# running under docker. Anyhow, this appears a safe workaround.
+#
+ifeq ($(DETECTED_HOST_OS),MSYS)
+undefine temp
+undefine tmp
+endif
 
 
 ifeq (0,$(ENABLE_ASSERTIONS))
@@ -39,7 +53,6 @@ CMAKE_PER_TARGET_BUILD_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_PER_
 CMAKE_PER_TARGET_BUILD_DIR:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(CMAKE_PER_TARGET_BUILD_DIR))
 
 #### SEE IF OTHER GENERATORS WORK WELL/BETTER??? https://www.mankier.com/7/cmake-generators
-CMAKE_USE_GENERATOR=Unix Makefiles
 ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2022)
 CMAKE_USE_GENERATOR=Visual Studio 17 2022
 else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
@@ -48,6 +61,8 @@ else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2017)
 CMAKE_USE_GENERATOR=Visual Studio 15 2017
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 $(error "unsupported version of visual studio.net")
+else
+CMAKE_USE_GENERATOR=Unix Makefiles
 endif
 
 
@@ -86,10 +101,16 @@ endif
 endif
 
 
-
-# For reasons not totally understood - probably just that the cmake in cygwin is quite old - it doesn't work right here.
-# so use the copy from visual studio which appears to be recent enough to know about the verison of visual studio it comes with ;-)
-#	--LGP 2018-12-15
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-PATH_ADJUSTMENT_PREFIX= PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)" 
-endif
+#
+# A bit confusing how cmake uses the _DEBUG and _RELEASE flags on windows but not unix
+# No matter - set them all to the same thing
+#
+#	With Xerces, we get link errors if we don't include the _DEBUG and _RELEASE versions
+#		-- LGP 2022-01-19
+#
+CMAKE_ARGS+= -DCMAKE_C_FLAGS='$(CFLAGS)'
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS='$(CXXFLAGS)'
+CMAKE_ARGS+= -DCMAKE_C_FLAGS_DEBUG='$(CFLAGS)'
+CMAKE_ARGS+= -DCMAKE_C_FLAGS_RELEASE='$(CFLAGS)'
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG='$(CXXFLAGS)'
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_RELEASE='$(CXXFLAGS)'

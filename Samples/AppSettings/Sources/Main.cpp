@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
@@ -72,7 +72,7 @@ namespace {
                    * Hook to decide the folder (and filename pattern) where the configuration data will be stored.
                    *
                    * This defaults to 
-                   *       FileSystem::WellKnownLocations::GetApplicationData () + appName + String (IO::FileSystem::kPathComponentSeperator) + moduleName + suffix
+                   *       FileSystem::WellKnownLocations::GetApplicationData () + appName + String{IO::FileSystem::kPathComponentSeperator} + moduleName + suffix
                    * or folder:
                    *      L"/var/opt/Put-Your-App-Name-Here" or "C:\ProgramData\Put-Your-App-Name-Here"
                    *  and this module configuration file would be:

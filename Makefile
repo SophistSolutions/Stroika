@@ -52,6 +52,7 @@ help:
 	@$(ECHO) "    reconfigure:                 -    Rebuild configuration files from the command-lines that built them before"
 	@$(ECHO) "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)"
 	@$(ECHO) "    project-files:               -    Alias for project-files-visual-studio project-files-qt-creator"
+	@$(ECHO) "    project-files-vs-code:       -    Builds project files for visual studio code"
 	@$(ECHO) "    project-files-visual-studio: -    Builds project files for visual studio.net"
 	@$(ECHO) "    project-files-qt-creator(*): -    Builds project project-files-qt-creator (also project-files-qt-creator-load"
 	@$(ECHO) "                                      project-files-qt-creator-save)"
@@ -184,12 +185,17 @@ third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-
 endif
 
 
-project-files:	project-files-visual-studio project-files-qt-creator
+# As of Stroika 2.1r4, no longer automatically run project-files-qt-creator since I'm not sure its widely used
+# anymore, and we may just deprecate (I no longer update the project files)
+project-files:	project-files-visual-studio project-files-vs-code
 
+project-files-vs-code:
+	@$(ECHO) "Creating default visual-studio-code configuration files:"
+	@cp --update .config-default.json .config.json
+	@$(MAKE) --silent apply-configurations MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 project-files-visual-studio:
 	@$(MAKE) --directory Tests --no-print-directory project-files
-
 
 project-files-qt-creator:	project-files-qt-creator-load
 
@@ -198,7 +204,6 @@ project-files-qt-creator-load:
 	@$(ECHO) -n "Loading qt-creator project files ... "
 	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp Library/Projects/QtCreator/$$i .; done;
 	@$(ECHO) "done"
-
 
 project-files-qt-creator-save:
 	@$(ECHO) -n "Saving qt-creator project files ... "
@@ -279,7 +284,7 @@ format-code:
 #	to make sure each configuraiton is checked at least once before build, so we get easier to understand error messages
 #	(tool x missing instead of xxx failed)
 #
-check-prerequisite-tools:Rw
+check-prerequisite-tools:
 	@$(MAKE) --no-print-directory check-prerequisite-tools-common CONFIGURATION=$$i
 ifeq ($(CONFIGURATION),)
 	@#no need to run apply-configurations-if-needed, but  looks neater in output if we run first, and then do checks
@@ -303,11 +308,12 @@ check-prerequisite-tools-common:
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type tr 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool tr && exit 1)"
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(pkg-config --version 1> /dev/null 2> /dev/null && type pkg-config 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool pkg-config && exit 1)"
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type realpath 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool realpath && exit 1)"
-	@if [[ "$(UNAME_DASH_O_)" = "Cygwin" || "$(UNAME_DASH_O_)" = "Msys" ]] ; then\
+	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type jq 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool jq && exit 1)"
+	@if [[ "$(DETECTED_HOST_OS)" = "Cygwin" || "$(DETECTED_HOST_OS)" = "MSYS" ]] ; then\
 		ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type dos2unix 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool dos2unix && exit 1)";\
 		ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type unix2dos 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool unix2dos && exit 1)";\
 	fi
-ifneq (,$(findstring Darwin,$(UNAME_DASH_O_)))
+ifneq (,$(findstring Darwin,$(DETECTED_HOST_OS)))
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type gsed 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool gsed && exit 1)"
 endif
 	@mkdir -p IntermediateFiles
@@ -398,28 +404,26 @@ endif
 	@echo "done"
 
 
-UNAME_DASH_O_=$(shell uname -o 2>/dev/null || uname)
-
 default-configurations:
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making default configurations:"
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
-	if [[ "$(UNAME_DASH_O_)" = "Cygwin" || "$(UNAME_DASH_O_)" = "Msys" ]] ; then\
+	if [[ "$(DETECTED_HOST_OS)" = "Cygwin" || "$(DETECTED_HOST_OS)" = "MSYS" ]] ; then\
 		./configure Debug --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-debug-flags;\
 		./configure Release --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags;\
 		./configure Release-Logging --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags --trace2file enable;\
-		./configure Debug-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(UNAME_DASH_O_) --apply-default-debug-flags;\
-		./configure Debug-x86_64 --config-tag Windows --config-tag x86_64 --build-by-default $(UNAME_DASH_O_)  --arch x86_64 --apply-default-debug-flags;\
-		./configure Release-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(UNAME_DASH_O_) --apply-default-release-flags;\
-		./configure Release-x86_64 --config-tag Windows --config-tag x86_64 --arch x86_64 --build-by-default $(UNAME_DASH_O_)  --apply-default-release-flags;\
-	elif [ "$(UNAME_DASH_O_)" = "Darwin" ] ; then\
-		./configure Debug --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-debug-flags;\
-		./configure Release --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-release-flags;\
+		./configure Debug-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --apply-default-debug-flags;\
+		./configure Debug-x86_64 --config-tag Windows --config-tag x86_64 --build-by-default $(DETECTED_HOST_OS)  --arch x86_64 --apply-default-debug-flags;\
+		./configure Release-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --apply-default-release-flags;\
+		./configure Release-x86_64 --config-tag Windows --config-tag x86_64 --arch x86_64 --build-by-default $(DETECTED_HOST_OS)  --apply-default-release-flags;\
+	elif [ "$(DETECTED_HOST_OS)" = "Darwin" ] ; then\
+		./configure Debug --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-debug-flags;\
+		./configure Release --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags;\
 		./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable;\
-		./configure Release-x86_64 --arch x86_64 --config-tag x86_64 --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-release-flags;\
-		./configure Release-arm64 --arch arm64 --config-tag arm --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-release-flags;\
+		./configure Release-x86_64 --arch x86_64 --config-tag x86_64 --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags;\
+		./configure Release-arm64 --arch arm64 --config-tag arm --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags;\
 	else\
-		./configure Debug --config-tag Unix --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-debug-flags;\
-		./configure Release --config-tag Unix --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-release-flags;\
+		./configure Debug --config-tag Unix --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-debug-flags;\
+		./configure Release --config-tag Unix --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags;\
 		./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable;\
 	fi
 
@@ -433,17 +437,17 @@ basic-unix-test-configurations:
 	./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components;\
 	./configure only-zlib-system-third-party-component --compiler-driver g++-10 --config-tag Unix --only-if-has-compiler --LibCurl no --lzma no --zlib system --OpenSSL no --sqlite no --Xerces no --boost no;\
 	./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --LibCurl no --lzma no --zlib system --OpenSSL no --sqlite no --Xerces no --boost no;\
-	make --silent basic-unix-test-configurations_g++_versions_;\
-	make --silent basic-unix-test-configurations_clang++_versions_;\
+	$(MAKE) --silent basic-unix-test-configurations_g++_versions_;\
+	$(MAKE) --silent basic-unix-test-configurations_clang++_versions_;\
 	#\
 	#32-bit not working now - asm bug - must debug...\
 	#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args -m32 --static-link-gccruntime disable;\
 	#\
-	make --silent basic-unix-test-configurations_sanitizer_configs_;\
+	$(MAKE) --silent basic-unix-test-configurations_sanitizer_configs_;\
 	#\
 	./configure g++-optimized --only-if-has-compiler --config-tag Unix --apply-default-release-flags;\
 	#\
-	make --silent basic-unix-test-configurations_valgrind_configs_;\
+	$(MAKE) --silent basic-unix-test-configurations_valgrind_configs_;\
 
 
 basic-unix-test-configurations_g++_versions_:
@@ -482,10 +486,13 @@ basic-unix-test-configurations_sanitizer_configs_:
 	./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp"
 	./configure g++-debug-sanitize_undefined --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable --compiler-driver g++-10
 	./configure g++-debug-sanitize_undefined --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable
-	./configure g++-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined --compiler-driver g++-10
-	./configure g++-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined
-	./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp" --compiler-driver g++-10
-	./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp"
+	#https://stroika.atlassian.net/browse/STK-761
+	if [[ `lsb_release -rs 2>/dev/null` == '21.10' ]] ; then ./configure g++-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined --lto disable; fi;
+	if [[ `lsb_release -rs 2>/dev/null` != '21.10' ]] ; then ./configure g++-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined; fi;
+	./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp";
+	# OVERREIDE TSAN OPTIONS FILE FOR Ubuntu 21.10
+	if [[ `lsb_release -rs 2>/dev/null` == '21.10' ]] ; then ./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp"; fi;
+	if [[ `lsb_release -rs 2>/dev/null` == '21.10' ]] ; then ./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp"; fi;
 
 basic-unix-test-configurations_valgrind_configs_:
 	# A few sanitize/configs (list explicit versions first as backup in case g++ doesn't work - enuf c++20 support - on this platform)
@@ -495,12 +502,10 @@ basic-unix-test-configurations_valgrind_configs_:
 	./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none
 	./configure valgrind-debug-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none --compiler-driver g++-10
 	./configure valgrind-debug-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none
-	##https://stroika.atlassian.net/browse/STK-674 - avoid warning
-	##https://stroika.atlassian.net/browse/STK-702 - avoid another warning (lto disable for valgrind)
-	./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable -lto disable --compiler-driver g++-10
-	./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable -lto disable
-	./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none --compiler-driver g++-10
-	./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none
+	./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable
+	# A few valgrind (must do explicit -g++-8 versions for ubuntu 1804 since its default g++ is 7 and not supported any longer)
+	if [[ `lsb_release -rs 2>/dev/null` == '18.04' ]] ; then ./configure g++-8-valgrind-debug-SSLPurify --compiler-driver g++-8 --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none; fi;
+	if [[ `lsb_release -rs 2>/dev/null` != '18.04' ]] ; then ./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none; fi;
 	
 
 
@@ -508,17 +513,7 @@ raspberrypi-cross-compile-test-configurations:
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making raspberrypi-cross-compile-test-configurations:"
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	#\
-	# --append-CXXFLAGS -Wno-psabi JUST FOR ARM GCC6 and GCC7 - https://stroika.atlassian.net/browse/STK-627\
-	#./configure raspberrypi-g++-7 --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --sanitize none --append-CXXFLAGS -Wno-psabi;\
-	#qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy - SEE https://stroika.atlassian.net/browse/STK-500 - RETEST WHEN WE HAVE GCC8\
-	#./configure raspberrypi-g++-7-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --append-run-prefix 'LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.4' --append-CXXFLAGS -Wno-psabi;\
-	./configure raspberrypi-g++-7-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --append-CXXFLAGS -Wno-psabi;\
-	#./configure raspberrypi-valgrind-g++-7-SSLPurify-NoBlockAlloc --config-tag Unix --config-tag raspberrypi --config-tag valgrind --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-7' --valgrind enable --block-allocation disable --openssl use --openssl-extraargs purify --cross-compiling true --append-CXXFLAGS -Wno-psabi;\
-	#\
-	# --append-CXXFLAGS -Wno-psabi JUST FOR ARM GCC6 and GCC7 - https://stroika.atlassian.net/browse/STK-627 \
-	#qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy - SEE https://stroika.atlassian.net/browse/STK-500 - RETEST WHEN WE HAVE GCC8\
-	#./configure raspberrypi-g++-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-8' --cross-compiling true --append-run-prefix 'LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5' --append-CXXFLAGS -Wno-psabi;\
-	#./configure raspberrypi-g++-8-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-8' --sanitize none,address --cross-compiling true --append-run-prefix 'LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.5';\
+	# --append-CXXFLAGS -Wno-psabi JUST FOR ARM GCC8 - https://stroika.atlassian.net/browse/STK-627 \
 	./configure raspberrypi-g++-8-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-8' --sanitize none,address --cross-compiling true;\
 	./configure raspberrypi-g++-8-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-8' --cross-compiling true --append-CXXFLAGS -Wno-psabi;\
 	##Couldn't get tsan to link (/usr/bin/arm-linux-gnueabihf-ld: cannot find -ltsan) - so retry on next ubuntu release\
@@ -538,7 +533,7 @@ regression-test-configurations:
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making regression-test configurations:"
 	@rm -f ConfigurationFiles/*
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
-	if [[ "$(UNAME_DASH_O_)" = "Cygwin" || "$(UNAME_DASH_O_)" = "Msys" ]] ; then\
+	if [[ "$(DETECTED_HOST_OS)" = "Cygwin" || "$(DETECTED_HOST_OS)" = "MSYS" ]] ; then\
 		$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) default-configurations;\
 	else\
 		$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations;\

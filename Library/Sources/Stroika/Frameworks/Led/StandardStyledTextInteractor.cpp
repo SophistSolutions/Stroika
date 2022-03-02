@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../Foundation/StroikaPreComp.h"
 
@@ -954,8 +954,8 @@ bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_STYLAndTEXT (ReaderF
     TempMarker newSel (GetTextStore (), pasteStart + 1, pasteStart + 1);
     if (inherited::InternalizeFlavor_TEXT (flavorPackage, pasteStart, pasteEnd)) {
         if (flavorPackage.GetFlavorAvailable ('styl')) {
-            size_t                         length = flavorPackage.GetFlavorSize ('styl');
-            Memory::SmallStackBuffer<char> buf (length);
+            size_t                    length = flavorPackage.GetFlavorSize ('styl');
+            Memory::StackBuffer<char> buf{Memory::eUninitialized, length};
             length = flavorPackage.ReadFlavorData ('styl', length, buf);
             Assert (newSel.GetStart () >= pasteStart + 1);
             size_t pasteEndXXX = newSel.GetStart () - 1;
@@ -977,8 +977,8 @@ bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_STYLAndTEXT (ReaderF
 bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_Native (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
 {
     if (flavorPackage.GetFlavorAvailable (kLedPrivateClipFormat)) {
-        size_t                         length = flavorPackage.GetFlavorSize (kLedPrivateClipFormat);
-        Memory::SmallStackBuffer<char> buf (length);
+        size_t                    length = flavorPackage.GetFlavorSize (kLedPrivateClipFormat);
+        Memory::StackBuffer<char> buf{Memory::eUninitialized, length};
         length = flavorPackage.ReadFlavorData (kLedPrivateClipFormat, length, buf);
 
         size_t start = from;
@@ -1011,7 +1011,7 @@ bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_RTF (ReaderFlavorPac
             // try to copy it... LGP 2000/04/26
             return false;
         }
-        Memory::SmallStackBuffer<char> buf (length);
+        Memory::StackBuffer<char> buf{Memory::eUninitialized, length};
         length = flavorPackage.ReadFlavorData (kRTFClipFormat, length, buf);
 
         size_t start = from;
@@ -1037,8 +1037,8 @@ bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_RTF (ReaderFlavorPac
 bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_HTML (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
 {
     if (flavorPackage.GetFlavorAvailable (kHTMLClipFormat)) {
-        size_t                         length = flavorPackage.GetFlavorSize (kHTMLClipFormat);
-        Memory::SmallStackBuffer<char> buf (length);
+        size_t                    length = flavorPackage.GetFlavorSize (kHTMLClipFormat);
+        Memory::StackBuffer<char> buf{Memory::eUninitialized, length};
         length = flavorPackage.ReadFlavorData (kHTMLClipFormat, length, buf);
 
         size_t start = from;
@@ -1179,9 +1179,9 @@ void StyledTextFlavorPackageExternalizer::ExternalizeFlavor_STYL (WriterFlavorPa
 
     Assert (offsetof (StScrpRec, scrpStyleTab) == sizeof (short)); // thats why we add sizeof (short)
 
-    size_t                         nBytes = sizeof (short) + nStyleRuns * sizeof (ScrpSTElement);
-    Memory::SmallStackBuffer<char> buf (nBytes);
-    StScrpPtr                      stylePtr = (StScrpPtr) (char*)buf;
+    size_t                    nBytes = sizeof (short) + nStyleRuns * sizeof (ScrpSTElement);
+    Memory::StackBuffer<char> buf{nBytes};
+    StScrpPtr                 stylePtr = (StScrpPtr) (char*)buf;
 
     stylePtr->scrpNStyles = nStyleRuns;
     StandardStyledTextImager::Convert (ledStyleRuns, stylePtr->scrpStyleTab);

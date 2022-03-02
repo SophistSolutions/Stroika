@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Led_PartitioningTextImager_h_
 #define _Stroika_Frameworks_Led_PartitioningTextImager_h_ 1
@@ -7,7 +7,6 @@
 #include "../StroikaPreComp.h"
 
 #include "../../Foundation/Cache/LRUCache.h"
-#include "../../Foundation/Memory/SmallStackBuffer.h"
 
 /*
 @MODULE:    PartitioningTextImager
@@ -322,7 +321,7 @@ namespace Stroika::Frameworks::Led {
             COMPARE_ITEM fValidFor;
 
         public:
-            Foundation::Memory::SmallStackBuffer<DistanceType> fMeasurementsCache; // for just the given PM
+            Foundation::Memory::InlineBuffer<DistanceType> fMeasurementsCache; // for just the given PM
 
         private:
             friend struct CacheEltLRUCacheTraits;

@@ -1,11 +1,11 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../../Foundation/StroikaPreComp.h"
 
 #include "../../../Foundation/Characters/CodePage.h"
 #include "../../../Foundation/Characters/LineEndings.h"
-#include "../../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../../Foundation/Memory/StackBuffer.h"
 
 #include "StyledTextIO_PlainText.h"
 
@@ -30,10 +30,10 @@ void StyledTextIOReader_PlainText::Read ()
 {
 #if 1
     // Read into a contiguous block of memory since it makes the dealing with CRLF
-    // strattling a buffer-bounary problem go away. Note that the Memory::SmallStackBuffer<>::GrowToSize()
+    // strattling a buffer-bounary problem go away. Note that the Memory::StackBuffer<>::GrowToSize()
     // code grows exponentially so that we minimize buffer copies on grows...
-    size_t                         len = 0;
-    Memory::SmallStackBuffer<char> buf (len);
+    size_t                    len = 0;
+    Memory::StackBuffer<char> buf{Memory::eUninitialized, len};
     while (true) {
         size_t kTryToReadThisTime = 16 * 1024;
         buf.GrowToSize (len + kTryToReadThisTime);
@@ -55,18 +55,18 @@ void StyledTextIOReader_PlainText::Read ()
     size_t endPos = GetSrcStream ().current_offset ();
     Assert (endPos >= oldPos);
     GetSrcStream ().seek_to (oldPos);
-    size_t                         len = endPos - oldPos;
-    Memory::SmallStackBuffer<char> buf (len);
-    size_t                         bytesRead = 0;
+    size_t                    len = endPos - oldPos;
+    Memory::StackBuffer<char> buf{Memory::eUninitialized, len};
+    size_t                    bytesRead = 0;
     if ((bytesRead = GetSrcStream ().read (buf, len)) != len) {
         Execution::Throw (DataExchange::BadFormatException::kThe);
     }
 #endif
 #if qWideCharacters
-    CodePage                            useCodePage = CodePagesGuesser ().Guess (buf, len);
-    CodePageConverter                   cpc         = CodePageConverter (useCodePage);
-    size_t                              outCharCnt  = cpc.MapToUNICODE_QuickComputeOutBufSize (static_cast<const char*> (buf), len + 1);
-    Memory::SmallStackBuffer<Led_tChar> wbuf (outCharCnt);
+    CodePage                       useCodePage = CodePagesGuesser{}.Guess (buf, len);
+    CodePageConverter              cpc         = CodePageConverter{useCodePage};
+    size_t                         outCharCnt  = cpc.MapToUNICODE_QuickComputeOutBufSize (static_cast<const char*> (buf), len + 1);
+    Memory::StackBuffer<Led_tChar> wbuf{Memory::eUninitialized, outCharCnt};
     cpc.SetHandleBOM (true);
     cpc.MapToUNICODE (static_cast<const char*> (buf), len, static_cast<wchar_t*> (wbuf), &outCharCnt);
     size_t charsRead = outCharCnt;
@@ -117,9 +117,9 @@ void StyledTextIOWriter_PlainText::Write ()
 #endif
         bytesRead = Characters::NLToNative<Led_tChar> (buf, bytesRead, buf2, Memory::NEltsOf (buf2));
 #if qWideCharacters
-        Memory::SmallStackBuffer<char> ansiBuf (bytesRead * sizeof (Led_tChar));
-        size_t                         nChars = bytesRead * sizeof (Led_tChar);
-        CodePageConverter (GetDefaultSDKCodePage ()).MapFromUNICODE (buf2, bytesRead, ansiBuf, &nChars);
+        Memory::StackBuffer<char> ansiBuf{Memory::eUninitialized, bytesRead * sizeof (Led_tChar)};
+        size_t                    nChars = bytesRead * sizeof (Led_tChar);
+        CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (buf2, bytesRead, ansiBuf, &nChars);
         bytesRead = nChars;
         write (ansiBuf, bytesRead);
 #else

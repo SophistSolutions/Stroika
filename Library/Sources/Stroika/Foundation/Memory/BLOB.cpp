@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../StroikaPreComp.h"
 
@@ -152,7 +152,7 @@ namespace {
 }
 BLOB BLOB::Hex (const char* s, const char* e)
 {
-    SmallStackBuffer<byte> buf;
+    StackBuffer<byte> buf;
     for (const char* i = s; i < e; ++i) {
         if (isspace (*i)) {
             continue;

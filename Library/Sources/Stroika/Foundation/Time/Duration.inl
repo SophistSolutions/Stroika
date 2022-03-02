@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Time_Duration_inl_
 #define _Stroika_Foundation_Time_Duration_inl_ 1
@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Time {
     {
         if (fRepType_ == eString_) {
             Assert (not src.fStringRep_.empty ());
-            new (&fStringRep_) string (src.fStringRep_);
+            new (&fStringRep_) string{src.fStringRep_};
         }
     }
     inline Duration::Duration (Duration&& src) noexcept
@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Time {
     {
         if (src.fRepType_ == eString_) {
             Assert (fRepType_ == eString_);
-            new (&fStringRep_) string (move (src.fStringRep_));
+            new (&fStringRep_) string{move (src.fStringRep_)};
         }
         src.fRepType_ = eEmpty_;
     }
@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Time {
         Assert (fRepType_ == eEmpty_);
         if (not durationStr.empty ()) {
             (*(inherited*)this) = inherited{ParseTime_ (durationStr)};
-            new (&fStringRep_) string (durationStr);
+            new (&fStringRep_) string{durationStr};
             fRepType_ = eString_;
         }
     }
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Time {
                 // if reps different, destroy in case this is string type
                 destroy_ ();
                 if (rhs.fRepType_ == eString_) {
-                    new (&fStringRep_) string (rhs.fStringRep_);
+                    new (&fStringRep_) string{rhs.fStringRep_};
                     // fRepType_ = eString_;    done at end of procedure
                 }
             }
@@ -154,7 +154,7 @@ namespace Stroika::Foundation::Time {
                 // if reps different, destroy in case this is string type
                 destroy_ ();
                 if (rhs.fRepType_ == eString_) {
-                    new (&fStringRep_) string (move (rhs.fStringRep_));
+                    new (&fStringRep_) string{move (rhs.fStringRep_)};
                 }
             }
             inherited::operator= (move (rhs));
@@ -272,7 +272,7 @@ namespace Stroika::Foundation::Time {
      */
     inline Duration operator"" _duration (const char* str, size_t len) noexcept
     {
-        return Duration{string (str, str + len)};
+        return Duration{string{str, str + len}};
     }
     inline Duration operator"" _duration (const wchar_t* str, size_t len) noexcept
     {

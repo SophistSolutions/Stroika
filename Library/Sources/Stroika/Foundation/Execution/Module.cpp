@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../StroikaPreComp.h"
 
@@ -20,7 +20,7 @@
 #include "../Execution/Synchronized.h"
 #include "../Execution/Throw.h"
 #include "../IO/FileSystem/PathName.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/StackBuffer.h"
 
 #include "Module.h"
 
@@ -59,7 +59,7 @@ filesystem::path Execution::GetEXEPath ()
     uint32_t bufSize = 0;
     Verify (_NSGetExecutablePath (nullptr, &bufSize) == -1);
     Assert (bufSize > 0);
-    Memory::SmallStackBuffer<char> buf (bufSize);
+    Memory::StackBuffer<char> buf{Memory::eUninitialized, bufSize};
     Verify (_NSGetExecutablePath (buf.begin (), &bufSize) == 0);
     Assert (buf[bufSize - 1] == '\0');
     return buf.begin ();
@@ -67,8 +67,8 @@ filesystem::path Execution::GetEXEPath ()
     // readlink () isn't clear about finding the right size. The only way to tell it wasn't enuf (maybe) is
     // if all the bytes passed in are used. That COULD mean it all fit, or there was more. If we get that -
     // double buf size and try again
-    Memory::SmallStackBuffer<Characters::SDKChar> buf (1024);
-    ssize_t                                       n;
+    Memory::StackBuffer<Characters::SDKChar> buf{Memory::eUninitialized, 1024};
+    ssize_t                                  n;
     while ((n = ::readlink ("/proc/self/exe", buf, buf.GetSize ())) == buf.GetSize ()) {
         buf.GrowToSize_uninitialized (buf.GetSize () * 2);
     }
@@ -109,9 +109,9 @@ filesystem::path Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
     // readlink () isn't clear about finding the right size. The only way to tell it wasn't enuf (maybe) is
     // if all the bytes passed in are used. That COULD mean it all fit, or there was more. If we get that -
     // double buf size and try again
-    Memory::SmallStackBuffer<Characters::SDKChar> buf{1024};
-    ssize_t                                       n;
-    char                                          linkNameBuf[1024];
+    Memory::StackBuffer<Characters::SDKChar> buf{Memory::eUninitialized, 1024};
+    ssize_t                                  n;
+    char                                     linkNameBuf[1024];
     (void)std::snprintf (linkNameBuf, sizeof (linkNameBuf), "/proc/%ld/exe", static_cast<long> (processID));
     while ((n = ::readlink (linkNameBuf, buf, buf.GetSize ())) == buf.GetSize ()) {
         buf.GrowToSize_uninitialized (buf.GetSize () * 2);

@@ -30,7 +30,7 @@ MAJOR_DOT_MINOR_VERSION=$(shell $(StroikaRoot)ScriptsLib/ExtractVersionInformati
 INSTALLER_RELEASE_TAG=$(shell $(StroikaRoot)ScriptsLib/ExtractVersionInformation $(VERSION_FILE_IN) DecoratedStageInfo)
 #INSTALLER_PLATFORM_TAG?=$(shell uname -m)
 INSTALLER_PLATFORM_TAG?=$(ARCH)
-INSTALLER_OS_TAG?=$(shell uname -s)
+INSTALLER_OS_TAG?=$(DETECTED_HOST_OS)
 
 TARGET_OUT_INSTALLER_DEB=$(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEB_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb
 TARGET_OUT_INSTALLER_RPM=$(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(RPM_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm
@@ -162,8 +162,7 @@ endif
 	@echo "Version: $(MAJOR_DOT_MINOR_VERSION)" >> $(RPM_WORKDIR)SPECS/$(BASIC_NAME_LC).spec
 	@echo "Release: $(INSTALLER_RELEASE_TAG)" >> $(RPM_WORKDIR)SPECS/$(BASIC_NAME_LC).spec
 	@cat $(BASIC_NAME_LC).rpm.spec >> $(RPM_WORKDIR)SPECS/$(BASIC_NAME_LC).spec
-	@#set HOME= to workaround issue/bug with centos-8
-	@export HOME=/tmp/installer-bld && cd $(RPM_WORKDIR) && rpmbuild -ba SPECS/$(BASIC_NAME_LC).spec > $(RPM_BUILD_OUT) 2>&1
+	@cd $(RPM_WORKDIR) && rpmbuild -ba SPECS/$(BASIC_NAME_LC).spec > $(RPM_BUILD_OUT) 2>&1
 
 	@cp $(RPM_WORKDIR)RPMS/*/*.rpm $(TARGET_OUT_INSTALLER_RPM)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "Built: "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(TARGET_OUT_INSTALLER_RPM)"`

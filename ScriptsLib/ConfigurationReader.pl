@@ -96,10 +96,6 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'TOOLS_PATH_ADDITIONS'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<TOOLS_PATH_ADDITIONS_BUGWORKAROUND>");
-		if (defined $pps) {
-			$configuration {'TOOLS_PATH_ADDITIONS_BUGWORKAROUND'} = $pps;
-		}
 		my $pps = ReadValue_($line, "<ARCH>");
 		if (defined $pps) {
 			$configuration {'ARCH'} = $pps;
@@ -271,6 +267,10 @@ sub	ReadConfigFile_ {
 		my $pps = ReadValue_($line, "<qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy>");
 		if (defined $pps) {
 			$configuration {'qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<qCompiler_ValgrindLTO_Buggy>");
+		if (defined $pps) {
+			$configuration {'qCompiler_ValgrindLTO_Buggy'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<qCompiler_ValgrindDirectSignalHandler_Buggy>");
 		if (defined $pps) {

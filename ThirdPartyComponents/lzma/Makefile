@@ -15,6 +15,10 @@ ifneq ($(CONFIGURATION),)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+
+# needed for vs2k17 build (doesnt appear otherwise)
+$(call PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED)
 
 
 .PHONY:	all clean clobber check doBuilds_
@@ -167,8 +171,8 @@ else
 			LD='$(Linker)' \
 			AR='$(LIBTOOL)' \
 			ProjectPlatformSubdir='$(ProjectPlatformSubdir)' \
-			INCLUDE='$(WIN_INCLUDES_PATH)' \
-			LIB='$(WIN_LIBS_PATH)' \
+			INCLUDE='$(INCLUDES_PATH)' \
+			LIB='$(LIBS_PATH)' \
 			LIBS='oleaut32.lib ole32.lib user32.lib' \
 			ARCRATEFLAGS='-nologo' \
 			ARTARGETPREFIX=-out: \

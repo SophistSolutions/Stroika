@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../StroikaPreComp.h"
 
@@ -29,10 +29,7 @@ using Characters::StringBuilder;
 class ThreadPool::MyRunnable_ {
 public:
     MyRunnable_ (ThreadPool& threadPool)
-        : fCurTaskUpdateCritSection_ ()
-        , fThreadPool_ (threadPool)
-        , fCurTask_ ()
-        , fNextTask_ ()
+        : fThreadPool_{threadPool}
     {
     }
 
@@ -98,7 +95,7 @@ private:
  ********************************************************************************
  */
 ThreadPool::ThreadPool (unsigned int nThreads, const optional<String>& threadPoolName)
-    : fThreadPoolName_ (threadPoolName)
+    : fThreadPoolName_{threadPoolName}
 {
     SetPoolSize (nThreads);
 }

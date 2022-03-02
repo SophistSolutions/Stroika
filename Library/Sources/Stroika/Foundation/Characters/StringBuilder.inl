@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_StringBuilder_inl_
 #define _Stroika_Foundation_Characters_StringBuilder_inl_
@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Characters {
             Append (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
         }
         else {
-            Append (String (s, e));
+            Append (String{s, e});
         }
     }
     inline void StringBuilder::Append (const char16_t* s)

@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Traversal_Iterable_h_
 #define _Stroika_Foundation_Traversal_Iterable_h_ 1
@@ -169,26 +169,6 @@ namespace Stroika::Foundation::Traversal {
      *
      *          We DO have methods SetEquals/MultiSetEquals/SequentialEquals (see below), as well as SequentialThreeWayComparer<> etc.
      *
-     *  *Important Design Note*:
-     *      Probably important - for performance??? - that all these methods are const,
-     *      so ??? think through - what this implies- but probably something about not
-     *      threading stuff and ???
-     *
-     *  *Important Design Note*:
-     *      Move operations on an interable are mapped to copy operations. We experimented with
-     *      true move (before Stroika v2.1d10), but since all operations have to still be somehow valid
-     *      after a move, that meants re-creating the rep in the moved-out iterable.
-     *
-     *      There is little value to move, since Iterable already uses copy-on-write (COW).
-     *
-     *      And when you take into account the cost of either checking for null in all operations (methods), or
-     *      creating a new empty object after each move, this is a poor tradeoff.
-     *
-     *      See https://stroika.atlassian.net/browse/STK-541 for history and alteratives (allowing real moves)
-     * 
-     *      In Stroika 2.1b3, switched to simply not defining (&&) move constructor/operator= (&&), instead of defining
-     *      it and having map to move.
-     *
      *  \em Design Note
      *      Methods like Min/Max/Median/Sum make little senese on empty Iterables. There were several choices
      *      available to deal with this:
@@ -227,7 +207,7 @@ namespace Stroika::Foundation::Traversal {
      *      We choose explicitly not to implement
      *          o   ToList/ToArray, no need because we have As<>, plus no List/Array classes (exactly).
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#ExternallySynchronized">ExternallySynchronized</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      */
     template <typename T>
@@ -1294,11 +1274,7 @@ namespace Stroika::Foundation::Traversal {
      *  Most abstract Containers in Stroika subclass of Iterable<T>.
      */
     template <typename T>
-    class Iterable<T>::_IRep
-#if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        : public IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename Iterable<T>::_IRep>
-#endif
-    {
+    class Iterable<T>::_IRep {
     protected:
         _IRep () = default;
 

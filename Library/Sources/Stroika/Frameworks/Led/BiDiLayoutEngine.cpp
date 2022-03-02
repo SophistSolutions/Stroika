@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../Foundation/StroikaPreComp.h"
 
@@ -336,7 +336,7 @@ Led_tString TextLayoutBlock::GetRealText () const
     const Led_tChar* s = nullptr;
     const Led_tChar* e = nullptr;
     PeekAtRealText_ (&s, &e);
-    return Led_tString (s, e);
+    return Led_tString{s, e};
 }
 
 Led_tString TextLayoutBlock::GetRealText (const ScriptRunElt& scriptRunElt) const
@@ -344,7 +344,7 @@ Led_tString TextLayoutBlock::GetRealText (const ScriptRunElt& scriptRunElt) cons
     const Led_tChar* s = nullptr;
     const Led_tChar* e = nullptr;
     PeekAtRealText (scriptRunElt, &s, &e);
-    return Led_tString (s, e);
+    return Led_tString{s, e};
 }
 
 void TextLayoutBlock::PeekAtVirtualText (const ScriptRunElt& scriptRunElt, const Led_tChar** startText, const Led_tChar** endText) const
@@ -363,7 +363,7 @@ Led_tString TextLayoutBlock::GetVirtualText () const
     const Led_tChar* s = nullptr;
     const Led_tChar* e = nullptr;
     PeekAtVirtualText_ (&s, &e);
-    return Led_tString (s, e);
+    return Led_tString{s, e};
 }
 
 Led_tString TextLayoutBlock::GetVirtualText (const ScriptRunElt& scriptRunElt) const
@@ -371,7 +371,7 @@ Led_tString TextLayoutBlock::GetVirtualText (const ScriptRunElt& scriptRunElt) c
     const Led_tChar* s = nullptr;
     const Led_tChar* e = nullptr;
     PeekAtVirtualText (scriptRunElt, &s, &e);
-    return Led_tString (s, e);
+    return Led_tString{s, e};
 }
 
 #if qDebug
@@ -501,7 +501,7 @@ void TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tCha
      */
 #if qTestUNISCRIBEResultsEqualFriBidi
     (void)Construct_UNISCRIBE (initialDirection);
-    Memory::SmallStackBuffer<Led_tChar> savedVirtualText (fTextLength);
+    Memory::StackBuffer<Led_tChar> savedVirtualText{fTextLength};
     copy (static_cast<const Led_tChar*> (fVirtualText), static_cast<const Led_tChar*> (fVirtualText) + fTextLength, static_cast<Led_tChar*> (savedVirtualText));
     vector<ScriptRunElt> savedScriptRuns = fScriptRuns;
     fScriptRuns                          = vector<ScriptRunElt> ();
@@ -545,8 +545,8 @@ void TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tCha
             TextDirection newDir = (se.fDirection == eLeftToRight) ? eRightToLeft : eLeftToRight;
             se.fDirection        = newDir;
             // now reverse the virtual text in the run...
-            size_t                              runLen = se.fVirtualEnd - se.fVirtualStart;
-            Memory::SmallStackBuffer<Led_tChar> reverseBuf (runLen);
+            size_t                         runLen = se.fVirtualEnd - se.fVirtualStart;
+            Memory::StackBuffer<Led_tChar> reverseBuf{runLen};
             for (size_t j = se.fVirtualStart; j < se.fVirtualEnd; ++j) {
                 reverseBuf[runLen - 1 - (j - se.fVirtualStart)] = fVirtualText[j];
             }
@@ -565,10 +565,10 @@ bool TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDir
         /*
          *  See SPR#1224 for why we pass along zeroed scriptControl/scriptState.
          */
-        Memory::SmallStackBuffer<SCRIPT_ITEM> scriptItems (fTextLength + 1);
-        int                                   nScriptItems = 0;
-        SCRIPT_CONTROL                        scriptControl;
-        SCRIPT_STATE                          scriptState;
+        Memory::StackBuffer<SCRIPT_ITEM> scriptItems{fTextLength + 1};
+        int                              nScriptItems = 0;
+        SCRIPT_CONTROL                   scriptControl;
+        SCRIPT_STATE                     scriptState;
         memset (&scriptControl, 0, sizeof (scriptControl));
         memset (&scriptState, 0, sizeof (scriptState));
 
@@ -596,13 +596,13 @@ bool TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDir
         Verify (sUniscribeDLL.ScriptItemize (static_cast<const Led_tChar*> (fRealText), fTextLength, fTextLength + 1, &scriptControl, &scriptState, scriptItems, &nScriptItems) == S_OK);
         Assert (nScriptItems >= 1);
 
-        Memory::SmallStackBuffer<BYTE> bidiLevels (nScriptItems);
+        Memory::StackBuffer<BYTE> bidiLevels{nScriptItems};
         for (size_t i = 0; i < static_cast<size_t> (nScriptItems); ++i) {
             bidiLevels[i] = scriptItems[i].a.s.uBidiLevel;
         }
 
-        Memory::SmallStackBuffer<int> visualToLogical (nScriptItems);
-        Memory::SmallStackBuffer<int> logicalToVisual (nScriptItems);
+        Memory::StackBuffer<int> visualToLogical{nScriptItems};
+        Memory::StackBuffer<int> logicalToVisual{nScriptItems};
 
         Verify (sUniscribeDLL.ScriptLayout (nScriptItems, bidiLevels, visualToLogical, logicalToVisual) == S_OK);
 
@@ -612,7 +612,7 @@ bool TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDir
          *  (a slightly tricky computation - noting that we must map back to logical coords to use the scriptItems array
          *  and note that the UNISCRIBE API gives you the length of a cell by taking diff between it and following cell start).
          */
-        Memory::SmallStackBuffer<size_t> visualSegStarts (nScriptItems);
+        Memory::StackBuffer<size_t> visualSegStarts{nScriptItems};
         {
             Assert (nScriptItems > 0);
             visualSegStarts[0] = 0;
@@ -737,11 +737,11 @@ void TextLayoutBlock_Basic::Construct_FriBidi (const TextDirection* initialDirec
     if (initialDirection != nullptr) {
         baseDir = (*initialDirection == eLeftToRight) ? FRIBIDI_TYPE_L : FRIBIDI_TYPE_R;
     }
-    Memory::SmallStackBuffer<FriBidiChar> srcText (fTextLength);
-    Memory::SmallStackBuffer<FriBidiChar> vText (fTextLength + 1); // fribidi_log2vis NUL-terminates the string
+    Memory::StackBuffer<FriBidiChar> srcText{fTextLength};
+    Memory::StackBuffer<FriBidiChar> vText{fTextLength + 1}; // fribidi_log2vis NUL-terminates the string
     copy (static_cast<Led_tChar*> (fRealText), fRealText + fTextLength, static_cast<FriBidiChar*> (srcText));
-    Memory::SmallStackBuffer<FriBidiStrIndex> posLtoVList (fTextLength);
-    Memory::SmallStackBuffer<FriBidiLevel>    bidiLevels (fTextLength * 2); // no docs on size - but looking at code it appears it can be up to this big...
+    Memory::StackBuffer<FriBidiStrIndex> posLtoVList{fTextLength};
+    Memory::StackBuffer<FriBidiLevel>    bidiLevels{fTextLength * 2}; // no docs on size - but looking at code it appears it can be up to this big...
     // LGP 2002-12-04
 
     bool result = ::fribidi_log2vis (srcText, fTextLength, &baseDir,

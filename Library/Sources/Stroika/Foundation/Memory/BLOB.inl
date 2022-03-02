@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Memory_BLOB_inl_
 #define _Stroika_Foundation_Memory_BLOB_inl_ 1
@@ -13,7 +13,7 @@
 #include "../Debug/Assertions.h"
 #include "../Memory/BlockAllocated.h"
 #include "../Memory/Common.h"
-#include "../Memory/SmallStackBuffer.h"
+#include "../Memory/InlineBuffer.h"
 #include "../Traversal/Iterator.h"
 
 namespace Stroika::Foundation::Memory {
@@ -23,11 +23,11 @@ namespace Stroika::Foundation::Memory {
         //  May not be any universal, good answer...
         //  Remember - users can subclass BLOB, and provider their own
         //  'rep' type tuned to their application.
-        SmallStackBuffer<byte, 64> fData;
+        InlineBuffer<byte, 64> fData;
 
         template <typename BYTE_ITERATOR>
         BasicRep_ (BYTE_ITERATOR start, BYTE_ITERATOR end)
-            : fData{SmallStackBufferCommon::eUninitialized, static_cast<size_t> (end - start)}
+            : fData{Memory::eUninitialized, static_cast<size_t> (end - start)}
         {
             // use memcpy instead of std::copy because std::copy doesn't work between uint8_t, and byte arrays.
             static_assert (sizeof (*start) == 1);

@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_VariantValue_inl_
 #define _Stroika_Foundation_DataExchange_VariantValue_inl_ 1
@@ -13,10 +13,9 @@
 
 namespace Stroika::Foundation::DataExchange {
 
-    /*
-     *  NB: we use enable_shared_from_this<> for performance reasons, not for any semantic purpose
+    /**
      */
-    struct VariantValue::IRep_ : public conditional_t<kVariantValueUsesStroikaSharedPtr_, Memory::enable_shared_from_this<VariantValue::IRep_>, enable_shared_from_this<VariantValue::IRep_>> {
+    struct VariantValue::IRep_ {
         virtual ~IRep_ ()             = default;
         virtual Type GetType () const = 0;
     };

@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../StroikaPreComp.h"
 
@@ -11,7 +11,6 @@
 #include "../../Execution/RequiredComponentMissingException.h"
 #include "../../Memory/Common.h"
 #include "../../Memory/MemoryAllocator.h"
-#include "../../Memory/SmallStackBuffer.h"
 
 #include "../BadFormatException.h"
 

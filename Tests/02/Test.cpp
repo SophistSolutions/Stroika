@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 //  TEST    Foundation::Characters::Strings
 #include "Stroika/Foundation/StroikaPreComp.h"
@@ -27,7 +27,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
-#include "Stroika/Foundation/Memory/SmallStackBuffer.h"
+#include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
 #include "../TestHarness/TestHarness.h"
@@ -602,12 +602,12 @@ namespace {
         wstring                   w = L"<PHRMode";
         using namespace Characters;
         using namespace Memory;
-        CodePageConverter      cpc (kCodePage_UTF8, CodePageConverter::eHandleBOM);
-        size_t                 sz = cpc.MapFromUNICODE_QuickComputeOutBufSize (w.c_str (), w.length ());
-        SmallStackBuffer<char> buf (sz + 1);
-        size_t                 charCnt = sz;
+        CodePageConverter cpc (kCodePage_UTF8, CodePageConverter::eHandleBOM);
+        size_t            sz = cpc.MapFromUNICODE_QuickComputeOutBufSize (w.c_str (), w.length ());
+        StackBuffer<char> buf{sz + 1};
+        size_t            charCnt = sz;
         cpc.MapFromUNICODE (w.c_str (), w.length (), buf, &charCnt);
-        VerifyTestResult (string (buf.begin (), buf.begin () + charCnt) == "﻿<PHRMode");
+        VerifyTestResult ((string{buf.begin (), buf.begin () + charCnt} == "﻿<PHRMode"));
     }
 }
 
@@ -1457,8 +1457,8 @@ namespace {
 #if __cpp_char8_t < 201811L
         {
             VerifyTestResult (u8"שלום" == String::FromUTF8 (u8"שלום").AsUTF8 ());
-            VerifyTestResult (string (u8"phred") == String::FromUTF8 (string (u8"phred")).AsUTF8 ());
-            VerifyTestResult (string (u8"שלום") == String::FromUTF8 (string (u8"שלום")).AsUTF8 ());
+            VerifyTestResult ((string{u8"phred"} == String::FromUTF8 (string (u8"phred")).AsUTF8 ()));
+            VerifyTestResult ((string{u8"שלום"} == String::FromUTF8 (string (u8"שלום")).AsUTF8 ()));
         }
         {
             VerifyTestResult (string (u8"phred") == String::FromUTF8 (u8"phred").AsUTF8<string> ());

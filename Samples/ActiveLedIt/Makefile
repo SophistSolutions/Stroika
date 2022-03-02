@@ -32,10 +32,10 @@ RC_OUTPUT_=$(ObjDir)ActiveLedIt.res
 
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CXXFLAGS += /D_WINDOWS
-CXXFLAGS += /DWIN32
-CXXFLAGS += /DSTRICT
-CXXFLAGS += /D_WIN32_WINNT=0x0501
+CXXFLAGS += -D_WINDOWS
+CXXFLAGS += -DWIN32
+CXXFLAGS += -DSTRICT
+CXXFLAGS += -D_WIN32_WINNT=0x0501
 Objs += ${RC_OUTPUT_}
 endif
 
@@ -65,12 +65,12 @@ check:
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-EXTRA_SUFFIX_LINKER_ARGS+= /SUBSYSTEM:Windows
+EXTRA_SUFFIX_LINKER_ARGS+= -SUBSYSTEM:Windows
 # OCX is a DLL, doesnt seem needed but examples pass this arg
-EXTRA_SUFFIX_LINKER_ARGS+= /DLL
+EXTRA_SUFFIX_LINKER_ARGS+= -DLL
 #flags from sample MSBUILD ActiveLedIt build link line I dont think are needed
-#EXTRA_SUFFIX_LINKER_ARGS+= /DYNAMICBASE
-#EXTRA_SUFFIX_LINKER_ARGS+= /MACHINE:X86 /SAFESEH:NO 
+#EXTRA_SUFFIX_LINKER_ARGS+= -DYNAMICBASE
+#EXTRA_SUFFIX_LINKER_ARGS+= -MACHINE:X86 /SAFESEH:NO 
 endif
 
 MIDL_OUTPUT_=$(ObjDir)ActiveLedIt.tlb $(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
@@ -80,10 +80,10 @@ $(ObjDir)ActiveLedIt_h.h $(ObjDir)ActiveLedIt_i.c:	$(ObjDir)ActiveLedIt.tlb
 $(Objs):	$(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
 
 
-MIDL_FLAGS +=	/env win32
-RC_FLAGS+=	/I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(ObjDir))"
+MIDL_FLAGS +=	-env win32
+RC_FLAGS+=	-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(ObjDir))"
 # not sure if TLBID matters, but old msbuild script set it
-EXTRA_SUFFIX_LINKER_ARGS+=/TLBID:1
+EXTRA_SUFFIX_LINKER_ARGS+=-TLBID:1
 
 $(ObjDir)ActiveLedIt.tlb:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)Sources/ActiveLedIt.odl` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
@@ -94,7 +94,7 @@ $(ObjDir)ActiveLedIt.tlb:
 
 
 # English US culture
-RC_FLAGS += /l 0x0409
+RC_FLAGS += -l 0x0409
 
 $(ObjDir)ActiveLedIt.res:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running RC compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)Sources/ActiveLedIt.rc` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)RC-Build.out`" ..."
@@ -107,11 +107,11 @@ $(ObjDir)ActiveLedIt.res:
 # WORKAROUND https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
 # https://developercommunity.visualstudio.com/t/please-re-open-httpsdevelopercommunityvisualstudio/1440675
 ifneq ($(filter-out -fanitize=address, $(CXXFLAGS)), $(CXXFLAGS))
-EXTRA_SUFFIX_LINKER_ARGS+= /FORCE:MULTIPLE
+EXTRA_SUFFIX_LINKER_ARGS+= -FORCE:MULTIPLE
 endif
 
 # without this the regsvr32 will fail; tried adding explict dllexport() in c++ code but couldnt find the right syntax to make it work
-EXTRA_SUFFIX_LINKER_ARGS += /DEF:Sources/ActiveLedIt.def
+EXTRA_SUFFIX_LINKER_ARGS += -DEF:Sources/ActiveLedIt.def
 
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs) $(ObjDir)ActiveLedIt.tlb
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
@@ -133,7 +133,7 @@ $(TARGETDIR)ActiveLedIt.cab: $(TARGETEXE)
 	@rm -f $(ObjDir)CabBld.ddf
 	@cp $(TARGETEXE) $(ObjDir)CabBld
 	@echo ".OPTION EXPLICIT     ; Generate errors" >> $(ObjDir)CabBld/CabBld.ddf
-	@echo ".Set CabinetNameTemplate=ActiveLedIt.cab"      >> $(ObjDir)CabBld/CabBld.ddf
+	@echo ".Set CabinetNameTemplate=ActiveLedIt.cab" >> $(ObjDir)CabBld/CabBld.ddf
 	@echo ".set DiskDirectoryTemplate=CDROM ; All cabinets in a single directory">> $(ObjDir)CabBld/CabBld.ddf
 	@echo ".Set CompressionType=MSZIP;** All files are compressed in cabinet files">> $(ObjDir)CabBld/CabBld.ddf
 	@echo ".Set UniqueFiles=\"OFF\"">> $(ObjDir)CabBld/CabBld.ddf
@@ -141,15 +141,15 @@ $(TARGETDIR)ActiveLedIt.cab: $(TARGETEXE)
 	@echo ".Set DiskDirectory1=AAA">> $(ObjDir)CabBld/CabBld.ddf
 	@echo "SophistSolutions.ActiveLedIt.dll" >> $(ObjDir)CabBld/CabBld.ddf
 	@echo ActiveLedIt.inf >> $(ObjDir)CabBld/CabBld.ddf
-	@cd $(ObjDir)/CabBld && makecab /F CabBld.ddf > ../CAB-Build.OUT 2>&1
+	@cd $(ObjDir)/CabBld && makecab -F CabBld.ddf > ../CAB-Build.OUT 2>&1
 	@mv $(ObjDir)/CabBld/AAA/ActiveLedIt.cab $@
 
 
 register:	$(TARGETEXE)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Registering `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(TARGETEXE)`" "... "
 	@#NOTE - if you run into errors - this typically needs to be run as administrator (run as administrator shell that invokes this)
-	@#regsvr32 /s /c "$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE))"
-	@regsvr32 /c "$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE))"
+	@#regsvr32 -s -c "$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE))"
+	@regsvr32 -c "$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE))"
 
 
 launch-sample:

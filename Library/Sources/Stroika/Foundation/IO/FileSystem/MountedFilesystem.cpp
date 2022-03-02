@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../../StroikaPreComp.h"
 
@@ -24,7 +24,6 @@
 #include "../../Execution/Finally.h"
 #include "../../Execution/Synchronized.h"
 #include "../../Execution/Thread.h"
-#include "../../Memory/SmallStackBuffer.h"
 
 #include "FileInputStream.h"
 #include "FileSystem.h"

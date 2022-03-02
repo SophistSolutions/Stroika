@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #include "../StroikaPreComp.h"
 
@@ -22,7 +22,6 @@
 #include "../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
 #include "../Linguistics/Words.h"
-#include "../Memory/SmallStackBuffer.h"
 
 #include "TimeOfDay.h"
 
