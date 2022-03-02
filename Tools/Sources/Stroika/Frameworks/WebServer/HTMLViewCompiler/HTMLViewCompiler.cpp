@@ -9,7 +9,6 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
-#include "Stroika/Foundation/Memory/SmallStackBuffer.h"
 #include "Stroika/Foundation/Streams/iostream/Utilities.h"
 
 using namespace Stroika::Foundation;
