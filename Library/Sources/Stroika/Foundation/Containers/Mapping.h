@@ -459,9 +459,9 @@ namespace Stroika::Foundation::Containers {
          *
          *  \par Example Usage
          *      \code
-         *           Mapping<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
-         *           VerifyTestResult ((m.Where ([](const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Mapping<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
-         *           VerifyTestResult ((m.Where ([](int key) { return Math::IsPrime (key); }) == Mapping<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+         *          Mapping<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
+         *          VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
+         *          VerifyTestResult ((m.Where ([] (int key) { return Math::IsPrime (key); }) == Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
          *      \endcode
          */
         nonvirtual ArchetypeContainerType Where (const function<bool (ArgByValueType<key_type>)>& includeIfTrue) const;
@@ -480,8 +480,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  \par Example Usage
          *      \code
-         *           Mapping<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
-         *           VerifyTestResult ((m.WithKeys (initializer_list<int> {2, 5}) == Mapping<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{5, 7}}));
+         *          Mapping<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
+         *          VerifyTestResult ((m.WithKeys ({2, 5}) == Mapping<int, int>{{2, 4}, {5, 7}}));
          *      \endcode
          */
         template <typename CONTAINER_OF_KEYS>
