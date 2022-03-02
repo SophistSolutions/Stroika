@@ -2109,9 +2109,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h">
-      <Filter>Sources\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\StackBuffer.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>

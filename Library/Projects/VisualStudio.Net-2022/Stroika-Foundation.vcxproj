@@ -649,7 +649,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\StackBuffer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedOutputStream.h" />

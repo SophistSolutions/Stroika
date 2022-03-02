@@ -2115,9 +2115,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\InlineBuffer.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h">
-      <Filter>Sources\Memory</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\StackBuffer.inl">
