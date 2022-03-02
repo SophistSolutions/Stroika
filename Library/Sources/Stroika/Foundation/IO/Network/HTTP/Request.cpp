@@ -137,14 +137,3 @@ String Request::ToString () const
     sb += L"}";
     return sb.str ();
 }
-
-/// HACK putting in this file
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-#include "Methods.h"
-const RegularExpression MethodsRegEx::kGet       = L"GET"_RegEx;
-const RegularExpression MethodsRegEx::kPut       = L"PUT"_RegEx;
-const RegularExpression MethodsRegEx::kPatch     = L"PATCH"_RegEx;
-const RegularExpression MethodsRegEx::kPost      = L"POST"_RegEx;
-const RegularExpression MethodsRegEx::kPostOrPut = L"PUT|POST"_RegEx;
-const RegularExpression MethodsRegEx::kDelete    = L"DELETE"_RegEx;
-#endif

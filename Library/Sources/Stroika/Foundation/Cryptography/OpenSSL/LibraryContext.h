@@ -111,9 +111,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         Containers::Association<String, ::OSSL_PROVIDER*> fLoadedProviders_; // providers maybe listed multiple times here, if loaded multiple times by callers
 #endif
     };
-#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     inline LibraryContext LibraryContext::sDefault;
-#endif
 
 }
 

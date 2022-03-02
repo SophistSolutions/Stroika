@@ -27,11 +27,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>>
     class SortedMapping_Factory {
     private:
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-        static atomic<SortedMapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_INORDER_COMPARER&)> sFactory_;
-#else
         static inline atomic<SortedMapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_INORDER_COMPARER&)> sFactory_{nullptr};
-#endif
 
     public:
         static_assert (not is_reference_v<KEY_TYPE> and not is_reference_v<VALUE_TYPE> and not is_reference_v<KEY_INORDER_COMPARER>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<>(), or remove_cvref_t");

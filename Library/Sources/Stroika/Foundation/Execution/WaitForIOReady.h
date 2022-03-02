@@ -113,11 +113,7 @@ namespace Stroika::Foundation::Execution {
         public:
             /**
              */
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-            static const TypeOfMonitorSet kDefaultTypeOfMonitor;
-#else
             static inline const TypeOfMonitorSet kDefaultTypeOfMonitor{TypeOfMonitor::eRead};
-#endif
 
         protected:
             /**

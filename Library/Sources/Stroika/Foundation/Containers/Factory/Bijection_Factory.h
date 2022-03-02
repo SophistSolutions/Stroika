@@ -74,11 +74,7 @@ namespace Stroika::Foundation::Containers::Factory {
         static Bijection<DOMAIN_TYPE, RANGE_TYPE> Default_ (InjectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&);
 
     private:
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-        static atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE> (*) (InjectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&)> sFactory_;
-#else
         static inline atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE> (*) (InjectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&)> sFactory_{nullptr};
-#endif
     };
 }
 

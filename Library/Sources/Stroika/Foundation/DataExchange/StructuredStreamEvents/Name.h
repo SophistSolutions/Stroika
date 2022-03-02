@@ -76,7 +76,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         nonvirtual String ToString () const;
 
     private:
-        static Common::strong_ordering TWC_ (const Name& lhs, const Name& rhs); // utility code share between c++17 and c++20 versions
+        static strong_ordering TWC_ (const Name& lhs, const Name& rhs); // utility code share between c++17 and c++20 versions
     };
 
 }

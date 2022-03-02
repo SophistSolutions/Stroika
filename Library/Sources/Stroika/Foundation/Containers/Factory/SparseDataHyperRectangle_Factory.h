@@ -32,11 +32,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename... INDEXES>
     class SparseDataHyperRectangle_Factory {
     private:
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-        static atomic<SparseDataHyperRectangle<T, INDEXES...> (*) (Configuration::ArgByValueType<T> defaultItem)> sFactory_;
-#else
         static inline atomic<SparseDataHyperRectangle<T, INDEXES...> (*) (Configuration::ArgByValueType<T> defaultItem)> sFactory_{nullptr};
-#endif
 
     public:
         /**

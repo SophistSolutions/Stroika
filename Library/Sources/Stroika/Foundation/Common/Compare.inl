@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename LT, typename RT>
-    constexpr Common::strong_ordering ThreeWayCompare (LT&& lhs, RT&& rhs)
+    constexpr strong_ordering ThreeWayCompare (LT&& lhs, RT&& rhs)
     {
         return ThreeWayComparer{}(forward<LT> (lhs), forward<RT> (rhs));
     }
@@ -46,14 +46,14 @@ namespace Stroika::Foundation::Common {
             return fTComparer_ (*lhs, *rhs);
         }
         if (not lhs and not rhs) {
-            return kEqual;
+            return strong_ordering::equal;
         }
         // treat missing as less than present
         if (lhs) {
-            return kGreater;
+            return strong_ordering::greater;
         }
         else {
-            return kLess;
+            return strong_ordering::less;
         }
     }
 
@@ -66,11 +66,11 @@ namespace Stroika::Foundation::Common {
     inline strong_ordering CompareResultNormalizer (FROM_INT_TYPE f)
     {
         if (f == 0) {
-            return Common::kEqual;
+            return strong_ordering::equal;
         }
         else {
             Assert (f < 0 or f > 0);
-            return f < 0 ? Common::kLess : Common::kGreater;
+            return f < 0 ? strong_ordering::less : strong_ordering::greater;
         }
     }
 
@@ -276,7 +276,7 @@ namespace Stroika::Foundation::Common {
             return baseComparison and fBASE_COMPARER_ (rhs, lhs);
         }
         if constexpr (kRelationKind == ComparisonRelationType::eThreeWayCompare) {
-            return baseComparison == kEqual;
+            return baseComparison == strong_ordering::equal;
         }
         AssertNotReached ();
         return false;
@@ -308,13 +308,13 @@ namespace Stroika::Foundation::Common {
         constexpr auto kRelationKind  = ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind;
         auto           baseComparison = fBASE_COMPARER_ (lhs, rhs);
         if constexpr (kRelationKind == ComparisonRelationType::eStrictInOrder) {
-            return baseComparison ? kLess : (fBASE_COMPARER_ (rhs, lhs) ? kGreater : kEqual);
+            return baseComparison ? strong_ordering::less : (fBASE_COMPARER_ (rhs, lhs) ? strong_ordering::greater : strong_ordering::equal);
         }
         if constexpr (kRelationKind == ComparisonRelationType::eThreeWayCompare) {
             return baseComparison;
         }
         AssertNotReached ();
-        return kEqual;
+        return strong_ordering::equal;
     }
 
 }

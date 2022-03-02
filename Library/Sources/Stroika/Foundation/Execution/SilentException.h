@@ -28,9 +28,7 @@ namespace Stroika::Foundation::Execution {
          */
         virtual const char* what () const noexcept override;
     };
-#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     inline const SilentException SilentException::kThe;
-#endif
 
 }
 

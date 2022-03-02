@@ -307,7 +307,7 @@ namespace Stroika::Foundation::Memory {
         nonvirtual bool operator== (const BLOB& rhs) const;
 
     private:
-        static Common::strong_ordering TWC_ (const BLOB& lhs, const BLOB& rhs); // utility code share between c++17 and c++20 versions
+        static strong_ordering TWC_ (const BLOB& lhs, const BLOB& rhs); // utility code share between c++17 and c++20 versions
 
     public:
         /**

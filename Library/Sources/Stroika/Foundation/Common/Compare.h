@@ -45,21 +45,21 @@ namespace Stroika::Foundation::Common {
      * 
      *  \todo DEPRECATE THESE NAMES AND USE C++ names directly --LGP 2022-01-10
      */
-    using strong_ordering              = std::strong_ordering;
-    constexpr strong_ordering kLess    = strong_ordering::less;
-    constexpr strong_ordering kEqual   = strong_ordering::equal;
-    constexpr strong_ordering kGreater = strong_ordering::greater;
+    //    using  [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] strong_ordering              = std::strong_ordering;
+    constexpr std::strong_ordering kLess [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]    = std::strong_ordering::less;
+    constexpr std::strong_ordering kEqual [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]   = std::strong_ordering::equal;
+    constexpr std::strong_ordering kGreater [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::greater;
 
     /**
      *  \brief like std::compare_three_way{} (lhs, rhs), except class templated on T1/T2 instead of function, so you can bind function object for example in templates expecting one
      *
      *  \see See also ThreeWayCompare - nearly identical - but function template and can be used to deduce template arguments more easily
-     * 
+     *  
      *  \note DO NOT SPECIALIZE ThreeWayComparer<>, since its just a utility which trivailly wraps
      *        std::compare_three_way in c++20, so just specialize std::compare_three_way<>::operator()...
      */
-     // @TODO SEEMS STILL NEEDED ON CLANG++-10???
-     // @TODO PROBABLY DEPRECATE THIS CLASS - and use std::compare_three_way directly
+    // @TODO SEEMS STILL NEEDED ON CLANG++-10???
+    // @TODO PROBABLY DEPRECATE THIS CLASS - and use std::compare_three_way directly
 #if __cpp_lib_three_way_comparison < 201907L
     struct ThreeWayComparer {
         template <class LT, class RT>
@@ -69,9 +69,9 @@ namespace Stroika::Foundation::Common {
             // ISSUE HERE - PRE C++20, no distinction made between strong_ordering, weak_ordering, and partial_ordering, because
             // this counts on cooperation with various types and mechanismns like operator<=> = default which we don't have (and declared strong_ordering=int)
             if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
-                return Stroika::Foundation::Common::kEqual;
+                return strong_ordering::equal;
             }
-            return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? Stroika::Foundation::Common::kLess : Stroika::Foundation::Common::kGreater;
+            return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
         }
     };
 #else
@@ -101,10 +101,10 @@ namespace Stroika::Foundation::Common {
      *
      *  \par Example Usage
      *      \code
-     *          if (auto cmp = Common::ThreeWayCompare (lhs.GetHost (), rhs.GetHost ()); cmp != Common::kEqual) {
+     *          if (auto cmp = Common::ThreeWayCompare (lhs.GetHost (), rhs.GetHost ()); cmp != strong_ordering::equal) {
      *             return cmp;
      *          }
-     *          if (auto cmp = Common::ThreeWayCompare (lhs.GetUserInfo (), rhs.GetUserInfo ()); cmp != Common::kEqual) {
+     *          if (auto cmp = Common::ThreeWayCompare (lhs.GetUserInfo (), rhs.GetUserInfo ()); cmp != strong_ordering::equal) {
      *             return cmp;
      *          }
      *          return Common::ThreeWayCompare (lhs.GetPort (), rhs.GetPort ());
@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Common {
      *              -- LGP 2019-05-07
      */
     template <typename LT, typename RT>
-    constexpr Common::strong_ordering ThreeWayCompare (LT&& lhs, RT&& rhs);
+    constexpr strong_ordering ThreeWayCompare (LT&& lhs, RT&& rhs);
 
     /**
      *  \brief ThreeWayComparer for optional types, like builtin one, except this lets you pass in explciit 'T' comparer for the T in optional<T>

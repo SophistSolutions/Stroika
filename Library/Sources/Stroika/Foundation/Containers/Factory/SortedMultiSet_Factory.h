@@ -35,11 +35,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename TRAITS, typename INORDER_COMPARER>
     class SortedMultiSet_Factory {
     private:
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-        static atomic<SortedMultiSet<T, TRAITS> (*) (const INORDER_COMPARER&)> sFactory_;
-#else
         static inline atomic<SortedMultiSet<T, TRAITS> (*) (const INORDER_COMPARER&)> sFactory_{nullptr};
-#endif
 
     public:
         static_assert (not is_reference_v<T> and not is_reference_v<INORDER_COMPARER>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<>(), or remove_cvref_t");

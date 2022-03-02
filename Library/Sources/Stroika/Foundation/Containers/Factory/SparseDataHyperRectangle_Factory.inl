@@ -22,14 +22,10 @@ namespace Stroika::Foundation::Containers {
 namespace Stroika::Foundation::Containers::Factory {
 
     /*
-        ********************************************************************************
-        ************************ SparseDataHyperRectangle_Factory<T> *******************
-        ********************************************************************************
-        */
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-    template <typename T, typename... INDEXES>
-    atomic<SparseDataHyperRectangle<T, INDEXES...> (*) (Configuration::ArgByValueType<T>)> SparseDataHyperRectangle_Factory<T, INDEXES...>::sFactory_ (nullptr);
-#endif
+     ********************************************************************************
+     ************************ SparseDataHyperRectangle_Factory<T> *******************
+     ********************************************************************************
+     */
     template <typename T, typename... INDEXES>
     inline SparseDataHyperRectangle<T, INDEXES...> SparseDataHyperRectangle_Factory<T, INDEXES...>::operator() (Configuration::ArgByValueType<T> defaultItem)
     {

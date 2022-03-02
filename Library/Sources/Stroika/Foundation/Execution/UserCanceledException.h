@@ -17,9 +17,7 @@ namespace Stroika::Foundation::Execution {
     public:
         static const UserCanceledException kThe;
     };
-#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     inline const UserCanceledException UserCanceledException::kThe;
-#endif
 
 }
 

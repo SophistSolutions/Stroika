@@ -266,14 +266,14 @@ namespace Stroika::Foundation::IO::Network {
     {
         return TWC_ (*this, rhs) == 0;
     }
-    inline Common::strong_ordering InternetAddress::TWC_ (const InternetAddress& lhs, const InternetAddress& rhs)
+    inline strong_ordering InternetAddress::TWC_ (const InternetAddress& lhs, const InternetAddress& rhs)
     {
-        if (auto cmp = Common::ThreeWayCompare (lhs.fAddressFamily_, rhs.fAddressFamily_); cmp != Common::kEqual) {
+        if (auto cmp = Common::ThreeWayCompare (lhs.fAddressFamily_, rhs.fAddressFamily_); cmp != strong_ordering::equal) {
             return cmp;
         }
         switch (lhs.fAddressFamily_) {
             case AddressFamily::UNKNOWN: {
-                return Common::kEqual;
+                return strong_ordering::equal;
             } break;
             case AddressFamily::V4: {
                 return Common::ThreeWayCompare (Memory::MemCmp (Traversal::Iterator2Pointer (lhs.fArray_4_uint_.begin ()), Traversal::Iterator2Pointer (rhs.fArray_4_uint_.begin ()), 4), 0);
@@ -283,7 +283,7 @@ namespace Stroika::Foundation::IO::Network {
             } break;
         }
         //AssertNotReached ();  @todo - this really should be an assertion failure, but tricky cuz constexpr function could fix with template)
-        return Common::kEqual;
+        return strong_ordering::equal;
     }
 
     namespace V4 {

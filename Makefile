@@ -495,18 +495,14 @@ basic-unix-test-configurations_sanitizer_configs_:
 	if [[ `lsb_release -rs 2>/dev/null` == '21.10' ]] ; then ./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp"; fi;
 
 basic-unix-test-configurations_valgrind_configs_:
-	# A few sanitize/configs (list explicit versions first as backup in case g++ doesn't work - enuf c++20 support - on this platform)
 	###Builds with a few special flags to make valgrind work better
 	#nb: using default installed C++ compiler cuz of matching installed libraries on host computer
-	./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none --compiler-driver g++-10
 	./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none
-	./configure valgrind-debug-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none --compiler-driver g++-10
 	./configure valgrind-debug-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none
 	./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable
 	# A few valgrind (must do explicit -g++-8 versions for ubuntu 1804 since its default g++ is 7 and not supported any longer)
 	if [[ `lsb_release -rs 2>/dev/null` == '18.04' ]] ; then ./configure g++-8-valgrind-debug-SSLPurify --compiler-driver g++-8 --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none; fi;
 	if [[ `lsb_release -rs 2>/dev/null` != '18.04' ]] ; then ./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none; fi;
-	
 
 
 raspberrypi-cross-compile-test-configurations:

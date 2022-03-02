@@ -101,35 +101,6 @@ TimeOfDay::FormatException::FormatException ()
  *********************************** TimeOfDay **********************************
  ********************************************************************************
  */
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-const TimeOfDay::FormatException TimeOfDay::FormatException::kThe;
-
-//%t        Any white space.
-//%T        The time as %H : %M : %S. (iso8601 format)
-//%r        is the time as %I:%M:%S %p
-//%M        The minute [00,59]; leading zeros are permitted but not required.
-//%p        Either 'AM' or 'PM' according to the given time value, or the corresponding strings for the current locale. Noon is treated as 'pm' and midnight as 'am'.
-//%P        Like %p but in lowercase: 'am' or 'pm' or a corresponding string for the current locale. (GNU)
-//%S        The seconds [00,60]; leading zeros are permitted but not required.
-const Traversal::Iterable<String> TimeOfDay::kDefaultParseFormats{
-    kLocaleStandardFormat,
-    kLocaleStandardAlternateFormat,
-    kISO8601Format,
-    L"%r"sv,
-    L"%H:%M"sv,
-    L"%I%p"sv,
-    L"%I%P"sv,
-    L"%I%t%p"sv,
-    L"%I%t%P"sv,
-    L"%I:%M%t%p"sv,
-    L"%I:%M%t%P"sv,
-    L"%I:%M:%S%t%p"sv,
-    L"%I:%M:%S%t%P"sv,
-    L"%I:%M:%S"sv,
-    L"%I:%M"sv,
-};
-#endif
-
 #if qPlatform_Windows
 namespace {
     TimeOfDay Parse_ (const String& rep, LCID lcid)

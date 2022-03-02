@@ -339,7 +339,7 @@ namespace Stroika::Foundation::Memory {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return BLOB ({*this, rhs});
     }
-    inline Common::strong_ordering BLOB::TWC_ (const BLOB& lhs, const BLOB& rhs)
+    inline strong_ordering BLOB::TWC_ (const BLOB& lhs, const BLOB& rhs)
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSecL{lhs}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
         shared_lock<const AssertExternallySynchronizedMutex> critSecR{rhs};
@@ -356,9 +356,9 @@ namespace Stroika::Foundation::Memory {
         }
         // if tmp is zero, and same size - its really zero. But if lhs shorter than right, say lhs < right
         if (lSize == rSize) {
-            return Common::kEqual;
+            return strong_ordering::equal;
         }
-        return (lSize < rSize) ? Common::kLess : Common::kGreater;
+        return (lSize < rSize) ? strong_ordering::less : strong_ordering::greater;
     }
 
 }

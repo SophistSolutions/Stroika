@@ -14,7 +14,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
 namespace {
-    inline Common::strong_ordering Compare_CS_ (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd)
+    inline strong_ordering Compare_CS_ (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd)
     {
         // TODO: Need a more efficient implementation - but this should do for starters...
         Assert (lhsStart <= lhsEnd);
@@ -37,7 +37,7 @@ namespace {
         }
         return Common::CompareResultNormalizer (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
     }
-    inline Common::strong_ordering Compare_CI_ (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd)
+    inline strong_ordering Compare_CI_ (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd)
     {
         // TODO: Need a more efficient implementation - but this should do for starters...
         Assert (lhsStart <= lhsEnd);
@@ -57,7 +57,7 @@ namespace {
     }
 }
 
-Common::strong_ordering Character::Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co)
+strong_ordering Character::Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co)
 {
     Require (co == CompareOptions::eWithCase or co == CompareOptions::eCaseInsensitive);
     Require (lhsStart <= lhsEnd);
@@ -69,6 +69,6 @@ Common::strong_ordering Character::Compare (const Character* lhsStart, const Cha
             return Compare_CI_ (lhsStart, lhsEnd, rhsStart, rhsEnd);
         default:
             AssertNotReached ();
-            return Common::kEqual;
+            return strong_ordering::equal;
     }
 }

@@ -793,9 +793,7 @@ namespace Stroika::Foundation::Execution {
              */
             static const InterruptException kThe;
         };
-#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         inline const InterruptException InterruptException::kThe;
-#endif
 
         /**
          */
@@ -814,9 +812,7 @@ namespace Stroika::Foundation::Execution {
              */
             static const AbortException kThe;
         };
-#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         inline const AbortException AbortException::kThe;
-#endif
 
         /**
          *  Thread IDs tend to be long and not easy to read in trace output. This utility class just maps these long
@@ -859,9 +855,7 @@ namespace Stroika::Foundation::Execution {
             mutex                     fMutex_;
             map<IDType, unsigned int> fShownThreadIDs_;
         };
-#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         inline IndexRegistrar IndexRegistrar::sThe;
-#endif
 
         /**
          *  This object - while in existance, blocks delivery of all Interrupt Exceptions (InterruptException and AbortException)

@@ -268,10 +268,6 @@ DISABLE_COMPILER_MSC_WARNING_END (4351)
  *********** Execution::SignalHandlerRegistry::SafeSignalsManager ***************
  ********************************************************************************
  */
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
-#endif
-
 SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
 {
     Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::CTOR"};
@@ -398,9 +394,6 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
     }
 
     auto sigSetHandler = [] (SignalID signal, [[maybe_unused]] void (*fun) (int)) {
-#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
-        &fun;
-#endif
 #if qPlatform_POSIX
         struct sigaction sa {
         };

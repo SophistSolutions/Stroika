@@ -767,18 +767,14 @@ namespace {
                         VerifyTestResult (c.find (i) != c.end ());
                     }
                     else {
-#if !qCompilerAndStdLib_if_constexpr_annoyingly_evaluates_untaken_path_Buggy
                         VerifyTestResult (c.Contains (i));
-#endif
                     }
                 }
                 if constexpr (is_same_v<set<ELEMENTTYPE>, CONTAINER>) {
                     VerifyTestResult (c.find (501) == c.end ());
                 }
                 else {
-#if !qCompilerAndStdLib_if_constexpr_annoyingly_evaluates_untaken_path_Buggy
                     VerifyTestResult (not c.Contains (501));
-#endif
                 }
             };
             if (nMoreCalls == 0) {

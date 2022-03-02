@@ -32,9 +32,6 @@ namespace {
     {
         using T                  = typename CONCRETE_CONTAINER::value_type;
         auto extraChecksFunction = [] ([[maybe_unused]] const Set<T>& s) {
-#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
-            &s;
-#endif
             // only work todo on sorted sets
         };
         CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, Set<T>> (factory, extraChecksFunction);

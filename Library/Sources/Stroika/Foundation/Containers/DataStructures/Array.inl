@@ -187,11 +187,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     T* newV = (T*)new char[sizeof (T) * slotsAlloced];
                     try {
                         size_t n2Copy = fLength_;
-#if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
-                        Configuration::uninitialized_copy_n_MSFT_BWA (&fItems_[0], n2Copy, newV);
-#else
                         uninitialized_copy_n (&fItems_[0], n2Copy, newV);
-#endif
                     }
                     catch (...) {
                         delete[](char*) newV;

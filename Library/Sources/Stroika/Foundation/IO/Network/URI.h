@@ -332,7 +332,7 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual bool operator== (const URI& rhs) const;
 
     private:
-        static Common::strong_ordering TWC_ (const URI& lhs, const URI& rhs); // utility code share between c++17 and c++20 versions
+        static strong_ordering TWC_ (const URI& lhs, const URI& rhs); // utility code share between c++17 and c++20 versions
 
     public:
         /**

@@ -86,6 +86,7 @@ namespace Stroika::Frameworks::Led {
 
         public:
             nonvirtual bool operator== (RowReference rhs) const;
+
         private:
             PartitionMarker* fPartitionMarker;
             size_t           fSubRow;

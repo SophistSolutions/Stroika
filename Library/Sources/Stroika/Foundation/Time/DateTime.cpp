@@ -159,28 +159,12 @@ DateTime::FormatException::FormatException ()
     : RuntimeErrorException<>{L"Invalid DateTime Format"sv}
 {
 }
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-const DateTime::FormatException DateTime::FormatException::kThe;
-#endif
 
 /*
  ********************************************************************************
  *********************************** DateTime ***********************************
  ********************************************************************************
  */
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-const Traversal::Iterable<String> DateTime::kDefaultParseFormats{
-    kLocaleStandardFormat,
-    kLocaleStandardAlternateFormat,
-    L"%x %X"sv,
-    L"%Ex %EX"sv,
-    L"%Y-%b-%d %H:%M:%S"sv, // no obvious reference for this so maybe not a good idea
-    L"%D%t%T"sv,            // no obvious reference for this so maybe not a good idea
-    L"%D%t%r"sv,            // no obvious reference for this so maybe not a good idea
-    L"%D%t%R"sv,            // no obvious reference for this so maybe not a good idea
-    L"%a %b %e %T %Y"sv,    // no obvious reference for this so maybe not a good idea
-};
-#endif
 DateTime::DateTime (time_t unixEpochTime) noexcept
     : fTimezone_{Timezone::kUTC}
     , fDate_{Date::kMinJulianRep} // avoid initialization warning
@@ -868,10 +852,10 @@ Duration DateTime::Difference (const DateTime& rhs) const
  ************************* DateTime::ThreeWayComparer ***************************
  ********************************************************************************
  */
-Common::strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& lhs, const DateTime& rhs) const
+strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& lhs, const DateTime& rhs) const
 {
     if (lhs.GetTimezone () == rhs.GetTimezone () or (lhs.GetTimezone () == Timezone::kUnknown) or (rhs.GetTimezone () == Timezone::kUnknown)) {
-        if (auto cmp = Common::ThreeWayCompare (lhs.GetDate (), rhs.GetDate ()); cmp != Common::kEqual) {
+        if (auto cmp = Common::ThreeWayCompare (lhs.GetDate (), rhs.GetDate ()); cmp != strong_ordering::equal) {
             return cmp;
         }
         return Common::ThreeWayCompare (lhs.GetTimeOfDay (), rhs.GetTimeOfDay ());
@@ -884,10 +868,10 @@ Common::strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& 
         // with first index being date, and then time, and only if those are the same use timezone as tie breaker
         //
         // This isn't a clearly good choice, so leave open the possability of changing this in the future -- LGP 2020-05-24
-        if (auto cmp = Common::ThreeWayCompare (lhs.GetDate (), rhs.GetDate ()); cmp != Common::kEqual) {
+        if (auto cmp = Common::ThreeWayCompare (lhs.GetDate (), rhs.GetDate ()); cmp != strong_ordering::equal) {
             return cmp;
         }
-        if (auto cmp = Common::ThreeWayCompare (lhs.GetTimeOfDay (), rhs.GetTimeOfDay ()); cmp != Common::kEqual) {
+        if (auto cmp = Common::ThreeWayCompare (lhs.GetTimeOfDay (), rhs.GetTimeOfDay ()); cmp != strong_ordering::equal) {
             return cmp;
         }
         return Common::ThreeWayCompare (lhs.GetTimezone (), rhs.GetTimezone ());

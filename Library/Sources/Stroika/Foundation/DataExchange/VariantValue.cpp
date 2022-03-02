@@ -837,7 +837,7 @@ bool Stroika::Foundation::DataExchange::VariantValue::EqualsComparer::operator()
  ************************* VariantValue::ThreeWayComparer ***********************
  ********************************************************************************
  */
-Common::strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& lhs, const VariantValue& rhs) const
+strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& lhs, const VariantValue& rhs) const
 {
     VariantValue::Type lt = lhs.GetType ();
     VariantValue::Type rt = rhs.GetType ();
@@ -849,7 +849,7 @@ Common::strong_ordering VariantValue::ThreeWayComparer::operator() (const Varian
     }
     switch (lt) {
         case VariantValue::eNull:
-            return rt == VariantValue::eNull ? Common::kEqual : Common::kGreater;
+            return rt == VariantValue::eNull ? strong_ordering::equal : strong_ordering::greater;
         case VariantValue::eBoolean:
             return Common::ThreeWayCompare (lhs.As<bool> (), rhs.As<bool> ());
         case VariantValue::eInteger:
@@ -861,13 +861,13 @@ Common::strong_ordering VariantValue::ThreeWayComparer::operator() (const Varian
             FloatType_ l = lhs.As<FloatType_> ();
             FloatType_ r = rhs.As<FloatType_> ();
             if (Math::NearlyEquals (l, r)) {
-                return Common::kEqual;
+                return strong_ordering::equal;
             }
             else if (l < r) {
-                return Common::kLess;
+                return strong_ordering::less;
             }
             else {
-                return Common::kGreater;
+                return strong_ordering::greater;
             }
         }
         case VariantValue::eDate:
@@ -891,7 +891,7 @@ Common::strong_ordering VariantValue::ThreeWayComparer::operator() (const Varian
             auto                          ri = rhsM.begin ();
             for (; li != lhsM.end (); ++li, ++ri) {
                 if (ri == rhsM.end ()) {
-                    return Common::kLess;
+                    return strong_ordering::less;
                 }
                 if (*li != *ri) {
                     //return false; CHANGE IN BEHAVIOR (I THINK FIX) 2020-05-04
@@ -900,14 +900,14 @@ Common::strong_ordering VariantValue::ThreeWayComparer::operator() (const Varian
             }
             Ensure (li == lhsM.end ());
             if (ri == rhsM.end ()) {
-                return Common::kEqual;
+                return strong_ordering::equal;
             }
             else {
-                return Common::kGreater;
+                return strong_ordering::greater;
             }
         }
         default:
             AssertNotReached ();
-            return Common::kEqual;
+            return strong_ordering::equal;
     }
 }

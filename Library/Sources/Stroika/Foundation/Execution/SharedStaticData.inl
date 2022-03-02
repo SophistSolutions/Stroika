@@ -24,17 +24,6 @@ namespace Stroika::Foundation::Execution {
      ******************************** SharedStaticData<T> ***************************
      ********************************************************************************
      */
-#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-    template <typename T>
-    T* SharedStaticData<T>::sOnceObj_;
-
-    template <typename T>
-    conditional_t<kSpinLock_IsFasterThan_mutex, SpinLock, mutex> SharedStaticData<T>::sMutex_;
-
-    template <typename T>
-    unsigned int SharedStaticData<T>::sCountUses_ = 0;
-#endif
-
     template <typename T>
     SharedStaticData<T>::SharedStaticData ()
     {

@@ -1050,21 +1050,21 @@ namespace Stroika::Foundation::Traversal {
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
         // no need for c' initialization cuz only used in else return at end, but never get there
         // unless set at least once
-        optional<Common::strong_ordering> c;
-        while ((li != le) and (ri != re) and (c = fElementComparer (*li, *ri)) == Common::kEqual) {
+        optional<strong_ordering> c;
+        while ((li != le) and (ri != re) and (c = fElementComparer (*li, *ri)) == strong_ordering::equal) {
             ++li;
             ++ri;
         }
         if (li == le) {
             if (ri == re) {
-                return Common::kEqual; // all items same and loop ended with both things at end
+                return strong_ordering::equal; // all items same and loop ended with both things at end
             }
             else {
-                return Common::kLess; // lhs shorter but an initial sequence of rhs
+                return strong_ordering::less; // lhs shorter but an initial sequence of rhs
             }
         }
         else if (ri == re) {
-            return Common::kGreater; // rhs shorter but an initial sequence of lhs
+            return strong_ordering::greater; // rhs shorter but an initial sequence of lhs
         }
         else {
             Assert (li != le and ri != re);

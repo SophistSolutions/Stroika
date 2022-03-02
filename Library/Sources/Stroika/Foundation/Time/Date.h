@@ -6,8 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
-#include <compare>
 #include <climits>
+#include <compare>
 #include <string>
 
 #include "../Characters/String.h"
@@ -495,7 +495,6 @@ namespace Stroika::Foundation::Time {
          */
         static const FormatException kThe;
     };
-#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     inline const Date::FormatException       Date::FormatException::kThe;
     inline const Traversal::Iterable<String> Date::kDefaultParseFormats{
         kLocaleStandardFormat,          // x (kLocaleStandardFormat) parses the locale's standard date representation
@@ -503,7 +502,6 @@ namespace Stroika::Foundation::Time {
         kMonthDayYearFormat,            // Before Stroika 2.1b10, this was L"%D" (=="%m/%d/%y) which is hte 2-digit year
         kISO8601Format,
     };
-#endif
 
     Date::SignedJulianRepType DayDifference (const Date& lhs, const Date& rhs);
     int                       YearDifference (const Date& lhs, const Date& rhs);

@@ -1518,24 +1518,24 @@ namespace Stroika::Foundation::Characters {
         constexpr ThreeWayComparer (CompareOptions co = CompareOptions::eWithCase);
 
         // Extra overloads a slight performance improvement
-        nonvirtual Common::strong_ordering operator() (const String& lhs, const String& rhs) const;
-        nonvirtual Common::strong_ordering operator() (const wstring_view& lhs, const wstring_view& rhs) const;
-        nonvirtual Common::strong_ordering operator() (const Character* lhs, const String& rhs) const;
-        nonvirtual Common::strong_ordering operator() (const Character* lhs, const wstring_view& rhs) const;
-        nonvirtual Common::strong_ordering operator() (const String& lhs, const Character* rhs) const;
-        nonvirtual Common::strong_ordering operator() (const wstring_view& lhs, const Character* rhs) const;
-        nonvirtual Common::strong_ordering operator() (const Character* lhs, const Character* rhs) const;
-        nonvirtual Common::strong_ordering operator() (const wchar_t* lhs, const String& rhs) const;
-        nonvirtual Common::strong_ordering operator() (const wchar_t* lhs, const wstring_view& rhs) const;
-        nonvirtual Common::strong_ordering operator() (const String& lhs, const wchar_t* rhs) const;
-        nonvirtual Common::strong_ordering operator() (const wstring_view& lhs, const wchar_t* rhs) const;
-        nonvirtual Common::strong_ordering operator() (const wchar_t* lhs, const wchar_t* rhs) const;
+        nonvirtual strong_ordering operator() (const String& lhs, const String& rhs) const;
+        nonvirtual strong_ordering operator() (const wstring_view& lhs, const wstring_view& rhs) const;
+        nonvirtual strong_ordering operator() (const Character* lhs, const String& rhs) const;
+        nonvirtual strong_ordering operator() (const Character* lhs, const wstring_view& rhs) const;
+        nonvirtual strong_ordering operator() (const String& lhs, const Character* rhs) const;
+        nonvirtual strong_ordering operator() (const wstring_view& lhs, const Character* rhs) const;
+        nonvirtual strong_ordering operator() (const Character* lhs, const Character* rhs) const;
+        nonvirtual strong_ordering operator() (const wchar_t* lhs, const String& rhs) const;
+        nonvirtual strong_ordering operator() (const wchar_t* lhs, const wstring_view& rhs) const;
+        nonvirtual strong_ordering operator() (const String& lhs, const wchar_t* rhs) const;
+        nonvirtual strong_ordering operator() (const wstring_view& lhs, const wchar_t* rhs) const;
+        nonvirtual strong_ordering operator() (const wchar_t* lhs, const wchar_t* rhs) const;
 
         CompareOptions fCompareOptions;
 
     private:
         template <typename LT, typename RT>
-        Common::strong_ordering                         Cmp_ (LT lhs, RT rhs) const;
+        strong_ordering                                 Cmp_ (LT lhs, RT rhs) const;
         static pair<const Character*, const Character*> Access_ (const String& s);
         static pair<const Character*, const Character*> Access_ (const wstring_view& s);
         static pair<const Character*, const Character*> Access_ (const Character* lhs);

@@ -95,22 +95,22 @@ String InternetMediaType::As () const
     return sb.str ();
 }
 
-Common::strong_ordering InternetMediaType::THREEWAYCOMPARE_ (const InternetMediaType& rhs) const
+strong_ordering InternetMediaType::THREEWAYCOMPARE_ (const InternetMediaType& rhs) const
 {
-    Common::strong_ordering cmp = Common::ThreeWayCompare (fType_, rhs.fType_);
-    if (cmp != Common::kEqual) {
+    strong_ordering cmp = Common::ThreeWayCompare (fType_, rhs.fType_);
+    if (cmp != strong_ordering::equal) {
         return cmp;
     }
     cmp = Common::ThreeWayCompare (fSubType_, rhs.fSubType_);
-    if (cmp != Common::kEqual) {
+    if (cmp != strong_ordering::equal) {
         return cmp;
     }
     cmp = Common::ThreeWayCompare (fSuffix_, rhs.fSuffix_);
-    if (cmp != Common::kEqual) {
+    if (cmp != strong_ordering::equal) {
         return cmp;
     }
     if (fParameters_.empty () and rhs.fParameters_.empty ()) {
-        return Common::kEqual; // very common case, shortcut
+        return strong_ordering::equal; // very common case, shortcut
     }
     else {
         // expensive for rare case, but if we must compare parameters, need some standardized way to iterate over them (key)

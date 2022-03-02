@@ -151,7 +151,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \todo   Consider if this should be somehow packaged with Character::ThreeWayComparer?
          */
-        static Common::strong_ordering Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co);
+        static strong_ordering Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co);
 
     private:
         wchar_t fCharacterCode_;

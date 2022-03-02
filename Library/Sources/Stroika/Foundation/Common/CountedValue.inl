@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Common {
     constexpr auto CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator<=> (const CountedValue& rhs) const
     {
         auto cmp = fValue <=> rhs.fValue;
-        if (cmp != Common::kEqual) {
+        if (cmp != strong_ordering::equal) {
             return cmp;
         }
         return fCount <=> rhs.fCount;

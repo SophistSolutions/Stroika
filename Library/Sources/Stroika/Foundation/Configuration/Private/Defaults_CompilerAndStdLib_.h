@@ -90,17 +90,6 @@
 
 #elif defined(_MSC_VER)
 
-// _MSC_VER=1914
-#define _MS_VS_2k17_15Pt7Pt6_ 191426433
-#define _MSC_VER_2k17_15Pt7_ 1914
-
-// _MSC_VER=1915
-#define _MSC_VER_2k17_15Pt8_ 1915
-
-// This is the only one tested for the last couple years - from the VS2k17 vintage - 15.9.x or later... -- LGP 2021-06-14
-// _MSC_VER=1916
-#define _MSC_VER_2k17_15Pt9_ 1916
-
 // _MSC_VER=1920
 #define _MSC_VER_2k19_16Pt0_ 1920
 #define _MS_VS_2k19_16Pt0Pt0pre2_ 192027305
@@ -144,16 +133,8 @@
 // _MSC_VER=1931
 #define _MSC_VER_2k22_17Pt1_ 1931
 
-#if _MSC_VER < 1910
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017 (use Stroika v2.0 or earlier)"
-#elif _MSC_VER <= _MSC_VER_2k17_15Pt7_
-// check which pointer-version of MSVC2k17 (15.7.x)
-#if _MSC_FULL_VER > _MS_VS_2k17_15Pt7Pt6_
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version ( #_MSC_FULL_VER ) - 15.7.x - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
-#define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
-#endif
-#elif _MSC_VER <= _MSC_VER_2k17_15Pt9_
-// check which pointer-version of MSVC2k17 just assume anythign 15.9 is OK - checked up to 15.9.19
+#if _MSC_VER < 1916
+#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2019 (use Stroika v2.1 or earlier)"
 #elif _MSC_VER <= _MSC_VER_2k19_16Pt4_
 // We COULD look at _MSC_FULL_VER and compare to _MS_VS_2k19_16Pt3Pt5_ etc, but changes too often and too rarely makes a difference
 // Just assume all bug defines the same for a given _MSC_VER
@@ -237,74 +218,6 @@ foo.cpp:
  *******************************************************************
  */
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
-
-Stroika-Frameworks-WebServer.vcxproj
-
-
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\dataexchange\badformatexception.h(40): warning C4359: 'Stroika::Foundation::DataExchange::BadFormatException::kThe': Alignment specifier is less than actual alignment (8), and will be ignored.
-...
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\optional.h(373): error C2719: 'defaultValue': formal parameter with requested alignment of 8 won't be aligned
-1>  c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\iterator.h(566): note: see reference to class template instantiation 'Stroika::Foundation::Memory::Optional<Stroika::Foundation::IO::Network::Interface,Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage<T>>' being compiled
-....1>  c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\interface.cpp(137): note: see reference to class template instantiation 'Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::IO::Network::Interface>' being compiled
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\optional.h(440): error C2719: 'unnamed-parameter': formal parameter with requested alignment of 8 won't be aligned
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\optional.h(544): error C2719: 'rhs': formal parameter with requested alignment of 8 won't be aligned
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\optional.h(552): error C2719: 'rhs': formal parameter with requested alignment of 8 won't be aligned
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\iterable.h(691): error C2719: 'unnamed-parameter': formal parameter with requested alignment of 8 won't be aligned
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\iterable.h(767): error C2719: 'unnamed-parameter': formal parameter with requested alignment of 8 won't be aligned
-
-error C2719: 'end': formal parameter with requested alignment of 8 won't be aligned (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.cpp)
-
-...
-
-2>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\common\../Configuration/Concepts.h(107): error C2718: 'Stroika::Foundation::Traversal::Iterator<T,std::iterator<std::forward_iterator_tag,T,ptrdiff_t,_Ty *,_Ty &>>': actual parameter with requested alignment of 8 won't be aligned
-2>        with
-2>        [
-2>            T=Stroika::Foundation::IO::Network::Interface,
-*/
-#ifndef qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
-
-#if defined(_MSC_VER)
-// still broken in _MS_VS_2k17_15Pt1_
-// still broken in _MS_VS_2k17_15Pt3Pt2_ - BUT MUCH MORE SUBTLY - WEBSERVER APP CRASHES (USES OPTIONAL) - AT RUNTIME - (at least debug build) - SO TEST WEBSERVER SAMPLE
-// still broken in _MS_VS_2k17_15Pt5Pt0_
-// Assume broken in _MS_VS_2k17_15Pt5Pt2_
-// Assume broken in _MS_VS_2k17_15Pt5Pt3_
-// Assume broken in _MS_VS_2k17_15Pt5Pt5_
-// still broken in _MS_VS_2k17_15Pt6Pt0_
-// Still broken in _MS_VS_2k17_15Pt7Pt1_ - but now causes more crashes in more places (perhaps just calling code changed) - more mysterious crashes with use of Optional  in regtests crash now
-// assume broken in _MS_VS_2k17_15Pt7Pt2_
-// assume broken in _MS_VS_2k17_15Pt7Pt3_
-// assume broken in _MS_VS_2k17_15Pt7Pt4_
-// assume broken in _MS_VS_2k17_15Pt7Pt5_
-// assume broken in _MS_VS_2k17_15Pt7Pt6_
-// Verified FIXED(BROKEN) in _MSC_VER_2k17_15Pt8_ (webserver no longer crashes - misleading - still broken
-// but we no longer use Memory::Optional, so we will have to lose this BWA, but bug NOT FIXED)
-// Can really only test this bug in stroika v2.0 branch since only place really still using Optional (that has this bug workaround)
-// until we test v2.0 branch, ASSUME fixed in _MSC_VER_2k17_15Pt9_
-#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
-#else
-#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy 0
-#endif
-
-#endif
-
-// I'm NOT sure if this is covering a Stroika bug, or if its a bug with vs2k17 compiler. It only breaks on vs2k17.
-// And I couldn't figure out what is promised by the language with a quick read of c++ spec, and search on stack overflow
-// The issue:
-// static inline obj = x;
-// static auto i = obj; // is that legal? In vs2k17 - for object with constructor etc - like string - it appears it may not be.
-//
-#ifndef qCompilerAndStdLib_static_inline_order_of_construction_Buggy
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_static_inline_order_of_construction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
-#else
-#define qCompilerAndStdLib_static_inline_order_of_construction_Buggy 0
-#endif
-
-#endif
-
 ///C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(246): error C2760: syntax error: unexpected token ';', expected ')'
 // You can use [[maybe_unused]] after the identifier, but not before the auto
 #ifndef qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy
@@ -316,160 +229,6 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k19_16Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt1_)
 #else
 #define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy 0
-#endif
-
-#endif
-
-/*
-  Building Stroika Foundation Objs:
-      Compiling Library/Sources/Stroika/Foundation/Configuration/Version.cpp ... 
-c:\sandbox\stroika\devroot\library\sources\stroika\foundation\debug\AssertExternallySynchronizedMutex.h(158): fatal error C1001: An internal error has occurred in the compiler.
-(compiler file 'd:\agent\_work\4\s\src\vctools\compiler\cxxfe\sl\p1\cxx\grammar.y', line 12721)
- To work around this problem, try simplifying or changing the program near the locations listed above.
-Please choose the Technical Support command on the Visual C++
- Help menu, or open the Technical Support help file for more information
-      Compiling Library/Sources/Stroika/Foundation/Configuration/Platform/Windows/Registry.cpp ... 
-c:\sandbox\stroika\devroot\library\sources\stroika\foundation\debug\AssertExternallySynchronizedMutex.h(158): fatal error C1001: An internal error has occurred in the compiler.
-(compiler file 'd:\agent\_work\4\s\src\vctools\compiler\cxxfe\sl\p1\cxx\grammar.y', line 12721)
- To work around this problem, try simplifying or changing the program near the locations listed above.
-Please choose the Technical Support command on the Visual C++
- Help menu, or open the Technical Support help file for more information
-       */
-#ifndef qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy
-
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
-#else
-#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy 0
-#endif
-
-#endif
-
-/**
- *  not sure what is wrong here but some crasher in InternetMediaTypeRegistry::FrontendRep_ code...
- *  ONLY VS2k17 problem and not going to support much longer
- */
-#ifndef qCompilerAndStdLib_initializer_list_sometimes_very_Buggy
-
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_initializer_list_sometimes_very_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
-#else
-#define qCompilerAndStdLib_initializer_list_sometimes_very_Buggy 0
-#endif
-
-#endif
-
-#ifndef qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
-
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
-#else
-#define qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy 0
-#endif
-
-#endif
-
-#ifndef qCompilerAndStdLib_MemInitializerWithBitfield_Buggy
-
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_MemInitializerWithBitfield_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
-#else
-#define qCompilerAndStdLib_MemInitializerWithBitfield_Buggy 0
-#endif
-
-#endif
-
-#ifndef qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy
-
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
-#else
-#define qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy 0
-#endif
-
-#endif
-
-#ifndef qCompilerAndStdLib_uniformInitializationsFailsOnIntSize_t_Buggy
-
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_uniformInitializationsFailsOnIntSize_t_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
-#else
-#define qCompilerAndStdLib_uniformInitializationsFailsOnIntSize_t_Buggy 0
-#endif
-
-#endif
-
-#ifndef qCompilerAndStdLib_startupAppMagicStaticsNotWorkingFully_Buggy
-
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_startupAppMagicStaticsNotWorkingFully_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
-#else
-#define qCompilerAndStdLib_startupAppMagicStaticsNotWorkingFully_Buggy 0
-#endif
-
-#endif
-
-/*
->   Compiling Library/Sources/Stroika/Frameworks/WebServer/Request.cpp ...
-2>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\concepts.h(467): error C2385: ambiguous access of 'value_type'
-2>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\concepts.h(467): note: could be the 'value_type' in base 'Stroika::Foundation::Common::ReadOnlyProperty<Stroika::Foundation::Characters::String>'
-2>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\concepts.h(467): note: or could be the 'value_type' in base 'Stroika::Foundation::Common::WriteOnlyProperty<Stroika::Foundation::Characters::String>'
-2>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\concepts.h(493): note: see reference to class template instantiation 'Stroika::Foundation::Configuration::ExtractValueType<Stroika::Foundation::Common::Property<Stroika::Foundation::Characters::String>,void>' being compiled
-2>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\concepts.h(493): note: see reference to alias template instantiation 'Stroika::Foundation::Configuration::ExtractValueType_t<Stroika::Foundation::Common::Property<Stroika::Foundation::Characters::String>>' being compiled
-2>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\concepts.h(467): note: see reference to variable template 'const bool IsIterable_v<Stroika::Foundation::Common::Property<Stroika::Foundation::Characters::String> >' being compiled
-2>c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\type_traits(16707566): note: see reference to function template instantiation 'auto Stroika::Frameworks::WebServer::Request::<lambda_50f8cdc935c03d80f9b5052785b593ec>::operator ()<Stroika::Foundation::Common::ReadOnlyProperty<bool>>(const Stroika::Foundation::Common::ReadOnlyProperty<bool> *) const' being compiled
-2>c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\type_traits(1871): note: see reference to alias template instantiation 'std::_Is_invocable_r_<bool,Stroika::Frameworks::WebServer::Request::<lambda_50f8cdc935c03d80f9b5052785b593ec>&,const Stroika::Foundation::Common::ReadOnlyProperty<bool>*>' being compiled
-2>c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\functional(1279): note: see reference to class template instantiation 'std::_Is_invocable_r<_Ret,_Fx,const Stroika::Foundation::Common::ReadOnlyProperty<bool> *>' being compiled
-2>        with
-2>*/
-#ifndef qCompilerAndStdLib_template_value_type_ambiguous_confusion_Buggy
-
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_template_value_type_ambiguous_confusion_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
-#else
-#define qCompilerAndStdLib_template_value_type_ambiguous_confusion_Buggy 0
-#endif
-
-#endif
-
-/*
-Building Stroika Foundation Objs:
-      Compiling Library/Sources/Stroika/Foundation/IO/Network/HTTP/CacheControl.cpp ... 
-c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\enumeration.inl(210): fatal error C1001: An internal error has occurred in the compiler.
-(compiler file 'd:\agent\_work\4\s\src\vctools\compiler\cxxfe\sl\p1\c\yyaction.cpp', line 1142)
- To work around this problem, try simplifying or changing the program near the locations listed above.
-Please choose the Technical Support command on the Visual C++
- Help menu, or open the Technical Support help file for more information
-c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\enumeration.inl(207): note: see reference to function template instantiation 'void Stroika::Foundation::Configuration::EnumNames<Stroika::Foundation::IO::Network::HTTP::CacheControl::Cacheability>::RequireItemsOrderedByEnumValue_(void) const' being compiled
-c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\enumeration.inl(114): note: see reference to function template instantiation 'void Stroika::Foundation::Configuration::EnumNames<Stroika::Foundation::IO::Network::HTTP::CacheControl::Cacheability>::RequireItemsOrderedByEnumValue_(void) const' being compiled
-c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.inl(370): note: see reference to class template instantiation 'std::optional<size_t>' being compiled
-c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\filesystem(2392): note: see reference to class template instantiation 'std::chrono::time_point<std::filesystem::_File_time_clock,std::filesystem::_File_time_clock::duration>' being compiled   
-c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\type_traits(616): note: see reference to class template instantiation 'std::basic_string_view<wchar_t,std::char_traits<wchar_t>>' being compiled
-c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\xstring(2124): note: see reference to class template instantiation 'std::is_convertible<const _StringViewIsh &,std::basic_string_view<wchar_t,std::char_traits<wchar_t>>>' being compiled       
-        with
-        [
-*/
-#ifndef qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy
-
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
-#else
-#define qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy 0
-#endif
-
-#endif
-
-/*
-c:\sandbox\stroika\devroot\tests\52\test.cpp(766): error C2039: 'Contains': is not a member of 'std::set<int,std::less<int>,std::allocator<int>>'
-c:\sandbox\stroika\devroot\tests\52\test.cpp(1494): note: see declaration of 'std::set<int,std::less<int>,std::allocator<int>>'
-c:\sandbox\stroika\devroot\tests\52\test.cpp(796): note: see reference to function template instantiation 'void `anonymous-namespace'::Private_::CopyContainerByValue<CONTAINER>(CONTAINER,int)' being compiled
-*/
-#ifndef qCompilerAndStdLib_if_constexpr_annoyingly_evaluates_untaken_path_Buggy
-
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_if_constexpr_annoyingly_evaluates_untaken_path_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
-#else
-#define qCompilerAndStdLib_if_constexpr_annoyingly_evaluates_untaken_path_Buggy 0
 #endif
 
 #endif
@@ -595,94 +354,8 @@ C :\Sandbox\Stroika\DevRoot\Tests\48\Test.cpp : 750
 
 #endif
 
-/*
-1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(95): error C2061: syntax error: identifier 'CountedValue<unsigned int,unsigned int>'
-1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(190): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::PRIVATE_::Test1_MiscStarterTests_::MultiSetIteratorTests_<DEFAULT_TESTING_SCHEMA>(const DEFAULT_TESTING_SCHEMA &,Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<T>> &)' being compiled
-1>        with
-1>        [
-1>            DEFAULT_TESTING_SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>,std::equal_to<unsigned int>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>>>,
-1>            T=size_t
-1>        ]
-1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(363): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::PRIVATE_::Test1_MiscStarterTests_::SimpleMultiSetTests_<DEFAULT_TESTING_SCHEMA>(const DEFAULT_TESTING_SCHEMA &,Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<T>> &)' being compiled
-1>        with
-1>        [
-1>            DEFAULT_TESTING_SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>,std::equal_to<unsigned int>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>>>,
-1>            T=size_t
-1>        ]
-1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(481): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::PRIVATE_::Test1_MiscStarterTests_::DoAllTests_<DEFAULT_TESTING_SCHEMA>(const DEFAULT_TESTING_SCHEMA &)' being compiled
-1>        with
-1>        [
-1>            DEFAULT_TESTING_SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>,std::equal_to<unsigned int>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>>>
-1>        ]
-1>c:\sandbox\stroika\devroot\tests\17\test.cpp(38): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::All_For_Type<SCHEMA>(const DEFAULT_TESTING_SCHEMA &)' being compiled
-1>        with
-1>        [
-1>            SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>,std::equal_to<unsigned int>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>>>,
-1>            DEFAULT_TESTING_SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>,std::equal_to<unsigned int>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>>>
-1>        ]
-1>c:\sandbox\stroika\devroot\tests\17\test.cpp(81): note: see reference to function template instantiation 'void `anonymous-namespace'::DoTestForConcreteContainer_<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<T>>,CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER,std::equal_to<unsigned int>,CommonTests::MultiSetTests::DefaultFactory<CONCRETE_CONTAINER>>>(const SCHEMA &)' being compiled
-1>        with
-1>        [
-1>            T=size_t,
-1>            CONCRETE_CONTAINER=Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>,
-1>            SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>,std::equal_to<unsigned int>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<size_t>>>>
-1>        ]
-1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(95): error C2143: syntax error: missing ';' before '{'
-1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(95): error C2061: syntax error: identifier 'CountedValue<Stroika::SimpleClass,unsigned int>'
-1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(190): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::PRIVATE_::Test1_MiscStarterTests_::MultiSetIteratorTests_<DEFAULT_TESTING_SCHEMA>(const DEFAULT_TESTING_SCHEMA &,Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<T>> &)' being compiled
-1>        with
-1>        [
-1>            DEFAULT_TESTING_SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>,std::equal_to<Stroika::SimpleClass>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>>>,
-1>            T=Stroika::SimpleClass
-1>        ]
-1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(363): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::PRIVATE_::Test1_MiscStarterTests_::SimpleMultiSetTests_<DEFAULT_TESTING_SCHEMA>(const DEFAULT_TESTING_SCHEMA &,Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<T>> &)' being compiled
-1>        with
-1>        [
-1>            DEFAULT_TESTING_SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>,std::equal_to<Stroika::SimpleClass>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>>>,
-1>            T=Stroika::SimpleClass
-1>        ]
-1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(481): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::PRIVATE_::Test1_MiscStarterTests_::DoAllTests_<DEFAULT_TESTING_SCHEMA>(const DEFAULT_TESTING_SCHEMA &)' being compiled
-1>        with
-1>        [
-1>            DEFAULT_TESTING_SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>,std::equal_to<Stroika::SimpleClass>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>>>
-1>        ]
-1>c:\sandbox\stroika\devroot\tests\17\test.cpp(38): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::All_For_Type<SCHEMA>(const DEFAULT_TESTING_SCHEMA &)' being compiled
-1>        with
-1>        [
-1>            SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>,std::equal_to<Stroika::SimpleClass>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>>>,
-1>            DEFAULT_TESTING_SCHEMA=CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>,std::equal_to<Stroika::SimpleClass>,CommonTests::MultiSetTests::DefaultFactory<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<Stroika::SimpleClass>>>>
-1>        ]
-1>c:\sandbox\stroika\devroot\tests\17\test.cpp(82): note: see reference to function template instantiation 'void `anonymous-namespace'::DoTestForConcreteContainer_<Stroika::Foundation::Containers::MultiSet<Stroika::SimpleClass,Stroika::Foundation::Containers::DefaultTraits::MultiSet<T>>,CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER,std::equal_to<Stroika::SimpleClass>,CommonTests::MultiSetTests::DefaultFactory<CONCRETE_CONTAINER>>>(const SCHEMA &)' being compiled
-1>        with
-1>        [
-1>            T=Stroika::SimpleClass,
-*/
-#ifndef qCompilerAndStdLib_attributes_before_template_in_Template_Buggy
-
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_attributes_before_template_in_Template_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
-#else
-#define qCompilerAndStdLib_attributes_before_template_in_Template_Buggy 0
-#endif
-
-#endif
-
 /**
  *
- On VS2k17:
-         Compiling Library/Sources/Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.cpp ... 
-c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\collection.h(192): fatal error C1001: An internal error has occurred in the compiler.
-(compiler file 'msc1.cpp', line 1518)
- To work around this problem, try simplifying or changing the program near the locations listed above.
-Please choose the Technical Support command on the Visual C++ 
- Help menu, or open the Technical Support help file for more information
-c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\collection.h(369): note: see reference to class template instantiation 'Stroika::Foundation::Containers::Collection<T>' being compiled
-c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\filesystem(2392): note: see reference to class template instantiation 'std::chrono::time_point<std::filesystem::_File_time_clock,std::filesystem::_File_time_clock::duration>' being compiled
-c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\type_traits(616): note: see reference to class template instantiation 'std::basic_string_view<wchar_t,std::char_traits<wchar_t>>' being compiled
-c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\xstring(2124): note: see reference to class template instantiation 'std::is_convertible<const _StringViewIsh &,std::basic_string_view<wchar_t,std::char_traits<wchar_t>>>' being compiled
-
-
-
 On Vs2k19:
 1>   Compiling Library/Sources/Stroika/Foundation/Cryptography/Digest/Algorithm/Jenkins.cpp ...
 1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Containers\Collection.inl(68): error C2244: 'Stroika::Foundation::Containers::Collection<T>::Collection': unable to match function definition to an existing declaration
@@ -833,21 +506,6 @@ ABORTING...
 #ifndef qCompilerAndStdLib_std_get_time_pctx_Buggy
 
 #if defined(_MSC_VER)
-// still broken in _MS_VS_2k17_15Pt1_
-// still broken in _MS_VS_2k17_15Pt3Pt2_
-// still broken in _MS_VS_2k17_15Pt5Pt0_
-// Assume broken in _MS_VS_2k17_15Pt5Pt2_
-// Assume broken in _MS_VS_2k17_15Pt5Pt3_
-// Assume broken in _MS_VS_2k17_15Pt5Pt5_
-// still broken in _MS_VS_2k17_15Pt6Pt0_
-// still broken in _MS_VS_2k17_15Pt7Pt1_
-// assume broken in _MS_VS_2k17_15Pt7Pt2_
-// assume broken in _MS_VS_2k17_15Pt7Pt3_
-// assume broken in _MS_VS_2k17_15Pt7Pt4_
-// assume broken in _MS_VS_2k17_15Pt7Pt5_
-// assume broken in _MS_VS_2k17_15Pt7Pt6_
-// still broken in _MSC_VER_2k17_15Pt8_
-// VERIFIED STILL BROKEN in _MSC_VER_2k17_15Pt9_
 // VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt0_
 // VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt1_
 // VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt2_
@@ -863,35 +521,6 @@ ABORTING...
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt1_)
 #else
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy 0
-#endif
-
-#endif
-
-/*
- *          error C2131: expression did not evaluate to a constant
->c:\sandbox\stroikadev\tests\37\test.cpp(203): error C2127: 'kOrigValueInit_': illegal initialization of 'constexpr' entity with a non-constant expression
-*/
-#ifndef qCompilerAndStdLib_constexpr_stdinitializer_Buggy
-
-#if defined(_MSC_VER)
-// still broken in _MS_VS_2k17_15Pt1_
-// still broken in _MS_VS_2k17_15Pt3Pt2_
-// still broken in _MS_VS_2k17_15Pt5Pt0_
-// Assume broken in _MS_VS_2k17_15Pt5Pt2_
-// Assume broken in _MS_VS_2k17_15Pt5Pt3_
-// Assume broken in _MS_VS_2k17_15Pt5Pt5_
-// still broken in _MS_VS_2k17_15Pt6Pt0_
-// still broken in _MS_VS_2k17_15Pt7Pt1_
-// assume broken in _MS_VS_2k17_15Pt7Pt2_
-// still broken in _MS_VS_2k17_15Pt7Pt3_
-// assume broken in _MS_VS_2k17_15Pt7Pt4_
-// assume broken in _MS_VS_2k17_15Pt7Pt5_
-// assume broken in _MS_VS_2k17_15Pt7Pt6_
-// still broken in _MSC_VER_2k17_15Pt8_
-// VERIFIED FIXED in _MSC_VER_2k17_15Pt9_
-#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
-#else
-#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy 0
 #endif
 
 #endif
@@ -1442,56 +1071,6 @@ STILL:
 
 #endif
 
-// You get double delete/shared_ptr failure on Test43 - IO:Transfer::Cache regression test
-// Issue is that static inline not implemented properly in vs2k17 and generates multiple definitions.
-// So you must add INGOREDUPDEFS linker flag, and then you get multiple construction (mostly harmless)
-// followed by multiple destructions (very harmful) - and this error. So must avoid static inline for anything
-// with a DTOR.
-// NOTE - HAD BEEN USING qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy - for a while, but got rid of that 2021-06-16 and just use this define
-//
-#ifndef qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-#if defined(_MSC_VER)
-// first broken in in _MS_VS_2k17_15Pt9Pt7_
-#define qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
-#else
-#define qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy 0
-#endif
-#endif
-
-/*
-  Range.cpp
-  ****NOTE - WARNING NOT ERRR - BUT USELESS AND ANNOYING ****
-
-2>c:\program files (x86)\microsoft visual studio 14.0\vc\include\xmemory(169): warning C4996: 'std::uninitialized_copy_n::_Unchecked_iterators::_Deprecate': Call to 'std::uninitialized_copy_n' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
-2>  c:\program files (x86)\microsoft visual studio 14.0\vc\include\xmemory(169): note: see declaration of 'std::uninitialized_copy_n::_Unchecked_iterators::_Deprecate'
-2>  c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\externallysynchronizeddatastructures\array.inl(190): note: see reference to function template instantiation '_FwdIt std::uninitialized_copy_n<T*,std::size_t,T*>(_InIt,std::_Diff,_FwdIt)' being compiled
-2>          with
-2>          [
-*/
-#ifndef qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
-
-#if defined(_MSC_VER)
-// still broken in _MS_VS_2k17_15Pt1_
-// still broken in _MS_VS_2k17_15Pt3Pt2_
-// still broken in _MS_VS_2k17_15Pt5Pt0_
-// Assume broken in _MS_VS_2k17_15Pt5Pt2_
-// Assume broken in _MS_VS_2k17_15Pt5Pt3_
-// Assume broken in _MS_VS_2k17_15Pt5Pt5_
-// still broken in _MS_VS_2k17_15Pt6Pt0_
-// still broken in _MS_VS_2k17_15Pt7Pt1_
-// assume broken in _MS_VS_2k17_15Pt7Pt2_
-// assume broken in _MS_VS_2k17_15Pt7Pt3_
-// assume broken in _MS_VS_2k17_15Pt7Pt4_
-// assume broken in _MS_VS_2k17_15Pt7Pt5_
-// assume broken in _MS_VS_2k17_15Pt7Pt6_
-// Verified FIXED in _MSC_VER_2k17_15Pt8_
-#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy (_MSC_VER <= _MSC_VER_2k17_15Pt7_)
-#else
-#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy 0
-#endif
-
-#endif
-
 #ifndef qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy
 
 #if defined(_MSC_VER)
@@ -1543,21 +1122,6 @@ STILL:
 
 #if defined(_MSC_VER)
 
-// still broken in _MS_VS_2k17_15Pt1_
-// still broken in _MS_VS_2k17_15Pt3Pt2_
-// still broken in _MS_VS_2k17_15Pt5Pt0_
-// Assume broken in _MS_VS_2k17_15Pt5Pt2_
-// Assume broken in _MS_VS_2k17_15Pt5Pt3_
-// Assume broken in _MS_VS_2k17_15Pt5Pt5_
-// still broken in _MS_VS_2k17_15Pt6Pt0_
-// still broken in _MS_VS_2k17_15Pt7Pt1_
-// assume broken in _MS_VS_2k17_15Pt7Pt2_
-// release notes say fixed, but after testing, still broken in _MS_VS_2k17_15Pt7Pt3_
-// still broken in _MS_VS_2k17_15Pt7Pt4_
-// assume broken in _MS_VS_2k17_15Pt7Pt5_
-// assume broken in _MS_VS_2k17_15Pt7Pt6_
-// still broken in _MSC_VER_2k17_15Pt8_
-// still broken in _MSC_VER_2k17_15Pt9_
 // still broken in _MSC_VER_2k19_16Pt0_
 // CONFUSED ABOUT --- seems fixed when I run msbuild from make cmdline but fail from IDE?_MS_VS_2k19_16Pt0Pt0pre2_
 // CONFUSED ABOUT --- seems fixed when I run msbuild from make cmdline but fail from IDE?_MS_VS_2k19_16Pt0Pt0pre3_
@@ -1597,11 +1161,6 @@ WORKAROUND:
 #ifndef qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
 
 #if defined(_MSC_VER)
-// first broken in _MSC_VER_2k17_15Pt8_  (_MS_VS_2k17_15Pt8Pt0_)
-// still broken in _MS_VS_2k17_15Pt8Pt4_
-// assume still broken in _MS_VS_2k17_15Pt8Pt5_
-// assume still broken in _MS_VS_2k17_15Pt8Pt8_
-// verified still broken in _MSC_VER_2k17_15Pt9_
 // verified still broken in _MSC_VER_2k19_16Pt0Pt0_ - preview1
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
@@ -1610,7 +1169,7 @@ WORKAROUND:
 // verified still broken _MSC_VER_2k19_16Pt2_
 // verified still broken in _MSC_VER_2k19_16Pt3_
 // verified fixed in _MSC_VER_2k19_16Pt4_
-#define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt3_)
+#define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
 #else
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy 0
 #endif
@@ -1955,21 +1514,6 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // still broken in clang++-13
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(_MSC_VER)
-// still broken in _MS_VS_2k17_15Pt1_
-// still broken in _MS_VS_2k17_15Pt3Pt2_
-// still broken in _MS_VS_2k17_15Pt5Pt0_
-// Assume broken in _MS_VS_2k17_15Pt5Pt2_
-// Assume broken in _MS_VS_2k17_15Pt5Pt3_
-// Assume broken in _MS_VS_2k17_15Pt5Pt5_
-// still broken in _MS_VS_2k17_15Pt6Pt0_
-// still broken in _MS_VS_2k17_15Pt7Pt1_
-// assume still broken in _MS_VS_2k17_15Pt7Pt2_
-// assume still broken in _MS_VS_2k17_15Pt7Pt3_
-// still broken in _MS_VS_2k17_15Pt7Pt4_
-// assume broken in _MS_VS_2k17_15Pt7Pt5_
-// assume broken in _MS_VS_2k17_15Pt7Pt6_
-// verified still broken in _MSC_VER_2k17_15Pt8_
-// verified still broken in _MSC_VER_2k17_15Pt9_
 // verified still broken in _MSC_VER_2k19_16Pt0_
 // verified still broken in _MSC_VER_2k19_16Pt1_
 // verified still broken in _MSC_VER_2k19_16Pt2_
@@ -2118,26 +1662,6 @@ NOTE:
 #endif
 
 /*
-\sandbox\stroika\devroot\tests\13\test.cpp(64): error C2794: 'CombinedType': is not a member of any direct or indirect base class of 'Stroika::Foundation::Containers::Private_DataHyperRectangle_::NTemplate<int,Stroika::Foundation::Containers::DataHyperRectangle>::Helper_<__make_integer_sequence_t<_IntSeq,_T,2>>'
-5>        with
-5>        [
-5>            _IntSeq=std::integer_sequence,
-5>            _T=size_t
-5>        ]
-5>c:\sandbox\stroika\devroot\tests\13\test.cpp(64): note: see reference to alias template instantiation 'Stroika::Foundation::Containers::DataHyperRectangleN<int,2>' being compiled
-5>c:\program files (x86)\microsoft vis
- */
-#ifndef qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
-
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
-#else
-#define qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy 0
-#endif
-
-#endif
-
-/*
  >c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\concrete\mapping_linkedlist.inl(55): error C2146: syntax error: missing ';' before identifier '_APPLY_ARGTYPE' (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp)
 1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\concrete\mapping_linkedlist.inl(211): note: see reference to class template instantiation 'Stroika::Foundation::Containers::Concrete::Mapping_LinkedList<KEY_TYPE,MAPPED_VALUE_TYPE>::Rep_<KEY_EQUALS_COMPARER>' being compiled (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp)
 1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\concrete\mapping_linkedlist.inl(55): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp)
@@ -2148,16 +1672,6 @@ NOTE:
 #ifndef qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
 
 #if defined(_MSC_VER)
-// first broken in _MS_VS_2k17_15Pt7Pt1_ (probably broken in .0 but I never tested that)
-// still broken in _MS_VS_2k17_15Pt7Pt2_
-// assume still broken in _MS_VS_2k17_15Pt7Pt3_
-// still broken in _MS_VS_2k17_15Pt7Pt4_
-// assume broken in _MS_VS_2k17_15Pt7Pt5_
-// assume broken in _MS_VS_2k17_15Pt7Pt6_
-// verified broken in _MSC_VER_2k17_15Pt8_
-// verified still broken in _MS_VS_2k17_15Pt8Pt4_
-// assume still broken in _MS_VS_2k17_15Pt8Pt5_
-// verified still broken in _MSC_VER_2k17_15Pt9_
 // verified still broken in _MSC_VER_2k19_16Pt0_ (.0 preview 1)
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // verified FIXED in _MS_VS_2k19_16Pt0Pt0pre3_
@@ -2177,10 +1691,6 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #ifndef qCompilerAndStdLib_inline_static_align_Buggy
 
 #if defined(_MSC_VER)
-// first seen broken in _MS_VS_2k17_15Pt7Pt5_
-// assume broken in _MS_VS_2k17_15Pt7Pt6_
-// verified BROKEN _MSC_VER_2k17_15Pt8_ (OK in debug build, but broken in Release-U-32)
-// verified BROKEN _MSC_VER_2k17_15Pt9_ (OK in debug build, but broken in Release-U-32)
 // verified still broken in _MSC_VER_2k19_16Pt0_ (.0 preview 1) - not not sure anything more than warnings - no buggy behavior seen?
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
@@ -2429,8 +1939,6 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 #ifndef qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
 
 #if defined(_MSC_VER)
-// first noticed broken in _MSC_VER_2k17_15Pt8_
-// verified still broken in _MSC_VER_2k17_15Pt9_
 // verified still broken in _MSC_VER_2k19_16Pt0_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
@@ -2505,8 +2013,6 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 #ifndef qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
 
 #if defined(_MSC_VER)
-// first noticed broken in _MSC_VER_2k17_15Pt8_
-// verified still broken in _MSC_VER_2k17_15Pt9_
 // verified still broken in _MSC_VER_2k19_16Pt0_
 // verified still broken in _MSC_VER_2k19_16Pt1_
 // verified still broken in _MSC_VER_2k19_16Pt2_
@@ -2544,37 +2050,6 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 #define qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 11)
 #else
 #define qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy 0
-#endif
-
-#endif
-
-/**
- WITHOUT the namespace aaa, this works fine.
-namespace {
-    namespace aaa {
-        struct dev {
-            static const ObjectVariantMapper kMapper_;
-        };
-    }
-    using namespace aaa;
-    const ObjectVariantMapper dev::kMapper_ = []() {
-        ObjectVariantMapper mapper;
-
-        using IO::Network::CIDR;
-        mapper.Add<CIDR> ([](const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { return obj->ToString (); },
-                          [](const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { *intoObj = CIDR{d.As<String> ()}; });
-        return mapper;
-    }();
-}
-*/
-#ifndef qCompilerAndStdLib_lambda_expand_in_namespace_Buggy
-
-#if defined(_MSC_VER)
-// first noticed broken in _MSC_VER_2k17_15Pt8_
-// VERIFIED FIXED in _MSC_VER_2k17_15Pt9_
-#define qCompilerAndStdLib_lambda_expand_in_namespace_Buggy (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
-#else
-#define qCompilerAndStdLib_lambda_expand_in_namespace_Buggy 0
 #endif
 
 #endif
@@ -2634,8 +2109,6 @@ stHarness/SimpleClass.cpp ...
 #ifndef qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy
 
 #if defined(_MSC_VER)
-// first broken in _MSC_VER_2k17_15Pt8_
-// VERIFIED broken IN _MSC_VER_2k17_15Pt9_  (NOTE - this no longer gives the above assertion error but instead just fails in the UTF8 code conversion)
 // VERIFIED still broken in _MSC_VER_2k19_16Pt0_
 // VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre3_
@@ -3017,49 +2490,6 @@ stHarness/SimpleClass.cpp ...
 #define Stroika_Foundation_Configuration_STRUCT_PACKED(...) __pragma (pack (push, 1)) __VA_ARGS__ __pragma (pack (pop))
 #elif defined(__GNUC__) || defined(__clang__)
 #define Stroika_Foundation_Configuration_STRUCT_PACKED(...) __VA_ARGS__ __attribute__ ((__packed__))
-#endif
-
-#if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
-namespace Stroika::Foundation::Configuration {
-    template <class InputIt, class Size, class ForwardIt>
-    ForwardIt uninitialized_copy_n_MSFT_BWA (InputIt first, Size count, ForwardIt d_first)
-    {
-        // @see https://en.cppreference.com/w/cpp/memory/uninitialized_copy_n
-        typedef typename std::iterator_traits<ForwardIt>::value_type Value;
-        ForwardIt                                                    current = d_first;
-        try {
-            for (; count > 0; ++first, (void)++current, --count) {
-                ::new (static_cast<void*> (std::addressof (*current))) Value (*first);
-            }
-        }
-        catch (...) {
-            for (; d_first != current; ++d_first) {
-                d_first->~Value ();
-            }
-            throw;
-        }
-        return current;
-    }
-    template <class InputIt, class ForwardIt>
-    ForwardIt uninitialized_copy_MSFT_BWA (InputIt first, InputIt last, ForwardIt d_first)
-    {
-        // @see https://en.cppreference.com/w/cpp/memory/uninitialized_copy
-        typedef typename std::iterator_traits<ForwardIt>::value_type Value;
-        ForwardIt                                                    current = d_first;
-        try {
-            for (; first != last; ++first, (void)++current) {
-                ::new (static_cast<void*> (std::addressof (*current))) Value (*first);
-            }
-            return current;
-        }
-        catch (...) {
-            for (; d_first != current; ++d_first) {
-                d_first->~Value ();
-            }
-            throw;
-        }
-    }
-} // namespace Stroika::Foundation::Configuration
 #endif
 
 #endif /*defined(__cplusplus)*/

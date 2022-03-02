@@ -1,0 +1,10 @@
+Set String "String.hh"
+!Shared RegionSharedPart
+!Shared TileSharedPart
+Sequence Point "Point.hh"
+!Shared ShapeRepresentation
+!Shared PictureSharedPart
+!Shared CLUTSharedPart
+!BlockAllocated CLUTSharedPart
+
+
