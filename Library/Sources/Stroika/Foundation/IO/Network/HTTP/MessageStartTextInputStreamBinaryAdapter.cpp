@@ -46,7 +46,7 @@ public:
     bool AssureHeaderSectionAvailable ()
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"MessageStartTextInputStreamBinaryAdapter::AssureHeaderSectionAvailable"));
+        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"MessageStartTextInputStreamBinaryAdapter::AssureHeaderSectionAvailable")};
 #endif
         this->SeekRead (Whence::eFromStart, 0);
         Character c;

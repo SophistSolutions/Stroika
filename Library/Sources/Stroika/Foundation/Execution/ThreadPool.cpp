@@ -113,7 +113,7 @@ unsigned int ThreadPool::GetPoolSize () const
 
 void ThreadPool::SetPoolSize (unsigned int poolSize)
 {
-    Debug::TraceContextBumper ctx (L"ThreadPool::SetPoolSize", L"poolSize=%d", poolSize);
+    Debug::TraceContextBumper ctx{L"ThreadPool::SetPoolSize", L"poolSize=%d", poolSize};
     Require (not fAborted_);
     [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
     DbgTrace (L"fThreads_.size ()=%d", fThreads_.size ());
@@ -166,7 +166,7 @@ ThreadPool::TaskType ThreadPool::AddTask (const TaskType& task)
 
 void ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper ctx ("ThreadPool::AbortTask");
+    Debug::TraceContextBumper ctx{"ThreadPool::AbortTask"};
     {
         // First see if its in the Q
         [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
@@ -209,7 +209,7 @@ void ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType time
 
 void ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper ctx ("ThreadPool::AbortTasks");
+    Debug::TraceContextBumper ctx{"ThreadPool::AbortTasks"};
     auto                      tps = GetPoolSize ();
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
@@ -266,7 +266,7 @@ bool ThreadPool::IsRunning (const TaskType& task) const
 
 void ThreadPool::WaitForTask (const TaskType& task, Time::DurationSecondsType timeout) const
 {
-    Debug::TraceContextBumper ctx ("ThreadPool::WaitForTask");
+    Debug::TraceContextBumper ctx{"ThreadPool::WaitForTask"};
     // Inefficient / VERY SLOPPY impl
     using Time::DurationSecondsType;
     DurationSecondsType timeoutAt = timeout + Time::GetTickCount ();

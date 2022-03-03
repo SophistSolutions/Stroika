@@ -57,7 +57,7 @@ namespace {
 namespace {
     void Test_1_SAXParser_ ()
     {
-        TraceContextBumper ctx ("Test_1_SAXParser_");
+        TraceContextBumper ctx{"Test_1_SAXParser_"};
         const wstring      kNSTest = L"Test-NAMESPACE";
         //NYI
         //Schema    gSchema     =   Schema (kNSTest);
@@ -946,7 +946,7 @@ namespace {
         void DoTest ()
         {
             using namespace PRIVATE_;
-            TraceContextBumper     traceCtx ("T10_SAXObjectReader_NANValues_");
+            TraceContextBumper     traceCtx{"T10_SAXObjectReader_NANValues_"};
             ObjectReader::Registry registry;
             registry.AddCommonType<double> ();
             registry.AddCommonReader_Class<Values_> (initializer_list<ObjectReader::StructFieldInfo>{
@@ -1151,7 +1151,7 @@ namespace {
         void DoTest ()
         {
             using namespace PRIVATE_;
-            TraceContextBumper     traceCtx ("T12_RangeReader_");
+            TraceContextBumper     traceCtx{"T12_RangeReader_"};
             ObjectReader::Registry registry;
             registry.AddCommonType<MY_TEST_RANGE_::value_type> ();
             registry.Add<MY_TEST_RANGE_> (ObjectReader::RangeReader<MY_TEST_RANGE_>::AsFactory ());

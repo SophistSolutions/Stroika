@@ -707,7 +707,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
 void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
 {
     Require (fStatus_ == Status::eAborting or fStatus_ == Status::eCompleted or (not aborting)); // if aborting, must be in state aborting or completed, but for interruption can be other state
-    //TraceContextBumper ctx ("Thread::Rep_::NotifyOfAbortFromAnyThread_");
+    //TraceContextBumper ctx{"Thread::Rep_::NotifyOfAbortFromAnyThread_"};
 
     AssertNotNull (fTLSInterruptFlag_);
     if (aborting) {
@@ -788,7 +788,7 @@ void Thread::Ptr::Rep_::InterruptionSignalHandler_ (SignalID signal) noexcept
     //
     //#if USE_NOISY_TRACE_IN_THIS_MODULE_
     // unsafe to call trace code - because called as unsafe (SignalHandler::Type::eDirect) handler
-    //TraceContextBumper ctx ("Thread::Ptr::Rep_::InterruptionSignalHandler_");
+    //TraceContextBumper ctx{"Thread::Ptr::Rep_::InterruptionSignalHandler_"};
     //#endif
     // This doesn't REALLY need to get called. Its enough to have the side-effect of the EINTR from system calls.
     // the TLS variable gets set through the rep poitner in NotifyOfInterruptionFromAnyThread_

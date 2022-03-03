@@ -254,7 +254,7 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters:
 
 String Main::GetServiceStatusMessage () const
 {
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::GetServiceStatusMessage");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::GetServiceStatusMessage"};
     const wchar_t             kTAB[] = L"    "; // use spaces instead of tab so formatting independent of tabstop settings
     ServiceDescription        svd    = GetServiceDescription ();
     wstringstream             tmp;
@@ -476,7 +476,7 @@ Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl ()
 void Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& appRep)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_Attach");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_Attach"};
 #endif
     Execution::Thread::SuppressInterruptionInContext suppressInterruption; // this must run to completion - it only blocks waiting for subsidiary thread to finish
     Require ((appRep == nullptr and fAppRep_.load () != nullptr) or
@@ -649,7 +649,7 @@ void Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType timeout)
 
 void Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_ForcedStop");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_ForcedStop"};
     // Send signal to server to stop
     pid_t svcPID = _GetServicePID ();
     if (svcPID > 0) {
@@ -824,7 +824,7 @@ void Main::WindowsService::_Install ()
 
 void Main::WindowsService::_UnInstall ()
 {
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::_UnInstall");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::WindowsService::_UnInstall"};
 
     const DWORD kServiceMgrAccessPrivs = SERVICE_STOP | DELETE;
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);

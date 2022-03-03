@@ -88,7 +88,7 @@ public:
         }
         for (ConnectionlessSocket::Ptr s : fSockets_) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Sending M-SEARCH");
+            Debug::TraceContextBumper ctx{"Sending M-SEARCH"};
 #endif
             SocketAddress useSocketAddress = s.GetAddressFamily () == SocketAddress::INET ? SSDP::V4::kSocketAddress : SSDP::V6::kSocketAddress;
             string        request;
@@ -159,7 +159,7 @@ public:
         String firstLine = in.ReadLine ().Trim ();
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx ("Read Reply");
+        Debug::TraceContextBumper ctx{"Read Reply"};
         DbgTrace (L"firstLine: %s", firstLine.c_str ());
 #endif
 

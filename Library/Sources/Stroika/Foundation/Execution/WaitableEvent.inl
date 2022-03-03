@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline void WaitableEvent::Reset ()
     {
-        //Debug::TraceContextBumper ctx ("WaitableEvent::Reset");
+        //Debug::TraceContextBumper ctx{"WaitableEvent::Reset"};
         fWE_.Reset ();
     }
     inline bool WaitableEvent::PeekIsSet () const noexcept

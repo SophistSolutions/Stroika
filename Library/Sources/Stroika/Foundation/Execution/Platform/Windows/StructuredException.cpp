@@ -107,7 +107,7 @@ const std::error_category& Execution::Platform::Windows::StructuredException_err
 namespace {
     void trans_func_ (unsigned int u, EXCEPTION_POINTERS* pExp)
     {
-        TraceContextBumper ctx ("{}::trans_func_");
+        TraceContextBumper ctx{"{}::trans_func_"};
         {
             // I wish I knew how to get a PROCNAME of where the caller was...
             DbgTrace ("u = 0x%x (%s)", u, StructuredException_error_category ().message (u).c_str ());

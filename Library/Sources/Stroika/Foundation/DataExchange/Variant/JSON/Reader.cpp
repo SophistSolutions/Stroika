@@ -403,7 +403,7 @@ public:
     virtual VariantValue Read (const Streams::InputStream<Characters::Character>::Ptr& in) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx ("DataExchange::JSON::Reader::Rep_::Read");
+        Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::Rep_::Read"};
 #endif
         Require (in.IsSeekable ());
         return Reader_value_ (in);
