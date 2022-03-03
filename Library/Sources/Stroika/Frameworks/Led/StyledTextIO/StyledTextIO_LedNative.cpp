@@ -402,7 +402,7 @@ bool StyledTextIOReader_LedNativeFileFormat::QuickLookAppearsToBeRightFormat ()
 void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
 {
     // quickie text read implementation - could loop, but turns out multiple calls to AppendText
-    // is slow (at least under OpenDoc - see why later and see if we can do peicewise read,
+    // is slow (at least under OpenDoc - see why later and see if we can do piecewise read,
     // so we don't need large contiguos buffer. This is OK though ...
     size_t totalTextLength = 0;
     {
@@ -505,7 +505,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
 void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
 {
     // quickie text read implementation - could loop, but turns out multiple calls to AppendText
-    // is slow (at least under OpenDoc - see why later and see if we can do peicewise read,
+    // is slow (at least under OpenDoc - see why later and see if we can do piecewise read,
     // so we don't need large contiguos buffer. This is OK though ...
     size_t totalTextLength = 0;
     {
@@ -620,7 +620,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
 void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
 {
     // quickie text read implementation - could loop, but turns out multiple calls to AppendText
-    // is slow (at least under OpenDoc - see why later and see if we can do peicewise read,
+    // is slow (at least under OpenDoc - see why later and see if we can do piecewise read,
     // so we don't need large contiguos buffer. This is OK though ...
     size_t totalTextLength = 0;
     {
