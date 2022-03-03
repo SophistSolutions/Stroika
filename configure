@@ -1314,7 +1314,7 @@ sub	ParseCommandLine_Remaining_
 			if ($var eq "c++14" ) {
 				print "Warning: c++14 not supported by Stroika v2.1 or later\n";
 			}
-			if ($var ne "c++17" && $var ne "c++2a") {
+			if ($var ne "c++17" && $var ne "c++2a" && $var ne "c++20" && $var ne "c++2b" && $var ne "c++23") {
 				print "Warning: unrecognized arg to --cppstd-version\n";
 			}
 			$CPPSTD_VERSION_FLAG = "--std=" . $var;
