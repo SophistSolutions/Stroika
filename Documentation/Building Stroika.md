@@ -446,6 +446,15 @@ Run Library/Projects/QtCreator/CreateQtCreatorSymbolicLinks.sh to create project
 
 ---
 
+## Integrating with CMake
+
+CMake is gaining in popularity, and we will consider possibly moving the Stroika build system to be based on/better integrated with cmake in the future. For now, if you prefer using cmake, and want to use Stroika with cmake, see
+
+- https://stackoverflow.com/questions/3489056/compile-other-external-libraries-without-cmakelists-txt-with-cmake?rq=1
+- https://cmake.org/cmake/help/v3.0/module/ExternalProject.html?highlight=external%20project
+
+---
+
 ## But Why? Build / Configuration Design
 
 ### Alternatives
