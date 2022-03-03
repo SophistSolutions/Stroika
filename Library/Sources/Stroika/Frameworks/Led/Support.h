@@ -500,6 +500,14 @@ namespace Stroika::Frameworks::Led {
 
     bool Led_CasedCharsEqual (char lhs, char rhs, bool ignoreCase = true);
     bool Led_CasedStringsEqual (const string& lhs, const string& rhs, bool ignoreCase = true);
+    bool Led_CasedStringsEqual (const string_view& lhs, const string_view& rhs, bool ignoreCase = true);
+    bool Led_CasedStringsEqual (const string_view& lhs, const string& rhs, bool ignoreCase = true);
+    bool Led_CasedStringsEqual (const string& lhs, const string_view& rhs, bool ignoreCase = true);
+    bool Led_CasedStringsEqual (const char* lhs, const string& rhs, bool ignoreCase = true);
+    bool Led_CasedStringsEqual (const string& lhs, const char* rhs, bool ignoreCase = true);
+    bool Led_CasedStringsEqual (const char* lhs, const string_view& rhs, bool ignoreCase = true);
+    bool Led_CasedStringsEqual (const string_view& lhs, const char* rhs, bool ignoreCase = true);
+    bool Led_CasedStringsEqual (const char* lhs, const char* rhs, bool ignoreCase = true);
 
     /*
         *  Clipboard access support.

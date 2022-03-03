@@ -1687,24 +1687,6 @@ bool Led::Led_CasedCharsEqual (char lhs, char rhs, bool ignoreCase)
     return false;
 }
 
-/*
- ********************************************************************************
- ******************************* Led_CasedStringsEqual **************************
- ********************************************************************************
- */
-bool Led::Led_CasedStringsEqual (const string& lhs, const string& rhs, bool ignoreCase)
-{
-    if (lhs.length () != rhs.length ()) {
-        return false;
-    }
-    for (size_t i = 0; i < lhs.length (); ++i) {
-        if (not Led_CasedCharsEqual (lhs[i], rhs[i], ignoreCase)) {
-            return false;
-        }
-    }
-    return true;
-}
-
 CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led, qSingleByteCharacters, qSingleByteCharacters);
 CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led, qMultiByteCharacters, qMultiByteCharacters);
 CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led, qWideCharacters, qWideCharacters);

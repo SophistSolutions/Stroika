@@ -115,309 +115,309 @@ namespace {
  */
 HTMLInfo::HTMLInfo ()
     : fDocTypeTag{}
-    , fHTMLTag {}
-    , fHeadTag {}
+    , fHTMLTag{}
+    , fHeadTag{}
     , fStartBodyTag{}
     , fUnknownHeaderTags{}
-    , fTitle {}
+    , fTitle{}
 {
 }
 
 HTMLInfo::EntityRefMapEntry HTMLInfo::sDefaultEntityRefMapTable[] = {
 
-    EntityRefMapEntry {"euro", 0x20ac}, // As part of bug request SPR#0852 - this number was given to us. Not in the HTML 4.0 spec (but must be somewhere!)
+    EntityRefMapEntry{"euro", 0x20ac}, // As part of bug request SPR#0852 - this number was given to us. Not in the HTML 4.0 spec (but must be somewhere!)
 
     /*
      * FROM http://www.w3.org/TR/WD-html40-970708/sgml/entities.html#h-10.5.1
      */
-    EntityRefMapEntry {"nbsp", 0x00a0},
-    EntityRefMapEntry {"iexcl", 0x00a1},
-    EntityRefMapEntry {"cent", 0x00a2},
-    EntityRefMapEntry {"pound", 0x00a3},
-    EntityRefMapEntry {"curren", 0x00a4},
-    EntityRefMapEntry {"yen", 0x00a5},
-    EntityRefMapEntry {"brvbar", 0x00a6},
-    EntityRefMapEntry {"sect", 0x00a7},
-    EntityRefMapEntry {"uml", 0x00a8},
-    EntityRefMapEntry {"copy", 0x00a9},
-    EntityRefMapEntry {"ordf", 0x00aa},
-    EntityRefMapEntry {"laquo", 0x00ab},
-    EntityRefMapEntry {"not", 0x00ac},
-    EntityRefMapEntry {"shy", 0x00ad},
-    EntityRefMapEntry {"reg", 0x00ae},
-    EntityRefMapEntry {"macr", 0x00af},
-    EntityRefMapEntry {"deg", 0x00b0},
-    EntityRefMapEntry {"plusmn", 0x00b1},
-    EntityRefMapEntry {"sup2", 0x00b2},
-    EntityRefMapEntry {"sup3", 0x00b3},
-    EntityRefMapEntry {"acute", 0x00b4},
-    EntityRefMapEntry {"micro", 0x00b5},
-    EntityRefMapEntry {"para", 0x00b6},
-    EntityRefMapEntry {"middot", 0x00b7},
-    EntityRefMapEntry {"cedil", 0x00b8},
-    EntityRefMapEntry {"sup1", 0x00b9},
-    EntityRefMapEntry {"ordm", 0x00ba},
-    EntityRefMapEntry {"raquo", 0x00bb},
-    EntityRefMapEntry {"frac14", 0x00bc},
-    EntityRefMapEntry {"frac12", 0x00bd},
-    EntityRefMapEntry {"frac34", 0x00be},
-    EntityRefMapEntry {"iquest", 0x00bf},
-    EntityRefMapEntry {"Agrave", 0x00c0},
-    EntityRefMapEntry {"Aacute", 0x00c1},
-    EntityRefMapEntry {"Acirc", 0x00c2},
-    EntityRefMapEntry {"Atilde", 0x00c3},
-    EntityRefMapEntry {"Auml", 0x00c4},
-    EntityRefMapEntry {"Aring", 0x00c5},
-    EntityRefMapEntry {"AElig", 0x00c6},
-    EntityRefMapEntry {"Ccedil", 0x00c7},
-    EntityRefMapEntry {"Egrave", 0x00c8},
-    EntityRefMapEntry {"Eacute", 0x00c9},
-    EntityRefMapEntry {"Ecirc", 0x00ca},
-    EntityRefMapEntry {"Euml", 0x00cb},
-    EntityRefMapEntry {"Igrave", 0x00cc},
-    EntityRefMapEntry {"Iacute", 0x00cd},
-    EntityRefMapEntry {"Icirc", 0x00ce},
-    EntityRefMapEntry {"Iuml", 0x00cf},
-    EntityRefMapEntry {"ETH", 0x00d0},
-    EntityRefMapEntry {"Ntilde", 0x00d1},
-    EntityRefMapEntry {"Ograve", 0x00d2},
-    EntityRefMapEntry {"Oacute", 0x00d3},
-    EntityRefMapEntry {"Ocirc", 0x00d4},
-    EntityRefMapEntry {"Otilde", 0x00d5},
-    EntityRefMapEntry {"Ouml", 0x00d6},
-    EntityRefMapEntry {"times", 0x00d7},
-    EntityRefMapEntry {"Oslash", 0x00d8},
-    EntityRefMapEntry {"Ugrave", 0x00d9},
-    EntityRefMapEntry {"Uacute", 0x00da},
-    EntityRefMapEntry {"Ucirc", 0x00db},
-    EntityRefMapEntry {"Uuml", 0x00dc},
-    EntityRefMapEntry {"Yacute", 0x00dd},
-    EntityRefMapEntry {"THORN", 0x00de},
-    EntityRefMapEntry {"szlig", 0x00df},
-    EntityRefMapEntry {"agrave", 0x00e0},
-    EntityRefMapEntry {"aacute", 0x00e1},
-    EntityRefMapEntry {"acirc", 0x00e2},
-    EntityRefMapEntry {"atilde", 0x00e3},
-    EntityRefMapEntry {"auml", 0x00e4},
-    EntityRefMapEntry {"aring", 0x00e5},
-    EntityRefMapEntry {"aelig", 0x00e6},
-    EntityRefMapEntry {"ccedil", 0x00e7},
-    EntityRefMapEntry {"egrave", 0x00e8},
-    EntityRefMapEntry {"eacute", 0x00e9},
-    EntityRefMapEntry {"ecirc", 0x00ea},
-    EntityRefMapEntry {"euml", 0x00eb},
-    EntityRefMapEntry {"igrave", 0x00ec},
-    EntityRefMapEntry {"iacute", 0x00ed},
-    EntityRefMapEntry {"icirc", 0x00ee},
-    EntityRefMapEntry {"iuml", 0x00ef},
-    EntityRefMapEntry {"eth", 0x00f0},
-    EntityRefMapEntry {"ntilde", 0x00f1},
-    EntityRefMapEntry {"ograve", 0x00f2},
-    EntityRefMapEntry {"oacute", 0x00f3},
-    EntityRefMapEntry {"ocirc", 0x00f4},
-    EntityRefMapEntry {"otilde", 0x00f5},
-    EntityRefMapEntry {"ouml", 0x00f6},
-    EntityRefMapEntry {"divide", 0x00f7},
-    EntityRefMapEntry {"oslash", 0x00f8},
-    EntityRefMapEntry {"ugrave", 0x00f9},
-    EntityRefMapEntry {"uacute", 0x00fa},
-    EntityRefMapEntry {"ucirc", 0x00fb},
-    EntityRefMapEntry {"uuml", 0x00fc},
-    EntityRefMapEntry {"yacute", 0x00fd},
-    EntityRefMapEntry {"thorn", 0x00fe},
-    EntityRefMapEntry {"yuml", 0x00ff},
+    EntityRefMapEntry{"nbsp", 0x00a0},
+    EntityRefMapEntry{"iexcl", 0x00a1},
+    EntityRefMapEntry{"cent", 0x00a2},
+    EntityRefMapEntry{"pound", 0x00a3},
+    EntityRefMapEntry{"curren", 0x00a4},
+    EntityRefMapEntry{"yen", 0x00a5},
+    EntityRefMapEntry{"brvbar", 0x00a6},
+    EntityRefMapEntry{"sect", 0x00a7},
+    EntityRefMapEntry{"uml", 0x00a8},
+    EntityRefMapEntry{"copy", 0x00a9},
+    EntityRefMapEntry{"ordf", 0x00aa},
+    EntityRefMapEntry{"laquo", 0x00ab},
+    EntityRefMapEntry{"not", 0x00ac},
+    EntityRefMapEntry{"shy", 0x00ad},
+    EntityRefMapEntry{"reg", 0x00ae},
+    EntityRefMapEntry{"macr", 0x00af},
+    EntityRefMapEntry{"deg", 0x00b0},
+    EntityRefMapEntry{"plusmn", 0x00b1},
+    EntityRefMapEntry{"sup2", 0x00b2},
+    EntityRefMapEntry{"sup3", 0x00b3},
+    EntityRefMapEntry{"acute", 0x00b4},
+    EntityRefMapEntry{"micro", 0x00b5},
+    EntityRefMapEntry{"para", 0x00b6},
+    EntityRefMapEntry{"middot", 0x00b7},
+    EntityRefMapEntry{"cedil", 0x00b8},
+    EntityRefMapEntry{"sup1", 0x00b9},
+    EntityRefMapEntry{"ordm", 0x00ba},
+    EntityRefMapEntry{"raquo", 0x00bb},
+    EntityRefMapEntry{"frac14", 0x00bc},
+    EntityRefMapEntry{"frac12", 0x00bd},
+    EntityRefMapEntry{"frac34", 0x00be},
+    EntityRefMapEntry{"iquest", 0x00bf},
+    EntityRefMapEntry{"Agrave", 0x00c0},
+    EntityRefMapEntry{"Aacute", 0x00c1},
+    EntityRefMapEntry{"Acirc", 0x00c2},
+    EntityRefMapEntry{"Atilde", 0x00c3},
+    EntityRefMapEntry{"Auml", 0x00c4},
+    EntityRefMapEntry{"Aring", 0x00c5},
+    EntityRefMapEntry{"AElig", 0x00c6},
+    EntityRefMapEntry{"Ccedil", 0x00c7},
+    EntityRefMapEntry{"Egrave", 0x00c8},
+    EntityRefMapEntry{"Eacute", 0x00c9},
+    EntityRefMapEntry{"Ecirc", 0x00ca},
+    EntityRefMapEntry{"Euml", 0x00cb},
+    EntityRefMapEntry{"Igrave", 0x00cc},
+    EntityRefMapEntry{"Iacute", 0x00cd},
+    EntityRefMapEntry{"Icirc", 0x00ce},
+    EntityRefMapEntry{"Iuml", 0x00cf},
+    EntityRefMapEntry{"ETH", 0x00d0},
+    EntityRefMapEntry{"Ntilde", 0x00d1},
+    EntityRefMapEntry{"Ograve", 0x00d2},
+    EntityRefMapEntry{"Oacute", 0x00d3},
+    EntityRefMapEntry{"Ocirc", 0x00d4},
+    EntityRefMapEntry{"Otilde", 0x00d5},
+    EntityRefMapEntry{"Ouml", 0x00d6},
+    EntityRefMapEntry{"times", 0x00d7},
+    EntityRefMapEntry{"Oslash", 0x00d8},
+    EntityRefMapEntry{"Ugrave", 0x00d9},
+    EntityRefMapEntry{"Uacute", 0x00da},
+    EntityRefMapEntry{"Ucirc", 0x00db},
+    EntityRefMapEntry{"Uuml", 0x00dc},
+    EntityRefMapEntry{"Yacute", 0x00dd},
+    EntityRefMapEntry{"THORN", 0x00de},
+    EntityRefMapEntry{"szlig", 0x00df},
+    EntityRefMapEntry{"agrave", 0x00e0},
+    EntityRefMapEntry{"aacute", 0x00e1},
+    EntityRefMapEntry{"acirc", 0x00e2},
+    EntityRefMapEntry{"atilde", 0x00e3},
+    EntityRefMapEntry{"auml", 0x00e4},
+    EntityRefMapEntry{"aring", 0x00e5},
+    EntityRefMapEntry{"aelig", 0x00e6},
+    EntityRefMapEntry{"ccedil", 0x00e7},
+    EntityRefMapEntry{"egrave", 0x00e8},
+    EntityRefMapEntry{"eacute", 0x00e9},
+    EntityRefMapEntry{"ecirc", 0x00ea},
+    EntityRefMapEntry{"euml", 0x00eb},
+    EntityRefMapEntry{"igrave", 0x00ec},
+    EntityRefMapEntry{"iacute", 0x00ed},
+    EntityRefMapEntry{"icirc", 0x00ee},
+    EntityRefMapEntry{"iuml", 0x00ef},
+    EntityRefMapEntry{"eth", 0x00f0},
+    EntityRefMapEntry{"ntilde", 0x00f1},
+    EntityRefMapEntry{"ograve", 0x00f2},
+    EntityRefMapEntry{"oacute", 0x00f3},
+    EntityRefMapEntry{"ocirc", 0x00f4},
+    EntityRefMapEntry{"otilde", 0x00f5},
+    EntityRefMapEntry{"ouml", 0x00f6},
+    EntityRefMapEntry{"divide", 0x00f7},
+    EntityRefMapEntry{"oslash", 0x00f8},
+    EntityRefMapEntry{"ugrave", 0x00f9},
+    EntityRefMapEntry{"uacute", 0x00fa},
+    EntityRefMapEntry{"ucirc", 0x00fb},
+    EntityRefMapEntry{"uuml", 0x00fc},
+    EntityRefMapEntry{"yacute", 0x00fd},
+    EntityRefMapEntry{"thorn", 0x00fe},
+    EntityRefMapEntry{"yuml", 0x00ff},
 
     /*
      * FROM http://www.w3.org/TR/WD-html40-970708/sgml/entities.html#h-10.5.2
      */
     //  Latin Extended-B
-    EntityRefMapEntry {"fnof", 0x0192},
+    EntityRefMapEntry{"fnof", 0x0192},
 
     //  Greek
-    EntityRefMapEntry {"Alpha", 0x391},
-    EntityRefMapEntry {"Beta", 0x392},
-    EntityRefMapEntry {"Gamma", 0x393},
-    EntityRefMapEntry {"Delta", 0x394},
-    EntityRefMapEntry {"Epsilon", 0x395},
-    EntityRefMapEntry {"Zeta", 0x396},
-    EntityRefMapEntry {"Eta", 0x397},
-    EntityRefMapEntry {"Theta", 0x398},
-    EntityRefMapEntry {"Iota", 0x399},
-    EntityRefMapEntry {"Kappa", 0x39a},
-    EntityRefMapEntry {"Lambda", 0x39b},
-    EntityRefMapEntry {"Mu", 0x39c},
-    EntityRefMapEntry {"Nu", 0x39d},
-    EntityRefMapEntry {"Xi", 0x39e},
-    EntityRefMapEntry {"Omicron", 0x39f},
-    EntityRefMapEntry {"Pi", 0x3a0},
-    EntityRefMapEntry {"Rho", 0x3a1},
-    EntityRefMapEntry {"Sigma", 0x3a3},
-    EntityRefMapEntry {"Tau", 0x3a4},
-    EntityRefMapEntry {"Upsilon", 0x3a5},
-    EntityRefMapEntry {"Phi", 0x3a6},
-    EntityRefMapEntry {"Chi", 0x3a7},
-    EntityRefMapEntry {"Psi", 0x3a8},
-    EntityRefMapEntry {"Omega", 0x3a9},
-    EntityRefMapEntry {"alpha", 0x03b1},
-    EntityRefMapEntry {"beta", 0x03b2},
-    EntityRefMapEntry {"gamma", 0x03b3},
-    EntityRefMapEntry {"delta", 0x03b4},
-    EntityRefMapEntry {"epsilon", 0x03b5},
-    EntityRefMapEntry {"zeta", 0x03b6},
-    EntityRefMapEntry {"eta", 0x03b7},
-    EntityRefMapEntry {"theta", 0x03b8},
-    EntityRefMapEntry {"iota", 0x03b9},
-    EntityRefMapEntry {"kappa", 0x03ba},
-    EntityRefMapEntry {"lambda", 0x03bb},
-    EntityRefMapEntry {"mu", 0x03bc},
-    EntityRefMapEntry {"nu", 0x03bd},
-    EntityRefMapEntry {"xi", 0x03be},
-    EntityRefMapEntry {"omicron", 0x03bf},
-    EntityRefMapEntry {"pi", 0x03c0},
-    EntityRefMapEntry {"rho", 0x03c1},
-    EntityRefMapEntry {"sigmaf", 0x03c2},
-    EntityRefMapEntry {"sigma", 0x03c3},
-    EntityRefMapEntry {"tau", 0x03c4},
-    EntityRefMapEntry {"upsilon", 0x03c5},
-    EntityRefMapEntry {"phi", 0x03c6},
-    EntityRefMapEntry {"chi", 0x03c7},
-    EntityRefMapEntry {"psi", 0x03c8},
-    EntityRefMapEntry {"omega", 0x03c9},
-    EntityRefMapEntry {"thetasym", 0x03d1},
-    EntityRefMapEntry {"upsih", 0x03d2},
-    EntityRefMapEntry {"piv", 0x03d6},
+    EntityRefMapEntry{"Alpha", 0x391},
+    EntityRefMapEntry{"Beta", 0x392},
+    EntityRefMapEntry{"Gamma", 0x393},
+    EntityRefMapEntry{"Delta", 0x394},
+    EntityRefMapEntry{"Epsilon", 0x395},
+    EntityRefMapEntry{"Zeta", 0x396},
+    EntityRefMapEntry{"Eta", 0x397},
+    EntityRefMapEntry{"Theta", 0x398},
+    EntityRefMapEntry{"Iota", 0x399},
+    EntityRefMapEntry{"Kappa", 0x39a},
+    EntityRefMapEntry{"Lambda", 0x39b},
+    EntityRefMapEntry{"Mu", 0x39c},
+    EntityRefMapEntry{"Nu", 0x39d},
+    EntityRefMapEntry{"Xi", 0x39e},
+    EntityRefMapEntry{"Omicron", 0x39f},
+    EntityRefMapEntry{"Pi", 0x3a0},
+    EntityRefMapEntry{"Rho", 0x3a1},
+    EntityRefMapEntry{"Sigma", 0x3a3},
+    EntityRefMapEntry{"Tau", 0x3a4},
+    EntityRefMapEntry{"Upsilon", 0x3a5},
+    EntityRefMapEntry{"Phi", 0x3a6},
+    EntityRefMapEntry{"Chi", 0x3a7},
+    EntityRefMapEntry{"Psi", 0x3a8},
+    EntityRefMapEntry{"Omega", 0x3a9},
+    EntityRefMapEntry{"alpha", 0x03b1},
+    EntityRefMapEntry{"beta", 0x03b2},
+    EntityRefMapEntry{"gamma", 0x03b3},
+    EntityRefMapEntry{"delta", 0x03b4},
+    EntityRefMapEntry{"epsilon", 0x03b5},
+    EntityRefMapEntry{"zeta", 0x03b6},
+    EntityRefMapEntry{"eta", 0x03b7},
+    EntityRefMapEntry{"theta", 0x03b8},
+    EntityRefMapEntry{"iota", 0x03b9},
+    EntityRefMapEntry{"kappa", 0x03ba},
+    EntityRefMapEntry{"lambda", 0x03bb},
+    EntityRefMapEntry{"mu", 0x03bc},
+    EntityRefMapEntry{"nu", 0x03bd},
+    EntityRefMapEntry{"xi", 0x03be},
+    EntityRefMapEntry{"omicron", 0x03bf},
+    EntityRefMapEntry{"pi", 0x03c0},
+    EntityRefMapEntry{"rho", 0x03c1},
+    EntityRefMapEntry{"sigmaf", 0x03c2},
+    EntityRefMapEntry{"sigma", 0x03c3},
+    EntityRefMapEntry{"tau", 0x03c4},
+    EntityRefMapEntry{"upsilon", 0x03c5},
+    EntityRefMapEntry{"phi", 0x03c6},
+    EntityRefMapEntry{"chi", 0x03c7},
+    EntityRefMapEntry{"psi", 0x03c8},
+    EntityRefMapEntry{"omega", 0x03c9},
+    EntityRefMapEntry{"thetasym", 0x03d1},
+    EntityRefMapEntry{"upsih", 0x03d2},
+    EntityRefMapEntry{"piv", 0x03d6},
 
     //  General Punctuation
-    EntityRefMapEntry {"bull", 0x2022},
-    EntityRefMapEntry {"hellip", 0x2026},
-    EntityRefMapEntry {"prime", 0x2032},
-    EntityRefMapEntry {"Prime", 0x2033},
-    EntityRefMapEntry {"oline", 0x203e},
-    EntityRefMapEntry {"frasl", 0x2044},
+    EntityRefMapEntry{"bull", 0x2022},
+    EntityRefMapEntry{"hellip", 0x2026},
+    EntityRefMapEntry{"prime", 0x2032},
+    EntityRefMapEntry{"Prime", 0x2033},
+    EntityRefMapEntry{"oline", 0x203e},
+    EntityRefMapEntry{"frasl", 0x2044},
 
     //  Letterlike Symbols
-    EntityRefMapEntry {"weierp", 0x2118},
-    EntityRefMapEntry {"image", 0x2111},
-    EntityRefMapEntry {"real", 0x211c},
-    EntityRefMapEntry {"trade", 0x2122},
-    EntityRefMapEntry {"alefsym", 0x2135},
+    EntityRefMapEntry{"weierp", 0x2118},
+    EntityRefMapEntry{"image", 0x2111},
+    EntityRefMapEntry{"real", 0x211c},
+    EntityRefMapEntry{"trade", 0x2122},
+    EntityRefMapEntry{"alefsym", 0x2135},
 
     //  Arrows
-    EntityRefMapEntry {"larr", 0x2190},
-    EntityRefMapEntry {"uarr", 0x2191},
-    EntityRefMapEntry {"rarr", 0x2192},
-    EntityRefMapEntry {"darr", 0x2193},
-    EntityRefMapEntry {"harr", 0x2194},
-    EntityRefMapEntry {"crarr", 0x21b5},
-    EntityRefMapEntry {"lArr", 0x21d0},
-    EntityRefMapEntry {"uArr", 0x21d1},
-    EntityRefMapEntry {"rArr", 0x21d2},
-    EntityRefMapEntry {"dArr", 0x21d3},
-    EntityRefMapEntry {"hArr", 0x21d4},
+    EntityRefMapEntry{"larr", 0x2190},
+    EntityRefMapEntry{"uarr", 0x2191},
+    EntityRefMapEntry{"rarr", 0x2192},
+    EntityRefMapEntry{"darr", 0x2193},
+    EntityRefMapEntry{"harr", 0x2194},
+    EntityRefMapEntry{"crarr", 0x21b5},
+    EntityRefMapEntry{"lArr", 0x21d0},
+    EntityRefMapEntry{"uArr", 0x21d1},
+    EntityRefMapEntry{"rArr", 0x21d2},
+    EntityRefMapEntry{"dArr", 0x21d3},
+    EntityRefMapEntry{"hArr", 0x21d4},
 
     //  Mathematical Operators
     //THESE ARE IN DECIMAL - CONVERT TO HEX TO BE CONSISTENT WITH OTHERS!!!!
-    EntityRefMapEntry {"forall", 8704},
-    EntityRefMapEntry {"part", 8706},
-    EntityRefMapEntry {"exist", 8707},
-    EntityRefMapEntry {"empty", 8709},
-    EntityRefMapEntry {"nabla", 8711},
-    EntityRefMapEntry {"isin", 8712},
-    EntityRefMapEntry {"notin", 8713},
-    EntityRefMapEntry {"ni", 8715},
-    EntityRefMapEntry {"prod", 8719},
-    EntityRefMapEntry {"sum", 8721},
-    EntityRefMapEntry {"minus", 8722},
-    EntityRefMapEntry {"lowast", 8727},
-    EntityRefMapEntry {"radic", 8730},
-    EntityRefMapEntry {"prop", 8733},
-    EntityRefMapEntry {"infin", 8734},
-    EntityRefMapEntry {"ang", 8736},
-    EntityRefMapEntry {"and", 8869},
-    EntityRefMapEntry {"or", 8870},
-    EntityRefMapEntry {"cap", 8745},
-    EntityRefMapEntry {"cup", 8746},
-    EntityRefMapEntry {"int", 8747},
-    EntityRefMapEntry {"there4", 8756},
-    EntityRefMapEntry {"sim", 8764},
-    EntityRefMapEntry {"cong", 8773},
-    EntityRefMapEntry {"asymp", 8776},
-    EntityRefMapEntry {"ne", 8800},
-    EntityRefMapEntry {"equiv", 8801},
-    EntityRefMapEntry {"le", 8804},
-    EntityRefMapEntry {"ge", 8805},
-    EntityRefMapEntry {"sub", 8834},
-    EntityRefMapEntry {"sup", 8835},
-    EntityRefMapEntry {"nsub", 8836},
-    EntityRefMapEntry {"sube", 8838},
-    EntityRefMapEntry {"supe", 8839},
-    EntityRefMapEntry {"oplus", 8853},
-    EntityRefMapEntry {"otimes", 8855},
-    EntityRefMapEntry {"perp", 8869},
-    EntityRefMapEntry {"sdot", 8901},
+    EntityRefMapEntry{"forall", 8704},
+    EntityRefMapEntry{"part", 8706},
+    EntityRefMapEntry{"exist", 8707},
+    EntityRefMapEntry{"empty", 8709},
+    EntityRefMapEntry{"nabla", 8711},
+    EntityRefMapEntry{"isin", 8712},
+    EntityRefMapEntry{"notin", 8713},
+    EntityRefMapEntry{"ni", 8715},
+    EntityRefMapEntry{"prod", 8719},
+    EntityRefMapEntry{"sum", 8721},
+    EntityRefMapEntry{"minus", 8722},
+    EntityRefMapEntry{"lowast", 8727},
+    EntityRefMapEntry{"radic", 8730},
+    EntityRefMapEntry{"prop", 8733},
+    EntityRefMapEntry{"infin", 8734},
+    EntityRefMapEntry{"ang", 8736},
+    EntityRefMapEntry{"and", 8869},
+    EntityRefMapEntry{"or", 8870},
+    EntityRefMapEntry{"cap", 8745},
+    EntityRefMapEntry{"cup", 8746},
+    EntityRefMapEntry{"int", 8747},
+    EntityRefMapEntry{"there4", 8756},
+    EntityRefMapEntry{"sim", 8764},
+    EntityRefMapEntry{"cong", 8773},
+    EntityRefMapEntry{"asymp", 8776},
+    EntityRefMapEntry{"ne", 8800},
+    EntityRefMapEntry{"equiv", 8801},
+    EntityRefMapEntry{"le", 8804},
+    EntityRefMapEntry{"ge", 8805},
+    EntityRefMapEntry{"sub", 8834},
+    EntityRefMapEntry{"sup", 8835},
+    EntityRefMapEntry{"nsub", 8836},
+    EntityRefMapEntry{"sube", 8838},
+    EntityRefMapEntry{"supe", 8839},
+    EntityRefMapEntry{"oplus", 8853},
+    EntityRefMapEntry{"otimes", 8855},
+    EntityRefMapEntry{"perp", 8869},
+    EntityRefMapEntry{"sdot", 8901},
 
     //  Miscellaneous Technical
     //THESE ARE IN DECIMAL - CONVERT TO HEX TO BE CONSISTENT WITH OTHERS!!!!
-    EntityRefMapEntry {"lceil", 8968},
-    EntityRefMapEntry {"rceil", 8969},
-    EntityRefMapEntry {"lfloor", 8970},
-    EntityRefMapEntry {"rfloor", 8971},
-    EntityRefMapEntry {"lang", 9001},
-    EntityRefMapEntry {"rang", 9002},
+    EntityRefMapEntry{"lceil", 8968},
+    EntityRefMapEntry{"rceil", 8969},
+    EntityRefMapEntry{"lfloor", 8970},
+    EntityRefMapEntry{"rfloor", 8971},
+    EntityRefMapEntry{"lang", 9001},
+    EntityRefMapEntry{"rang", 9002},
 
     //  Geometric Shapes
     //THESE ARE IN DECIMAL - CONVERT TO HEX TO BE CONSISTENT WITH OTHERS!!!!
-    EntityRefMapEntry {"loz", 9674},
+    EntityRefMapEntry{"loz", 9674},
 
     //  Miscellaneous Symbols
     //THESE ARE IN DECIMAL - CONVERT TO HEX TO BE CONSISTENT WITH OTHERS!!!!
-    EntityRefMapEntry {"spades", 9824},
-    EntityRefMapEntry {"clubs", 9827},
-    EntityRefMapEntry {"hearts", 9829},
-    EntityRefMapEntry {"diams", 9830},
+    EntityRefMapEntry{"spades", 9824},
+    EntityRefMapEntry{"clubs", 9827},
+    EntityRefMapEntry{"hearts", 9829},
+    EntityRefMapEntry{"diams", 9830},
 
     /*
      * FROM http://www.w3.org/TR/WD-html40-970708/sgml/entities.html#h-10.5.3
      */
 
     // C0 Controls and Basic Latin
-    EntityRefMapEntry {"quot", 0x0022},
-    EntityRefMapEntry {"amp", 0x0026},
-    EntityRefMapEntry {"lt", 0x003c},
-    EntityRefMapEntry {"gt", 0x003e},
+    EntityRefMapEntry{"quot", 0x0022},
+    EntityRefMapEntry{"amp", 0x0026},
+    EntityRefMapEntry{"lt", 0x003c},
+    EntityRefMapEntry{"gt", 0x003e},
 
     // Latin Extended-A
-    EntityRefMapEntry {"OElig", 0x0152},
-    EntityRefMapEntry {"oelig", 0x0153},
-    EntityRefMapEntry {"Scaron", 0x0160},
-    EntityRefMapEntry {"scaron", 0x0161},
-    EntityRefMapEntry {"Yuml", 0x0178},
+    EntityRefMapEntry{"OElig", 0x0152},
+    EntityRefMapEntry{"oelig", 0x0153},
+    EntityRefMapEntry{"Scaron", 0x0160},
+    EntityRefMapEntry{"scaron", 0x0161},
+    EntityRefMapEntry{"Yuml", 0x0178},
 
     // Spacing Modifier Letters
-    EntityRefMapEntry {"circ", 0x2c6},
-    EntityRefMapEntry {"tilde", 0x2dc},
+    EntityRefMapEntry{"circ", 0x2c6},
+    EntityRefMapEntry{"tilde", 0x2dc},
 
     // General Punctuation
-    EntityRefMapEntry {"ensp", 8194},
-    EntityRefMapEntry {"emsp", 8195},
-    EntityRefMapEntry {"thinsp", 8201},
-    EntityRefMapEntry {"zwnj", 8204},
-    EntityRefMapEntry {"zwj", 8205},
-    EntityRefMapEntry {"lrm", 8206},
-    EntityRefMapEntry {"rlm", 8207},
-    EntityRefMapEntry {"ndash", 0x2013},
-    EntityRefMapEntry {"mdash", 0x2014},
-    EntityRefMapEntry {"lsquo", 0x2018},
-    EntityRefMapEntry {"rsquo", 0x2019},
-    EntityRefMapEntry {"sbquo", 0x201a},
-    EntityRefMapEntry {"ldquo", 0x201c},
-    EntityRefMapEntry {"rdquo", 0x201d},
-    EntityRefMapEntry {"bdquo", 0x201e},
-    EntityRefMapEntry {"dagger", 0x2020},
-    EntityRefMapEntry {"Dagger", 0x2021},
-    EntityRefMapEntry {"permil", 0x2030},
-    EntityRefMapEntry {"lsaquo", 0x2039},
-    EntityRefMapEntry {"rsaquo", 0x203a},
+    EntityRefMapEntry{"ensp", 8194},
+    EntityRefMapEntry{"emsp", 8195},
+    EntityRefMapEntry{"thinsp", 8201},
+    EntityRefMapEntry{"zwnj", 8204},
+    EntityRefMapEntry{"zwj", 8205},
+    EntityRefMapEntry{"lrm", 8206},
+    EntityRefMapEntry{"rlm", 8207},
+    EntityRefMapEntry{"ndash", 0x2013},
+    EntityRefMapEntry{"mdash", 0x2014},
+    EntityRefMapEntry{"lsquo", 0x2018},
+    EntityRefMapEntry{"rsquo", 0x2019},
+    EntityRefMapEntry{"sbquo", 0x201a},
+    EntityRefMapEntry{"ldquo", 0x201c},
+    EntityRefMapEntry{"rdquo", 0x201d},
+    EntityRefMapEntry{"bdquo", 0x201e},
+    EntityRefMapEntry{"dagger", 0x2020},
+    EntityRefMapEntry{"Dagger", 0x2021},
+    EntityRefMapEntry{"permil", 0x2030},
+    EntityRefMapEntry{"lsaquo", 0x2039},
+    EntityRefMapEntry{"rsaquo", 0x203a},
 };
 const size_t HTMLInfo::kDefaultEntityRefMapTable_Count = Memory::NEltsOf (HTMLInfo::sDefaultEntityRefMapTable);
 
@@ -478,25 +478,25 @@ int HTMLInfo::RealFontSizeToHTMLFontSize (FontSpecification::FontSize size)
  ********************************************************************************
  */
 StyledTextIOReader_HTML::StyledTextIOReader_HTML (SrcStream* srcStream, SinkStream* sinkStream, HTMLInfo* saveHTMLInfoInto)
-    : StyledTextIOReader {srcStream, sinkStream}
-    , fInAPara {false}
-    , fSaveHTMLInfoInto {saveHTMLInfoInto}
-    , fReadingBody {false}
-    , fFontStack {}
-    , fComingTextIsTitle {false}
-    , fNormalizeInputWhitespace {true}
-    , fHTMLBaseFontSize {3}
-    , fHTMLFontSize {3}
-    , fLastCharSpace {true}
-    , fCurAHRefStart {size_t (-1)}
-    , fCurAHRefText {}
-    , fULNestingCount {0}
-    , fLIOpen {false}
-    , fTableOpenCount {0}
-    , fTableRowOpen {false}
-    , fTableCellOpen {false}
-    , fHiddenTextMode {false}
-    , fHiddenTextAccumulation {}
+    : StyledTextIOReader{srcStream, sinkStream}
+    , fInAPara{false}
+    , fSaveHTMLInfoInto{saveHTMLInfoInto}
+    , fReadingBody{false}
+    , fFontStack{}
+    , fComingTextIsTitle{false}
+    , fNormalizeInputWhitespace{true}
+    , fHTMLBaseFontSize{3}
+    , fHTMLFontSize{3}
+    , fLastCharSpace{true}
+    , fCurAHRefStart{size_t (-1)}
+    , fCurAHRefText{}
+    , fULNestingCount{0}
+    , fLIOpen{false}
+    , fTableOpenCount{0}
+    , fTableRowOpen{false}
+    , fTableCellOpen{false}
+    , fHiddenTextMode{false}
+    , fHiddenTextAccumulation{}
 {
     if (fSaveHTMLInfoInto != nullptr) {
         *fSaveHTMLInfoInto = HTMLInfo (); // reset to default values before reading...
@@ -1078,7 +1078,7 @@ IncrementalFontSpecification StyledTextIOReader_HTML::ExtractFontSpecFromCSSStyl
     }
     if (ParseCSSTagArgOut (fullCSSString, "font-size", &itemValue)) {
         if (itemValue.length () >= 3 and
-            Led_CasedStringsEqual (itemValue.substr (itemValue.length () - 2, 2), "pt")) {
+            Led_CasedStringsEqual (itemValue.substr (itemValue.length () - 2, 2), "pt"sv)) {
             int sizeVal = 0;
             if (ParseStringToInt_ (itemValue.substr (0, itemValue.length () - 2), &sizeVal) and
                 sizeVal >= 2 and sizeVal <= 128) {
@@ -1087,17 +1087,17 @@ IncrementalFontSpecification StyledTextIOReader_HTML::ExtractFontSpecFromCSSStyl
         }
     }
     if (ParseCSSTagArgOut (fullCSSString, "font-style", &itemValue)) {
-        if (Led_CasedStringsEqual (itemValue, "italic")) {
+        if (Led_CasedStringsEqual (itemValue, "italic"sv)) {
             f.SetStyle_Italic (true);
         }
-        else if (Led_CasedStringsEqual (itemValue, "normal")) {
+        else if (Led_CasedStringsEqual (itemValue, "normal"sv)) {
             f.SetStyle_Italic (false);
         }
     }
     if (ParseCSSTagArgOut (fullCSSString, "font-weight", &itemValue)) {
         int bv = 0;
-        if (Led_CasedStringsEqual (itemValue, "bold") or
-            Led_CasedStringsEqual (itemValue, "bolder") or
+        if (Led_CasedStringsEqual (itemValue, "bold"sv) or
+            Led_CasedStringsEqual (itemValue, "bolder"sv) or
             (itemValue.length () > 0 and isdigit (itemValue[0]) and ParseStringToInt_ (itemValue, &bv) and bv >= 400)) {
             f.SetStyle_Bold (true);
         }
@@ -2476,7 +2476,7 @@ static inline string PrintColorString (Color color)
     buf[8]        = '\0';
     string result = string{buf};
     for (size_t i = 0; i < Memory::NEltsOf (kColorNameTable_); ++i) {
-        if (Led_CasedStringsEqual (buf, "\"" + kColorNameTable_[i].second + "\"")) {
+        if (Led_CasedStringsEqual (buf, string{"\""sv} + string{kColorNameTable_[i].second} + string{"\""sv})) {
             //result = "\'" + kColorNameTable_[i].first + "\'";
             result = kColorNameTable_[i].first;
             break;
