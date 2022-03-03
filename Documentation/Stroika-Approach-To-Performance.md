@@ -10,7 +10,7 @@ How to optimize an application
 
 - Then you find the bottleneck, and replace it with more performant code.
 
-This is probably all obvious, and non-controversial. What may not have been so obvious, is that the thing that makes it **practical** to optimize, is the **simplicity** and **understandability** of the code. 
+This is probably all obvious, and non-controversial. What may not have been so obvious, is that the thing that makes it **practical** to optimize, is the **simplicity** and **understandability** of the code (much more than - as is commonly believed - how generally performant the initial code is). 
 
 It's well known that "Premature optimization is the root of all evil". But the reasons for this, and the implications are less widely understood. 
 
@@ -20,7 +20,7 @@ It's well known that "Premature optimization is the root of all evil". But the r
 
 - Analyze performance and optimize bottlenecks as needed.
 
-- Leverage c++'s powerful abstraction mechanisms to very ***locally*** replace bits of code with different approaches (here is where the earlier abstraction pays dividends). And leverage Stroika's utility classes (e.g. [Foundation::Cache](../Library/Sources/Stroika/Foundation/Cache/ReadMe.md) or alternate container backends [Foundation::Containers](../Library/Sources/Stroika/Foundation/Containers/ReadMe.md#Alternate-Backends-Feature)), or localized use of lower level c++ standard library functions to optimize just the peices that need it).
+- Leverage c++'s powerful abstraction mechanisms to very ***locally*** replace bits of code with different approaches (here is where the earlier abstraction pays dividends). And leverage Stroika's utility classes (e.g. [Foundation::Cache](../Library/Sources/Stroika/Foundation/Cache/ReadMe.md) or alternate container backends [Foundation::Containers](../Library/Sources/Stroika/Foundation/Containers/ReadMe.md#Alternate-Backends-Feature)), or localized use of lower level c++ standard library functions to optimize just the pieces that need it).
 
 ## Experience
 
@@ -29,7 +29,7 @@ Though this is anecdotal, it may still help. I've been hired dozens of times to 
 - 20-30% of the time, learning and understanding the code
 - 1% identifying the bottlenecks
 - 60-70% refactoring the code so that the bottlenecks take place in modular, replacable chunks
-- 1% - actually rewriting those peices to be optimal
+- 1% - actually rewriting those pieces to be optimal
 
 If you can make the 'learning and undestanding the code' bit faster, and the 'refactoring the code so that the bottlenecks take place in modular, replacable chunks' part pre-done, optimizing bottlenecks becomes cheap and easy.
 
@@ -43,4 +43,4 @@ You want to **first and foremost** keep the code clean and simple. And then only
 drop down to possibly using lower level features and lighter weight abstractions.
 
 This thinking of lowest-possible-cost abstractions permeats most other C++ libraries (e.g. boost). That makes them very good for that
-narrow peice of code that you must optimize, but less of a good choice to write the other 99% of your application.
+narrow piece of code that you must optimize, but less of a good choice to write the other 99% of your application.
