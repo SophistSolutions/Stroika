@@ -542,7 +542,7 @@ void StyledTextIOReader_HTML::Read ()
 
 bool StyledTextIOReader_HTML::QuickLookAppearsToBeRightFormat ()
 {
-    SrcStreamSeekSaver savePos (GetSrcStream ());
+    SrcStreamSeekSaver savePos{GetSrcStream ()};
 
 Again:
     if (GetSrcStream ().current_offset () >= 1024) {
@@ -607,7 +607,7 @@ const vector<StyledTextIOReader_HTML::EntityRefMapEntry>& StyledTextIOReader_HTM
     static ELTV sResult;
     if (sFirstTime) {
         sFirstTime = false;
-        sResult    = ELTV (HTMLInfo::sDefaultEntityRefMapTable, HTMLInfo::sDefaultEntityRefMapTable + HTMLInfo::kDefaultEntityRefMapTable_Count);
+        sResult    = ELTV{HTMLInfo::sDefaultEntityRefMapTable, HTMLInfo::sDefaultEntityRefMapTable + HTMLInfo::kDefaultEntityRefMapTable_Count};
     }
     return sResult;
 }
