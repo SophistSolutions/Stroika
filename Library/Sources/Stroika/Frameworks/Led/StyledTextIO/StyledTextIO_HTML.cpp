@@ -1078,7 +1078,7 @@ IncrementalFontSpecification StyledTextIOReader_HTML::ExtractFontSpecFromCSSStyl
     }
     if (ParseCSSTagArgOut (fullCSSString, "font-size", &itemValue)) {
         if (itemValue.length () >= 3 and
-            Led_CasedStringsEqual (itemValue.substr (itemValue.length () - 2, 2), "pt")) {
+            Led_CasedStringsEqual (itemValue.substr (itemValue.length () - 2, 2), "pt"sv)) {
             int sizeVal = 0;
             if (ParseStringToInt_ (itemValue.substr (0, itemValue.length () - 2), &sizeVal) and
                 sizeVal >= 2 and sizeVal <= 128) {
@@ -1087,17 +1087,17 @@ IncrementalFontSpecification StyledTextIOReader_HTML::ExtractFontSpecFromCSSStyl
         }
     }
     if (ParseCSSTagArgOut (fullCSSString, "font-style", &itemValue)) {
-        if (Led_CasedStringsEqual (itemValue, "italic")) {
+        if (Led_CasedStringsEqual (itemValue, "italic"sv)) {
             f.SetStyle_Italic (true);
         }
-        else if (Led_CasedStringsEqual (itemValue, "normal")) {
+        else if (Led_CasedStringsEqual (itemValue, "normal"sv)) {
             f.SetStyle_Italic (false);
         }
     }
     if (ParseCSSTagArgOut (fullCSSString, "font-weight", &itemValue)) {
         int bv = 0;
-        if (Led_CasedStringsEqual (itemValue, "bold") or
-            Led_CasedStringsEqual (itemValue, "bolder") or
+        if (Led_CasedStringsEqual (itemValue, "bold"sv) or
+            Led_CasedStringsEqual (itemValue, "bolder"sv) or
             (itemValue.length () > 0 and isdigit (itemValue[0]) and ParseStringToInt_ (itemValue, &bv) and bv >= 400)) {
             f.SetStyle_Bold (true);
         }
@@ -2476,7 +2476,7 @@ static inline string PrintColorString (Color color)
     buf[8]        = '\0';
     string result = string{buf};
     for (size_t i = 0; i < Memory::NEltsOf (kColorNameTable_); ++i) {
-        if (Led_CasedStringsEqual (buf, "\"" + kColorNameTable_[i].second + "\"")) {
+        if (Led_CasedStringsEqual (buf, string{"\""sv} + string{kColorNameTable_[i].second} + string{"\""sv})) {
             //result = "\'" + kColorNameTable_[i].first + "\'";
             result = kColorNameTable_[i].first;
             break;
