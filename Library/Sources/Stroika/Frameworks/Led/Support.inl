@@ -610,7 +610,6 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
-
     /*
      ********************************************************************************
      ******************************* Led_CasedStringsEqual **************************
@@ -667,7 +666,6 @@ namespace Stroika::Frameworks::Led {
     {
         return Led_CasedStringsEqual_ (string_view{lhs}, string_view{rhs}, ignoreCase);
     }
-
 }
 CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led, qSingleByteCharacters, qSingleByteCharacters);
 CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led, qMultiByteCharacters, qMultiByteCharacters);
