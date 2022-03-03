@@ -23,7 +23,7 @@ using namespace Stroika::Foundation::Execution;
 bool Execution::IsProcessRunning (pid_t pid)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper traceCtx (L"Stroika::Foundation::Execution::IsProcessRunning", L"pid=%d", pid);
+    Debug::TraceContextBumper traceCtx{L"Stroika::Foundation::Execution::IsProcessRunning", L"pid=%d", pid};
 #endif
 #if qPlatform_POSIX
     // http://stackoverflow.com/questions/9152979/check-if-process-exists-given-its-pid

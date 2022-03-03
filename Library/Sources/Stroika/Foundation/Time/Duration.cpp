@@ -399,7 +399,7 @@ Duration Duration::operator- () const
 Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Duration::ParseTime_");
+    Debug::TraceContextBumper ctx{"Duration::ParseTime_"};
     DbgTrace ("(s = %s)", s.c_str ());
 #endif
     if (s.empty ()) {
@@ -527,7 +527,7 @@ DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 string Duration::UnParseTime_ (InternalNumericFormatType_ t)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"Duration::UnParseTime_", L"t = %e", t);
+    Debug::TraceContextBumper ctx{L"Duration::UnParseTime_", L"t = %e", t};
 #endif
     bool                       isNeg    = (t < 0);
     InternalNumericFormatType_ timeLeft = t < 0 ? -t : t;

@@ -90,7 +90,7 @@ public:
     ~Rep_ ()
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx (L"FileInputStream::Rep_::~Rep_");
+        Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::~Rep_"};
         if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction and IsOpenRead ()) {
             DbgTrace (L"closing %d", fFD_);
         }
@@ -132,7 +132,7 @@ public:
         Require (intoStart < intoEnd);
         size_t nRequested = intoEnd - intoStart;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx (L"FileInputStream::Rep_::Read", L"nRequested: %llu", static_cast<unsigned long long> (nRequested));
+        Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::Read", L"nRequested: %llu", static_cast<unsigned long long> (nRequested)};
 #endif
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         auto                                                readingFromFileActivity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); });
@@ -199,7 +199,7 @@ public:
     {
         using namespace Streams;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx (L"FileInputStream::Rep_::SeekRead", L"whence: %d, offset: %lld", whence, static_cast<long long> (offset));
+        Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::SeekRead", L"whence: %d, offset: %lld", whence, static_cast<long long> (offset)};
 #endif
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         switch (whence) {
@@ -284,7 +284,7 @@ auto FileInputStream::New (Execution::InternallySynchronized internallySynchroni
 InputStream<byte>::Ptr FileInputStream::New (const filesystem::path& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"FileInputStream::New", L"fileName: %s, seekable: %d, bufferFlag: %d", ToString (fileName).c_str (), seekable, bufferFlag);
+    Debug::TraceContextBumper ctx{L"FileInputStream::New", L"fileName: %s, seekable: %d, bufferFlag: %d", ToString (fileName).c_str (), seekable, bufferFlag};
 #endif
     InputStream<byte>::Ptr in = FileInputStream::New (fileName, seekable);
     switch (bufferFlag) {
@@ -301,7 +301,7 @@ InputStream<byte>::Ptr FileInputStream::New (const filesystem::path& fileName, S
 InputStream<byte>::Ptr FileInputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"FileInputStream::New", L"fd: %d, seekable: %d, bufferFlag: %d", fd, seekable, bufferFlag);
+    Debug::TraceContextBumper ctx{L"FileInputStream::New", L"fd: %d, seekable: %d, bufferFlag: %d", fd, seekable, bufferFlag};
 #endif
     InputStream<byte>::Ptr in = FileInputStream::New (fd, adoptFDPolicy, seekable);
     switch (bufferFlag) {

@@ -360,7 +360,7 @@ void ProcessRunner::BackgroundProcess::JoinUntil (Time::DurationSecondsType time
 
 void ProcessRunner::BackgroundProcess::Terminate ()
 {
-    TraceContextBumper                                   ctx ("ProcessRunner::BackgroundProcess::Terminate");
+    TraceContextBumper                                   ctx{"ProcessRunner::BackgroundProcess::Terminate"};
     shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
     // @todo? set thread to null when done -
     //
@@ -1199,7 +1199,7 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
 
     return [processResult, runningPID, progress, cmdLine, workingDir, in, out, err, effectiveCmdLine] () {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContextBumper ctx ("ProcessRunner::CreateRunnable_::{}::Runner...");
+        TraceContextBumper ctx{"ProcessRunner::CreateRunnable_::{}::Runner..."};
 #endif
         SDKString      currentDirBuf_;
         const SDKChar* currentDir = workingDir ? (currentDirBuf_ = workingDir->AsSDKString (), currentDirBuf_.c_str ()) : nullptr;
@@ -1219,7 +1219,7 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
 pid_t Execution::DetachedProcessRunner (const String& commandLine)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx (L"Execution::DetachedProcessRunner", L"commandline=%s", commandLine.c_str ());
+    TraceContextBumper ctx{L"Execution::DetachedProcessRunner", L"commandline=%s", commandLine.c_str ()};
 #endif
     filesystem::path exe;
     Sequence<String> args;

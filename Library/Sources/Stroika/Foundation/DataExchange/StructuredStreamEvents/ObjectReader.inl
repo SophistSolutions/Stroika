@@ -675,7 +675,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     {
 #if qDebug
         if (not fFactories_.ContainsKey (ti)) {
-            Debug::TraceContextBumper ctx (L"Registry::MakeContextReader", L"FAILED TO FIND READER! (forTypeInfo = %s) - Use of UnRegistered Type!", Characters::ToString (ti).c_str ());
+            Debug::TraceContextBumper ctx{L"Registry::MakeContextReader", L"FAILED TO FIND READER! (forTypeInfo = %s) - Use of UnRegistered Type!", Characters::ToString (ti).c_str ()};
         }
 #endif
         ReaderFromVoidStarFactory factory = *fFactories_.Lookup (ti); // must be found or caller/assert error
@@ -701,7 +701,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
 #if qDebug
         for (const auto& kv : fieldDescriptions) {
             if (not kv.fOverrideTypeMapper.has_value () and not fFactories_.ContainsKey (kv.fFieldMetaInfo.fTypeInfo)) {
-                Debug::TraceContextBumper ctx (L"Registry::AddCommonReader_Class", L"CLASS=%s field-TypeInfo-not-found = %s, for field named '%s' - UnRegistered Type!", Characters::ToString (typeid (CLASS)).c_str (), Characters::ToString (kv.fFieldMetaInfo.fTypeInfo).c_str (), Characters::ToString (kv.fSerializedFieldName).c_str ());
+                Debug::TraceContextBumper ctx{L"Registry::AddCommonReader_Class", L"CLASS=%s field-TypeInfo-not-found = %s, for field named '%s' - UnRegistered Type!", Characters::ToString (typeid (CLASS)).c_str (), Characters::ToString (kv.fFieldMetaInfo.fTypeInfo).c_str (), Characters::ToString (kv.fSerializedFieldName).c_str ()};
                 RequireNotReached ();
             }
         }

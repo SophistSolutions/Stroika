@@ -43,7 +43,7 @@ namespace {
         String firstLine = in.ReadLine ().Trim ();
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx ("Read SSDP Packet");
+        Debug::TraceContextBumper ctx{"Read SSDP Packet"};
         DbgTrace (L"firstLine: %s", firstLine.c_str ());
 #endif
         static const String kNOTIFY_LEAD = L"M-SEARCH "sv;
@@ -104,7 +104,7 @@ namespace {
                     }
 
                     if (includeThisAdvertisement) {
-                        Memory::BLOB data = SSDP::Serialize (L"HTTP/1.1 200 OK", SearchOrNotify::SearchResponse, a);
+                        Memory::BLOB data = SSDP::Serialize (L"HTTP/1.1 200 OK"sv, SearchOrNotify::SearchResponse, a);
                         useSocket.SendTo (data.begin (), data.end (), sendTo);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         String msg;

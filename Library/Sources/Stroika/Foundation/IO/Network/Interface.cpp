@@ -930,7 +930,7 @@ namespace {
 Traversal::Iterable<Interface> SystemInterfacesMgr::GetAll ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("SystemInterfacesMgr::GetAll");
+    Debug::TraceContextBumper ctx{"SystemInterfacesMgr::GetAll"};
 #endif
 #if qPlatform_POSIX
     Traversal::Iterable<Interface> results = GetInterfaces_POSIX_ ();
@@ -949,7 +949,7 @@ optional<Interface> SystemInterfacesMgr::GetById (const Interface::SystemIDType&
 {
     // Made some progress but must refactor the above a little more to be able avoid iterating and just fetch the desired interface (esp on macos).
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Network::GetById");
+    Debug::TraceContextBumper ctx{"Network::GetById"};
 #endif
     // @todo - a much more efficent implementation - maybe good enuf to use caller staleness cache with a few seconds staleness
     for (const Interface& i : GetAll ()) {
@@ -969,7 +969,7 @@ optional<Interface> SystemInterfacesMgr::GetById (const Interface::SystemIDType&
 optional<Interface> SystemInterfacesMgr::GetContainingAddress (const InternetAddress& ia)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Network::GetById");
+    Debug::TraceContextBumper ctx{"Network::GetContainingAddress"};
 #endif
     // @todo - a much more efficent implementation - maybe good enuf to use caller staleness cache with a few seconds staleness
     for (const Interface& i : GetAll ()) {

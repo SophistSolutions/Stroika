@@ -72,7 +72,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     void FlushDupsWarning_ ()
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx ("Logger::Rep_::FlushDupsWarning_");
+        Debug::TraceContextBumper ctx{"Logger::Rep_::FlushDupsWarning_"};
 #endif
         shared_ptr<IAppenderRep> tmp           = fAppender_; // avoid races and critical sections (appender internally threadsafe)
         auto                     lastMsgLocked = fLastMsg_.rwget ();
@@ -95,7 +95,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     void Flush_ ()
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx ("Logger::Rep_::Flush_");
+        Debug::TraceContextBumper ctx{"Logger::Rep_::Flush_"};
 #endif
         shared_ptr<IAppenderRep> tmp = fAppender_; // avoid races and critical sections (between check and invoke)
         if (tmp != nullptr) {
@@ -200,14 +200,14 @@ Logger::~Logger ()
 
 void Logger::ShutdownSingleton ()
 {
-    Debug::TraceContextBumper ctx ("Logger::ShutdownSingleton");
+    Debug::TraceContextBumper ctx{"Logger::ShutdownSingleton"};
     // @todo Assure done before end of main?? Or try???
     sThe_.Shutdown ();
 }
 
 void Logger::Shutdown ()
 {
-    Debug::TraceContextBumper ctx ("Logger::Shutdown");
+    Debug::TraceContextBumper ctx{"Logger::Shutdown"};
     // @todo FIX to assure all shutdown properly...
     // But this is OK for now pragmatically
     SetSuppressDuplicates (nullopt);
@@ -264,7 +264,7 @@ void Logger::Log_ (Priority logLevel, const String& msg)
 
 void Logger::SetBufferingEnabled (bool logBufferingEnabled)
 {
-    Debug::TraceContextBumper ctx (L"Logger::SetBufferingEnabled", L"logBufferingEnabled=%d", logBufferingEnabled);
+    Debug::TraceContextBumper ctx{L"Logger::SetBufferingEnabled", L"logBufferingEnabled=%d", logBufferingEnabled};
     RequireNotNull (fRep_);
     if (fRep_->fBufferingEnabled_ != logBufferingEnabled) {
         fRep_->fBufferingEnabled_ = logBufferingEnabled;
@@ -274,7 +274,7 @@ void Logger::SetBufferingEnabled (bool logBufferingEnabled)
 
 void Logger::Flush ()
 {
-    Debug::TraceContextBumper ctx ("Logger::Flush");
+    Debug::TraceContextBumper ctx{"Logger::Flush"};
     RequireNotNull (fRep_);
     fRep_->Flush_ ();
 }

@@ -53,7 +53,7 @@ WMICollector::PerInstanceData_::PerInstanceData_ (const String& objectName, cons
     , fInstance_ (instance)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::PerInstanceData_::PerInstanceData_");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::PerInstanceData_::PerInstanceData_"};
 #endif
     PDH_STATUS x = ::PdhOpenQuery (NULL, NULL, &fQuery_);
     if (x != 0) {
@@ -65,7 +65,7 @@ WMICollector::PerInstanceData_::PerInstanceData_ (const String& objectName, cons
 WMICollector::PerInstanceData_::~PerInstanceData_ ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::PerInstanceData_::~PerInstanceData_");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::PerInstanceData_::~PerInstanceData_"};
 #endif
     AssertNotNull (fQuery_);
     //@todo add cehck result (this SB assert??)Verify
@@ -155,7 +155,7 @@ WMICollector::WMICollector (const String& objectName, const Iterable<String>& in
     : fObjectName_{objectName}
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::WMICollector");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::WMICollector"};
 #endif
     instances.Apply ([this] (String i) { AddInstance_ (i); });
     counterName.Apply ([this] (String i) { AddCounter_ (i); });
@@ -165,7 +165,7 @@ WMICollector::WMICollector (const WMICollector& from)
     : WMICollector{from.fObjectName_, from.fInstanceData_.Keys (), from.fCounterNames_}
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::WMICollector");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::WMICollector"};
 #endif
     /// @todo auto&& critSec = lock_guard{fCritSection_}; before copy elts!!!
 
@@ -175,7 +175,7 @@ WMICollector::WMICollector (const WMICollector& from)
 WMICollector& WMICollector::operator= (const WMICollector& rhs)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::operator=");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::operator="};
 #endif
     if (this != &rhs) {
         lock_guard<const AssertExternallySynchronizedMutex> critSec1{rhs};
@@ -191,7 +191,7 @@ WMICollector& WMICollector::operator= (const WMICollector& rhs)
 void WMICollector::Collect ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::Collect");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::Collect"};
 #endif
     lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
     fInstanceData_.Apply ([this] (KeyValuePair<String, std::shared_ptr<PerInstanceData_>> i) {
@@ -265,7 +265,7 @@ Set<String> WMICollector::GetAvailableCounters ()
 void WMICollector::AddCounters (const String& counterName)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddCounters");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddCounters"};
 #endif
     lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
     AddCounter_ (counterName);
@@ -274,7 +274,7 @@ void WMICollector::AddCounters (const String& counterName)
 void WMICollector::AddCounters (const Iterable<String>& counterNames)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddCounters");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddCounters"};
 #endif
     lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
     counterNames.Apply ([this] (String i) { AddCounter_ (i); });
@@ -283,7 +283,7 @@ void WMICollector::AddCounters (const Iterable<String>& counterNames)
 void WMICollector::AddInstances (const String& instance)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddInstances");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddInstances"};
 #endif
     lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
     AddInstance_ (instance);
@@ -292,7 +292,7 @@ void WMICollector::AddInstances (const String& instance)
 void WMICollector::AddInstances (const Iterable<String>& instances)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddInstances");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddInstances"};
 #endif
     lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
     instances.Apply ([this] (String i) { AddInstance_ (i); });
@@ -301,7 +301,7 @@ void WMICollector::AddInstances (const Iterable<String>& instances)
 bool WMICollector::AddInstancesIf (const String& instance)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddInstancesIf");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddInstancesIf"};
 #endif
     lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
     if (not fInstanceData_.ContainsKey (instance)) {
@@ -314,7 +314,7 @@ bool WMICollector::AddInstancesIf (const String& instance)
 bool WMICollector::AddInstancesIf (const Iterable<String>& instances)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddInstancesIf");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddInstancesIf"};
 #endif
     lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
     bool                                                anyAdded = false;

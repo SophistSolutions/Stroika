@@ -412,7 +412,7 @@ namespace {
 namespace {
     void Test2_InternetAddress_ ()
     {
-        Debug::TraceContextBumper trcCtx ("Test2_InternetAddress_");
+        Debug::TraceContextBumper trcCtx{"Test2_InternetAddress_"};
         {
             VerifyTestResult ((InternetAddress{169, 254, 0, 1}).As<String> () == L"169.254.0.1");
             VerifyTestResult ((InternetAddress{1, 2, 3, 4}).As<String> () == L"1.2.3.4");
@@ -491,7 +491,7 @@ namespace {
 namespace {
     void Test3_NetworkInterfaceList_ ()
     {
-        Debug::TraceContextBumper trcCtx ("Test3_NetworkInterfaceList_");
+        Debug::TraceContextBumper trcCtx{"Test3_NetworkInterfaceList_"};
         for (Interface iFace : SystemInterfacesMgr{}.GetAll ()) {
             DbgTrace (L"iFace: %s", Characters::ToString (iFace).c_str ());
         }
@@ -502,7 +502,7 @@ namespace {
     namespace Test4_DNS_ {
         void DoTests_ ()
         {
-            Debug::TraceContextBumper ctx ("Test4_DNS_::DoTests_");
+            Debug::TraceContextBumper ctx{"Test4_DNS_::DoTests_"};
             {
                 DNS::HostEntry e = DNS::Default ().GetHostEntry (L"www.sophists.com");
                 VerifyTestResult (e.fCanonicalName.Contains (L".sophists.com"));
@@ -557,7 +557,7 @@ namespace {
     namespace Test6_Neighbors_ {
         void DoTests_ ()
         {
-            Debug::TraceContextBumper ctx ("Test6_Neighbors_::DoTests_");
+            Debug::TraceContextBumper ctx{"Test6_Neighbors_::DoTests_"};
             {
                 IO::Network::NeighborsMonitor monitor;
                 Time::DurationSecondsType     timeoutAt = (Time::GetTickCount () + Time::Duration{3s}).As<Time::DurationSecondsType> ();

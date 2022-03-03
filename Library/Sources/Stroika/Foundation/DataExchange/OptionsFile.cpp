@@ -205,7 +205,7 @@ void OptionsFile::WriteRaw (const BLOB& blob)
 template <>
 optional<VariantValue> OptionsFile::Read ()
 {
-    Debug::TraceContextBumper ctx ("OptionsFile::Read");
+    Debug::TraceContextBumper ctx{"OptionsFile::Read"};
     try {
         optional<VariantValue> r = fReader_.Read (MemoryStream<byte>::New (ReadRaw ()));
         if (r.has_value ()) {
@@ -229,7 +229,7 @@ optional<VariantValue> OptionsFile::Read ()
 template <>
 void OptionsFile::Write (const VariantValue& optionsObject)
 {
-    Debug::TraceContextBumper ctx ("OptionsFile::Write");
+    Debug::TraceContextBumper ctx{"OptionsFile::Write"};
     MemoryStream<byte>::Ptr   tmp = MemoryStream<Memory::byte>::New ();
     fWriter_.Write (optionsObject, tmp);
     WriteRaw (tmp.As<BLOB> ());
