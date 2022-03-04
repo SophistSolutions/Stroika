@@ -50,10 +50,10 @@ public:
 // TODO - USE SAXREADER HERE!!!
 #if qHasFeature_Xerces
         AssertNotImplemented ();
-        return VariantValue ();
+        return VariantValue{};
 #else
         AssertNotImplemented ();
-        return VariantValue ();
+        return VariantValue{};
 #endif
     }
     nonvirtual SerializationConfiguration GetConfiguration () const

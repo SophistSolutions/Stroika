@@ -226,7 +226,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::Duration> ()
         return VariantValue{(fromObjOfTypeT)->As<String> ()};
     };
     ToObjectMapperType<Time::Duration> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, Time::Duration* intoObjOfTypeT) -> void {
-        *intoObjOfTypeT = Duration (d.As<String> ());
+        *intoObjOfTypeT = Duration{d.As<String> ()};
     };
     return TypeMappingDetails{typeid (Duration), fromObjectMapper, toObjectMapper};
 }
@@ -238,7 +238,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> ()
         return VariantValue{fromObjOfTypeT->GetAsSecondsCount ()};
     };
     ToObjectMapperType<Time::TimeOfDay> toObjectMapper = [] ([[maybe_unused]] const ObjectVariantMapper&, const VariantValue& d, Time::TimeOfDay* intoObjOfTypeT) -> void {
-        *reinterpret_cast<TimeOfDay*> (intoObjOfTypeT) = TimeOfDay (d.As<uint32_t> ());
+        *reinterpret_cast<TimeOfDay*> (intoObjOfTypeT) = TimeOfDay{d.As<uint32_t> ()};
     };
     return TypeMappingDetails{typeid (TimeOfDay), fromObjectMapper, toObjectMapper};
 }

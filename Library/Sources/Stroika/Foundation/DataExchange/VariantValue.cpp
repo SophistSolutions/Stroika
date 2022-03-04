@@ -528,7 +528,7 @@ DateTime VariantValue::As () const
         case Type::eDate: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<Date>*> (fVal_.get ());
             AssertNotNull (v);
-            return DateTime (v->fVal);
+            return DateTime{v->fVal};
         }
         case Type::eDateTime: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<DateTime>*> (fVal_.get ());

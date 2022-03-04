@@ -130,7 +130,7 @@ namespace Stroika::Foundation::Time {
     {
         // Gregorian calendar started on Sep. 14, 1752
         Require (year >= Year::eFirstYear);
-        Require (year > Year (1752) or (month > MonthOfYear::eSeptember) or (month == MonthOfYear::eSeptember and day >= DayOfMonth (14)));
+        Require (year > Year{1752} or (month > MonthOfYear::eSeptember) or (month == MonthOfYear::eSeptember and day >= DayOfMonth{14}));
     }
     inline constexpr Date::JulianRepType Date::GetJulianRep () const
     {

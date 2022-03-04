@@ -123,7 +123,7 @@ namespace {
                 using namespace Time;
                 IO::Network::HTTP::Headers h1;
                 // Test cases from https://tools.ietf.org/html/rfc2616#section-3.3.1
-                const DateTime kReferenceTest_{Date{Year (1994), MonthOfYear::eNovember, DayOfMonth (6)}, TimeOfDay{8, 49, 37}, Timezone::kUTC};
+                const DateTime kReferenceTest_{Date{Year{1994}, MonthOfYear::eNovember, DayOfMonth{6}}, TimeOfDay{8, 49, 37}, Timezone::kUTC};
                 const String   kTest1_ = L"Sun, 06 Nov 1994 08:49:37 GMT";
                 const String   kTest2_ = L"Sunday, 06-Nov-94 08:49:37 GMT";
                 const String   kTest3_ = L"Sun Nov  6 08:49:37 1994";

@@ -122,14 +122,14 @@ Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, cons
             DbgTrace (L"exception %s - ipaddr = %s", Characters::ToString (ttlExpiredException).c_str (), Characters::ToString (ttlExpiredException.GetReachedIP ()).c_str ());
 #endif
             // totally normal - this is how we find out the hops
-            results += Hop{Duration (Time::GetTickCount () - startOfPingRequest), ttlExpiredException.GetReachedIP ()};
+            results += Hop{Duration{Time::GetTickCount () - startOfPingRequest}, ttlExpiredException.GetReachedIP ()};
         }
         catch (const ICMP::V4::DestinationUnreachableException& destinationUnreachableException) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"exception %s - ipaddr = %s", Characters::ToString (destinationUnreachableException).c_str (), Characters::ToString (destinationUnreachableException.GetReachedIP ()).c_str ());
 #endif
             // Not sure how normal this is? @todo - research - maybe abandon ping when this happens... -- LGP 2017-03-27
-            results += Hop{Duration (Time::GetTickCount () - startOfPingRequest), destinationUnreachableException.GetReachedIP ()};
+            results += Hop{Duration{Time::GetTickCount () - startOfPingRequest}, destinationUnreachableException.GetReachedIP ()};
         }
         catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

@@ -209,7 +209,7 @@ namespace {
                 VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
                 VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
                 VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
-                VerifyTestResult (calendar[0].when and calendar[0].when->GetDate () == Time::Date (Time::Year (2005), Time::MonthOfYear::eJune, Time::DayOfMonth (1)));
+                VerifyTestResult ((calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::MonthOfYear::eJune, Time::DayOfMonth (1)}));
                 VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
                 VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
             }
@@ -222,7 +222,7 @@ namespace {
                 VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
                 VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
                 VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
-                VerifyTestResult (calendar[0].when and calendar[0].when->GetDate () == Time::Date (Time::Year (2005), Time::MonthOfYear::eJune, Time::DayOfMonth (1)));
+                VerifyTestResult ((calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::MonthOfYear::eJune, Time::DayOfMonth (1)}));
                 VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
                 VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
             }

@@ -347,7 +347,7 @@ namespace {
 #else
             VerifyTestResult (TimeOfDay{101}.Format (locale{}) == L"12:01:41 AM");
             VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"12:01 AM");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == L"1:01:41 AM" or TimeOfDay (60 * 60 + 101).Format (locale{}) == L"01:01:41 AM");
+            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == L"1:01:41 AM" or TimeOfDay{60 * 60 + 101}.Format (locale{}) == L"01:01:41 AM");
             VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"1:01:41 AM");
             VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"1:01 AM");
 #endif
@@ -378,7 +378,7 @@ namespace {
     {
         TraceContextBumper ctx{"Test_3_TestDate_"};
         {
-            Date d (Year{1903}, MonthOfYear::eApril, DayOfMonth{4});
+            Date d{Year{1903}, MonthOfYear::eApril, DayOfMonth{4}};
             TestRoundTripFormatThenParseNoChange_ (d);
             VerifyTestResult (d.Format (Date::kISO8601Format) == L"1903-04-04");
             VERIFY_ROUNDTRIP_XML_ (d);
@@ -413,7 +413,7 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
-            VerifyTestResult (Date::Parse (L"11/3/2001", Date::kMonthDayYearFormat) == Date (Year{2001}, Time::MonthOfYear::eNovember, DayOfMonth{3}));
+            VerifyTestResult ((Date::Parse (L"11/3/2001", Date::kMonthDayYearFormat) == Date{Year (2001), Time::MonthOfYear::eNovember, DayOfMonth (3)}));
             VerifyTestResult (Date::Parse (L"11/3/2001", Date::kMonthDayYearFormat).Format (Date::kMonthDayYearFormat) == L"11/03/2001");
         }
         {
@@ -741,7 +741,7 @@ namespace {
         {
             const Duration kP2Y = Duration{L"P2Y"};
             VerifyTestResult (kP2Y.As<time_t> () == 2 * 365 * kSecondsPerDay);
-            VerifyTestResult (Duration (2 * 365 * kSecondsPerDay).As<wstring> () == L"P2Y");
+            VerifyTestResult (Duration{2 * 365 * kSecondsPerDay}.As<wstring> () == L"P2Y");
         }
         {
             const Duration kHalfMinute = Duration{L"PT0.5M"};
@@ -765,7 +765,7 @@ namespace {
             VerifyTestResult (kD.PrettyPrint () == L"1.003 seconds");
         }
         {
-            const Duration kD = Duration (L"PT0.000045S");
+            const Duration kD = Duration{L"PT0.000045S"};
             VerifyTestResult (kD.PrettyPrint () == L"45 µs");
         }
         {
@@ -804,7 +804,7 @@ namespace {
         {
             static const size_t K = Debug::IsRunningUnderValgrind () ? 2630 : 263;
             for (time_t i = 60 * 60 * 24 * 365 - 40; i < 3 * 60 * 60 * 24 * 365; i += K) {
-                VerifyTestResult (Duration{Duration (i).As<wstring> ()}.As<time_t> () == i);
+                VerifyTestResult (Duration{Duration{i}.As<wstring> ()}.As<time_t> () == i);
             }
         }
         VerifyTestResult (Duration::min () < Duration::max ());
@@ -853,7 +853,7 @@ namespace {
         {
             DateTime n1 = DateTime{Date{Year{2015}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{19, 18, 42}, Timezone::kLocalTime};
             DateTime n2 = n1 - Duration{L"P100Y"};
-            VerifyTestResult (n2.GetDate ().GetYear () == Year ((int)n1.GetDate ().GetYear () - 100));
+            VerifyTestResult (n2.GetDate ().GetYear () == Year{(int)n1.GetDate ().GetYear () - 100});
 #if 0
             // @todo - Improve - increment by 100 years not as exact as one might like @todo --LGP 2015-06-09
             VerifyTestResult (n2.GetDate ().GetMonth () == n1.GetDate ().GetMonth ());

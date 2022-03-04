@@ -186,7 +186,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"reply->ttl = %d, nHops = %d", replyIPHeader->ttl, nHops);
 #endif
-                return ResultType{Duration (Time::GetTickCount () - replyICMPHeader->timestamp / 1000.0), nHops};
+                return ResultType{Duration{Time::GetTickCount () - replyICMPHeader->timestamp / 1000.0}, nHops};
             }
             case ICMP::V4::ICMP_TTL_EXPIRE: {
                 Execution::Throw (ICMP::V4::TTLExpiredException{InternetAddress{replyIPHeader->saddr}});
