@@ -509,7 +509,7 @@ sub     FillDefaultLibDependencies_
 				#???dont thnik needed cuz of pragma comment link...
 			}
 			else {
-				push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \$(StroikaRoot)Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs openssl");
+				push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs openssl");
 			}
 		}
 
@@ -2141,10 +2141,10 @@ sub PostProcessOptions_ ()
 				$RUN_PREFIX = " " . $RUN_PREFIX;
 			}
 			if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
-				$RUN_PREFIX = "TSAN_OPTIONS=suppressions=\$(StroikaRoot)/Tests/ThreadSanitizerSuppressions_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp" . $RUN_PREFIX;
+				$RUN_PREFIX = "TSAN_OPTIONS=suppressions=\${StroikaRoot}/Tests/ThreadSanitizerSuppressions_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp" . $RUN_PREFIX;
 			}
 			else {
-				$RUN_PREFIX = "TSAN_OPTIONS=suppressions=\$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp" . $RUN_PREFIX;
+				$RUN_PREFIX = "TSAN_OPTIONS=suppressions=\${StroikaRoot}/Tests/ThreadSanitizerSuppressions.supp" . $RUN_PREFIX;
 			}
 		}
 	}
