@@ -191,7 +191,11 @@ project-files:	project-files-visual-studio project-files-vs-code
 
 project-files-vs-code:
 	@$(ECHO) "Creating default visual-studio-code configuration files:"
+ifeq ($(DETECTED_HOST_OS),Darwin)
+	@rsync --update .config-default.json .config.json
+else
 	@cp --update .config-default.json .config.json
+endif
 	@$(MAKE) --silent apply-configurations MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 project-files-visual-studio:

@@ -778,8 +778,8 @@ namespace Stroika::Frameworks::Service {
     private:
         static WindowsService*      s_SvcRunningTHIS_;
         Execution::Thread::Ptr      fRunThread_;
-        SERVICE_STATUS_HANDLE       fServiceStatusHandle_; // nullptr if invalid - not INVALID_HANDLE
-        SERVICE_STATUS              fServiceStatus_;
+        SERVICE_STATUS_HANDLE       fServiceStatusHandle_{nullptr}; // nullptr if invalid - not INVALID_HANDLE
+        SERVICE_STATUS              fServiceStatus_{};
         shared_ptr<IApplicationRep> fAppRep_;
     };
 #endif

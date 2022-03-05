@@ -7,5 +7,5 @@
 SHELLVAR=$1
 
 if [ "$SHELLVAR" == "ECHO" ] ; then
-	echo -n "echo"
+	/bin/echo -n "/bin/echo"
 fi
