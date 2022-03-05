@@ -131,14 +131,14 @@ DateTime IO::FileSystem::Ptr::GetFileLastModificationDate (const filesystem::pat
     struct stat s {
     };
     FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (fileName.generic_string ().c_str (), &s), fileName);
-    return DateTime (s.st_mtime);
+    return DateTime{s.st_mtime};
 #elif qPlatform_Windows
     WIN32_FILE_ATTRIBUTE_DATA fileAttrData{};
     FileSystem::Exception::ThrowIfZeroGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData), fileName);
-    return DateTime (fileAttrData.ftLastWriteTime);
+    return DateTime{fileAttrData.ftLastWriteTime};
 #else
     AssertNotImplemented ();
-    return DateTime ();
+    return DateTime{};
 #endif
 }
 

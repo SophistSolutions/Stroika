@@ -35,5 +35,5 @@ void Execution::Sleep (const Time::Duration& wait, Time::Duration* remainingInSl
     RequireNotNull (remainingInSleep);
     Time::DurationSecondsType remaining = 0;
     Sleep (wait.As<Time::DurationSecondsType> (), &remaining);
-    *remainingInSleep = Time::Duration (remaining);
+    *remainingInSleep = Time::Duration{remaining};
 }

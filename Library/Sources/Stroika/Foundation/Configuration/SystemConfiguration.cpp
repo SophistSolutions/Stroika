@@ -241,7 +241,7 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
             ::setutxent ();
             for (const utmpx* i = ::getutxent (); i != nullptr; i = ::getutxent ()) {
                 if (i->ut_type == BOOT_TIME) {
-                    result.fBootedAt = DateTime (i->ut_tv);
+                    result.fBootedAt = DateTime{i->ut_tv};
                     succeeded        = true;
                 }
             }
