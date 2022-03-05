@@ -853,7 +853,7 @@ namespace {
         {
             DateTime n1 = DateTime{Date{Year{2015}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{19, 18, 42}, Timezone::kLocalTime};
             DateTime n2 = n1 - Duration{L"P100Y"};
-            VerifyTestResult (n2.GetDate ().GetYear () == Year{(int)n1.GetDate ().GetYear () - 100});
+            VerifyTestResult (n2.GetDate ().GetYear () == Year{(short)n1.GetDate ().GetYear () - 100});
 #if 0
             // @todo - Improve - increment by 100 years not as exact as one might like @todo --LGP 2015-06-09
             VerifyTestResult (n2.GetDate ().GetMonth () == n1.GetDate ().GetMonth ());
