@@ -29,7 +29,9 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
     using Traversal::Iterable;
 
     /**
-     *
+     *  Instantiating the class does nothing. You must invoke Run() to start the search. And then
+     *  it runs in the background (with its own private thread) until the SearchResponder object is
+     *  destroyed.
      */
     class SearchResponder {
     public:
