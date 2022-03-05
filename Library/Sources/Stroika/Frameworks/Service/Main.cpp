@@ -726,9 +726,7 @@ void Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
 Main::WindowsService* Main::WindowsService::s_SvcRunningTHIS_ = nullptr;
 
 Main::WindowsService::WindowsService ()
-    : fAppRep_ ()
-    , fServiceStatusHandle_{nullptr}
-    , fServiceStatus_{}
+    : fServiceStatus_{}
 {
     fServiceStatus_.dwServiceType      = SERVICE_WIN32_OWN_PROCESS;
     fServiceStatus_.dwCurrentState     = SERVICE_STOPPED;
