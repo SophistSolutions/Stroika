@@ -2,41 +2,48 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "make clean (CURRENT-SETTINGS)",
+      "label": "make clean",
       "type": "shell",
       "command": "make",
       "args": ["CONFIGURATION=${command:cpptools.activeConfigName}", "clean"],
-      "options": {"env": {"CHERE_INVOKING" : "1",  }},
       "group": {
         "kind": "build",
         "isDefault": true
       },
       "presentation": {
         "clear": true,
-        "panel": "dedicated"
+        "panel": "shared",
+        "showReuseMessage" : false,
+        "echo": true
       },
-      "problemMatcher": ["$msCompile"]
+      "problemMatcher": ["$msCompile"],
+      "windows": {
+        "options": {"env": {"CHERE_INVOKING" : "1",  }},
+      }
     },
     {
-      "label": "make clobber (CURRENT-SETTINGS)",
+      "label": "make clobber",
       "type": "shell",
       "command": "make",
-      "args": ["CONFIGURATION=${input:CURRENT-CONFIGURATION}", "clobber"],
-      "options": {"env": {"CHERE_INVOKING" : "1",  }},
+      "args": ["CONFIGURATION=${command:cpptools.activeConfigName}", "clobber"],
       "group": {
         "kind": "build",
         "isDefault": true
       },
       "presentation": {
         "clear": true,
-        "panel": "dedicated"
+        "panel": "shared",
+        "showReuseMessage" : false,
+        "echo": true
       },
+      "windows": {
+        "options": {"env": {"CHERE_INVOKING" : "1",  }},
+      }
     },
     {
-      "label": "make all (CURRENT-SETTINGS)",
+      "label": "make all",
       "type": "shell",
       "command": "make",
-      "options": {"env": {"CHERE_INVOKING" : "1",  }},
       "args": [
         "CONFIGURATION=${command:cpptools.activeConfigName}",
         "all",
@@ -48,24 +55,32 @@
       },
       "presentation": {
         "clear": true,
-        "panel": "dedicated"
+        "panel": "shared",
+        "showReuseMessage" : false,
+        "echo": true
       },
-      "problemMatcher": ["$msCompile", "$gcc"]
+      "problemMatcher": ["$msCompile", "$gcc"],
+      "windows": {
+        "options": {"env": {"CHERE_INVOKING" : "1",  }},
+      }
     },
     {
-      "label": "make rebuild (CURRENT-SETTINGS)",
+      "label": "make rebuild",
       "type": "shell",
-      "options": {"env": {"CHERE_INVOKING" : "1",  }},
       "command": "make CONFIGURATION=${command:cpptools.activeConfigName} clean && make CONFIGURATION=${command:cpptools.activeConfigName} all ${input:CURRENT-JOBSFLAG}",
-      "problemMatcher": ["$msCompile"],
+      "problemMatcher": ["$msCompile", "$gcc"],
       "group": {
         "kind": "build",
         "isDefault": true
       },
       "presentation": {
-        "echo": true,
         "clear": true,
-        "panel": "dedicated"
+        "panel": "shared",
+        "showReuseMessage" : false,
+        "echo": true
+      },
+      "windows": {
+        "options": {"env": {"CHERE_INVOKING" : "1",  }},
       }
     },
   ],
