@@ -12,6 +12,9 @@ if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=
 : ${BUILD_CONFIGURATIONS_MAKEFILE_TARGET:=default-configurations}
 : ${USE_TEST_BASENAME:=""}
 
+# Some scripts use this, especially when we invoke stuff from 'GetConfigurations'
+export StroikaRoot=`realpath .`
+
 
 if [ "$BUILD_EXTRA_COMPILERS_IF_MISSING" == "" ] ; then 
 	if [ $CONTINUE -eq 0 ]  && [ "$BUILD_CONFIGURATIONS_MAKEFILE_TARGET" != "default-configurations" ] && [ "$DETECTED_HOST_OS" == "Linux" ]; then
