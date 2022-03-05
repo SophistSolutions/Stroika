@@ -165,15 +165,15 @@ endif
 
 
 project-files:
-	@echo -n "Building VisualStudio.Net-2017 project files..."
+	@$(ECHO) -n "Building VisualStudio.Net-2017 project files..."
 	@cd Projects/VisualStudio.Net-2017 && ./BuildProjectsFiles
-	@echo done
-	@echo -n "Building VisualStudio.Net-2019 project files..."
+	@$(ECHO) done
+	@$(ECHO) -n "Building VisualStudio.Net-2019 project files..."
 	@cd Projects/VisualStudio.Net-2019 && ./BuildProjectsFiles
-	@echo done
-	@echo -n "Building VisualStudio.Net-2022 project files..."
+	@$(ECHO) done
+	@$(ECHO) -n "Building VisualStudio.Net-2022 project files..."
 	@cd Projects/VisualStudio.Net-2022 && ./BuildProjectsFiles
-	@echo done
+	@$(ECHO) done
 
 
 tests:
@@ -211,7 +211,7 @@ else
 	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Running Stroika Tests {$(CONFIGURATION)}:"
 	@PREFIX=`../ScriptsLib/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL) + 1))`;\
     if [ "$(CrossCompiling)" = "true" ] && [ "$(REMOTE)" = "" ] ; then\
-           echo "$$PREFIX" "Skiping cuz Cross-Compiling and REMOTE= not specified...";\
+           $(ECHO) "$$PREFIX" "Skiping cuz Cross-Compiling and REMOTE= not specified...";\
 	else\
 		FAILED=0;\
 		for i in $(TESTS); do\
@@ -220,7 +220,7 @@ else
 			$(RUNTEST_REMOTECOPYSETUP2);\
 			TIMESTAMP=`date +%s`;\
 			EXERESULT=`$(RUNTEST_EXE_RUN)`;\
-			EXERESULT=`echo $$EXERESULT | tr -d '\n' | tr -d '\r'`;\
+			EXERESULT=`$(ECHO) $$EXERESULT | tr -d '\n' | tr -d '\r'`;\
 			if [ "$$EXERESULT" != "Succeeded" ]; then\
 			    FAILED=1;\
 			fi;\
@@ -232,14 +232,14 @@ else
 			if [ "$$DIFFTIME" -lt "10" ]; then\
 			    DIFFTIME=$$DIFFTIME" ";\
 			fi;\
-			echo "$$PREFIX[$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN_PRINTLINE))";\
+			$(ECHO) "$$PREFIX[$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN_PRINTLINE))";\
 		done;\
 		if [ "$$FAILED" -ne 0 ]; then\
 			if [ "$$TEST_FAILURES_CAUSE_FAILED_MAKE" -ne 0 ]; then\
-				echo "$$PREFIX" "   ***SOME TESTS FAILED***";\
+				$(ECHO) "$$PREFIX" "   ***SOME TESTS FAILED***";\
 				exit 1;\
 			else\
-				echo "$$PREFIX" "   ***SOME TESTS FAILED*** (exit suppressed by TEST_FAILURES_CAUSE_FAILED_MAKE)";\
+				$(ECHO) "$$PREFIX" "   ***SOME TESTS FAILED*** (exit suppressed by TEST_FAILURES_CAUSE_FAILED_MAKE)";\
 			fi;\
 		fi\
     fi
