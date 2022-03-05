@@ -20,6 +20,8 @@ Rough outline of (informal/weak) plans for Stroika v3
 - General c++ 20-based use cleanup
 - std::format use
 - Consider switch to cmake, or otherwise address make depend issue
+  and provide cmake project file / package so easy for people using cmake to just use Stroika
+  https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html
 - Modules support
 - OpenAPI integration (maybe automatic methods, or at least validation).
 - Some sort of GUI integration (perhaps ) - CEF (https://code.google.com/p/chromiumembedded/) or Gekko/Mozilla, or WebKit/V8
