@@ -2290,7 +2290,7 @@ stHarness/SimpleClass.cpp ...
             */
 #ifndef qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy
 
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__clang__)
 // APPEARS fixed in GCC 9.0
 #define qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy (__GNUC__ <= 8)
 #else
