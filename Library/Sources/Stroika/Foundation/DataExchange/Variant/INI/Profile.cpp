@@ -44,7 +44,7 @@ VariantValue INI::Convert (Profile p)
         for (const KeyValuePair<String, String>& k : s.fProperties) {
             m.Add (k.fKey, k.fValue);
         }
-        return VariantValue (m);
+        return VariantValue{m};
     };
     Mapping<String, VariantValue> mv;
     for (const KeyValuePair<String, Section>& kvp : p.fNamedSections) {
@@ -53,5 +53,5 @@ VariantValue INI::Convert (Profile p)
     for (const KeyValuePair<String, String>& kvp : p.fUnnamedSection.fProperties) {
         mv.Add (kvp.fKey, kvp.fValue);
     }
-    return VariantValue (mv);
+    return VariantValue{mv};
 }

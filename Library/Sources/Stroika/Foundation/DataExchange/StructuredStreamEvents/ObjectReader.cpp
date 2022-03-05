@@ -164,7 +164,7 @@ template <>
 void Registry::SimpleReader_<Time::Duration>::Deactivating ()
 {
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
-    IgnoreExceptionsForCall (*fValue_ = Time::Duration (fBuf_.str ()));
+    IgnoreExceptionsForCall (*fValue_ = Time::Duration{fBuf_.str ()});
 }
 
 /*

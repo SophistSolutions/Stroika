@@ -470,7 +470,7 @@ namespace Stroika::Foundation::DataExchange {
                     s.Append (mapper.FromObject<T> (valueMapper, i));
                 }
             }
-            return VariantValue (s);
+            return VariantValue{s};
         };
         ToObjectMapperType<ACTUAL_CONTAINER_TYPE> toObjectMapper = [] (const ObjectVariantMapper& mapper, const VariantValue& d, ACTUAL_CONTAINER_TYPE* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
@@ -508,7 +508,7 @@ namespace Stroika::Foundation::DataExchange {
                 encodedPair.Append (mapper.FromObject<RANGE_TYPE> (rangeMapper, i.second));
                 s.Append (VariantValue{encodedPair});
             }
-            return VariantValue (s);
+            return VariantValue{s};
         };
         ToObjectMapperType<Bijection<DOMAIN_TYPE, RANGE_TYPE>> toObjectMapper = [] (const ObjectVariantMapper& mapper, const VariantValue& d, Bijection<DOMAIN_TYPE, RANGE_TYPE>* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
@@ -554,7 +554,7 @@ namespace Stroika::Foundation::DataExchange {
                 return mapper.FromObject<T> (**fromObjOfTypeT);
             }
             else {
-                return VariantValue ();
+                return VariantValue{};
             }
         };
         ToObjectMapperType<optional<T>> toObjectMapper = [] (const ObjectVariantMapper& mapper, const VariantValue& d, optional<T>* intoObjOfTypeT) -> void {

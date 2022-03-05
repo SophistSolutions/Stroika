@@ -520,15 +520,15 @@ namespace Test_07_ParserTestReadWriteBasictypes_ {
             }
         };
         auto doAll = [f] () {
-            f (VariantValue (405));
-            f (VariantValue (4405));
-            f (VariantValue (44905));
+            f (VariantValue{405});
+            f (VariantValue{4405});
+            f (VariantValue{44905});
             f (VariantValue (405.1));
             f (VariantValue (4405.2));
             f (VariantValue (44905.3));
             f (VariantValue (L"'"));
-            f (VariantValue (Date (Year (1933), MonthOfYear::eFebruary, DayOfMonth::e12)));
-            f (VariantValue (DateTime (Date (Year (1933), MonthOfYear::eFebruary, DayOfMonth::e12), TimeOfDay (432))));
+            f (VariantValue (Date{Year{1933}, MonthOfYear::eFebruary, DayOfMonth::e12}));
+            f (VariantValue (DateTime{Date{Year{1933}, MonthOfYear::eFebruary, DayOfMonth::e12}, TimeOfDay{432}}));
 
             {
                 stringstream tmpStrm;

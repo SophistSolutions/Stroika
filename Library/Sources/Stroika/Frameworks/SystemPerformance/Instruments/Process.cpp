@@ -477,7 +477,7 @@ namespace {
                             //(22) The time the process started after system boot. In kernels before Linux 2.6,
                             // this value was expressed in jiffies. Since Linux 2.6,
                             // the value is expressed in clock ticks (divide by sysconf(_SC_CLK_TCK)).
-                            processDetails.fProcessStartedAt = DateTime (static_cast<time_t> (stats.start_time / kClockTick_ + kUNIXEpochTimeOfBoot_));
+                            processDetails.fProcessStartedAt = DateTime{static_cast<time_t> (stats.start_time / kClockTick_ + kUNIXEpochTimeOfBoot_)};
                         }
 
                         processDetails.fTotalCPUTimeEverUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
@@ -1408,7 +1408,7 @@ namespace {
                             if (::GetProcessTimes (hProcess, &creationTime, &exitTime, &kernelTime, &userTime)) {
                                 if (grabStaticData) {
 
-                                    processInfo.fProcessStartedAt = DateTime (creationTime);
+                                    processInfo.fProcessStartedAt = DateTime{creationTime};
                                 }
                                 processInfo.fTotalCPUTimeEverUsed = convertFILETIME2DurationSeconds (kernelTime) + convertFILETIME2DurationSeconds (userTime);
                             }

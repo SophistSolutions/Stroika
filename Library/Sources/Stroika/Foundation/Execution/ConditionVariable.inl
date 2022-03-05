@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Execution {
                     lock.lock ();
                 }
             }
-            cv_status tmp = fConditionVariable.wait_for (lock, Time::Duration (remaining).As<chrono::milliseconds> ());
+            cv_status tmp = fConditionVariable.wait_for (lock, Time::Duration{remaining}.As<chrono::milliseconds> ());
             Assert (lock.owns_lock ());
             if (tmp == cv_status::timeout) {
                 /*

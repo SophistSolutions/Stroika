@@ -118,7 +118,7 @@ namespace {
         tmp.fEnabled = newEnabled;
         tmp.fThisPHRsIDToSharedContactID.Add (L"A", L"B");
         tmp.fThisPHRsIDToSharedContactID2.Add (L"A", L"B");
-        tmp.fLastSynchronizedAt = DateTime{Time::Date{Time::Year (1998), Time::MonthOfYear::eApril, Time::DayOfMonth::e11}, Time::TimeOfDay::Parse (L"3pm", locale::classic ())};
+        tmp.fLastSynchronizedAt = DateTime{Time::Date{Time::Year{1998}, Time::MonthOfYear::eApril, Time::DayOfMonth::e11}, Time::TimeOfDay::Parse (L"3pm", locale::classic ())};
 
         VariantValue v = mapper.FromObject (tmp);
 
@@ -401,11 +401,11 @@ namespace {
         });
 
         SharedContactsConfig_ tmp;
-        tmp.fDate1      = Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12);
-        tmp.fDateTime1  = DateTime (Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12), Time::TimeOfDay::Parse (L"3pm", locale::classic ()));
+        tmp.fDate1      = Date{Time::Year{2001}, Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12};
+        tmp.fDateTime1  = DateTime{Date{Time::Year{2001}, Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12}, Time::TimeOfDay::Parse (L"3pm", locale::classic ())};
         tmp.fTimeOfDay1 = tmp.fDateTime1->GetTimeOfDay ();
         Assert (tmp.fTimeOfDay1.has_value ());
-        tmp.fTimeOfDay1 = TimeOfDay (tmp.fTimeOfDay1->GetAsSecondsCount () + 60);
+        tmp.fTimeOfDay1 = TimeOfDay{tmp.fTimeOfDay1->GetAsSecondsCount () + 60};
         VariantValue v  = mapper.FromObject (tmp);
 
         // at this point - we should have VariantValue object with "Enabled" field.
@@ -453,7 +453,7 @@ namespace {
         });
 
         SharedContactsConfig_ tmp;
-        tmp.fVV1       = Date{Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12};
+        tmp.fVV1       = Date{Time::Year{2001}, Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12};
         VariantValue v = mapper.FromObject (tmp);
 
         // at this point - we should have VariantValue object with "Enabled" field.
