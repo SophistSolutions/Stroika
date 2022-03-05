@@ -780,6 +780,10 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #endif
 
 #endif
+#if qCompilerAndStdLib_constexpr_error_category_ctor_Buggy
+// Since Stroika 3.0d1
+#error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
+#endif
 
 // Run regtest 35 (Foundation::Execution::Exceptions) to see if fails
 #ifndef qCompilerAndStdLib_error_code_compare_condition_Buggy
@@ -797,6 +801,10 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #else
 #define qCompilerAndStdLib_error_code_compare_condition_Buggy 0
 #endif
+#endif
+#if qCompilerAndStdLib_error_code_compare_condition_Buggy
+// Since Stroika 3.0d1
+#error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
 #endif
 
 /*
@@ -914,6 +922,10 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 #endif
 
 #endif
+#if qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy
+// Since Stroika 3.0d1
+#error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
+#endif
 
 /*
 
@@ -976,6 +988,10 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 #define qCompiler_ASanitizer_global_buffer_overflow_Buggy 0
 #endif
 
+#endif
+#if qCompiler_ASanitizer_global_buffer_overflow_Buggy
+// Since Stroika 3.0d1
+#error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
 #endif
 
 // Debug builds - only fails running samples - not tests - crashes
@@ -1069,6 +1085,10 @@ STILL:
 #define qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy 0
 #endif
 
+#endif
+#if qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy
+// Since Stroika 3.0d1
+#error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
 #endif
 
 #ifndef qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy
@@ -1414,6 +1434,11 @@ int main ()
 #endif
 
 #endif
+#if qCompilerAndStdLib_to_chars_INT_Buggy
+// Since Stroika 3.0d1
+#error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
+#endif
+
 
 #ifndef qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
 
@@ -1648,6 +1673,11 @@ NOTE:
 #endif
 
 #endif
+#if qCompilerAndStdLib_conditionvariable_waitfor_nounlock_Buggy
+// Since Stroika 3.0d1
+#error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
+#endif
+
 
 #ifndef qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy
 
@@ -2268,6 +2298,12 @@ stHarness/SimpleClass.cpp ...
 #endif
 
 #endif
+
+#if qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy
+// Since Stroika 3.0d1
+#error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
+#endif
+
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Support__PRETTY_FUNCTION__
