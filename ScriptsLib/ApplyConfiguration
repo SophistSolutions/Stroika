@@ -564,6 +564,16 @@ sub WriteVS2kIntellisenseConfigFile
 	close(OUT);
 }
 
+sub ToFullPathEXE_($)
+{
+	my $exe = shift;
+	local $e = trim(`which "$exe" 2>/dev/null`);
+	if ( $? != 0 ) {
+		return $exe;
+	}
+	return $e;
+}
+
 sub WriteVSCodeCPPExtensionConfigFile
 {
 	local $jq = `which jq`;
@@ -640,7 +650,8 @@ sub WriteVSCodeCPPExtensionConfigFile
 		$newCfgObj .= "]";
 	}
 	{
-		$newCfgObj .= " ,compilerPath: \\\"$COMPILER_DRIVER_CPlusPlus\\\"";
+		my $showPath = ToFullPathEXE_($COMPILER_DRIVER_CPlusPlus);
+		$newCfgObj .= " ,compilerPath: \\\"$showPath\\\"";
 	}
 
 	$newCfgObj .= "}";
