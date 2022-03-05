@@ -88,7 +88,7 @@ help:
 
 
 ifeq ($(CONFIGURATION),)
-all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_
+all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT assure-default-configurations-exist_
 	@#first run all checks so any errors for missing tools appear ASAP
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Checking Prerequisites for Stroika:"
 	@$(MAKE) --no-print-directory --silent apply-configurations-if-needed MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
@@ -100,7 +100,7 @@ all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurat
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 else
-all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_ libraries tools tests samples documentation
+all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT assure-default-configurations-exist_ libraries tools tests samples documentation
 endif
 
 
@@ -159,13 +159,13 @@ documentation:
 
 
 ifeq ($(CONFIGURATION),)
-libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_
+libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT assure-default-configurations-exist_
 	@for i in $(APPLY_CONFIGS) ; do\
 		ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making Stroika/Libraries {$$i}:";\
 		$(MAKE) --no-print-directory libraries CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 else
-libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED third-party-components
+libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT assure-default-configurations-exist_ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED third-party-components
 	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Library --no-print-directory all
 endif
@@ -337,6 +337,11 @@ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED:
 	@#Check BOTH the check-prerequisite-tools-common (redundantly) and check-prerequisite-tools-current-configuration
 	@#because we could be using different versions of make (eg. cygwin vs. WSL) for different configurations
 	@$(MAKE) check-prerequisite-tools-common check-prerequisite-tools-current-configuration --no-print-directory
+
+IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT:
+	@$(MAKE) --no-print-directory project-files
+	@touch IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT
+
 
 
 assure-default-configurations-exist_:
