@@ -30,11 +30,11 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
     using Traversal::Iterable;
 
     /**
-     *  A big part of SSDP server functinality is to send periodic notifications of the Device info
+     *  A big part of SSDP server functinality is to send periodic notifications of the Device description
      *
-     *
-     *  Could pass in thread or maybe just keep it hidden
-     *
+     *  Instantiating the class does nothing. You must invoke Run() to start the notifications. And then
+     *  it runs in the background (with its own private thread) until the PeriodicNotifier object is
+     *  destroyed.
      */
     class PeriodicNotifier {
     public:
