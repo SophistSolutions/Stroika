@@ -7,6 +7,82 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+### 2.1r5x release start
+
+- Documentation/Comments
+
+- cosmetic - use {} for object construction instead of ()
+
+- expand set of allowed args to --cppstd-version in configure
+
+- mostly cosmetic cleanups to Led code (and lose obsolete bug define)
+
+- configure: use ${ syntax not $( sytnax for StroikaRoot in configure output so works in shells
+
+#if 0
+
+    for https://stroika.atlassian.net/browse/STK-717 - and otherwise simplicatiion - new configure flag --include-default-TSAN_OPTIONS {true/false} - and have configure automatically add TSAN_OPTIONS for ThreadSanitizerSuppressions.supp OR ThreadSanitizerSuppressions_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp as appriopriuate - and appearntly appropriate anytime using g++10 or 11 - or at least added case of on Ubuntu 20.04 (really only tested needed for TSAN, but probably also for valgrind)
+
+commit 0e3e73b25304622c79a095a505cbb4bf11bfac46
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 5 13:24:43 2022 +0000
+
+    fixed typo in qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy (was accidentally applying to clang)
+
+commit 50175fec76dec789fff2ecd01d85c0dc49fa024c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 5 14:27:26 2022 +0000
+
+    top level IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT so we run make project-files by default and dont get confused about missing files by default
+
+commit 60ea78cdb4962171e412e84d4f39cf949bd7279e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 5 14:47:06 2022 +0000
+
+    export StroikaRoot=/cygdrive/c/Sandbox/Stroika/DevRoot in regressiontests script
+
+commit df886be395f1415b20a825468d5828d138ebaf2d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 5 14:59:04 2022 +0000
+
+    use initializer in class declaration in place of CTOR in a few places
+
+commit 0f401f23fc7750eea2c9022b3226d931bd3c29aa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 5 18:42:39 2022 +0000
+
+    ApplyConfigurations update of vscode compilerPath now emits fullpath if possible
+
+commit 187911d4f8acc850191febd3104b8101b9b15fc6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 5 15:04:19 2022 -0500
+
+    fixed ScriptsLib/GetDefaultShellVariable to return a better answer for ECHO on MacOS
+
+commit 48b084ceb53de95e33b261e1543f6e0eab058e77
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 5 15:05:05 2022 -0500
+
+    macos doesnt support cp --update so ifdef DETECTED_OS and use rsync which does seem to work/support --update on macos
+
+commit a9642566fa89e502dea9f172975ff5529a03e142
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 5 15:05:40 2022 -0500
+
+    use $ECHO intead of echo in a few places in scripts/makefiles
+
+commit 445c784ab7ab39d0f57240cc171dca9a88805981
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 6 14:52:59 2022 +0000
+
+    start release 2.1r5 release
+
+
+#endif
+
+
+
 ---
 
 ### 2.1r4 {2022-03-01}
