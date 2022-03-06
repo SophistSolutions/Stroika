@@ -568,8 +568,6 @@ sub     FillDefaultLibDependencies_
 			}
 		}
 	}
-
-
 }
 sub     FillInToolsPathAdditionsIfNeeded_
 {
@@ -1053,10 +1051,10 @@ sub	SetDefaultForCompilerDriver_
 sub	SetDefaultForPlatform_
 {
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && $COMPILER_DRIVER eq '') {
-		# Ubuntu 18.04 comes with gcc version 7.x, which this version of Stroika doesnt support so
-		# if < 8, at least force gcc 8 as default; if wrong default - user can specify what they wanted explicitly
-		if (GetGCCVersion_ ("gcc") < '8') {
-			$COMPILER_DRIVER = "gcc-8";
+		# Ubuntu 20.04 comes with gcc version 9.x, which this version of Stroika doesnt support so
+		# if < 10, at least force gcc 10 as default; if wrong default - user can specify what they wanted explicitly
+		if (GetGCCVersion_ ("gcc") < '10') {
+			$COMPILER_DRIVER = "gcc-10";
 		}
 		else {
 			$COMPILER_DRIVER = "gcc";
