@@ -73,7 +73,7 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
         public:
             /**
              */
-            DestinationUnreachableException (uint8_t code, const InternetAddress& reachedIP);
+            DestinationUnreachableException (uint8_t code, const InternetAddress& unreachedIP);
 
         public:
             /**
@@ -81,11 +81,11 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
             nonvirtual uint8_t GetCode () const;
 
         public:
-            nonvirtual InternetAddress GetReachedIP () const;
+            nonvirtual InternetAddress GetUnreachedIP () const;
 
         private:
             uint8_t         fCode_;
-            InternetAddress fReachedIP_;
+            InternetAddress fUnreachedIP_;
         };
 
         /**
@@ -121,13 +121,13 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
         public:
             /**
              */
-            TTLExpiredException (const InternetAddress& reachedIP);
+            TTLExpiredException (const InternetAddress& unreachedIP);
 
         public:
-            nonvirtual InternetAddress GetReachedIP () const;
+            nonvirtual InternetAddress GetUnreachedIP () const;
 
         private:
-            InternetAddress fReachedIP_;
+            InternetAddress fUnreachedIP_;
         };
     }
 

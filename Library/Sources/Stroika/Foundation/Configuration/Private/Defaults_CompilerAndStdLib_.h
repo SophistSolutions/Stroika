@@ -1439,7 +1439,6 @@ int main ()
 #error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
 #endif
 
-
 #ifndef qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
@@ -1677,7 +1676,6 @@ NOTE:
 // Since Stroika 3.0d1
 #error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
 #endif
-
 
 #ifndef qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy
 
@@ -2303,7 +2301,6 @@ stHarness/SimpleClass.cpp ...
 // Since Stroika 3.0d1
 #error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
 #endif
-
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Support__PRETTY_FUNCTION__

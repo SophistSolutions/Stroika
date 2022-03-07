@@ -13,7 +13,7 @@ using namespace Stroika::Foundation::Execution;
 
 /*
  ********************************************************************************
- **************** RequiredComponentVersionMismatchException *********************
+ ****************** RequiredComponentVersionMismatchException *******************
  ********************************************************************************
  */
 namespace {

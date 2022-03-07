@@ -19,23 +19,23 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
          **************************** TTLExpiredException *******************************
          ********************************************************************************
          */
-        inline InternetAddress TTLExpiredException::GetReachedIP () const
+        inline InternetAddress TTLExpiredException::GetUnreachedIP () const
         {
-            return fReachedIP_;
+            return fUnreachedIP_;
         }
 
         /*
          ********************************************************************************
-         ********************** DestinationUnreachableException *************************
+         ************************ DestinationUnreachableException ***********************
          ********************************************************************************
          */
         inline uint8_t DestinationUnreachableException::GetCode () const
         {
             return fCode_;
         }
-        inline InternetAddress DestinationUnreachableException::GetReachedIP () const
+        inline InternetAddress DestinationUnreachableException::GetUnreachedIP () const
         {
-            return fReachedIP_;
+            return fUnreachedIP_;
         }
 
         /*

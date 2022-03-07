@@ -62,10 +62,10 @@ namespace {
  ***** InternetProtocol::ICMP::V4::DestinationUnreachableException **************
  ********************************************************************************
  */
-InternetProtocol::ICMP::V4::DestinationUnreachableException::DestinationUnreachableException (uint8_t code, const InternetAddress& reachedIP)
+InternetProtocol::ICMP::V4::DestinationUnreachableException::DestinationUnreachableException (uint8_t code, const InternetAddress& unreachedIP)
     : inherited{mkMessage_ (code)}
     , fCode_{code}
-    , fReachedIP_{reachedIP}
+    , fUnreachedIP_{unreachedIP}
 {
 }
 
@@ -85,8 +85,8 @@ InternetProtocol::ICMP::V4::UnknownICMPPacket::UnknownICMPPacket (ICMP_PacketTyp
  ************* InternetProtocol::ICMP::V4::TTLExpiredException ******************
  ********************************************************************************
  */
-InternetProtocol::ICMP::V4::TTLExpiredException::TTLExpiredException (const InternetAddress& reachedIP)
+InternetProtocol::ICMP::V4::TTLExpiredException::TTLExpiredException (const InternetAddress& unreachedIP)
     : inherited{L"ICMP TTL Expired."sv}
-    , fReachedIP_{reachedIP}
+    , fUnreachedIP_{unreachedIP}
 {
 }
