@@ -490,6 +490,10 @@ But - even with just plain make, you need some sort of configure script to estab
 
   cygcheck -p dos2unix
 
+- rm: cannot remove '.../boost/libs/beast/test/extern/zlib-1.2.11/contrib/dotzlib': Device or resource busy
+
+  This appears to be some weird issue with visual studio code. Quit vs code, and try again.
+
 - On raspberry pi
 
   > /tmp/Test43: /lib/arm-linux-gnueabihf/libc.so.6: version `GLIBC_2.28' not found (required by /tmp/Test43)

@@ -415,26 +415,25 @@ endif
 
 default-configurations:
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making default configurations:"
-	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
-	if [[ "$(DETECTED_HOST_OS)" = "Cygwin" || "$(DETECTED_HOST_OS)" = "MSYS" ]] ; then\
-		./configure Debug --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-debug-flags;\
-		./configure Release --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags;\
-		./configure Release-Logging --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags --trace2file enable;\
-		./configure Debug-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --apply-default-debug-flags;\
-		./configure Debug-x86_64 --config-tag Windows --config-tag x86_64 --build-by-default $(DETECTED_HOST_OS)  --arch x86_64 --apply-default-debug-flags;\
-		./configure Release-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --apply-default-release-flags;\
-		./configure Release-x86_64 --config-tag Windows --config-tag x86_64 --arch x86_64 --build-by-default $(DETECTED_HOST_OS)  --apply-default-release-flags;\
-	elif [ "$(DETECTED_HOST_OS)" = "Darwin" ] ; then\
-		./configure Debug --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-debug-flags;\
-		./configure Release --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags;\
-		./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable;\
-		./configure Release-x86_64 --arch x86_64 --config-tag x86_64 --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags;\
-		./configure Release-arm64 --arch arm64 --config-tag arm --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags;\
-	else\
-		./configure Debug --config-tag Unix --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-debug-flags;\
-		./configure Release --config-tag Unix --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags;\
-		./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable;\
-	fi
+ifneq ($(findstring $(HOST_OS_DETECTED),MSYS-Cygwin),)
+	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-debug-flags
+	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags
+	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags --trace2file enable
+	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --apply-default-debug-flags
+	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug-x86_64 --config-tag Windows --config-tag x86_64 --build-by-default $(DETECTED_HOST_OS)  --arch x86_64 --apply-default-debug-flags
+	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --apply-default-release-flags
+	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86_64 --config-tag Windows --config-tag x86_64 --arch x86_64 --build-by-default $(DETECTED_HOST_OS) --apply-default-release-flags
+else ifneq ($(findstring $(HOST_OS_DETECTED),Darwin),)
+	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-debug-flags
+	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
+	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable
+	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86_64 --arch x86_64 --config-tag x86_64 --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
+	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-arm64 --arch arm64 --config-tag arm --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
+else
+	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --config-tag Unix --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-debug-flags
+	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --config-tag Unix --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
+	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable
+endif
 
 
 basic-unix-test-configurations:
@@ -492,38 +491,41 @@ basic-unix-test-configurations_sanitizer_configs_:
 	./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined
 	./configure g++-debug-sanitize_undefined --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable --compiler-driver g++-10
 	./configure g++-debug-sanitize_undefined --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable
+	./configure g++-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined
 	#https://stroika.atlassian.net/browse/STK-761
 	if [[ `lsb_release -rs 2>/dev/null` == '21.10' ]] ; then ./configure g++-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined --lto disable; fi;
-	if [[ `lsb_release -rs 2>/dev/null` != '21.10' ]] ; then ./configure g++-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined; fi;
-	./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp";
+	./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread,undefined
 
 basic-unix-test-configurations_valgrind_configs_:
-	###Builds with a few special flags to make valgrind work better
-	#nb: using default installed C++ compiler cuz of matching installed libraries on host computer
+	# Builds with a few special flags to make valgrind work better
+	# nb: using default installed C++ compiler cuz of matching installed libraries on host computer
 	./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none
 	./configure valgrind-debug-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none
 	./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable
 	./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none
 
-
 raspberrypi-cross-compile-test-configurations:
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making raspberrypi-cross-compile-test-configurations:"
-	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
-	#\
-	# --append-CXXFLAGS -Wno-psabi JUST FOR ARM GCC8 - https://stroika.atlassian.net/browse/STK-627 \
-	./configure raspberrypi-g++-8-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-8' --sanitize none,address --cross-compiling true;\
-	./configure raspberrypi-g++-8-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-8' --cross-compiling true --append-CXXFLAGS -Wno-psabi;\
-	##Couldn't get tsan to link (/usr/bin/arm-linux-gnueabihf-ld: cannot find -ltsan) - so retry on next ubuntu release\
-	##DISABLE VALGRIND ALTOGETHER ON RASPBERRYPI - https://stroika.atlassian.net/browse/STK-703\
-	#./configure raspberrypi-valgrind-g++-8-SSLPurify-NoBlockAlloc --config-tag Unix --config-tag raspberrypi --config-tag valgrind --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-8' --valgrind enable --block-allocation disable --openssl use --openssl-extraargs purify --cross-compiling true;\
-	#\
-	# gcc-9 ARM raspberrypi compiler (ubuntu 20.04)\
-	./configure raspberrypi-g++-9-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-9' --sanitize none,address --cross-compiling true;\
-	./configure raspberrypi-g++-9-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-9' --cross-compiling true --append-CXXFLAGS -Wno-psabi;\
-	#\
-	# gcc-10 ARM raspberrypi compiler (ubuntu 20.04)\
-	./configure raspberrypi-g++-10-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-10' --sanitize none,address --cross-compiling true;\
-	./configure raspberrypi-g++-10-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-10' --cross-compiling true --append-CXXFLAGS -Wno-psabi;\
+	@#
+	@# --append-CXXFLAGS -Wno-psabi JUST FOR ARM GCC8 - https://stroika.atlassian.net/browse/STK-627
+	@			seems still broken on arm gcc 10 on Ubuntu 20.04
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-8-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-8' --sanitize none,address --cross-compiling true
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-8-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-8' --cross-compiling true --append-CXXFLAGS -Wno-psabi
+	@##Couldn't get tsan to link (/usr/bin/arm-linux-gnueabihf-ld: cannot find -ltsan) - so retry on next ubuntu release
+	@##DISABLE VALGRIND ALTOGETHER ON RASPBERRYPI - https://stroika.atlassian.net/browse/STK-703
+	@#./configure raspberrypi-valgrind-g++-8-SSLPurify-NoBlockAlloc --config-tag Unix --config-tag raspberrypi --config-tag valgrind --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-8' --valgrind enable --block-allocation disable --openssl use --openssl-extraargs purify --cross-compiling true
+	@#
+	@# gcc-9 ARM raspberrypi compiler
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-9-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-9' --sanitize none,address --cross-compiling true
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-9-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-9' --cross-compiling true --append-CXXFLAGS -Wno-psabi
+	@#
+	@# gcc-10 ARM raspberrypi compiler
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-10-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-10' --sanitize none,address --cross-compiling true
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-10-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-10' --cross-compiling true --append-CXXFLAGS -Wno-psabi
+	@#
+	@# gcc-11 ARM raspberrypi compiler
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-11-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-11' --sanitize none,address --cross-compiling true
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-11-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-11' --cross-compiling true
 
 
 regression-test-configurations:
