@@ -7,6 +7,74 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1r5x {2022-03-xx}
+
+#### TLDR
+
+- Minor cleanups, vscode configuration/compatability scripting, and other build system cleanups
+
+#### Change Details
+
+- Build System Tests And Tools
+  - configure
+    - expand set of allowed args to --cppstd-version in configure
+    - use \${ syntax not \$( sytnax for StroikaRoot in configure output so works in shells
+    - for https://stroika.atlassian.net/browse/STK-717 - and simplication - new configure flag --include-default-TSAN_OPTIONS {true/false} - and have configure automatically add TSAN_OPTIONS for ThreadSanitizerSuppressions.supp OR ThreadSanitizerSuppressions_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp as appriopriuate - and appearntly appropriate anytime using g++10 or 11 - or at least added case of on Ubuntu 20.04 (really only tested needed for TSAN, but probably also for valgrind)
+  - Regression Test Script
+    - export StroikaRoot=/cygdrive/c/Sandbox/Stroika/DevRoot in regressiontests script
+  - Makefiles
+    - top level IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT so we run make project-files by default and dont get confused about missing files by default
+  - vscode worskpaces/configuration
+    - ApplyConfigurations update of vscode compilerPath now emits fullpath if possible
+  - Build Scripts
+    - fixed ScriptsLib/GetDefaultShellVariable to return a better answer for ECHO on MacOS
+    - macos doesnt support cp --update so ifdef DETECTED_OS and use rsync which does seem to work/support --update on macos
+
+- Documentation/Comments
+
+- Library
+  - Compiler Bug defines
+    - fixed typo in qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy (was accidentally applying to clang)
+  - Minor code cleanups
+    - mostly cosmetic cleanups to Led code (and lose obsolete bug define)
+    - more use of {} syntax instead of () for object construction
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13; XCode: 13 }
+  - MSVC: { 15.9.41, 16.11.10, 17.1.0 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Monterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 21.10], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - vs2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+  - WSL-Regression tests
+    - Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure
+
 ---
 
 ### 2.1r4 {2022-03-01}
