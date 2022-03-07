@@ -3,7 +3,7 @@ DEFAULT_GOAL := help
 STROIKA_VERSION=$(shell dos2unix < ../STROIKA_VERSION | xargs echo -n)
 STROIKA_VERSION_Final=$(shell ../ScriptsLib/ExtractVersionInformation ../STROIKA_VERSION FinalBuild)
 
-HOST_OS_DETECTED=$(shell ../ScriptsLib/DetectedHostOS)
+DETECTED_HOST_OS=$(shell ../ScriptsLib/DetectedHostOS)
 
 help:
 	@echo "make docker-images to create the docker images on your computer"
@@ -20,7 +20,7 @@ help:
 
 
 build-images:
-ifeq (${HOST_OS_DETECTED},Linux)
+ifeq (${DETECTED_HOST_OS},Linux)
 	docker build -f Ubuntu1804-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-small .
 	docker build -f Ubuntu2004-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2004-small .
 	docker build -f Ubuntu2110-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2110-small .
@@ -32,7 +32,7 @@ ifeq (${HOST_OS_DETECTED},Linux)
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2004 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2110 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests .
 endif
-ifneq ($(findstring $(HOST_OS_DETECTED),MSYS-Cygwin),)
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	# to build this you may need  --storage-opts "size 100GB", but that currently doesn't work with build, so set
 	# in docker windows configuration settings (can get from docker gui - settings/Docker Engine)
 	# Build with -m 4GB cuz default of 1GB pages alot
@@ -48,7 +48,7 @@ endif
 
 
 stroika-dev-containers:
-ifeq (${HOST_OS_DETECTED},Linux)
+ifeq (${DETECTED_HOST_OS},Linux)
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10022:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-1804 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-1804 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10122:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2004 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2004 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10222:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
@@ -57,7 +57,7 @@ endif
 
 
 tag-images:
-ifeq (${HOST_OS_DETECTED},Linux)
+ifeq (${DETECTED_HOST_OS},Linux)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu1804-small sophistsolutionsinc/stroika-buildvm-ubuntu1804-small:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests  sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2004-small sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:$(STROIKA_VERSION)
@@ -66,7 +66,7 @@ ifeq (${HOST_OS_DETECTED},Linux)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests:$(STROIKA_VERSION)
 	#docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
 endif
-ifneq ($(findstring $(HOST_OS_DETECTED),MSYS-Cygwin),)
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	docker tag sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19:$(STROIKA_VERSION)
@@ -75,19 +75,19 @@ endif
 
 
 pull-base-images:
-ifeq (${HOST_OS_DETECTED},Linux)
+ifeq (${DETECTED_HOST_OS},Linux)
 	docker pull ubuntu:18.04
 	docker pull ubuntu:20.04
 	docker pull ubuntu:21.10
 endif
-ifneq ($(findstring $(HOST_OS_DETECTED),MSYS-Cygwin),)
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	docker pull mcr.microsoft.com/windows/servercore:ltsc2022
 endif
 
 
 push-images:
 	#if you get errors doing this (permission denied) make sure you ran docker login (as sophists - else no permission to push these)
-ifeq (${HOST_OS_DETECTED},Linux)
+ifeq (${DETECTED_HOST_OS},Linux)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2110-small:latest
@@ -97,14 +97,14 @@ ifeq (${HOST_OS_DETECTED},Linux)
 	#no need to push this yet/now
 	#docker push sophistsolutionsinc/stroika-dev:latest
 endif
-ifneq ($(findstring $(HOST_OS_DETECTED),MSYS-Cygwin),)
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:latest
 	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:latest
 	docker push sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19:latest
 	docker push sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:latest
 endif
 ifeq ($(STROIKA_VERSION_Final),true)
-ifeq (${HOST_OS_DETECTED},Linux)
+ifeq (${DETECTED_HOST_OS},Linux)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2110-small:$(STROIKA_VERSION)
@@ -114,7 +114,7 @@ ifeq (${HOST_OS_DETECTED},Linux)
 	#no need to push this yet/now
 	#docker push sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
 endif
-ifneq ($(findstring $(HOST_OS_DETECTED),MSYS-Cygwin),)
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19:$(STROIKA_VERSION)
