@@ -123,6 +123,10 @@ namespace {
         /*
          *  See the Iterable<> template in Iterable.h - for a ton more of this functional style linq-like operations
          *  you can do on any Stroika container.
+         * 
+         *  While most of these 'linq like' APIs are also present in STL as '<algorithms>' - those algorithms
+         *  are much hard to use (due to how templates work, and how you must pass 2 iterators, and they aren't
+         *  member functions of the container).
          */
         {
             Collection<int> tmp{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -197,6 +201,8 @@ namespace {
         for (Iterator<String> i = fruits.begin (); i != fruits.end ();) {
             if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*i, L"apple")) {
                 fruits.Remove (i, &i); // 'i' has already been updated to refer to the next element, regardless of how the Collection<> represents its data
+                // If you forget to pass in &i and continue iterating, this is a DETECTED bug (in debug builds)
+                // And stroika will assert out when you next use the iterator (i++).
             }
             else {
                 ++i;
