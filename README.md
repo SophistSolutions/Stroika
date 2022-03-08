@@ -10,7 +10,7 @@ Stroika is comprised of 2 layers, the [Foundation](Library/Sources/Stroika/Found
 
 ![alt text](Documentation/Images/AppLayersBlockDiagram.png "Title")
 
-The Frameworks depend on the Foundation; Foundation modules frequently depend on each other; but Foundation layer code contains no dependencies outside of the Foundation (except on std C++ libraries, and various ThirdPartyComponent libraries optionally included or referenced, like openssl).
+The Frameworks depend on the Foundation; Foundation modules frequently depend on each other; but Foundation layer code contains no dependencies outside of the Foundation (except on the Standard C++ Library, and various ThirdPartyComponent libraries optionally included or referenced, like openssl).
 
 ## Quality
 
