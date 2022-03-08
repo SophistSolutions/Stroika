@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         *  \brief returns true if this Contains (elt) - and probably false otherwise.
+         *  \brief returns true if this (probably) Contains 'elt' - and false otherwise.
          *
          *  False positive retrieval results are possible, but false negatives are not;
          * 
