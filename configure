@@ -2141,7 +2141,7 @@ sub PostProcessOptions_ ()
 				$RUN_PREFIX = " " . $RUN_PREFIX;
 			}
 			if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
-				$RUN_PREFIX = "TSAN_OPTIONS=suppressions=\${StroikaRoot}/Tests/ThreadSanitizerSuppressions_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp" . $RUN_PREFIX;
+				$RUN_PREFIX = "TSAN_OPTIONS=\"detect_deadlocks=0 suppressions=\${StroikaRoot}/Tests/ThreadSanitizerSuppressions_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp\"" . $RUN_PREFIX;
 			}
 			else {
 				$RUN_PREFIX = "TSAN_OPTIONS=suppressions=\${StroikaRoot}/Tests/ThreadSanitizerSuppressions.supp" . $RUN_PREFIX;
