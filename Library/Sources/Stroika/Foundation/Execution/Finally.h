@@ -61,6 +61,12 @@ namespace Stroika::Foundation::Execution {
      *
      *  Inspired by:
      *      http://nerds-central.blogspot.com/2012/03/c11-trycatchfinally-pattern-using-raii.html
+     * 
+     *  \note SEE https://en.cppreference.com/w/cpp/experimental/scope_exit
+     *            https://en.cppreference.com/w/cpp/experimental/scope_fail
+     *            https://en.cppreference.com/w/cpp/experimental/scope_success
+     *      (these may replace Finally - success/fail variants maybe better, and scope_exit I think basically
+     *       the same, except not sure always available)
      *
      *  \note   For cleanup which is important/critical to be completed, its sometimes wise to include
      *              Thread::SuppressInterruptionInContext suppressThreadInterrupts;
