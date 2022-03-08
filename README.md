@@ -4,7 +4,7 @@ Stroika is a modern, portable, thread-savvy, C++ application framework. It makes
 
 Stroika works ***with*** the standard C++ library, layered on top, and prodivdes simpler to use (higher level) classes, with more safety checking guarantees, and wider domain of applicability.
 
-Stylistically, Stroika differs from boost, in that it (relatively) embraces object oriented abstractions over template-based genericity (see [Stroika-Approach-To-Performance.md](Documentation/Stroika-Approach-To-Performance.md)) because the abstraction of type hierarchies is so much better suited to how people reason. And Stroika emphasizes separation of interface from implementation, carefully documenting the interface in the headers, and separating the implementation to other files.
+Stylistically, Stroika differs from boost and the Standard C++ Library (STL), in that it (relatively) embraces object oriented abstractions over template-based genericity (see [Stroika-Approach-To-Performance.md](Documentation/Stroika-Approach-To-Performance.md)) because the abstraction of type hierarchies is so much better suited to how people reason. And Stroika emphasizes separation of interface from implementation, carefully documenting the interface in the headers, and separating the implementation to other files.
 
 Stroika is comprised of 2 layers, the [Foundation](Library/Sources/Stroika/Foundation/ReadMe.md), which provides directly usable classes, and a series of domain specific [Framework](Library/Sources/Stroika/Frameworks/ReadMe.md)s which provide a rich collection of code in different domains.
 
