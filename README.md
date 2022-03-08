@@ -4,13 +4,15 @@ Stroika is a modern, portable, thread-savvy, C++ application framework. It makes
 
 Stroika works ***with*** the standard C++ library, layered on top, and prodivdes simpler to use (higher level) classes, with more safety checking guarantees, and wider domain of applicability.
 
-Stylistically, Stroika differs from boost and the Standard C++ Library (STL), in that it (relatively) embraces object oriented abstractions over template-based genericity (see [Stroika-Approach-To-Performance.md](Documentation/Stroika-Approach-To-Performance.md)) because the abstraction of type hierarchies is so much better suited to how people reason. And Stroika emphasizes separation of interface from implementation, carefully documenting the interface in the headers, and separating the implementation to other files.
+Stylistically, Stroika differs from the Standard C++ Library (STL), boost, and many other C++ libraries, in that it (relatively) embraces object oriented abstractions over template-based genericity (see [Stroika-Approach-To-Performance.md](Documentation/Stroika-Approach-To-Performance.md)). The abstraction of type hierarchies is better suited to how people reason, and templates and concepts - while powerful - can be fiddly and obscure programmer intent. Also, Stroika emphasizes separation of interface from implementation, carefully documenting the interface in the headers, and separating the implementation to other files.
 
 Stroika is comprised of 2 layers, the [Foundation](Library/Sources/Stroika/Foundation/ReadMe.md), which provides directly usable classes, and a series of domain specific [Framework](Library/Sources/Stroika/Frameworks/ReadMe.md)s which provide a rich collection of code in different domains.
 
 ![alt text](Documentation/Images/AppLayersBlockDiagram.png "Title")
 
 The Frameworks depend on the Foundation; Foundation modules frequently depend on each other; but Foundation layer code contains no dependencies outside of the Foundation (except on std C++ libraries, and various ThirdPartyComponent libraries optionally included or referenced, like openssl).
+
+## Quality
 
 - Nearly all public interfaces and methods are well documented; implementations are clear and well commented.
 - Thoroughly integrated assertions (including thread-safety assertions) help document and enforce usage patterns (without performance cost in production builds).
