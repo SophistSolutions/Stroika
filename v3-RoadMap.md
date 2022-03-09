@@ -2,7 +2,9 @@
 
 Rough outline of (informal/weak) plans for Stroika v3
 
-- Start January 2022
+- Start April 2022
+- Skel app - to generate new makefiles, main, etc, that uses Stroika
+  - maybe options for using frameworks, configurations, git submodule etc
 - Improve HTTP server
   - inline zip
   - https
