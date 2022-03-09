@@ -415,44 +415,43 @@ endif
 
 default-configurations:
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making default configurations:"
-ifneq ($(findstring $(HOST_OS_DETECTED),MSYS-Cygwin),)
-	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-debug-flags
-	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags
-	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags --trace2file enable
-	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --apply-default-debug-flags
-	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug-x86_64 --config-tag Windows --config-tag x86_64 --build-by-default $(DETECTED_HOST_OS)  --arch x86_64 --apply-default-debug-flags
-	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --apply-default-release-flags
-	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86_64 --config-tag Windows --config-tag x86_64 --arch x86_64 --build-by-default $(DETECTED_HOST_OS) --apply-default-release-flags
-else ifneq ($(findstring $(HOST_OS_DETECTED),Darwin),)
-	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-debug-flags
-	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
-	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable
-	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86_64 --arch x86_64 --config-tag x86_64 --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
-	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-arm64 --arch arm64 --config-tag arm --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-debug-flags
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags --trace2file enable
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --apply-default-debug-flags
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug-x86_64 --config-tag Windows --config-tag x86_64 --build-by-default $(DETECTED_HOST_OS)  --arch x86_64 --apply-default-debug-flags
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --apply-default-release-flags
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86_64 --config-tag Windows --config-tag x86_64 --arch x86_64 --build-by-default $(DETECTED_HOST_OS) --apply-default-release-flags
+else ifneq ($(findstring $(DETECTED_HOST_OS),Darwin),)
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-debug-flags
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86_64 --arch x86_64 --config-tag x86_64 --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-arm64 --arch arm64 --config-tag arm --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
 else
-	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --config-tag Unix --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-debug-flags
-	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --config-tag Unix --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
-	MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --config-tag Unix --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-debug-flags
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --config-tag Unix --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable
 endif
 
 
 basic-unix-test-configurations:
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making basic-unix-test-configurations:"
-	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
-	./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler;\
-	./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components;\
-	./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --LibCurl no --lzma no --zlib system --OpenSSL no --sqlite no --Xerces no --boost no;\
-	$(MAKE) --silent basic-unix-test-configurations_g++_versions_;\
-	$(MAKE) --silent basic-unix-test-configurations_clang++_versions_;\
-	#\
-	#32-bit not working now - asm bug - must debug...\
-	#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args -m32 --static-link-gccruntime disable;\
-	#\
-	$(MAKE) --silent basic-unix-test-configurations_sanitizer_configs_;\
-	#\
-	./configure g++-optimized --only-if-has-compiler --config-tag Unix --apply-default-release-flags;\
-	#\
-	$(MAKE) --silent basic-unix-test-configurations_valgrind_configs_;\
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --LibCurl no --lzma no --zlib system --OpenSSL no --sqlite no --Xerces no --boost no
+	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations_g++_versions_
+	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations_clang++_versions_
+	@#
+	@#32-bit not working now - asm bug - must debug...
+	@#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args -m32 --static-link-gccruntime disable;
+	@#
+	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations_sanitizer_configs_;
+	@#
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure g++-optimized --only-if-has-compiler --config-tag Unix --apply-default-release-flags;
+	@#
+	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations_valgrind_configs_
 
 
 basic-unix-test-configurations_g++_versions_:
@@ -508,7 +507,7 @@ raspberrypi-cross-compile-test-configurations:
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making raspberrypi-cross-compile-test-configurations:"
 	@#
 	@# --append-CXXFLAGS -Wno-psabi JUST FOR ARM GCC8 - https://stroika.atlassian.net/browse/STK-627
-	@			seems still broken on arm gcc 10 on Ubuntu 20.04
+	@#			seems still broken on arm gcc 10 on Ubuntu 20.04
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-8-release-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-release-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-8' --sanitize none,address --cross-compiling true
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure raspberrypi-g++-8-debug-sanitize_undefined --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-8' --cross-compiling true --append-CXXFLAGS -Wno-psabi
 	@##Couldn't get tsan to link (/usr/bin/arm-linux-gnueabihf-ld: cannot find -ltsan) - so retry on next ubuntu release

@@ -24,6 +24,7 @@ especially those they need to be aware of when upgrading.
     - export StroikaRoot=/cygdrive/c/Sandbox/Stroika/DevRoot in regressiontests script
   - Makefiles
     - top level IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT so we run make project-files by default and dont get confused about missing files by default
+    - cleanup definitions of various default configurations
   - vscode worskpaces/configuration
     - ApplyConfigurations update of vscode compilerPath now emits fullpath if possible
   - Build Scripts
