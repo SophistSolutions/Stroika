@@ -273,7 +273,7 @@ STAGE_STARTAT_INT=$(date +%s)
 echo "<Make all>" >>$TEST_OUT_FILE 2>&1
 echo -n "Make all ($PARALELLMAKEFLAG)..."
 echo "$PREFIX_OUT_LABEL" "Make all ($PARALELLMAKEFLAG)..."  >>$TEST_OUT_FILE 2>&1
-make all $PARALELLMAKEFLAG >>$TEST_OUT_FILE 2>&1
+(make all $PARALELLMAKEFLAG >>$TEST_OUT_FILE 2>&1) || exit $?
 STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
