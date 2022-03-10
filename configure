@@ -522,7 +522,7 @@ sub     FillDefaultLibDependencies_
 				#???dont thnik needed cuz of pragma comment link...
 			}
 			else {
-				push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \$(StroikaRoot)Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs libcurl");
+				push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs libcurl");
 			}
 		}
 
