@@ -30,7 +30,7 @@ The Frameworks depend on the Foundation; Foundation modules frequently depend on
 - [Networking](Library/Sources/Stroika/Foundation/IO/Network/ReadMe.md) support (high level socket wrappers, Web client fetching).
 - Simple, elegant [streams library](Library/Sources/Stroika/Foundation/Streams/ReadMe.md), with adapters for cryptography, compression, text transforms, etc.
 - Seamless integration (object oriented wrappers respecting Stroika's safety and adapter rules) with many important libraries , including: boost, libcurl, lzma sdk, openssl, sqlite, xerces, zlib (e.g. wrap a compression stream - using for example zlib).
-- and more...
+- and [more](Library/Sources/Stroika/Foundation/ReadMe.md)...
 
 ## Stroika [Framework](Library/Sources/Stroika/Frameworks/ReadMe.md)s provides
 
@@ -40,7 +40,7 @@ The Frameworks depend on the Foundation; Foundation modules frequently depend on
 - [text editing/word processor](Library/Sources/Stroika/Frameworks/Led/ReadMe.md)
 - [web server](Library/Sources/Stroika/Frameworks/WebServer/ReadMe.md)
 - [web services](Library/Sources/Stroika/Frameworks/WebService/ReadMe.md)
-- and more...
+- and [more](Library/Sources/Stroika/Frameworks/ReadMe.md)...
 
 ## Trade-offs
 

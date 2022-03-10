@@ -17,7 +17,7 @@ This folder contains all the Stroika Library Frameworks source code.
 
 - [Service](Service/ReadMe.md)
 
-  Package a program in the form of a UNIX or Windows service
+  Package a program in the form of a UNIX or Windows service (aka daemon, app that auto-starts with OS, has installer, start/stop integrated with OS, etc)
 
 - [System Performance](SystemPerformance/ReadMe.md)
 
