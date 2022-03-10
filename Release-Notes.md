@@ -7,7 +7,9 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1r5x {2022-03-xx}
+---
+
+### 2.1r5 {2022-03-10}
 
 #### TLDR
 
@@ -45,7 +47,7 @@ especially those they need to be aware of when upgrading.
 - Compilers Tested/Supported
   - g++ { 8, 9, 10, 11 }
   - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13; XCode: 13 }
-  - MSVC: { 15.9.41, 16.11.10, 17.1.0 }
+  - MSVC: { 15.9.41, 16.11.11, 17.1.1 }
 - OS/Platforms Tested/Supported
   - Windows
     - Windows 10 version 21H2
