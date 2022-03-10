@@ -16,7 +16,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 #if qHasFeature_LibCurl
     inline void ThrowIfError (CURLcode status)
     {
-        if (status != CURLE_OK) [[UNLIKELY_ATTR]] {
+        if (status != CURLE_OK) [[unlikely]] {
             Execution::Throw (Execution::SystemErrorException<>{status, LibCurl_error_category ()});
         }
     }

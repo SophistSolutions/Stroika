@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Memory {
     {
         // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
         // and we can avoid the (common) and costly memory barrier
-        if (fSharedImpl_ != from) [[LIKELY_ATTR]] {
+        if (fSharedImpl_ != from) [[likely]] {
             fSharedImpl_ = from;
         }
         return *this;
@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Memory {
     {
         // If the pointers are the same, there is no need to copy, as the reference counts must also be the same,
         // and we can avoid the (common) and costly memory barrier
-        if (fSharedImpl_ != from) [[LIKELY_ATTR]] {
+        if (fSharedImpl_ != from) [[likely]] {
             fSharedImpl_ = move (from);
         }
         return *this;
@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Memory {
          * 
          *  Save this way so no race (after Assure1Reference() other remaining ptr could go away.
          */
-        if (fSharedImpl_ != nullptr) [[LIKELY_ATTR]] {
+        if (fSharedImpl_ != nullptr) [[likely]] {
             AssureNOrFewerReferences (forward<COPIER> (copier));
             shared_ptr_type result = fSharedImpl_;
             Ensure (result.use_count () == 1);
@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Memory {
          * 
          *  Save this way so no race (after Assure1Reference() other remaining ptr could go away.
          */
-        if (fSharedImpl_ != nullptr) [[LIKELY_ATTR]] {
+        if (fSharedImpl_ != nullptr) [[likely]] {
             AssureNOrFewerReferences (forward<COPIER> (copier));
             Ensure (fSharedImpl_.use_count () == 1);
             return fSharedImpl_.get ();
@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Memory {
     inline void SharedByValue<T, TRAITS>::AssureNOrFewerReferences (COPIER&& copier, unsigned int n)
     {
         Require (n != 0);
-        if (static_cast<unsigned int> (fSharedImpl_.use_count ()) > n) [[UNLIKELY_ATTR]] {
+        if (static_cast<unsigned int> (fSharedImpl_.use_count ()) > n) [[unlikely]] {
             BreakReferences_ (forward<COPIER> (copier));
             Assert (this->use_count () == 1);
         }

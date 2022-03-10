@@ -753,7 +753,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             }
             virtual void Deactivating () override
             {
-                if (auto optVal = fNameMap.InverseLookup (fBuf_.str ())) [[LIKELY_ATTR]] {
+                if (auto optVal = fNameMap.InverseLookup (fBuf_.str ())) [[likely]] {
                     *fValue_ = *optVal;
                 }
                 else {
@@ -803,7 +803,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             {
                 using SerializeAsType = typename std::underlying_type<ENUM_TYPE>::type;
                 SerializeAsType tmp   = Characters::String2Int<SerializeAsType> (fBuf_.str ());
-                if (Configuration::ToInt (ENUM_TYPE::eSTART) <= tmp and tmp < Configuration::ToInt (ENUM_TYPE::eEND)) [[LIKELY_ATTR]] {
+                if (Configuration::ToInt (ENUM_TYPE::eSTART) <= tmp and tmp < Configuration::ToInt (ENUM_TYPE::eEND)) [[likely]] {
                     *fValue_ = Configuration::ToEnum<ENUM_TYPE> (tmp);
                 }
                 else {

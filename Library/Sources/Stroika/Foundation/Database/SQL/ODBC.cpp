@@ -30,7 +30,7 @@ using namespace Debug;
 namespace {
     void ThrowIfSQLError_ (SQLRETURN r, const String& message)
     {
-        if ((r != SQL_SUCCESS) and (r != SQL_SUCCESS_WITH_INFO)) [[UNLIKELY_ATTR]] {
+        if ((r != SQL_SUCCESS) and (r != SQL_SUCCESS_WITH_INFO)) [[unlikely]] {
             Execution::Throw (Exception{message});
         }
     }

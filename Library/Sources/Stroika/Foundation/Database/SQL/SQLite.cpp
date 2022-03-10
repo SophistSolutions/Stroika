@@ -101,7 +101,7 @@ namespace {
     void ThrowSQLiteErrorIfNotOK_ (int errCode, sqlite3* sqliteConnection = nullptr)
     {
         static_assert (SQLITE_OK == 0);
-        if (errCode != SQLITE_OK) [[UNLIKELY_ATTR]] {
+        if (errCode != SQLITE_OK) [[unlikely]] {
             ThrowSQLiteError_ (errCode, sqliteConnection);
         }
     }
@@ -211,7 +211,7 @@ struct Connection::Rep_ final : IRep {
                 }
             }
         }
-        if (e != SQLITE_OK) [[UNLIKELY_ATTR]] {
+        if (e != SQLITE_OK) [[unlikely]] {
             [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { if (fDB_ != nullptr) { Verify (::sqlite3_close (fDB_) == SQLITE_OK); } });
             ThrowSQLiteError_ (e, fDB_);
         }
@@ -265,7 +265,7 @@ struct Connection::Rep_ final : IRep {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         char*                                               db_err{};
         int                                                 e = ::sqlite3_exec (fDB_, sql.AsUTF8 ().c_str (), NULL, 0, &db_err);
-        if (e != SQLITE_OK) [[UNLIKELY_ATTR]] {
+        if (e != SQLITE_OK) [[unlikely]] {
             if (db_err == nullptr or *db_err == '\0') {
                 ThrowSQLiteErrorIfNotOK_ (e, fDB_);
             }

@@ -108,11 +108,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         Invariant ();
         fHead_ = new Link_{item, nullptr, fHead_};
-        if (fHead_->fNext != nullptr) [[LIKELY_ATTR]] {
+        if (fHead_->fNext != nullptr) [[likely]] {
             // backlink second item to first
             fHead_->fNext->fPrev = fHead_;
         }
-        if (fTail_ == nullptr) [[UNLIKELY_ATTR]] {
+        if (fTail_ == nullptr) [[unlikely]] {
             // if last is null, list was empty, so first==last now
             fTail_ = fHead_;
         }
@@ -124,11 +124,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         Invariant ();
         fTail_ = new Link_{item, fTail_, nullptr};
-        if (fTail_->fPrev != nullptr) [[LIKELY_ATTR]] {
+        if (fTail_->fPrev != nullptr) [[likely]] {
             // forward link second to last item to its prev
             fTail_->fPrev->fNext = fTail_;
         }
-        if (fHead_ == nullptr) [[UNLIKELY_ATTR]] {
+        if (fHead_ == nullptr) [[unlikely]] {
             // if head is null, list was empty, so first==last now
             fHead_ = fTail_;
         }

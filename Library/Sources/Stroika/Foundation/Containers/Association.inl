@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Containers {
     inline MAPPED_VALUE_TYPE Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupOneChecked (ArgByValueType<key_type> key, const THROW_IF_MISSING& throwIfMissing) const
     {
         auto tmp = Lookup (key);
-        if (auto i = tmp.begin ()) [[LIKELY_ATTR]] {
+        if (auto i = tmp.begin ()) [[likely]] {
             return *i;
         }
         Execution::Throw (throwIfMissing);
@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Containers {
     inline MAPPED_VALUE_TYPE Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupOneValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue) const
     {
         auto tmp = Lookup (key);
-        if (auto i = tmp.begin ()) [[LIKELY_ATTR]] {
+        if (auto i = tmp.begin ()) [[likely]] {
             return *i;
         }
         return defaultValue;
@@ -180,7 +180,7 @@ namespace Stroika::Foundation::Containers {
     {
         if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, Iterable<value_type>*>) {
             // very rare corner case
-            if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[UNLIKELY_ATTR]] {
+            if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[unlikely]] {
                 vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
                 AddAll (std::begin (copy), std::end (copy));
                 return;

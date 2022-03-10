@@ -1070,7 +1070,7 @@ STILL:
  *  But with gcc 9, this generates:
         ../Containers/../Configuration/Enumeration.inl: In member function 'ENUM_TYPE Stroika::Foundation::Configuration::EnumNames<ENUM_TYPE>::GetValue(const wchar_t*, const NOT_FOUND_EXCEPTION&) const':
         ../Containers/../Configuration/Enumeration.inl:190:13: warning: attributes at the beginning of statement are ignored [-Wattributes]
-          190 |             [[UNLIKELY_ATTR]]
+          190 |             [[unlikely]]
 
  */
 #ifndef qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy
@@ -2475,6 +2475,7 @@ stHarness/SimpleClass.cpp ...
 /*
  * https://en.cppreference.com/w/User:D41D8CD98F/feature_testing_macros
  * https://en.cppreference.com/w/cpp/language/attributes/likely
+ *      *** DEPRECATED IN STROIKA 3.0d1 ***
  */
 #if defined(__has_cpp_attribute)
 #if __has_cpp_attribute(likely)
@@ -2489,6 +2490,7 @@ stHarness/SimpleClass.cpp ...
 /*
  * https://en.cppreference.com/w/User:D41D8CD98F/feature_testing_macros
  * https://en.cppreference.com/w/cpp/language/attributes/likely
+ *      *** DEPRECATED IN STROIKA 3.0d1 ***
  */
 #if defined(__has_cpp_attribute)
 #if __has_cpp_attribute(unlikely)

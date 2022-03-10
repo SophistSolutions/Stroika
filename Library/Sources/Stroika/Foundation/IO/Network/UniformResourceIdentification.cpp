@@ -60,7 +60,7 @@ void SchemeType::Validate () const
 {
     // https://tools.ietf.org/html/rfc3986#appendix-A  -- scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
     for (Characters::Character c : *this) {
-        if (not c.IsASCII () or not(c.IsAlphabetic () or c.IsDigit () or c == '-' or c == '.' or c == '+')) [[UNLIKELY_ATTR]] {
+        if (not c.IsASCII () or not(c.IsAlphabetic () or c.IsDigit () or c == '-' or c == '.' or c == '+')) [[unlikely]] {
             Execution::Throw (Execution::RuntimeErrorException{L"bad character in URI scheme"sv});
         }
     }

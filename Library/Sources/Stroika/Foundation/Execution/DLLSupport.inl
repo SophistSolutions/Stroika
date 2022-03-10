@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Execution {
             addr = dlsym (fModule_, procName);
             // interface seems to be defined only for char*, not wide strings: may need to map procName as well
             const char* err = dlerror ();
-            if (err != nullptr) [[UNLIKELY_ATTR]] {
+            if (err != nullptr) [[unlikely]] {
                 Execution::Throw (DLLException (err));
             }
         }

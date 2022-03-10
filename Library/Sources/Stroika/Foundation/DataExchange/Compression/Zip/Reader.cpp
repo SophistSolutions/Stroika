@@ -34,7 +34,7 @@ namespace {
     void ThrowIfZLibErr_ (int err)
     {
         // VERY ROUGH DRAFT - probably need a more specific exception object type
-        if (err != Z_OK) [[UNLIKELY_ATTR]] {
+        if (err != Z_OK) [[unlikely]] {
             switch (err) {
                 case Z_VERSION_ERROR:
                     Execution::Throw (Execution::RuntimeErrorException{L"ZLIB Z_VERSION_ERROR"sv});

@@ -228,11 +228,11 @@ protected:
         Require (IsOpenRead ());
         switch (whence) {
             case Whence::eFromStart: {
-                if (offset < 0) [[UNLIKELY_ATTR]] {
+                if (offset < 0) [[unlikely]] {
                     Execution::Throw (range_error{"seek"});
                 }
                 SeekOffsetType uOffset = static_cast<SeekOffsetType> (offset);
-                if (uOffset > fBufferFilledUpValidBytes_) [[UNLIKELY_ATTR]] {
+                if (uOffset > fBufferFilledUpValidBytes_) [[unlikely]] {
                     Execution::Throw (range_error{"seek"});
                 }
                 // Note - warning here  legit - our caching strategy wtih string is bogus and wont work with large streams
@@ -241,11 +241,11 @@ protected:
             case Whence::eFromCurrent: {
                 Streams::SeekOffsetType       curOffset = fOffset_;
                 Streams::SignedSeekOffsetType newOffset = curOffset + offset;
-                if (newOffset < 0) [[UNLIKELY_ATTR]] {
+                if (newOffset < 0) [[unlikely]] {
                     Execution::Throw (range_error{"seek"});
                 }
                 SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
-                if (uNewOffset > fBufferFilledUpValidBytes_) [[UNLIKELY_ATTR]] {
+                if (uNewOffset > fBufferFilledUpValidBytes_) [[unlikely]] {
                     Execution::Throw (range_error{"seek"});
                 }
                 // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
@@ -253,11 +253,11 @@ protected:
             } break;
             case Whence::eFromEnd: {
                 Streams::SignedSeekOffsetType newOffset = fBufferFilledUpValidBytes_ + offset;
-                if (newOffset < 0) [[UNLIKELY_ATTR]] {
+                if (newOffset < 0) [[unlikely]] {
                     Execution::Throw (range_error{"seek"});
                 }
                 SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
-                if (uNewOffset > fBufferFilledUpValidBytes_) [[UNLIKELY_ATTR]] {
+                if (uNewOffset > fBufferFilledUpValidBytes_) [[unlikely]] {
                     Execution::Throw (range_error{"seek"});
                 }
                 // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams

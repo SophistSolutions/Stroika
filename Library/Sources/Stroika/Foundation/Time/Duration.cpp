@@ -413,7 +413,7 @@ Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
         isNeg = true;
         i     = SkipWhitespace_ (i + 1, s.end ());
     }
-    if (*i == 'P') [[LIKELY_ATTR]] {
+    if (*i == 'P') [[likely]] {
         i = SkipWhitespace_ (i + 1, s.end ());
     }
     else {
@@ -428,10 +428,10 @@ Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
         }
         string::const_iterator firstDigitI = i;
         string::const_iterator lastDigitI  = FindFirstNonDigitOrDot_ (i, s.end ());
-        if (lastDigitI == s.end ()) [[UNLIKELY_ATTR]] {
+        if (lastDigitI == s.end ()) [[unlikely]] {
             Execution::Throw (FormatException::kThe);
         }
-        if (firstDigitI == lastDigitI) [[UNLIKELY_ATTR]] {
+        if (firstDigitI == lastDigitI) [[unlikely]] {
             Execution::Throw (FormatException::kThe);
         }
         /*

@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Time {
     inline bool IsLeapYear (Year y)
     {
         // clang-format off
-        if (y % 4 == 0) [[UNLIKELY_ATTR]] {
+        if (y % 4 == 0) [[unlikely]] {
             if (y % 100 == 0) {
                 return y % 400 == 0;
             }

@@ -169,7 +169,7 @@ public:
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         switch (whence) {
             case Whence::eFromStart: {
-                if (offset < 0) [[UNLIKELY_ATTR]] {
+                if (offset < 0) [[unlikely]] {
                     Execution::Throw (range_error{"seek"});
                 }
 #if qPlatform_Linux

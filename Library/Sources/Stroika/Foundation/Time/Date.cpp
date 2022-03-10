@@ -115,7 +115,7 @@ optional<Date> Date::ParseQuietly_ (const wstring& rep, const time_get<wchar_t>&
     istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
     istreambuf_iterator<wchar_t> itend;        // end-of-stream
     istreambuf_iterator<wchar_t> i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
-    if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
+    if ((errState & ios::badbit) or (errState & ios::failbit)) [[unlikely]] {
         return nullopt;
     }
     else {
@@ -205,7 +205,7 @@ Date Date::AddDays (SignedJulianRepType dayCount) const
      */
     Date result = *this;
     result.fJulianDateRep_ += dayCount;
-    if (result.fJulianDateRep_ < Date::kMinJulianRep) [[UNLIKELY_ATTR]] {
+    if (result.fJulianDateRep_ < Date::kMinJulianRep) [[unlikely]] {
         static const range_error kRangeErrror_{"Date::AddDays cannot add days to go before the first julian calandar day"};
         Execution::Throw (kRangeErrror_);
     }

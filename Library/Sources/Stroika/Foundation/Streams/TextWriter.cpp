@@ -84,7 +84,7 @@ protected:
             sc = pc;
             goto Again;
         }
-        if (r != codecvt_utf8<wchar_t>::ok) [[UNLIKELY_ATTR]] {
+        if (r != codecvt_utf8<wchar_t>::ok) [[unlikely]] {
             // not sure waht to throw!
             Execution::Throw (Execution::RuntimeErrorException{L"Error converting characters codepage"sv});
         }

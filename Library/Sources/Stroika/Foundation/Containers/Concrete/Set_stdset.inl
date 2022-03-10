@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             fData_.Invariant ();
             auto i = fData_.find (item);
-            if (i != fData_.end ()) [[LIKELY_ATTR]] {
+            if (i != fData_.end ()) [[likely]] {
                 fData_.erase (i);
                 fChangeCounts_.PerformedChange ();
                 return true;

@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Characters {
                     ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
                 }
                 auto [ptr, ec] = from_chars (b, e, r);
-                if (ec == errc::result_out_of_range) [[UNLIKELY_ATTR]] {
+                if (ec == errc::result_out_of_range) [[unlikely]] {
                     return *b == '-' ? numeric_limits<T>::min () : numeric_limits<T>::max ();
                 }
                 // if error or trailing crap - return nan

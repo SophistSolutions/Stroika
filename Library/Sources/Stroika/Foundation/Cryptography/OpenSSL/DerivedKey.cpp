@@ -167,7 +167,7 @@ namespace {
         Require (nRounds >= 1);
         StackBuffer<byte> useKey{Memory::eUninitialized, cipherAlgorithm.KeyLength ()};
         StackBuffer<byte> useIV{Memory::eUninitialized, cipherAlgorithm.IVLength ()};
-        if (salt and salt->GetSize () != 8) [[UNLIKELY_ATTR]] {
+        if (salt and salt->GetSize () != 8) [[unlikely]] {
             // Could truncate and fill to adapt to different sized salt...
             Execution::Throw (Execution::Exception{L"only 8-byte salt with EVP_BytesToKey"sv});
         }
@@ -213,7 +213,7 @@ namespace {
             digestAlgorithm,
             static_cast<int> (keyLen + ivLen),
             reinterpret_cast<unsigned char*> (outBuf.begin ()));
-        if (a == 0) [[UNLIKELY_ATTR]] {
+        if (a == 0) [[unlikely]] {
             Execution::Throw (Execution::Exception{L"PKCS5_PBKDF2_HMAC error"sv});
         }
         const byte* p = outBuf.begin ();

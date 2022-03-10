@@ -2918,9 +2918,9 @@ namespace Stroika::Foundation::Characters::UTFConvert {
                 break;
             }
             ch = *source++;
-            if (ch <= UNI_MAX_BMP) [[LIKELY_ATTR]] { /* Target is a character <= 0xFFFF */
+            if (ch <= UNI_MAX_BMP) [[likely]] { /* Target is a character <= 0xFFFF */
                 /*   UTF-16 surrogate values are illegal in UTF-32; 0xffff or 0xfffe are both reserved values */
-                if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) [[UNLIKELY_ATTR]] {
+                if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) [[unlikely]] {
                     if (flags == strictConversion) {
                         --source; /* return to the illegal value itself */
                         result = sourceIllegal;
@@ -2977,7 +2977,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             const char16_t* oldSource = source; /*  In case we have to back up because of target overflow. */
             ch                        = *source++;
             /* If we have a surrogate pair, convert to UTF32 first. */
-            if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_HIGH_END) [[UNLIKELY_ATTR]] {
+            if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_HIGH_END) [[unlikely]] {
                 /* If the 16 bits following the high surrogate are in the source buffer... */
                 if (source < sourceEnd) {
                     ch2 = *source;
@@ -3038,9 +3038,9 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             const char16_t*    oldSource    = source; /* In case we have to back up because of target overflow. */
             ch                              = *source++;
             /* If we have a surrogate pair, convert to char32_t first. */
-            if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_HIGH_END) [[UNLIKELY_ATTR]] {
+            if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_HIGH_END) [[unlikely]] {
                 /* If the 16 bits following the high surrogate are in the source buffer... */
-                if (source < sourceEnd) [[LIKELY_ATTR]] {
+                if (source < sourceEnd) [[likely]] {
                     char32_t ch2 = *source;
                     /* If it's a low surrogate, convert to char32_t. */
                     if (ch2 >= UNI_SUR_LOW_START && ch2 <= UNI_SUR_LOW_END) {
@@ -3163,7 +3163,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             }
             ch -= offsetsFromUTF8[extraBytesToRead];
 
-            if (target >= targetEnd) [[UNLIKELY_ATTR]] {
+            if (target >= targetEnd) [[unlikely]] {
                 source -= (extraBytesToRead + 1); /* Back up source pointer! */
                 result = targetExhausted;
                 break;
@@ -3234,7 +3234,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             ch                          = *source++;
             if (flags == strictConversion) {
                 /* UTF-16 surrogate values are illegal in UTF-32 */
-                if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) [[UNLIKELY_ATTR]] {
+                if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) [[unlikely]] {
                     --source; /* return to the illegal value itself */
                     result = sourceIllegal;
                     break;
@@ -3307,7 +3307,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
         while (source < reinterpret_cast<const UTF8_*> (sourceEnd)) {
             char32_t       ch               = 0;
             unsigned short extraBytesToRead = trailingBytesForUTF8[*source];
-            if (source + extraBytesToRead >= reinterpret_cast<const UTF8_*> (sourceEnd)) [[UNLIKELY_ATTR]] {
+            if (source + extraBytesToRead >= reinterpret_cast<const UTF8_*> (sourceEnd)) [[unlikely]] {
                 result = sourceExhausted;
                 break;
             }
@@ -3340,12 +3340,12 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             }
             ch -= offsetsFromUTF8[extraBytesToRead];
 
-            if (target >= targetEnd) [[UNLIKELY_ATTR]] {
+            if (target >= targetEnd) [[unlikely]] {
                 source -= (extraBytesToRead + 1); /* Back up the source pointer! */
                 result = targetExhausted;
                 break;
             }
-            if (ch <= UNI_MAX_LEGAL_UTF32) [[LIKELY_ATTR]] {
+            if (ch <= UNI_MAX_LEGAL_UTF32) [[likely]] {
                 /*
                      * UTF-16 surrogate values are illegal in UTF-32, and anything
                      * over Plane 17 (> 0x10FFFF) is illegal.

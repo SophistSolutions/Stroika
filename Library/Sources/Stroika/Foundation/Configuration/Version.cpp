@@ -29,10 +29,10 @@ Version Version::FromWin32Version4DotString (const Characters::String& win32Vers
     DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
     int nMatchingItems = ::swscanf (win32Version4DotString.c_str (), L"%d.%d.%d.%d", &major, &minor, &verStageOctet, &verSubStageOctet);
     DISABLE_COMPILER_MSC_WARNING_END (4996)
-    if (major < 0 or major > 255) [[UNLIKELY_ATTR]] {
+    if (major < 0 or major > 255) [[unlikely]] {
         Execution::Throw (Execution::RuntimeErrorException{L"Invalid Version String"sv});
     }
-    if (minor < 0 or minor > 255) [[UNLIKELY_ATTR]] {
+    if (minor < 0 or minor > 255) [[unlikely]] {
         Execution::Throw (Execution::RuntimeErrorException{L"Invalid Version String"sv});
     }
     int verStage = static_cast<uint16_t> (verStageOctet) >> 5;
@@ -54,7 +54,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     // Helper to throw if out of range
     auto my_wcstol_ = [=] (const wchar_t* i, wchar_t** endResult) -> uint8_t {
         long l = wcstol (i, endResult, 10);
-        if (l < 0 or l > numeric_limits<uint8_t>::max ()) [[UNLIKELY_ATTR]] {
+        if (l < 0 or l > numeric_limits<uint8_t>::max ()) [[unlikely]] {
             DbgTrace (L"prettyVersionString=%s", prettyVersionString.c_str ());
             Execution::Throw (Execution::RuntimeErrorException{L"Invalid Version String: component out of range"_k});
         }
@@ -64,7 +64,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     const wchar_t* i        = prettyVersionString.c_str ();
     wchar_t*       tokenEnd = nullptr;
     major                   = my_wcstol_ (i, &tokenEnd); // @todo should validate, but no biggie
-    if (i == tokenEnd) [[UNLIKELY_ATTR]] {
+    if (i == tokenEnd) [[unlikely]] {
         DbgTrace (L"prettyVersionString=%s", prettyVersionString.c_str ());
         Execution::Throw (Execution::RuntimeErrorException{L"Invalid Version String"sv});
     }
@@ -72,7 +72,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     i = tokenEnd + 1; // end plus '.' separator
 
     minor = my_wcstol_ (i, &tokenEnd);
-    if (i == tokenEnd) [[UNLIKELY_ATTR]] {
+    if (i == tokenEnd) [[unlikely]] {
         DbgTrace (L"prettyVersionString=%s", prettyVersionString.c_str ());
         Execution::Throw (Execution::RuntimeErrorException{L"Invalid Version String"sv}); // require form 1.0a3, or at least 1.0, but no 1
     }
@@ -109,7 +109,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     }
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
     uint8_t verSubStage = my_wcstol_ (i, &tokenEnd);
-    if (i == tokenEnd) [[UNLIKELY_ATTR]] {
+    if (i == tokenEnd) [[unlikely]] {
         DbgTrace (L"prettyVersionString=%s", prettyVersionString.c_str ());
         Execution::Throw (Execution::RuntimeErrorException{L"Invalid Version String"sv}); // require form 1.0a3, or at least 1.0, but no 1
     }

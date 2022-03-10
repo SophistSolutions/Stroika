@@ -606,7 +606,7 @@ namespace Stroika::Foundation::Characters {
     {
         _SafeReadRepAccessor accessor{this};
         size_t               thisLen = accessor._ConstGetRep ()._GetLength ();
-        if (from > thisLen) [[UNLIKELY_ATTR]] {
+        if (from > thisLen) [[unlikely]] {
             Execution::Throw (out_of_range{"string index out of range"});
         }
         // @todo

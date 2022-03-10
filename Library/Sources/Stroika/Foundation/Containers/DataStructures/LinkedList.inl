@@ -170,7 +170,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void LinkedList<T>::Append (ArgByValueType<T> item)
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
-        if (this->fHead_ == nullptr) [[UNLIKELY_ATTR]] {
+        if (this->fHead_ == nullptr) [[unlikely]] {
             Prepend (item);
         }
         else {

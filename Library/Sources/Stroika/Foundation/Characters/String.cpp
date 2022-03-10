@@ -111,11 +111,11 @@ Traversal::Iterator<Character> String::_IRep::MakeIterator () const
         virtual void More (optional<Character>* result, bool advance) override
         {
             RequireNotNull (result);
-            if (advance) [[LIKELY_ATTR]] {
+            if (advance) [[likely]] {
                 Require (fCurIdx <= fStr->_GetLength ());
                 ++fCurIdx;
             }
-            if (fCurIdx < fStr->_GetLength ()) [[LIKELY_ATTR]] {
+            if (fCurIdx < fStr->_GetLength ()) [[likely]] {
                 *result = fStr->GetAt (fCurIdx);
             }
             else {
@@ -296,7 +296,7 @@ String String::FromNarrowString (const char* from, const char* to, const locale&
     const char*          from_next;
     wchar_t*             to_next;
     codecvt_base::result result = cvt.in (mbstate, from, to, from_next, &resultWStr[0], &resultWStr[resultWStr.size ()], to_next);
-    if (result != codecvt_base::ok) [[UNLIKELY_ATTR]] {
+    if (result != codecvt_base::ok) [[unlikely]] {
         Execution::Throw (Execution::RuntimeErrorException{L"Error converting locale multibyte string to UNICODE"sv});
     }
     resultWStr.resize (to_next - &resultWStr[0]);
@@ -416,7 +416,7 @@ String String::Concatenate (const String& rhs) const
     }
     _SafeReadRepAccessor                     rhsAccessor{&rhs};
     pair<const Character*, const Character*> rhsD = rhsAccessor._ConstGetRep ().GetData ();
-    if (rhsD.first == rhsD.second) [[UNLIKELY_ATTR]] {
+    if (rhsD.first == rhsD.second) [[unlikely]] {
         return *this;
     }
     return String{mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
@@ -429,7 +429,7 @@ String String::Concatenate (const wchar_t* appendageCStr) const
     _SafeReadRepAccessor                     thisAccessor{this};
     pair<const Character*, const Character*> lhsD   = thisAccessor._ConstGetRep ().GetData ();
     size_t                                   lhsLen = lhsD.second - lhsD.first;
-    if (lhsLen == 0) [[UNLIKELY_ATTR]] {
+    if (lhsLen == 0) [[unlikely]] {
         return String{appendageCStr};
     }
     return String{mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
@@ -1110,7 +1110,7 @@ void String::AsNarrowString (const locale& l, string* into) const
     const wchar_t*       from_next;
     char*                to_next;
     codecvt_base::result result = cvt.out (mbstate, &wstr[0], &wstr[wstr.size ()], from_next, &(*into)[0], &(*into)[into->size ()], to_next);
-    if (result != codecvt_base::ok) [[UNLIKELY_ATTR]] {
+    if (result != codecvt_base::ok) [[unlikely]] {
         Execution::Throw (Execution::RuntimeErrorException{L"Error converting locale multibyte string to UNICODE"sv});
     }
     into->resize (to_next - &(*into)[0]);
@@ -1237,7 +1237,7 @@ bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, s
     into->clear ();
     into->reserve (fromEnd - fromStart);
     for (const wchar_t* wi = fromStart; wi != fromEnd; ++wi) {
-        if (not Character{*wi}.IsASCII ()) [[UNLIKELY_ATTR]] {
+        if (not Character{*wi}.IsASCII ()) [[unlikely]] {
             return false;
         }
         into->push_back (static_cast<char> (*wi));
@@ -1252,7 +1252,7 @@ bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, M
     into->clear ();
     into->reserve (fromEnd - fromStart);
     for (const wchar_t* wi = fromStart; wi != fromEnd; ++wi) {
-        if (not Character{*wi}.IsASCII ()) [[UNLIKELY_ATTR]] {
+        if (not Character{*wi}.IsASCII ()) [[unlikely]] {
             return false;
         }
         into->push_back (static_cast<char> (*wi));

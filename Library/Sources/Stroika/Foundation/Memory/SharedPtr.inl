@@ -506,7 +506,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     inline void ThrowIfNull (const Memory::SharedPtr<T>& p)
     {
-        if (p.get () == nullptr) [[UNLIKELY_ATTR]] {
+        if (p.get () == nullptr) [[unlikely]] {
             Execution::Throw (bad_alloc{}, "ThrowIfNull (SharedPtr<T> ()) - throwing bad_alloc ()");
         }
     }

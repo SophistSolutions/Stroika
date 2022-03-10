@@ -309,7 +309,7 @@ bool VariantValue::As () const
 
 bool VariantValue::IsConvertibleTo (Type to) const
 {
-    if (GetType () == to) [[LIKELY_ATTR]] {
+    if (GetType () == to) [[likely]] {
         return true; // performance tweak
     }
     try {
@@ -324,7 +324,7 @@ bool VariantValue::IsConvertibleTo (Type to) const
 
 VariantValue VariantValue::ConvertTo (Type to) const
 {
-    if (GetType () == to) [[LIKELY_ATTR]] {
+    if (GetType () == to) [[likely]] {
         return *this; // performance tweak
     }
     static const DataExchange::BadFormatException kCannotCoerce2Null_{L"Cannot coerce VariantValue to null"sv};
@@ -551,7 +551,7 @@ DateTime VariantValue::As () const
 
 String VariantValue::AsString_ () const
 {
-    if (fVal_ == nullptr) [[UNLIKELY_ATTR]] {
+    if (fVal_ == nullptr) [[unlikely]] {
         return String{};
     }
     switch (fVal_->GetType ()) {
@@ -664,7 +664,7 @@ template <>
 map<wstring, VariantValue> VariantValue::As () const
 {
     using namespace Characters;
-    if (fVal_ == nullptr) [[UNLIKELY_ATTR]] {
+    if (fVal_ == nullptr) [[unlikely]] {
         return map<wstring, VariantValue> ();
     }
     switch (fVal_->GetType ()) {
@@ -690,7 +690,7 @@ template <>
 Mapping<String, VariantValue> VariantValue::As () const
 {
     using namespace Characters;
-    if (fVal_ == nullptr) [[UNLIKELY_ATTR]] {
+    if (fVal_ == nullptr) [[unlikely]] {
         return Mapping<String, VariantValue> ();
     }
     switch (fVal_->GetType ()) {
@@ -717,7 +717,7 @@ vector<VariantValue> VariantValue::As () const
 template <>
 Sequence<VariantValue> VariantValue::As () const
 {
-    if (fVal_ == nullptr) [[UNLIKELY_ATTR]] {
+    if (fVal_ == nullptr) [[unlikely]] {
         return Sequence<VariantValue>{};
     }
     switch (fVal_->GetType ()) {

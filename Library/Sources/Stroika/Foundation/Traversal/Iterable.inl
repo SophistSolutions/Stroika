@@ -273,7 +273,7 @@ namespace Stroika::Foundation::Traversal {
         vector<T>                tmp{from.begin (), from.end ()}; // Somewhat simplistic / inefficient implementation
         size_t                   idx{0};
         function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
-            if (idx < tmp.size ()) [[LIKELY_ATTR]] {
+            if (idx < tmp.size ()) [[likely]] {
                 return tmp[idx++];
             }
             else {
@@ -856,7 +856,7 @@ namespace Stroika::Foundation::Traversal {
         vector<T> tmp{begin (), end ()}; // Somewhat simplistic implementation
         sort (tmp.begin (), tmp.end (), compare);
         size_t sz{tmp.size ()};
-        if (sz == 0) [[UNLIKELY_ATTR]] {
+        if (sz == 0) [[unlikely]] {
             return nullopt;
         }
         if ((sz % 2) == 0) {
@@ -887,10 +887,10 @@ namespace Stroika::Foundation::Traversal {
                 size_t                   innerIndex{0};
                 function<optional<T> ()> getNext = [origList, repeatCountIndex, innerIndex, count] () mutable -> optional<T> {
                     Again:
-                        if (innerIndex < origList.size ()) [[LIKELY_ATTR]] {
+                        if (innerIndex < origList.size ()) [[likely]] {
                             return origList[innerIndex++];
                         }
-                        if (repeatCountIndex < count) [[LIKELY_ATTR]] {
+                        if (repeatCountIndex < count) [[likely]] {
                             ++repeatCountIndex;
                             innerIndex = 0;
                             goto Again;

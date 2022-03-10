@@ -160,12 +160,12 @@ namespace Stroika::Foundation::Math {
     {
         Require (epsilon >= 0);
         TC diff = l - r;
-        if (isnan (diff)) [[UNLIKELY_ATTR]] {
+        if (isnan (diff)) [[unlikely]] {
             // nan-nan, or inf-inf
             // maybe other cases shouldnt be considered nearly equals?
             return std::fpclassify (l) == std::fpclassify (r);
         }
-        if (isinf (diff)) [[UNLIKELY_ATTR]] {
+        if (isinf (diff)) [[unlikely]] {
             static const TC kEpsilon_ = Private_::mkCompareEpsilon_ (numeric_limits<TC>::max (), numeric_limits<TC>::max ());
             /* 
              *  Need to use a temporary of type TC, because T1 or T2 maybe a type of a special temporary value which cannot be assigned to (like Sequence<>::TemporaryItem....

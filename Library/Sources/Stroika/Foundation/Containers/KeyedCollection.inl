@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Containers {
     template <typename THROW_IF_MISSING>
     inline auto KeyedCollection<T, KEY_TYPE, TRAITS>::LookupChecked (ArgByValueType<KeyType> key, const THROW_IF_MISSING& throwIfMissing) const -> value_type
     {
-        if (optional<value_type> r{Lookup (key)}) [[LIKELY_ATTR]] {
+        if (optional<value_type> r{Lookup (key)}) [[likely]] {
             return *r;
         }
         Execution::Throw (throwIfMissing);

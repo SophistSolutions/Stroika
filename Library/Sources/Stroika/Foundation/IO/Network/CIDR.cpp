@@ -33,10 +33,10 @@ namespace {
         if (auto i = cidrNotation.RFind ('/')) {
             InternetAddress ia{cidrNotation.SubString (0, *i), addressFamily};
             unsigned int    nBits = Characters::String2Int<unsigned int> (cidrNotation.SubString (*i + 1));
-            if (not ia.GetAddressSize ().has_value ()) [[UNLIKELY_ATTR]] {
+            if (not ia.GetAddressSize ().has_value ()) [[unlikely]] {
                 Execution::Throw (Execution::RuntimeErrorException{L"CIDR format exception: cannot use CIDR notation with that type of internet address"sv});
             }
-            if (*ia.GetAddressSize () * 8 < nBits) [[UNLIKELY_ATTR]] {
+            if (*ia.GetAddressSize () * 8 < nBits) [[unlikely]] {
                 Execution::Throw (Execution::RuntimeErrorException{L"CIDR format exception: number of significant bits too large"sv});
             }
             return CIDR{ia, nBits};

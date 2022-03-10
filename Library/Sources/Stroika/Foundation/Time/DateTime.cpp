@@ -250,7 +250,7 @@ DateTime DateTime::Parse (const String& rep, LocaleIndependentFormat format)
 
 DateTime DateTime::Parse (const String& rep, const locale& l, const String& formatPattern)
 {
-    if (rep.empty ()) [[UNLIKELY_ATTR]] {
+    if (rep.empty ()) [[unlikely]] {
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
     }
     if (auto o = ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern)) {
@@ -261,7 +261,7 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const String& form
 
 DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns)
 {
-    if (rep.empty ()) [[UNLIKELY_ATTR]] {
+    if (rep.empty ()) [[unlikely]] {
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
     }
     wstring                  wRep  = rep.As<wstring> ();
@@ -281,7 +281,7 @@ DateTime DateTime::Parse (const String& rep, const String& formatPattern)
 
 optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentFormat format)
 {
-    if (rep.empty ()) [[UNLIKELY_ATTR]] {
+    if (rep.empty ()) [[unlikely]] {
         return nullopt;
     }
     switch (format) {
@@ -462,7 +462,7 @@ optional<DateTime> DateTime::ParseQuietly_ (const wstring& rep, const time_get<w
         }
     }
 
-    if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
+    if ((errState & ios::badbit) or (errState & ios::failbit)) [[unlikely]] {
         return nullopt;
     }
     // @todo probably could read TIMEZONE (occasionally) from the when output (maybe look at format string to tell if its being set)
@@ -710,7 +710,7 @@ time_t DateTime::As () const
     DateTime useDT = this->AsUTC (); // time_t defined in UTC
     Date     d     = useDT.GetDate ();
 
-    if (useDT.GetDate ().GetYear () < Year{1970}) [[UNLIKELY_ATTR]] {
+    if (useDT.GetDate ().GetYear () < Year{1970}) [[unlikely]] {
         static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1970"};
         Execution::Throw (kRangeErrror_);
     }
@@ -734,7 +734,7 @@ template <>
 tm DateTime::As () const
 {
     // clang-format off
-    if (GetDate ().GetYear () < Year{1900}) [[UNLIKELY_ATTR]] {
+    if (GetDate ().GetYear () < Year{1900}) [[unlikely]] {
         static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1900"};
         Execution::Throw (kRangeErrror_);
     }

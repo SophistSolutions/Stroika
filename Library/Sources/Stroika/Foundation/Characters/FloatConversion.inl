@@ -119,7 +119,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                             break;
                         }
                     }
-                    if (len != pPastLastZero) [[UNLIKELY_ATTR]] { // check common case of no change, but this substring and assign already pretty optimized (not sure helps performance)
+                    if (len != pPastLastZero) [[unlikely]] { // check common case of no change, but this substring and assign already pretty optimized (not sure helps performance)
                         *strResult = strResult->SubString (0, pPastLastZero);
                     }
                 }
@@ -473,15 +473,15 @@ namespace Stroika::Foundation::Characters::FloatConversion {
              */
             auto b = start;
             auto e = end;
-            if (b != e and *b == '+') [[UNLIKELY_ATTR]] {
+            if (b != e and *b == '+') [[unlikely]] {
                 ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
             }
             auto [ptr, ec] = from_chars (b, e, result);
-            if (ec == errc::result_out_of_range) [[UNLIKELY_ATTR]] {
+            if (ec == errc::result_out_of_range) [[unlikely]] {
                 return *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
             }
             // if error or trailing crap - return nan
-            if (ec != std::errc{} or ptr != e) [[UNLIKELY_ATTR]] {
+            if (ec != std::errc{} or ptr != e) [[unlikely]] {
                 result = Math::nan<T> ();
             }
         }
@@ -513,15 +513,15 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             if (String::AsASCIIQuietly (start, end, &asciiS)) {
                 auto b = asciiS.begin ();
                 auto e = asciiS.end ();
-                if (b != e and *b == '+') [[UNLIKELY_ATTR]] {
+                if (b != e and *b == '+') [[unlikely]] {
                     ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
                 }
                 auto [ptr, ec] = from_chars (b, e, result);
-                if (ec == errc::result_out_of_range) [[UNLIKELY_ATTR]] {
+                if (ec == errc::result_out_of_range) [[unlikely]] {
                     return *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
                 }
                 // if error or trailing crap - return nan
-                if (ec != std::errc{} or ptr != e) [[UNLIKELY_ATTR]] {
+                if (ec != std::errc{} or ptr != e) [[unlikely]] {
                     // result = Math::nan<T> ();
                     // This could be a locale issue, so until we have a parameter saying FORCE-C-LOCALE, treat librarly and let strtod have a shot
                     // See https://stroika.atlassian.net/browse/STK-748
@@ -574,30 +574,30 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 auto b         = asciiS.begin ();
                 auto originalB = b; // needed to properly compute remainder
                 auto e         = asciiS.end ();
-                if (remainder != nullptr) [[UNLIKELY_ATTR]] {
+                if (remainder != nullptr) [[unlikely]] {
                     // in remainder mode we skip leading whitespace
                     while (b != e and iswspace (*b))
-                        [[UNLIKELY_ATTR]]
+                        [[unlikely]]
                         {
                             ++b;
                         }
                 }
-                if (b != e and *b == '+') [[UNLIKELY_ATTR]] {
+                if (b != e and *b == '+') [[unlikely]] {
                     ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
                 }
 
                 auto [ptr, ec] = from_chars (b, e, result);
-                if (ec == errc::result_out_of_range) [[UNLIKELY_ATTR]] {
+                if (ec == errc::result_out_of_range) [[unlikely]] {
                     return *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
                 }
                 // if error - return nan
-                if (ec != std::errc{}) [[UNLIKELY_ATTR]] {
+                if (ec != std::errc{}) [[unlikely]] {
                     result = Math::nan<T> ();
                 }
                 // If asked to return remainder do so.
                 // If NOT asked to return remainder, treat not using the entire string as forcing result to be a Nan (invalid parse of number of not the whole thing is a number)
-                if (remainder == nullptr) [[LIKELY_ATTR]] {
-                    if (ptr != e) [[UNLIKELY_ATTR]] {
+                if (remainder == nullptr) [[likely]] {
+                    if (ptr != e) [[unlikely]] {
                         result = Math::nan<T> ();
                     }
                 }

@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>& Iterator<T, ITERATOR_TRAITS>::operator= (const Iterator& rhs)
     {
-        if (&rhs != this) [[LIKELY_ATTR]] {
+        if (&rhs != this) [[likely]] {
             fRep_          = rhs.fRep_ == nullptr ? nullptr : Clone_ (*rhs.fRep_);
             fCurrentValue_ = rhs.fCurrentValue_;
             this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>& Iterator<T, ITERATOR_TRAITS>::operator= (Iterator&& rhs) noexcept
     {
-        if (&rhs != this) [[LIKELY_ATTR]] {
+        if (&rhs != this) [[likely]] {
             fRep_          = move (rhs.fRep_);
             fCurrentValue_ = move (rhs.fCurrentValue_);
             this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
@@ -202,7 +202,7 @@ namespace Stroika::Foundation::Traversal {
          */
         bool lDone = Done ();
         bool rDone = rhs.Done ();
-        if (lDone != rDone) [[LIKELY_ATTR]] {
+        if (lDone != rDone) [[likely]] {
             return false;
         }
         if (lDone) {

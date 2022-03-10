@@ -52,7 +52,7 @@ namespace {
 #if qPlatform_POSIX
         // either main module or not found
         const char* err = dlerror ();
-        if (err != nullptr) [[UNLIKELY_ATTR]] {
+        if (err != nullptr) [[unlikely]] {
             Execution::Throw (DLLException{err});
         }
 #endif
@@ -158,7 +158,7 @@ DLLLoader::~DLLLoader ()
 #else
     if (::dlclose (fModule_) != 0) {
         const char* err = ::dlerror ();
-        if (err != nullptr) [[UNLIKELY_ATTR]] {
+        if (err != nullptr) [[unlikely]] {
             Execution::Throw (DLLException{err});
         }
     }

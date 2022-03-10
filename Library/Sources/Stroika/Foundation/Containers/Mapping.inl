@@ -154,7 +154,7 @@ namespace Stroika::Foundation::Containers {
     template <typename THROW_IF_MISSING>
     inline MAPPED_VALUE_TYPE Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupChecked (ArgByValueType<key_type> key, const THROW_IF_MISSING& throwIfMissing) const
     {
-        if (optional<MAPPED_VALUE_TYPE> r{Lookup (key)}) [[LIKELY_ATTR]] {
+        if (optional<MAPPED_VALUE_TYPE> r{Lookup (key)}) [[likely]] {
             return *r;
         }
         Execution::Throw (throwIfMissing);
@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Containers {
     {
         if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, Iterable<value_type>*>) {
             // very rare corner case
-            if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[UNLIKELY_ATTR]] {
+            if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[unlikely]] {
                 vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
                 return AddAll (std::begin (copy), std::end (copy), addReplaceMode);
             }

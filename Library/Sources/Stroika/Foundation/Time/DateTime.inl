@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Time {
     }
     inline optional<DateTime> DateTime::ParseQuietly (const String& rep, const locale& l, const String& formatPattern)
     {
-        if (rep.empty ()) [[UNLIKELY_ATTR]] {
+        if (rep.empty ()) [[unlikely]] {
             Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
         }
         return ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern);

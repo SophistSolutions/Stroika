@@ -159,7 +159,7 @@ Response Connection::Ptr::Send (const Request& r)
     const LazyEvalActivity activity{[&] () { return L"sending '" + r.fMethod + L"' request to " + Characters::ToString (GetSchemeAndAuthority ().Combine (r.fAuthorityRelativeURL)); }};
     DeclareActivity        declaredActivity{GetOptions ().fDeclareActivities.value_or (kDeclareActivitiesFlag_Default_) ? &activity : nullptr};
     Response               response = fRep_->Send (r);
-    if (not response.GetSucceeded ()) [[UNLIKELY_ATTR]] {
+    if (not response.GetSucceeded ()) [[unlikely]] {
         Throw (Exception{response});
     }
     Ensure (response.GetSucceeded ());

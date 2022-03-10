@@ -440,7 +440,7 @@ namespace Stroika::Foundation::Containers {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         // see https://stroika.atlassian.net/browse/STK-645
         if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, const MultiSet<T, TRAITS>*>) {
-            if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[UNLIKELY_ATTR]] {
+            if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[unlikely]] {
                 // very rare corner case
                 vector<typename decay_t<ITERABLE_OF_ADDABLE>::value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
                 for (const auto& i : copy) {

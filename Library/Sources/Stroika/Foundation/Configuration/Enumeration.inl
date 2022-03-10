@@ -194,7 +194,7 @@ namespace Stroika::Foundation::Configuration {
     {
         RequireNotNull (name);
         optional<ENUM_TYPE> tmp = PeekValue (name);
-        if (!tmp) [[UNLIKELY_ATTR]] {
+        if (!tmp) [[unlikely]] {
             //Execution::Throw (notFoundException);
             throw (notFoundException);
         }

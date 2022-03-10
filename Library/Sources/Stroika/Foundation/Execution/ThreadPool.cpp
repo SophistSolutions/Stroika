@@ -428,7 +428,7 @@ void ThreadPool::WaitForNextTask_ (TaskType* result)
 {
     RequireNotNull (result);
     while (true) {
-        if (fAborted_) [[UNLIKELY_ATTR]] {
+        if (fAborted_) [[unlikely]] {
             Execution::Throw (Thread::AbortException::kThe);
         }
 

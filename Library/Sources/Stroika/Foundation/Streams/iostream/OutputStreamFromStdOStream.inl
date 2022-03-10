@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Streams::iostream {
 
             using StreamElementType = typename OStreamType::char_type;
             fOriginalStream_.write (reinterpret_cast<const StreamElementType*> (start), end - start);
-            if (fOriginalStream_.fail ()) [[UNLIKELY_ATTR]] {
+            if (fOriginalStream_.fail ()) [[unlikely]] {
                 using namespace Characters;
                 Execution::Throw (Execution::RuntimeErrorException{L"Failed to write from ostream"sv});
             }
@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Streams::iostream {
             lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
             Require (IsOpenWrite ());
             fOriginalStream_.flush ();
-            if (fOriginalStream_.fail ()) [[UNLIKELY_ATTR]] {
+            if (fOriginalStream_.fail ()) [[unlikely]] {
                 using namespace Characters;
                 Execution::Throw (Execution::RuntimeErrorException{L"Failed to flush ostream"sv});
             }

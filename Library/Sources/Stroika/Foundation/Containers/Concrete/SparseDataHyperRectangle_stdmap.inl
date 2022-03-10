@@ -158,11 +158,11 @@ namespace Stroika::Foundation::Containers::Concrete {
             virtual void More (optional<tuple<T, INDEXES...>>* result, bool advance) override
             {
                 RequireNotNull (result);
-                if (advance) [[LIKELY_ATTR]] {
+                if (advance) [[likely]] {
                     Require (not fIterator.Done ()); // new requirement since Stroika 2.1b14
                     ++fIterator;
                 }
-                if (fIterator.Done ()) [[UNLIKELY_ATTR]] {
+                if (fIterator.Done ()) [[unlikely]] {
                     *result = nullopt;
                 }
                 else {

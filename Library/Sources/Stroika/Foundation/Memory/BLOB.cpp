@@ -159,7 +159,7 @@ BLOB BLOB::Hex (const char* s, const char* e)
         }
         byte b = HexChar2Num_ (*i);
         ++i;
-        if (i == e) [[UNLIKELY_ATTR]] {
+        if (i == e) [[unlikely]] {
             Execution::Throw (Execution::RuntimeErrorException{L"Invalid partial HEX character in BLOB::Hex"sv});
         }
         b = byte (uint8_t (b << 4) + uint8_t (HexChar2Num_ (*i)));
@@ -230,10 +230,10 @@ namespace {
                 Require (IsOpenRead ());
                 switch (whence) {
                     case Whence::eFromStart: {
-                        if (offset < 0) [[UNLIKELY_ATTR]] {
+                        if (offset < 0) [[unlikely]] {
                             Execution::Throw (range_error{"seek"});
                         }
-                        if (offset > (fEnd - fStart)) [[UNLIKELY_ATTR]] {
+                        if (offset > (fEnd - fStart)) [[unlikely]] {
                             Execution::Throw (range_error{"seek"});
                         }
                         fCur = fStart + offset;
@@ -241,20 +241,20 @@ namespace {
                     case Whence::eFromCurrent: {
                         Streams::SeekOffsetType       curOffset = fCur - fStart;
                         Streams::SignedSeekOffsetType newOffset = curOffset + offset;
-                        if (newOffset < 0) [[UNLIKELY_ATTR]] {
+                        if (newOffset < 0) [[unlikely]] {
                             Execution::Throw (range_error{"seek"});
                         }
-                        if (newOffset > (fEnd - fStart)) [[UNLIKELY_ATTR]] {
+                        if (newOffset > (fEnd - fStart)) [[unlikely]] {
                             Execution::Throw (range_error{"seek"});
                         }
                         fCur = fStart + newOffset;
                     } break;
                     case Whence::eFromEnd: {
                         Streams::SignedSeekOffsetType newOffset = (fEnd - fStart) + offset;
-                        if (newOffset < 0) [[UNLIKELY_ATTR]] {
+                        if (newOffset < 0) [[unlikely]] {
                             Execution::Throw (range_error{"seek"});
                         }
-                        if (newOffset > (fEnd - fStart)) [[UNLIKELY_ATTR]] {
+                        if (newOffset > (fEnd - fStart)) [[unlikely]] {
                             Execution::Throw (range_error{"seek"});
                         }
                         fCur = fStart + newOffset;

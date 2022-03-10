@@ -107,11 +107,11 @@ namespace Stroika::Foundation::Containers::Private {
         RequireNotNull (result); // API says result ptr required
         ValidateChangeCount ();
         // Typically calls have advance = true
-        if (advance) [[LIKELY_ATTR]] {
+        if (advance) [[likely]] {
             Require (not fIterator.Done ()); // new requirement since Stroika 2.1b14
             ++fIterator;
         }
-        if (fIterator.Done ()) [[UNLIKELY_ATTR]] {
+        if (fIterator.Done ()) [[unlikely]] {
             *result = nullopt;
         }
         else {
