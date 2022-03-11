@@ -1539,7 +1539,7 @@ namespace Stroika::Foundation::Characters {
 
     private:
         template <typename LT, typename RT>
-        Common::strong_ordering                         Cmp_ (LT lhs, RT rhs) const;
+        Common::strong_ordering                         Cmp_ (LT&& lhs, RT&& rhs) const;
         static pair<const Character*, const Character*> Access_ (const String& s);
         static pair<const Character*, const Character*> Access_ (const wstring_view& s);
         static pair<const Character*, const Character*> Access_ (const Character* lhs);
