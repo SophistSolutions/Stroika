@@ -86,6 +86,7 @@ mkThirdPartyComponentsAndStroika_()
 mkMyApp_()
 {
   mkdir -p $APP_ROOT/$APP_NAME/Sources
+  cp $MY_PATH_/Shared/Skel-Templates/VERSION $APP_ROOT/VERSION
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Makefile > $APP_ROOT/$APP_NAME/Makefile
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Sources/Main.cpp > $APP_ROOT/$APP_NAME/Sources/Main.cpp
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Sources/Makefile > $APP_ROOT/$APP_NAME/Sources/Makefile
