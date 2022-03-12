@@ -97,6 +97,8 @@ ifeq ($(CONFIGURATION_TAGS),)
 		rm -rf IntermediateFiles/*/${APP_NAME}*;\
 	fi
 	@$(MAKE) --silent --directory html $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));
+	@# with no config specified, ${APP_NAME} NYI make clean/clobber (and not needed)
+	@#$(MAKE) --silent --directory ${APP_NAME} $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));
 	@$(MAKE) --silent --directory ThirdPartyComponents $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));
 else
 	@for i in $(APPLY_CONFIGS) ; do\
