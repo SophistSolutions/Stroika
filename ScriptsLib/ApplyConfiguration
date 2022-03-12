@@ -30,7 +30,7 @@ my $MAKE_INDENT_LEVEL = $ENV{'MAKE_INDENT_LEVEL'};
 $MAKE_INDENT_LEVEL = $MAKE_INDENT_LEVEL + 1;
 
 my $intermediateFiles	=	"IntermediateFiles/";
-my $activeConfiguration	=	$ARGV[0];
+my $activeConfiguration	=	undef;
 
 
 my $PATH_SEPERATOR=":";
@@ -95,7 +95,8 @@ sub trim($)
 sub	DoHelp_
 {
 	print("Usage:\n");
-	print("	ApplyConfiguration.pl OPTIONS where options can be:\n");
+	print("	ApplyConfiguration.pl [OPTIONS] CONFIGURATION\n");
+	print("	  where options can be:\n");
 	print("	    --help              /* print this help */\n");
 	print("	    --only-vscode       /* only update .vscode/cpp stuff */\n");
 	exit (0);
@@ -113,11 +114,17 @@ sub	ParseCommandLine_
 		if ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
 			DoHelp_ ();
 		}
-		if (lc ($var) eq "--only-vscode") {
+		elsif (lc ($var) eq "--only-vscode") {
 			$GEN_VSCODE = true;
 			$GEN_CONFIG_MAKE = false;
 			$GEN_VISUAL_STUDIO_INTELLISENSE = false;
 		}
+		else {
+			$activeConfiguration = $var;
+		}
+	}
+	if (! defined $activeConfiguration) {
+		die ("Missing argument configuration\n");
 	}
 }
 
@@ -190,10 +197,6 @@ sub	ReadConfiguration_
 ParseCommandLine_ ();
 
 ReadConfiguration_();
-
-
-
-#mkdir ($intermediateFiles);
 
 
 
