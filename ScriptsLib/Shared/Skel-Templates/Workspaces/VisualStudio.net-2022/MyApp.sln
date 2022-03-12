@@ -1,0 +1,116 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31019.35
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WhyTheFuckIsMyNetworkSoSlow-Backend", "..\..\Backend\Projects\VisualStudio.Net-2022\WhyTheFuckIsMyNetworkSoSlow-Backend.vcxproj", "{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+		{91C825D0-2702-4800-98DD-B83727D51F5E} = {91C825D0-2702-4800-98DD-B83727D51F5E}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ROOT-FOLDER", "ROOT-FOLDER", "{8184CE9F-C478-4792-9649-C652C914C316}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\.clang-format = ..\..\.clang-format
+		..\..\.gitattributes = ..\..\.gitattributes
+		..\..\.gitignore = ..\..\.gitignore
+		..\..\.gitmodules = ..\..\.gitmodules
+		..\..\Makefile = ..\..\Makefile
+		..\..\README.md = ..\..\README.md
+		..\..\TODO.txt = ..\..\TODO.txt
+		..\..\VERSION = ..\..\VERSION
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdPartyComponents", "ThirdPartyComponents", "{679BC6AD-01AF-4A16-9EF4-16BE283E2F97}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\ThirdPartyComponents\Makefile = ..\..\ThirdPartyComponents\Makefile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stroika", "Stroika", "{53CC012B-669C-4426-8E2A-776A0F3F35D0}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\ThirdPartyComponents\Stroika\Makefile = ..\..\ThirdPartyComponents\Stroika\Makefile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installers", "Installers", "{2BAB6D3D-C91B-41E0-B5D1-583600211F3C}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Installers\Installer.wix = ..\..\Installers\Installer.wix
+		..\..\Installers\Installer_en-us.wxl = ..\..\Installers\Installer_en-us.wxl
+		..\..\Installers\Makefile = ..\..\Installers\Makefile
+		..\..\Installers\whythefuckismynetworksoslow.control = ..\..\Installers\whythefuckismynetworksoslow.control
+		..\..\Installers\whythefuckismynetworksoslow.rpm.spec = ..\..\Installers\whythefuckismynetworksoslow.rpm.spec
+		..\..\Installers\whythefuckismynetworksoslow.service = ..\..\Installers\whythefuckismynetworksoslow.service
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "..\..\ThirdPartyComponents\Stroika\StroikaRoot\Library\Projects\VisualStudio.Net-2022\Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks", "..\..\ThirdPartyComponents\Stroika\StroikaRoot\Library\Projects\VisualStudio.Net-2022\Stroika-Frameworks.vcxproj", "{91C825D0-2702-4800-98DD-B83727D51F5E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Unspecified = Debug|Unspecified
+		Debug-x86_64|Unspecified = Debug-x86_64|Unspecified
+		Debug-x86|Unspecified = Debug-x86|Unspecified
+		Release|Unspecified = Release|Unspecified
+		Release-Logging|Unspecified = Release-Logging|Unspecified
+		Release-x86_64|Unspecified = Release-x86_64|Unspecified
+		Release-x86|Unspecified = Release-x86|Unspecified
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Debug|Unspecified.ActiveCfg = Debug|Win32
+		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Debug|Unspecified.Build.0 = Debug|Win32
+		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Debug-x86_64|Unspecified.ActiveCfg = Debug-x86_64|Win32
+		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Debug-x86_64|Unspecified.Build.0 = Debug-x86_64|Win32
+		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Debug-x86|Unspecified.ActiveCfg = Debug-x86|Win32
+		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Debug-x86|Unspecified.Build.0 = Debug-x86|Win32
+		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Release|Unspecified.ActiveCfg = Release|Win32
+		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Release|Unspecified.Build.0 = Release|Win32
+		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Release-Logging|Unspecified.ActiveCfg = Release-Logging|Win32
+		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Release-Logging|Unspecified.Build.0 = Release-Logging|Win32
+		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Release-x86_64|Unspecified.ActiveCfg = Release-x86_64|Win32
+		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Release-x86_64|Unspecified.Build.0 = Release-x86_64|Win32
+		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Release-x86|Unspecified.ActiveCfg = Release-x86|Win32
+		{30B6D154-A548-40A5-BCF1-E8B5B6112CD3}.Release-x86|Unspecified.Build.0 = Release-x86|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug|Unspecified.ActiveCfg = Debug|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug|Unspecified.Build.0 = Debug|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug-x86_64|Unspecified.ActiveCfg = Debug-x86_64|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug-x86_64|Unspecified.Build.0 = Debug-x86_64|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug-x86|Unspecified.ActiveCfg = Debug-x86|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug-x86|Unspecified.Build.0 = Debug-x86|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release|Unspecified.ActiveCfg = Release|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release|Unspecified.Build.0 = Release|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-Logging|Unspecified.ActiveCfg = Release-Logging|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-Logging|Unspecified.Build.0 = Release-Logging|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-x86_64|Unspecified.ActiveCfg = Release-x86_64|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-x86_64|Unspecified.Build.0 = Release-x86_64|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-x86|Unspecified.ActiveCfg = Release-x86|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-x86|Unspecified.Build.0 = Release-x86|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug|Unspecified.ActiveCfg = Debug|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug|Unspecified.Build.0 = Debug|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug-x86_64|Unspecified.ActiveCfg = Debug-x86_64|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug-x86_64|Unspecified.Build.0 = Debug-x86_64|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug-x86|Unspecified.ActiveCfg = Debug-x86|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug-x86|Unspecified.Build.0 = Debug-x86|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release|Unspecified.ActiveCfg = Release|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release|Unspecified.Build.0 = Release|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-Logging|Unspecified.ActiveCfg = Release-Logging|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-Logging|Unspecified.Build.0 = Release-Logging|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-x86_64|Unspecified.ActiveCfg = Release-x86_64|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-x86_64|Unspecified.Build.0 = Release-x86_64|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-x86|Unspecified.ActiveCfg = Release-x86|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-x86|Unspecified.Build.0 = Release-x86|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{679BC6AD-01AF-4A16-9EF4-16BE283E2F97} = {8184CE9F-C478-4792-9649-C652C914C316}
+		{53CC012B-669C-4426-8E2A-776A0F3F35D0} = {679BC6AD-01AF-4A16-9EF4-16BE283E2F97}
+		{2BAB6D3D-C91B-41E0-B5D1-583600211F3C} = {8184CE9F-C478-4792-9649-C652C914C316}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {09E9F4A9-EC1B-4FA6-BC9C-7ECC8DEE6D7F}
+	EndGlobalSection
+EndGlobal
