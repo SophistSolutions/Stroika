@@ -8,7 +8,17 @@
 
 BEGIN{ @INC = ( "./", @INC ); }
 
-require ("ScriptsLib/ConfigurationReader.pl");
+sub	GetThisScriptDir {
+	use File::Basename;
+	use Cwd 'abs_path';
+	my $p = __FILE__;
+	my $A = abs_path ($p);
+	my $dirname = dirname($A);
+	return $dirname;
+}
+my	$thisScriptDir	=	GetThisScriptDir ();
+
+require ("$thisScriptDir/ConfigurationReader.pl");
 
 use constant false => 0;
 use constant true  => 1;
@@ -86,9 +96,15 @@ sub	DoHelp_
 {
 	print("Usage:\n");
 	print("	ApplyConfiguration.pl OPTIONS where options can be:\n");
-	print("	    --help       /* print this help */\n");
+	print("	    --help              /* print this help */\n");
+	print("	    --only-vscode       /* only update .vscode/cpp stuff */\n");
 	exit (0);
 }
+
+my $GEN_VSCODE = true;
+my $GEN_CONFIG_MAKE = true;
+my $GEN_VISUAL_STUDIO_INTELLISENSE = true;
+
 
 sub	ParseCommandLine_
 {
@@ -96,6 +112,11 @@ sub	ParseCommandLine_
 		my $var = $ARGV[$i];
 		if ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
 			DoHelp_ ();
+		}
+		if (lc ($var) eq "--only-vscode") {
+			$GEN_VSCODE = true;
+			$GEN_CONFIG_MAKE = false;
+			$GEN_VISUAL_STUDIO_INTELLISENSE = false;
 		}
 	}
 }
@@ -172,7 +193,7 @@ ReadConfiguration_();
 
 
 
-mkdir ($intermediateFiles);
+#mkdir ($intermediateFiles);
 
 
 
@@ -671,30 +692,36 @@ sub WriteVSCodeCPPExtensionConfigFile
 #@ todo write to temporary file and only update if actually changed
 #
 
-system ("rm -f $configFileMakeName");
+if ($GEN_CONFIG_MAKE) {
+	system ("rm -f $configFileMakeName");
 
-unless (-e $intermediateFiles) {
-    mkdir ($intermediateFiles);
+	unless (-e $intermediateFiles) {
+		mkdir ($intermediateFiles);
+	}
+
+	#Really only for UNIX (for now) but harmless on WinDoze
+	unless (-e "$intermediateFiles/$activeConfiguration") {
+		mkdir "$intermediateFiles$activeConfiguration";
+		mkdir "$intermediateFiles$activeConfiguration/Library";
+	}
+
+	unless (-e $configFileMakeName) {
+		print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Writing \"$configFileMakeName\" ... ");
+		WriteStroikaConfigMakeHeader ();
+		print("done\n");
+	}
 }
 
-#Really only for UNIX (for now) but harmless on WinDoze
-unless (-e "$intermediateFiles/$activeConfiguration") {
-	mkdir "$intermediateFiles$activeConfiguration";
-	mkdir "$intermediateFiles$activeConfiguration/Library";
+if ($GEN_VISUAL_STUDIO_INTELLISENSE) {
+	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+		print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Updating \"$vs2kIntellisenseCng\" ... ");
+		WriteVS2kIntellisenseConfigFile ();
+		print("done\n");
+	}
 }
 
-unless (-e $configFileMakeName) {
-	print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Writing \"$configFileMakeName\" ... ");
-	WriteStroikaConfigMakeHeader ();
+if ($GEN_VSCODE) {
+	print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Updating \"$vsCodeCppExtensionCng\" ... ");
+	WriteVSCodeCPPExtensionConfigFile ();
 	print("done\n");
 }
-
-if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-	print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Updating \"$vs2kIntellisenseCng\" ... ");
-	WriteVS2kIntellisenseConfigFile ();
-	print("done\n");
-}
-
-print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Updating \"$vsCodeCppExtensionCng\" ... ");
-WriteVSCodeCPPExtensionConfigFile ();
-print("done\n");
