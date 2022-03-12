@@ -709,7 +709,7 @@ if ($GEN_CONFIG_MAKE) {
 	}
 
 	unless (-e $configFileMakeName) {
-		print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Writing \"$configFileMakeName\" ... ");
+		print(`$thisScriptDir/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Writing \"$configFileMakeName\" ... ");
 		WriteStroikaConfigMakeHeader ();
 		print("done\n");
 	}
@@ -717,14 +717,14 @@ if ($GEN_CONFIG_MAKE) {
 
 if ($GEN_VISUAL_STUDIO_INTELLISENSE) {
 	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-		print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Updating \"$vs2kIntellisenseCng\" ... ");
+		print(`$thisScriptDir/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Updating \"$vs2kIntellisenseCng\" ... ");
 		WriteVS2kIntellisenseConfigFile ();
 		print("done\n");
 	}
 }
 
 if ($GEN_VSCODE) {
-	print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Updating configuration $activeConfiguration in \"$vsCodeCppExtensionCng\" ... ");
+	print(`$thisScriptDir/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Updating configuration $activeConfiguration in \"$vsCodeCppExtensionCng\" ... ");
 	WriteVSCodeCPPExtensionConfigFile ();
 	print("done\n");
 }
