@@ -85,7 +85,7 @@ mkThirdPartyComponentsAndStroika_()
 }
 mkMyApp_()
 {
-  mkdir -p $APP_ROOT/Workspaces/VisualStudio.Net-2019 $APP_ROOT/Workspaces/VisualStudio.Net-2022 $APP_ROOT/$APP_NAME/Sources $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2019 $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022
+  mkdir -p $APP_ROOT/Workspaces/VisualStudio.Net-2019 $APP_ROOT/Workspaces/VisualStudio.Net-2022 $APP_ROOT/Workspaces/VSCode $APP_ROOT/$APP_NAME/Sources $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2019 $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022
   cp $MY_PATH_/Shared/Skel-Templates/VERSION $APP_ROOT/VERSION
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Makefile > $APP_ROOT/$APP_NAME/Makefile
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Sources/Main.cpp > $APP_ROOT/$APP_NAME/Sources/Main.cpp
@@ -93,6 +93,7 @@ mkMyApp_()
 
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Workspaces/VisualStudio.Net-2019/MyApp.sln > $APP_ROOT/Workspaces/VisualStudio.Net-2019/$APP_NAME.sln
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Workspaces/VisualStudio.Net-2022/MyApp.sln > $APP_ROOT/Workspaces/VisualStudio.Net-2022/$APP_NAME.sln
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Workspaces/VSCode/MyApp.code-workspace > $APP_ROOT/Workspaces/VSCode/$APP_NAME.code-workspace
 
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Projects/VisualStudio.Net-2019/MyApp.vcxproj > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2019/$APP_NAME.vcxproj
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Projects/VisualStudio.Net-2019/MyApp.vcxproj.filters > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2019/$APP_NAME.vcxproj.filters
