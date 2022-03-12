@@ -53,10 +53,10 @@
   <PropertyGroup>
     <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\ CONFIGURATION=$(CONFIGURATION) $(JOBS_FLAG) --silent all</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>make --directory $(ProjectDir)\..\..\ CONFIGURATION=$(CONFIGURATION) clean --silent</NMakeCleanCommandLine>
-    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\WhyTheFuckIsMyNetworkSoSlow\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\WhyTheFuckIsMyNetworkSoSlow\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\Builds\$(Configuration)\${APP_NAME}\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\${APP_NAME}\</IntDir>
     <ExecutablePath>$(StroikaBuildToolsExtraPath);$(CommonExecutablePath)</ExecutablePath>
-    <NMakeIncludeSearchPath>$(ProjectDir)\..\..\;$(ProjectDir)\..\..\..\IntermediateFiles\$(Configuration)\WhyTheFuckIsMyNetworkSoSlow\;$(ProjectDir)\..\..\..\ThirdPartyComponents\Stroika\StroikaRoot\Library\Sources\</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(ProjectDir)\..\..\;$(ProjectDir)\..\..\..\IntermediateFiles\$(Configuration)\${APP_NAME}\;$(ProjectDir)\..\..\..\ThirdPartyComponents\Stroika\StroikaRoot\Library\Sources\</NMakeIncludeSearchPath>
     <AdditionalOptions>/std:c++latest</AdditionalOptions>
   </PropertyGroup>
   <ItemGroup>
