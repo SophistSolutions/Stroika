@@ -724,7 +724,7 @@ if ($GEN_VISUAL_STUDIO_INTELLISENSE) {
 }
 
 if ($GEN_VSCODE) {
-	print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Updating \"$vsCodeCppExtensionCng\" ... ");
+	print(`ScriptsLib/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Updating configuration $activeConfiguration in \"$vsCodeCppExtensionCng\" ... ");
 	WriteVSCodeCPPExtensionConfigFile ();
 	print("done\n");
 }
