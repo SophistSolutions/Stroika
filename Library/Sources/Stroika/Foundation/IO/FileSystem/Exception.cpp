@@ -25,10 +25,10 @@ Characters::String FileSystem::Exception::mkMsg_ (error_code errCode, const path
 {
     StringBuilder sb = Execution::Private_::SystemErrorExceptionPrivate_::mkMsg_ (errCode);
     if (not p1.empty ()) {
-        sb += L" {" + String (p1.wstring ()).LimitLength (25, false) + L"}";
+        sb += L" {" + String{p1.wstring ()}.LimitLength (25, false) + L"}";
     }
     if (not p2.empty ()) {
-        sb += L" {" + String (p2.wstring ()).LimitLength (25, false) + L"}";
+        sb += L" {" + String{p2.wstring ()}.LimitLength (25, false) + L"}";
     }
     return sb.str ();
 }
@@ -37,10 +37,10 @@ Characters::String FileSystem::Exception::mkMsg_ (error_code errCode, const Char
 {
     StringBuilder sb = Execution::Private_::SystemErrorExceptionPrivate_::mkCombinedMsg_ (errCode, message);
     if (not p1.empty ()) {
-        sb += L" {" + String (p1.wstring ()).LimitLength (25, false) + L"}";
+        sb += L" {" + String{p1.wstring ()}.LimitLength (25, false) + L"}";
     }
     if (not p2.empty ()) {
-        sb += L" {" + String (p2.wstring ()).LimitLength (25, false) + L"}";
+        sb += L" {" + String{p2.wstring ()}.LimitLength (25, false) + L"}";
     }
     return sb.str ();
 }

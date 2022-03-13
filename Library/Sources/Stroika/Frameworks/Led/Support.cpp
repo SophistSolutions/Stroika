@@ -74,7 +74,7 @@ string Led::Wide2ACPString (const wstring& s)
     Memory::StackBuffer<char> result{Memory::eUninitialized, nChars};
     CodePageConverter         cpg (GetDefaultSDKCodePage ());
     cpg.MapFromUNICODE (s.c_str (), s.length () + 1, result, &nChars);
-    return string (result);
+    return string{result};
 }
 
 #if qSDK_UNICODE
@@ -847,12 +847,12 @@ char* Led_URLD::PeekAtTitle () const
 
 string Led_URLD::GetTitle () const
 {
-    return string (PeekAtTitle (), GetTitleLength ());
+    return string{PeekAtTitle (), GetTitleLength ()};
 }
 
 string Led_URLD::GetURL () const
 {
-    return string (PeekAtURL (), GetURLLength ());
+    return string{PeekAtURL (), GetURLLength ()};
 }
 
 /*

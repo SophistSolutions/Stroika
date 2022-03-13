@@ -605,8 +605,8 @@ string RTFIO::GetAtomName (ControlWordAtom atom)
     ITER start = sControlWordNameMap.begin ();
     ITER end   = sControlWordNameMap.end ();
     for (ITER it = start; it != end; ++it) {
-        if ((*it).second == atom) {
-            return string ((*it).first);
+        if (it->second == atom) {
+            return string{it->first};
         }
     }
     Assert (false);

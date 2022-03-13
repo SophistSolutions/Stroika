@@ -807,7 +807,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* text
     Require (nBytes >= 1);
 
     // For understood entity references, emit the character. For others, just emit the original enity ref..
-    string refName = string (&text[1], nBytes - 1);
+    string refName = string{&text[1], nBytes - 1};
     if (refName.length () > 0) {
         if (refName[refName.length () - 1] == ';') {
             refName.erase (refName.length () - 1);
@@ -854,7 +854,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* text
     }
 
     // Even if qThrowAwayMostUnknownHTMLTags, we should still emit unknown entity refs, I think ... LGP 961015
-    EmitText (MapInputTextToTString (string (text, nBytes)));
+    EmitText (MapInputTextToTString (string{text, nBytes}));
 }
 
 void StyledTextIOReader_HTML::HandleHTMLThingy_Tag (const char* text, size_t nBytes)
@@ -1133,7 +1133,7 @@ void StyledTextIOReader_HTML::GrabAndApplyCSSStyleFromTagText (const char* text,
 void StyledTextIOReader_HTML::HandleHTMLThingyTag_BANG_doctype (bool /*start*/, const char* text, size_t nBytes)
 {
     if (fSaveHTMLInfoInto != nullptr) {
-        fSaveHTMLInfoInto->fDocTypeTag = string (text, nBytes);
+        fSaveHTMLInfoInto->fDocTypeTag = string{text, nBytes};
     }
 }
 
@@ -1209,7 +1209,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_basefont (bool start, const ch
 void StyledTextIOReader_HTML::HandleHTMLThingyTag_body (bool start, const char* text, size_t nBytes)
 {
     if (start and fSaveHTMLInfoInto != nullptr) {
-        fSaveHTMLInfoInto->fStartBodyTag = string (text, nBytes);
+        fSaveHTMLInfoInto->fStartBodyTag = string{text, nBytes};
     }
     fReadingBody = true;
     if (start) {
@@ -1383,14 +1383,14 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_font (bool start, const char* 
 void StyledTextIOReader_HTML::HandleHTMLThingyTag_head (bool start, const char* text, size_t nBytes)
 {
     if (start and fSaveHTMLInfoInto != nullptr) {
-        fSaveHTMLInfoInto->fHeadTag = string (text, nBytes);
+        fSaveHTMLInfoInto->fHeadTag = string{text, nBytes};
     }
 }
 
 void StyledTextIOReader_HTML::HandleHTMLThingyTag_html (bool start, const char* text, size_t nBytes)
 {
     if (start and fSaveHTMLInfoInto != nullptr) {
-        fSaveHTMLInfoInto->fHTMLTag = string (text, nBytes);
+        fSaveHTMLInfoInto->fHTMLTag = string{text, nBytes};
     }
 }
 

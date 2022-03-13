@@ -244,7 +244,7 @@ String String::FromSDKString (const SDKChar* from, const SDKChar* to)
 {
 // @todo FIX PERFORMANCE
 #if qTargetPlatformSDKUseswchar_t
-    return String (from, to);
+    return String{from, to};
 #else
     wstring tmp;
     NarrowStringToWide (from, to, GetDefaultSDKCodePage (), &tmp);
@@ -663,7 +663,7 @@ vector<String>  String::Find (const String& string2SearchFor, CompareOptions co)
     regex_search (tmp, res, regExp);
     result.reserve (res.size ());
     for (auto i = res.begin (); i != res.end (); ++i) {
-        result.push_back (String (*i));
+        result.push_back (String{*i});
     }
     return result;
 }

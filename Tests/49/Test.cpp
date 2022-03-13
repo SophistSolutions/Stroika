@@ -190,7 +190,7 @@ namespace {
             using Characters::Character;
             using Characters::String;
             {
-                Traversal::Iterable<Character> s  = String (L"This");
+                Traversal::Iterable<Character> s  = String{L"This"};
                 TextReader::Ptr                tr = TextReader::New (s);
                 VerifyTestResult (tr.ReadAll () == L"This");
             }

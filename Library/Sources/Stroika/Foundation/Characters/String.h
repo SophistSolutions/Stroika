@@ -831,7 +831,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  Note: FindEach handles the special case of an empty match as ignored, so FindEach(empty-str-or-regexp)
          *  always returns an empty list. Also - for the String case, it returns distinct matches, so if you
-         *  search String ("AAAA").FindEach ("AA"), you will get 2 answers ({0, 2}).
+         *  search String{"AAAA"}.FindEach ("AA"), you will get 2 answers ({0, 2}).
          *
          *  @see Find ()
          *  @see FindEachString ()

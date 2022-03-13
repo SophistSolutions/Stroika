@@ -485,7 +485,7 @@ namespace Test_05_ParseRegressionTest_3_ {
             VariantValue                  v  = DataExchange::Variant::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryInputStream<byte>::New (reinterpret_cast<const byte*> (std::begin (kJSONExample_)), reinterpret_cast<const byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
             Mapping<String, VariantValue> mv = v.As<Mapping<String, VariantValue>> ();
             VerifyTestResult (mv[L"T1"].GetType () == VariantValue::eString);
-            VerifyTestResult (mv[L"T1"] == String ());
+            VerifyTestResult (mv[L"T1"] == String{});
             VerifyTestResult (mv[L"T2"].GetType () == VariantValue::eNull);
             VerifyTestResult (mv[L"T3"].GetType () == VariantValue::eMap);
         }
@@ -678,7 +678,7 @@ namespace {
         {
             VariantValue v;
             VerifyTestResult (v.empty ());
-            v = String (L"hi");
+            v = String{L"hi"};
             VerifyTestResult (v == L"hi");
         }
         Test3_VariantValue_Helper_MinMax_<int> ();

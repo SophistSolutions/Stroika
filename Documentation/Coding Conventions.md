@@ -318,7 +318,7 @@ Note that we choose to use non-member operator overloads for these comparison fu
 So for example:
 
 ```C++
-    if (L"aa" < String (L"ss")) {
+    if (L"aa" < String{L"ss"}) {
     }
 ```
 
