@@ -1,0 +1,127 @@
+#!/bin/bash
+# Skel - generate skeletal Stroika-based C++ application (point is setting up default makefiles etc)
+#
+#   Parameters:
+#       --appRoot <DIR>     # top level directory generated
+#       --stroika-source (git | download)
+#
+POSITIONAL_ARGS=()
+APP_ROOT="app"
+APP_NAME=""
+STROIKA_SOURCE="git"
+GIT_REMOTE="https://github.com/SophistSolutions/Stroika.git"
+
+help_()
+{
+  echo "Skel";
+  echo "  --appRoot <DIR>         # top level directory generated (DEFAULT: ${APP_ROOT})"
+  echo '  --appName <NAME>        # top level directory generated (DEFAULT: `basename \$\{APP_ROOT\}`)'
+  echo "  --stroika-source (git | download)"
+}
+parse_command_line_ () {
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --appRoot)
+        APP_ROOT="$2"
+        shift # past argument
+        shift # past value
+        ;;
+      --appName)
+        APP_NAME="$2"
+        shift # past argument
+        shift # past value
+        ;;
+      -h|--help)
+        help_;
+        exit 0
+        ;;
+      -*|--*)
+        echo "Unknown option $1"
+        help_;
+        exit 1
+        ;;
+      *)
+        POSITIONAL_ARGS+=("$1") # save positional arg
+        shift # past argument
+        ;;
+    esac
+  done
+
+  if [[ "$APP_NAME" == "" ]] ; then
+    APP_NAME=`basename ${APP_ROOT}`
+  fi
+}
+
+get_script_dir_ () {
+     #https://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/
+     SOURCE="${BASH_SOURCE[0]}"
+     # While $SOURCE is a symlink, resolve it
+     while [ -h "$SOURCE" ]; do
+          DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+          SOURCE="$( readlink "$SOURCE" )"
+          # If $SOURCE was a relative symlink (so no "/" as prefix, need to resolve it relative to the symlink base directory
+          [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+     done
+     DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+     echo "$DIR"
+}
+MY_PATH_=$(get_script_dir_)
+
+mkTopLevelDir_()
+{
+    mkdir -p $APP_ROOT/$APP_NAME
+    cp $MY_PATH_/Shared/Skel-Templates/Makefile $APP_ROOT/
+    sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Makefile > $APP_ROOT/Makefile
+}
+mkThirdPartyComponentsAndStroika_()
+{
+    mkdir -p $APP_ROOT/ThirdPartyComponents/Stroika
+    cp $MY_PATH_/Shared/Skel-Templates/ThirdPartyComponents/Makefile $APP_ROOT/ThirdPartyComponents/
+    cp $MY_PATH_/Shared/Skel-Templates/ThirdPartyComponents/Stroika/Makefile $APP_ROOT/ThirdPartyComponents/Stroika/
+    if [[ "$STROIKA_SOURCE" == "git" ]] ; then
+      (cd $APP_ROOT && git init)
+      (cd $APP_ROOT/ThirdPartyComponents/Stroika; git submodule add $GIT_REMOTE StroikaRoot)
+    fi
+}
+mkMyApp_()
+{
+  mkdir -p $APP_ROOT/Workspaces/VisualStudio.Net-2019 \
+    $APP_ROOT/Workspaces/VisualStudio.Net-2022 \
+    $APP_ROOT/Workspaces/VSCode $APP_ROOT/$APP_NAME/Sources \
+    $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2019 \
+    $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022 \
+    $APP_ROOT/.vscode
+  cp $MY_PATH_/Shared/Skel-Templates/VERSION $APP_ROOT/VERSION
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Makefile > $APP_ROOT/$APP_NAME/Makefile
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Sources/Main.cpp > $APP_ROOT/$APP_NAME/Sources/Main.cpp
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Sources/Makefile > $APP_ROOT/$APP_NAME/Sources/Makefile
+
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Workspaces/VisualStudio.Net-2019/MyApp.sln > $APP_ROOT/Workspaces/VisualStudio.Net-2019/$APP_NAME.sln
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Workspaces/VisualStudio.Net-2022/MyApp.sln > $APP_ROOT/Workspaces/VisualStudio.Net-2022/$APP_NAME.sln
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Workspaces/VSCode/MyApp.code-workspace > $APP_ROOT/Workspaces/VSCode/$APP_NAME.code-workspace
+
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Projects/VisualStudio.Net-2019/MyApp.vcxproj > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2019/$APP_NAME.vcxproj
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Projects/VisualStudio.Net-2019/MyApp.vcxproj.filters > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2019/$APP_NAME.vcxproj.filters
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Projects/VisualStudio.Net-2022/MyApp.vcxproj > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022/$APP_NAME.vcxproj
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Projects/VisualStudio.Net-2022/MyApp.vcxproj.filters > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022/$APP_NAME.vcxproj.filters
+}
+
+
+
+
+
+parse_command_line_ $*;
+
+OUTDIR=$APP_ROOT/"Skel-Output-$APP_NAME.txt"
+
+echo "Building skeletal app:"
+echo "  directory: $APP_ROOT"
+echo "  app name:  $APP_NAME"
+echo "  log:       $OUTDIR"
+
+mkdir $APP_ROOT
+mkTopLevelDir_ >> $OUTDIR 2>&1
+mkThirdPartyComponentsAndStroika_ >> $OUTDIR 2>&1
+mkMyApp_ >> $OUTDIR 2>&1
+
+echo "  done"

@@ -503,6 +503,22 @@ The workspsace contains pre-built 'tasks' to build Stroika (run makefiles).
 
 Run Library/Projects/QtCreator/CreateQtCreatorSymbolicLinks.sh to create project files at the top level of your Stroika directory. Then you can open that .creator file in qtCreator, and build and debug Stroika-based applications.
 
+
+---
+
+## Building your own application
+
+To some degree, this is simple, and you can just copy/munge one of the sample applications. But the paths in the makefile aren't simple to update. So Stroika provides
+a 'Skel' utility, that builds a skelten application.
+
+  ~~~bash
+  ./ScriptsLib/Skel --appRoot ../myApp
+  cd ../myApp
+  make CONFIGURATION=Debug all -j10
+  ~~~
+
+Use './ScriptsLib/Skel --help' to see options
+
 ---
 
 ## Integrating with CMake

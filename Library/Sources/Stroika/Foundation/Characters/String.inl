@@ -846,8 +846,8 @@ namespace Stroika::Foundation::Characters {
     inline strong_ordering String::ThreeWayComparer::Cmp_ (LT lhs, RT rhs) const
     {
         using namespace Stroika::Foundation::Characters;
-        pair<const Character*, const Character*> l = Access_ (lhs);
-        pair<const Character*, const Character*> r = Access_ (rhs);
+        pair<const Character*, const Character*> l = Access_ (forward<LT> (lhs));
+        pair<const Character*, const Character*> r = Access_ (forward<RT> (rhs));
         return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
     }
     inline strong_ordering String::ThreeWayComparer::operator() (const String& lhs, const String& rhs) const
