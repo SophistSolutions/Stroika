@@ -62,15 +62,7 @@
    Helgrind:Misc
    obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
    ...
-   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
-}
-{
-   https://stroika.atlassian.net/browse/STK-620
-   Helgrind:Misc
-   ...
-   fun:__pthread_cond_wait_common
-   ...
-   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
+   fun:Stroika::Foundation::Execution::ConditionVariable<std::mutex, std::condition_variable>::wait_until(std::unique_lock<std::mutex>&, double) 
 }
 {
    https://stroika.atlassian.net/browse/STK-741
