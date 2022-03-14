@@ -194,9 +194,7 @@ namespace {
                 }
                 catch (std::system_error const& e) {
                     VerifyTestResult (e.code ().value () == static_cast<int> (std::errc::no_such_file_or_directory)); // workaround?
-#if !qCompilerAndStdLib_error_code_compare_condition_Buggy
-                    VerifyTestResult (e.code () == std::errc::no_such_file_or_directory); // <- FAILS!?
-#endif
+                    VerifyTestResult (e.code () == std::errc::no_such_file_or_directory);                             // <- FAILS!?
                 }
                 catch (...) {
                     VerifyTestResult (false);

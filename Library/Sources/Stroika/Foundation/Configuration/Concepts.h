@@ -144,23 +144,6 @@ namespace Stroika::Foundation::Configuration {
 
     }
 
-    // handy to have remove_cvref/remove_cvref_t definition around, even if using pre-c++20
-    // Put in our namespace, and when we switch to C++20, we can deprecate our local namespace copy
-    // NOTE: can also use std::decay_t which does this and more in c++17
-#if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_20
-    template <class T>
-    struct remove_cvref {
-        typedef std::remove_cv_t<std::remove_reference_t<T>> type;
-    };
-    template <class T>
-    using remove_cvref_t = typename remove_cvref<T>::type;
-#else
-    template <class T>
-    using remove_cvref = std::remove_cvref<T>;
-    template <class T>
-    using remove_cvref_t = std::remove_cvref_t<T>;
-#endif
-
     /**
      *  \brief Extract the number of arguments, return type, and each individual argument type from a lambda or function object.
      *

@@ -80,8 +80,8 @@
 
 #elif defined(__GNUC__)
 
-#if __GNUC__ < 8
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to GCC 8 (v2.0 supports g++5 and g++6 and g++-7)"
+#if __GNUC__ < 10
+#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v3 does not support versions prior to GCC 10 (v2.1 supports g++7 and later, v2.0 supports g++5 and g++6 and g++-7)"
 #endif
 #if __GNUC__ > 11 || (__GNUC__ == 11 && (__GNUC_MINOR__ > 2))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
@@ -170,8 +170,6 @@ foo.cpp:
 
  prints __GLIBCXX__=20180728
  */
-#define GLIBCXX_7x_ 20180720
-#define GLIBCXX_8x_ 20180728
 #define GLIBCXX_9x_ 20191008
 #define GLIBCXX_93x_ 20200408
 //#define GLIBCXX_10x_ 20200930
@@ -668,10 +666,6 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 #ifndef qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
-// VERIFIED BROKEN IN GCC8
-// VERIFIED BROKEN IN GCC9
-// VERIFIED BROKEN IN GCC 9.2
-// VERIFIED BROKEN IN GCC 9.3
 // VERIFIED BROKEN IN GCC 10.0
 // VERIFIED BROKEN IN GCC 10.2
 // VERIFIED BROKEN IN GCC 11
@@ -762,51 +756,6 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 
 #endif
 
-/**
- * According to https://en.cppreference.com/w/cpp/error/error_category/error_category ctor is constexpr since c++14
- */
-#ifndef qCompilerAndStdLib_constexpr_error_category_ctor_Buggy
-
-#if defined(__GNUC__) && !defined(__clang__)
-// VERIFIED BROKEN IN GCC8
-// VERIFIED FIXED in GCC9
-#define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy (__GNUC__ <= 8)
-#elif defined(_MSC_VER)
-// verified still BROKEN in _MSC_VER_2k19_16Pt0_ (preview2)
-// SEEMS to work or maybe I dont have well recorded the problem. But no obvious problems with: _MS_VS_2k19_16Pt0Pt0pre43_
-#define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre4_)
-#else
-#define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy 0
-#endif
-
-#endif
-#if qCompilerAndStdLib_constexpr_error_category_ctor_Buggy
-// Since Stroika 3.0d1
-#error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
-#endif
-
-// Run regtest 35 (Foundation::Execution::Exceptions) to see if fails
-#ifndef qCompilerAndStdLib_error_code_compare_condition_Buggy
-
-#if defined(__GNUC__) && !defined(__clang__)
-// https://stackoverflow.com/questions/44405394/how-to-portably-compare-stdsystem-error-exceptions-to-stderrc-values
-#if __GNUC__ <= 8
-#define qCompilerAndStdLib_error_code_compare_condition_Buggy (__GNUC_MINOR__ <= 3)
-// VERIFIED FIXED in GCC9
-#else
-#define qCompilerAndStdLib_error_code_compare_condition_Buggy 0
-#endif
-#elif defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_8x_
-#define qCompilerAndStdLib_error_code_compare_condition_Buggy 1
-#else
-#define qCompilerAndStdLib_error_code_compare_condition_Buggy 0
-#endif
-#endif
-#if qCompilerAndStdLib_error_code_compare_condition_Buggy
-// Since Stroika 3.0d1
-#error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
-#endif
-
 /*
  *      ACCORDING To https://en.cppreference.com/w/cpp/locale/time_get/get
  * 
@@ -851,147 +800,6 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 #else
 #define qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy 0
 #endif
-#endif
-
-/*
-Builds/g++-8-debug-c++17/Tests/Test41
-=================================================================
-==11117==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7ffeaef13750 at pc 0x55fa63931042 bp 0x7ffeaef13680 sp 0x7ffeaef13670
-WRITE of size 4 at 0x7ffeaef13750 thread T0
-    #0 0x55fa63931041 in Stroika::Foundation::Characters::String::FromASCII(char const*, char const*) /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/String.cpp:352
-    #1 0x55fa63d84a02 in Stroika::Foundation::Characters::String::FromASCII(char const*) ../../Characters/Concrete/../String.inl:188
-    #2 0x55fa63f0263f in Stroika::Foundation::Characters::String Stroika::Foundation::IO::Network::InternetAddress::As<Stroika::Foundation::Characters::String>() const /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/Network/InternetAddress.cpp:188
-    #3 0x55fa63f4b745 in Stroika::Foundation::IO::Network::URL::Authority::Host::EncodeAsRawURL_(Stroika::Foundation::IO::Network::InternetAddress const&) /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/Network/URL.cpp:171
-    #4 0x55fa638f83d8 in Stroika::Foundation::IO::Network::URL::Authority::Host::Host(Stroika::Foundation::IO::Network::InternetAddress const&) (/Sandbox/Stroika-Dev/Builds/Debug/Tests/Test41+0x19e43d8)
-    #5 0x55fa638e619c in TestHostParsing_ /Sandbox/Stroika-Dev/Tests/41/Test.cpp:267
-    #6 0x55fa638e7dae in DoTests_ /Sandbox/Stroika-Dev/Tests/41/Test.cpp:299
-    #7 0x55fa638f0411 in DoRegressionTests_ /Sandbox/Stroika-Dev/Tests/41/Test.cpp:440
-    #8 0x55fa63925288 in Stroika::TestHarness::PrintPassOrFail(void (*)()) /Sandbox/Stroika-Dev/Tests/41/../TestHarness/TestHarness.cpp:75
-    #9 0x55fa638f0443 in main /Sandbox/Stroika-Dev/Tests/41/Test.cpp:450
-    #10 0x7fc2d310909a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2409a)
-    #11 0x55fa637d0f19 in _start (/Sandbox/Stroika-Dev/Builds/Debug/Tests/Test41+0x18bcf19)
-
-Address 0x7ffeaef13750 is located in stack of thread T0 at offset 144 in frame
-    #0 0x55fa63930d87 in Stroika::Foundation::Characters::String::FromASCII(char const*, char const*) /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/String.cpp:345
-
-  This frame has 1 object(s):
-    [32, 4160) 'buf' <== Memory access at offset 144 is inside this variable
-HINT: this may be a false positive if your program uses some custom stack unwind mechanism or swapcontext
-      (longjmp and C++ exceptions *are* supported)
-SUMMARY: AddressSanitizer: stack-use-after-scope /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/String.cpp:352 in Stroika::Foundation::Characters::String::FromASCII(char const*, char const*)
-Shadow bytes around the buggy address:
-  0x100055dda690: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x100055dda6a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x100055dda6b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x100055dda6c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x100055dda6d0: 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00 00 00 00
-=>0x100055dda6e0: 00 00 00 00 00 00 00 00 00 00[f8]f8 f8 f8 f8 f8
-  0x100055dda6f0: f8 f8 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x100055dda700: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x100055dda710: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x100055dda720: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x100055dda730: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-Shadow byte legend (one shadow byte represents 8 application bytes):
-  Addressable:           00
-  Partially addressable: 01 02 03 04 05 06 07
-  Heap left redzone:       fa
-  Freed heap region:       fd
-  Stack left redzone:      f1
-  Stack mid redzone:       f2
-  Stack right redzone:     f3
-  Stack after return:      f5
-  Stack use after scope:   f8
-  Global redzone:          f9
-  Global init order:       f6
-  Poisoned by user:        f7
-  Container overflow:      fc
-  Array cookie:            ac
-  Intra object redzone:    bb
-  ASan internal:           fe
-  Left alloca redzone:     ca
-  Right alloca redzone:    cb
-==11117==ABORTING
-*/
-#ifndef qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy
-
-#if defined(__GNUC__) && !defined(__clang__)
-// Appears fixed in GCC 9.0 (ubuntu 1904)
-#define qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy ((__GNUC__ <= 8))
-#else
-#define qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy 0
-#endif
-
-#endif
-#if qCompiler_Sanitizer_stack_use_after_scope_asan_premature_poison_Buggy
-// Since Stroika 3.0d1
-#error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
-#endif
-
-/*
-
-./Builds/g++-release-sanitize_address_undefined/Samples-SQL/SQL 
-=================================================================
-==711063==ERROR: AddressSanitizer: global-buffer-overflow on address 0x56148d9e104c at pc 0x56148d242544 bp 0x7ffe78498710 sp 0x7ffe78498700
-READ of size 2 at 0x56148d9e104c thread T0
-    #0 0x56148d242543 in Stroika::Foundation::Characters::UTFConvert::ConversionResult Stroika::Foundation::Characters::UTFConvert::ConvertQuietly<char16_t, char32_t>(char16_t const**, char16_t const*, char32_t**, char32_t*, Stroika::Foundation::Characters::UTFConvert::ConversionFlags) /Sandbox/Stroika-Dev/Samples/SQL/CodePage.cpp:2976
-    #1 0x56148d242543 in Stroika::Foundation::Characters::UTFConvert::ConversionResult Stroika::Foundation::Characters::UTFConvert::ConvertQuietly<char16_t, wchar_t>(char16_t const**, char16_t const*, wchar_t**, wchar_t*, Stroika::Foundation::Characters::UTFConvert::ConversionFlags) ../Containers/../Traversal/../Memory/../Execution/../Debug/../Characters/CodePage.inl:249
-    #2 0x56148d242543 in void Stroika::Foundation::Characters::UTFConvert::Convert<char16_t, wchar_t>(char16_t const**, char16_t const*, wchar_t**, wchar_t*, Stroika::Foundation::Characters::UTFConvert::ConversionFlags) ../Containers/../Traversal/../Memory/../Execution/../Debug/../Characters/CodePage.inl:269
-    #3 0x56148d242543 in Stroika::Foundation::Characters::String::mk_(char16_t const*, char16_t const*) [clone .constprop.0] /Sandbox/Stroika-Dev/Samples/SQL/String.cpp:392
-    #4 0x56148d0f40ec in Stroika::Foundation::Characters::String::String(char16_t const*, char16_t const*) ../Cryptography/Digest/Algorithm/../../../Memory/../Streams/../Execution/../Characters/String.inl:150
-    #5 0x56148d0f40ec in Stroika::Foundation::Characters::String::String(char16_t const*) /Sandbox/Stroika-Dev/Samples/SQL/String.cpp:182
-    #6 0x56148d0f40ec in main /Sandbox/Stroika-Dev/Samples/SQL//Sources/Main.cpp:32
-    #7 0x7f097f4260b2 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x270b2)
-    #8 0x56148d0f9dbd in _start (/Sandbox/Stroika-Dev/Builds/g++-release-sanitize_address_undefined/Samples-SQL/SQL+0xe3fdbd)
-
-0x56148d9e104c is located 0 bytes to the right of global variable '*.LC134' defined in '/tmp/SQL.VhKQdJ.ltrans0.o' (0x56148d9e1020) of size 44
-SUMMARY: AddressSanitizer: global-buffer-overflow /Sandbox/Stroika-Dev/Samples/SQL/CodePage.cpp:2976 in Stroika::Foundation::Characters::UTFConvert::ConversionResult Stroika::Foundation::Characters::UTFConvert::ConvertQuietly<char16_t, char32_t>(char16_t const**, char16_t const*, char32_t**, char32_t*, Stroika::Foundation::Characters::UTFConvert::ConversionFlags)
-Shadow bytes around the buggy address:
-  0x0ac311b341b0: f9 f9 f9 f9 00 f9 f9 f9 f9 f9 f9 f9 00 00 00 00
-  0x0ac311b341c0: 00 00 00 00 00 00 00 f9 f9 f9 f9 f9 00 f9 f9 f9
-  0x0ac311b341d0: f9 f9 f9 f9 00 f9 f9 f9 f9 f9 f9 f9 00 00 00 00
-  0x0ac311b341e0: 00 00 00 04 f9 f9 f9 f9 00 f9 f9 f9 f9 f9 f9 f9
-  0x0ac311b341f0: 00 f9 f9 f9 f9 f9 f9 f9 00 00 00 00 00 00 f9 f9
-=>0x0ac311b34200: f9 f9 f9 f9 00 00 00 00 00[04]f9 f9 f9 f9 f9 f9
-  0x0ac311b34210: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 05
-  0x0ac311b34220: f9 f9 f9 f9 00 00 00 00 00 f9 f9 f9 f9 f9 f9 f9
-  0x0ac311b34230: 00 04 f9 f9 f9 f9 f9 f9 00 04 f9 f9 f9 f9 f9 f9
-  0x0ac311b34240: 00 00 04 f9 f9 f9 f9 f9 00 00 04 f9 f9 f9 f9 f9
-  0x0ac311b34250: 00 00 f9 f9 f9 f9 f9 f9 00 00 f9 f9 f9 f9 f9 f9
-Shadow byte legend (one shadow byte represents 8 application bytes):
-  Addressable:           00
-  Partially addressable: 01 02 03 04 05 06 07 
-  Heap left redzone:       fa
-  Freed heap region:       fd
-  Stack left redzone:      f1
-  Stack mid redzone:       f2
-  Stack right redzone:     f3
-  Stack after return:      f5
-  Stack use after scope:   f8
-  Global redzone:          f9
-  Global init order:       f6
-  Poisoned by user:        f7
-  Container overflow:      fc
-  Array cookie:            ac
-  Intra object redzone:    bb
-  ASan internal:           fe
-  Left alloca redzone:     ca
-  Right alloca redzone:    cb
-  Shadow gap:              cc
-==711063==ABORTING
-*/
-#ifndef qCompiler_ASanitizer_global_buffer_overflow_Buggy
-
-#if defined(__GNUC__) && !defined(__clang__)
-// Broken in g++9, and lower - Ubuntu 18.04 and 20.04
-#define qCompiler_ASanitizer_global_buffer_overflow_Buggy ((__GNUC__ <= 9))
-#else
-#define qCompiler_ASanitizer_global_buffer_overflow_Buggy 0
-#endif
-
-#endif
-#if qCompiler_ASanitizer_global_buffer_overflow_Buggy
-// Since Stroika 3.0d1
-#error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
 #endif
 
 // Debug builds - only fails running samples - not tests - crashes
@@ -1059,36 +867,6 @@ STILL:
 #define qCompilerAndStdLib_ATL_Assign_wstring_COMOBJ_Buggy 0
 #endif
 
-#endif
-
-/*
- *  https://timsong-cpp.github.io/cppwp/draft.pdf documents
-            if (n > 5) [[unlikely]] { // n > 5 is considered to be arbitrarily unlikely
-                g(0);
-                return n * 2 + 1;
-            }
- *  But with gcc 9, this generates:
-        ../Containers/../Configuration/Enumeration.inl: In member function 'ENUM_TYPE Stroika::Foundation::Configuration::EnumNames<ENUM_TYPE>::GetValue(const wchar_t*, const NOT_FOUND_EXCEPTION&) const':
-        ../Containers/../Configuration/Enumeration.inl:190:13: warning: attributes at the beginning of statement are ignored [-Wattributes]
-          190 |             [[unlikely]]
-
- */
-#ifndef qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy
-
-#if defined(__GNUC__) && !defined(__clang__)
-// Broken in GCC 9.0
-// Verified still broken in 9.2
-// Verified still broken in 9.3
-// Verfiried fixed in GCC 10.0
-#define qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy ((__GNUC__ == 9))
-#else
-#define qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy 0
-#endif
-
-#endif
-#if qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy
-// Since Stroika 3.0d1
-#error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
 #endif
 
 #ifndef qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy
@@ -1421,24 +1199,6 @@ int main ()
 #endif
 #endif
 
-/*
-/usr/lib/gcc/x86_64-linux-gnu/8/../../../../include/c++/8/charconv:632: undefined reference to `__muloti4'
-/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Builds/my-clang++-7-release-libstdc++/Stroika-Foundation.a(VariantValue.o): In function `bool std::__detail::__raise_and_add<unsigned long>(unsigned long&, int, unsigned char)':
-*/
-#ifndef qCompilerAndStdLib_to_chars_INT_Buggy
-
-#if defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_to_chars_INT_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 7))
-#else
-#define qCompilerAndStdLib_to_chars_INT_Buggy 0
-#endif
-
-#endif
-#if qCompilerAndStdLib_to_chars_INT_Buggy
-// Since Stroika 3.0d1
-#error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
-#endif
-
 #ifndef qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
@@ -1530,8 +1290,6 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // VERIFIED BROKEN on XCode 13.0
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
-// still broken in clang++-8
-// still broken in clang++-9
 // still broken in clang++-10
 // still broken in clang++-11
 // still broken in clang++-12
@@ -2217,28 +1975,6 @@ stHarness/SimpleClass.cpp ...
 #endif
 
 /*
- * OpenSSL calls under valgrind memcheck mysteriously cause failure/crash
- *
- *      On raspberry pi:
- *          lewis@raspberrypi:/tmp $ valgrind --gen-suppressions=yes -q --track-origins=yes --tool=memcheck --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp  /tmp/Test43
- *          FAILED: SIGNAL= SIGILL
- *
- *          NOTE - we get the same failure with helgrind!
- *
- */
-#ifndef qCompilerAndStdLib_arm_openssl_valgrind_Buggy
-
-#if defined(__GNUC__) && defined(__arm__)
-// tested still generates warning with gcc8 (actually crash on valgrind and raspberrypi - stretch - maybe fixed in buster? - maybe got worse cuz I upgraded libc on that machine but not valgrind to buster?)
-// UNTESTED with GCC-9, because my only ARM machine right now doesn't have the right version of glibc -- LGP 2019-04-20
-#define qCompilerAndStdLib_arm_openssl_valgrind_Buggy (__GNUC__ <= 8)
-#else
-#define qCompilerAndStdLib_arm_openssl_valgrind_Buggy 0
-#endif
-
-#endif
-
-/*
  *     Running Stroka Tests {g++-valgrind-debug-SSLPurify-NoBlockAlloc}:
  *      [Succeeded]  (3  seconds)  [01]  Foundation::Caching  (valgrind -q --track-origins=yes --tool=memcheck --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp  ../Builds/g++-valgrind-debug-SSLPurify-NoBlockAlloc/Test01)
  *              FAILED: Assert; !isinf (f);Stroika::Foundation::Characters::String {anonymous}::Float2String_(FLOAT_TYPE, const Stroika::Foundation::Characters::Float2StringOptions&) [with FLOAT_TYPE = long double];FloatConversion.cpp: 200
@@ -2264,42 +2000,6 @@ stHarness/SimpleClass.cpp ...
 #define qCompilerAndStdLib_valgrind_fpclassify_check_Buggy 0
 #endif
 
-#endif
-
-/*
- *  This COULD have todo with using LTO? Or any other form of optimizaiton.
- *
- *      valgrind --track-origins=yes --tool=memcheck --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp  ../Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/Tests/Test41
- 
-            ==25626== Conditional jump or move depends on uninitialised value(s)
-            ==25626==    at 0x18791F: (anonymous namespace)::Test1_URL_Parsing_::Private_::BasicTests_AsOf21d22_() [clone .lto_priv.852] (in /Sandbox/Stroika-Dev/Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/Tests/Test41)
-            ==25626==    by 0x1358AA: main (in /Sandbox/Stroika-Dev/Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/Tests/Test41)
-            ==25626==  Uninitialised value was created by a stack allocation
-            ==25626==    at 0x15181F: Stroika::Foundation::IO::Network::URL::Parse(Stroika::Foundation::Characters::String const&, Stroika::Foundation::IO::Network::URL::ParseOptions) (in /Sandbox/Stroika-Dev/Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/Tests/Test41)
-
- REALLY bad message. Triggered by:
-                     VerifyTestResult (URL::Parse (kTestURL_, po) == URL (L"http", L"www.x.com", L"foo", L"bar=3"));
-
-                    because it calls operator==, which calls
-                    UniformResourceIdentification::operator!= (const Authority& lhs, const Authority& rhs)
-
-                    and compares with missing port. NOT SURE if missing other stuff also causes trouble but it appears not.
-
-            */
-#ifndef qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy
-
-#if defined(__GNUC__) && !defined(__clang__)
-// APPEARS fixed in GCC 9.0
-#define qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy (__GNUC__ <= 8)
-#else
-#define qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy 0
-#endif
-
-#endif
-
-#if qCompilerAndStdLib_valgrind_optional_compare_equals_Buggy
-// Since Stroika 3.0d1
-#error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
 #endif
 
 /*
@@ -2415,10 +2115,6 @@ stHarness/SimpleClass.cpp ...
 //  and if debug is false, expands to nothing. So the compiler sees different expectations of whether you ever get the the line
 //  return x;
 #pragma warning(disable : 4702)
-#endif
-
-#if qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy
-#pragma GCC diagnostic ignored "-Wattributes"
 #endif
 
 // doesn't seem any portable way todo this, and not defined in C++ language

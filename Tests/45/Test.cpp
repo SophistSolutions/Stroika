@@ -84,7 +84,6 @@ namespace {
                     }
 #endif
                     //https://stroika.atlassian.net/browse/STK-679
-                    // MAYBE RELATED TO/SAME AS qCompilerAndStdLib_arm_openssl_valgrind_Buggy
                     if (lce.code () == error_code{CURLE_SSL_CONNECT_ERROR, LibCurl_error_category ()} and Debug::IsRunningUnderValgrind ()) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - - see qCompilerAndStdLib_openssl3_helgrind_Buggy");
                         return;
@@ -103,13 +102,7 @@ namespace {
             void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ())
             {
                 Test_1_SimpleFetch_Google_C_ (factory ());
-#if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
-                if (not Debug::IsRunningUnderValgrind ()) {
-                    Test_2_SimpleFetch_SSL_Google_C_ (factory ());
-                }
-#else
                 Test_2_SimpleFetch_SSL_Google_C_ (factory ());
-#endif
             }
         }
         void DoTests_ ()
@@ -276,25 +269,13 @@ namespace {
                 try {
                     {
                         T1_httpbin_SimpleGET_ (factory ());
-#if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
-                        if (not Debug::IsRunningUnderValgrind ()) {
-                            T2_httpbin_SimplePOST_ (factory ());
-                        }
-#else
                         T2_httpbin_SimplePOST_ (factory ());
-#endif
                     }
                     {
                         // Connection re-use
                         Connection::Ptr conn = factory ();
                         T1_httpbin_SimpleGET_ (conn);
-#if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
-                        if (not Debug::IsRunningUnderValgrind ()) {
-                            T2_httpbin_SimplePOST_ (conn);
-                        }
-#else
                         T2_httpbin_SimplePOST_ (conn);
-#endif
                         T3_httpbin_SimplePUT_ (conn);
                     }
                 }
@@ -586,12 +567,6 @@ namespace {
                      initializer_list<URI> {URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"} }
 #endif
                 ) {
-#if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
-                    // Not SURE this is the same bug (openssl related) but could be due to redirect?) Anyhow - both are raspberrypi only - and valgrind only
-                    if (u == URI{L"http://www.cnn.com"} and Debug::IsRunningUnderValgrind ()) {
-                        continue; // sigill in c.GET (u) under valgrind, just on raspberrypi. just with valgrind, inside libcurl code, so not obviously our bug
-                    }
-#endif
                     try {
                         Response r = c.GET (u);
                         VerifyTestResult (not r.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault));
@@ -663,12 +638,6 @@ namespace {
                      initializer_list<URI> {URI{L"http://httpbin.org/get" }, URI{L"http://www.google.com" }, URI { L"http://www.cnn.com" } }
 #endif
                 ) {
-#if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
-                    // Not SURE this is the same bug (openssl related) but could be due to redirect?) Anyhow - both are raspberrypi only - and valgrind only
-                    if (u == URI{L"http://www.cnn.com"} and Debug::IsRunningUnderValgrind ()) {
-                        continue; // sigill in c.GET (u) under valgrind, just on raspberrypi. just with valgrind, inside libcurl code, so not obviously our bug
-                    }
-#endif
                     Connection::Ptr c = factory (u);
                     Response        r = c.GET (u);
                     VerifyTestResult (r.GetSucceeded ());
@@ -747,13 +716,7 @@ namespace {
         Test_2_SimpleFetch_httpbin_::DoTests_ ();
         Test3_TextStreamResponse_::DoTests_ ();
         Test_4_RefDocsTests_::DoTests_ ();
-#if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
-        if (not Debug::IsRunningUnderValgrind ()) {
-            Test_5_SSLCertCheckTests_::DoTests_ ();
-        }
-#else
         Test_5_SSLCertCheckTests_::DoTests_ ();
-#endif
         Test_6_TestWithCache_::DoTests_ ();
         Test_7_TestWithConnectionPool_::DoTests_ ();
     }

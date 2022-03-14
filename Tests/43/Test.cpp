@@ -570,13 +570,7 @@ namespace {
                     }
                     catch ([[maybe_unused]] const filesystem::filesystem_error& e) {
 #if qPlatform_Linux
-                        if (
-#if qCompilerAndStdLib_error_code_compare_condition_Buggy
-                            e.code ().value () == static_cast<int> (errc::no_such_file_or_directory)
-#else
-                            e.code () == errc::no_such_file_or_directory
-#endif
-                        ) {
+                        if (e.code () == errc::no_such_file_or_directory) {
                             TestHarness::WarnTestIssue ((L"Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: " + Characters::ToString (current_exception ())).c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
                             return;
                         }

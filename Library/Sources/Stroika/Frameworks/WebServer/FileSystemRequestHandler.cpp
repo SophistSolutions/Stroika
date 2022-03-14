@@ -82,9 +82,6 @@ namespace {
                 response.write (in.ReadAll ());
             }
             catch (const system_error& e) {
-#if qCompilerAndStdLib_error_code_compare_condition_Buggy
-                // not sure how to workaround this, but fixed in the latest gcc (GLIBCXX 9)
-#endif
                 if (e.code () == errc::no_such_file_or_directory) {
                     Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
                 }
