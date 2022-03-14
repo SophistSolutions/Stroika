@@ -58,14 +58,14 @@
    ...
 }
 {
-   https://stroika.atlassian.net/browse/STK-628
+   https://stroika.atlassian.net/browse/STK-620
    Helgrind:Misc
    obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
    ...
    fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
 }
 {
-   https://stroika.atlassian.net/browse/STK-628
+   https://stroika.atlassian.net/browse/STK-620
    Helgrind:Misc
    ...
    fun:__pthread_cond_wait_common
