@@ -65,6 +65,9 @@
    fun:_ZN7Stroika10Foundation9Execution17ConditionVariableISt5mutexSt18condition_variableE10wait_until*
    #fun:_ZN7Stroika10Foundation9Execution17ConditionVariableISt5mutexSt18condition_variableE10wait_untilIZNS1_13WaitableEvent3WE_16WaitUntilQuietlyEdEUlvE_EEbRSt11unique_lockIS3_EdT_
    #fun:Stroika::Foundation::Execution::ConditionVariable<std::mutex, std::condition_variable>::wait_until(std::unique_lock<std::mutex>&, double) 
+   # NOTES:
+   #     not triggered every time (maybe 10-20% without suppression)
+   #     reproduce mostly in valgrind/helgrind tests 40/41 on any ubuntu tried (1804/2004)
 }
 {
    https://stroika.atlassian.net/browse/STK-741
