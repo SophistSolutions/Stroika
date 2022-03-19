@@ -70,6 +70,13 @@
    #     reproduce mostly in valgrind/helgrind tests 40/41 on any ubuntu tried (1804/2004)
 }
 {
+   https://stroika.atlassian.net/browse/STK-620
+   Helgrind:Misc
+   obj:/usr/lib/x86_64-linux-gnu/valgrind/vgpreload_helgrind-amd64-linux.so
+   ...
+   fun:*wait_until*
+}
+{
    https://stroika.atlassian.net/browse/STK-741
    Helgrind:Race
    ...
