@@ -77,6 +77,12 @@
    fun:*wait_until*
 }
 {
+   https://stroika.atlassian.net/browse/STK-620
+   Helgrind:Misc
+   ...
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
+}
+{
    https://stroika.atlassian.net/browse/STK-741
    Helgrind:Race
    ...
