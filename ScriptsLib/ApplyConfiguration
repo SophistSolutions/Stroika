@@ -204,7 +204,7 @@ ReadConfiguration_();
 # For now KISS - just check if the file doesn't exist, and if so write a default value.
 #
 my $configFileMakeName	=	"$intermediateFiles$activeConfiguration/Configuration.mk";
-my $vs2kIntellisenseCng	=	"Library/Projects/VisualStudio.Net/Microsoft.Cpp.stroika.AllConfigs.props";
+my $vs2kIntellisenseCng	=	"Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props";
 my $vsCodeCppExtensionCng	=	".vscode/c_cpp_properties.json";
 
 
@@ -462,6 +462,24 @@ sub WriteStroikaConfigMakeHeader
 	close(OUT);
 }
 
+## GUESS directory for MSYS
+sub GetMSYSPathVar2Add_
+{
+	if ("$^O" == "msys") {
+	}
+	if (! -e ('/usr/lib/llvm-6/include/c++/v1/cstddef')) {
+	}
+	return "c:\\msys\\usr\\bin;c:\\msys64\\usr\\bin;";
+}
+sub GetCygwinPathVar2Add_
+{
+	if ("$^O" == "cygwin") {
+	}
+	if (! -e ('/usr/lib/llvm-6/include/c++/v1/cstddef')) {
+	}
+	return "c:\\cygwin\\bin;c:\\cygwin64\\bin";
+}
+
 
 sub WriteVS2kIntellisenseConfigFile
 {
@@ -556,19 +574,21 @@ sub WriteVS2kIntellisenseConfigFile
 	# for the make without requiring the user to add it to their user/system path
 	# by default
 	#
+	local $defCygwinStkBuildPath = GetCygwinPathVar2Add_();
+	local $msysStkBuildPath = GetMSYSPathVar2Add_();
 	print (OUT "\n");
 	print (OUT "  <PropertyGroup Label=\"UserMacros\">\n");
-	print (OUT "    <StroikaBuildToolsExtraPath>c:\\msys\\usr\\bin;c:\\msys64\\usr\\bin;c:\\cygwin\\bin;c:\\cygwin64\\bin</StroikaBuildToolsExtraPath>\n");
+	print (OUT "    <StroikaBuildToolsExtraPath>$msysStkBuildPath;$defCygwinStkBuildPath</StroikaBuildToolsExtraPath>\n");
 	print (OUT "    <JOBS_FLAG>-j 8</JOBS_FLAG>\n");
 	print (OUT "  </PropertyGroup>\n");
 	if ("$^O" == "msys") {
 		print (OUT "  <PropertyGroup Label=\"UserMacros\" Condition=\"'\$(Configuration)|\$(Platform)'=='$activeConfiguration|Win32'\">\n");
-		print (OUT "    <StroikaBuildToolsExtraPath>c:\\msys\\usr\\bin;c:\\msys64\\usr\\bin;</StroikaBuildToolsExtraPath>\n");
+		print (OUT "    <StroikaBuildToolsExtraPath>$msysStkBuildPath</StroikaBuildToolsExtraPath>\n");
 		print (OUT "  </PropertyGroup>\n");
 	}
 	elsif ("$^O" == "cygwin") {
 		print (OUT "  <PropertyGroup Label=\"UserMacros\" Condition=\"'\$(Configuration)|\$(Platform)'=='$activeConfiguration|Win32'\">\n");
-		print (OUT "    <StroikaBuildToolsExtraPath>c:\\cygwin\\bin;c:\\cygwin64\\bin</StroikaBuildToolsExtraPath>\n");
+		print (OUT "    <StroikaBuildToolsExtraPath>$defCygwinStkBuildPath</StroikaBuildToolsExtraPath>\n");
 		print (OUT "  </PropertyGroup>\n");
 	}
 

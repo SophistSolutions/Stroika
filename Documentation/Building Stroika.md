@@ -483,7 +483,7 @@ Visual Studio.net project and solution files are available for the Stroika demos
 Stroika's build process automatically populates a property file
 
 ~~~
-Library/Projects/VisualStudio.Net/Microsoft.Cpp.stroika.AllConfigs.props
+Library/Projects/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props
 ~~~
 
 This contains lots of interesting stuff (used to drive intellisense etc) and is automatically included by the provided Stroika projects.

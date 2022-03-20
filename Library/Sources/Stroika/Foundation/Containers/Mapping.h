@@ -207,10 +207,10 @@ namespace Stroika::Foundation::Containers {
          *  Keys () returns an Iterable object with just the key part of the Mapping.
          *
          *  \note   Keys () will return a an Iterable producing (iterating) elements in
-         *          the same order as the collection it is created from.
+         *          the same order as the Mapping it is created from.
          *
-         *          It is equivilent to copying the underlying collection and 'projecting' the
-         *          key fields.
+         *          It is equivilent to copying the underlying Mapping and 'projecting' the
+         *          key fields (so the result will be sorted in a SortedMapping).
          *
          *  \em Design Note:
          *      The analagous method in C#.net - Dictionary<TKey, TValue>.KeyCollection
