@@ -342,7 +342,7 @@ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED:
 	@#because we could be using different versions of make (eg. cygwin vs. WSL) for different configurations
 	@$(MAKE) check-prerequisite-tools-common check-prerequisite-tools-current-configuration --no-print-directory
 
-IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT:
+IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT: assure-default-configurations-exist_
 	@$(MAKE) --no-print-directory project-files
 	@touch IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT
 

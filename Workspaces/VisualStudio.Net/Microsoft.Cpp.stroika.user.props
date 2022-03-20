@@ -1,6 +1,5 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" TreatAsLocalProperty="Platform">
   <PropertyGroup Label="UserMacros">
-    <StroikaBuildToolsExtraPath>c:\tools\msys64\usr\bin;</StroikaBuildToolsExtraPath>
   </PropertyGroup>
   <ItemGroup>
     <BuildMacro Include="StroikaBuildToolsExtraPath">
