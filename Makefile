@@ -88,19 +88,19 @@ help:
 
 
 ifeq ($(CONFIGURATION),)
-all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT assure-default-configurations-exist_
+all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT assure-default-configurations-exist_
 	@#first run all checks so any errors for missing tools appear ASAP
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Checking Prerequisites for Stroika:"
 	@$(MAKE) --no-print-directory --silent apply-configurations-if-needed MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@for i in $(APPLY_CONFIGS) ; do\
-		$(MAKE) --no-print-directory --silent IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL IntermediateFiles/$$i/TOOLS_CHECKED CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
+		$(MAKE) --no-print-directory --silent IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/$$i/TOOLS_CHECKED CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 	@for i in $(APPLY_CONFIGS) ; do\
 		ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika all {$$i}:";\
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 else
-all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT assure-default-configurations-exist_ libraries tools tests samples documentation
+all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT assure-default-configurations-exist_ libraries tools tests samples documentation
 endif
 
 
@@ -159,13 +159,13 @@ documentation:
 
 
 ifeq ($(CONFIGURATION),)
-libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT assure-default-configurations-exist_
+libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT assure-default-configurations-exist_
 	@for i in $(APPLY_CONFIGS) ; do\
 		ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making Stroika/Libraries {$$i}:";\
 		$(MAKE) --no-print-directory libraries CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 else
-libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT assure-default-configurations-exist_ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED third-party-components
+libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT assure-default-configurations-exist_ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED third-party-components
 	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Library --no-print-directory all
 endif
@@ -173,13 +173,13 @@ endif
 
 
 ifeq ($(CONFIGURATION),)
-third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_
+third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON assure-default-configurations-exist_
 	@for i in $(APPLY_CONFIGS) ; do\
 		ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making Stroika/Third-party-components {$$i}:";\
 		$(MAKE) --no-print-directory third-party-components CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 else
-third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_ apply-configuration-if-needed_ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
+third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON assure-default-configurations-exist_ apply-configuration-if-needed_ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
 	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory all
 endif
@@ -292,7 +292,7 @@ format-code:
 #	is broken into check-prerequisite-tools-common - which checks all stroika prerequisites, and
 #	check-prerequisite-tools-current-configuration which checks a given argument CONFIGURATION.
 #
-#	We use take target files IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL and IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
+#	We use take target files IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON and IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
 #	to make sure each configuraiton is checked at least once before build, so we get easier to understand error messages
 #	(tool x missing instead of xxx failed)
 #
@@ -329,7 +329,7 @@ ifneq (,$(findstring Darwin,$(DETECTED_HOST_OS)))
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type gsed 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool gsed && exit 1)"
 endif
 	@mkdir -p IntermediateFiles
-	@touch IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL
+	@touch IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON
 
 
 check-prerequisite-tools-current-configuration:
@@ -342,15 +342,16 @@ endif
 	@touch IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
 
 
-IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL:
+IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON:
 	@$(MAKE) check-prerequisite-tools-common --no-print-directory
 
 IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED:
 	@#Check BOTH the check-prerequisite-tools-common (redundantly) and check-prerequisite-tools-current-configuration
 	@#because we could be using different versions of make (eg. cygwin vs. WSL) for different configurations
-	@$(MAKE) check-prerequisite-tools-common check-prerequisite-tools-current-configuration --no-print-directory
+	@$(MAKE) IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON check-prerequisite-tools-current-configuration --no-print-directory
 
-IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT: assure-default-configurations-exist_
+IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT:
+	@$(MAKE) --no-print-directory assure-default-configurations-exist_
 	@$(MAKE) --no-print-directory project-files
 	@touch IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT
 
