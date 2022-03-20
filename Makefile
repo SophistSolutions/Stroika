@@ -348,7 +348,7 @@ IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON:
 IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED:
 	@#Check BOTH the check-prerequisite-tools-common (redundantly) and check-prerequisite-tools-current-configuration
 	@#because we could be using different versions of make (eg. cygwin vs. WSL) for different configurations
-	@$(MAKE) IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON check-prerequisite-tools-current-configuration --no-print-directory
+	@$(MAKE) --silent IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON check-prerequisite-tools-current-configuration --no-print-directory
 
 IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT:
 	@$(MAKE) --no-print-directory assure-default-configurations-exist_
