@@ -200,6 +200,11 @@ endif
 
 project-files-visual-studio:
 	@$(MAKE) --directory Tests --no-print-directory project-files
+ifeq ($(DETECTED_HOST_OS),Darwin)
+	@rsync --update Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user-default.props Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
+else
+	@cp --update Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user-default.props Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
+endif
 
 project-files-qt-creator:	project-files-qt-creator-load
 
