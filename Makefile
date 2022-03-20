@@ -187,7 +187,9 @@ endif
 
 # As of Stroika 2.1r4, no longer automatically run project-files-qt-creator since I'm not sure its widely used
 # anymore, and we may just deprecate (I no longer update the project files)
-project-files:	project-files-visual-studio project-files-vs-code
+project-files:	
+	@$(ECHO) "Creating (common) default project files:"
+	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) project-files-visual-studio project-files-vs-code
 
 project-files-vs-code:
 	@$(ECHO) "Creating default visual-studio-code configuration files:"
