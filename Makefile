@@ -188,11 +188,11 @@ endif
 # As of Stroika 2.1r4, no longer automatically run project-files-qt-creator since I'm not sure its widely used
 # anymore, and we may just deprecate (I no longer update the project files)
 project-files:	
-	@$(ECHO) "Creating (common) default project files:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating (common) default project files:"
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) project-files-visual-studio project-files-vs-code
 
 project-files-vs-code:
-	@$(ECHO) "Creating default visual-studio-code configuration files:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating default visual-studio-code configuration files:"
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@rsync --update .config-default.json .config.json
 else
@@ -201,7 +201,8 @@ endif
 	@$(MAKE) --silent apply-configurations MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 project-files-visual-studio:
-	@$(MAKE) --directory Tests --no-print-directory project-files
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating default visual-studio project files:"
+	@$(MAKE) --directory Tests --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) project-files
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@rsync --update Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user-default.props Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
 else
@@ -212,12 +213,12 @@ project-files-qt-creator:	project-files-qt-creator-load
 
 
 project-files-qt-creator-load:
-	@$(ECHO) -n "Loading qt-creator project files ... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Loading qt-creator project files ... "
 	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp Library/Projects/QtCreator/$$i .; done;
 	@$(ECHO) "done"
 
 project-files-qt-creator-save:
-	@$(ECHO) -n "Saving qt-creator project files ... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Saving qt-creator project files ... "
 	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp $$i Library/Projects/QtCreator/ ; done;
 	@$(ECHO) "done"
 

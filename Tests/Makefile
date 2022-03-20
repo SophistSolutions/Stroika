@@ -165,13 +165,14 @@ endif
 
 
 project-files:
-	@$(ECHO) -n "Building VisualStudio.Net-2017 project files..."
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating default visual-studio Tests project files:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "Building VisualStudio.Net-2017 project files..."
 	@cd Projects/VisualStudio.Net-2017 && ./BuildProjectsFiles
 	@$(ECHO) done
-	@$(ECHO) -n "Building VisualStudio.Net-2019 project files..."
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  -n "Building VisualStudio.Net-2019 project files..."
 	@cd Projects/VisualStudio.Net-2019 && ./BuildProjectsFiles
 	@$(ECHO) done
-	@$(ECHO) -n "Building VisualStudio.Net-2022 project files..."
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  -n "Building VisualStudio.Net-2022 project files..."
 	@cd Projects/VisualStudio.Net-2022 && ./BuildProjectsFiles
 	@$(ECHO) done
 
