@@ -349,7 +349,7 @@ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED:
 	@$(MAKE) --silent IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON check-prerequisite-tools-current-configuration --no-print-directory
 
 IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT:
-	@$(MAKE) --no-print-directory IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
+	@$(MAKE) --no-print-directory --silent IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 	@mkdir -p IntermediateFiles; touch IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT
 
 
