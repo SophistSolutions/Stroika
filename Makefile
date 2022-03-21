@@ -12,7 +12,7 @@ endif
 # have to be built before the samples etc...
 .NOTPARALLEL:
 
-.PHONY:	tests documentation all check clobber libraries assure-default-configurations apply-configuration-if-needed_ check-prerequisite-tools apply-configurations apply-configuration
+.PHONY:	tests documentation all check clobber libraries apply-configuration-if-needed_ check-prerequisite-tools apply-configurations apply-configuration
 
 
 SHELL=/bin/bash
@@ -88,7 +88,7 @@ help:
 
 
 ifeq ($(CONFIGURATION),)
-all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT assure-default-configurations-exist_
+all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 	@#first run all checks so any errors for missing tools appear ASAP
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Checking Prerequisites for Stroika:"
 	@$(MAKE) --no-print-directory --silent apply-configurations-if-needed MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
@@ -100,11 +100,11 @@ all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFA
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 else
-all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT assure-default-configurations-exist_ libraries tools tests samples documentation
+all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT libraries tools tests samples documentation
 endif
 
 
-check: assure-default-configurations-exist_
+check: IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 ifeq ($(CONFIGURATION),)
 ifeq ($(MAKECMDGOALS),check)
 	@for i in $(APPLY_CONFIGS) ; do\
@@ -159,13 +159,13 @@ documentation:
 
 
 ifeq ($(CONFIGURATION),)
-libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT assure-default-configurations-exist_
+libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 	@for i in $(APPLY_CONFIGS) ; do\
 		ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making Stroika/Libraries {$$i}:";\
 		$(MAKE) --no-print-directory libraries CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 else
-libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT assure-default-configurations-exist_ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED third-party-components
+libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED third-party-components
 	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Library --no-print-directory all
 endif
@@ -173,13 +173,13 @@ endif
 
 
 ifeq ($(CONFIGURATION),)
-third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON assure-default-configurations-exist_
+third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 	@for i in $(APPLY_CONFIGS) ; do\
 		ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making Stroika/Third-party-components {$$i}:";\
 		$(MAKE) --no-print-directory third-party-components CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 else
-third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON assure-default-configurations-exist_ apply-configuration-if-needed_ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
+third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT apply-configuration-if-needed_ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
 	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory all
 endif
@@ -187,7 +187,7 @@ endif
 
 # As of Stroika 2.1r4, no longer automatically run project-files-qt-creator since I'm not sure its widely used
 # anymore, and we may just deprecate (I no longer update the project files)
-project-files:	
+project-files:	IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating (common) default project files:"
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) project-files-visual-studio project-files-vs-code
 
@@ -224,39 +224,39 @@ project-files-qt-creator-save:
 
 
 ifeq ($(CONFIGURATION),)
-tools:	assure-default-configurations-exist_
+tools:	IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 	@for i in $(APPLY_CONFIGS) ; do\
 		ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making Stroika/Tools {$$i}:";\
 		$(MAKE) tools --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 else
-tools:	assure-default-configurations-exist_ libraries
+tools:	IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT libraries
 	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Tools --no-print-directory all
 endif
 
 
 ifeq ($(CONFIGURATION),)
-tests:	assure-default-configurations-exist_
+tests:	IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 	@for i in $(APPLY_CONFIGS) ; do\
 		ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making Stroika/Tests {$$i}:";\
 		$(MAKE) tests --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 else
-tests:	assure-default-configurations-exist_ libraries
+tests:	IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT libraries
 	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Tests --no-print-directory tests
 endif
 
 
 ifeq ($(CONFIGURATION),)
-samples:	assure-default-configurations-exist_
+samples:	IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 	@for i in $(APPLY_CONFIGS) ; do\
 		ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making Stroika/Samples {$$i}:";\
 		$(MAKE) samples --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 else
-samples:	assure-default-configurations-exist_ libraries
+samples:	IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT libraries
 	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Samples --no-print-directory samples
 endif
@@ -351,19 +351,19 @@ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED:
 	@$(MAKE) --silent IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON check-prerequisite-tools-current-configuration --no-print-directory
 
 IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT:
-	@$(MAKE) --no-print-directory assure-default-configurations-exist_
-	@$(MAKE) --no-print-directory project-files
+	@$(MAKE) --no-print-directory IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 	@touch IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT
 
 
-
-assure-default-configurations-exist_:
+# DONT actually defaults if any configurations have already been created (but still mark as created)
+IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT:
 ifeq ($(shell ScriptsLib/GetConfigurations --quiet),)
 	@$(MAKE) default-configurations --no-print-directory
 endif
+	@touch IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 
 
-apply-configuration-if-needed_:	assure-default-configurations-exist_
+apply-configuration-if-needed_:	IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 ifneq ($(CONFIGURATION),)
 	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --no-print-directory --silent IntermediateFiles/$(CONFIGURATION)/Configuration.mk
