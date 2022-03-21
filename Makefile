@@ -328,8 +328,7 @@ check-prerequisite-tools-common:
 ifneq (,$(findstring Darwin,$(DETECTED_HOST_OS)))
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type gsed 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool gsed && exit 1)"
 endif
-	@mkdir -p IntermediateFiles
-	@touch IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON
+	@mkdir -p IntermediateFiles; touch IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON
 
 
 check-prerequisite-tools-current-configuration:
@@ -338,8 +337,7 @@ ifeq ($(CONFIGURATION),)
 endif
 	@$(MAKE) --no-print-directory apply-configuration-if-needed_
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory check-prerequisite-tools
-	@mkdir -p IntermediateFiles/$(CONFIGURATION)
-	@touch IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
+	@mkdir -p IntermediateFiles/$(CONFIGURATION); touch IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
 
 
 IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON:
@@ -352,7 +350,7 @@ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED:
 
 IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT:
 	@$(MAKE) --no-print-directory IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
-	@touch IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT
+	@mkdir -p IntermediateFiles; touch IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT
 
 
 # DONT actually defaults if any configurations have already been created (but still mark as created)
@@ -360,7 +358,7 @@ IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT:
 ifeq ($(shell ScriptsLib/GetConfigurations --quiet),)
 	@$(MAKE) default-configurations --no-print-directory
 endif
-	@touch IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
+	@mkdir -p IntermediateFiles; touch IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 
 
 apply-configuration-if-needed_:	IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
