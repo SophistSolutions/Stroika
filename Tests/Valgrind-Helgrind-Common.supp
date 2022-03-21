@@ -89,6 +89,12 @@
    fun:*ConstantProperty*
 }
 {
+   https://stroika.atlassian.net/browse/STK-774
+   Helgrind:Race
+   ...
+   fun:*call_once*
+}
+{
    https://stroika.atlassian.net/browse/STK-644 - fails on Ubuntu 18.04 and 21.10, valgrind -q --gen-suppressions=yes --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp  Builds/valgrind-release-SSLPurify-NoBlockAlloc/Tests/Test31 OR valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp Builds/valgrind-debug-SSLPurify-NoBlockAlloc/Tests/Test31
    Helgrind:Misc
    ...
