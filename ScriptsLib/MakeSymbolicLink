@@ -1,0 +1,18 @@
+#!/bin/bash
+TARGET=$1
+ALIASPATH=$2
+
+DETECTED_HOST_OS=`ScriptsLib/DetectedHostOS`
+
+if [[ "$DETECTED_HOST_OS" == "Cygwin"  ]] ; then
+export CYGWIN="winsymlinks:nativestrict;$CYGWIN"
+fi
+if [[ "$DETECTED_HOST_OS" == "MSYS"  ]] ; then
+export MSYS="winsymlinks:nativestrict;$MSYS"
+fi
+
+if [ $# == 2 ] ; then
+    ln -s $TARGET $ALIASPATH
+else
+    ln -s $TARGET
+fi
