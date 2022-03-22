@@ -1,0 +1,84 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "make clean (CURRENT-SETTINGS)",
+      "type": "shell",
+      "command": "make",
+      "args": ["CONFIGURATION=${command:cpptools.activeConfigName}", "clean"],
+      "options": {"env": {"CHERE_INVOKING" : "1",  }},
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "clear": true,
+        "panel": "dedicated"
+      },
+      "problemMatcher": ["$msCompile"]
+    },
+    {
+      "label": "make clobber (CURRENT-SETTINGS)",
+      "type": "shell",
+      "command": "make",
+      "args": ["CONFIGURATION=${input:CURRENT-CONFIGURATION}", "clobber"],
+      "options": {"env": {"CHERE_INVOKING" : "1",  }},
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "clear": true,
+        "panel": "dedicated"
+      },
+    },
+    {
+      "label": "make all (CURRENT-SETTINGS)",
+      "type": "shell",
+      "command": "make",
+      "options": {"env": {"CHERE_INVOKING" : "1",  }},
+      "args": [
+        "CONFIGURATION=${command:cpptools.activeConfigName}",
+        "all",
+        "${input:CURRENT-JOBSFLAG}"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "clear": true,
+        "panel": "dedicated"
+      },
+      "problemMatcher": ["$msCompile", "$gcc"]
+    },
+    {
+      "label": "make rebuild (CURRENT-SETTINGS)",
+      "type": "shell",
+      "options": {"env": {"CHERE_INVOKING" : "1",  }},
+      "command": "make CONFIGURATION=${command:cpptools.activeConfigName} clean && make CONFIGURATION=${command:cpptools.activeConfigName} all ${input:CURRENT-JOBSFLAG}",
+      "problemMatcher": ["$msCompile"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "clear": true,
+        "panel": "dedicated"
+      }
+    },
+  ],
+  "inputs": [
+    {
+      "id": "CURRENT-JOBSFLAG",
+      "type": "command",
+      "command": "extension.commandvariable.file.content",
+      "args": {
+        "fileName": "${workspaceFolder}/.config.json",
+        "json": "content.JOBS_FLAG",
+        "default": "-j4"
+      }
+    }
+  ]
+}

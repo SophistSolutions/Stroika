@@ -114,9 +114,9 @@ mkMyApp_()
 
   cp $MY_PATH_/Shared/Skel-Templates/VERSION $APP_ROOT/VERSION
 
-  cp $StroikaRoot.vscode/launch.json $APP_ROOT/.vscode/
-  cp $StroikaRoot.vscode/settings.json $APP_ROOT/.vscode/
-  cp $StroikaRoot.vscode/tasks.json $APP_ROOT/.vscode/
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/launch.json > $APP_ROOT/.vscode/launch.json
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/settings.json > $APP_ROOT/.vscode/settings.json
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/tasks.json > $APP_ROOT/.vscode/tasks.json
   cp $StroikaRoot.config-default.json $APP_ROOT/.config.json
 }
 
