@@ -45,8 +45,8 @@
   <ImportGroup Label="Shared">
   </ImportGroup>
   <ImportGroup Label="PropertySheets">
-    <Import Project="$(ProjectDir)\..\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.ConfigurationBased.props" Condition="exists('$(ProjectDir)\..\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.ConfigurationBased.props')" Label="Stroika-Configuration" />
-    <Import Project="$(ProjectDir)\..\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.user.props" Condition="exists('$(ProjectDir)\..\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.user.props')" Label="User-Editable-Properties" />
+    <Import Project="$(ProjectDir)\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.ConfigurationBased.props" Condition="exists('$(ProjectDir)\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.ConfigurationBased.props')" Label="Stroika-Configuration" />
+    <Import Project="$(ProjectDir)\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.user.props" Condition="exists('$(ProjectDir)\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.user.props')" Label="User-Editable-Properties" />
   </ImportGroup>
   <PropertyGroup>
     <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\ CONFIGURATION=$(CONFIGURATION) $(JOBS_FLAG) --silent all</NMakeBuildCommandLine>
