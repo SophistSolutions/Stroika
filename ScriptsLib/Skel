@@ -125,3 +125,5 @@ mkThirdPartyComponentsAndStroika_ >> $OUTDIR 2>&1
 mkMyApp_ >> $OUTDIR 2>&1
 
 echo "  done"
+echo "Suggested next step:"
+echo "  cd $OUTDIR; make CONFIGURATION=Debug all -j8"
