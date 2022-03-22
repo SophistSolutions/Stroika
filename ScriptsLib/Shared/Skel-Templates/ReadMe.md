@@ -1,6 +1,8 @@
 # About this project
 
-This project is created by the Stroika Skel utility
+This project is created by the Stroika Skel utility.
+
+This is folder is a standalone project, which aggregates its dependencies (like Stroika).
 
 ## Building
 
