@@ -17,7 +17,7 @@ get_script_dir () {
 }
 MY_PATH=$(get_script_dir)
 
-DETECTED_HOST_OS=`${MY_PATH}/ScriptsLib/DetectedHostOS`
+DETECTED_HOST_OS=`${MY_PATH}/DetectedHostOS`
 
 if [[ "$DETECTED_HOST_OS" == "Cygwin"  ]] ; then
 export CYGWIN="winsymlinks:nativestrict;$CYGWIN"
