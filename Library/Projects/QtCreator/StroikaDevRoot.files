@@ -1564,7 +1564,7 @@ ScriptsLib/GetDefaultShellVariable.sh
 ScriptsLib/GetMessageForMissingTool.sh
 ScriptsLib/HasCompiler.sh
 ScriptsLib/MakeBuildRoot.sh
-ScriptsLib/MakeDirectorySymbolicLink.sh
+ScriptsLib/MakeSymbolicLink
 ScriptsLib/MakeVersionFile.sh
 ScriptsLib/PrintConfigurationVariable.pl
 ScriptsLib/PrintEnvVarFromCommonBuildVars.pl
