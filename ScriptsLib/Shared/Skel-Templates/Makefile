@@ -87,13 +87,8 @@ build-root:
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) Making BuildRoot...
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd ThirdPartyComponents/Stroika/StroikaRoot && ./ScriptsLib/MakeBuildRoot ../../../
 	@mkdir Workspaces/VisualStudio.Net
-	@cd Workspaces/VisualStudio.Net; $(StroikaRoot)ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props Microsoft.Cpp.stroika.ConfigurationBased.props
-	@cd Workspaces/VisualStudio.Net; $(StroikaRoot)ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props Microsoft.Cpp.stroika.user.props
-	@#you may want these to be symbolic links or just your own copies bootstrapped by copying...
-	@cd .vscode; $(StroikaRoot)ScriptsLib/MakeSymbolicLink ../ThirdPartyComponents/Stroika/StroikaRoot/.vscode/launch.json
-	@cd .vscode; $(StroikaRoot)ScriptsLib/MakeSymbolicLink ../ThirdPartyComponents/Stroika/StroikaRoot/.vscode/settings.json
-	@cd .vscode; $(StroikaRoot)ScriptsLib/MakeSymbolicLink ../ThirdPartyComponents/Stroika/StroikaRoot/.vscode/tasks.json
-	@$(StroikaRoot)ScriptsLib/MakeSymbolicLink ../ThirdPartyComponents/Stroika/StroikaRoot/.config-default.json
+	@cd Workspaces/VisualStudio.Net; touch ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft; $(StroikaRoot)ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props
+	@cd Workspaces/VisualStudio.Net; $(StroikaRoot)ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
 	
 
 apply-configurations-to-vscode:

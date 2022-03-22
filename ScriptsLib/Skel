@@ -66,6 +66,7 @@ get_script_dir_ () {
      echo "$DIR"
 }
 MY_PATH_=$(get_script_dir_)
+StroikaRoot=${MY_PATH}/../
 
 mkTopLevelDir_()
 {
@@ -104,6 +105,15 @@ mkMyApp_()
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Projects/VisualStudio.Net-2019/MyApp.vcxproj.filters > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2019/$APP_NAME.vcxproj.filters
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Projects/VisualStudio.Net-2022/MyApp.vcxproj > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022/$APP_NAME.vcxproj
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Projects/VisualStudio.Net-2022/MyApp.vcxproj.filters > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022/$APP_NAME.vcxproj.filters
+
+
+  cp $MY_PATH_/Shared/Skel-Templates/VERSION $APP_ROOT/VERSION
+
+  cp ${StroikaRoot}.vscode/launch.json ${APP_ROOT}/.vscode/
+  cp ${StroikaRoot}.vscode/settings.json ${APP_ROOT}/.vscode/
+  cp ${StroikaRoot}.vscode/tasks.json ${APP_ROOT}/.vscode/
+  cp ${StroikaRoot}.config-default.json ${APP_ROOT}/.config.json
+
 }
 
 
