@@ -111,8 +111,13 @@ mkMyApp_()
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Projects/VisualStudio.Net-2022/MyApp.vcxproj > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022/$APP_NAME.vcxproj
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Projects/VisualStudio.Net-2022/MyApp.vcxproj.filters > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022/$APP_NAME.vcxproj.filters
 
+  cp $MY_PATH_/Shared/Skel-Templates/VERSION $APP_ROOT/
+  cp $MY_PATH_/Shared/Skel-Templates/ReadMe.md $APP_ROOT/
 
-  cp $MY_PATH_/Shared/Skel-Templates/VERSION $APP_ROOT/VERSION
+  (cd $APP_ROOT/Workspaces/VisualStudio.Net; touch ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props)
+  (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props)
+  (cd $APP_ROOT; $StroikaRoot/ScriptsLib/MakeSymbolicLink ThirdPartyComponents/Stroika/StroikaRoot/.clang-format
+  cp $StroikaRoot/.gitignore $APP_ROOT
 
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/launch.json > $APP_ROOT/.vscode/launch.json
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/settings.json > $APP_ROOT/.vscode/settings.json
