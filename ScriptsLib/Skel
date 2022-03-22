@@ -10,6 +10,7 @@ APP_ROOT="app"
 APP_NAME=""
 STROIKA_SOURCE="git"
 GIT_REMOTE="https://github.com/SophistSolutions/Stroika.git"
+GIT_STROIKA_BRANCH=`git rev-parse --abbrev-ref HEAD`
 
 help_()
 {
@@ -85,6 +86,7 @@ mkThirdPartyComponentsAndStroika_()
       echo "Initializing git repository and adding Stroika submodule"
       (cd $APP_ROOT && git init)
       (cd $APP_ROOT/ThirdPartyComponents/Stroika; git submodule add $GIT_REMOTE StroikaRoot)
+      (cd $APP_ROOT/ThirdPartyComponents/Stroika/StroikaRoot; git checkout ${GIT_STROIKA_BRANCH})
     fi
 }
 mkMyApp_()
@@ -116,7 +118,7 @@ mkMyApp_()
 
   (cd $APP_ROOT/Workspaces/VisualStudio.Net; touch ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props)
   (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props)
-  (cd $APP_ROOT; $StroikaRoot/ScriptsLib/MakeSymbolicLink ThirdPartyComponents/Stroika/StroikaRoot/.clang-format
+  (cd $APP_ROOT; $StroikaRoot/ScriptsLib/MakeSymbolicLink ThirdPartyComponents/Stroika/StroikaRoot/.clang-format)
   cp $StroikaRoot/.gitignore $APP_ROOT
 
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/launch.json > $APP_ROOT/.vscode/launch.json
