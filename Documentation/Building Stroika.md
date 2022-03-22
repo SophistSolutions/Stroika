@@ -499,6 +499,8 @@ And it includes two important macros (set reasonably by default, but that you ma
 Visual Studio Code works well with Stroika. Just open the workspace file Workspaces/VSCode/Stroika.code-workspace.
 The workspsace contains pre-built 'tasks' to build Stroika (run makefiles).
 
+To use the builtin 'tasks.json' - you may need to install the VSCode extension "command variable".
+
 ### Using QtCreator (on unix)
 
 Run Library/Projects/QtCreator/CreateQtCreatorSymbolicLinks.sh to create project files at the top level of your Stroika directory. Then you can open that .creator file in qtCreator, and build and debug Stroika-based applications.
