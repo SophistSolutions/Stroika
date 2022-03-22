@@ -63,7 +63,7 @@ endif
 
 .PHONY: default-configurations
 default-configurations:
-	@make -s build-root
+	@if [ ! -d ConfigurationFiles ] ; then $(MAKE) --silent build-root; fi
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) Configuring...
 ifeq ($(DETECTED_HOST_OS), Darwin)
 	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Debug --build-by-default $(DETECTED_HOST_OS) --config-tag Unix $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_DEBUG));
