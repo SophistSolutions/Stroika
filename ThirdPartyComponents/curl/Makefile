@@ -72,7 +72,7 @@ endif
 
 
 $(ZIPPEDFILE):
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)WebGet $(ZIPPEDFILE) $(FETCHURLS)
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)ScriptsLib/WebGet $(ZIPPEDFILE) $(FETCHURLS)
 
 
 #ALL produced artifacts produced by the same thing. But if you try the same rule to make all, if parallel makes invoked on this, you get

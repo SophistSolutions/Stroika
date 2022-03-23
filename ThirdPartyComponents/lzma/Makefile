@@ -119,7 +119,7 @@ endif
 
 
 $(ZIPPEDFILE):
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)WebGet $(ZIPPEDFILE) $(FETCHURLS)
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)ScriptsLib/WebGet $(ZIPPEDFILE) $(FETCHURLS)
 
 
 check-prerequisite-tools:

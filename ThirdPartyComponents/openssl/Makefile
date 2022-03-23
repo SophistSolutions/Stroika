@@ -44,7 +44,7 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
-ZIPPEDFILE=$(StroikaRoot)ThirdPartyComponents/Origs-Cache/$(BASENAME).tar.gz
+ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 
 FETCHURLS=
 FETCHURLS+=http://www.openssl.org/source/$(BASENAME).tar.gz
@@ -196,7 +196,7 @@ endif
 
 
 $(ZIPPEDFILE):
-	@MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(StroikaRoot)WebGet $(ZIPPEDFILE) $(FETCHURLS)
+	@MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(StroikaRoot)ScriptsLib/WebGet $(ZIPPEDFILE) $(FETCHURLS)
 
 
 
