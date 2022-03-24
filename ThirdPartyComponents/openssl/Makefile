@@ -273,14 +273,22 @@ export LDFLAGS
 # I tried many other tricks (like setting .SHELLFLAGS), but this appears to work best (setting -i or -l .SHELLFLAGS also works
 # but creates other problems)
 #		--LGP 2022-01-24
+#
+# This hack/workaround caused failure of build in various subtle ways (complaint about cannot find rule to make ../Origs-Cache... stuff
+# and then failure inside RunExteneralVStudioScripts... - fails to invoke .bat file). So I tried losing this,
+# and it appears to no longer be needed. So disable and retest if works without this.
+#
+# NOTE - ONE of the problems this caused (messed up PWD) - can be fixed by setting
+# 		export CHERE_INVOKING=1
+# but no need if we can avoid this altogether.
 # 
-ifeq ($(DETECTED_HOST_OS),MSYS)
+# ifeq ($(DETECTED_HOST_OS),MSYS)
 # From https://linux.die.net/man/1/bash
 #		When bash is started non-interactively, to run a shell script, for example, it looks
 #		for the variable BASH_ENV in the environment, expands its value if it appears there, 
 #		and uses the expanded value as the name of a file to read and execute.
-export BASH_ENV=/etc/profile
-endif
+# export BASH_ENV=/etc/profile
+# endif
 
 
 ifeq ($(qFeatureFlag_ActivePerl), use)
