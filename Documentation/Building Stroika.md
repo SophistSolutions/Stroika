@@ -513,7 +513,7 @@ add to your settings.json:
       },
       "msys-bash": {
         "path": "C:\\tools\\msys64\\usr\\bin\\bash.exe",
-        "env": {"MSYSTEM": "MSYS"},
+        "env": {"MSYSTEM": "MSYS", "CHERE_INVOKING": "1"},
         "args": [
           "-l", "-i"
         ],
