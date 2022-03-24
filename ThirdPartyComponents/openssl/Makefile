@@ -282,6 +282,15 @@ ifeq ($(DETECTED_HOST_OS),MSYS)
 export BASH_ENV=/etc/profile
 endif
 
+
+ifeq ($(qFeatureFlag_ActivePerl), use)
+# See https://stackoverflow.com/questions/45494630/how-to-build-openssl-on-windows-with-visual-studio-2017
+PERL_VERSION_PATCH_=set PATH=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot))ThirdPartyComponents/ActivePerl/CURRENT/bin;%PATH%
+endif
+ifeq (${PERL_VERSION_PATCH_},)
+PERL_VERSION_PATCH_=echo 'using installed perl'
+endif
+
 doBuilds_:
 	@
 	@#Run openssl configure scripts
@@ -299,13 +308,13 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(ECHO) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && perl configdata.pm --dump >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@#nb: need set path INSIDE args to RunArgumentsWithCommonBuildVars since it re-orders path
+	@#nb: need PERL_VERSION_PATCH_ INSIDE args to RunArgumentsWithCommonBuildVars since RunArgumentsWithCommonBuildVars re-orders path
 	@$(ECHO) 'cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 	 env --unset=MFLAGS --unset=MAKEFLAGS \
-	 $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"set PATH=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot))ThirdPartyComponents/ActivePerl/CURRENT/bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)\"' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt 2>&1
+	 $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"$(PERL_VERSION_PATCH_) && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)\"' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt 2>&1
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 	 env --unset=MFLAGS --unset=MAKEFLAGS \
-	 $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "set PATH=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot))ThirdPartyComponents/ActivePerl/CURRENT/bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt 2>&1
+	 $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "$(PERL_VERSION_PATCH_) && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt 2>&1
 endif
 	@
 	@
