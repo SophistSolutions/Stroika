@@ -501,6 +501,30 @@ The workspsace contains pre-built 'tasks' to build Stroika (run makefiles).
 
 To use the builtin 'tasks.json' - you may need to install the VSCode extension "command variable".
 
+Also, you will need to have tools like cygwin or MSYS (see [Installing-Required-Tools.md](./Installing-Required-Tools.md)) in your path. One good way todo this is to 
+add to your settings.json:
+  ~~~json
+    "terminal.integrated.profiles.windows": {
+      "cygwin-bash": {
+        "path": "C:\\tools\\cygwin\\bin\\bash.exe",
+        "args": [
+          "-l", "-i"
+        ],
+      },
+      "msys-bash": {
+        "path": "C:\\tools\\msys64\\usr\\bin\\bash.exe",
+        "env": {"MSYSTEM": "MSYS"},
+        "args": [
+          "-l", "-i"
+        ],
+      },
+    },
+    "terminal.integrated.defaultProfile.windows": "cygwin-msys",
+  ~~~
+
+  The 'defaultProfile' is the one used by the tasks.json for executing commands like make all, make clean etc from vscode's build menu (SHIFT-Cntrl-B)
+
+
 ### Using QtCreator (on unix)
 
 Run Library/Projects/QtCreator/CreateQtCreatorSymbolicLinks.sh to create project files at the top level of your Stroika directory. Then you can open that .creator file in qtCreator, and build and debug Stroika-based applications.
