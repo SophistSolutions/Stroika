@@ -657,6 +657,9 @@ sub WriteVSCodeCPPExtensionConfigFile
 		if ($l != -1) {
 			$std = substr ($std, 0, $l);
 		}
+		if ($std eq "c++2a") {
+			$std = "c++20";
+		}
 		if ($std eq "c++latest") {
 			$std = "c++20";
 		}
