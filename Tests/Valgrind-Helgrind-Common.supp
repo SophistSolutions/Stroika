@@ -80,6 +80,12 @@
    https://stroika.atlassian.net/browse/STK-620
    Helgrind:Misc
    ...
+   fun:*BlockingQueue*
+}
+{
+   https://stroika.atlassian.net/browse/STK-620
+   Helgrind:Misc
+   ...
    fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
 }
 {
