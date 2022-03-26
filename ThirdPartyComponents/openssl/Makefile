@@ -283,6 +283,7 @@ export LDFLAGS
 # but no need if we can avoid this altogether.
 # 
 ifeq ($(DETECTED_HOST_OS),MSYS)
+$(info shopt output = $(shell shopt -q login_shell && echo login))
 ifneq ($(shell shopt -q login_shell && echo login), login)
 # From https://linux.die.net/man/1/bash
 #		When bash is started non-interactively, to run a shell script, for example, it looks
