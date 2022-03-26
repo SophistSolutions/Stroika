@@ -282,14 +282,15 @@ export LDFLAGS
 # 		export CHERE_INVOKING=1
 # but no need if we can avoid this altogether.
 # 
-# ifeq ($(DETECTED_HOST_OS),MSYS)
+ifeq ($(DETECTED_HOST_OS),MSYS)
+ifneq ($(shell shopt -q login_shell && echo login), login)
 # From https://linux.die.net/man/1/bash
 #		When bash is started non-interactively, to run a shell script, for example, it looks
 #		for the variable BASH_ENV in the environment, expands its value if it appears there, 
 #		and uses the expanded value as the name of a file to read and execute.
-# export BASH_ENV=/etc/profile
-# endif
-
+export BASH_ENV=/etc/profile
+endif
+endif
 
 ifeq ($(qFeatureFlag_ActivePerl), use)
 # See https://stackoverflow.com/questions/45494630/how-to-build-openssl-on-windows-with-visual-studio-2017
