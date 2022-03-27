@@ -11,6 +11,40 @@ especially those they need to be aware of when upgrading.
 
 ### 2.1r6 {2022-03-??}
 
+
+more changes:
+-vs2k 17.1.2
+
+- Microsoft.Cpp.stroika.ConfigurationBased.props and Microsoft.Cpp.stroika.user.props" support
+   updated all sample and library and test project files to refer to these
+- docs on vscode usage
+- top level makefile uses  IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT instead of assure-default-configurations-exist_
+
+make project-files-visual-studio now cp --update Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user-default.props Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
+- lose obsoelte TEMPLATE sample project (obsoleted by Skel)
+
+rename ScriptsLib/MakeDirectorySymbolicLink -> MakeSymbolicLink
+
+- more Skel improvements
+
+ https://stroika.atlassian.net/browse/STK-628 (same but for ARM)--diff function optimized out of callstack
++   https://stroika.atlassian.net/browse/STK-620 (
+
+ (reove 628 and use 620 and cleanups to wrokaround)
+
+ https://stroika.atlassian.net/browse/STK-774 helgrind workaround
+
+ openssl ERSION=3.0.2
+
+ anohther fix/workaround to MSYS makefile problem with openssl - MSYSTEM check and CHERE_INVOKING=1
+ 
+ openssl makefile
+  +ifeq ($(qFeatureFlag_ActivePerl), use)
+
+----
+
+
+
 #### TLDR
 
 - New Skel utility - to facilitate starting/building new Stroika-based applications
