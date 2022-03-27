@@ -462,22 +462,70 @@ sub WriteStroikaConfigMakeHeader
 	close(OUT);
 }
 
+
+sub MapArraysOfFiles2Path_
+{
+	my ($conditionalPaths, $backupPaths) = @_;
+	local $result = "";
+	for my $i (0 .. $#conditionalPaths)
+	{
+		my $f = $conditionalPaths[$i];
+		if (-e $f) {
+			if (not ($result eq "")) {
+				$result .= ":";
+			}
+			$result .=  trim (`cygpath --windows $f`);
+		}
+	}
+	if ($result eq "") {
+		for my $i (0 .. $#backupPaths)
+		{
+			my $f = $backupPaths[$i];
+			if (not ($result eq "")) {
+				$result .= ":";
+			}
+			$result .=  trim (`cygpath --windows $f`);
+		}
+	}
+	return $result;
+}
+
 ## GUESS directory for MSYS
 sub GetMSYSPathVar2Add_
 {
+	use Config;
+	local @conditionalPaths = ();
+	local @backupPaths = ();
 	if ("$^O" == "msys") {
+		push  @conditionalPaths, dirname ($Config{perlpath});
 	}
-	if (! -e ('/usr/lib/llvm-6/include/c++/v1/cstddef')) {
+	push @backupPaths, "c:/tools/msys64/usr/bin";
+	push @backupPaths, "c:/tools/msys32/usr/bin";
+	push  @backupPaths, "c:/msys/usr/bin";
+	push  @backupPaths, "c:/msys64/usr/bin";
+	for my $i (0 .. $#backupPaths)
+	{
+		push  @conditionalPaths, $backupPaths[$i];
 	}
-	return "c:\\msys\\usr\\bin;c:\\msys64\\usr\\bin;";
+	return MapArraysOfFiles2Path_(@conditionalPaths, @backupPaths);
 }
 sub GetCygwinPathVar2Add_
 {
+	use Config;
+	local @conditionalPaths = ();
+	local @backupPaths = ();
 	if ("$^O" == "cygwin") {
+		push @conditionalPaths, dirname ($Config{perlpath});
 	}
-	if (! -e ('/usr/lib/llvm-6/include/c++/v1/cstddef')) {
+	push @backupPaths, "c:/tools/cygwin/bin";
+	push @backupPaths, "c:/cygwin/bin";
+	push  @backupPaths, "c:/cygwin64/bin";
+	push  @backupPaths, "c:/cygwin32/bin";
+	for my $i (0 .. $#backupPaths)
+	{
+		push  @conditionalPaths, $backupPaths[$i];
 	}
-	return "c:\\cygwin\\bin;c:\\cygwin64\\bin";
+	return MapArraysOfFiles2Path_(@conditionalPaths, @backupPaths);
 }
 
 
@@ -518,7 +566,7 @@ sub WriteVS2kIntellisenseConfigFile
 	#
 	# then we write the new (current) section, and repeat all the others in our output
 	#
-	open(OUT,">$vs2kIntellisenseCng");
+	open(OUT,">$vs2kIntellisenseCng");		### ConfigurationBased.props file
 	print (OUT "<!--\n");
 	print (OUT " Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved\n");
 	print (OUT "-->\n");
