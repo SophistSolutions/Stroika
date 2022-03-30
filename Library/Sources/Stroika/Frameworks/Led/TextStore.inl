@@ -407,9 +407,9 @@ namespace Stroika::Frameworks::Led {
 
             if (overlapSize == 0) {
                 /*
-                    *  The ONLY case where we want to allow for a zero-overlap to imply a legit overlap is when the marker itself
-                    *  is zero-sized (cuz otherwise - it would never get found).
-                    */
+                 *  The ONLY case where we want to allow for a zero-overlap to imply a legit overlap is when the marker itself
+                 *  is zero-sized (cuz otherwise - it would never get found).
+                 */
                 //  Ensure (oldAlgorithmAnswer == (end == start));
                 return end == start;
             }
