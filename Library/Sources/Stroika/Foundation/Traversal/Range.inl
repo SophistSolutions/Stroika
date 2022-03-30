@@ -249,7 +249,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T2, typename TRAITS2>
     constexpr bool Range<T, TRAITS>::Intersects (const Range<T2, TRAITS2>& rhs) const
     {
-        auto oldCode = [this] (const Range<T2, TRAITS2>& rhs) {
+        [[maybe_unused]] auto oldCode = [this] (const Range<T2, TRAITS2>& rhs) {
             if (empty () or rhs.empty ()) {
                 return false;
             }
