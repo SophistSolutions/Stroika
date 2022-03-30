@@ -54,6 +54,8 @@ especially those they need to be aware of when upgrading.
 
 
 - ThirdPartyComponents
+  - curl
+    - VERSION 7.82.0
   - openssl makefile
     - VERSION 3.0.2
     - ifeq ($(qFeatureFlag_ActivePerl), use)
