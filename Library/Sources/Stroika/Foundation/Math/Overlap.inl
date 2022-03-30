@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Math {
      ********************************************************************************
      */
     template <typename T>
-    constexpr bool Overlaps (const pair<T, T>& i1, const pair<T, T>& i2)
+    [[deprecated ("Since Stroika 2.1r7, use Range<T>{}.Intersects() with appropriate Range openneess (closed ends probably)")]] constexpr bool Overlaps (const pair<T, T>& i1, const pair<T, T>& i2)
     {
         Require (i1.first <= i1.second);
         Require (i2.first <= i2.second);
@@ -57,11 +57,13 @@ namespace Stroika::Foundation::Math {
         }
         return true;
     }
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     template <typename T>
-    constexpr bool Overlaps (T p1Start, T p1End, T p2Start, T p2End)
+    [[deprecated ("Since Stroika 2.1r7, use Range<T>{}.Intersects() with appropriate Range openneess (closed ends probably)")]] constexpr bool Overlaps (T p1Start, T p1End, T p2Start, T p2End)
     {
         return Overlaps (pair<T, T> (p1Start, p1End), pair<T, T> (p2Start, p2End));
     }
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
 }
 

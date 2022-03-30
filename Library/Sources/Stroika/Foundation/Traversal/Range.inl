@@ -7,7 +7,6 @@
 #include "../Characters/Format.h"
 #include "../Characters/StringBuilder.h"
 #include "../Debug/Assertions.h"
-#include "../Math/Overlap.h"
 #include "DisjointRange.h"
 
 namespace Stroika::Foundation::Traversal {
@@ -246,65 +245,59 @@ namespace Stroika::Foundation::Traversal {
         Require (not empty ());
         return Range{GetLowerBound (), GetUpperBound (), Openness::eClosed, Openness::eClosed};
     }
-#if 0
-    template    <typename T, typename TRAITS>
-    bool    Range<T, TRAITS>::Overlaps (const Range<T, TRAITS>& rhs) const
-    {
-        /*
-            *  @todo   RETHINK - because Range has semantics of exclude end - make sure overlap usuage
-            *          here is correct??? Unsure -- LGP 2013-07-05
-            */
-        return Math::Overlaps (
-                    pair<T, T> (fBegin_, fEnd_),
-                    pair<T, T> (rhs.fBegin_, rhs.fEnd_)
-                );
-    }
-#endif
     template <typename T, typename TRAITS>
     template <typename T2, typename TRAITS2>
     constexpr bool Range<T, TRAITS>::Intersects (const Range<T2, TRAITS2>& rhs) const
     {
-        // perhaps better algorithm?
-        auto newCode = [this] (const Range<T2, TRAITS2>& rhs) {
+        auto oldCode = [this] (const Range<T2, TRAITS2>& rhs) {
             if (empty () or rhs.empty ()) {
-                return false; // if either side is empty, clearly they cannot share any points
+                return false;
             }
-            if (rhs.GetUpperBound () < GetLowerBound ()) {
-                return false; // the entirety of rhs is strictly BEFORE lhs
+            T l = max (fBegin_, rhs.GetLowerBound ());
+            T r = min (fEnd_, rhs.GetUpperBound ());
+            if (l < r) {
+                return true;
             }
-            if (rhs.GetLowerBound () > GetUpperBound ()) {
-                return false; // the entirety of rhs is strictly AFTER lhs
+            else if (l == r) {
+                // must check if the end that has 'l' for each Range that that end is closed. Contains()
+                // is a shortcut for that
+                return Contains (l) and rhs.Contains (l);
             }
-            if (rhs.GetUpperBound () == GetLowerBound ()) {
-                // if they interect at a point, both side must be closed (contain that point)
-                return rhs.GetUpperBoundOpenness () == Openness::eClosed and GetLowerBoundOpenness () == Openness::eClosed;
+            else {
+                return false;
             }
-            if (rhs.GetLowerBound () == GetUpperBound ()) {
-                // if they interect at a point, both side must be closed (contain that point)
-                return rhs.GetLowerBoundOpenness () == Openness::eClosed and GetUpperBoundOpenness () == Openness::eClosed;
-            }
-            return true;
         };
+        /*
+         *                         |               this              |
+         *  | A |                | B |             | C |           | D |           | E |
+         *  |                                        F                                 |
+         *  | G                    |                                 |   H   |
+         */
         if (empty () or rhs.empty ()) {
-            Assert (newCode (rhs) == false);
-            return false;
+            // @todo might be faster to move this test after next 2, but then must access fBegin/fEnd directly to avoid asserts if empty
+            Assert (oldCode (rhs) == false);
+            return false; // if either side is empty, clearly they cannot share any points
         }
-        T l = max (fBegin_, rhs.GetLowerBound ());
-        T r = min (fEnd_, rhs.GetUpperBound ());
-        if (l < r) {
-            Assert (newCode (rhs) == true);
-            return true;
+        if (rhs.GetUpperBound () < GetLowerBound ()) {
+            Assert (oldCode (rhs) == false);
+            return false; // the entirety of rhs is strictly BEFORE lhs (see case A)
         }
-        else if (l == r) {
-            // must check if the end that has 'l' for each Range that that end is closed. Contains()
-            // is a shortcut for that
-            Assert (newCode (rhs) == (Contains (l) and rhs.Contains (l)));
-            return Contains (l) and rhs.Contains (l);
+        if (rhs.GetLowerBound () > GetUpperBound ()) {
+            Assert (oldCode (rhs) == false);
+            return false; // the entirety of rhs is strictly AFTER lhs (see case E)
         }
-        else {
-            Assert (newCode (rhs) == false);
-            return false;
+        if (rhs.GetUpperBound () == GetLowerBound ()) {
+            Assert (oldCode (rhs) == (rhs.GetUpperBoundOpenness () == Openness::eClosed and GetLowerBoundOpenness () == Openness::eClosed));
+            // if they interect at a point, both side must be closed (contain that point) - (see case G)
+            return rhs.GetUpperBoundOpenness () == Openness::eClosed and GetLowerBoundOpenness () == Openness::eClosed;
         }
+        if (rhs.GetLowerBound () == GetUpperBound ()) {
+            Assert (oldCode (rhs) == (rhs.GetLowerBoundOpenness () == Openness::eClosed and GetUpperBoundOpenness () == Openness::eClosed));
+            // if they interect at a point, both side must be closed (contain that point) - (see case H)
+            return rhs.GetLowerBoundOpenness () == Openness::eClosed and GetUpperBoundOpenness () == Openness::eClosed;
+        }
+        Assert (oldCode (rhs) == true);
+        return true; // see cases B, C, D, and F - they all intersect
     }
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS> Range<T, TRAITS>::Intersection (const Range& rhs) const

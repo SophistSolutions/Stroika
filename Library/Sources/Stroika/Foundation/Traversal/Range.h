@@ -30,9 +30,6 @@
  *          @todo   Carefully review intersection/unionbounds code for new open/closed parameters. Either make sure
  *                  it works or at least more carefully document in method headers the quirks of the
  *                  chosen definition.
- *
- *          @todo   Consider if we want to re-instate Range<T, TRAITS>::Overlaps - but think through and document
- *                  definition clearly.
  */
 
 namespace Stroika::Foundation::Traversal {
@@ -323,7 +320,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  Range () creates an empty range.
+         *  Range{} creates an empty range (note all empty () ranges of the same type are equal to each other).
          *
          *  optional values - if omitted - are replaced with the TRAITS::kLowerBound and TRAITS::kUpperBound values (as well as 'TRAITs' default openness).
          *  Constructors with actual numeric values (begin/end) MUST construct non-empty ranges (begin == end ==> both sides closed).
@@ -348,7 +345,8 @@ namespace Stroika::Foundation::Traversal {
         constexpr explicit Range (const optional<T>& begin, const optional<T>& end, Openness lhsOpen, Openness rhsOpen);
 
     public:
-        /** 
+        /**
+         *  \brief returns a range centered around center, with the given radius (and optionally argument openness).
          */
         static constexpr Range Ball (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen = TRAITS::kLowerBoundOpenness, Openness rhsOpen = TRAITS::kUpperBoundOpenness);
 
@@ -404,6 +402,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         *  \req not empty ()
          */
         constexpr T GetMidpoint () const;
 
@@ -437,16 +436,10 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual constexpr Range Closure () const;
 
-#if 0
-    public:
-        /**
-         */
-        nonvirtual  bool    Overlaps (const Range& rhs) const;
-#endif
-
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
+         *  \note All empty ranges (of the same type) are equal to each other.
          */
         constexpr bool operator== (const Range& rhs) const;
 #endif
