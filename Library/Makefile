@@ -16,7 +16,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory CONFIGURATION=$$i all || exit $$?;\
 	done
 else
-	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Library {$(CONFIGURATION)}:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Stroika Library {$(CONFIGURATION)}:"
 	@$(MAKE) --directory Sources/Stroika/Foundation/ --no-print-directory --silent all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Sources/Stroika/Frameworks/ --no-print-directory --silent all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -28,8 +28,8 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory CONFIGURATION=$$i check || exit $$?;\
 	done
 else
-	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Checking Stroika Library {$(CONFIGURATION)}:      "
-	@../ScriptsLib/CheckFileExists $(StroikaFoundationLib) $(StroikaFrameworksLib)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Checking Stroika Library {$(CONFIGURATION)}:      "
+	@$(StroikaRoot)ScriptsLib/CheckFileExists $(StroikaFoundationLib) $(StroikaFrameworksLib)
 	@$(ECHO) "[SUCCEEDED]"
 endif
 

@@ -7,7 +7,6 @@
 #include "../Characters/Format.h"
 #include "../Characters/StringBuilder.h"
 #include "../Debug/Assertions.h"
-#include "../Math/Overlap.h"
 #include "DisjointRange.h"
 
 namespace Stroika::Foundation::Traversal {
@@ -144,6 +143,11 @@ namespace Stroika::Foundation::Traversal {
         return false;
     }
     template <typename T, typename TRAITS>
+    constexpr Range<T, TRAITS>::operator bool () const
+    {
+        return not empty ();
+    }
+    template <typename T, typename TRAITS>
     constexpr typename Range<T, TRAITS>::UnsignedDifferenceType Range<T, TRAITS>::GetDistanceSpanned () const
     {
         if (empty ()) [[unlikely]] {
@@ -241,40 +245,59 @@ namespace Stroika::Foundation::Traversal {
         Require (not empty ());
         return Range{GetLowerBound (), GetUpperBound (), Openness::eClosed, Openness::eClosed};
     }
-#if 0
-    template    <typename T, typename TRAITS>
-    bool    Range<T, TRAITS>::Overlaps (const Range<T, TRAITS>& rhs) const
-    {
-        /*
-            *  @todo   RETHINK - because Range has semantics of exclude end - make sure overlap usuage
-            *          here is correct??? Unsure -- LGP 2013-07-05
-            */
-        return Math::Overlaps (
-                    pair<T, T> (fBegin_, fEnd_),
-                    pair<T, T> (rhs.fBegin_, rhs.fEnd_)
-                );
-    }
-#endif
     template <typename T, typename TRAITS>
     template <typename T2, typename TRAITS2>
     constexpr bool Range<T, TRAITS>::Intersects (const Range<T2, TRAITS2>& rhs) const
     {
+        auto oldCode = [this] (const Range<T2, TRAITS2>& rhs) {
+            if (empty () or rhs.empty ()) {
+                return false;
+            }
+            T l = max (fBegin_, rhs.GetLowerBound ());
+            T r = min (fEnd_, rhs.GetUpperBound ());
+            if (l < r) {
+                return true;
+            }
+            else if (l == r) {
+                // must check if the end that has 'l' for each Range that that end is closed. Contains()
+                // is a shortcut for that
+                return Contains (l) and rhs.Contains (l);
+            }
+            else {
+                return false;
+            }
+        };
+        /*
+         *                         |               this              |
+         *  | A |                | B |             | C |           | D |           | E |
+         *  |                                        F                                 |
+         *  | G                    |                                 |   H   |
+         */
         if (empty () or rhs.empty ()) {
-            return false;
+            // @todo might be faster to move this test after next 2, but then must access fBegin/fEnd directly to avoid asserts if empty
+            Assert (oldCode (rhs) == false);
+            return false; // if either side is empty, clearly they cannot share any points
         }
-        T l = max (fBegin_, rhs.GetLowerBound ());
-        T r = min (fEnd_, rhs.GetUpperBound ());
-        if (l < r) {
-            return true;
+        if (rhs.GetUpperBound () < GetLowerBound ()) {
+            Assert (oldCode (rhs) == false);
+            return false; // the entirety of rhs is strictly BEFORE lhs (see case A)
         }
-        else if (l == r) {
-            // must check if the end that has 'l' for each Range that that end is closed. Contains()
-            // is a shortcut for that
-            return Contains (l) and rhs.Contains (l);
+        if (rhs.GetLowerBound () > GetUpperBound ()) {
+            Assert (oldCode (rhs) == false);
+            return false; // the entirety of rhs is strictly AFTER lhs (see case E)
         }
-        else {
-            return false;
+        if (rhs.GetUpperBound () == GetLowerBound ()) {
+            Assert (oldCode (rhs) == (rhs.GetUpperBoundOpenness () == Openness::eClosed and GetLowerBoundOpenness () == Openness::eClosed));
+            // if they interect at a point, both side must be closed (contain that point) - (see case G)
+            return rhs.GetUpperBoundOpenness () == Openness::eClosed and GetLowerBoundOpenness () == Openness::eClosed;
         }
+        if (rhs.GetLowerBound () == GetUpperBound ()) {
+            Assert (oldCode (rhs) == (rhs.GetLowerBoundOpenness () == Openness::eClosed and GetUpperBoundOpenness () == Openness::eClosed));
+            // if they interect at a point, both side must be closed (contain that point) - (see case H)
+            return rhs.GetLowerBoundOpenness () == Openness::eClosed and GetUpperBoundOpenness () == Openness::eClosed;
+        }
+        Assert (oldCode (rhs) == true);
+        return true; // see cases B, C, D, and F - they all intersect
     }
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS> Range<T, TRAITS>::Intersection (const Range& rhs) const
@@ -398,34 +421,34 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    inline Range<T, TRAITS> operator+ (const T& lhs, const Range<T, TRAITS>& rhs)
+    constexpr Range<T, TRAITS> operator+ (const T& lhs, const Range<T, TRAITS>& rhs)
     {
         return rhs.Offset (lhs);
     }
     template <typename T, typename TRAITS>
-    inline Range<T, TRAITS> operator+ (const Range<T, TRAITS>& lhs, const T& rhs)
+    constexpr Range<T, TRAITS> operator+ (const Range<T, TRAITS>& lhs, const T& rhs)
     {
         return lhs.Offset (rhs);
     }
     template <typename T, typename TRAITS>
-    inline DisjointRange<T, Range<T, TRAITS>> operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
+    DisjointRange<T, Range<T, TRAITS>> operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
     {
         return lhs.Union (rhs);
     }
 
     template <typename T, typename TRAITS>
-    inline Range<T, TRAITS> operator* (const T& lhs, const Range<T, TRAITS>& rhs)
+    constexpr Range<T, TRAITS> operator* (const T& lhs, const Range<T, TRAITS>& rhs)
     {
         return rhs.Times (lhs);
     }
     template <typename T, typename TRAITS>
-    inline Range<T, TRAITS> operator* (const Range<T, TRAITS>& lhs, const T& rhs)
+    constexpr Range<T, TRAITS> operator* (const Range<T, TRAITS>& lhs, const T& rhs)
     {
         return lhs.Times (rhs);
     }
 
     template <typename T, typename TRAITS>
-    inline Range<T, TRAITS> operator^ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
+    constexpr Range<T, TRAITS> operator^ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
     {
         return lhs.Intersection (rhs);
     }

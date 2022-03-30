@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Traversal {
             }
             optional<value_type> upperBoundSeenSoFar;
             Openness             upperBoundSeenSoFarOpenness{};
-            for (KeyValuePair<value_type, RANGETYPE> i : tmp) {
+            for (const KeyValuePair<value_type, RANGETYPE>& i : tmp) {
                 //DbgTrace ("i.fKey = %f, i.fValue = (%f,%f, ol=%d, or=%d)", i.fKey, i.fValue.GetLowerBound (), i.fValue.GetUpperBound (), i.fValue.GetLowerBoundOpenness (), i.fValue.GetUpperBoundOpenness ());
                 if (upperBoundSeenSoFar) {
                     if (not comparer (*upperBoundSeenSoFar, i.fValue.GetLowerBound ())) {

@@ -165,13 +165,14 @@ endif
 
 
 project-files:
-	@$(ECHO) -n "Building VisualStudio.Net-2017 project files..."
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating default visual-studio Tests project files:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "Building VisualStudio.Net-2017 project files..."
 	@cd Projects/VisualStudio.Net-2017 && ./BuildProjectsFiles
 	@$(ECHO) done
-	@$(ECHO) -n "Building VisualStudio.Net-2019 project files..."
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  -n "Building VisualStudio.Net-2019 project files..."
 	@cd Projects/VisualStudio.Net-2019 && ./BuildProjectsFiles
 	@$(ECHO) done
-	@$(ECHO) -n "Building VisualStudio.Net-2022 project files..."
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  -n "Building VisualStudio.Net-2022 project files..."
 	@cd Projects/VisualStudio.Net-2022 && ./BuildProjectsFiles
 	@$(ECHO) done
 
@@ -207,8 +208,8 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
-	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Running Stroika Tests {$(CONFIGURATION)}:"
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Running Stroika Tests {$(CONFIGURATION)}:"
 	@PREFIX=`../ScriptsLib/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL) + 1))`;\
     if [ "$(CrossCompiling)" = "true" ] && [ "$(REMOTE)" = "" ] ; then\
            $(ECHO) "$$PREFIX" "Skiping cuz Cross-Compiling and REMOTE= not specified...";\

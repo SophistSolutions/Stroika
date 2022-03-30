@@ -483,7 +483,7 @@ Visual Studio.net project and solution files are available for the Stroika demos
 Stroika's build process automatically populates a property file
 
 ~~~
-Library/Projects/VisualStudio.Net/Microsoft.Cpp.stroika.AllConfigs.props
+Library/Projects/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props
 ~~~
 
 This contains lots of interesting stuff (used to drive intellisense etc) and is automatically included by the provided Stroika projects.
@@ -498,6 +498,32 @@ And it includes two important macros (set reasonably by default, but that you ma
 
 Visual Studio Code works well with Stroika. Just open the workspace file Workspaces/VSCode/Stroika.code-workspace.
 The workspsace contains pre-built 'tasks' to build Stroika (run makefiles).
+
+To use the builtin 'tasks.json' - you may need to install the VSCode extension "command variable".
+
+Also, you will need to have tools like cygwin or MSYS (see [Installing-Required-Tools.md](./Installing-Required-Tools.md)) in your path. One good way todo this is to 
+add to your settings.json:
+  ~~~json
+    "terminal.integrated.profiles.windows": {
+      "cygwin-bash": {
+        "path": "C:\\tools\\cygwin\\bin\\bash.exe",
+        "args": [
+          "-l", "-i"
+        ],
+      },
+      "msys-bash": {
+        "path": "C:\\tools\\msys64\\usr\\bin\\bash.exe",
+        "env": {"MSYSTEM": "MSYS", "CHERE_INVOKING": "1"},
+        "args": [
+          "-l", "-i"
+        ],
+      },
+    },
+    "terminal.integrated.defaultProfile.windows": "cygwin-msys",
+  ~~~
+
+  The 'defaultProfile' is the one used by the tasks.json for executing commands like make all, make clean etc from vscode's build menu (SHIFT-Cntrl-B)
+
 
 ### Using QtCreator (on unix)
 

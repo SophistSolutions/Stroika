@@ -88,6 +88,13 @@ Note - we've only tested building (from MSYS) using Visual Studio. We've not yet
 
 - See <https://www.msys2.org/>
 - download and run installer - e.g. <https://github.com/msys2/msys2-installer/releases/download/2021-11-30/msys2-x86_64-20211130.exe>
+  
+  OR
+  use 
+  ~~~
+  choco install msys2
+  ~~~
+
 - pacman -Syu
   
   Note - this closes the shell window when its done, so start a new shell window when it completes

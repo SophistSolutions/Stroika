@@ -921,8 +921,6 @@ Library/Sources/Stroika/Foundation/Math/Angle.h
 Library/Sources/Stroika/Foundation/Math/Angle.inl
 Library/Sources/Stroika/Foundation/Math/Common.h
 Library/Sources/Stroika/Foundation/Math/Common.inl
-Library/Sources/Stroika/Foundation/Math/Overlap.h
-Library/Sources/Stroika/Foundation/Math/Overlap.inl
 Library/Sources/Stroika/Foundation/Math/ReadMe.md
 Library/Sources/Stroika/Foundation/Math/ReBin.h
 Library/Sources/Stroika/Foundation/Math/ReBin.inl
@@ -1564,7 +1562,7 @@ ScriptsLib/GetDefaultShellVariable.sh
 ScriptsLib/GetMessageForMissingTool.sh
 ScriptsLib/HasCompiler.sh
 ScriptsLib/MakeBuildRoot.sh
-ScriptsLib/MakeDirectorySymbolicLink.sh
+ScriptsLib/MakeSymbolicLink
 ScriptsLib/MakeVersionFile.sh
 ScriptsLib/PrintConfigurationVariable.pl
 ScriptsLib/PrintEnvVarFromCommonBuildVars.pl

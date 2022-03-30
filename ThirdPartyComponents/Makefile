@@ -126,9 +126,9 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika ThirdPartyComponents Build {$(CONFIGURATION)}:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika ThirdPartyComponents Build {$(CONFIGURATION)}:"
 ifeq ($(SubDirs),)
-	@../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "none"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "none"
 else
 	@$(MAKE) --silent $(SubDirs)
 endif
@@ -137,12 +137,12 @@ endif
 
 check-prerequisite-tools:
 ifeq ($(CONFIGURATION),)
-	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika ThirdPartyComponents Checking-Prerequisite Tools:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika ThirdPartyComponents Checking-Prerequisite Tools:"
 	@for i in $(APPLY_CONFIGS) ; do\
 		$(MAKE) --no-print-directory check-prerequisite-tools CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 else
-	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking-Prerequisite Tools Stroika ThirdPartyComponents {$(CONFIGURATION)}:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking-Prerequisite Tools Stroika ThirdPartyComponents {$(CONFIGURATION)}:"
 ifeq ($(BUILD_boost), 1)
 	@$(MAKE) --directory boost --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -178,7 +178,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 else
-	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika ThirdPartyComponents Check {$(CONFIGURATION)}:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika ThirdPartyComponents Check {$(CONFIGURATION)}:"
 ifeq ($(BUILD_boost), 1)
 	@$(MAKE) --directory boost --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -208,9 +208,9 @@ endif
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
-	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) ... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) ... "
 else
-	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
 endif
 	@$(MAKE) --directory ActivePerl --silent $@
 	@$(MAKE) --directory boost --silent $@

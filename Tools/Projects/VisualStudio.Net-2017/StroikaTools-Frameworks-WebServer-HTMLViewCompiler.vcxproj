@@ -44,10 +44,10 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <Import Project="$(ProjectDir)\..\..\..\Library\Projects\VisualStudio.net\Microsoft.Cpp.stroika.AllConfigs.props" Condition="exists('$(ProjectDir)\..\..\..\Library\Projects\VisualStudio.net\Microsoft.Cpp.stroika.AllConfigs.props')" Label="Stroika-Configuration" />
-  <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  <PropertyGroup Label="UserMacros">
-  </PropertyGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(ProjectDir)\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.ConfigurationBased.props" Condition="exists('$(ProjectDir)\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.ConfigurationBased.props')" Label="Stroika-Configuration" />
+    <Import Project="$(ProjectDir)\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.user.props" Condition="exists('$(ProjectDir)\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.user.props')" Label="User-Editable-Properties" />
+  </ImportGroup>
   <PropertyGroup>
     <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\..\Tools\Sources\Stroika\Frameworks\WebServer\HTMLViewCompiler\ CONFIGURATION=$(CONFIGURATION) $(JOBS_FLAG) --silent all</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>make --directory $(ProjectDir)\..\..\..\Tools\Sources\Stroika\Frameworks\WebServer\HTMLViewCompiler\ CONFIGURATION=$(CONFIGURATION) clean --silent</NMakeCleanCommandLine>

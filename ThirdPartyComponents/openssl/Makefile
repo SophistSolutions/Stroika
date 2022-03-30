@@ -23,7 +23,8 @@ QUICK_BUILD ?= 1
 #
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
-VERSION=3.0.1
+VERSION=3.0.2
+#VERSION=3.0.1
 #VERSION=3.0.0
 
 #VERSION=1.1.1k
@@ -129,12 +130,12 @@ endif
 
 all:
 ifeq ($(CONFIGURATION),)
-	@for i in `../../ScriptsLib/GetConfigurations` ; do\
+	@for i in `$(StroikaRoot)GetConfigurations` ; do\
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
-	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/OpenSSL Build $(VERSION) {$(CONFIGURATION)}:"
-	@../../ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/OpenSSL Build $(VERSION) {$(CONFIGURATION)}:"
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(ZIPPEDFILE)
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error PRODUCED_OUTPUT_ARTIFACTS missing)
@@ -190,13 +191,13 @@ endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
-	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "openssl ${VERSION} - Checking ... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "openssl ${VERSION} - Checking ... "
 	@$(StroikaRoot)ScriptsLib/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(ECHO) " Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]"
 
 
 $(ZIPPEDFILE):
-	@MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ../../ScriptsLib/WebGet $(ZIPPEDFILE) $(FETCHURLS)
+	@MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(StroikaRoot)ScriptsLib/WebGet $(ZIPPEDFILE) $(FETCHURLS)
 
 
 
@@ -272,20 +273,38 @@ export LDFLAGS
 # I tried many other tricks (like setting .SHELLFLAGS), but this appears to work best (setting -i or -l .SHELLFLAGS also works
 # but creates other problems)
 #		--LGP 2022-01-24
+#
+# This hack/workaround caused failure of build in various subtle ways (complaint about cannot find rule to make ../Origs-Cache... stuff
+# and then failure inside RunExteneralVStudioScripts... -  probably due to the resetting of the PWD, and other things.
+#
+# Eventually settiled on ONLY setting BASH_ENV when MSYSTEM has not been defined (so we ran - eg docker exec C make ... from .github actions)
+# But NOT RESETTING it in case when its already been set, like from vscode terminal shell (where setting BASH_ENV unconditionally caused failrues).
+#		-- LGP 2022-03-26
 # 
 ifeq ($(DETECTED_HOST_OS),MSYS)
+ifeq ($(MSYSTEM), )
 # From https://linux.die.net/man/1/bash
 #		When bash is started non-interactively, to run a shell script, for example, it looks
 #		for the variable BASH_ENV in the environment, expands its value if it appears there, 
 #		and uses the expanded value as the name of a file to read and execute.
 export BASH_ENV=/etc/profile
+export CHERE_INVOKING=1		# even if we need vars set, dont change CWD
+endif
+endif
+
+ifeq ($(qFeatureFlag_ActivePerl), use)
+# See https://stackoverflow.com/questions/45494630/how-to-build-openssl-on-windows-with-visual-studio-2017
+PERL_VERSION_PATCH_=set PATH=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot))ThirdPartyComponents/ActivePerl/CURRENT/bin;%PATH%
+endif
+ifeq (${PERL_VERSION_PATCH_},)
+PERL_VERSION_PATCH_=echo 'using installed perl'
 endif
 
 doBuilds_:
 	@
 	@#Run openssl configure scripts
 	@
-	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl ${VERSION} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME}CONFIG-OUT.txt) ..."` " "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl ${VERSION} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME}CONFIG-OUT.txt) ..."` " "
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt && touch $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt
 	@$(ECHO) "CONFIG_ARGS: $(CONFIG_ARGS)" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt
@@ -298,19 +317,19 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(ECHO) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && perl configdata.pm --dump >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@#nb: need set path INSIDE args to RunArgumentsWithCommonBuildVars since it re-orders path
+	@#nb: need PERL_VERSION_PATCH_ INSIDE args to RunArgumentsWithCommonBuildVars since RunArgumentsWithCommonBuildVars re-orders path
 	@$(ECHO) 'cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 	 env --unset=MFLAGS --unset=MAKEFLAGS \
-	 $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"set PATH=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot))ThirdPartyComponents/ActivePerl/CURRENT/bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)\"' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt 2>&1
+	 $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \"$(PERL_VERSION_PATCH_) && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)\"' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt 2>&1
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 	 env --unset=MFLAGS --unset=MAKEFLAGS \
-	 $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "set PATH=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot))ThirdPartyComponents/ActivePerl/CURRENT/bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt 2>&1
+	 $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "$(PERL_VERSION_PATCH_) && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIG-OUT.txt 2>&1
 endif
 	@
 	@
 	@#Do actual OpenSSL build
 	@
-	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl ${VERSION} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-OUT.txt)"` " ... ";
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl ${VERSION} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-OUT.txt)"` " ... ";
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory all > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1;
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
@@ -330,7 +349,7 @@ endif
 	@
 	@# OpenSSL build to INSTALLDIR (inside Stroika Builds)
 	@
-	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "openssl ${VERSION} - Installing (see ${OUTPUT_WORKDIR_PRETTYNAME}INSTALL-OUT.txt) ... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "openssl ${VERSION} - Installing (see ${OUTPUT_WORKDIR_PRETTYNAME}INSTALL-OUT.txt) ... "
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) -j1 --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory install > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/INSTALL-OUT.txt 2>&1;
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
@@ -354,7 +373,7 @@ endif
 	@
 ifneq ($(QUICK_BUILD), 1)
 ifeq (false,$(CrossCompiling))
-	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl ${VERSION} - Running tests (see ${OUTPUT_WORKDIR_PRETTYNAME}TEST-OUT.txt)"` "...";
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl ${VERSION} - Running tests (see ${OUTPUT_WORKDIR_PRETTYNAME}TEST-OUT.txt)"` "...";
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@### @todo FIX FOR WINDOWS BUILDS - not sure why all tests fail -- which is why we don't bother with diff
 	@$(ECHO) 'cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
@@ -366,14 +385,14 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 else
 	@#we get a single failure on BLOW, so ignore, minor, and should do diff of results
 	@$(MAKE) -j1 --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory -s test > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/TEST-OUT.txt 2>&1 || true
-	@export NDIFSS=`diff -c --text -b REFERENCE_TEST_OUTPUT.txt $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/TEST-OUT.txt | egrep -v "^---" | egrep -c "^[!+-]"` && ../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n && $(ECHO) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl $(VERSION) - Test results: $$NDIFSS lines differ between REFERENCE_TEST_OUTPUT.txt and $(OUTPUT_WORKDIR_PRETTYNAME)TEST.OUT"`
+	@export NDIFSS=`diff -c --text -b REFERENCE_TEST_OUTPUT.txt $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/TEST-OUT.txt | egrep -v "^---" | egrep -c "^[!+-]"` && $(StroikaRoot)PrintProgressLine $(MAKE_INDENT_LEVEL) -n && $(ECHO) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl $(VERSION) - Test results: $$NDIFSS lines differ between REFERENCE_TEST_OUTPUT.txt and $(OUTPUT_WORKDIR_PRETTYNAME)TEST.OUT"`
 endif
 endif
 endif
 
 
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
-	@../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
@@ -384,7 +403,7 @@ else
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq ($@, $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_))
-	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "openssl ${VERSION} - Patching ... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "openssl ${VERSION} - Patching ... "
 	@$(ECHO) -n .
 	@patch --quiet -p0 $@/Configurations/windows-makefile.tmpl < Patches/FixQuotesInWindowsMakefileTemplate.PATCH
 	@$(ECHO) "done"

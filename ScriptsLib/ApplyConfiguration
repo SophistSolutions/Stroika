@@ -204,7 +204,7 @@ ReadConfiguration_();
 # For now KISS - just check if the file doesn't exist, and if so write a default value.
 #
 my $configFileMakeName	=	"$intermediateFiles$activeConfiguration/Configuration.mk";
-my $vs2kIntellisenseCng	=	"Library/Projects/VisualStudio.Net/Microsoft.Cpp.stroika.AllConfigs.props";
+my $vs2kIntellisenseCng	=	"Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props";
 my $vsCodeCppExtensionCng	=	".vscode/c_cpp_properties.json";
 
 
@@ -463,6 +463,72 @@ sub WriteStroikaConfigMakeHeader
 }
 
 
+sub MapArraysOfFiles2Path_
+{
+	my ($conditionalPaths, $backupPaths) = @_;
+	local $result = "";
+	for my $i (0 .. $#conditionalPaths)
+	{
+		my $f = $conditionalPaths[$i];
+		if (-e $f) {
+			if (not ($result eq "")) {
+				$result .= ":";
+			}
+			$result .=  trim (`cygpath --windows $f`);
+		}
+	}
+	if ($result eq "") {
+		for my $i (0 .. $#backupPaths)
+		{
+			my $f = $backupPaths[$i];
+			if (not ($result eq "")) {
+				$result .= ":";
+			}
+			$result .=  trim (`cygpath --windows $f`);
+		}
+	}
+	return $result;
+}
+
+## GUESS directory for MSYS
+sub GetMSYSPathVar2Add_
+{
+	use Config;
+	local @conditionalPaths = ();
+	local @backupPaths = ();
+	if ("$^O" == "msys") {
+		push  @conditionalPaths, dirname ($Config{perlpath});
+	}
+	push @backupPaths, "c:/tools/msys64/usr/bin";
+	push @backupPaths, "c:/tools/msys32/usr/bin";
+	push  @backupPaths, "c:/msys/usr/bin";
+	push  @backupPaths, "c:/msys64/usr/bin";
+	for my $i (0 .. $#backupPaths)
+	{
+		push  @conditionalPaths, $backupPaths[$i];
+	}
+	return MapArraysOfFiles2Path_(@conditionalPaths, @backupPaths);
+}
+sub GetCygwinPathVar2Add_
+{
+	use Config;
+	local @conditionalPaths = ();
+	local @backupPaths = ();
+	if ("$^O" == "cygwin") {
+		push @conditionalPaths, dirname ($Config{perlpath});
+	}
+	push @backupPaths, "c:/tools/cygwin/bin";
+	push @backupPaths, "c:/cygwin/bin";
+	push  @backupPaths, "c:/cygwin64/bin";
+	push  @backupPaths, "c:/cygwin32/bin";
+	for my $i (0 .. $#backupPaths)
+	{
+		push  @conditionalPaths, $backupPaths[$i];
+	}
+	return MapArraysOfFiles2Path_(@conditionalPaths, @backupPaths);
+}
+
+
 sub WriteVS2kIntellisenseConfigFile
 {
 	#
@@ -500,7 +566,7 @@ sub WriteVS2kIntellisenseConfigFile
 	#
 	# then we write the new (current) section, and repeat all the others in our output
 	#
-	open(OUT,">$vs2kIntellisenseCng");
+	open(OUT,">$vs2kIntellisenseCng");		### ConfigurationBased.props file
 	print (OUT "<!--\n");
 	print (OUT " Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved\n");
 	print (OUT "-->\n");
@@ -556,19 +622,21 @@ sub WriteVS2kIntellisenseConfigFile
 	# for the make without requiring the user to add it to their user/system path
 	# by default
 	#
+	local $defCygwinStkBuildPath = GetCygwinPathVar2Add_();
+	local $msysStkBuildPath = GetMSYSPathVar2Add_();
 	print (OUT "\n");
 	print (OUT "  <PropertyGroup Label=\"UserMacros\">\n");
-	print (OUT "    <StroikaBuildToolsExtraPath>c:\\msys\\usr\\bin;c:\\msys64\\usr\\bin;c:\\cygwin\\bin;c:\\cygwin64\\bin</StroikaBuildToolsExtraPath>\n");
+	print (OUT "    <StroikaBuildToolsExtraPath>$msysStkBuildPath;$defCygwinStkBuildPath</StroikaBuildToolsExtraPath>\n");
 	print (OUT "    <JOBS_FLAG>-j 8</JOBS_FLAG>\n");
 	print (OUT "  </PropertyGroup>\n");
 	if ("$^O" == "msys") {
 		print (OUT "  <PropertyGroup Label=\"UserMacros\" Condition=\"'\$(Configuration)|\$(Platform)'=='$activeConfiguration|Win32'\">\n");
-		print (OUT "    <StroikaBuildToolsExtraPath>c:\\msys\\usr\\bin;c:\\msys64\\usr\\bin;</StroikaBuildToolsExtraPath>\n");
+		print (OUT "    <StroikaBuildToolsExtraPath>$msysStkBuildPath</StroikaBuildToolsExtraPath>\n");
 		print (OUT "  </PropertyGroup>\n");
 	}
 	elsif ("$^O" == "cygwin") {
 		print (OUT "  <PropertyGroup Label=\"UserMacros\" Condition=\"'\$(Configuration)|\$(Platform)'=='$activeConfiguration|Win32'\">\n");
-		print (OUT "    <StroikaBuildToolsExtraPath>c:\\cygwin\\bin;c:\\cygwin64\\bin</StroikaBuildToolsExtraPath>\n");
+		print (OUT "    <StroikaBuildToolsExtraPath>$defCygwinStkBuildPath</StroikaBuildToolsExtraPath>\n");
 		print (OUT "  </PropertyGroup>\n");
 	}
 
@@ -636,6 +704,9 @@ sub WriteVSCodeCPPExtensionConfigFile
 		local $l = index($std, " ");
 		if ($l != -1) {
 			$std = substr ($std, 0, $l);
+		}
+		if ($std eq "c++2a") {
+			$std = "c++20";
 		}
 		if ($std eq "c++latest") {
 			$std = "c++20";

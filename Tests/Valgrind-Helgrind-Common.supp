@@ -58,17 +58,33 @@
    ...
 }
 {
-   https://stroika.atlassian.net/browse/STK-628
+   https://stroika.atlassian.net/browse/STK-620
    Helgrind:Misc
    obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
    ...
-   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
+   fun:_ZN7Stroika10Foundation9Execution17ConditionVariableISt5mutexSt18condition_variableE10wait_until*
+   #fun:_ZN7Stroika10Foundation9Execution17ConditionVariableISt5mutexSt18condition_variableE10wait_untilIZNS1_13WaitableEvent3WE_16WaitUntilQuietlyEdEUlvE_EEbRSt11unique_lockIS3_EdT_
+   #fun:Stroika::Foundation::Execution::ConditionVariable<std::mutex, std::condition_variable>::wait_until(std::unique_lock<std::mutex>&, double) 
+   # NOTES:
+   #     not triggered every time (maybe 10-20% without suppression)
+   #     reproduce mostly in valgrind/helgrind tests 40/41 on any ubuntu tried (1804/2004)
 }
 {
-   https://stroika.atlassian.net/browse/STK-628
+   https://stroika.atlassian.net/browse/STK-620
+   Helgrind:Misc
+   obj:/usr/lib/x86_64-linux-gnu/valgrind/vgpreload_helgrind-amd64-linux.so
+   ...
+   fun:*wait_until*
+}
+{
+   https://stroika.atlassian.net/browse/STK-620
    Helgrind:Misc
    ...
-   fun:__pthread_cond_wait_common
+   fun:*BlockingQueue*
+}
+{
+   https://stroika.atlassian.net/browse/STK-620
+   Helgrind:Misc
    ...
    fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
 }
@@ -77,6 +93,12 @@
    Helgrind:Race
    ...
    fun:*ConstantProperty*
+}
+{
+   https://stroika.atlassian.net/browse/STK-774
+   Helgrind:Race
+   ...
+   fun:*call_once*
 }
 {
    https://stroika.atlassian.net/browse/STK-644 - fails on Ubuntu 18.04 and 21.10, valgrind -q --gen-suppressions=yes --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp  Builds/valgrind-release-SSLPurify-NoBlockAlloc/Tests/Test31 OR valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp Builds/valgrind-debug-SSLPurify-NoBlockAlloc/Tests/Test31

@@ -25,12 +25,11 @@
  *      DateRangeType/DateTimeRangeType code.
  *
  *  TODO:
+ *          @todo   Better integrate with https://stroika.atlassian.net/browse/STK-779 - C++20 ranges library
+ * 
  *          @todo   Carefully review intersection/unionbounds code for new open/closed parameters. Either make sure
  *                  it works or at least more carefully document in method headers the quirks of the
  *                  chosen definition.
- *
- *          @todo   Consider if we want to re-instate Range<T, TRAITS>::Overlaps - but think through and document
- *                  definition clearly.
  */
 
 namespace Stroika::Foundation::Traversal {
@@ -321,7 +320,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  Range () creates an empty range.
+         *  Range{} creates an empty range (note all empty () ranges of the same type are equal to each other).
          *
          *  optional values - if omitted - are replaced with the TRAITS::kLowerBound and TRAITS::kUpperBound values (as well as 'TRAITs' default openness).
          *  Constructors with actual numeric values (begin/end) MUST construct non-empty ranges (begin == end ==> both sides closed).
@@ -332,9 +331,9 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Range<double> r1{3, 5};
-         *          VerifyTestResult (r1.Contains (3) and not r1.Contains (3));  // because default arithmetic traits have [) half open
+         *          Assert (r1.Contains (3) and not r1.Contains (3));  // because default arithmetic traits have [) half open
          *          Range<double> r2{ 3, 5, Openness::eOpen, Openness::eOpen };
-         *          VerifyTestResult (not r2.Contains (3));
+         *          Assert (not r2.Contains (3));
          *      \endcode
          */
         constexpr explicit Range ();
@@ -346,7 +345,8 @@ namespace Stroika::Foundation::Traversal {
         constexpr explicit Range (const optional<T>& begin, const optional<T>& end, Openness lhsOpen, Openness rhsOpen);
 
     public:
-        /** 
+        /**
+         *  \brief returns a range centered around center, with the given radius (and optionally argument openness).
          */
         static constexpr Range Ball (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen = TRAITS::kLowerBoundOpenness, Openness rhsOpen = TRAITS::kUpperBoundOpenness);
 
@@ -384,6 +384,12 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         *  \brief equivilent to not this->empty ();
+         */
+        constexpr explicit operator bool () const;
+
+    public:
+        /**
          *  GetUpperBound ()-GetLowerBound (), or distance from GetLowerBound () to end of the range.
          *  If this is empty (), then GetDistanceSpanned () will be zero but the GetDistanceSpanned CAN be zero without the
          *  range being empty (if both ends are closed).
@@ -396,6 +402,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         *  \req not empty ()
          */
         constexpr T GetMidpoint () const;
 
@@ -429,21 +436,28 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual constexpr Range Closure () const;
 
-#if 0
     public:
         /**
-         */
-        nonvirtual  bool    Overlaps (const Range& rhs) const;
-#endif
-
-    public:
-        /**
+         *  \note All empty ranges (of the same type) are equal to each other.
          */
         constexpr bool operator== (const Range& rhs) const;
 
     public:
         /**
          *  Returns true iff there are any points shared in common between this range and the rhs range.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          using RT = Range<int>;
+         *          constexpr auto eOpen = Openness::eOpen;
+         *          constexpr auto eClosed = Openness::eClosed;
+         *          Assert ((RT{1, 2}.Intersects (RT{1, 2})));
+         *          Assert ((not RT{1, 2, eOpen, eOpen}.Intersects (RT{2, 3, eOpen, eOpen})));
+         *          Assert ((not RT{1, 2, eOpen, eClosed}.Intersects (RT{2, 3, eOpen, eOpen})));
+         *          Assert ((RT{1, 2, eOpen, eClosed}.Intersects (RT{2, 3, eClosed, eOpen})));
+         *      \endcode
+         * 
+         *  \see operator^
          */
         template <typename T2, typename TRAITS2>
         constexpr bool Intersects (const Range<T2, TRAITS2>& rhs) const;
@@ -532,9 +546,9 @@ namespace Stroika::Foundation::Traversal {
      *  Alias: RANGE + RANGE => RANGE.Union (RANGE)
      */
     template <typename T, typename TRAITS>
-    Range<T, TRAITS> operator+ (const T& lhs, const Range<T, TRAITS>& rhs);
+    constexpr Range<T, TRAITS> operator+ (const T& lhs, const Range<T, TRAITS>& rhs);
     template <typename T, typename TRAITS>
-    Range<T, TRAITS> operator+ (const Range<T, TRAITS>& lhs, const T& rhs);
+    constexpr Range<T, TRAITS> operator+ (const Range<T, TRAITS>& lhs, const T& rhs);
     template <typename T, typename TRAITS>
     DisjointRange<T, Range<T, TRAITS>> operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
 
@@ -543,15 +557,24 @@ namespace Stroika::Foundation::Traversal {
      *  \req T has operator* (T,T) -> T defined
      */
     template <typename T, typename TRAITS>
-    Range<T, TRAITS> operator* (const T& lhs, const Range<T, TRAITS>& rhs);
+    constexpr Range<T, TRAITS> operator* (const T& lhs, const Range<T, TRAITS>& rhs);
     template <typename T, typename TRAITS>
-    Range<T, TRAITS> operator* (const Range<T, TRAITS>& lhs, const T& rhs);
+    constexpr Range<T, TRAITS> operator* (const Range<T, TRAITS>& lhs, const T& rhs);
 
     /**
-     *  Alias forlhs.Intersection (rhs)
+     *  Alias for lhs.Intersection (rhs)
+     * 
+     *  \par Example Usage
+     *      \code
+     *          using RT = Range<int>;
+     *          constexpr auto eOpen = Openness::eOpen;
+     *          constexpr auto eClosed = Openness::eClosed;
+     *          Assert ((RT{1, 2, eOpen, eClosed} ^ RT{2, 3, eClosed, eOpen}));
+     *          Assert (((RT{1, 2, eOpen, eClosed} ^ RT{2, 3, eClosed, eOpen}) == RT{2,2,eClosed,eClosed}));
+     *      \endcode
      */
     template <typename T, typename TRAITS>
-    Range<T, TRAITS> operator^ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
+    constexpr Range<T, TRAITS> operator^ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
 
 }
 

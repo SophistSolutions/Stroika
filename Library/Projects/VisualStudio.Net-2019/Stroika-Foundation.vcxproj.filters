@@ -1065,9 +1065,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Overlap.h">
-      <Filter>Sources\Math</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.h">
       <Filter>Sources\Configuration</Filter>
     </ClInclude>
@@ -2318,9 +2315,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\TODO.md">
       <Filter>Sources\IO\Network</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Math\Overlap.inl">
-      <Filter>Sources\Math</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.inl">
       <Filter>Sources\Configuration</Filter>

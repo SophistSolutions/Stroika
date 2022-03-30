@@ -13,7 +13,6 @@
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Math/LinearAlgebra/Matrix.h"
 #include "Stroika/Foundation/Math/Optimization/DownhillSimplexMinimization.h"
-#include "Stroika/Foundation/Math/Overlap.h"
 #include "Stroika/Foundation/Math/ReBin.h"
 #include "Stroika/Foundation/Math/Statistics.h"
 
@@ -25,28 +24,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Math;
 
 namespace {
-    // test helper to assure answer for (A,B) is same as (B,A) - commutative
-    template <typename T>
-    bool VerifyOverlapIsCommutative_ (const pair<T, T>& p1, const pair<T, T>& p2)
-    {
-        bool r = Overlaps<T> (p1, p2);
-        VerifyTestResult (r == Overlaps<T> (p2, p1));
-        return r;
-    }
-}
-
-namespace {
-    void Test1_Overlap_ ()
-    {
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (2, 2)));
-        VerifyTestResult (not VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (3, 4)));
-        VerifyTestResult (not VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (0, 1)));
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (1, 1)));
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 10), pair<int, int> (3, 4)));
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 10), pair<int, int> (3, 3)));
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (5, 10), pair<int, int> (3, 7)));
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (5, 10), pair<int, int> (5, 5)));
-    }
     void Test2_Round_ ()
     {
         // really could use more cases!!!
@@ -352,7 +329,6 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-        Test1_Overlap_ ();
         Test2_Round_ ();
         Test3_Angle_ ();
         Test4_OddEvenPrime_ ();

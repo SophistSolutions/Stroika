@@ -10,6 +10,7 @@ APP_ROOT="app"
 APP_NAME=""
 STROIKA_SOURCE="git"
 GIT_REMOTE="https://github.com/SophistSolutions/Stroika.git"
+GIT_STROIKA_BRANCH=`git rev-parse --abbrev-ref HEAD`
 
 help_()
 {
@@ -66,27 +67,34 @@ get_script_dir_ () {
      echo "$DIR"
 }
 MY_PATH_=$(get_script_dir_)
+StroikaRoot=${MY_PATH_}/../
 
 mkTopLevelDir_()
 {
+    echo "Making top level directory: $APP_ROOT"
     mkdir -p $APP_ROOT/$APP_NAME
     cp $MY_PATH_/Shared/Skel-Templates/Makefile $APP_ROOT/
     sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/Makefile > $APP_ROOT/Makefile
 }
 mkThirdPartyComponentsAndStroika_()
 {
+    echo "Making $APP_ROOT/ThirdPartyComponents/Stroika"
     mkdir -p $APP_ROOT/ThirdPartyComponents/Stroika
     cp $MY_PATH_/Shared/Skel-Templates/ThirdPartyComponents/Makefile $APP_ROOT/ThirdPartyComponents/
     cp $MY_PATH_/Shared/Skel-Templates/ThirdPartyComponents/Stroika/Makefile $APP_ROOT/ThirdPartyComponents/Stroika/
     if [[ "$STROIKA_SOURCE" == "git" ]] ; then
+      echo "Initializing git repository and adding Stroika submodule"
       (cd $APP_ROOT && git init)
       (cd $APP_ROOT/ThirdPartyComponents/Stroika; git submodule add $GIT_REMOTE StroikaRoot)
+      (cd $APP_ROOT/ThirdPartyComponents/Stroika/StroikaRoot; git checkout ${GIT_STROIKA_BRANCH})
     fi
 }
 mkMyApp_()
 {
+  echo "Making $APP_ROOT/{Workspaces, .vscode, $APP_NAME} etc..."
   mkdir -p $APP_ROOT/Workspaces/VisualStudio.Net-2019 \
     $APP_ROOT/Workspaces/VisualStudio.Net-2022 \
+    $APP_ROOT/Workspaces/VisualStudio.Net \
     $APP_ROOT/Workspaces/VSCode $APP_ROOT/$APP_NAME/Sources \
     $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2019 \
     $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022 \
@@ -104,6 +112,19 @@ mkMyApp_()
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Projects/VisualStudio.Net-2019/MyApp.vcxproj.filters > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2019/$APP_NAME.vcxproj.filters
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Projects/VisualStudio.Net-2022/MyApp.vcxproj > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022/$APP_NAME.vcxproj
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/MyApp/Projects/VisualStudio.Net-2022/MyApp.vcxproj.filters > $APP_ROOT/$APP_NAME/Projects/VisualStudio.Net-2022/$APP_NAME.vcxproj.filters
+
+  cp $MY_PATH_/Shared/Skel-Templates/VERSION $APP_ROOT/
+  cp $MY_PATH_/Shared/Skel-Templates/ReadMe.md $APP_ROOT/
+
+  (cd $APP_ROOT/Workspaces/VisualStudio.Net; touch ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props)
+  (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props)
+  (cd $APP_ROOT; $StroikaRoot/ScriptsLib/MakeSymbolicLink ThirdPartyComponents/Stroika/StroikaRoot/.clang-format)
+  cp $StroikaRoot/.gitignore $APP_ROOT
+
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/launch.json > $APP_ROOT/.vscode/launch.json
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/settings.json > $APP_ROOT/.vscode/settings.json
+  sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/tasks.json > $APP_ROOT/.vscode/tasks.json
+  cp $StroikaRoot.config-default.json $APP_ROOT/.config.json
 }
 
 
@@ -125,3 +146,5 @@ mkThirdPartyComponentsAndStroika_ >> $OUTDIR 2>&1
 mkMyApp_ >> $OUTDIR 2>&1
 
 echo "  done"
+echo "Suggested next step:"
+echo "  cd $APP_ROOT; make CONFIGURATION=Debug all -j8"

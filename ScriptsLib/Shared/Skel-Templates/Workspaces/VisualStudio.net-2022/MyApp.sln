@@ -12,12 +12,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ROOT-FOLDER", "ROOT-FOLDER", "{8184CE9F-C478-4792-9649-C652C914C316}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\.clang-format = ..\..\.clang-format
-		..\..\.gitattributes = ..\..\.gitattributes
 		..\..\.gitignore = ..\..\.gitignore
 		..\..\.gitmodules = ..\..\.gitmodules
 		..\..\Makefile = ..\..\Makefile
 		..\..\README.md = ..\..\README.md
-		..\..\TODO.txt = ..\..\TODO.txt
 		..\..\VERSION = ..\..\VERSION
 	EndProjectSection
 EndProject

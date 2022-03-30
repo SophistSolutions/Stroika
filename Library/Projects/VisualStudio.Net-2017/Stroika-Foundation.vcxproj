@@ -47,11 +47,9 @@
   <ImportGroup Label="Shared">
   </ImportGroup>
   <ImportGroup Label="PropertySheets">
-    <Import Project="$(ProjectDir)\..\VisualStudio.net\Microsoft.Cpp.stroika.AllConfigs.props" Condition="exists('$(ProjectDir)\..\VisualStudio.net\Microsoft.Cpp.stroika.AllConfigs.props')" Label="Stroika-Configuration" />
+    <Import Project="$(ProjectDir)\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.ConfigurationBased.props" Condition="exists('$(ProjectDir)\\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.ConfigurationBased.props')" Label="Stroika-Configuration" />
+    <Import Project="$(ProjectDir)\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.user.props" Condition="exists('$(ProjectDir)\..\..\..\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.user.props')" Label="User-Editable-Properties" />
   </ImportGroup>
-  <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  <PropertyGroup Label="UserMacros">
-  </PropertyGroup>
   <PropertyGroup>
     <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\..\Library\Sources\Stroika\Foundation\ CONFIGURATION=$(CONFIGURATION) all $(JOBS_FLAG) --silent</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>make --directory $(ProjectDir)\..\..\..\Library\Sources\Stroika\Foundation\ CONFIGURATION=$(CONFIGURATION) clean --silent</NMakeCleanCommandLine>
@@ -607,7 +605,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Matrix.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Optimization\DownhillSimplexMinimization.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Overlap.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\ReBin.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Statistics.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Bits.h" />
@@ -1026,7 +1023,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Math\Optimization\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\Optimization\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\Optimization\TODO.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\Math\Overlap.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\ReBin.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\Statistics.inl" />
