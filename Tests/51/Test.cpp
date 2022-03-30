@@ -611,7 +611,7 @@ namespace {
             {
                 // test iterate over ranges
                 int timeThru = 0;
-                for (RT rng : dr.SubRanges ()) {
+                for (const RT& rng : dr.SubRanges ()) {
                     switch (timeThru++) {
                         case 0:
                             VerifyTestResult ((rng == RT{1, 2}));
@@ -673,6 +673,18 @@ namespace {
             roundTrip (Set<int>{1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 100});
             roundTrip (Set<int>{4, 5, 6, 7, 8, 9, 10, 11, 100, 102, 103, 104});
             roundTrip (Set<int>{(DiscreteRange<int>{1, 1000}).Elements ()});
+        }
+        {
+            // Check semantics of Range<>::Intersects
+            using RT               = Range<int>;
+            constexpr auto eOpen   = Openness::eOpen;
+            constexpr auto eClosed = Openness::eClosed;
+            VerifyTestResult ((RT{1, 2}.Intersects (RT{1, 2})));
+            VerifyTestResult ((not RT{1, 2, eOpen, eOpen}.Intersects (RT{2, 3, eOpen, eOpen})));
+            VerifyTestResult ((not RT{1, 2, eOpen, eClosed}.Intersects (RT{2, 3, eOpen, eOpen})));
+            VerifyTestResult ((RT{1, 2, eOpen, eClosed}.Intersects (RT{2, 3, eClosed, eOpen})));
+            VerifyTestResult ((RT{1, 2, eOpen, eClosed} ^ RT{2, 3, eClosed, eOpen}));
+            VerifyTestResult (((RT{1, 2, eOpen, eClosed} ^ RT{2, 3, eClosed, eOpen}) == RT{2, 2, eClosed, eClosed}));
         }
     }
 }
