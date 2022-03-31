@@ -270,28 +270,29 @@ namespace Stroika::Foundation::Traversal {
         /*
          *                         |               this              |
          *  | A |                | B |             | C |           | D |           | E |
-         *  |                                        F                                 |
          *  | G                    |                                 |   H   |
+         *  |                                        F                                 |
          */
-        if (empty () or rhs.empty ()) {
-            // @todo might be faster to move this test after next 2, but then must access fBegin/fEnd directly to avoid asserts if empty
-            Assert (oldCode (rhs) == false);
-            return false; // if either side is empty, clearly they cannot share any points
-        }
-        if (rhs.GetUpperBound () < GetLowerBound ()) {
+        // note: GetLowerBound () and GetUpperBound () do assert !empty (), so must access fBegin/fEnd directly
+        // since probably more efficeint to check past end cases before checking empty cases
+        if (rhs.fEnd_ < fBegin_) {
             Assert (oldCode (rhs) == false);
             return false; // the entirety of rhs is strictly BEFORE lhs (see case A)
         }
-        if (rhs.GetLowerBound () > GetUpperBound ()) {
+        if (rhs.fBegin_ > fEnd_) {
             Assert (oldCode (rhs) == false);
             return false; // the entirety of rhs is strictly AFTER lhs (see case E)
         }
-        if (rhs.GetUpperBound () == GetLowerBound ()) {
+        if (empty () or rhs.empty ()) {
+            Assert (oldCode (rhs) == false);
+            return false; // if either side is empty, clearly they cannot share any points
+        }
+        if (rhs.fEnd_ == fBegin_) {
             Assert (oldCode (rhs) == (rhs.GetUpperBoundOpenness () == Openness::eClosed and GetLowerBoundOpenness () == Openness::eClosed));
             // if they interect at a point, both side must be closed (contain that point) - (see case G)
             return rhs.GetUpperBoundOpenness () == Openness::eClosed and GetLowerBoundOpenness () == Openness::eClosed;
         }
-        if (rhs.GetLowerBound () == GetUpperBound ()) {
+        if (rhs.fBegin_ == fEnd_) {
             Assert (oldCode (rhs) == (rhs.GetLowerBoundOpenness () == Openness::eClosed and GetUpperBoundOpenness () == Openness::eClosed));
             // if they interect at a point, both side must be closed (contain that point) - (see case H)
             return rhs.GetLowerBoundOpenness () == Openness::eClosed and GetUpperBoundOpenness () == Openness::eClosed;
