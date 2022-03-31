@@ -13,7 +13,7 @@ RUN apt-get install -y  g++-7  g++-8
 RUN apt-get install -y  clang++-6  libc++abi-dev libc++-dev
 
 # for testing configuration 'only-zlib-system-third-party-component'
-RUN  apt-get install zlib1g-dev
+RUN  apt-get install -y zlib1g-dev
 
 #Only needed to run with valgrind regtests
 RUN apt-get install -y valgrind
