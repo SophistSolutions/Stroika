@@ -67,7 +67,7 @@ namespace {
             String           urlHostRelPath{ExtractURLHostRelPath_ (m)};
             filesystem::path fn{fFSRoot_ / filesystem::path{urlHostRelPath.As<wstring> ()}};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}...FileSystemRequestHandler...HandleMessage", L"relURL=%s, serving fn=%s", Characters::ToString (m->request ()->url ().GetAuthorityRelativeResource ()).c_str (), Characters::ToString (fn).c_str ())};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}...FileSystemRequestHandler...HandleMessage", L"relURL=%s, serving fn=%s", Characters::ToString (m->request ().url ().GetAuthorityRelativeResource ()).c_str (), Characters::ToString (fn).c_str ())};
 #endif
             try {
                 Response&              response = m->rwResponse ();
