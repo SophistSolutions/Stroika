@@ -51,6 +51,7 @@ namespace {
         r.Add ({InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{L".txt"sv}, L".txt"sv}});
         r.Add ({InternetMediaTypes::kCSS, OverrideRecord{nullopt, Containers::Set<String>{L".css"sv}, L".css"sv}});
         r.Add ({InternetMediaTypes::kHTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"sv, L".html"sv}, L".htm"sv}});
+        r.Add ({InternetMediaTypes::kJavascript, OverrideRecord{nullopt, Containers::Set<String>{L".js"sv}, L".js"sv}});
         r.Add ({InternetMediaTypes::kJSON, OverrideRecord{nullopt, Containers::Set<String>{L".json"sv}, L".json"sv}});
         r.Add ({InternetMediaTypes::kPNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"sv}, L".png"sv}});
         r.Add ({InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{L".xml"sv}, L".xml"sv}});
@@ -86,6 +87,9 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
         {InternetMediaTypes::kHTML, OverrideRecord{nullopt,
                                                    Containers::Set<String>{L".htm"sv, L".html"sv},
                                                    L".htm"sv}},
+        {InternetMediaTypes::kJavascript, OverrideRecord{nullopt,
+                                                         Containers::Set<String>{L".js"sv},
+                                                         L".js"sv}},
         {InternetMediaTypes::kJSON, OverrideRecord{nullopt,
                                                    Containers::Set<String>{L".json"sv},
                                                    L".json"sv}},
@@ -840,6 +844,7 @@ const InternetMediaType InternetMediaTypes::kPNG{InternetMediaTypes::Types::kIma
 const InternetMediaType InternetMediaTypes::kGIF{InternetMediaTypes::Types::kImage, L"gif"sv};
 const InternetMediaType InternetMediaTypes::kJPEG{InternetMediaTypes::Types::kImage, L"jpeg"sv};
 const InternetMediaType InternetMediaTypes::kHTML{InternetMediaTypes::Types::kText, L"html"sv};
+const InternetMediaType InternetMediaTypes::kJavascript{InternetMediaTypes::Types::kText, L"javascript"sv};
 const InternetMediaType InternetMediaTypes::kCSS{InternetMediaTypes::Types::kText, L"css"sv};
 const InternetMediaType InternetMediaTypes::kText_PLAIN{InternetMediaTypes::Types::kText, L"plain"sv};
 const InternetMediaType InternetMediaTypes::kCSV{InternetMediaTypes::Types::kText, L"csv"sv};

@@ -373,6 +373,7 @@ namespace Stroika::Foundation::DataExchange {
         extern const InternetMediaType kGIF;
         extern const InternetMediaType kJPEG;
         extern const InternetMediaType kHTML;
+        extern const InternetMediaType kJavascript;
         extern const InternetMediaType kCSS;
         extern const InternetMediaType kText_PLAIN;
         extern const InternetMediaType kCSV;
@@ -409,6 +410,11 @@ namespace Stroika::Foundation::DataExchange {
          * \brief text/html
          */
         inline const InternetMediaType kHTML{Types::kText, L"html"sv};
+
+        /**
+         * \brief text/javascript
+         */
+        inline const InternetMediaType kJavascript{Types::kText, L"javascript"sv};
 
         /**
          * \brief text/css
