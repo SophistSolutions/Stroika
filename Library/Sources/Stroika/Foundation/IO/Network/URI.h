@@ -252,7 +252,7 @@ namespace Stroika::Foundation::IO::Network {
          *  If return type is String, it will THROW when the path is not an absolute path.
          *
          *  In either case, the special case of GetPath ().empty () will be treated as '/'.
-         *
+         *  So in either case, if a string is returned, its length always >= 1.
          */
         template <typename RETURN_VALUE = String>
         nonvirtual RETURN_VALUE GetAbsPath () const;
