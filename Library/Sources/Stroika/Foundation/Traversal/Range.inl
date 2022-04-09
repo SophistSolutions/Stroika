@@ -249,6 +249,22 @@ namespace Stroika::Foundation::Traversal {
     template <typename T2, typename TRAITS2>
     constexpr bool Range<T, TRAITS>::Intersects (const Range<T2, TRAITS2>& rhs) const
     {
+#if 0
+            // For SOME cases - if we can check if constexpr/if consteval - we maybe able to use the simpler
+            T mn = min (fEnd, rhs.fEnd);
+            T mx = max (fBegin, rhs.fBegin);
+            int cmp = mx - min;
+            if (cmp == 0) {
+              return rhs.GetUpperBoundOpenness () == eOpen or GetLowerBoundOpenness () == Openness::eClosed;
+            }
+            return cmp > 0;
+            if consteval (I know this is closed) {
+            .... do optimized case;
+            }
+            ...
+            bools as numbers
+            Range::Intersects
+#endif
         [[maybe_unused]] auto oldCode = [this] (const Range<T2, TRAITS2>& rhs) {
             if (empty () or rhs.empty ()) {
                 return false;
