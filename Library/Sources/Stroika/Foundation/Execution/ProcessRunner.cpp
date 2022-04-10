@@ -903,7 +903,7 @@ namespace {
                         stderrMsg.str (),
                         WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
                         WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{},
-                        WIFSTOPPED (status) ? WSTOPSIG (status) : optional<uint8_t>{})};
+                        WIFSTOPPED (status) ? WSTOPSIG (status) : optional<uint8_t>{}});
                 }
             }
         }
