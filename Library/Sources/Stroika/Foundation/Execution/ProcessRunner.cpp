@@ -887,7 +887,7 @@ namespace {
                 // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
                 processResult->store (ProcessRunner::ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : optional<int> (), WIFSIGNALED (status) ? WTERMSIG (status) : optional<int> ()});
             }
-            if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
+            else if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
                 // @todo fix this message
                 DbgTrace ("childPID=%d, result=%d, status=%d, WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d", childPID, result, status, WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
                 if (processResult == nullptr) {
@@ -897,13 +897,13 @@ namespace {
                         stderrMsg += String::FromISOLatin1 (trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf));
                     }
                     stderrMsg += String::FromISOLatin1 (begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt);
-                    Throw (ProcessRunner::Exception (
+                    Throw (ProcessRunner::Exception{
                         effectiveCmdLine,
                         L"Spawned program"sv,
                         stderrMsg.str (),
                         WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
                         WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{},
-                        WIFSTOPPED (status) ? WSTOPSIG (status) : optional<uint8_t>{}));
+                        WIFSTOPPED (status) ? WSTOPSIG (status) : optional<uint8_t>{})};
                 }
             }
         }
@@ -1162,7 +1162,7 @@ namespace {
 
                 if (processResult == nullptr) {
                     if (processExitCode != 0) {
-                        Throw (ProcessRunner::Exception (effectiveCmdLine, L"Spawned program", {}, processExitCode));
+                        Throw (ProcessRunner::Exception{effectiveCmdLine, L"Spawned program", {}, processExitCode});
                     }
                 }
                 else {

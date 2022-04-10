@@ -219,7 +219,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  Each overload that takes a 'processResult' argument recieves the numeric value the process
          *  exited with (if it called exit - that is - didnt terminate by signal etc). However, if that
-         *  parameter is missing (nullptr) - Run () wll throw an exception if the called process returns
+         *  parameter is missing (nullptr) - Run () will throw an exception if the called process returns
          *  non-zero.
          *
          *  \note Exceptions:
