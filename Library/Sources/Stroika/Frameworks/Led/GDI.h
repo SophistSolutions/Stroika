@@ -219,7 +219,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     /*
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     template <typename POINT_TYPE, typename SIZE_TYPE>

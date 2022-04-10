@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Containers {
      *  a programming (assertion) error to check/add items outside that range. And when iterating (e.g. size ()) you always
      *  find all items.
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      @see inherited from DataHyperRectangle<>
      */
     template <typename T, typename... INDEXES>

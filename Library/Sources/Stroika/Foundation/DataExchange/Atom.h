@@ -118,7 +118,7 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  @see Microsoft.net String::Intern () - http://msdn.microsoft.com/en-us/library/system.string.intern(v=vs.110).aspx
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      *
      *          Atom's are compared in a way that will NOT in general be the same as print name compare. 

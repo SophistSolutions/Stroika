@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Containers {
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison equality (==, !=) support (iff <T> parameter has default equal_to<T> implementation)
      *      o   EqualsComparer provided as alias to SequentialEqualsComparer
      *          Two Queues are considered equal if they contain the same elements (by comparing them

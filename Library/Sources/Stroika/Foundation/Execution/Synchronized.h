@@ -221,7 +221,7 @@ namespace Stroika::Foundation::Execution {
      *
      *          So ONLY support operator-> const overload (brevity and more common than for write). To write - use rwget().
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *          (but these are ONLY defined if TRAITS::kIsRecursiveReadMutex)
      */

@@ -28,7 +28,7 @@ namespace Stroika::Foundation::IO::Network::SystemFirewall {
     using Characters::String;
 
     /**
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     struct Rule {

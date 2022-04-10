@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Containers {
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Mappings (base class) are already intrinsically equals-comparable.
      *
      *      o   Since SortedMapping implies an ordering on the elements of the mapping, we can use this to define a

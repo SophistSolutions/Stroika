@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Common {
     /**
      *  A very common 16-byte opaque ID structure.
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     struct GUID {

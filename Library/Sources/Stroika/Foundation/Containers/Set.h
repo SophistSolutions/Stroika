@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Containers {
      *      We intentionally omit the Update () method since update given an iterator would do the same thing
      *      as Container::Add(). We COULD enhance Add () to take an optional hint parameter in a future version of Stroika.
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison equality (==, <=> etc) - because all sets have an equalsComparer for their elements
      *        o ordering (<,<=> etc) not provided, because a set has no intrinsic ordering between the set elements
      *        o when comparing a Set to any Itererable<> - this is treated as 'set' equality comparison

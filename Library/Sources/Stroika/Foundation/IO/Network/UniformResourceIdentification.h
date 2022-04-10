@@ -117,7 +117,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *      @todo   MABYE add "SCHEME REGISTER"
      *              { string, isSecure, isHttpIsh } -na dif httpish req certina methdos get GethOst etc for httpish schemes
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *
      *          o   schemes are case-insensitive  @see https://tools.ietf.org/html/rfc3986#section-3.1
@@ -199,7 +199,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *
      *  This class is ALWAYS either (mutually exclusive) regsiterName, or internetAddress.
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *
      *              note that when comparing hosts, if they are registered names, they are compared case insensitively.
@@ -354,7 +354,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *
      *  \note UserInfo may not contain an empty string (use optional<UserInfo> and nullopt for that)
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *
      *          Because https://tools.ietf.org/html/rfc3986 says nothing about case sensativity or comparing userInfo,
@@ -469,7 +469,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *
      *  Based on https://tools.ietf.org/html/rfc3986#section-3.2
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     class Authority {
@@ -602,7 +602,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #endif
 
     /**
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      *
      *          Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive

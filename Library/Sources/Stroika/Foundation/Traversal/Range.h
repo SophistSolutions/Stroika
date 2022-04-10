@@ -283,7 +283,7 @@ namespace Stroika::Foundation::Traversal {
      * \note The default OPENNESS for Default varies by TYPE T. Integer and enums are both
      *       fully closed by default, and other arithmetic types (floats) are half open [)
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *      o   Depends on operator== being defined on T
      *      

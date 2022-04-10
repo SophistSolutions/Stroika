@@ -84,7 +84,7 @@ namespace Stroika::Foundation::IO::Network {
      *          This poses some difficulties for code that wants to update BOTH the authority and the path of a URI (which do you do first - tricky).
      *          But its easy enough to avoid by re-constructing the URI from scratch using the URI (individiaul components) constructor.
      *      
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     class URI : private Debug::AssertExternallySynchronizedMutex {

@@ -20,7 +20,7 @@
 namespace Stroika::Foundation::DataExchange::XML {
 
     /**
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     struct NamespaceDefinition {
@@ -46,7 +46,7 @@ namespace Stroika::Foundation::DataExchange::XML {
 #endif
 
     /**
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     class NamespaceDefinitionsList {

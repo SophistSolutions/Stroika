@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers {
     /**
      *  \note   Aliases: Data-Cube, Date Cube, Hyper-Cube, Hypercube, Tensor, Matrix, Vector
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   operator== and operator!= are supported
      *  
      *          Two DataHyperRectangle are considered equal if they contain the same elements (by comparing them with ELEMENT_EQUALS_COMPARER)

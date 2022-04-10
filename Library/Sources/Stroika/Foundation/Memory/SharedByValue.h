@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Memory {
      *          PRO NOT EMBED: Simpler todo access functions (default parameter instead of overload passing fCopier).
      *          For now - go with more flexible approach since no much more complex to implement.
      * 
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Only comparison (operator==/!=) with nullptr is supported.
      *
      *      Earlier versions of Stroika (before 2.1a5) supported operator==(SharedByValue) - and this kind of makes sense

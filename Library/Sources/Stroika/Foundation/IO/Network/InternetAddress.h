@@ -92,7 +92,7 @@ namespace Stroika::Foundation::IO::Network {
      *      This class provides no support for site-local addresses because they have been deprecated
      *      in http://www.ietf.org/rfc/rfc3879.txt
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     class InternetAddress {

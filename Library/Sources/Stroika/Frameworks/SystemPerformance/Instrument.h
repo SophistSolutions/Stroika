@@ -62,7 +62,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      * 
      *          Though this time can be controlled otherwise, the easiest way is via the CaptureSet 'RunPeriod'
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>

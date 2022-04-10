@@ -296,7 +296,7 @@ namespace Stroika::Foundation::Characters {
      *          operate properly, even if used at file scope, and to initialize other strings or objects.
      *          @see "Test of STATIC FILE SCOPE INITIALIZATION"
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *      o   String::EqualsComparer, String::ThreeWayComparer and String::LessComparer provided with construction parameters to allow case insensitive compares 
      */

@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Common {
      *
      *  \note   moderately interoperable with pair<>
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     template <typename KEY_TYPE, typename VALUE_TYPE>
