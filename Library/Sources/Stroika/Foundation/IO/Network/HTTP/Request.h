@@ -26,7 +26,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     using DataExchange::InternetMediaType;
 
     /**
-     *  First Draft of Request object that could be shared by FETCH and WEBSERVER APIs.
+     *  HTTP Request object that (shared by HTTP Client and HTTP Server apis).
      *  \note - @todo - KEY MISSING FEATURE is BODY and STREAM - which are just in the Frameworks/WebServer subclass
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
