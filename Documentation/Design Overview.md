@@ -274,6 +274,21 @@ That technique is used to control the default kind of containers (backend algori
 
 Or for Stream classes, the &#39;stream quasi namespace&#39; contains a New method to construct the actual stream, and the definition of the Ptr type – smart pointer – used to access the stream.
 
+
+### static T::Parse () method versus T () constructor
+
+Constructors return an object, not optional, of that object. You could just have the constructor throw an
+exception when it fails to construct (due to bad arguments) - but sometimes its handy to just return optional<T> for that case.
+
+One case where this is commonly true is with parsing arguments (like a date, or a URL). So for these cases, Stroika provides
+a static Parse () function, which returns optional<T>, and acts kind of like a constructor, except that it returns
+missing when unable to 'parse' its arguments.
+
+Another reason why its sometimes helpful to use the static name Parse() instead of a constructor argument, is for clarity take
+that you aren't converting (so maybe accidentally implicitly converting) a string into that object type, but explicitly noting
+that the string is being parsed into that object type.
+
+
 ### <a name="Comparisons"></a> Comparisons: spaceship operator, operator==, operator<=> and operator<, operator>, etc…
 
 - Note this has materially changed in Stroika v2.1, due to the upcoming
