@@ -20,6 +20,22 @@ to handlers? Or maybe abstract classes bette r than std::function here?
 
     >	Consider migrating most (all?) classes down a level under "HTTP" folder
 
+## Miscelaneous Features status
+
+Very roughly, this web server supports HTTP 1.1 protocol version.
+What this means - is that unless you need HTTPS - this will do everything you need, and work just fine interoperating with web browsers and web applications.
+
+| Feature                        | Supported?                 |
+| ---------------------          | ----------                 |
+| Chuncked Transfers             | yes                        |
+| Cookies                        | yes (partly - not storage) |
+| HTTPS                          | no                         |
+| Compression                    | no                         |
+| HTTP Keep Alives               | yes                        |
+| CORS                           | yes                        |
+| filesystem or dynamic source   | yes                        |
+
+
 ## Modules
 
 - [Connection.h](Connection.h)
