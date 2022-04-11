@@ -44,7 +44,16 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  Returns the default dns resolver.
          */
-        static DNS Default ();
+        static [[deprecated ("Since Stroika 2.1r9 - use sThe")]] DNS Default ();
+
+    public:
+        /**
+         *  Returns the default DNS resolver. 
+         *
+         *  \note NOTE - future versions of Stroika may allow specification
+         *  of alternate DNS resolvers, somehow, probably by just constructing them and using a backend rep.
+         */
+        static const DNS kThe;
 
     public:
         DNS ();
@@ -99,6 +108,7 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual InternetAddress GetHostAddress (const String& hostNameOrAddress) const;
         nonvirtual InternetAddress GetHostAddress (const String& hostNameOrAddress, InternetAddress::AddressFamily family) const;
     };
+    inline const DNS DNS::kThe;
 
 }
 
