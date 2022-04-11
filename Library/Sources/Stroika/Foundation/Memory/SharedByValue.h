@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename T, typename SHARED_IMLP = shared_ptr<T>, typename COPIER = SharedByValue_CopyByDefault<T, SHARED_IMLP>>
     struct SharedByValue_Traits {
-        using element_type        = T;
+        using element_type = T;
 
         /**
          *  Note that the COPIER can ASSERT externally synchronized, and doesnt need to syncronize itself.
