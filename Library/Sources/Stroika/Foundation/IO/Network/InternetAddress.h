@@ -146,7 +146,7 @@ namespace Stroika::Foundation::IO::Network {
          *      If the address is unparsable according to the rules specified, an exception will be thrown.
          *
          *      \note This does NOT lookup hostnames (like www.google.com or localhost). It must be a numeric
-         *      form of an internet address. Use IO::Network::DNS::Default ().GetHostAddresses () instead.
+         *      form of an internet address. Use IO::Network::DNS::kThe.GetHostAddresses () instead.
          *
          *      \note also this parser doesn't support surrounding spaces, so Trim () first.
          *

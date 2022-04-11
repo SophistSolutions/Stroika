@@ -268,7 +268,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *
          *  \par Example Usage
          *      \code
-         *          auto locAddrs = IO::Network::DNS::Default ().GetHostAddresses (host.AsDecoded ());
+         *          auto locAddrs = IO::Network::DNS::kThe.GetHostAddresses (host.AsDecoded ());
          *      \endcode
          */
         nonvirtual String AsDecoded () const;
