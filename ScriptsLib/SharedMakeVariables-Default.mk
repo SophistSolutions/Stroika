@@ -94,47 +94,6 @@ endif
 
 
 
-####
-####
-####	Expected Link Line
-####		$(LINKER) $(StroikaLinkerPrefixArgs) $(OJS-and-App-Libs) -o OUTPUTFILE $(StroikaLinkerSuffixArgs)
-####	
-####	Stuff in StroikaLinkerPrefixArgs includes stuff like -L - directories to search, and -g, etc.
-####	
-####	Intentionally use '=' instead of ':=' so variables included in StroikaLinkerPrefixArgs can get re-evaluated
-####
-#ifeq ($(IncludeDebugSymbolsInExecutables), 1)
-#	StroikaLinkerPrefixArgs += -g
-#endif
-### SOON TO BE DEPRECATED - LGP 2019-09-24 - use DEFAULT_LINK_LINE
-ifndef StroikaLinkerPrefixArgs
-	StroikaLinkerPrefixArgs	=	
-endif
-ifndef StroikaLinkerSuffixArgs
-	StroikaLinkerSuffixArgs	=	
-endif
-
-
-### DONE IN CONFIGURE NOW (AND FOR A WHILE) --LGP 2019-09-20
-#ifeq ($(IncludeDebugSymbolsInExecutables), 1)
-#	StroikaLinkerPrefixArgs += -g
-#endif
-### SOON TO BE DEPRECATED - LGP 2019-09-24 - use DEFAULT_LINK_LINE
-StroikaLinkerPrefixArgs+=	$(EXTRA_PREFIX_LINKER_ARGS)  $(LIBS_PATH_DIRECTIVES)
-
-
-
-### SOON TO BE DEPRECATED - LGP 2019-09-24 - use DEFAULT_LINK_LINE
-StroikaLinkerSuffixArgs	+=	$(StroikaLibs)
-
-# (NOTE DONE FOR NOW BECAUSE SO FAR NOT NEEDED BUT HERE IS THE PLACE TO DUP LIB_DEPENDENCIES IF NEEDED): Because the linker requires libraries to go in-order, and they can have mutual dependencies, list the libraries twice
-### SOON TO BE DEPRECATED - LGP 2019-09-24 - use DEFAULT_LINK_LINE
-StroikaLinkerSuffixArgs+=	$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)
-
-#### clean dup / do another way...StroikaFoundationSupportLibs deprecated - so just add compute of pkg-config libs) @todo -LGP 2018-05-01, -LGP 2018-05-03
-### SOON TO BE DEPRECATED - LGP 2019-09-24 - use DEFAULT_LINK_LINE
-StroikaLinkerSuffixArgs+=	$(StroikaFoundationSupportLibs)
-
 
 ifndef HTMLViewCompiler
 	HTMLViewCompiler	=	"$(StroikaRoot)Builds/$(CONFIGURATION)/HTMLViewCompiler"
