@@ -44,7 +44,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  Returns the default dns resolver.
          */
-        static [[deprecated ("Since Stroika 2.1r9 - use sThe")]] DNS Default ();
+        [[deprecated ("Since Stroika 2.1r9 - use sThe")]] static DNS Default ();
 
     public:
         /**
