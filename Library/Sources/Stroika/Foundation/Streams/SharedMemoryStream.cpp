@@ -51,5 +51,5 @@ Characters::String SharedMemoryStream<Characters::Character>::Ptr::As () const
     AssertMember (&_GetRepConstRef (), Rep_);
     const Rep_& rep = *Debug::UncheckedDynamicCast<const Rep_*> (&_GetRepConstRef ());
     auto        tmp = rep.AsVector ();
-    return String (Containers::Start (tmp), Containers::End (tmp));
+    return String{Containers::Start (tmp), Containers::End (tmp)};
 }

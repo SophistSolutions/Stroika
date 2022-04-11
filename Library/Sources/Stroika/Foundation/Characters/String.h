@@ -727,10 +727,10 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          Assert (String (L"abc").Match (L"abc"));
-         *          Assert (not (String (L"abc").Match (L"bc")));
-         *          Assert (String (L"abc").Match (L".*bc"));
-         *          Assert (not String (L"abc").Match (L"b.*c"));
+         *          Assert (String{L"abc"}.Match (L"abc"));
+         *          Assert (not (String{L"abc"}.Match (L"bc")));
+         *          Assert (String{L"abc"}.Match (L".*bc"));
+         *          Assert (not String{L"abc"}.Match (L"b.*c"));
          *      \endcode
          *
          *  \par Example Usage
@@ -833,7 +833,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  Note: FindEach handles the special case of an empty match as ignored, so FindEach(empty-str-or-regexp)
          *  always returns an empty list. Also - for the String case, it returns distinct matches, so if you
-         *  search String ("AAAA").FindEach ("AA"), you will get 2 answers ({0, 2}).
+         *  search String{"AAAA"}.FindEach ("AA"), you will get 2 answers ({0, 2}).
          *
          *  @see Find ()
          *  @see FindEachString ()
