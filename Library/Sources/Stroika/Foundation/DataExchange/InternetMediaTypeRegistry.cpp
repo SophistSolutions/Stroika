@@ -280,7 +280,7 @@ shared_ptr<InternetMediaTypeRegistry::IBackendRep> InternetMediaTypeRegistry::De
 #if qPlatform_Windows
     return WindowsRegistryDefaultBackend ();
 #endif
-    // not sure how to tell if this works - @todo - FIX - need to avoid this on macos somehow...
+    // @todo fix for MacOS - which doesn't support these - https://stroika.atlassian.net/browse/STK-795
     if (filesystem::exists ("/usr/share/mime")) {
         try {
             return UsrSharedDefaultBackend ();
@@ -289,7 +289,6 @@ shared_ptr<InternetMediaTypeRegistry::IBackendRep> InternetMediaTypeRegistry::De
             // LOG/WRN
         }
     }
-    // not sure how to tell if this works - @todo - FIX - need to avoid this on macos somehow...
     if (filesystem::exists ("/etc/mime.types")) {
         try {
             return EtcMimeTypesDefaultBackend ();
