@@ -34,6 +34,7 @@ What this means - is that unless you need HTTPS - this will do everything you ne
 | HTTP Keep Alives               | yes                        |
 | CORS                           | yes                        |
 | filesystem or dynamic source   | yes                        |
+| HEAD/Conditional Get/ETags     | yes                        |
 
 
 ## Modules
