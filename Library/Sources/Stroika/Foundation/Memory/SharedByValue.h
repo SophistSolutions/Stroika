@@ -50,6 +50,10 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename SHARED_IMLP = shared_ptr<T>, typename COPIER = SharedByValue_CopyByDefault<T, SHARED_IMLP>>
     struct SharedByValue_Traits {
         using element_type        = T;
+
+        /**
+         *  Note that the COPIER can ASSERT externally synchronized, and doesnt need to syncronize itself.
+         */
         using element_copier_type = COPIER;
         using shared_ptr_type     = SHARED_IMLP;
     };
@@ -97,7 +101,7 @@ namespace Stroika::Foundation::Memory {
      *          the instance (I can think of no use case for this) - very tricky unless embedded.
      * 
      *          PRO NOT EMBED: Simpler todo access functions (default parameter instead of overload passing fCopier).
-     *          For now - go with more flexible approach since no much more complex to implement.
+     *          For now - go with more flexible approach since not much more complex to implement.
      * 
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Only comparison (operator==/!=) with nullptr is supported.
@@ -106,6 +110,9 @@ namespace Stroika::Foundation::Memory {
      *      but is a little ambiguous if its measuring pointer (shared reference) equality or actual value equality.
      *
      *      Better to let the caller use opeartor<=> on cget() or *cget() to make clear their intentions.
+     * 
+     *  TODO:
+     *      @todo https://stroika.atlassian.net/browse/STK-798 - review docs and threadsafety
      */
     template <typename T, typename TRAITS = SharedByValue_Traits<T>>
     class SharedByValue {

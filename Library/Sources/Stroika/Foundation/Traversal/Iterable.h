@@ -135,6 +135,8 @@ namespace Stroika::Foundation::Traversal {
      *      come from arbitrary, programatic sources (like a sequence of uncomputed random numbers). If you wish to capture something
      *      like an Iterable for later use, but don't want its value to change once you've captured it, consider using Collection<T> which is
      *      almost the same, but will make a copy of the data, and not allow it to change without preserve COW semantics.
+     * 
+     *      @todo https://stroika.atlassian.net/browse/STK-799 - CLEAR UP THESE DOCS!!!!
      *
      *  *Design Note*:
      *      Why does Iterable<T> contain a size () method?
