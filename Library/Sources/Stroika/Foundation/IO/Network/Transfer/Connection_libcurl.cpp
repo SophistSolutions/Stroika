@@ -217,6 +217,7 @@ void Connection_LibCurl::Rep_::SetAuthorityRelativeURL_ (const URI& url)
     URI newURL = url;
     newURL.SetScheme (fURL_.GetScheme ());
     newURL.SetAuthority (fURL_.GetAuthority ());
+    Assert (newURL == fURL_.Combine (url)); // @todo replace the above with this simpler (not fully equivilent) logic
     if (fCurlHandle_ != nullptr) {
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, newURL.As<string> ().c_str ()));
     }

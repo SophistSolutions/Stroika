@@ -176,6 +176,7 @@ void Connection_WinHTTP::Rep_::SetAuthorityRelativeURL_ (const URI& url)
     URI newURL = url;
     newURL.SetScheme (fURL_.GetScheme ());
     newURL.SetAuthority (fURL_.GetAuthority ());
+    Assert (newURL == fURL_.Combine (url)); // @todo replace the above with this simpler (not fully equivilent) logic
     if (fURL_ != url) {
         fConnectionHandle_.reset ();
         fURL_ = newURL;
