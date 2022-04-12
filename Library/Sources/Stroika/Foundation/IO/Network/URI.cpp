@@ -336,7 +336,7 @@ URI URI::Combine (const URI& overridingURI) const
                 result.SetQuery (overridingURI.GetQuery<String> () ? overridingURI.GetQuery<String> () : baseURI.GetQuery<String> ());
             }
             else {
-                if (uri.GetPath ().StartsWith (L"/")) {
+                if (overridingURI.GetPath ().StartsWith (L"/")) {
                     result.SetPath (remove_dot_segments_ (overridingURI.GetPath ()));
                 }
                 else {
