@@ -64,8 +64,8 @@ namespace Stroika::Foundation::Cache {
          *      \code
          *          unsigned int                      totalCallsCount{};
          *          Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount](int a, int b) { ++totalCallsCount;  return a + b; }};
-         *          VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
-         *          VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
+         *          VerifyTestResult (memoizer (1, 1) == 2 and totalCallsCount == 1);
+         *          VerifyTestResult (memoizer (1, 1) == 2 and totalCallsCount == 1);
          *      \endcode
          */
         Memoizer (const function<RESULT (ARGS...)>& f, CACHE<tuple<ARGS...>, RESULT>&& cache = CACHE<tuple<ARGS...>, RESULT>{});
@@ -78,8 +78,9 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         *  \note this function is not const, because it modifies the state of the object/cache.
          */
-        nonvirtual RESULT Compute (ARGS... args);
+        nonvirtual RESULT operator() (ARGS... args);
 
     private:
         function<RESULT (ARGS...)>    fFunction_;

@@ -242,16 +242,17 @@ namespace {
 #else
                 Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount] (int a, int b) { totalCallsCount++;  return a + b; }};
 #endif
-                VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
-                VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
+                VerifyTestResult (memoizer (1, 1) == 2 and totalCallsCount == 1);
+                VerifyTestResult (memoizer (1, 1) == 2 and totalCallsCount == 1);
             }
 #if 0
             {
+                // https://stroika.atlassian.net/browse/STK-812
                 // trying to figure out how to do...
                 unsigned int totalCallsCount{};
                 Memoizer     memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }};
-                VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
-                VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
+                VerifyTestResult (memoizer (1, 1) == 2 and totalCallsCount == 1);
+                VerifyTestResult (memoizer (1, 1) == 2 and totalCallsCount == 1);
             }
 #endif
         }
