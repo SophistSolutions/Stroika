@@ -264,7 +264,7 @@ void URI::CheckValidPathForAuthority_ (const optional<Authority>& authority, con
     }
 }
 
-URI URI::Combine (const URI& uri) const
+URI URI::Combine (const URI& overridingURI) const
 {
     shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
 
@@ -279,7 +279,7 @@ URI URI::Combine (const URI& uri) const
      *      }
      */
     if (not *this) {
-        return uri;
+        return overridingURI;
     }
 
     /*
@@ -316,37 +316,37 @@ URI URI::Combine (const URI& uri) const
      *       undefine(R.scheme);
      *    endif;
      */
-    if (uri.GetScheme ()) {
-        result.SetScheme (uri.GetScheme ());
-        result.SetAuthority (uri.GetAuthority ());
-        result.SetPath (remove_dot_segments_ (uri.GetPath ()));
-        result.SetQuery (uri.GetQuery<String> ());
+    if (overridingURI.GetScheme ()) {
+        result.SetScheme (overridingURI.GetScheme ());
+        result.SetAuthority (overridingURI.GetAuthority ());
+        result.SetPath (remove_dot_segments_ (overridingURI.GetPath ()));
+        result.SetQuery (overridingURI.GetQuery<String> ());
     }
     else {
         result.SetScheme (baseURI.GetScheme ());
-        if (uri.GetAuthority ()) {
-            result.SetAuthority (uri.GetAuthority ());
-            result.SetPath (remove_dot_segments_ (uri.GetPath ()));
-            result.SetQuery (uri.GetQuery<String> ());
+        if (overridingURI.GetAuthority ()) {
+            result.SetAuthority (overridingURI.GetAuthority ());
+            result.SetPath (remove_dot_segments_ (overridingURI.GetPath ()));
+            result.SetQuery (overridingURI.GetQuery<String> ());
         }
         else {
             result.SetAuthority (baseURI.GetAuthority ());
-            if (uri.GetPath ().empty ()) {
+            if (overridingURI.GetPath ().empty ()) {
                 result.SetPath (baseURI.GetPath ());
-                result.SetQuery (uri.GetQuery<String> () ? uri.GetQuery<String> () : baseURI.GetQuery<String> ());
+                result.SetQuery (overridingURI.GetQuery<String> () ? overridingURI.GetQuery<String> () : baseURI.GetQuery<String> ());
             }
             else {
                 if (uri.GetPath ().StartsWith (L"/")) {
-                    result.SetPath (remove_dot_segments_ (uri.GetPath ()));
+                    result.SetPath (remove_dot_segments_ (overridingURI.GetPath ()));
                 }
                 else {
-                    result.SetPath (remove_dot_segments_ (merge (baseURI.GetPath (), uri.GetPath ())));
+                    result.SetPath (remove_dot_segments_ (merge (baseURI.GetPath (), overridingURI.GetPath ())));
                 }
-                result.SetQuery (uri.GetQuery<String> ());
+                result.SetQuery (overridingURI.GetQuery<String> ());
             }
         }
     }
-    result.SetFragment (uri.GetFragment ());
+    result.SetFragment (overridingURI.GetFragment ());
     return result;
 }
 

@@ -321,8 +321,10 @@ namespace Stroika::Foundation::IO::Network {
          *  Note - one special case - if the source URI is empty (if !u) - then just return the argument URI as the result (avoiding
          *  issues with having to always check if the source URI has a scheme. NOT - if you pass in a BAD src URI as 'this' - one without
          *  a scheme for example - you still get an exception thrown.
+         * 
+         *  \note *this is the 'baseURL' which the argument 'overrides' bits of (or all of).
          */
-        nonvirtual URI Combine (const URI& uri) const;
+        nonvirtual URI Combine (const URI& overridingURI) const;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:
