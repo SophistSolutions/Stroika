@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Cache {
     {
     }
     template <typename RESULT, template <typename, typename> class CACHE, typename... ARGS>
-    RESULT Memoizer<RESULT, CACHE, ARGS...>::operator () (ARGS... args)
+    RESULT Memoizer<RESULT, CACHE, ARGS...>::operator() (ARGS... args)
     {
         // Lookup the value in the cache, and if that fails, call fFunction_ (and add that to the cache)
         return fCache_.LookupValue (
