@@ -132,7 +132,7 @@ int main (int argc, const char* argv[])
                 for (Traceroute::Hop h : hops) {
                     String hopName = [=] () {
                         String addrStr = h.fAddress.As<String> ();
-                        if (auto rdnsName = DNS::Default ().QuietReverseLookup (h.fAddress)) {
+                        if (auto rdnsName = DNS::kThe.QuietReverseLookup (h.fAddress)) {
                             return *rdnsName + L" [" + addrStr + L"]";
                         }
                         else {
