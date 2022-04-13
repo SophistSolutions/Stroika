@@ -958,7 +958,7 @@ namespace Stroika::Foundation::Traversal {
     {
         for (Iterator<T> i = startAt; i != end (); ++i) {
             if (that (*i)) {
-                return i;
+                return move (i);
             }
         }
         return end ();
@@ -969,7 +969,7 @@ namespace Stroika::Foundation::Traversal {
     {
         for (Iterator<T> i = startAt; i != end (); ++i) {
             if (equalsComparer (v, *i)) {
-                return i;
+                return move (i);
             }
         }
         return end ();
