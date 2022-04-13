@@ -166,6 +166,7 @@ namespace Stroika::Foundation::Execution {
 
     private:
         alignas (alignof (MODULE_DATA)) static std::byte sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)]; // avoid actual memory allocation call - since only one of these
+                                                                                                                  // note no atomic/thread safety stuff needed here cuz called before main, before threads can be started...
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         static uint16_t sInitCnt_;
 #else
