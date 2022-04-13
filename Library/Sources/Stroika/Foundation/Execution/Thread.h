@@ -924,6 +924,11 @@ namespace Stroika::Foundation::Execution {
          *
          *  \par Example Usage
          *      \code
+         *          Thread::New ([r]() { r->Run (); }, Thread::eAutoStart);     // runs arg to completion then thread destroyed. New returns once thread created
+         *      \endcode
+         *
+         *  \par Example Usage
+         *      \code
          *          Thread::Ptr t = Thread::New ([r]() { r->Run (); }, Thread::eAutoStart, L"Thread Name");
          *      \endcode
          *
