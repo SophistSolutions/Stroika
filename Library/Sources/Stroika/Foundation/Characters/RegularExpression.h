@@ -103,7 +103,6 @@ namespace Stroika::Foundation::Characters {
 #endif
 
     /**
-     * @todo DRAFT 2015-02-01
      */
     class RegularExpressionMatch {
     public:

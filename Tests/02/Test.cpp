@@ -722,19 +722,19 @@ namespace {
         {
             {
                 for (String i : Sequence<String>{L"01-23-45-67-89", L"", L"a"}) {
-                    VerifyTestResult (not i.Match (RegularExpression::kNONE));
-                    VerifyTestResult (i.Match (RegularExpression::kAny));
+                    VerifyTestResult (not i.Matches (RegularExpression::kNONE));
+                    VerifyTestResult (i.Matches (RegularExpression::kAny));
                 }
             }
             {
                 // Test from String::Match () docs
                 static const RegularExpression kSonosRE_{L"([0-9.:]*)( - .*)"_RegEx};
                 static const String            kTestStr_{L"192.168.244.104 - Sonos Play:5"};
-                VerifyTestResult (kTestStr_.Match (kSonosRE_));
+                VerifyTestResult (kTestStr_.Matches (kSonosRE_));
                 optional<String> match1;
-                VerifyTestResult (kTestStr_.Match (kSonosRE_, &match1) and match1 == L"192.168.244.104");
+                VerifyTestResult (kTestStr_.Matches (kSonosRE_, &match1) and match1 == L"192.168.244.104");
                 optional<String> match2;
-                VerifyTestResult (kTestStr_.Match (kSonosRE_, &match1, &match2) and match1 == L"192.168.244.104" and match2 == L" - Sonos Play:5");
+                VerifyTestResult (kTestStr_.Matches (kSonosRE_, &match1, &match2) and match1 == L"192.168.244.104" and match2 == L" - Sonos Play:5");
             }
         }
         void Test17_RegExp_Search_ ()
@@ -1104,17 +1104,17 @@ namespace {
     void Test22_StartsWithEndsWithMatch_ ()
     {
         Debug::TraceContextBumper ctx{L"Test22_StartsWithEndsWithMatch_"};
-        VerifyTestResult (String (L"abc").Match (RegularExpression (L"abc")));
-        VerifyTestResult (not(String (L"abc").Match (RegularExpression (L"bc"))));
-        VerifyTestResult (String (L"abc").Match (RegularExpression (L".*bc")));
-        VerifyTestResult (not String (L"abc").Match (RegularExpression (L"b.*c")));
-        VerifyTestResult (not String (L"Hello world").Match (RegularExpression (L"ello")));
-        VerifyTestResult (String (L"abc").StartsWith (L"AB", CompareOptions::eCaseInsensitive));
-        VerifyTestResult (not String (L"abc").StartsWith (L"AB", CompareOptions::eWithCase));
-        VerifyTestResult (String (L"abc").EndsWith (L"bc", CompareOptions::eCaseInsensitive));
-        VerifyTestResult (String (L"abc").EndsWith (L"bc", CompareOptions::eWithCase));
-        VerifyTestResult (String (L"abc").EndsWith (L"BC", CompareOptions::eCaseInsensitive));
-        VerifyTestResult (not String (L"abc").EndsWith (L"BC", CompareOptions::eWithCase));
+        VerifyTestResult (String{L"abc"}.Matches (RegularExpression{L"abc"}));
+        VerifyTestResult (not(String{L"abc"}.Matches (RegularExpression{L"bc"})));
+        VerifyTestResult (String{L"abc"}.Matches (RegularExpression{L".*bc"}));
+        VerifyTestResult (not String{L"abc"}.Matches (RegularExpression{L"b.*c"}));
+        VerifyTestResult (not String{L"Hello world"}.Matches (RegularExpression{L"ello"}));
+        VerifyTestResult (String{L"abc"}.StartsWith (L"AB", CompareOptions::eCaseInsensitive));
+        VerifyTestResult (not String{L"abc"}.StartsWith (L"AB", CompareOptions::eWithCase));
+        VerifyTestResult (String{L"abc"}.EndsWith (L"bc", CompareOptions::eCaseInsensitive));
+        VerifyTestResult (String{L"abc"}.EndsWith (L"bc", CompareOptions::eWithCase));
+        VerifyTestResult (String{L"abc"}.EndsWith (L"BC", CompareOptions::eCaseInsensitive));
+        VerifyTestResult (not String{L"abc"}.EndsWith (L"BC", CompareOptions::eWithCase));
     }
 }
 

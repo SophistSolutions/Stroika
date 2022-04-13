@@ -56,12 +56,12 @@ bool Route::Matches (const Request& request, Sequence<String>* pathRegExpMatches
 bool Route::Matches (const String& method, const String& hostRelPath, const Request& request, Sequence<String>* pathRegExpMatches) const
 {
     if (fVerbAndPathMatch_) {
-        if (not method.Match (fVerbAndPathMatch_->first)) {
+        if (not method.Matches (fVerbAndPathMatch_->first)) {
             return false;
         }
         return (pathRegExpMatches == nullptr)
-                   ? hostRelPath.Match (fVerbAndPathMatch_->second)
-                   : hostRelPath.Match (fVerbAndPathMatch_->second, pathRegExpMatches);
+                   ? hostRelPath.Matches (fVerbAndPathMatch_->second)
+                   : hostRelPath.Matches (fVerbAndPathMatch_->second, pathRegExpMatches);
     }
     else if (fRequestMatch_) {
         return (*fRequestMatch_) (method, hostRelPath, request);

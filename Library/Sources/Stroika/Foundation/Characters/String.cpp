@@ -619,7 +619,7 @@ vector<RegularExpressionMatch> String::FindEachMatch (const RegularExpression& r
 {
     vector<RegularExpressionMatch> result;
     wstring                        tmp{As<wstring> ()};
-    for (wsregex_iterator i = wsregex_iterator (tmp.begin (), tmp.end (), regEx.GetCompiled ()); i != wsregex_iterator (); ++i) {
+    for (wsregex_iterator i = wsregex_iterator{tmp.begin (), tmp.end (), regEx.GetCompiled ()}; i != wsregex_iterator (); ++i) {
         wsmatch match{*i};
         Assert (match.size () != 0);
         size_t                       n = match.size ();
@@ -636,19 +636,9 @@ vector<String> String::FindEachString (const RegularExpression& regEx) const
 {
     vector<String> result;
     wstring        tmp{As<wstring> ()};
-#if 1
-    for (wsregex_iterator i = wsregex_iterator (tmp.begin (), tmp.end (), regEx.GetCompiled ()); i != wsregex_iterator (); ++i) {
+    for (wsregex_iterator i = wsregex_iterator{tmp.begin (), tmp.end (), regEx.GetCompiled ()}; i != wsregex_iterator (); ++i) {
         result.push_back (String{i->str ()});
     }
-#else
-    wsmatch res;
-    if (regex_search (tmp, res, regEx.GetCompiled ())) {
-        result.reserve (res.size ());
-        for (auto i : res) {
-            result.push_back (String{i});
-        }
-    }
-#endif
     return result;
 }
 
@@ -770,13 +760,13 @@ bool String::EndsWith (const String& subString, CompareOptions co) const
     return result;
 }
 
-bool String::Match (const RegularExpression& regEx) const
+bool String::Matches (const RegularExpression& regEx) const
 {
     wstring tmp{As<wstring> ()};
     return regex_match (tmp.begin (), tmp.end (), regEx.GetCompiled ());
 }
 
-bool String::Match (const RegularExpression& regEx, Containers::Sequence<String>* matches) const
+bool String::Matches (const RegularExpression& regEx, Containers::Sequence<String>* matches) const
 {
     RequireNotNull (matches);
     //tmphack

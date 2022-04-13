@@ -120,7 +120,7 @@ URI URI::Parse (const String& rawURL)
         return nullopt;
     };
     (void)rawURL.AsASCII (); // for throw check side-effect
-    if (rawURL.Match (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
+    if (rawURL.Matches (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
         return URI{emptyStr2Missing (scheme), Authority::Parse (authority.value_or (String{})), UniformResourceIdentification::PCTDecode2String (path.value_or (String{})), emptyStr2Missing (query), emptyStr2Missing (fragment)};
     }
     else {
@@ -211,7 +211,7 @@ String URI::GetAuthorityRelativeResourceDir () const
     shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
     static const RegularExpression                       kSelectDir_ = L"(.*\\/)[^\\/]*"_RegEx;
     optional<String>                                     baseDir;
-    (void)fPath_.Match (kSelectDir_, &baseDir);
+    (void)fPath_.Matches (kSelectDir_, &baseDir);
     return baseDir.value_or (String{});
 }
 
@@ -297,7 +297,7 @@ URI URI::Combine (const URI& overridingURI) const
         }
         static const RegularExpression kSelectDir_ = L"(.*\\/)[^\\/]*"_RegEx;
         optional<String>               baseDir;
-        (void)base.Match (kSelectDir_, &baseDir);
+        (void)base.Matches (kSelectDir_, &baseDir);
         return baseDir.value_or (String{}) + rhs;
     };
 

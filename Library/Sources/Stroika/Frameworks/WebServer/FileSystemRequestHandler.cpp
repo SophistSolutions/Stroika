@@ -96,7 +96,7 @@ namespace {
         void ApplyCacheControl_ (Response& r, const String& urlRelPath) const
         {
             for (const auto& i : fCacheControlSettings) {
-                if (urlRelPath.Match (i.first)) {
+                if (urlRelPath.Matches (i.first)) {
                     r.rwHeaders ().cacheControl = i.second;
                     break; // just apply first
                 }

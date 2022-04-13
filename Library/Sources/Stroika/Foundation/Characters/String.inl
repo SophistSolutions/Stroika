@@ -346,7 +346,7 @@ namespace Stroika::Foundation::Characters {
         const wregex& RegularExpression_GetCompiled (const RegularExpression& regExp);
     }
     template <typename... OPTIONAL_STRINGS>
-    bool String::Match (const RegularExpression& regEx, OPTIONAL_STRINGS&&... subMatches) const
+    bool String::Matches (const RegularExpression& regEx, OPTIONAL_STRINGS&&... subMatches) const
     {
         wstring tmp{As<wstring> ()};
         wsmatch base_match;
