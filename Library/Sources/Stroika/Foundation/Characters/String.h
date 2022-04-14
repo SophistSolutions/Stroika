@@ -1019,6 +1019,10 @@ namespace Stroika::Foundation::Characters {
         /**
          *  Combine the given array into a single string (typically comma space) separated.
          *  If given a list of length n, this adds n-1 seperators.
+         * 
+         *  \note .Net version - https://docs.microsoft.com/en-us/dotnet/api/system.string.join?redirectedfrom=MSDN&view=net-6.0#System_String_Join_System_String_System_String___
+         *  \note Java version - https://docs.oracle.com/javase/8/docs/api/java/lang/String.html#join-java.lang.CharSequence-java.lang.CharSequence...-
+         *  \note Javascript   - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join
          */
         static String Join (const Iterable<String>& list, const String& separator = L", "sv);
 
