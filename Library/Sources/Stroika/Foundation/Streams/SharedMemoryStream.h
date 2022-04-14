@@ -67,6 +67,8 @@ namespace Stroika::Foundation::Streams {
      *           Assert (sum == (1 + kUpToInclusive_) * (kUpToInclusive_ - 1 + 1) / 2); // not a race
      *      \endcode
      *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
+     *
      */
     template <typename ELEMENT_TYPE>
     class SharedMemoryStream : public InputOutputStream<ELEMENT_TYPE> {

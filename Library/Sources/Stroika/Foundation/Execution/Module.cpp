@@ -76,7 +76,7 @@ filesystem::path Execution::GetEXEPath ()
         ThrowPOSIXErrNo (errno);
     }
     Assert (n <= buf.GetSize ()); // could leave no room for NUL-byte, but not needed
-    return SDKString (buf.begin (), buf.begin () + n);
+    return SDKString{buf.begin (), buf.begin () + n};
 #elif qPlatform_Windows
     Characters::SDKChar buf[MAX_PATH];
     //memset (buf, 0, sizeof (buf));

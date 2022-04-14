@@ -55,6 +55,8 @@ namespace Stroika::Foundation ::Streams {
      *          BLOB                    blob    =   ReadRaw ();
      *          optional<VariantValue>  r       =   reader.Read (MemoryStream<byte>::New (blob));
      *      \endcode
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
     template <typename ELEMENT_TYPE>
     class MemoryStream : public InputOutputStream<ELEMENT_TYPE> {

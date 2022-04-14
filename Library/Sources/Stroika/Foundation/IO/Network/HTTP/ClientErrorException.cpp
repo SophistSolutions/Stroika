@@ -17,31 +17,31 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
  ********************************************************************************
  */
 ClientErrorException::ClientErrorException (const Exception& basedOnInnerException)
-    : ClientErrorException (400, Characters::ToString (basedOnInnerException))
+    : ClientErrorException{400, Characters::ToString (basedOnInnerException)}
 {
 }
 
 ClientErrorException::ClientErrorException (Status status, const Exception& basedOnInnerException)
-    : ClientErrorException (status, Characters::ToString (basedOnInnerException))
+    : ClientErrorException{status, Characters::ToString (basedOnInnerException)}
 {
 }
 
 ClientErrorException::ClientErrorException (const exception& basedOnInnerException)
-    : ClientErrorException (400, Characters::ToString (basedOnInnerException))
+    : ClientErrorException{400, Characters::ToString (basedOnInnerException)}
 {
 }
 
 ClientErrorException::ClientErrorException (Status status, const exception& basedOnInnerException)
-    : ClientErrorException (status, Characters::ToString (basedOnInnerException))
+    : ClientErrorException{status, Characters::ToString (basedOnInnerException)}
 {
 }
 
 ClientErrorException::ClientErrorException (const exception_ptr& basedOnInnerException)
-    : ClientErrorException (400, Characters::ToString (basedOnInnerException))
+    : ClientErrorException{400, Characters::ToString (basedOnInnerException)}
 {
 }
 
 ClientErrorException::ClientErrorException (Status status, const exception_ptr& basedOnInnerException)
-    : ClientErrorException (status, Characters::ToString (basedOnInnerException))
+    : ClientErrorException{status, Characters::ToString (basedOnInnerException)}
 {
 }

@@ -92,6 +92,13 @@ namespace Stroika::Foundation::Memory {
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     * 
+     *          Understand that this works because SharedByValue objects are really shared_ptr, but with copy by value semantics.
+     *          C++-Standard-Thread-Safety means that the envelope is always safe because its just following standard c++
+     *          rules for copying the shared_ptr.
+     * 
+     *          And copying the indirected shared_ptr is always safe because the ONLY time anyone can ever MODIFY
+     *          an object is if the shared_count == 1 (so no other threads using it).
      *
      *  \note   Design choice: embed fCopier into instance
      *          vs. just constructing the object on the fly the way we do for comparison functions like std::less<T> {} etc.
