@@ -75,6 +75,9 @@ This (the envelope 'Ptr' class) has all the constraints of <a href='C++-Standard
 
 The underlying rep stream is internally synchronized, so it can be used safely from multiple threads, without any additional checking/worries.
 
+#### Notes
+  - Because the envelope follows C++-Standard-Thread-Safety, constness of its methods follows the implied thread safety rules
+
 #### Examples:
   - Execution::Thread
 
@@ -88,6 +91,9 @@ Plus, the caller must somehow arrange to synchonize access to the underlying obj
 the caller must somehow synchonize those accesses.
 
 Typically the rep will check via Debug::AssertExternallySynchronized.
+
+#### Notes
+  - Because the envelope follows C++-Standard-Thread-Safety, constness of its methods follows the implied thread safety rules
 
 ---
 
