@@ -328,8 +328,8 @@ namespace Stroika::Foundation::Cache {
     private:
         struct MyResult_ {
             MyResult_ (const VALUE& r)
-                : fResult (r)
-                , fLastAccessedAt (Time::GetTickCount ())
+                : fResult{r}
+                , fLastAccessedAt{Time::GetTickCount ()}
             {
             }
             VALUE                     fResult;
