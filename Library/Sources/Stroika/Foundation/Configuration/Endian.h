@@ -14,7 +14,7 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
- *      @todo   Use new stdc++17 endian feature
+ *      @todo   Use new stdc++17 endian feature - https://stroika.atlassian.net/browse/STK-850
  */
 
 namespace Stroika::Foundation::Configuration {
