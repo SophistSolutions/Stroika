@@ -28,7 +28,7 @@ namespace Stroika::Frameworks::WebServer {
      *  \note   Inspired by, but fairly different from
      *          @see https://cxf.apache.org/javadoc/latest/org/apache/cxf/interceptor/Interceptor.html
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
      *              But note that HandleMessage() is a const method, so it can safely be called from any number of threads
      *              simultaneously.
      */

@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Streams::iostream {
          *
          *  \note   The lifetime of the underlying created (shared_ptr) Stream must be >= the lifetime of the argument std::ostream
          *
-         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Rep-Inside-Ptr-Must-Be-Externally-Synchronized">Rep-Inside-Ptr-Must-Be-Externally-Synchronized</a>
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
          *              It is also up to the caller to assure no references to or calls to that ostream
          *              be made from another thread. However, no data is cached in this class - it just
          *              delegates, so calls CAN be made the the underlying ostream - so long as not

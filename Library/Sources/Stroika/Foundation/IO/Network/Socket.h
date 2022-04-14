@@ -193,7 +193,7 @@ namespace Stroika::Foundation::IO::Network {
      *  \note Since Socket::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
      *        the underlying thread object.
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
      */
     class Socket::Ptr : protected Debug::AssertExternallySynchronizedMutex {
     protected:

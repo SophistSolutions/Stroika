@@ -174,7 +174,7 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  \see Set ()
          *
-         *  \note  \em Thread-Safety   <a href="Thread-Safety.md#Rep-Inside-Ptr-Is-Internally-Synchronized">Rep-Inside-Ptr-Is-Internally-Synchronized</a>
+         *  \note  \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
          */
     public:
         static InternetMediaTypeRegistry Get ();
@@ -185,7 +185,7 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  \see Get ()
          *
-         *  \note  \em Thread-Safety   <a href="Thread-Safety.md#Rep-Inside-Ptr-Is-Internally-Synchronized">Rep-Inside-Ptr-Is-Internally-Synchronized</a>
+         *  \note  \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
          */
         static void Set (const InternetMediaTypeRegistry& newRegistry);
 

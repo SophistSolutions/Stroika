@@ -77,7 +77,7 @@ namespace Stroika::Foundation ::Streams {
          *          string xxx = out.As<string> ();
          *      \endcode
          *
-         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Rep-Inside-Ptr-Must-Be-Externally-Synchronized">Rep-Inside-Ptr-Must-Be-Externally-Synchronized</a>
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
          */
         static Ptr New (Execution::InternallySynchronized internallySynchronized = Execution::eNotKnownInternallySynchronized);
         static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);

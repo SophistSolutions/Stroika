@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /**
-         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Rep-Inside-Ptr-Is-Internally-Synchronized">Rep-Inside-Ptr-Is-Internally-Synchronized</a>
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
          */
         static Ptr New (Execution::InternallySynchronized internallySynchronized = Execution::eInternallySynchronized);
         static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);

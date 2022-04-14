@@ -320,7 +320,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \see    Thread::CleanupPtr
          *
-         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a>
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
          */
         class Ptr : private Debug::AssertExternallySynchronizedMutex {
         private:
