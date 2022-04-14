@@ -329,6 +329,9 @@ namespace Stroika::Foundation::Containers {
         nonvirtual Iterable<DomainType> InverseMap (const Iterable<RangeType>& values) const;
 
     public:
+        /**
+         * \brief Like Iterable<T>::Where, but returning a bijection - subset of this bijection where includeIfTrue is true
+         */
         nonvirtual Bijection Where (const function<bool (pair<DomainType, RangeType>)>& includeIfTrue) const;
 
     public:

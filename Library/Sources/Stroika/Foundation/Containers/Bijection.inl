@@ -236,15 +236,8 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::Where (const function<bool (pair<DomainType, RangeType>)>& includeIfTrue) const -> Bijection
     {
-        // @todo - fix very primitive implementation - could use Generator instead?, generator avoids copy of data, and just copies includeIfTrue filter function
-        _SafeReadRepAccessor<_IRep> lhs{this};
-        Bijection                   result = dynamic_pointer_cast<_IRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty ());
-        for (const auto& i : *this) {
-            if (includeIfTrue (i)) {
-                result.Add (i);
-            }
-        }
-        return result;
+        // @todo possibly optimize - for case where includeIfTrue always true, better to return *this instead of new Bijection
+        return inherited::template Where<Bijection> (includeIfTrue);
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::WhereDomainIntersects (const Iterable<DomainType>& domainValues) const -> Bijection
