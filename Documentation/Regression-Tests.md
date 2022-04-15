@@ -135,6 +135,14 @@ checkin from one spot.
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
+
+- Docker windows tests
+
+  ```bash
+  for var in "Cygwin-VS2k19" "Cygwin-VS2k22" "MSYS-VS2k19" "MSYS-VS2k22" ; do LCV=`echo "${var}" | tr '[:upper:]' '[:lower:]'` CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${LCV} USE_TEST_BASENAME=Windows_${var}-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests ; done
+  ```
+
+
 - Must be done on Windows machine (currently doesnt work on - even windows - vm)
 
   ```sh
