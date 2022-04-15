@@ -506,6 +506,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief  Run the argument bool-returning function (or lambda) on each element of the
          *          container, and return an iterator pointing at the first element found true.
+         *          (or use First() to do same thing but return optional<>)
          *
          *  Take the given function argument, and call it for each element of the container. This is
          *  equivalent to:
@@ -540,6 +541,11 @@ namespace Stroika::Foundation::Traversal {
          *      \endcode
          *
          *  @see First () - often more handy
+         * 
+         *  \note - because the lifetime of the iterable must exceed that of the iterator, its generally unsafe to use Find()
+         *          on a temporary (except with the trick if (auto i = x().Find(...)) { ok to access i here cuz x() temporary
+         *          not destroyed yet).
+         * 
          *  \note Before Stroika 2.1b14, the overload taking just THAT_FUNCTION was called FindFirstThat, and used function<bool(T)> instead of a templated function.
          * 
          *  \note THAT_FUNTION type used to be hardwired to function<bool (ArgByValueType<T> item)>&, but now use template argument
