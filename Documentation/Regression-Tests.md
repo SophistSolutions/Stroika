@@ -109,6 +109,20 @@ checkin from one spot.
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
+- \$TEST_TARGET=Ubuntu2204_x86_64
+
+  (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
+
+  ```bash
+  RUN_IN_DOCKER=1 \
+      USE_TEST_BASENAME=Ubuntu2204_x86_64 \
+      BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
+      CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
+      PRIVATE_COMPILER_BUILDS_DIR=/private-compiler-builds-Ununtu-2204-x64 \
+      MACHINE=Hercules \
+      ./ScriptsLib/RunRemoteRegressionTests
+  ```
+
 - \$TEST_TARGET=Ubuntu1804-Cross-Compile2RaspberryPi
 
   (remote execute on machine hercules (and then that will test on raspberrypi) - using docker and copy back results; takes about 3 HRs)
@@ -131,6 +145,19 @@ checkin from one spot.
       USE_TEST_BASENAME=Ubuntu2004-Cross-Compile2RaspberryPi \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests \
+      MACHINE=Hercules \
+      ./ScriptsLib/RunRemoteRegressionTests
+  ```
+
+- \$TEST_TARGET=Ubuntu2204-Cross-Compile2RaspberryPi
+
+  (remote execute on machine hercules (and then that will test on raspberrypi) - using docker and copy back results; takes about 3 HRs) - note - many of these tests fail as of 2019-04-22, because its hard to get the latest version of libc on a raspberrypi. Ignore those failures.
+
+  ```bash
+  RUN_IN_DOCKER=1 \
+      USE_TEST_BASENAME=Ubuntu2204-Cross-Compile2RaspberryPi \
+      BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
+      CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
       MACHINE=Hercules \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
