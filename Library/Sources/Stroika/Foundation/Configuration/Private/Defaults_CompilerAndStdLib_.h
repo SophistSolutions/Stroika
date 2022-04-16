@@ -196,7 +196,9 @@ foo.cpp:
 //#define GLIBCXX_10x_ 20200930
 #define GLIBCXX_10x_ 20210408
 //#define GLIBCXX_11x_ 20210427
-#define GLIBCXX_11x_ 20210923
+//#define GLIBCXX_11x_ 20210923
+// this version of g++11 lib from ubuntu 22.04
+#define GLIBCXX_11x_ 20220324
 
 /*
  *
