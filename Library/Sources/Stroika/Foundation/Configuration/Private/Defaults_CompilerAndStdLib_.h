@@ -1842,7 +1842,11 @@ int main ()
     return 0;
 }*/
 #ifndef qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
-#if defined(__GLIBCXX__)
+
+#if defined(_LIBCPP_VERSION)
+// Appears still buggy in 14.0 clang libc++ on ubuntu 22.04 (doesnt compile)
+#define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 14000))
+#elif defined(__GLIBCXX__)
 // according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11 (library so affects clang too if built with glibc)
 #define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GLIBCXX__ <= GLIBCXX_11x_)
 #else
