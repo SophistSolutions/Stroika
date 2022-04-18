@@ -121,6 +121,57 @@ jobs:
             extra_config_args: --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: false
 
+          # ubuntu 22.04
+          - displayTargetName: ubuntu-22.04-g++-11 (Debug)
+            os: unix
+            compiler: g++-11
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
+            cpp_version: c++17
+            config_name: Debug
+            extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
+            includeInDevBranchBuilds: false
+
+          - displayTargetName: ubuntu-22.04-g++-12 (Debug)
+            os: unix
+            compiler: g++-12
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
+            cpp_version: c++17
+            config_name: Debug
+            extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
+            includeInDevBranchBuilds: false
+
+          - displayTargetName: ubuntu-22.04-g++-12
+            os: unix
+            compiler: g++-12
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
+            cpp_version: c++17
+            config_name: Release
+            extra_config_args: --apply-default-release-flags --trace2file enable
+            includeInDevBranchBuilds: true
+
+          - displayTargetName: ubuntu-22.04-g++-12-c++2a
+            os: unix
+            compiler: g++-12
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
+            cpp_version: c++2a
+            config_name: Release
+            extra_config_args: --apply-default-release-flags --trace2file enable
+            includeInDevBranchBuilds: false
+
+          - displayTargetName: ubuntu-22.04-clang++-14
+            os: unix
+            compiler: clang++-14
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
+            cpp_version: c++17
+            config_name: Release
+            extra_config_args: --apply-default-release-flags --trace2file enable
+            includeInDevBranchBuilds: false
+
     ### ATTEMPT TO COMPRESS 2 workflow files into one, but so far not working
     ### SEE
     ### https://stackoverflow.com/questions/65384420/how-to-make-a-github-action-matrix-element-conditional/65385385#65385385
