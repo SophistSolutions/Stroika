@@ -1078,6 +1078,7 @@ namespace Stroika::Foundation::Characters {
          *      o   const Character*
          *      o   u16string
          *      o   u32string
+         *      o   String    (return *this; handy sometimes in templated usage; harmless)
          *
          *  \note
          *      o   As<u16string> () equivilent to AsUTF16 () calll
@@ -1332,6 +1333,8 @@ namespace Stroika::Foundation::Characters {
     u16string String::As () const;
     template <>
     u32string String::As () const;
+    template <>
+    String String::As () const;
 
     template <>
     void String::AsUTF8 (string* into) const;

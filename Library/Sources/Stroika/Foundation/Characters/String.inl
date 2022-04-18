@@ -490,6 +490,11 @@ namespace Stroika::Foundation::Characters {
         return accessor._ConstGetRep ()._Peek ();
     }
     template <>
+    inline String String::As () const
+    {
+       return *this;
+    }
+    template <>
     inline string String::AsUTF8 () const
     {
         string r;
