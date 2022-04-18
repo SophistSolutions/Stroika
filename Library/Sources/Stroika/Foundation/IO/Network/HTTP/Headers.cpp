@@ -700,7 +700,7 @@ Collection<KeyValuePair<String, String>> Headers::As () const
         results.Add ({HeaderName::kETag, et->As<String> ()});
     }
     if (fHost_) {
-        results.Add ({HeaderName::kHost, fHost_->As<String> ()});
+        results.Add ({HeaderName::kHost, *fHost_});
     }
     if (fIfNoneMatch_) {
         results.Add ({HeaderName::kIfNoneMatch, fIfNoneMatch_->As<String> ()});
