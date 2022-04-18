@@ -699,6 +699,9 @@ Collection<KeyValuePair<String, String>> Headers::As () const
     if (auto et = ETag ()) {
         results.Add ({HeaderName::kETag, et->As<String> ()});
     }
+    if (fHost_) {
+        results.Add ({HeaderName::kHost, fHost_->As<String> ()});
+    }
     if (fIfNoneMatch_) {
         results.Add ({HeaderName::kIfNoneMatch, fIfNoneMatch_->As<String> ()});
     }
