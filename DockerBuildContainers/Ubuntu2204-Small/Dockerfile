@@ -3,6 +3,8 @@ FROM ubuntu:22.04
 # Get latest packages system, so can do installs
 RUN apt-get update
 
+RUN apt-get install -y build-essential
+
 # This hack is needed to avoid failure in apt-get install -y pkg-config for Ubuntu 20.04
 #https://serverfault.com/questions/949991/how-to-install-tzdata-on-a-ubuntu-docker-image
 #RUN apt-get install -y tzdata
@@ -16,6 +18,9 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 #locale support not strictly required, but some regression tests depend on it
 #and as of Ubuntu 20.04 (prerelease) appears must be included for other apt-get install programs to complete
 RUN apt-get install -y locales && locale-gen en_US en_US.UTF-8
+
+# docker build fails without extra update for some reason? --LGP 2022-04-18
+RUN apt-get update
 
 # Used to unpack sources for lzma SDK
 RUN apt-get install -y p7zip-full
