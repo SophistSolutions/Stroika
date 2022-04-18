@@ -200,7 +200,6 @@ foo.cpp:
 // this version of g++11 lib from ubuntu 22.04
 #define GLIBCXX_11x_ 20220324
 
-
 /*
  *
  *  Stroika supports a wide variety of compilers with a wide variety of bugs and degrees of C++ standards conformance.
@@ -1190,7 +1189,7 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
  *      but libstdc++ doesn't appear to support the leading zero.
  */
 #ifndef qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
-#if defined (__clang_major__) && __clang_major__ >= 14
+#if defined(__clang_major__) && __clang_major__ >= 14
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 0
 #elif defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_11x_
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 1
@@ -1795,7 +1794,7 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 #elif defined(__clang__) && defined(__APPLE__)
 // according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
 #define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
-#elif defined(__clang__) && !defined(__APPLE__) && defined (_LIBCPP_VERSION)
+#elif defined(__clang__) && !defined(__APPLE__) && defined(_LIBCPP_VERSION)
 // according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
 // appears still broken in clang++13 (maybe should depend on stdlib version not compiler version)
 // appears fixed in clang++14 (or maybe SB depending on libversion)
@@ -1872,8 +1871,6 @@ int main ()
 #endif
 
 #endif
-
-
 
 /*
  
