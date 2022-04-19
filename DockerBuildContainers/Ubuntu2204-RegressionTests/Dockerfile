@@ -20,6 +20,9 @@ RUN apt-get install -y clang++-12
 RUN apt-get install -y clang++-13
 RUN apt-get install -y clang++-14 && apt-get install -y libc++-14-dev libc++abi-14-dev
 
+# For some reason not installed on ubuntu 21.04, nor 22.04 otherwise
+RUN apt-get install -y libz.a
+
 #Only needed to run with valgrind regtests
 RUN apt-get install -y valgrind
 
