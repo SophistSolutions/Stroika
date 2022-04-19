@@ -113,7 +113,11 @@ namespace Stroika::Foundation::Execution {
         BarrierType fBarrierFlag_;
 
     private:
+#if (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_20)
         atomic_flag fLock_ = ATOMIC_FLAG_INIT;
+#else
+        atomic_flag fLock_;
+#endif
     };
 
 }
