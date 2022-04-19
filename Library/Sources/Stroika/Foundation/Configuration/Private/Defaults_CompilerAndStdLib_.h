@@ -1191,6 +1191,9 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #ifndef qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
 #if defined(__clang_major__) && __clang_major__ >= 14
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 0
+#elif __GNUC__ == 12
+// appears fixed in g++-12 on ubuntu 22.04
+#define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 0
 #elif defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_11x_
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 1
 #else
