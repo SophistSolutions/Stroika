@@ -492,7 +492,7 @@ namespace Stroika::Foundation::Characters {
     template <>
     inline String String::As () const
     {
-       return *this;
+        return *this;
     }
     template <>
     inline string String::AsUTF8 () const
