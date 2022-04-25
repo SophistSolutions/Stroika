@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+#        ScriptsLib/CheckForLibrary LINKER LIB
+#
+# Example Usage:
+#        ScriptsLib/CheckForLibrary g++ brotlicommon  
+#
+# NOTE: ONLY WORKS ON UNIX (so far) - Linux and macosx)
+#
+CC=$1
+LIB=$2
+
+TMPFILE=`mktemp`
+TMPDIR=`dirname $TMPFILE`
+cd $TMPDIR
+"$CC" -l$LIB 2> $TMPFILE | true
+echo TMPFILE=$TMPFILE
+#rm -f $TMPFILE
+CHECK=`cat $TMPFILE | grep -i 'not found' | grep $LIB`
+if [ "$CHECK" == "" ]; then
+    exit 0;
+else
+    exit 1;
+fi
