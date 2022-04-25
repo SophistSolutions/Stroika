@@ -108,3 +108,11 @@
    ...
    fun:OSSL_PROVIDER_load
 }
+{
+   https://stroika.atlassian.net/browse/STK-903
+   Helgrind:Misc
+   obj:/usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
