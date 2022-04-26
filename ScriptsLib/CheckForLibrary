@@ -18,7 +18,10 @@ TMPFILE=`mktemp`
 TMPDIR=`dirname $TMPFILE`
 cd $TMPDIR
 "$CC" -l$LIB 2> $TMPFILE | true
-CHECK=`cat $TMPFILE | grep -i 'not found' | grep $LIB`
+## sometimes cannot find -lbrotlicommon: No such file or directory, sometimes 'not found'
+CHECK=`cat $TMPFILE | grep -i 'no' | grep $LIB`
+#cat $TMPFILE
+rm -f $TMPFILE
 if [ "$CHECK" == "" ]; then
     echo 'true'
     exit 0
@@ -26,4 +29,3 @@ else
     echo 'false'
     exit 1
 fi
-rm -f $TMPFILE
