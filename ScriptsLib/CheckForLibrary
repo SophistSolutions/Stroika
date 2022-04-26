@@ -18,7 +18,6 @@ TMPFILE=`mktemp`
 TMPDIR=`dirname $TMPFILE`
 cd $TMPDIR
 "$CC" -l$LIB 2> $TMPFILE | true
-echo TMPFILE=$TMPFILE
 CHECK=`cat $TMPFILE | grep -i 'not found' | grep $LIB`
 if [ "$CHECK" == "" ]; then
     echo 'true'
