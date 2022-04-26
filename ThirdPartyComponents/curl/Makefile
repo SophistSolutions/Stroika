@@ -199,7 +199,7 @@ ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 #
 # BUT THEN got cross-compiling for raspberry pi on Ubuntu 22.04, so try a more sophisticated check
 ifneq ($(Linker),)
-ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary $(Linker) brotlicommon),)
+ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(Linker) $(EXTRA_PREFIX_LINKER_ARGS) $(EXTRA_SUFFIX_LINKER_ARGS)" brotlicommon),false)
 LIBCURL_CONFIGURE += --without-brotli
 endif
 endif

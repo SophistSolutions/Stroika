@@ -17,7 +17,7 @@ LIB=$2
 TMPFILE=`mktemp`
 TMPDIR=`dirname $TMPFILE`
 cd $TMPDIR
-"$CC" -l$LIB 2> $TMPFILE | true
+$CC -l$LIB 2> $TMPFILE | true
 ## sometimes cannot find -lbrotlicommon: No such file or directory, sometimes 'not found'
 CHECK=`cat $TMPFILE | grep -i 'no' | grep $LIB`
 #cat $TMPFILE
