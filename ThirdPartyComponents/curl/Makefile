@@ -173,7 +173,7 @@ LIBCURL_CONFIGURE += --enable-optimize
 LIBCURL_CONFIGURE += --disable-curldebug
 endif
 
-ifeq ($(DETECTED_HOST_OS), Darwin)
+ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 # https://stroika.atlassian.net/browse/STK-759
 ### On M1 Mac (even if running under rosetta) - really just one mac tested - 
 ### Get error:
@@ -197,8 +197,11 @@ ifeq ($(DETECTED_HOST_OS), Darwin)
 #			_brotli_init_writer in lto.o
 #		ld: symbol(s) not found for architecture x86_64
 #
-ifeq ($(ARCH), x86_64)
+# BUT THEN got cross-compiling for raspberry pi on Ubuntu 22.04, so try a more sophisticated check
+ifneq ($(Linker),)
+ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary $(Linker) brotlicommon),)
 LIBCURL_CONFIGURE += --without-brotli
+endif
 endif
 endif
 

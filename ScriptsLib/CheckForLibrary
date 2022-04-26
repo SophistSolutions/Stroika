@@ -7,6 +7,10 @@
 #
 # NOTE: ONLY WORKS ON UNIX (so far) - Linux and macosx)
 #
+#   Based on ideas from
+#       https://stackoverflow.com/questions/18900855/how-to-work-with-external-libraries-when-cross-compiling
+#   NOTE: the suggestsions about --print-sys-root etc dont really work well for clang (or at all for visual studio)
+#
 CC=$1
 LIB=$2
 
@@ -15,10 +19,12 @@ TMPDIR=`dirname $TMPFILE`
 cd $TMPDIR
 "$CC" -l$LIB 2> $TMPFILE | true
 echo TMPFILE=$TMPFILE
-#rm -f $TMPFILE
 CHECK=`cat $TMPFILE | grep -i 'not found' | grep $LIB`
 if [ "$CHECK" == "" ]; then
-    exit 0;
+    echo 'true'
+    exit 0
 else
-    exit 1;
+    echo 'false'
+    exit 1
 fi
+rm -f $TMPFILE
