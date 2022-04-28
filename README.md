@@ -1,4 +1,4 @@
-﻿# Stroika v2.1
+﻿# Stroika v3
 
 Stroika is a modern, portable, thread-savvy, C++ application framework. It makes writing high performance C++ applications easier by providing safe, flexible, modular building blocks which are easily combined.
 
