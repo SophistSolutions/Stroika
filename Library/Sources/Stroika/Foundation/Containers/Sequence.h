@@ -196,7 +196,7 @@ namespace Stroika::Foundation::Containers {
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison equality (==, <=> etc) - IFF equal_to (for ==/!=) and three_way_comparer<> (for the rest are defined
      *        o using EqualsComparer = typename Iterable<T>::template SequentialEqualsComparer<T_EQUALS_COMPARER>;
      *        o using ThreeWayComparer = typename Iterable<T>::template SequentialThreeWayComparer<T_EQUALS_COMPARER>;

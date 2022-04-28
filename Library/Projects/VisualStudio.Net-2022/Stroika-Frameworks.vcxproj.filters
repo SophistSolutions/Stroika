@@ -106,9 +106,6 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.inl">
       <Filter>WebServer</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ToDo.md">
-      <Filter>WebServer</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.inl">
       <Filter>WebService</Filter>
     </None>
@@ -240,6 +237,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\InstrumentHelpers.inl">
       <Filter>System-Performance\Support</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ToDo.md">
+      <Filter>System-Performance</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

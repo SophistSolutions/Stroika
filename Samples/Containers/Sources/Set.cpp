@@ -11,6 +11,7 @@
 // Not generally included, but you can include these if you want to select a particular backend implementation
 #include "Stroika/Foundation/Containers/Concrete/Set_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Set_stdset.h"
+#include "Stroika/Foundation/Containers/SortedSet.h"
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 
@@ -54,6 +55,16 @@ namespace {
             if (s.Contains (5)) {
                 Assert (false);
             }
+        }
+    }
+    void SetWithExplicitComparer_ ()
+    {
+        {
+            using Characters::String;
+            SortedSet<String> tmp{String::LessComparer{Characters::CompareOptions::eCaseInsensitive}, {L"a", L"b", L"A"}};
+            Assert (tmp.size () == 2);
+            Assert (tmp.Contains (L"A"));
+            Assert (tmp.Contains (L"B"));
         }
     }
 }

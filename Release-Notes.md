@@ -7,6 +7,194 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1r9 {2022-04-28}
+
+#### TLDR
+
+- Support Ubuntu 22.04 (LTS), g++12, clang++14
+- Documentation
+- Several minor API cleanups/deprecations (e.g. DNS::Default -> DNS::sThe, Memoizer use operator() syntax)
+- Reviewed my private todo file and closed everything or moved it to https://stroika.atlassian.net
+
+#### Change Details
+
+- Documentation
+  - merged Coding Conventions.md into Design Document.md and related cleanups
+  - more design overview docs
+  - docs on http server
+  - major cleanup to thread safety docs, changing many of the names of classifications and rolling together many duplicates
+  - ugprade Stroika version docs
+  - docs about Syncronized and upgradelocks
+- Compiler and System Compatability
+  - ubuntu 22.04 support
+    - Docker containers, github actions, and new compiler support
+    - g++12
+    - clang++14
+  - VS 17.1.4 and 16.11.12 in docker containers
+- Build System
+  - lose makefile deprecated StroikaLinkerSuffixArgs StroikaLinkerPrefixArgs
+  - new ScriptsLib/CheckForLibrary, and used to cleanup curl makefile so works for ubuntu 22.04 cross compile and better on macos
+    to address https://stroika.atlassian.net/browse/STK-759 on raspberrypi
+- Library
+  - Overall
+    - no longer use std::iterator<> - deprecated
+    - avoid c++ 20 deprecation warning (ATOMIC_FLAG_INIT)
+    - cosmetic code cleanups (uniform initialization mostly)
+  - Foundation
+    - Cache
+      - (not backward compat) - Memoizer uses function call syntax - operator() now instead of .Compute()
+    - Characters
+      - renamed String::Match() to String::Matches() - not backward compatible, but better name just before public release
+      - added nearly useless (helpful for some template cases) but harmless template <> String String::As () const;
+    - Configuration
+      - fixed version# for GLIBCXX_11x_ - for ubuntu 22.04
+    - Containers
+      - Comments and simplified implementation of Bijection<DOMAIN_TYPE, RANGE_TYPE>::Where()
+      - https://stroika.atlassian.net/browse/STK-154 - regtests and samples for explicit sort function in SortedSet
+    - Execution
+      - ProcessRunner - https://stroika.atlassian.net/browse/STK-148 - fixed so throws on fail of process on unix too (if no process-return-value optional parameter provided - as with windows)
+    - Networking
+      - cosmetic/naming cleanup URI code
+      - IO::Network::HTTP::Headers missing fHost from Collection<KeyValuePair<String, String>> Headers::As () const
+      - deprecated DNS::Default() and replaced wtih DNS::kThe (and other small related cleanups)
+    - Traversal
+      - https://stroika.atlassian.net/browse/STK-690 a couple  more places to use move on iterators
+- RegressionTests and Sanitizers
+  - fixed suppression line for helgrind in regtests for apps
+  - Added https://stroika.atlassian.net/browse/STK-717 BWA in configure - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy - since still appears buggy there
+    appars BOTH tsan and valgrind bug manifestations occur.
+  - workaround https://stroika.atlassian.net/browse/STK-903 helgrind issue
+  - Comments about regtest failures and made one not real failure into a warning
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13 }
+  - MSVC: { 15.9.41, 16.11.11, 17.1.4 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Monterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 21.10, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+
+---
+
+### 2.1r8 {2022-04-05}
+
+#### TLDR
+
+-  Added DataExchange::InternetMediaTypes::kJavascript - and added it to default InternetMediaTypeRegistry
+
+#### Change Details
+
+- Library
+  -  Added DataExchange::InternetMediaTypes::kJavascript - and added it to default InternetMediaTypeRegistry
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13; XCode: 13 }
+  - MSVC: { 15.9.41, 16.11.11, 17.1.1 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Monterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 21.10], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+
+---
+
+### 2.1r7 {2022-04-01}
+
+#### TLDR
+
+- Deprecate Math::Overlap and docs/cleanups to Range
+
+#### Change Details
+
+- Library
+  - Deprecate Math::Overlap and docs/cleanups to Range
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13; XCode: 13 }
+  - MSVC: { 15.9.41, 16.11.11, 17.1.1 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Monterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 21.10], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+
 ---
 
 ### 2.1r6 {2022-03-29}

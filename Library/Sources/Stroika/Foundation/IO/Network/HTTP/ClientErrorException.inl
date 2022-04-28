@@ -32,7 +32,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
             return f ();
         }
         catch (...) {
-            Execution::Throw (ClientErrorException (current_exception ()));
+            Execution::Throw (ClientErrorException{current_exception ()});
         }
     }
 

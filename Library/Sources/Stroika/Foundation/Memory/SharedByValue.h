@@ -49,7 +49,11 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename T, typename SHARED_IMLP = shared_ptr<T>, typename COPIER = SharedByValue_CopyByDefault<T, SHARED_IMLP>>
     struct SharedByValue_Traits {
-        using element_type        = T;
+        using element_type = T;
+
+        /**
+         *  Note that the COPIER can ASSERT externally synchronized, and doesnt need to syncronize itself.
+         */
         using element_copier_type = COPIER;
         using shared_ptr_type     = SHARED_IMLP;
     };
@@ -88,6 +92,13 @@ namespace Stroika::Foundation::Memory {
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     * 
+     *          Understand that this works because SharedByValue objects are really shared_ptr, but with copy by value semantics.
+     *          C++-Standard-Thread-Safety means that the envelope is always safe because its just following standard c++
+     *          rules for copying the shared_ptr.
+     * 
+     *          And copying the indirected shared_ptr is always safe because the ONLY time anyone can ever MODIFY
+     *          an object is if the shared_count == 1 (so no other threads using it).
      *
      *  \note   Design choice: embed fCopier into instance
      *          vs. just constructing the object on the fly the way we do for comparison functions like std::less<T> {} etc.
@@ -97,15 +108,18 @@ namespace Stroika::Foundation::Memory {
      *          the instance (I can think of no use case for this) - very tricky unless embedded.
      * 
      *          PRO NOT EMBED: Simpler todo access functions (default parameter instead of overload passing fCopier).
-     *          For now - go with more flexible approach since no much more complex to implement.
+     *          For now - go with more flexible approach since not much more complex to implement.
      * 
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Only comparison (operator==/!=) with nullptr is supported.
      *
      *      Earlier versions of Stroika (before 2.1a5) supported operator==(SharedByValue) - and this kind of makes sense
      *      but is a little ambiguous if its measuring pointer (shared reference) equality or actual value equality.
      *
      *      Better to let the caller use opeartor<=> on cget() or *cget() to make clear their intentions.
+     * 
+     *  TODO:
+     *      @todo https://stroika.atlassian.net/browse/STK-798 - review docs and threadsafety
      */
     template <typename T, typename TRAITS = SharedByValue_Traits<T>>
     class SharedByValue {

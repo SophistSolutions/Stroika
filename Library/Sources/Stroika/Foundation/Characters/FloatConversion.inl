@@ -169,6 +169,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         template <typename RETURN_TYPE>
         RETURN_TYPE ToFloat_ViaStrToD_ (const char* start, const char* end, const char** remainder)
         {
+            Require (start <= end);
             if (start == end) {
                 if (remainder != nullptr) {
                     *remainder = start;
@@ -212,6 +213,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         template <typename RETURN_TYPE>
         RETURN_TYPE ToFloat_ViaStrToD_ (const wchar_t* start, const wchar_t* end, const wchar_t** remainder)
         {
+            Require (start <= end);
             if (start == end) {
                 if (remainder != nullptr) {
                     *remainder = start;
@@ -462,6 +464,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     template <typename T>
     T ToFloat (const char* start, const char* end)
     {
+        Require (start <= end);
         T result; // intentionally uninitialized
         if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy or qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
             result = Private_::ToFloat_ViaStrToD_<T> (start, end, nullptr);
@@ -500,6 +503,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     template <typename T>
     T ToFloat (const wchar_t* start, const wchar_t* end)
     {
+        Require (start <= end);
         T result; // intentionally uninitialized
         if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy or qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
             result = Private_::ToFloat_ViaStrToD_<T> (start, end, nullptr);
@@ -559,6 +563,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     template <typename T>
     inline T ToFloat (const wchar_t* start, const wchar_t* end, const wchar_t** remainder)
     {
+        Require (start <= end);
         RequireNotNull (remainder);
         T result; // intentionally uninitialized
         if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy or qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {

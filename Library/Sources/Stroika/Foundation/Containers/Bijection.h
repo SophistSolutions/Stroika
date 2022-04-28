@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Containers {
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   operator== and operator!= are supported
      *      o   All Bijections MUST have = comparable DOMAIN_TYPE and RANGE_TYPE, so operator== for the bijection is well-defined.
      *
@@ -329,6 +329,9 @@ namespace Stroika::Foundation::Containers {
         nonvirtual Iterable<DomainType> InverseMap (const Iterable<RangeType>& values) const;
 
     public:
+        /**
+         * \brief Like Iterable<T>::Where, but returning a bijection - subset of this bijection where includeIfTrue is true
+         */
         nonvirtual Bijection Where (const function<bool (pair<DomainType, RangeType>)>& includeIfTrue) const;
 
     public:

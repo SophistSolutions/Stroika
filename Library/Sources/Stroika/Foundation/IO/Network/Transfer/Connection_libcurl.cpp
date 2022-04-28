@@ -83,7 +83,7 @@ namespace {
             // @todo - not sure how todo this - except by defining new conditions
             //switch (ev) {
             //}
-            return error_condition (errc::bad_message); // no idea what to return here
+            return error_condition{errc::bad_message}; // no idea what to return here
         }
         virtual string message (int ccode) const override
         {
@@ -214,7 +214,7 @@ void Connection_LibCurl::Rep_::SetAuthorityRelativeURL_ (const URI& url)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"Connection_LibCurl::Rep_::SetAuthorityRelativeURL_ (%s)", Characters::ToString (url).c_str ());
 #endif
-    URI newURL = url;
+    URI newURL = url; // almost but not quite the same as fURL_.Combine (url)
     newURL.SetScheme (fURL_.GetScheme ());
     newURL.SetAuthority (fURL_.GetAuthority ());
     if (fCurlHandle_ != nullptr) {

@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Time {
      *
      *  @see https://msdn.microsoft.com/en-us/library/system.timezone(v=vs.110).aspx
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *          o   comparison of < not 100% intuitive, but unambiguous, so these can be compared (by numeric value of flags/offets).
      */

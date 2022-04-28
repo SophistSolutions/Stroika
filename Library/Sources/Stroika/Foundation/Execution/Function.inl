@@ -21,9 +21,9 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename FUNCTION_SIGNATURE>
     template <typename CTOR_FUNC_SIG, enable_if_t<is_convertible_v<CTOR_FUNC_SIG, function<FUNCTION_SIGNATURE>> and not is_base_of_v<Function<FUNCTION_SIGNATURE>, Configuration::remove_cvref_t<CTOR_FUNC_SIG>>>*>
-    inline Function<FUNCTION_SIGNATURE>::Function (const CTOR_FUNC_SIG& f)
-        : fFun_ (STDFUNCTION (f)) // use non-uniform-initialzation convert to STDFUNCTION so we can get implicit conversions here
-        , fOrdering_{fFun_.template target<CTOR_FUNC_SIG> ()}
+    inline Function<FUNCTION_SIGNATURE>::Function (CTOR_FUNC_SIG&& f)
+        : fFun_{forward<CTOR_FUNC_SIG> (f)}
+        , fOrdering_{fFun_.template target<Configuration::remove_cvref_t<CTOR_FUNC_SIG>> ()}
     {
         Assert ((fOrdering_ == nullptr) == (fFun_ == nullptr));
     }

@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Memory {
      *          parametized (as it is with normal C++ allocators). Or maybe leave subclassing this STLAllocator<> as a way
      *          todo that? Thats probably good enuf...
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *          o   only operator== is defined, and is boring 
      *          @see https://en.cppreference.com/w/cpp/memory/allocator/operator_cmp
      */

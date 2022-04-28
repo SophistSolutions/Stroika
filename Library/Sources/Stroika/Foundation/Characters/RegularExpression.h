@@ -101,7 +101,6 @@ namespace Stroika::Foundation::Characters {
     inline const RegularExpression RegularExpression::kAny{L".*"sv};
 
     /**
-     * @todo DRAFT 2015-02-01
      */
     class RegularExpressionMatch {
     public:

@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Streams {
      *
      *  \note   Reading improperly encoded text may result in a RuntimeException indicating inproperly encoded characters.
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
     class TextReader : public InputStream<Character> {
     public:

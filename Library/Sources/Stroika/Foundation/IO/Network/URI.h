@@ -81,7 +81,7 @@ namespace Stroika::Foundation::IO::Network {
      *          This poses some difficulties for code that wants to update BOTH the authority and the path of a URI (which do you do first - tricky).
      *          But its easy enough to avoid by re-constructing the URI from scratch using the URI (individiaul components) constructor.
      *      
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     class URI : private Debug::AssertExternallySynchronizedMutex {
@@ -249,7 +249,7 @@ namespace Stroika::Foundation::IO::Network {
          *  If return type is String, it will THROW when the path is not an absolute path.
          *
          *  In either case, the special case of GetPath ().empty () will be treated as '/'.
-         *
+         *  So in either case, if a string is returned, its length always >= 1.
          */
         template <typename RETURN_VALUE = String>
         nonvirtual RETURN_VALUE GetAbsPath () const;
@@ -318,8 +318,10 @@ namespace Stroika::Foundation::IO::Network {
          *  Note - one special case - if the source URI is empty (if !u) - then just return the argument URI as the result (avoiding
          *  issues with having to always check if the source URI has a scheme. NOT - if you pass in a BAD src URI as 'this' - one without
          *  a scheme for example - you still get an exception thrown.
+         * 
+         *  \note *this is the 'baseURL' which the argument 'overrides' bits of (or all of).
          */
-        nonvirtual URI Combine (const URI& uri) const;
+        nonvirtual URI Combine (const URI& overridingURI) const;
 
     public:
         /**

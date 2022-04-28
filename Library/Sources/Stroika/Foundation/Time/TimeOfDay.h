@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Time {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     class TimeOfDay {

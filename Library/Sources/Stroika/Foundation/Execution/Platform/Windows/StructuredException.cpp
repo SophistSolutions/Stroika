@@ -39,7 +39,7 @@ namespace {
             // @todo - not sure how todo this - except by defining new conditions
             //switch (ev) {
             //}
-            return error_condition (errc::bad_message); // no idea what to return here
+            return error_condition{errc::bad_message}; // no idea what to return here
         }
         virtual string message (int u) const override
         {

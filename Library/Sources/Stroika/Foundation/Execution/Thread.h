@@ -320,7 +320,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \see    Thread::CleanupPtr
          *
-         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a>
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
          */
         class Ptr : private Debug::AssertExternallySynchronizedMutex {
         private:
@@ -902,6 +902,11 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   Unlike std::thread, a Stroika Thread is not started automatically (unless you pass eAutoStart as a constructor argument),
          *          and it can run in the background after the Thread has gone out of scope (std::thread you can do this but must call detach).
+         *
+         *  \par Example Usage
+         *      \code
+         *          Thread::New ([r]() { r->Run (); }, Thread::eAutoStart);     // runs arg to completion then thread destroyed. New returns once thread created
+         *      \endcode
          *
          *  \par Example Usage
          *      \code

@@ -120,7 +120,7 @@ URI URI::Parse (const String& rawURL)
         return nullopt;
     };
     (void)rawURL.AsASCII (); // for throw check side-effect
-    if (rawURL.Match (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
+    if (rawURL.Matches (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
         return URI{emptyStr2Missing (scheme), Authority::Parse (authority.value_or (String{})), UniformResourceIdentification::PCTDecode2String (path.value_or (String{})), emptyStr2Missing (query), emptyStr2Missing (fragment)};
     }
     else {
@@ -211,7 +211,7 @@ String URI::GetAuthorityRelativeResourceDir () const
     shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
     static const RegularExpression                       kSelectDir_ = L"(.*\\/)[^\\/]*"_RegEx;
     optional<String>                                     baseDir;
-    (void)fPath_.Match (kSelectDir_, &baseDir);
+    (void)fPath_.Matches (kSelectDir_, &baseDir);
     return baseDir.value_or (String{});
 }
 
@@ -264,7 +264,7 @@ void URI::CheckValidPathForAuthority_ (const optional<Authority>& authority, con
     }
 }
 
-URI URI::Combine (const URI& uri) const
+URI URI::Combine (const URI& overridingURI) const
 {
     shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
 
@@ -279,7 +279,7 @@ URI URI::Combine (const URI& uri) const
      *      }
      */
     if (not *this) {
-        return uri;
+        return overridingURI;
     }
 
     /*
@@ -297,7 +297,7 @@ URI URI::Combine (const URI& uri) const
         }
         static const RegularExpression kSelectDir_ = L"(.*\\/)[^\\/]*"_RegEx;
         optional<String>               baseDir;
-        (void)base.Match (kSelectDir_, &baseDir);
+        (void)base.Matches (kSelectDir_, &baseDir);
         return baseDir.value_or (String{}) + rhs;
     };
 
@@ -316,37 +316,37 @@ URI URI::Combine (const URI& uri) const
      *       undefine(R.scheme);
      *    endif;
      */
-    if (uri.GetScheme ()) {
-        result.SetScheme (uri.GetScheme ());
-        result.SetAuthority (uri.GetAuthority ());
-        result.SetPath (remove_dot_segments_ (uri.GetPath ()));
-        result.SetQuery (uri.GetQuery<String> ());
+    if (overridingURI.GetScheme ()) {
+        result.SetScheme (overridingURI.GetScheme ());
+        result.SetAuthority (overridingURI.GetAuthority ());
+        result.SetPath (remove_dot_segments_ (overridingURI.GetPath ()));
+        result.SetQuery (overridingURI.GetQuery<String> ());
     }
     else {
         result.SetScheme (baseURI.GetScheme ());
-        if (uri.GetAuthority ()) {
-            result.SetAuthority (uri.GetAuthority ());
-            result.SetPath (remove_dot_segments_ (uri.GetPath ()));
-            result.SetQuery (uri.GetQuery<String> ());
+        if (overridingURI.GetAuthority ()) {
+            result.SetAuthority (overridingURI.GetAuthority ());
+            result.SetPath (remove_dot_segments_ (overridingURI.GetPath ()));
+            result.SetQuery (overridingURI.GetQuery<String> ());
         }
         else {
             result.SetAuthority (baseURI.GetAuthority ());
-            if (uri.GetPath ().empty ()) {
+            if (overridingURI.GetPath ().empty ()) {
                 result.SetPath (baseURI.GetPath ());
-                result.SetQuery (uri.GetQuery<String> () ? uri.GetQuery<String> () : baseURI.GetQuery<String> ());
+                result.SetQuery (overridingURI.GetQuery<String> () ? overridingURI.GetQuery<String> () : baseURI.GetQuery<String> ());
             }
             else {
-                if (uri.GetPath ().StartsWith (L"/")) {
-                    result.SetPath (remove_dot_segments_ (uri.GetPath ()));
+                if (overridingURI.GetPath ().StartsWith (L"/")) {
+                    result.SetPath (remove_dot_segments_ (overridingURI.GetPath ()));
                 }
                 else {
-                    result.SetPath (remove_dot_segments_ (merge (baseURI.GetPath (), uri.GetPath ())));
+                    result.SetPath (remove_dot_segments_ (merge (baseURI.GetPath (), overridingURI.GetPath ())));
                 }
-                result.SetQuery (uri.GetQuery<String> ());
+                result.SetQuery (overridingURI.GetQuery<String> ());
             }
         }
     }
-    result.SetFragment (uri.GetFragment ());
+    result.SetFragment (overridingURI.GetFragment ());
     return result;
 }
 

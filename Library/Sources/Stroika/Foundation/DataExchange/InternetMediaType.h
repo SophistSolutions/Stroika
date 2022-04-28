@@ -40,7 +40,7 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  \note The 'tree' is just merged into the 'subtype'
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      *
      *          NO GUARANTEE about the meaning of the ordering? for now. May use atom ordering

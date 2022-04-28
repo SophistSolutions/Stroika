@@ -65,6 +65,9 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
         {InternetMediaTypes::kHTML, OverrideRecord{nullopt,
                                                    Containers::Set<String>{L".htm"sv, L".html"sv},
                                                    L".htm"sv}},
+        {InternetMediaTypes::kJavascript, OverrideRecord{nullopt,
+                                                         Containers::Set<String>{L".js"sv},
+                                                         L".js"sv}},
         {InternetMediaTypes::kJSON, OverrideRecord{nullopt,
                                                    Containers::Set<String>{L".json"sv},
                                                    L".json"sv}},
@@ -254,8 +257,8 @@ shared_ptr<InternetMediaTypeRegistry::IBackendRep> InternetMediaTypeRegistry::De
 #if qPlatform_Windows
     return WindowsRegistryDefaultBackend ();
 #endif
-    // not sure how to tell if this works - @todo - FIX - need to avoid this on macos somehow...
-    if (filesystem::exists ("/usr/share/mime")) {
+    // @todo fix for MacOS - which doesn't support these - https://stroika.atlassian.net/browse/STK-795
+    if (filesystem::exists ("/usr/share/mime"sv)) {
         try {
             return UsrSharedDefaultBackend ();
         }
@@ -263,8 +266,7 @@ shared_ptr<InternetMediaTypeRegistry::IBackendRep> InternetMediaTypeRegistry::De
             // LOG/WRN
         }
     }
-    // not sure how to tell if this works - @todo - FIX - need to avoid this on macos somehow...
-    if (filesystem::exists ("/etc/mime.types")) {
+    if (filesystem::exists ("/etc/mime.types"sv)) {
         try {
             return EtcMimeTypesDefaultBackend ();
         }

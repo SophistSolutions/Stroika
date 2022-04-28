@@ -173,7 +173,7 @@ void Connection_WinHTTP::Rep_::SetTimeout (DurationSecondsType timeout)
 
 void Connection_WinHTTP::Rep_::SetAuthorityRelativeURL_ (const URI& url)
 {
-    URI newURL = url;
+    URI newURL = url; // almost but not quite the same as fURL_.Combine (url)
     newURL.SetScheme (fURL_.GetScheme ());
     newURL.SetAuthority (fURL_.GetAuthority ());
     if (fURL_ != url) {

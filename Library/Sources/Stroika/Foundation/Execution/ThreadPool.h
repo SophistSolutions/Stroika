@@ -129,8 +129,8 @@ namespace Stroika::Foundation::Execution {
          *
          *  \par Example Usage
          *      \code
-         *      ThreadPool p;
-         *      p.AddTask ([] () {doIt ();});
+         *          ThreadPool p;
+         *          p.AddTask ([] () {doIt ();});
          *      \endcode
          *
          *  \note   Design Note:

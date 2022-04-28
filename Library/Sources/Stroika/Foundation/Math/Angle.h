@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Math {
     public:
         /**
          *
-         *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+         *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
          *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
          *      o   partial_ordering because floating point admits only partial ordering.
          *      

@@ -72,8 +72,8 @@
 #if (__clang_major__ < 6) || (__clang_major__ == 6 && (__clang_minor__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to clang++ 6 (non-apple); note that Stroika v2.0 supports clang3.9, clang4, and clang5"
 #endif
-#if (__clang_major__ > 13) || (__clang_major__ == 13 && (__clang_minor__ > 0))
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - (>13.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#if (__clang_major__ > 14) || (__clang_major__ == 14 && (__clang_minor__ > 0))
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - (>14.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #endif
@@ -83,7 +83,7 @@
 #if __GNUC__ < 10
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v3 does not support versions prior to GCC 10 (v2.1 supports g++7 and later, v2.0 supports g++5 and g++6 and g++-7)"
 #endif
-#if __GNUC__ > 11 || (__GNUC__ == 11 && (__GNUC_MINOR__ > 2))
+#if __GNUC__ > 12 || (__GNUC__ == 12 && (__GNUC_MINOR__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -175,7 +175,9 @@ foo.cpp:
 //#define GLIBCXX_10x_ 20200930
 #define GLIBCXX_10x_ 20210408
 //#define GLIBCXX_11x_ 20210427
-#define GLIBCXX_11x_ 20210923
+//#define GLIBCXX_11x_ 20210923
+// this version of g++11 lib from ubuntu 22.04
+#define GLIBCXX_11x_ 20220324
 
 /*
  *
@@ -411,6 +413,7 @@ in enable_if_t's, but may not need this anymore
 #define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
 // broken in clang++-13
+// appears fixed in clang++14
 #define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #else
 #define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy 0
@@ -444,7 +447,6 @@ make[3]: *** [/Sandbox/Str
 #elif defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
 #elif defined(__clang__) && !defined(__APPLE__)
-// broken in clang++-13
 #define qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
 #else
 #define qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy 0
@@ -669,7 +671,8 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 // VERIFIED BROKEN IN GCC 10.0
 // VERIFIED BROKEN IN GCC 10.2
 // VERIFIED BROKEN IN GCC 11
-#define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
+// VERIFIED BROKEN IN GCC 12
+#define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
 #else
 #define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy 0
 #endif
@@ -772,8 +775,11 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
  *      but libstdc++ doesn't appear to support the leading zero.
  */
 #ifndef qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
-#if defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_11x_
-#define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 1
+#if defined(__clang_major__) && __clang_major__ >= 14
+#define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 0
+#elif defined(__GLIBCXX__)
+// Crazy, but seems broken on older libg++, and fixed in 20220319, and then broken again in 20220324 - at least on Ubuntu 22.04
+#define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy ((__GLIBCXX__ < 20220319) || (__GLIBCXX__ == 20220324))
 #else
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 0
 #endif
@@ -1024,6 +1030,7 @@ In file included from Namespace.cpp:10:
 // broken in clang++-11
 // broken in clang++-12
 // broken in clang++-13
+// appears fixed in clang++-14
 #define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #else
 #define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy 0
@@ -1145,10 +1152,16 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 #elif defined(__clang__) && defined(__APPLE__)
 // according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
 #define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
+#elif defined(__clang__) && !defined(__APPLE__) && defined(_LIBCPP_VERSION)
+// according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
+// appears still broken in clang++13 (maybe should depend on stdlib version not compiler version)
+// appears fixed in clang++14 (or maybe SB depending on libversion)
+#define qCompilerAndStdLib_to_chars_FP_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 14000))
 #elif defined(__clang__) && !defined(__APPLE__)
 // according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
 // appears still broken in clang++13 (maybe should depend on stdlib version not compiler version)
-#define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
+// appears fixed in clang++14 (or maybe SB depending on libversion)
+#define qCompilerAndStdLib_to_chars_FP_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 13))
 #else
 #define qCompilerAndStdLib_to_chars_FP_Buggy 0
 #endif
@@ -1191,7 +1204,11 @@ int main ()
     return 0;
 }*/
 #ifndef qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
-#if defined(__GLIBCXX__)
+
+#if defined(_LIBCPP_VERSION)
+// Appears still buggy in 14.0 clang libc++ on ubuntu 22.04 (doesnt compile)
+#define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 14000))
+#elif defined(__GLIBCXX__)
 // according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11 (library so affects clang too if built with glibc)
 #define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GLIBCXX__ <= GLIBCXX_11x_)
 #else
@@ -1206,7 +1223,8 @@ int main ()
 #define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
 // appears still broken in clang++-13
-#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
+// appears still broken in clang++-14
+#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
 #define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy 0
 #endif
@@ -1294,7 +1312,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // still broken in clang++-11
 // still broken in clang++-12
 // still broken in clang++-13
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
+// still broken in clang++-14
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(_MSC_VER)
 // verified still broken in _MSC_VER_2k19_16Pt0_
 // verified still broken in _MSC_VER_2k19_16Pt1_
@@ -1336,7 +1355,8 @@ Test.cpp:173:31: error: template template argument has different template parame
 // verified still broken in clang++-11
 // verified still broken in clang++-12
 // verified still broken in clang++-13
-#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
+// verified still broken in clang++-14
+#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy 0
 #endif
@@ -1371,7 +1391,8 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 // Broken in _LIBCPP_VERSION  11000
 // Broken in _LIBCPP_VERSION  12000
 // Broken in _LIBCPP_VERSION  13000
-#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 13000))
+// Broken in _LIBCPP_VERSION  14000
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 14000))
 #else
 #define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy 0
 #endif
@@ -1650,6 +1671,7 @@ WARNING: ThreadSanitizer: double lock of a mutex (pid=2575509)
 #define qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt1_)
 #elif defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC 11
+// appears fixed in GCC 12
 #define qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
 #else
 #define qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy 0

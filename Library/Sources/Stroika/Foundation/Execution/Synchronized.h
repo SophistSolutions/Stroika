@@ -217,8 +217,22 @@ namespace Stroika::Foundation::Execution {
      *          have no read locks - all locks write locks).
      *
      *          So ONLY support operator-> const overload (brevity and more common than for write). To write - use rwget().
+     * 
+     *  \note Upgrading a shared_lock to a full lock
+     *        We experimented with using boost upgrade_lock code to allow for a full upgrade capability, but this intrindically
+     *        can (easily) yield deadlocks (e.g. thread A holds read lock and tries to upgrade, while thread B holds shared_lock
+     *        and waits on something from thread A), and so I decided to abandon this approach.
+     * 
+     *        Instead, just have upgradeLock release the shared_lock, and re-acquire the mutex as a full lock. BUT - this has problems
+     *        too. Typically - you compute something with the shared_lock and notice you want to commit a change, and so upgrade to get
+     *        the full lock. But when you do the upgrade, someone else could sneak in and do the same thing invalidating your earlier
+     *        computation.
+     * 
+     *        So - the Upgrade lock APIS have the word "NON_ATOMICALLY" in the name to emphasize this issue, and either return a boolean
+     *        indicating failure, or take a callback that gets notified of the need to recompute the cached value/data.
+     * 
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *          (but these are ONLY defined if TRAITS::kIsRecursiveReadMutex)
      */

@@ -186,27 +186,32 @@ TextImager::HilightMarker::HilightMarker ()
  ********************************************************************************
  */
 TextImager::TextImager ()
-    : fTextStore (nullptr)
-    , fDefaultFont (GetStaticDefaultFont ())
-    , fForceAllRowsShowing (true)
-    , fImageUsingOffscreenBitmaps (qUseOffscreenBitmapsToReduceFlicker)
-    , fHScrollPos (0)
-    , fSuppressGoalColumnRecompute (false)
-    , fSelectionGoalColumn (TWIPS{0})
-    , fUseEOLBOLRowHilightStyle (true)
-    , fSelectionShown (false)
-    , fWindowRect (Led_Rect (0, 0, 0, 0))
-    , fHiliteMarker (nullptr)
-    , fWeAllocedHiliteMarker (false)
-    ,
-    //  fDefaultColorIndex (),
-    fCachedFontSpec ()
-    , fCachedFontInfo ()
+    : fTextStore{nullptr}
+    , fDefaultFont{GetStaticDefaultFont ()}
+    , fForceAllRowsShowing{true}
+    , fImageUsingOffscreenBitmaps{qUseOffscreenBitmapsToReduceFlicker}
+    , fHScrollPos{0}
+    , fSuppressGoalColumnRecompute{false}
+    , fSelectionGoalColumn{TWIPS{0}}
+    , fUseEOLBOLRowHilightStyle{true}
+    , fSelectionShown{false}
+    , fWindowRect{Led_Rect{0, 0, 0, 0}}
+    , fHiliteMarker{nullptr}
+    , fWeAllocedHiliteMarker{false}
+    //,  fDefaultColorIndex{},
+    , fCachedFontSpec{}
+    , fCachedFontInfo{}
     ,
 #if qPlatform_Windows
-    fCachedFont (nullptr)
+    fCachedFont
+{
+    nullptr
+}
 #else
-    fCachedFontValid (false)
+    fCachedFontValid
+{
+    false
+}
 #endif
 {
     for (Color** i = &fDefaultColorIndex[0]; i < &fDefaultColorIndex[eMaxDefaultColorIndex]; ++i) {

@@ -18,13 +18,6 @@
  *
  *
  *  TODO:
- *      @todo   Consider adding 'max-size' feature to Q. With this set, attempt to add item past
- *              max size would throw. This can be handy with stuff like blocking q? and probably
- *              other cases as well (when you don't want q to grow indefinitely).
- *
- *      @todo   Select carefully thoguht through principle descriptive documemtatnion (probably: HEAD/TAIL)
- *              and use that docuemntation PRINCIPLALLY THORUHGOUT THE API (and class docs).
- *
  *      @todo   trial balloon - EnqueueAll(CONTAINER), and Enqueue (STARTIT, ENDIT), enques
  *              items in order from start to end, so that when iterating over the resulting queue, you
  *              encounter the items in the order you added them. That makes EnqueueAll(CONTINER) as simple
@@ -72,7 +65,7 @@ namespace Stroika::Foundation::Containers {
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison equality (==, !=) support (iff <T> parameter has default equal_to<T> implementation)
      *      o   EqualsComparer provided as alias to SequentialEqualsComparer
      *          Two Queues are considered equal if they contain the same elements (by comparing them

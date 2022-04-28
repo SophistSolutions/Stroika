@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Containers {
      *
      * But default values don't show up when iterating.
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Same as DataHyperRectangle<> comparisons
      */
     template <typename T, typename... INDEXES>

@@ -32,3 +32,13 @@ So for exmaple, if upgrading from use of 2.0b23 to v2.1 (final release)
 - Upgrade to v2.1
 
 Each stage of upgrade should come with fairly clear instructions (deprecation warnings) about what API changes to make, or just recompile with no problems.
+
+## Writing code that works with multiple versions of Stroika
+
+~~~c++
+#if kStroika_Version_FullVersion <= Stroika_Make_FULL_VERSION (2, 1, kStroika_Version_Stage_ReleaseCandidate, 2, 1)
+  old_way();
+#else
+  new_way();
+#endif
+~~~

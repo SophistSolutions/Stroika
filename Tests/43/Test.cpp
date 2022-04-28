@@ -504,20 +504,20 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"Test4_DNS_::DoTests_"};
             {
-                DNS::HostEntry e = DNS::Default ().GetHostEntry (L"www.sophists.com");
+                DNS::HostEntry e = DNS::kThe.GetHostEntry (L"www.sophists.com");
                 VerifyTestResult (e.fCanonicalName.Contains (L".sophists.com"));
                 VerifyTestResult (e.fAddressList.size () >= 1);
             }
             {
-                DNS::HostEntry e = DNS::Default ().GetHostEntry (L"www.google.com");
+                DNS::HostEntry e = DNS::kThe.GetHostEntry (L"www.google.com");
                 VerifyTestResult (e.fAddressList.size () >= 1);
             }
             {
-                DNS::HostEntry e = DNS::Default ().GetHostEntry (L"www.cnn.com");
+                DNS::HostEntry e = DNS::kThe.GetHostEntry (L"www.cnn.com");
                 VerifyTestResult (e.fAddressList.size () >= 1);
             }
             {
-                optional<String> aaa = DNS::Default ().ReverseLookup (InternetAddress (23, 56, 90, 167));
+                optional<String> aaa = DNS::kThe.ReverseLookup (InternetAddress (23, 56, 90, 167));
                 DbgTrace (L"reverselookup %s", Memory::NullCoalesce (aaa).c_str ());
             }
         }

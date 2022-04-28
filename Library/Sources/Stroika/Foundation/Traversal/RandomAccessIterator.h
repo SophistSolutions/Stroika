@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Traversal {
 
     /**
      */
-    template <typename T, typename BASE_STD_ITERATOR = iterator<random_access_iterator_tag, T>>
+    template <typename T, typename BASE_STD_ITERATOR = DefaultIteratorTraits<random_access_iterator_tag, T>>
     class RandomAccessIterator : public BidirectionalIterator<T, BASE_STD_ITERATOR> {
     private:
         using inherited = Iterator<T, BASE_STD_ITERATOR>;

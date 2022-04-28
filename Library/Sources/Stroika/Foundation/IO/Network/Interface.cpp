@@ -333,7 +333,7 @@ namespace {
                         // frequently fails - cuz its a dns name
                     }
                     try {
-                        auto s = IO::Network::DNS::Default ().GetHostAddresses (*gateway);
+                        auto s = IO::Network::DNS::kThe.GetHostAddresses (*gateway);
                         if (not s.empty ()) {
                             return InternetAddress{s.Nth (0)};
                         }

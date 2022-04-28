@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Common {
      *
      *  Essentially the same as pair<VALUE_TYPE,COUNTER_TYPE> but with more clearly named data elements
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *      o   @todo COULD add EqualsComparer/ThreeWayComparer members which take explicit 'T' comparer argument
      */

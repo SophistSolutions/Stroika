@@ -56,7 +56,7 @@ namespace {
         void HandleMessage (Message* m)
         {
 #if qDefaultTracingOn
-            Debug::TimingTrace ttrc{L"FSRouterRep_::HandleMessage", .001}; // prelim - gather info on whether worht supporting ETAGs etc - why is this sometimes somewhat slow
+            Debug::TimingTrace ttrc{L"FSRouterRep_::HandleMessage", .001}; // prelim - gather info on whether worth supporting ETAGs etc - why is this sometimes somewhat slow
 #endif
             /*
              * @todo rewrite to incrementally copy file from stream, not read all into RAM
@@ -67,7 +67,7 @@ namespace {
             String           urlHostRelPath{ExtractURLHostRelPath_ (m)};
             filesystem::path fn{fFSRoot_ / filesystem::path{urlHostRelPath.As<wstring> ()}};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}...FileSystemRequestHandler...HandleMessage", L"relURL=%s, serving fn=%s", Characters::ToString (m->request ()->url ().GetAuthorityRelativeResource ()).c_str (), Characters::ToString (fn).c_str ())};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}...FileSystemRequestHandler...HandleMessage", L"relURL=%s, serving fn=%s", Characters::ToString (m->request ().url ().GetAuthorityRelativeResource ()).c_str (), Characters::ToString (fn).c_str ())};
 #endif
             try {
                 Response&              response = m->rwResponse ();
@@ -93,7 +93,7 @@ namespace {
         void ApplyCacheControl_ (Response& r, const String& urlRelPath) const
         {
             for (const auto& i : fCacheControlSettings) {
-                if (urlRelPath.Match (i.first)) {
+                if (urlRelPath.Matches (i.first)) {
                     r.rwHeaders ().cacheControl = i.second;
                     break; // just apply first
                 }

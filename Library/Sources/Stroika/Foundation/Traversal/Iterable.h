@@ -132,6 +132,8 @@ namespace Stroika::Foundation::Traversal {
      *      come from arbitrary, programatic sources (like a sequence of uncomputed random numbers). If you wish to capture something
      *      like an Iterable for later use, but don't want its value to change once you've captured it, consider using Collection<T> which is
      *      almost the same, but will make a copy of the data, and not allow it to change without preserve COW semantics.
+     * 
+     *      @todo https://stroika.atlassian.net/browse/STK-799 - CLEAR UP THESE DOCS!!!!
      *
      *  *Design Note*:
      *      Why does Iterable<T> contain a size () method?
@@ -160,7 +162,7 @@ namespace Stroika::Foundation::Traversal {
      *      sequence of numbers each time you make an iterate and run.
      *
      *  *Design Note*:
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *          Chose NOT to include an equal_to<Iterable<T>> partial specialization here, but instead duplicatively in
      *          each subclass, so that it could more easily be implemented efficiently (not a biggie), but more
      *          importantly because it doesn't appear to me to make sense so say that a Stack<T> == Set<T>, even if
@@ -501,6 +503,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief  Run the argument bool-returning function (or lambda) on each element of the
          *          container, and return an iterator pointing at the first element found true.
+         *          (or use First() to do same thing but return optional<>)
          *
          *  Take the given function argument, and call it for each element of the container. This is
          *  equivalent to:
@@ -535,6 +538,11 @@ namespace Stroika::Foundation::Traversal {
          *      \endcode
          *
          *  @see First () - often more handy
+         * 
+         *  \note - because the lifetime of the iterable must exceed that of the iterator, its generally unsafe to use Find()
+         *          on a temporary (except with the trick if (auto i = x().Find(...)) { ok to access i here cuz x() temporary
+         *          not destroyed yet).
+         * 
          *  \note Before Stroika 2.1b14, the overload taking just THAT_FUNCTION was called FindFirstThat, and used function<bool(T)> instead of a templated function.
          * 
          *  \note THAT_FUNTION type used to be hardwired to function<bool (ArgByValueType<T> item)>&, but now use template argument

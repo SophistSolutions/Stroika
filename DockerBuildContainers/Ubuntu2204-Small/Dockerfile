@@ -1,0 +1,61 @@
+FROM ubuntu:22.04
+
+# Get latest packages system, so can do installs
+RUN apt-get update
+
+RUN apt-get install -y build-essential
+
+# This hack is needed to avoid failure in apt-get install -y pkg-config for Ubuntu 20.04
+#https://serverfault.com/questions/949991/how-to-install-tzdata-on-a-ubuntu-docker-image
+#RUN apt-get install -y tzdata
+#RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && dpkg-reconfigure --frontend noninteractive tzdata
+
+# cuz you need this alot, like if something else missing; use NOPASSWD in sudoers file so this works, cuz hard
+# to get sudo/enter password working under docker; sb relatively safe cuz only for sudo group members from base os
+RUN apt-get install -y sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+#locale support not strictly required, but some regression tests depend on it
+#and as of Ubuntu 20.04 (prerelease) appears must be included for other apt-get install programs to complete
+RUN apt-get install -y locales && locale-gen en_US en_US.UTF-8
+
+# docker build fails without extra update for some reason? --LGP 2022-04-18
+RUN apt-get update
+
+# Used to unpack sources for lzma SDK
+RUN apt-get install -y p7zip-full
+
+# A couple ThirdPartyLibs (e.g. sqlite, zlib) deliver library source in this form (.zip) - so get to unpack them
+RUN apt-get install -y unzip
+
+# Used to fetch third party components to build them. Not strictly needed if you don't build any of those...
+RUN apt-get install -y wget
+
+#pkg-config only needed for building third-party components, like libcurl, etc, but also used in Stroika makefiles to find appropriate
+# components
+RUN apt-get install -y pkg-config
+
+#You need some compiler, - can be clang or g++, but pick g++ as a good default
+RUN apt-get install -y g++
+
+#required to build Xerces
+RUN apt-get install -y cmake
+
+#required to build libcurl
+RUN apt-get install -y automake autoconf libtool-bin
+
+#Not required, but if you want to generate docs
+RUN apt-get install -y doxygen
+
+#needed for ApplyConfiguration to update vs-code configuration files
+RUN apt-get install -y jq
+
+#Not really a Stroika dependency, but its how we download/fetch stroika
+RUN apt-get install -y git
+
+#Only needed to use sanitizer builds
+RUN apt-get install -y libasan5 libasan6 libubsan1
+
+COPY Shared-Files/Getting-Started-With-Stroika.md ./
+
+CMD /bin/bash

@@ -54,7 +54,7 @@ If you are missing any components and just want a quick environment to test that
 UNIX:
 
 ```bash
-docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu2004-small
+docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu2204-small
 cat Getting-Started-With-Stroika.md
 ```
 
@@ -450,9 +450,9 @@ To cross-compile for Raspberry pi,
 
 - install some suitable cross compiler (in this example arm-linux-gnueabihf-g++-9)
 
-On unubtu, sudo apt-get install g++-9-arm-linux-gnueabihf
+On unubtu, sudo apt-get install g++-11-arm-linux-gnueabihf
 
-- configure raspberrypi-gcc-9 --apply-default-debug-flags --trace2file enable --compiler-driver arm-linux-gnueabihf-g++-9 --cross-compiling true
+- configure raspberrypi-gcc-11 --apply-default-debug-flags --trace2file enable --compiler-driver arm-linux-gnueabihf-g++-11 --cross-compiling true
 
 Set cross-compiling true so that internal tests aren&#39;t run using the arm built executables.
 

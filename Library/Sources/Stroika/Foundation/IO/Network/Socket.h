@@ -182,7 +182,7 @@ namespace Stroika::Foundation::IO::Network {
      *
      *  \note inherits from Socket just for inherited type definitions - no methods or data.
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      *        o Socket::Ptr objects are compared (relative or equality) by their underlying 'rep' object.
      *          This USED to be done by calling GetNativeSocket () so two separately attached sockets
@@ -193,7 +193,7 @@ namespace Stroika::Foundation::IO::Network {
      *  \note Since Socket::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
      *        the underlying thread object.
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
      */
     class Socket::Ptr : protected Debug::AssertExternallySynchronizedMutex {
     protected:

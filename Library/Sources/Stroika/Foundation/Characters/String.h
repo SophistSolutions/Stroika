@@ -294,7 +294,7 @@ namespace Stroika::Foundation::Characters {
      *          operate properly, even if used at file scope, and to initialize other strings or objects.
      *          @see "Test of STATIC FILE SCOPE INITIALIZATION"
      *
-     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *      o   String::EqualsComparer, String::ThreeWayComparer and String::LessComparer provided with construction parameters to allow case insensitive compares 
      */
@@ -681,8 +681,8 @@ namespace Stroika::Foundation::Characters {
         /**
          *  Returns true if the argument character or string is found anywhere inside this string.
          *  This is equivalent to
-         *      return Match (".*" + X + L".*");    // If X had no characters which look like they are part of
-         *                                          // a regular expression
+         *      return Matches (".*" + X + L".*");    // If X had no characters which look like they are part of
+         *                                            // a regular expression
          *
          *  @see Match
          */
@@ -694,7 +694,7 @@ namespace Stroika::Foundation::Characters {
          *  Returns true iff the given substring is contained in this string.
          *
          *  Similar to:
-         *      return Match (X + L".*");
+         *      return Matches (X + L".*");
          *  except for the fact that with StartsWith() doesn't interpet 'X' as a regular expression
          *
          *  @see Match
@@ -708,7 +708,7 @@ namespace Stroika::Foundation::Characters {
          *  Returns true iff the given substring is contained in this string.
          *
          *  Similar to:
-         *      return Match (X + L".*");
+         *      return Matches (X + L".*");
          *  except for the fact that with StartsWith() doesn't interpet 'X' as a regular expression
          *
          *  @see Match
@@ -725,10 +725,10 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          Assert (String (L"abc").Match (L"abc"));
-         *          Assert (not (String (L"abc").Match (L"bc")));
-         *          Assert (String (L"abc").Match (L".*bc"));
-         *          Assert (not String (L"abc").Match (L"b.*c"));
+         *          Assert (String{L"abc"}.Matches (L"abc"));
+         *          Assert (not (String{L"abc"}.Matches (L"bc")));
+         *          Assert (String{L"abc"}.Matches (L".*bc"));
+         *          Assert (not String{L"abc"}.Matches (L"b.*c"));
          *      \endcode
          *
          *  \par Example Usage
@@ -737,7 +737,7 @@ namespace Stroika::Foundation::Characters {
          *          static const String            kTestStr_{L"192.168.244.104 - Sonos Play:5"};
          *          optional<String> match1;
          *          optional<String> match2;
-         *          VerifyTestResult (kTestStr_.Match (kSonosRE_, &match1, &match2) and match1 == L"192.168.244.104" and match2 == L" - Sonos Play:5");
+         *          VerifyTestResult (kTestStr_.Matches (kSonosRE_, &match1, &match2) and match1 == L"192.168.244.104" and match2 == L" - Sonos Play:5");
          *      \endcode
          *
          *  \par Example Usage
@@ -749,7 +749,7 @@ namespace Stroika::Foundation::Characters {
          *          optional<String>               path;
          *          optional<String>               query;
          *          optional<String>               fragment;
-         *          if (rawURL.Match (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
+         *          if (rawURL.Matches (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
          *              DbgTrace (L"***good - scehme=%s", Characters::ToString (scheme).c_str ());
          *              DbgTrace (L"***good - authority=%s", Characters::ToString (authority).c_str ());
          *              DbgTrace (L"***good - path=%s", Characters::ToString (path).c_str ());
@@ -770,10 +770,10 @@ namespace Stroika::Foundation::Characters {
          *  @see Find
          *  @see FindEach
          */
-        nonvirtual bool Match (const RegularExpression& regEx) const;
-        nonvirtual bool Match (const RegularExpression& regEx, Containers::Sequence<String>* matches) const;
+        nonvirtual bool Matches (const RegularExpression& regEx) const;
+        nonvirtual bool Matches (const RegularExpression& regEx, Containers::Sequence<String>* matches) const;
         template <typename... OPTIONAL_STRINGS>
-        nonvirtual bool Match (const RegularExpression& regEx, OPTIONAL_STRINGS&&... subMatches) const;
+        nonvirtual bool Matches (const RegularExpression& regEx, OPTIONAL_STRINGS&&... subMatches) const;
 
     public:
         /**
@@ -835,7 +835,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  @see Find ()
          *  @see FindEachString ()
-         *  @see Match ()
+         *  @see Matches ()
          */
         nonvirtual vector<pair<size_t, size_t>> FindEach (const RegularExpression& regEx) const;
         nonvirtual vector<size_t> FindEach (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
@@ -854,7 +854,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  @see Find ()
          *  @see FindEachString ()
-         *  @see Match ()
+         *  @see Matches ()
          */
         nonvirtual vector<RegularExpressionMatch> FindEachMatch (const RegularExpression& regEx) const;
 
@@ -869,7 +869,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  @see Find ()
          *  @see FindEachMatch ()
-         *  @see Match ()
+         *  @see Matches ()
          */
         nonvirtual vector<String> FindEachString (const RegularExpression& regEx) const;
 
@@ -1017,6 +1017,10 @@ namespace Stroika::Foundation::Characters {
         /**
          *  Combine the given array into a single string (typically comma space) separated.
          *  If given a list of length n, this adds n-1 seperators.
+         * 
+         *  \note .Net version - https://docs.microsoft.com/en-us/dotnet/api/system.string.join?redirectedfrom=MSDN&view=net-6.0#System_String_Join_System_String_System_String___
+         *  \note Java version - https://docs.oracle.com/javase/8/docs/api/java/lang/String.html#join-java.lang.CharSequence-java.lang.CharSequence...-
+         *  \note Javascript   - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join
          */
         static String Join (const Iterable<String>& list, const String& separator = L", "sv);
 
@@ -1072,6 +1076,7 @@ namespace Stroika::Foundation::Characters {
          *      o   const Character*
          *      o   u16string
          *      o   u32string
+         *      o   String    (return *this; handy sometimes in templated usage; harmless)
          *
          *  \note
          *      o   As<u16string> () equivilent to AsUTF16 () calll
@@ -1324,6 +1329,8 @@ namespace Stroika::Foundation::Characters {
     u16string String::As () const;
     template <>
     u32string String::As () const;
+    template <>
+    String String::As () const;
 
     template <>
     void String::AsUTF8 (string* into) const;

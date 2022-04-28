@@ -54,9 +54,11 @@ ARG VS_17_0=https://download.visualstudio.microsoft.com/download/pr/8cea3871-c74
 ARG VS_17_1_0=https://download.visualstudio.microsoft.com/download/pr/c30a4f7e-41da-41a5-afe8-ac56abf2740f/c9c5c694fdfdf0b9295c10416d370e4e9d60f5220c2ab9eee9ee147052294d31/vs_BuildTools.exe
 ARG VS_17_1_1=https://download.visualstudio.microsoft.com/download/pr/99543e14-a692-4a98-9ac0-805b0f05f3b4/ba3498d6ade2671c786b5a761a3ff7eb94a0b0f06542e3aa1e157c4c01ac0192/vs_BuildTools.exe
 ARG VS_17_1_2=https://download.visualstudio.microsoft.com/download/pr/c308d1c8-6b87-4859-9de6-c09a446c10ea/fcf8d50ed0987ab233f76445885710df9bb395a98d2828148e2475b3fddaf1f4/vs_BuildTools.exe
+ARG VS_17_1_3=https://download.visualstudio.microsoft.com/download/pr/3f21c6d5-11da-4876-aa78-a2b2cce30660/e3da6424c439c07176e59927e248f80c60c95795a5fab3726649215f790786c2/vs_BuildTools.exe
+ARG VS_17_1_4=https://download.visualstudio.microsoft.com/download/pr/180ad262-2f90-4974-a63e-3e47a5b2033c/0ca09a396d63f84f0739c89aa2bd6a70b8d448715300eddaac558fd81a5af6f1/vs_BuildTools.exe
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_17_1_2" \
+RUN Invoke-WebRequest "$env:VS_17_1_4" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 
 SHELL ["cmd", "/S", "/C"]

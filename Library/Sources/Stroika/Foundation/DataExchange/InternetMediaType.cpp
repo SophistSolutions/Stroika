@@ -34,7 +34,7 @@ InternetMediaType::InternetMediaType (const String& ct)
     // based on https://www.regextester.com/110183 and fiddling with that regexp to add suffix/params
     static const RegularExpression kTopLevelMatcher_ = L"(^[-\\w.]+)/([-\\w.]+)(\\+[a-z]*)?(.*)"_RegEx;
     Containers::Sequence<String>   matches;
-    if (ct.Match (kTopLevelMatcher_, &matches) and matches.length () >= 2) {
+    if (ct.Matches (kTopLevelMatcher_, &matches) and matches.length () >= 2) {
         fType_    = matches[0];
         fSubType_ = matches[1];
         if (matches.length () >= 3 and matches[2].length () > 1) {
@@ -45,7 +45,7 @@ InternetMediaType::InternetMediaType (const String& ct)
             while (not moreParameters.empty ()) {
                 static const RegularExpression kParameterMatcher_ = L"\\s*;\\s*([_\\-[:alnum:]]+)\\s*=\\s*(\\S+)(.*)"_RegEx;
                 matches.clear ();
-                if (moreParameters.Match (kParameterMatcher_, &matches)) {
+                if (moreParameters.Matches (kParameterMatcher_, &matches)) {
                     String pName  = matches[0];
                     String pValue = matches[1];
                     if (pValue.StartsWith (L"\"") and pValue.EndsWith (L"\"")) {

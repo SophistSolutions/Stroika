@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+#        ScriptsLib/CheckForLibrary LINKER LIB
+#
+# Example Usage:
+#        ScriptsLib/CheckForLibrary g++ brotlicommon  
+#
+# NOTE: ONLY WORKS ON UNIX (so far) - Linux and macosx)
+#
+#   Based on ideas from
+#       https://stackoverflow.com/questions/18900855/how-to-work-with-external-libraries-when-cross-compiling
+#   NOTE: the suggestsions about --print-sys-root etc dont really work well for clang (or at all for visual studio)
+#
+CC=$1
+LIB=$2
+
+TMPFILE=`mktemp`
+TMPDIR=`dirname $TMPFILE`
+cd $TMPDIR
+$CC -l$LIB 2> $TMPFILE | true
+## sometimes cannot find -lbrotlicommon: No such file or directory, sometimes 'not found'
+CHECK=`cat $TMPFILE | grep -i 'no' | grep $LIB`
+#cat $TMPFILE
+rm -f $TMPFILE
+if [ "$CHECK" == "" ]; then
+    echo 'true'
+    exit 0
+else
+    echo 'false'
+    exit 1
+fi

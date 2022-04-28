@@ -144,24 +144,11 @@ InternetAddress Network::GetPrimaryInternetAddress ()
 #endif
     char ac[1024];
     if (::gethostname (ac, sizeof (ac)) == SOCKET_ERROR) {
-        return InternetAddress ();
+        return InternetAddress{};
     }
-#if 1
-    // WAG at charset - whole thing not well done!
-    for (const InternetAddress& i : DNS::Default ().GetHostAddresses (String::FromUTF8 (ac))) {
+    for (const InternetAddress& i : DNS::kThe.GetHostAddresses (String::FromNarrowSDKString (ac))) {
         return i;
     }
-#else
-    struct hostent* phe = gethostbyname (ac);
-    if (phe == nullptr) {
-        return InternetAddress ();
-    }
-    for (int i = 0; phe->h_addr_list[i] != 0; ++i) {
-        struct in_addr addr;
-        (void)::memcpy (&addr, phe->h_addr_list[i], sizeof (struct in_addr));
-        return InternetAddress{addr};
-    }
-#endif
     return InternetAddress{};
 #elif qPlatform_POSIX
     auto getFlags = [] (int sd, const char* name) -> int {

@@ -101,9 +101,9 @@ int main (int argc, const char* argv[])
     }
 
     try {
-        Collection<InternetAddress> addrList = IO::Network::DNS::Default ().GetHostAddresses (targetAddress);
+        Collection<InternetAddress> addrList = IO::Network::DNS::kThe.GetHostAddresses (targetAddress);
         if (addrList.empty ()) {
-            Execution::Throw (Execution::Exception (L"whoops no addrs"sv));
+            Execution::Throw (Execution::Exception{L"whoops no addrs"sv});
         }
         InternetAddress addr = addrList.Nth (0);
 
@@ -132,7 +132,7 @@ int main (int argc, const char* argv[])
                 for (Traceroute::Hop h : hops) {
                     String hopName = [=] () {
                         String addrStr = h.fAddress.As<String> ();
-                        if (auto rdnsName = DNS::Default ().QuietReverseLookup (h.fAddress)) {
+                        if (auto rdnsName = DNS::kThe.QuietReverseLookup (h.fAddress)) {
                             return *rdnsName + L" [" + addrStr + L"]";
                         }
                         else {

@@ -7,6 +7,7 @@
 
 #include <iostream>
 
+#include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h"
 #include "Stroika/Foundation/Containers/SortedSet.h"
@@ -70,13 +71,35 @@ namespace {
             }
             {
                 Set<int>       t1{1, 3, 4, 5, 7};
-                SortedSet<int> tmp = SortedSet<int> (t1.begin (), t1.end ());
+                SortedSet<int> tmp = SortedSet<int>{t1.begin (), t1.end ()};
                 //SortedSet<int> tmp  {t1.begin (), t1.end () };
                 VerifyTestResult (tmp.size () == 5);
                 VerifyTestResult (tmp.Contains (1));
                 VerifyTestResult (not tmp.Contains (2));
                 VerifyTestResult (tmp.Contains (3));
                 VerifyTestResult (tmp.Contains (7));
+            }
+        }
+    }
+}
+
+namespace {
+    namespace Test3_ExplicitSortFunction_ {
+        void DoRun ()
+        {
+            {
+                using Characters::String;
+                SortedSet<String> tmp{L"a", L"b", L"A"};
+                VerifyTestResult (tmp.size () == 3);
+                VerifyTestResult (tmp.Contains (L"A"));
+                VerifyTestResult (not tmp.Contains (L"B"));
+            }
+            {
+                using Characters::String;
+                SortedSet<String> tmp{String::LessComparer{Characters::CompareOptions::eCaseInsensitive}, {L"a", L"b", L"A"}};
+                VerifyTestResult (tmp.size () == 2);
+                VerifyTestResult (tmp.Contains (L"A"));
+                VerifyTestResult (tmp.Contains (L"B"));
             }
         }
     }
@@ -102,6 +125,7 @@ namespace {
         RunTests_<SortedSet_stdset<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, [] () { return SortedSet_stdset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
 
         Test2_InitalizeCTORs_::DoRun ();
+        Test3_ExplicitSortFunction_::DoRun ();
 
         VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
