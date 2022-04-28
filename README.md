@@ -99,4 +99,4 @@ Looking through the samples is also a good way to start:
 
 Please report bugs/issues at:
 
-&nbsp;&nbsp;&nbsp;&nbsp;[http://stroika-bugs.sophists.com](http://stroika-bugs.sophists.com)
+&nbsp;&nbsp;&nbsp;&nbsp;[http://stroika-bugs.sophists.com](https://stroika.atlassian.net/jira/dashboards/10000)
