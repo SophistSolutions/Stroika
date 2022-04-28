@@ -7,6 +7,231 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+- I THINK can lose https://stroika.atlassian.net/browse/STK-717 workarounds for ubuntu 20.04 - testing
+- https://stroika.atlassian.net/browse/STK-148 - fixed so throws on fail of process on unix too (if no process-return-value optional parameter provided - as with windows
+
+- cosmetic code cleanups (uniform initialization mostly)
+
+- Comments about regtest failures and made one not real failure into a warning
+
+- merged Coding Conventions.md into Design Document.md and related cleanups
+- more design overview docs
+
+- deprecated DNS::Default() and replaced wtih DNS::kThe (and other small related cleanups)
+
+- use 17.1.3 vs2k22
+- https://stroika.atlassian.net/browse/STK-154 - regtests and samples for explicit sort function in SortedSet
+
+- Reviewed my private todo file and closed everything or moved it to https://stroika.atlassian.net
+
+- Doc
+  - docs on http server
+  - major cleanup to thread safety docs, changing many of the names of classifications and rolling together many duplicates
+  - ugprade docs
+
+- ubuntu 22.04 support
+  - Docker containers, github actions, and new compiler support
+- g++12
+- clang++14
+
+- Build System
+  - lose makefile deprecated StroikaLinkerSuffixArgs StroikaLinkerPrefixArgs
+  - new ScriptsLib/CheckForLibrary, and used to cleanup curl makefile so works for ubuntu 22.04 cross compile and better on macos
+
+- Library
+  - Foundation
+    - Networking
+      - cosmetic/naming cleanup URI code
+
+
+#if 0
+
+commit a28ec66102dc21c30fd1227ee64a4239ff90fb47
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 12 15:24:29 2022 -0400
+
+    Added asserts - not stricltly true - but to test likely situation before I change / simplfiy code
+
+commit fbe95389b56e62742ef683d03167690bcfcb032f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 12 16:06:07 2022 -0400
+
+    (not backward compat) - Memoizer uses function call syntax - operator() now instead of .Compute()
+
+commit 766b60fb848423c4c2d49d183caecfc27062bfce
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 12 16:26:40 2022 -0400
+
+    docs about Syncronized and upgradelocks
+
+commit 96e4a046daa892504ba57e6eb7f02165a712091b
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Apr 12 18:01:24 2022 -0400
+
+    VS 17.1.4 and 16.11.12 in docker containers
+
+commit 7cbbf9cf9977510cfd6811e5cf95e0c06736ffa6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 12 20:42:51 2022 -0400
+
+    undo use of URI::Combine() in transfer code - doesnt do what I wanted
+
+commit 6b53c2b3124491f93a20791c6144d9f1c3fe5b20
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 12 20:51:10 2022 -0400
+
+    renamed String::Match() to String::Matches() - not backward compatible, but better name just before public release
+
+commit 11d0088055631f6ffc97e03974c6f154f0794a1e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 12 20:53:33 2022 -0400
+
+    https://stroika.atlassian.net/browse/STK-690 a couple  more places to use move on iterators
+
+commit ecee9dc7ee2da123b5447c183e050b49dd2b42fb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 14 11:18:18 2022 -0400
+
+commit 387627ca9950cebbf554e0179d90c739f2dd43dc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 14 13:31:02 2022 -0400
+
+    Comments and simplified implementation of Bijection<DOMAIN_TYPE, RANGE_TYPE>::Where()
+
+commit e12ec91c8fff14dd4b06aabed02be249a59f80a6
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Apr 16 09:20:19 2022 -0400
+
+    no longer use std::iterator<> - deprecated
+
+commit 73c7834792cd8489badea2d25373a4a3b6d72554
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Apr 16 09:20:49 2022 -0400
+
+    fixed version# for GLIBCXX_11x_ - for ubuntu 22.04
+
+commit 5f6e31fe0b623e12966f2d524d73158b9054a529
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Apr 16 11:26:56 2022 -0400
+
+    Compiler bug defines for clang++14 and gcc 12
+
+commit 5b60c3744b7ed99ff1e24a86a45ffd6e7ede42c5
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Apr 18 10:22:03 2022 -0400
+
+    fixes for ubuntu 22.04 docker files
+
+commit 4e745734be3d13094098751dd4039c5f6e153818
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Apr 18 10:36:36 2022 -0400
+
+    qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy appears buggy in LIBCPP_VERSION 14.0 (or maybe other variant of from_chars code buggy)
+
+commit 1aeceb140d2950c06042fcd21f79e3c25bf94af9
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Apr 18 10:41:30 2022 -0400
+
+    qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy  on _LIBCPP_VERSION <= 14000
+
+commit 94aee0e8f776c58061528b00530c8b02543fab26
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Apr 18 11:46:34 2022 -0400
+
+    qCompilerAndStdLib_to_chars_FP_Buggy check for clang now checks LIBCPP_VERSION not clang_major version (maybe need to check both?)
+
+commit 8e9a321a38a7cf1a51a26fec26fb298e3a6440b4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 18 13:56:11 2022 -0400
+
+    ubuntu 22.04 cases added to github actions
+
+commit 0bb89d4947b3803d3f66364ee3c084efc8d68317
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Apr 18 11:50:24 2022 -0400
+
+    Added https://stroika.atlassian.net/browse/STK-717 BWA in configure - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy - since still appears buggy there
+    appars BOTH tsan and valgrind bug manifestations occur.
+
+commit 8e31c3e0c9a67ee67a57a71697393b0990550613
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Apr 18 14:30:53 2022 -0400
+
+    fixed regression in qCompilerAndStdLib_to_chars_FP_Buggy setting
+
+commit cbccdecd18d9697fe741e9a2efcb035c51a35d9c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 18 19:24:32 2022 -0400
+
+    IO::Network::HTTP::Headers missing fHost from Collection<KeyValuePair<String, String>> Headers::As () const
+
+commit 50c1da4230509f1297ac8225ccee505a2fbe7cd9
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Apr 18 19:43:01 2022 -0400
+
+    added nearly useless (helpful for some template cases) but harmless template <>
+    +    inline String String::As () const
+
+commit 4bfa3015aea797065d64f3d891338d78efdee00f
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Apr 18 19:43:20 2022 -0400
+
+    fixed typo regression in Collection<KeyValuePair<String, String>> Headers::As () const
+
+commit acacb06a42afbf4d458f583c290f51c460fa8561
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Apr 18 20:17:22 2022 -0400
+
+    mark qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy as fixed for gcc 12
+
+commit 5ad448dca3254dd94a48432c721fad7f83be2dc1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 18 21:15:27 2022 -0400
+
+    silence c++ 20 deprecation warning (ATOMIC_FLAG_INIT)
+
+commit 62afd5f18e556ad0f6ad7d772dd80b2263672c02
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Apr 22 08:35:50 2022 -0400
+
+    https://stroika.atlassian.net/browse/STK-761 workaround applies to ubuntu 22.04 as well
+
+commit a49792a37e53499e3700e5489f03a916959beb07
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Apr 23 11:11:27 2022 -0400
+
+    fixed qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy I hope for new compilers/gcc lib versions
+
+commit 52d812983ef91a4be8abbe3e2c4669c3a0ffc1fa
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Apr 25 10:32:03 2022 -0400
+
+    workaround https://stroika.atlassian.net/browse/STK-903 helgrind issue
+
+commit 5bbea27a426496236a04c6bc36413a4c0cd21660
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 25 18:45:05 2022 -0400
+
+    new CheckForLibrary utility script
+
+commit 6c4fc077abd3e25d9ba3d0ad1f959dccc25534e9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 25 21:48:11 2022 -0400
+
+    use new criptsLib/CheckForLibrary in makefile for libcurl to address https://stroika.atlassian.net/browse/STK-759 on raspberrypi
+
+commit 374dcbe10076472cc8b7cdb445b903165f18ff15
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 26 05:40:58 2022 -0400
+
+    fixed suppression line for helgrind in regtests for apps
+
+
+
+
+#endif
+
 ---
 
 ### 2.1r8 {2022-04-05}
