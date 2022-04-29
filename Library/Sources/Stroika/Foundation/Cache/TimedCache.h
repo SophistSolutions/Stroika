@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Cache {
      *              static const Time::Duration                                             kCacheTTL_{5min}; // @todo fix when Stroika Duration bug supports constexpr this should
      *              static Cache::TimedCache<InternetAddress, optional<String>> sCache_{kCacheTTL_};
      *              return sCache_.LookupValue (inetAddr, [] (const InternetAddress& inetAddr) {
-     *                  return DNS::Default ().ReverseLookup (inetAddr);
+     *                  return DNS::kThe.ReverseLookup (inetAddr);
      *              });
      *          }
      *      \endcode
