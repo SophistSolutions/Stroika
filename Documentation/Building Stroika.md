@@ -6,11 +6,13 @@
 
 Stroika is a C++ class library. The only fully supported build environment for Stroika is GNU Make. Once you have that setup, you can build through your favorite IDE.
 
-This build process is cross-platform. It supports cross-compiling, and builds on visual studio.net (windows), and Linux.
+This build process is cross-platform. It supports cross-compiling, and builds on visual studio.net (windows), and Linux. Stroika also directly supports the IDEs Visual Studio.Net, and Visual Studio code.
 
 ---
 
 ## <a name="Quick-Start">Quick Start</a>
+
+If you have a POSIX build environment (else see below, docker environments or installing development tools):
 
 ```bash
 git clone https://github.com/SophistSolutions/Stroika.git Stroika-Dev
