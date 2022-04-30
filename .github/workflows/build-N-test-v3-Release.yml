@@ -84,7 +84,7 @@ jobs:
             compiler: g++-11
             runs_on: ubuntu-latest
             container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
-            cpp_version: c++17
+            cpp_version: c++20
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
             includeInDevBranchBuilds: false
@@ -94,7 +94,7 @@ jobs:
             compiler: g++-12
             runs_on: ubuntu-latest
             container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
-            cpp_version: c++17
+            cpp_version: c++20
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
             includeInDevBranchBuilds: false
@@ -104,7 +104,7 @@ jobs:
             compiler: g++-12
             runs_on: ubuntu-latest
             container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
-            cpp_version: c++17
+            cpp_version: c++20
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: true
@@ -124,7 +124,7 @@ jobs:
             compiler: clang++-14
             runs_on: ubuntu-latest
             container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
-            cpp_version: c++17
+            cpp_version: c++20
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: false
