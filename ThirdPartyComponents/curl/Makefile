@@ -18,10 +18,9 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 
-VERSION=7.82.0
+VERSION=7.83.0
+#VERSION=7.82.0
 #VERSION=7.81.0
-#VERSION=7.80.0
-#VERSION=7.79.1
 BASENAME=curl-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
