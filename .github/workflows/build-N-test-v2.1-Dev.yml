@@ -1,7 +1,7 @@
 #
 # Docs on github action files: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
 #
-# build-N-test-v2.1-Dev and build-N-test-v2.1-Release are neary
+# build-N-test-v2.1-Dev and build-N-test-v2.1-Release are nearly
 # identical, but a few tests are commented out (to not needlessly stress CI system)
 # for v2.1-Dev builds
 #
