@@ -18,11 +18,9 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 # because we list multiple targets in PRODUCED_OUTPUT_ARTIFACTS, all of which are built with the same script
 .NOTPARALLEL:
 
-VERSION=3370200
+VERSION=3380300
+#VERSION=3370200
 #VERSION=3370100
-#VERSION=3370000
-#VERSION=3360000
-#VERSION=3350500
 
 #
 # Download of SQLITE from www.sqlite.org mysteriously started failing on the macos machines only for travisci
