@@ -118,7 +118,11 @@ namespace {
         {
             Assert (CompiledOptions::kThe.ENABLE_NORMALIZE == !!::sqlite3_compileoption_used ("ENABLE_NORMALIZE"));
             Assert (CompiledOptions::kThe.THREADSAFE == !!::sqlite3_compileoption_used ("THREADSAFE"));
+            #if SQLITE_VERSION_NUMBER < 3038000
             Assert (CompiledOptions::kThe.ENABLE_JSON1 == !!::sqlite3_compileoption_used ("ENABLE_JSON1"));
+            #else
+            Assert (CompiledOptions::kThe.ENABLE_JSON1 == !::sqlite3_compileoption_used ("OMIT_JSON1"));
+            #endif
         }
     } sVerifyFlags_;
 }
