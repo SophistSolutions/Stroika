@@ -19,10 +19,11 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
+VERSION=1.2.12
+#VERSION=1.2.11
 # last stable version
 #VERSION=1.2.8
 # crashes in regtest for inflate on Win32 (but not Win64), 1.2.9 thru 1.2.11
-VERSION=1.2.11
 
 
 BASENAME=zlib-$(VERSION)
