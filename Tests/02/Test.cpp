@@ -219,29 +219,29 @@ namespace {
          * Some simple tests to start off with.
          */
         {
-            VerifyTestResult (String (L"a").length () == 1);
-            VerifyTestResult (String (String (L"fred") + String (L"joe")).size () == 7);
+            VerifyTestResult (String{L"a"}.length () == 1);
+            VerifyTestResult (String{String{L"fred"} + String{L"joe"}}.size () == 7);
 
-            VerifyTestResult (String (L"fred") + String (L"joe") == String (L"fredjoe"));
+            VerifyTestResult (String{L"fred"} + String{L"joe"} == String{L"fredjoe"});
 
             {
-                String s1 = String (L"test strings");
-                String s2 = String (L"test strings");
+                String s1 = String{L"test strings"};
+                String s2 = String{L"test strings"};
                 Test2_Helper_ (s1, s2);
             }
 
             {
-                String s1 (L"test strings");
-                String s2 (L"test strings");
+                String s1{L"test strings"};
+                String s2{L"test strings"};
 
-                VerifyTestResult (Character ('a') == 'a');
+                VerifyTestResult (Character{'a'} == 'a');
 
                 Test2_Helper_ (s1, s2);
             }
 
             {
-                String s1 = String_ExternalMemoryOwnership_ApplicationLifetime (L"test strings");
-                String s2 = String_ExternalMemoryOwnership_ApplicationLifetime (L"test strings");
+                String s1 = String_ExternalMemoryOwnership_ApplicationLifetime{L"test strings"};
+                String s2 = String_ExternalMemoryOwnership_ApplicationLifetime{L"test strings"};
                 Test2_Helper_ (s1, s2);
             }
         }
@@ -286,13 +286,13 @@ namespace {
         t1 += 'd';
         t1 += L" Flintstone";
         VerifyTestResult (t1 == L"Fred Flintstone");
-        VerifyTestResult (String (L"Fred Flintstone") == t1);
-        VerifyTestResult (String (L"Fred Flintstone") == t1);
-        VerifyTestResult (t1 == String (L"Fred Flintstone"));
+        VerifyTestResult (String{L"Fred Flintstone"} == t1);
+        VerifyTestResult (String{L"Fred Flintstone"} == t1);
+        VerifyTestResult (t1 == String{L"Fred Flintstone"});
         VerifyTestResult (t2 != L"Fred Flintstone");
-        VerifyTestResult (String (L"Fred Flintstone") != t2);
-        VerifyTestResult (String (L"Fred Flintstone") != t2);
-        VerifyTestResult (t2 != String (L"Fred Flintstone"));
+        VerifyTestResult (String{L"Fred Flintstone"} != t2);
+        VerifyTestResult (String{L"Fred Flintstone"} != t2);
+        VerifyTestResult (t2 != String{L"Fred Flintstone"});
 
         VerifyTestResult (t1.size () == 15);
         t1.erase (4);
@@ -323,8 +323,8 @@ namespace {
 
         String  t1;
         String  t3 = L"a";
-        String  t5 = String (frobaz);
-        String* t6 = new String (L"xyz");
+        String  t5 = String{frobaz};
+        String* t6 = new String{L"xyz"};
         delete (t6);
 
         t5 = t1;
@@ -473,13 +473,13 @@ namespace {
     void Test7_Comparisons_ ()
     {
         Debug::TraceContextBumper ctx{L"Test7_Comparisons_"};
-        VerifyTestResult (String (L"1") <= String (L"1"));
-        VerifyTestResult (L"1" <= String (L"1"));
-        VerifyTestResult (String (L"1") <= L"1");
-        VerifyTestResult (String (L"1") <= String (L"10"));
-        VerifyTestResult (not(String (L"1") > String (L"10")));
-        VerifyTestResult (not(String (L"1") >= String (L"10")));
-        VerifyTestResult (String (L"1") < String (L"10"));
+        VerifyTestResult (String{L"1"} <= String{L"1"});
+        VerifyTestResult (L"1" <= String{L"1"});
+        VerifyTestResult (String{L"1"} <= L"1");
+        VerifyTestResult (String{L"1"} <= String (L"10"));
+        VerifyTestResult (not(String{L"1"} > String (L"10")));
+        VerifyTestResult (not(String{L"1"} >= String (L"10")));
+        VerifyTestResult (String{L"1"} < String (L"10"));
 
         VerifyTestResult (String (L"20") > String (L"11"));
         VerifyTestResult (String (L"20") >= String (L"11"));
@@ -588,7 +588,7 @@ namespace {
         VerifyTestResult (kT1.RTrim () == kT1);
         VerifyTestResult (kT1.LTrim () == kT1.Trim ());
         VerifyTestResult (kT1.Trim () == L"abc");
-        VerifyTestResult (String (L" abc ").Trim () == L"abc");
+        VerifyTestResult (String{L" abc "}.Trim () == L"abc");
 
         VerifyTestResult (kT1.Trim ([] (Character c) -> bool { return c.IsAlphabetic (); }) == L"  ");
         VerifyTestResult (String (L"/\n").Trim () == L"/");
