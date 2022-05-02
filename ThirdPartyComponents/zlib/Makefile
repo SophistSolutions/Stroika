@@ -109,6 +109,8 @@ $(ZIPPEDFILE):
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 # See comments at head of win32/Makefile.msc for the meaning of these flags (DASMV, etc)
+# @todo - https://stroika.atlassian.net/browse/STK-905 - rewrite the windows build stuff (and unix) using cmake) - sb simpler/cleaner build and
+#         get asm stuff working again
 ASFLAGS_=-coff -Z7
 ifeq ($(ENABLE_ASSERTIONS),1)
 CFLAGS+= -DZLIB_DEBUG
@@ -121,10 +123,10 @@ ifeq ($(ARCH), x86)
 ### avoid occasional 'fatal error LNK1281: Unable to generate SAFESEH image.'
 #ASFLAGS_+= -safeseh
 endif
-ifeq ($(ARCH), x86_64)
-CFLAGS+= -DASMV -DASMINF
-OBJA_=inffasx64.obj gvmat64.obj inffas8664.obj
-endif
+# ifeq ($(ARCH), x86_64)
+# CFLAGS+= -DASMV -DASMINF
+# OBJA_=inffasx64.obj gvmat64.obj inffas8664.obj
+# endif
 endif
 
 
