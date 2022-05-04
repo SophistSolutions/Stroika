@@ -461,12 +461,19 @@ basic-unix-test-configurations:
 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations_valgrind_configs_
 
 
+# Currently not used, but maybe test occasionally
+private_compiler_versions_:
+	./configure my-g++-8.3-debug-c++2a --config-tag Unix --compiler-driver /private-compiler-builds/gcc-8.3.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --no-sanitize address --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:/private-compiler-builds/gcc-8.3.0/lib64' --only-if-has-compiler --cppstd-version c++2a
+	# --no-sanitize and --lto disable calls for clang7 just because of how I built it...
+	./configure my-clang++-7-debug-libc++ --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize address --no-sanitize undefined
+	./configure my-clang++-7-debug-libc++-c++2a --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize address --no-sanitize undefined --cppstd-version c++2a
+	./configure my-clang++-7-release-libstdc++ --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable --lto disable
+
 basic-unix-test-configurations_g++_versions_:
 	# g++-8
 	./configure g++-8-debug-c++17 --config-tag Unix --compiler-driver g++-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17
 	./configure g++-8-release-c++17 --config-tag Unix --compiler-driver g++-8 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17
 	./configure g++-8-debug-c++2a --config-tag Unix --compiler-driver g++-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2a
-	./configure my-g++-8.3-debug-c++2a --config-tag Unix --compiler-driver /private-compiler-builds/gcc-8.3.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --no-sanitize address --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:/private-compiler-builds/gcc-8.3.0/lib64' --only-if-has-compiler --cppstd-version c++2a
 	# g++-9
 	./configure g++-9-debug-c++17 --config-tag Unix --compiler-driver g++-9 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17
 	./configure g++-9-release-c++17 --config-tag Unix --compiler-driver g++-9 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17
@@ -493,10 +500,6 @@ basic-unix-test-configurations_clang++_versions_:
 	./configure clang++-7-debug-libc++ --config-tag Unix --compiler-driver clang++-7 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
 	./configure clang++-7-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-7 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a
 	./configure clang++-7-release-libstdc++ --config-tag Unix --compiler-driver clang++-7 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
-	# --no-sanitize and --lto disable calls for clang7 just because of how I built it...
-	./configure my-clang++-7-debug-libc++ --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize address --no-sanitize undefined
-	./configure my-clang++-7-debug-libc++-c++2a --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize address --no-sanitize undefined --cppstd-version c++2a
-	./configure my-clang++-7-release-libstdc++ --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable --lto disable
 	# clang-8
 	./configure clang++-8-debug-libc++ --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
 	./configure clang++-8-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a
@@ -581,6 +584,8 @@ regression-test-configurations:
 		$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) basic-unix-test-configurations;\
 		$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) raspberrypi-cross-compile-test-configurations;\
 	fi
+	@# Currently not used, but maybe test occasionally
+	@#(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) private_compiler_versions_
 
 
 list-configurations:
