@@ -47,6 +47,9 @@ namespace Stroika::Foundation::Cache {
          *  Which is better depends on the likihood the caller will make multiple requests for the same non-existent value at
          *  the same time. If yes, you should set fHoldWriteLockDuringCacheFill. If no (or if you care more about being able to
          *  read the rest of the data and not having threads block needlessly for other values) set fHoldWriteLockDuringCacheFill false (default).
+         * 
+         *  \note Another thing to be aware of, if setting fHoldWriteLockDuringCacheFill true, is that it increases the risk
+         *        of Deadlock (if what you don the fill code is complicated and difficult to analyze for what locks it might acquire).
          */
         bool fHoldWriteLockDuringCacheFill{false};
 
