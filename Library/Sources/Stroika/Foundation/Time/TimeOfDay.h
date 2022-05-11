@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Time {
          * We normalize to be within a given day (seconds since midnight)
          *
          *  For the TimeOfDay, we allow out of range values and pin/accumulate. But you can still never have a time of day >= kMaxSecondsPerDay.
-         *  And the first hour (1pm) is hour 0, so TimeOfDay (2, 0, 0) is 3am.
+         *  And the first hour (1pm) is hour 0, so TimeOfDay{2, 0, 0} is 3am.
          *
          *  \req argument time-of-day (in seconds or hours/minutes/seconds) is in valid range for one day
          *  \req t < kMaxSecondsPerDay
