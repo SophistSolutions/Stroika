@@ -10,10 +10,10 @@
   -->
   <Type Name="Stroika::Foundation::Characters::String">
     <DisplayString>
-      {((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_.fEnvelope_.fPtr_)->_fStart}</DisplayString>
+      {((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_._Ptr)->_fStart}</DisplayString>
     <Expand>
-      <Item Name="length">((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_.fEnvelope_.fPtr_)->_fEnd - ((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_.fEnvelope_.fPtr_)->_fStart</Item>
-      <Item Name="c_str">((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_.fEnvelope_.fPtr_)->_fStart</Item>
+      <Item Name="length">((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_._Ptr)->_fEnd - ((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_._Ptr)->_fStart</Item>
+      <Item Name="c_str">((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_._Ptr)->_fStart</Item>
     </Expand>
   </Type>
   <Type Name="Stroika::Foundation::Characters::StringBuilder">
