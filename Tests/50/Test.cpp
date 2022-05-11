@@ -304,14 +304,14 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
-            TimeOfDay t2 (5 * 60 * 60 + 3 * 60 + 49);
+            TimeOfDay t2{5 * 60 * 60 + 3 * 60 + 49};
             VerifyTestResult (t2.GetHours () == 5);
             VerifyTestResult (t2.GetMinutes () == 3);
             VerifyTestResult (t2.GetSeconds () == 49);
             TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
-            TimeOfDay t2 (24 * 60 * 60 - 1);
+            TimeOfDay t2{24 * 60 * 60 - 1};
             VerifyTestResult (t2.GetHours () == 23);
             VerifyTestResult (t2.GetMinutes () == 59);
             VerifyTestResult (t2.GetSeconds () == 59);
@@ -680,8 +680,8 @@ namespace {
     {
         TraceContextBumper ctx{"Test_6_DateTimeStructTM_"};
         {
-            struct tm x;
-            memset (&x, 0, sizeof (x));
+            struct tm x {
+            };
             x.tm_hour    = 3;
             x.tm_min     = 30;
             x.tm_year    = 80;
