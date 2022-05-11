@@ -48,9 +48,10 @@ ARG VS_17_1_2=https://download.visualstudio.microsoft.com/download/pr/c308d1c8-6
 ARG VS_17_1_3=https://download.visualstudio.microsoft.com/download/pr/3f21c6d5-11da-4876-aa78-a2b2cce30660/e3da6424c439c07176e59927e248f80c60c95795a5fab3726649215f790786c2/vs_BuildTools.exe
 ARG VS_17_1_4=https://download.visualstudio.microsoft.com/download/pr/180ad262-2f90-4974-a63e-3e47a5b2033c/0ca09a396d63f84f0739c89aa2bd6a70b8d448715300eddaac558fd81a5af6f1/vs_BuildTools.exe
 ARG VS_17_1_6=https://download.visualstudio.microsoft.com/download/pr/949751db-6687-4a88-a0cf-047f10908a29/3d9b988f8850d1af4fae60807d8695249731fc19488eed013d1dd4a21c7309d5/vs_BuildTools.exe
+ARG VS_17_2_0=https://download.visualstudio.microsoft.com/download/pr/dc2793e9-7b80-4f11-9e33-85833e8921a6/e6b0cd7dd16ce03a0cb49e697ca0a5dd23230711235179eb80f6d5c5785d83e4/vs_BuildTools.exe
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_17_1_6" \
+RUN Invoke-WebRequest "$env:VS_17_2_0" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 SHELL ["cmd", "/S", "/C"]
 RUN %TEMP%\vs_buildtools.exe \
