@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Rep_ (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& inorderComparer)
             // clang-format off
             : fKeyExtractor_{keyExtractor}
-            , fKeyComparer_ {  inorderComparer }
+            , fKeyComparer_ {inorderComparer}
             #if qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
             , fData_{SetInOrderComparer<KEY_EXTRACTOR,KEY_INORDER_COMPARER>{keyExtractor, inorderComparer}}
             #else
