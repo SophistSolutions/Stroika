@@ -45,9 +45,15 @@ namespace Stroika::Foundation::Cache {
          *          {
          *              static const Time::Duration                                             kCacheTTL_{5min}; // @todo fix when Stroika Duration bug supports constexpr this should
          *              static Cache::SynchronizedTimedCache<InternetAddress, optional<String>> sCache_{kCacheTTL_};
-         *              return sCache_.LookupValue (inetAddr, [] (const InternetAddress& inetAddr) {
-         *                  return DNS::kThe.ReverseLookup (inetAddr);
-         *              });
+         *              try {
+         *                  return sCache_.LookupValue (inetAddr, [] (const InternetAddress& inetAddr) {
+         *                      return DNS::kThe.ReverseLookup (inetAddr);
+         *                  });
+         *              }
+         *              catch (...) {
+         *                  // NOTE - to NEGATIVELY CACHE failure, you could call sCache_.Add (inetAddr, nullopt);
+         *                  return nullopt; // if DNS is failing, just dont do this match, dont abandon all data collection
+         *              }
          *          }
          *      \endcode
          *
@@ -90,6 +96,9 @@ namespace Stroika::Foundation::Cache {
         nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key);
 
     public:
+        /**
+          * @see TimedCache::LookupValue
+          */
         nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller);
 
     public:

@@ -95,9 +95,15 @@ namespace Stroika::Foundation::Cache {
      *          optional<int> MapValue_ (int value, optional<Time::DurationSecondsType> allowedStaleness = {})
      *          {
      *              static CallerStalenessCache<int, optional<int>> sCache_;
-     *              return sCache_.LookupValue (value, sCache_.Ago (allowedStaleness.value_or (30)), [=](int v) -> optional<int> {
-     *                  return v;   // could be more expensive computation
-     *              });
+     *              try {
+     *                  return sCache_.LookupValue (value, sCache_.Ago (allowedStaleness.value_or (30)), [=](int v) -> optional<int> {
+     *                      return v;   // could be more expensive computation
+     *                  });
+     *              }
+     *              catch (...) {
+     *                  // NOTE - to NEGATIVELY CACHE failure, you could call sCache_.Add (value, nullopt);
+     *                  // return null here, or Execution::ReThrow ()
+     *              }
      *          }
      *          VerifyTestResult (MapValue_ (1) == 1);  // skips 'more expensive computation' if in cache
      *          VerifyTestResult (MapValue_ (2) == 2);  // ''
