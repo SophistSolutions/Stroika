@@ -7,14 +7,28 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1r10 {2022-05-14}
 
--   vs2k 17.1.6 and 16.11.13
-- Updated vs2k versions to VS_17_2_0 and VS_16_11_14 for docker files
+#### TLDR
+
+- Visual Stuido 2022 17.2 support
+- Updates to a few ThirdPartyComponents (libcurl, sqlite, zlib, boost)
+- Documentation cleanups
+- Important fix to debugger visualization specification (visual studio)
+
+#### Change Details
 
 - Documentation
   - update link to stroika bugs in readme
   - update comments/examples
-
+- Compiler and System Compatability
+  - vs2k 17.1.6 and 16.11.13
+  - Updated vs2k versions to VS_17_2_0 and VS_16_11_14 for docker files
+  - support visual studio compiler _MSC_VER_2k22_17Pt2_ (2 new bugs and nothing fixed)
+- Build System
+  - refactored and disabled (by default) makefile configurations for private_compiler_versions_: myg++8.3, and my-clang++-7; left in makefile disabled so easy to re-include as needed if I need custom compiler build
+- Debugger tools
+  - fixed (serious regrssion - string visualizer) was broken, and updated older visual studio natvis files to match
 - ThirdPartyComponents
   - libcurl 7.83.0
   - zlib 
@@ -24,34 +38,46 @@ especially those they need to be aware of when upgrading.
   - SQLite
     - 3380300
     - fixed CompiledOptions::kThe.ENABLE_JSON1 for newwer sqlite
-
 - Samples
   - Service
     -  Don't strip when building installer if IncludeDebugSymbolsInExecutables set
 
-- Build
-  - refactored and disabled (by default) makefile configurations for private_compiler_versions_: myg++8.3, and my-clang++-7; left in makefile disabled so easy to re-include as needed if I need custom compiler build
+#### Release-Validation
 
-- Debugger tools
-  - fixed (serious regrssion - string visualizer) was broken, and updated older visual studio natvis files to match
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13 }
+  - MSVC: { 15.9.41, 16.11.14, 17.2.0 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Monterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 21.10, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
 
-- support visual studio compiler _MSC_VER_2k22_17Pt2_ (2 new bugs and nothing fixed)
-
-
-
-
-
-
-
-
-
-
-
-
-
------------------
-
-
+---
 
 ### 2.1r9 {2022-04-28}
 
