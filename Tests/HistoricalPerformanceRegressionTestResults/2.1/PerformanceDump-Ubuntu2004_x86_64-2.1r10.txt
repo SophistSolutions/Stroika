@@ -1,0 +1,169 @@
+Performance score 1.0 means both sides equal (ratio), and tests setup so lower is generally better
+
+[[[Started testing at: Thu May 12 20:11:26 2022]]]
+
+Using TIME MULTIPLIER: 15
+
+Test Test of simple locking strategies (mutex v shared_ptr copy) (mutex vs shared_ptr<> copy)
+	PERFORMANCE_SCORE	0.81
+	DETAILS:         	[baseline test 6.76099 secs, and comparison 5.46473 sec, and warnIfPerfScore > 0.65, and perfScore=0.808274]
+	                 	shared_ptr<> copy is FASTER
+
+Test Test of simple locking strategies (mutex v SpinLock) (mutex vs SpinLock)
+	PERFORMANCE_SCORE	0.5
+	DETAILS:         	[baseline test 6.93678 secs, and comparison 3.44909 sec, and warnIfPerfScore > 0.5, and perfScore=0.497218]
+	                 	SpinLock is FASTER
+
+Test std::shared_ptr versus Memory::SharedPtr (shared_ptr vs SharedPtr)
+	PERFORMANCE_SCORE	1
+	DETAILS:         	[baseline test 8.00377 secs, and comparison 8.02648 sec, and warnIfPerfScore > 1.05, and perfScore=1.00284]
+	                 	SharedPtr is ***SLOWER***
+
+Test std::shared_ptr (make_shared) versus Memory::SharedPtr (shared_ptr vs SharedPtr)
+	PERFORMANCE_SCORE	1.1
+	DETAILS:         	[baseline test 7.20033 secs, and comparison 8.16352 sec, and warnIfPerfScore > 1.15, and perfScore=1.13377]
+	                 	SharedPtr is ***SLOWER***
+
+Test Simple Struct With Strings Filling And Copying (wstring vs Charactes::String)
+	PERFORMANCE_SCORE	0.4
+	DETAILS:         	[baseline test 6.70773 secs, and comparison 2.71449 sec, and warnIfPerfScore > 0.48, and perfScore=0.404681]
+	                 	Charactes::String is FASTER
+
+Test Simple Struct With Strings Filling And Copying2 (wstring vs Charactes::String)
+	PERFORMANCE_SCORE	0.43
+	DETAILS:         	[baseline test 8.04253 secs, and comparison 3.4357 sec, and warnIfPerfScore > 0.57, and perfScore=0.427192]
+	                 	Charactes::String is FASTER
+
+Test Simple String append test (+='string object') 10x (wstring vs Charactes::String)
+	PERFORMANCE_SCORE	3.6
+	DETAILS:         	[baseline test 5.57986 secs, and comparison 19.9838 sec, and warnIfPerfScore > 2.9, and perfScore=3.58142]
+	                 	Charactes::String is ***SLOWER***
+
+Test Simple String append test (+=wchar_t[]) 10x (wstring vs Charactes::String)
+	PERFORMANCE_SCORE	3.3
+	DETAILS:         	[baseline test 6.49486 secs, and comparison 21.3279 sec, and warnIfPerfScore > 2.9, and perfScore=3.28381]
+	                 	Charactes::String is ***SLOWER***
+
+Test Simple String append test (+=wchar_t[]) 100x (wstring vs Charactes::String)
+	PERFORMANCE_SCORE	8.3
+	DETAILS:         	[baseline test 8.5814 secs, and comparison 71.3798 sec, and warnIfPerfScore > 24, and perfScore=8.31797]
+	                 	Charactes::String is ***SLOWER***
+
+Test String a + b (wstring vs String)
+	PERFORMANCE_SCORE	1.2
+	DETAILS:         	[baseline test 9.45178 secs, and comparison 11.4524 sec, and warnIfPerfScore > 1.7, and perfScore=1.21166]
+	                 	String is ***SLOWER***
+
+Test wstringstream << test (wstring vs Charactes::String)
+	PERFORMANCE_SCORE	0.95
+	DETAILS:         	[baseline test 9.02773 secs, and comparison 8.58918 sec, and warnIfPerfScore > 1.5, and perfScore=0.951423]
+	                 	Charactes::String is FASTER
+
+Test String::substr() (wstring vs Charactes::String)
+	PERFORMANCE_SCORE	2.6
+	DETAILS:         	[baseline test 4.98896 secs, and comparison 13.2055 sec, and warnIfPerfScore > 2.1, and perfScore=2.64694]
+	                 	Charactes::String is ***SLOWER***
+
+Test wstringstream versus BasicTextOutputStream (wstringstream vs MemoryStream<Characters::Character>)
+	PERFORMANCE_SCORE	0.75
+	DETAILS:         	[baseline test 7.04421 secs, and comparison 5.30787 sec, and warnIfPerfScore > 1.6, and perfScore=0.753508]
+	                 	MemoryStream<Characters::Character> is FASTER
+
+Test wstringstream versus StringBuilder (wstringstream vs StringBuilder)
+	PERFORMANCE_SCORE	0.23
+	DETAILS:         	[baseline test 7.84835 secs, and comparison 1.82937 sec, and warnIfPerfScore > 0.23, and perfScore=0.233089]
+	                 	StringBuilder is FASTER
+
+Test Simple c_str() test (wstring vs Charactes::String)
+	PERFORMANCE_SCORE	1.1
+	DETAILS:         	[baseline test 4.27084 secs, and comparison 4.80809 sec, and warnIfPerfScore > 1.3, and perfScore=1.12579]
+	                 	Charactes::String is ***SLOWER***
+
+Test Sequence<int> basics (vector<int> vs Sequence<int>)
+	PERFORMANCE_SCORE	2.6
+	DETAILS:         	[baseline test 3.15577 secs, and comparison 8.19922 sec, and warnIfPerfScore > 1.2, and perfScore=2.59817]
+	                 	Sequence<int> is ***SLOWER***
+
+Test Sequence<string> basics (vector<string> vs Sequence<string>)
+	PERFORMANCE_SCORE	0.13
+	DETAILS:         	[baseline test 24.1544 secs, and comparison 3.24483 sec, and warnIfPerfScore > 0.33, and perfScore=0.134337]
+	                 	Sequence<string> is FASTER
+
+Test Sequence_DoublyLinkedList<int> basics (vector<int> vs Sequence_DoublyLinkedList<int>)
+	PERFORMANCE_SCORE	10
+	DETAILS:         	[baseline test 4.55069 secs, and comparison 45.6811 sec, and warnIfPerfScore > 6, and perfScore=10.0383]
+	                 	Sequence_DoublyLinkedList<int> is ***SLOWER***
+
+Test Sequence_Array<int> basics (vector<int> vs Sequence_Array<int>)
+	PERFORMANCE_SCORE	2.5
+	DETAILS:         	[baseline test 4.23155 secs, and comparison 10.5772 sec, and warnIfPerfScore > 0.8, and perfScore=2.4996]
+	                 	Sequence_Array<int> is ***SLOWER***
+
+Test Sequence_stdvector<int> basics (vector<int> vs Sequence_stdvector<int>)
+	PERFORMANCE_SCORE	2.9
+	DETAILS:         	[baseline test 4.31337 secs, and comparison 12.5068 sec, and warnIfPerfScore > 1.4, and perfScore=2.89953]
+	                 	Sequence_stdvector<int> is ***SLOWER***
+
+Test Sequence_DoublyLinkedList<string> basics (vector<string> vs Sequence_DoublyLinkedList<string>)
+	PERFORMANCE_SCORE	0.18
+	DETAILS:         	[baseline test 25.2244 secs, and comparison 4.49955 sec, and warnIfPerfScore > 0.65, and perfScore=0.178381]
+	                 	Sequence_DoublyLinkedList<string> is FASTER
+
+Test Collection<int> basics (vector<int> vs Collection<int>)
+	PERFORMANCE_SCORE	5.5
+	DETAILS:         	[baseline test 7.18466 secs, and comparison 39.7019 sec, and warnIfPerfScore > 4.4, and perfScore=5.52593]
+	                 	Collection<int> is ***SLOWER***
+
+Test Collection<string> basics (vector<string> vs Collection<string>)
+	PERFORMANCE_SCORE	0.23
+	DETAILS:         	[baseline test 19.25 secs, and comparison 4.33175 sec, and warnIfPerfScore > 0.6, and perfScore=0.225025]
+	                 	Collection<string> is FASTER
+
+Test Collection_LinkedList<string> basics (vector<string> vs Collection_LinkedList<string>)
+	PERFORMANCE_SCORE	0.29
+	DETAILS:         	[baseline test 12.9521 secs, and comparison 3.7292 sec, and warnIfPerfScore > 0.6, and perfScore=0.287922]
+	                 	Collection_LinkedList<string> is FASTER
+
+Test Collection_stdforward_list<string> basics (vector<string> vs Collection_stdforward_list<string>)
+	PERFORMANCE_SCORE	0.26
+	DETAILS:         	[baseline test 14.2095 secs, and comparison 3.6886 sec, and warnIfPerfScore > 0.6, and perfScore=0.259587]
+	                 	Collection_stdforward_list<string> is FASTER
+
+Test Collection_stdmultiset<string> basics (vector<string> vs Collection_stdmultiset<string>)
+	PERFORMANCE_SCORE	0.3
+	DETAILS:         	[baseline test 15.6977 secs, and comparison 4.65966 sec, and warnIfPerfScore > 1.3, and perfScore=0.296837]
+	                 	Collection_stdmultiset<string> is FASTER
+
+Test Collection_stdmultiset<string> basics with rnd strings (vector<string> vs Collection_stdmultiset<string>)
+	PERFORMANCE_SCORE	0.47
+	DETAILS:         	[baseline test 29.1057 secs, and comparison 13.6172 sec, and warnIfPerfScore > 1.3, and perfScore=0.467851]
+	                 	Collection_stdmultiset<string> is FASTER
+
+Test std::set<int> vs Set<int> (set<int> vs Set<int>)
+	PERFORMANCE_SCORE	0.38
+	DETAILS:         	[baseline test 19.532 secs, and comparison 7.48476 sec, and warnIfPerfScore > 0.3, and perfScore=0.383204]
+	                 	Set<int> is FASTER
+
+Test String Characters::Format () (sprintf vs String Characters::Format)
+	PERFORMANCE_SCORE	1.6
+	DETAILS:         	[baseline test 11.8299 secs, and comparison 18.6793 sec, and warnIfPerfScore > 1.5, and perfScore=1.57899]
+	                 	String Characters::Format is ***SLOWER***
+
+Test BLOB versus vector<byte> (vector<byte> vs BLOB)
+	PERFORMANCE_SCORE	0.32
+	DETAILS:         	[baseline test 8.93132 secs, and comparison 2.82277 sec, and warnIfPerfScore > 0.55, and perfScore=0.316053]
+	                 	BLOB is FASTER
+
+Test Test_JSONReadWriteFile (15.000000 seconds vs Test_JSONReadWriteFile)
+	PERFORMANCE_SCORE	0.092
+	DETAILS:         	[baseline test 15 secs, and comparison 1.37958 sec, and warnIfPerfScore > 0.1, and perfScore=0.0919721]
+	                 	Test_JSONReadWriteFile is FASTER
+
+Test Test_Optional_ (15.000000 seconds vs Test_Optional_)
+	PERFORMANCE_SCORE	0.26
+	DETAILS:         	[baseline test 15 secs, and comparison 3.88051 sec, and warnIfPerfScore > 0.5, and perfScore=0.258701]
+	                 	Test_Optional_ is FASTER
+
+[[[Tests took: 11 minutes, 27 seconds]]]
+
+Succeeded
