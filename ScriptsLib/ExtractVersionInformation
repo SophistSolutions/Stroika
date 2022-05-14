@@ -41,6 +41,7 @@ MAJOR=`$SED 's/\([0-9]*\).*/\1/' $VERSION_IN_FILE`
 MINOR=`$SED 's/[0-9]*\.\([0-9]*\).*/\1/' $VERSION_IN_FILE`
 VERSIONSTAGE=`$SED 's/[0-9]*\.[0-9]*\([abdr\.]\?\).*/\1/' $VERSION_IN_FILE`
 VERSIONSUBSTAGE=`$SED 's/[0-9]*\.[0-9]*[abdr\.]\?\([0-9]*\).*/\1/' $VERSION_IN_FILE`
+if [ "$VERSIONSUBSTAGE" == "" ] ; then VERSIONSUBSTAGE="0"; fi
 VERSIONFINAL=`$SED 's/[0-9]*\.[0-9]*[abdr\.]\?[0-9]*\(.*\)/\1/' $VERSION_IN_FILE | tr -d '[[:space:]]'`
 SHORT_VERSION_STAGE=$VERSIONSTAGE
 SHORT_VERSIONFINAL=$VERSIONFINAL
