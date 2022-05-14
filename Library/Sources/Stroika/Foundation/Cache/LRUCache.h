@@ -203,6 +203,10 @@ namespace Stroika::Foundation::Cache {
          *                  );
          *          }
          *      \endcode
+         * 
+         *  \note - LookupValue () only caches successful lookups, and propagates any exceptions looking up.
+         *          To negatively cache, be sure you use an optional<X> for the VALUE type, and then you can wrap
+         *          the LookupValue function with try/catch and on failure, cache nullopt.
          */
         nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& valueFetcher);
 
