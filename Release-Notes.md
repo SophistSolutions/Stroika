@@ -7,6 +7,52 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+-   vs2k 17.1.6 and 16.11.13
+- Updated vs2k versions to VS_17_2_0 and VS_16_11_14 for docker files
+
+- Documentation
+  - update link to stroika bugs in readme
+  - update comments/examples
+
+- ThirdPartyComponents
+  - libcurl 7.83.0
+  - zlib 
+    - 1.2.12
+    - disable ASM build for x64 windows zlib - and created jira ticket https://stroika.atlassian.net/browse/STK-905 to track future cleanup of makefile to reenable this (probably using cmake)
+  - boost 1.79.0
+  - SQLite
+    - 3380300
+    - fixed CompiledOptions::kThe.ENABLE_JSON1 for newwer sqlite
+
+- Samples
+  - Service
+    -  Don't strip when building installer if IncludeDebugSymbolsInExecutables set
+
+- Build
+  - refactored and disabled (by default) makefile configurations for private_compiler_versions_: myg++8.3, and my-clang++-7; left in makefile disabled so easy to re-include as needed if I need custom compiler build
+
+- Debugger tools
+  - fixed (serious regrssion - string visualizer) was broken, and updated older visual studio natvis files to match
+
+- support visual studio compiler _MSC_VER_2k22_17Pt2_ (2 new bugs and nothing fixed)
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------
+
+
+
 ### 2.1r9 {2022-04-28}
 
 #### TLDR
