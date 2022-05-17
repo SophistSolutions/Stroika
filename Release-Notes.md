@@ -7,6 +7,55 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+### 2.1 {2022-05-17}
+
+#### TLDR
+
+- nothing changed
+
+#### Change Details
+
+- Build System
+  - fix bug with ExtractVersionInfo call when VERSIONSUBSTAGE= (release) - set to 0
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13 }
+  - MSVC: { 15.9.41, 16.11.14, 17.2.0 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Monterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 21.10, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+
+---
+
 ### 2.1r10 {2022-05-14}
 
 #### TLDR
