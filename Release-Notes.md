@@ -7,8 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-
-### 2.1 {2022-05-17}
+### 2.1 {2022-05-18}
 
 #### TLDR
 
