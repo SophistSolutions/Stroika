@@ -450,10 +450,10 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 				for app in "${SAMPLE_APPS_2_TEST[@]}" ; do
 					# KISS  - include basically all the suppression files (later be smarter about which)
 					SUPPRESSION_LINES_="--suppressions=Tests/Valgrind-MemCheck-Common.supp --suppressions=Tests/Valgrind-MemCheck-BlockAllocation.supp  --suppressions=Tests/Valgrind-MemCheck-Common-x86_64.supp"
-					echo -n "valgrind -q --tool=memcheck $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app ..."
-					echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=memcheck $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app..." >>$TEST_OUT_FILE 2>&1
+					echo -n "valgrind -q --tool=memcheck --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app ..."
+					echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=memcheck --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app..." >>$TEST_OUT_FILE 2>&1
 					STAGE_STARTAT_INT=$(date +%s)
-					valgrind -q --tool=memcheck $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app 2>&1 > /dev/null
+					valgrind -q --tool=memcheck --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app 2>&1 > /dev/null
 					cat valgrind-log.tmp >> $TEST_OUT_FILE
 					rm -f valgrind-log.tmp 
 					STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
@@ -479,10 +479,10 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 					if [[ `ScriptsLib/GetConfigurationParameter $cfg qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy` -eq 1 ]] ; then 
 						SUPPRESSION_LINES_="$SUPPRESSION_LINES_ Tests/Valgrind-Helgrind-qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp"
 					fi
-					echo -n "valgrind -q --tool=helgrind $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app ..."
-					echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=helgrind $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app..." >>$TEST_OUT_FILE 2>&1
+					echo -n "valgrind -q --tool=helgrind --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app ..."
+					echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=helgrind --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app..." >>$TEST_OUT_FILE 2>&1
 					STAGE_STARTAT_INT=$(date +%s)
-					valgrind -q --tool=helgrind $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app 2>&1 > /dev/null
+					valgrind -q --tool=helgrind --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app 2>&1 > /dev/null
 					cat valgrind-log.tmp >> $TEST_OUT_FILE
 					rm -f valgrind-log.tmp 
 					STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
