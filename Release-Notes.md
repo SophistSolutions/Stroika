@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1 {2022-05-18}
+### 2.1 {2022-05-20}
 
 #### TLDR
 
@@ -17,6 +17,8 @@ especially those they need to be aware of when upgrading.
 
 - Build System
   - fix bug with ExtractVersionInfo call when VERSIONSUBSTAGE= (release) - set to 0
+- RegressionTests and Sanitizers
+  - saw sporadic (irreproducible) failures with Ubuntu 21.10 valgrind/helgrind, so added flags to valgrind to gen-supressions if it ever happens again.
 
 #### Release-Validation
 
