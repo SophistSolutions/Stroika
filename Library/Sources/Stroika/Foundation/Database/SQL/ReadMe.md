@@ -13,7 +13,7 @@ This folder contains all the Stroika Library Foundation::[Database](../ReadMe.md
 - Concrete
 
   - [ODBCClient.h](ODBCClient.h) - Concrete ODBC client (implements abstract Connection etc interfaces)
-  - [SQLite.h](SQLite.h)- Concrete ODBC client (implements abstract Connection etc interfaces)
+  - [SQLite.h](SQLite.h)- Concrete SQLite client (implements abstract Connection etc interfaces)
 
 - Other
   - [Utils.h](Utils.h)
