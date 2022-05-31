@@ -192,7 +192,8 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
     };
 
     /**
-     *  'Connection' is a quasi-namespace.
+     *  \brief SQLite Concrete Connection is a factory for building (local) sqlite based database connection objects.
+     *         'Connection' is a quasi-namespace.
      */
     class Connection : SQL::Connection {
     public:
@@ -212,7 +213,6 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
 
     public:
         /**
-         *  The dbInitializer is called IFF the New () call results in a newly created database (@todo RECONSIDER).
          */
         static Ptr New (const Options& options);
     };
