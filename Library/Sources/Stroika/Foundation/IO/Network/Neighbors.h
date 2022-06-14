@@ -34,6 +34,10 @@ namespace Stroika::Foundation::IO::Network {
      */
     class NeighborsMonitor {
     public:
+        /**
+         *  Note, though there are no guarantees about the form of a hardware address, we generally prefer emitting
+         *  things like ab:cd:ef... for ethernet addresses over what windows sometimes uses, ab-cd-ef...
+         */
         struct Neighbor {
             InternetAddress         fInternetAddress;
             String                  fHardwareAddress;

@@ -75,20 +75,20 @@ namespace {
                 // According to https://unix.stackexchange.com/questions/192313/how-do-you-clear-the-arp-cache-on-linux
                 // 'incomplete' entries mean about to be removed from the ARP table (or mostly removed).
                 //
-                if (s[1].StartsWith (L"(") and s[1].EndsWith (L")")) {
-                    if (not includePurgedEntries and s[3].Contains (L"incomplete")) {
+                if (s[1].StartsWith (L"("sv) and s[1].EndsWith (L")"sv)) {
+                    if (not includePurgedEntries and s[3].Contains (L"incomplete"sv)) {
                         continue;
                     }
                     String interfaceID;
                     size_t l = s.length ();
-                    if (l >= 6 and s[l - 2] == L"on") {
+                    if (l >= 6 and s[l - 2] == L"on"sv) {
                         interfaceID = s[l - 1];
                     }
                     result += Neighbor{InternetAddress{s[1].SubString (1, -1)}, s[3], interfaceID};
                 }
             }
 #elif qPlatform_Windows
-            if (i.StartsWith (L"Interface:")) {
+            if (i.StartsWith (L"Interface:"sv)) {
                 Sequence<String> s = i.Tokenize ();
                 if (s.length () >= 2) {
                     curInterface = s[1];
@@ -103,8 +103,12 @@ namespace {
             }
             if (i.StartsWith (L" ") and not curInterface.empty ()) {
                 Sequence<String> s = i.Tokenize ();
-                if (s.length () >= 3 and (s[2] == L"static" or s[2] == L"dynamic")) {
-                    result += Neighbor{InternetAddress{s[0]}, s[1], curInterface};
+                if (s.length () >= 3 and (s[2] == L"static"sv or s[2] == L"dynamic"sv)) {
+                    // Windows arp produces address of the form xy-ab-cd, while most other platforms produce xy:ab:cd, so standardize the
+                    // format we produce; helpful for WTF for example, sharing data among servers from different platforms --LGP 2022-06-14
+                    static const String kDash_  = L"-"sv;
+                    static const String kColon_ = L":"sv;
+                    result += Neighbor{InternetAddress{s[0]}, s[1].ReplaceAll (kDash_, kColon_), curInterface};
                 }
             }
 #endif
@@ -167,11 +171,11 @@ namespace {
 String NeighborsMonitor::Neighbor::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"fInternetAddress:" + Characters::ToString (fInternetAddress) + L",";
-    sb += L"fHardwareAddress:" + Characters::ToString (fHardwareAddress) + L",";
-    sb += L"fInterfaceID:" + Characters::ToString (fInterfaceID);
-    sb += L"}";
+    sb += L"{"sv;
+    sb += L"fInternetAddress:"sv + Characters::ToString (fInternetAddress) + L",";
+    sb += L"fHardwareAddress:"sv + Characters::ToString (fHardwareAddress) + L",";
+    sb += L"fInterfaceID:"sv + Characters::ToString (fInterfaceID);
+    sb += L"}"sv;
     return sb.str ();
 }
 
