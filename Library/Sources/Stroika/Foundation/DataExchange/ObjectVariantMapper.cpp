@@ -299,7 +299,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const InternetMed
 {
     using T                                  = InternetMediaType;
     FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
-        return VariantValue{fromObjOfTypeT->ToString ()};
+        return VariantValue{fromObjOfTypeT->As<String> ()};
     };
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = T{d.As<String> ()};
@@ -311,7 +311,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
 {
     using T                                  = IO::Network::CIDR;
     FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
-        return VariantValue{fromObjOfTypeT->ToString ()};
+        return VariantValue{fromObjOfTypeT->As<String> ()};
     };
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = T{d.As<String> ()};
@@ -323,7 +323,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
 {
     using T                                  = IO::Network::InternetAddress;
     FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
-        return VariantValue{fromObjOfTypeT->ToString ()};
+        return VariantValue{fromObjOfTypeT->As<String> ()};
     };
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = T{d.As<String> ()};

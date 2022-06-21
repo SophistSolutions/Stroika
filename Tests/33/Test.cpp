@@ -703,12 +703,6 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_CustomMapper_11_"};
         {
-            ObjectVariantMapper mapper;
-            using IO::Network::CIDR;
-            mapper.Add<CIDR> ([] ([[maybe_unused]] const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { return obj->ToString (); },
-                              [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { *intoObj = CIDR{d.As<String> ()}; });
-        }
-        {
             struct RGBColor {
                 uint8_t red;
                 uint8_t green;
@@ -761,24 +755,6 @@ namespace {
     }
 }
 
-#if !qCompilerAndStdLib_lambda_expand_in_namespace_Buggy
-namespace {
-    namespace aaa {
-        struct dev {
-            static const ObjectVariantMapper kMapper_;
-        };
-    }
-    using namespace aaa;
-    const ObjectVariantMapper dev::kMapper_ = [] () {
-        ObjectVariantMapper mapper;
-        using IO::Network::CIDR;
-        mapper.Add<CIDR> ([] ([[maybe_unused]] const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { return obj->ToString (); },
-                          [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { *intoObj = CIDR{d.As<String> ()}; });
-        return mapper;
-    }();
-}
-#endif
-
 namespace {
     void DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_ ()
     {
@@ -803,7 +779,7 @@ namespace {
             Fred fEnum1;
 
             SharedContactsConfig_ ()
-                : fEnum1 (Fred::a)
+                : fEnum1{Fred::a}
             {
             }
 
