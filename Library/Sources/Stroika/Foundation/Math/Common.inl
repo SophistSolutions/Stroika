@@ -353,8 +353,9 @@ namespace Stroika::Foundation::Math {
      ********************************************************************************
      */
     template <typename T>
-    inline bool IsOdd (T v)
+    constexpr bool IsOdd (T v)
     {
+        static_assert (is_integral_v<T>);
         return v % 2 == 1;
     }
 
@@ -364,8 +365,9 @@ namespace Stroika::Foundation::Math {
      ********************************************************************************
      */
     template <typename T>
-    inline bool IsEven (T v)
+    constexpr bool IsEven (T v)
     {
+        static_assert (is_integral_v<T>);
         return v % 2 == 0;
     }
 

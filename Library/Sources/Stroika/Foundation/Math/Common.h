@@ -158,13 +158,13 @@ namespace Stroika::Foundation::Math {
      *  \note - when we port stroika bignum package - this should support those bignums.
      */
     template <typename T>
-    bool IsOdd (T v);
+    constexpr bool IsOdd (T v);
 
     /**
      *  Note - when we port stroika bignum package - this should support those bignums.
      */
     template <typename T>
-    bool IsEven (T v);
+    constexpr bool IsEven (T v);
 
     /**
      *  Note - when we port stroika bignum package - this shoudl support those bignums.
