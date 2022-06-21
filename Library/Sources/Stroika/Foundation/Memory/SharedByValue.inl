@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Memory {
         if constexpr (is_same_v<SHARED_IMLP, shared_ptr<T>>) {
             return make_shared<T> (t); // more efficient
         }
-        return SHARED_IMLP{new T (t)};
+        return SHARED_IMLP{new T{t}};
     }
 
     /*

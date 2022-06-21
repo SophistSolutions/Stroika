@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             const T* rhs = &from.fItems_[0];
             T*       end = &fItems_[newLength];
             do {
-                new (lhs) T (*rhs++);
+                new (lhs) T{*rhs++};
             } while (++lhs < end);
         }
         fLength_ = newLength;
@@ -257,7 +257,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             T* end = &fItems_[newLength]; // point 1 past last new guy
             Assert (lhs < end);
             do {
-                new (lhs) T (*rhs++);
+                new (lhs) T{*rhs++};
             } while (++lhs < end);
         }
         fLength_ = newLength;
@@ -290,7 +290,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         if (newLength > fLength_) {
             Assert (cur < end);
             do {
-                new (cur) T (fillValue);
+                new (cur) T{fillValue};
             } while (++cur < end);
         }
         else {

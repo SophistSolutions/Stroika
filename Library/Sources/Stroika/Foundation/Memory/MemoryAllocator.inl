@@ -75,12 +75,12 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename BASE_ALLOCATOR>
     inline void STLAllocator<T, BASE_ALLOCATOR>::construct (pointer ptr)
     {
-        new (ptr) T ();
+        new (ptr) T{};
     }
     template <typename T, typename BASE_ALLOCATOR>
     inline void STLAllocator<T, BASE_ALLOCATOR>::construct (pointer ptr, const T& v)
     {
-        new (ptr) T (v);
+        new (ptr) T{v};
     }
     template <typename T, typename BASE_ALLOCATOR>
     template <typename OTHERT>
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Memory {
     template <typename... ARGS>
     inline void STLAllocator<T, BASE_ALLOCATOR>::construct (pointer p, ARGS&&... args)
     {
-        ::new ((void*)p) T (forward<ARGS> (args)...);
+        ::new ((void*)p) T{forward<ARGS> (args)...};
     }
     template <typename T, typename BASE_ALLOCATOR>
     inline size_t STLAllocator<T, BASE_ALLOCATOR>::max_size () const noexcept

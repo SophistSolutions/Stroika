@@ -302,7 +302,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const InternetMed
         return VariantValue{fromObjOfTypeT->ToString ()};
     };
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
-        *intoObjOfTypeT = T (d.As<String> ());
+        *intoObjOfTypeT = T{d.As<String> ()};
     };
     return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }
@@ -314,7 +314,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
         return VariantValue{fromObjOfTypeT->ToString ()};
     };
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
-        *intoObjOfTypeT = T (d.As<String> ());
+        *intoObjOfTypeT = T{d.As<String> ()};
     };
     return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }
@@ -326,7 +326,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
         return VariantValue{fromObjOfTypeT->ToString ()};
     };
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
-        *intoObjOfTypeT = T (d.As<String> ());
+        *intoObjOfTypeT = T{d.As<String> ()};
     };
     return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }

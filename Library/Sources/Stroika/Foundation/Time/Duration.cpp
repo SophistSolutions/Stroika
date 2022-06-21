@@ -126,7 +126,7 @@ namespace {
 #if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\"");
 #endif
-        return T (typename T::rep (d * multiplier));
+        return T{typename T::rep (d * multiplier)}; // () vs {} because we allow narrowing conversion
     }
 }
 
