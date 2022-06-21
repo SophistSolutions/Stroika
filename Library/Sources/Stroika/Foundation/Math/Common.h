@@ -150,6 +150,7 @@ namespace Stroika::Foundation::Math {
      *      \note   we define this as an alertnative to std::abs () - since that is not extendible to other types (just an overload for floating point and int types)
      *
      *  \note   when we port stroika bignum package - this shoudl support those bignums.
+     *  \note std::abs() not constexpr until C++ 23 (which is why this isn't)
      */
     template <typename T, typename RESULT_TYPE = T>
     RESULT_TYPE Abs (T v);
