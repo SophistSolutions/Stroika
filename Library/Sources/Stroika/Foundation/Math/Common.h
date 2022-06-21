@@ -144,7 +144,7 @@ namespace Stroika::Foundation::Math {
      *      \endcode
      */
     template <typename NEW_T, typename T>
-    NEW_T PinToMaxForType (T initialValue);
+    constexpr NEW_T PinToMaxForType (T initialValue);
 
     /**
      *      \note   we define this as an alertnative to std::abs () - since that is not extendible to other types (just an overload for floating point and int types)

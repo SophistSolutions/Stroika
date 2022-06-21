@@ -265,9 +265,9 @@ namespace Stroika::Foundation::Math {
      ********************************************************************************
      */
     template <typename NEW_T, typename T>
-    NEW_T PinToMaxForType (T initialValue)
+    constexpr NEW_T PinToMaxForType (T initialValue)
     {
-        using LargerType = decltype (NEW_T () + T ()); // maybe should use conditional<> for this?
+        using LargerType = decltype (NEW_T{} + T{}); // maybe should use conditional<> for this?
         return static_cast<NEW_T> (min<LargerType> (initialValue, numeric_limits<NEW_T>::max ()));
     }
 
