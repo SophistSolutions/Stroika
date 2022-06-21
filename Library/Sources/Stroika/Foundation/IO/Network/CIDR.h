@@ -42,6 +42,11 @@ namespace Stroika::Foundation::IO::Network {
          *  For CIDR (const String& cidrNotation... CTOR)
          *      cidrNotation ends with "/NNN" where NNN are digits of an interger where the numberOfBits. This will
          *      throw an exception if the input is ill-formed (e.g. if number of bits too large for the address).
+         *      And the internet-address part will be parsed as by InternetAddress{String} CTOR, and will also throw
+         *      on bad format (basically must be valid numeric internet address format).
+         * 
+         *      This API should always work with the output of CIDR::As<String> () - but will NOT in general work
+         *      with the output of CIDR::ToString () (since the later is for display purposes).
          */
         CIDR (const CIDR& src) = default;
         CIDR (const InternetAddress& internetAddress, optional<unsigned int> significantBits = nullopt);
@@ -81,6 +86,17 @@ namespace Stroika::Foundation::IO::Network {
          *      \endcode
          */
         nonvirtual Traversal::DiscreteRange<InternetAddress> GetRange () const;
+
+    public:
+        /**
+         *  Only specifically specialized variants are supported. As<T> supported variants include:
+         *      As<String> ();
+         *
+         *  \note   As<String> () will always produce a numerical representation, whereas ToString () - will sometimes produce
+         *          a textual shortcut, like "INADDR_ANY".
+         */
+        template <typename T>
+        nonvirtual T As () const;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:

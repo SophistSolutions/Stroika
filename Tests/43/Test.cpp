@@ -549,6 +549,10 @@ namespace {
                 auto cidr = CIDR{InternetAddress{"172.17.185.1"}, 28};
                 VerifyTestResult (Characters::ToString (cidr) == L"172.17.185.0/28");
             }
+            {
+                auto cidr = CIDR{V6::kAddrAny, 64};
+                VerifyTestResult (Characters::ToString (cidr) == L"in6addr_any/64");
+            }
         }
     }
 }
