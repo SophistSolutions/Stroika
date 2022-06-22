@@ -160,8 +160,7 @@ void Debug::Private_::EmitFirstTime (Emitter& emitter)
     if constexpr (qTraceToFile) {
         emitter.EmitTraceMessage (L"qTraceToFile: %s", String::FromSDKString (emitter.GetTraceFileName ()).c_str ());
     }
-    if constexpr (qCompiler_LimitLengthBeforeMainCrash_Buggy)
-    {
+    if constexpr (qCompiler_LimitLengthBeforeMainCrash_Buggy) {
         emitter.EmitTraceMessage ("EXEPath=%s", Execution::GetEXEPath ().native ().c_str ());
     }
     else {
