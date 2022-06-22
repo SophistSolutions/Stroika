@@ -156,7 +156,12 @@ void Debug::Private_::EmitFirstTime (Emitter& emitter)
     // Cannot call DbgTrace or TraceContextBumper in this code (else hang cuz calls back to Emitter::Get ())
     // which is why this function takes Emitter as argument!
     emitter.EmitTraceMessage (L"***Starting TraceLog***");
-    if constexpr (qCompiler_LimitLengthBeforeMainCrash_Buggy) {
+    emitter.EmitTraceMessage (L"Starting at %s", Characters::ToString (Time::DateTime::Now ()).c_str ());
+    if constexpr (qTraceToFile) {
+        emitter.EmitTraceMessage (L"qTraceToFile: %s", String::FromSDKString (emitter.GetTraceFileName ()).c_str ());
+    }
+    if constexpr (qCompiler_LimitLengthBeforeMainCrash_Buggy)
+    {
         emitter.EmitTraceMessage ("EXEPath=%s", Execution::GetEXEPath ().native ().c_str ());
     }
     else {
