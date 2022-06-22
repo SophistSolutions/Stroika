@@ -521,3 +521,33 @@ String ObjectVariantMapper::ToString () const
     sb += L"}";
     return sb.str ();
 }
+
+//  https://stroika.atlassian.net/browse/STK-910
+template <>
+ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const optional<IO::Network::CIDR>*)
+{
+    using T                                            = IO::Network::CIDR;
+    FromObjectMapperType<optional<T>> fromObjectMapper = [] (const ObjectVariantMapper& mapper, const optional<T>* fromObjOfTypeT) -> VariantValue {
+        RequireNotNull (fromObjOfTypeT);
+        if (fromObjOfTypeT->has_value ()) {
+            return mapper.FromObject<T> (**fromObjOfTypeT);
+        }
+        else {
+            return VariantValue{};
+        }
+    };
+    ToObjectMapperType<optional<T>> toObjectMapper = [] (const ObjectVariantMapper& mapper, const VariantValue& d, optional<T>* intoObjOfTypeT) -> void {
+        RequireNotNull (intoObjOfTypeT);
+        if (d.GetType () == VariantValue::eNull) {
+            *intoObjOfTypeT = nullopt;
+        }
+        else {
+            // SEE https://stroika.atlassian.net/browse/STK-910
+            // fix here - I KNOW I have something there, but how to construct
+            T tmp{IO::Network::V4::kLocalhost};
+            mapper.ToObject<T> (d, &tmp);
+            *intoObjOfTypeT = tmp;
+        }
+    };
+    return TypeMappingDetails{typeid (optional<T>), fromObjectMapper, toObjectMapper};
+}

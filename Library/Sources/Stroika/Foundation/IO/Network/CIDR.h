@@ -45,10 +45,12 @@ namespace Stroika::Foundation::IO::Network {
          *      And the internet-address part will be parsed as by InternetAddress{String} CTOR, and will also throw
          *      on bad format (basically must be valid numeric internet address format).
          * 
-         *      This API should always work with the output of CIDR::As<String> () - but will NOT in general work
+         *      This (string) API should always work with the output of CIDR::As<String> () - but will NOT in general work
          *      with the output of CIDR::ToString () (since the later is for display purposes).
          */
+        CIDR ()                = delete;
         CIDR (const CIDR& src) = default;
+        CIDR (CIDR&& src)      = default;
         CIDR (const InternetAddress& internetAddress, optional<unsigned int> significantBits = nullopt);
         CIDR (const InternetAddress& internetAddress, unsigned int significantBits);
         CIDR (const String& cidrNotation, InternetAddress::AddressFamily addressFamily = InternetAddress::AddressFamily::UNKNOWN);

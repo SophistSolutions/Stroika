@@ -551,6 +551,7 @@ namespace Stroika::Foundation::DataExchange {
         // the VariantValue (typically think JSON representation) as an array of Key/Value pairs, then use MakeCommonSerializer_MappingAsArrayOfKeyValuePairs
         return MakeCommonSerializer_MappingWithStringishKey<Containers::Mapping<KEY_TYPE, VALUE_TYPE>> ();
     }
+
     template <typename T>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const optional<T>*)
     {
@@ -569,11 +570,16 @@ namespace Stroika::Foundation::DataExchange {
                 *intoObjOfTypeT = nullopt;
             }
             else {
+                // SEE https://stroika.atlassian.net/browse/STK-910
+                // fix here - I KNOW I have something there, but how to construct
                 *intoObjOfTypeT = mapper.ToObject<T> (d);
             }
         };
         return TypeMappingDetails{typeid (optional<T>), fromObjectMapper, toObjectMapper};
     }
+    //  https://stroika.atlassian.net/browse/STK-910
+    template <>
+    ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const optional<IO::Network::CIDR>*);
     template <typename T, typename TRAITS>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>*)
     {
