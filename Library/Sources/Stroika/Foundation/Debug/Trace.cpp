@@ -23,6 +23,7 @@
 #include "../IO/FileSystem/PathName.h"
 #include "../Memory/Common.h"
 #include "../Memory/StackBuffer.h"
+#include "../Time/DateTime.h"
 #include "../Time/Realtime.h"
 
 #if qTraceToFile
