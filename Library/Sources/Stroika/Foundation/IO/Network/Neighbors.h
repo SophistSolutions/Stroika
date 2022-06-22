@@ -70,6 +70,10 @@ namespace Stroika::Foundation::IO::Network {
             // sometimes entries will remain in arp table after they have expired (just with address deleted).
             // Probably best to not include those
             optional<bool> fIncludePurgedEntries;
+
+            // On windows, we appear to get bogus hardware addresses for broadcast entries
+            // defaults true
+            optional<bool> fOmitAllFFHardwareAddresses;
         };
 
     public:

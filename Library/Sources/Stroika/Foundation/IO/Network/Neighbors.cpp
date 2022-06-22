@@ -36,7 +36,7 @@ using Neighbor = NeighborsMonitor::Neighbor;
 // @todo perhaps add ability - background thread - to monitor, and always report up to date list?
 //
 namespace {
-    Collection<Neighbor> ArpDashA_ (bool includePurgedEntries)
+    Collection<Neighbor> ArpDashA_ (bool includePurgedEntries, bool omitAllFFHardwareAddresses)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}ArpDashA_", L"includePurgedEntries=%s", Characters::ToString (includePurgedEntries).c_str ())};
@@ -108,6 +108,13 @@ namespace {
                     // format we produce; helpful for WTF for example, sharing data among servers from different platforms --LGP 2022-06-14
                     static const String kDash_  = L"-"sv;
                     static const String kColon_ = L":"sv;
+                    if (omitAllFFHardwareAddresses) {
+                        static const String kFFFF_ = L"ff-ff-ff-ff-ff-ff"sv;
+                        if (s[1] == kFFFF_) {
+                            //DbgTrace (L"ignoring arped fake(broadcast) address %s", s[1].c_str ());
+                            continue;
+                        }
+                    }
                     result += Neighbor{InternetAddress{s[0]}, s[1].ReplaceAll (kDash_, kColon_), curInterface};
                 }
             }
@@ -228,9 +235,10 @@ public:
 #endif
         switch (s) {
             case Options::Strategy::eArpProgram:
-                return ArpDashA_ (fOptions_.fIncludePurgedEntries.value_or (false));
+                return ArpDashA_ (fOptions_.fIncludePurgedEntries.value_or (false), fOptions_.fOmitAllFFHardwareAddresses.value_or (true));
 #if qPlatform_Linux
             case Options::Strategy::eProcNetArp:
+                // fOmitAllFFHardwareAddresses not needed here apparently
                 return ProcNetArp_ (fOptions_.fIncludePurgedEntries.value_or (false));
 #endif
             default:
