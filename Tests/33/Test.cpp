@@ -838,9 +838,6 @@ namespace {
     namespace Test14_ObjVarMapperAsStringVsToString_STK_909_ {
         void DoIt ()
         {
-            IO::Network::InternetAddress    ia;
-            optional<IO::Network::CIDR>     cidr;
-            DataExchange::InternetMediaType mediaType;
             ObjectVariantMapper             mapper;
             struct T {
                 IO::Network::InternetAddress    ia;
