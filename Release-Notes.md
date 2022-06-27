@@ -7,6 +7,78 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1.1  {20xxx0--working}
+
+#### TLDR
+
+- Foundation::IO::Network::Neighbors on windows, return : separated hardware addresses
+- https://stroika.atlassian.net/browse/STK-909: slight cleanup to CIDR constructors; and allow
+  roundtrip As<String>/CIDR{String} to always work (and a few other types with ObjectVariantMapper - use As<String> not ToString())
+- Added Iterable<>::First() and Last() overloads which are much more convenient (callback return bool)
+
+#### Change Details
+
+- Build System
+  - Docker containers: use VS_17_2_4 and VS_16_11_16
+- RegressionTests and Sanitizers
+  - Add suppression for /Valgrind-Helgrind-qCompiler_lto_Buggy.supp
+- Documentation
+  - Serveral small docs cleanups, method/class descriptions mostly
+- Library
+  - Foundation
+    - Debug
+      - augmented initial tracelog output with Starting at, and qTraceToFile messages
+    - IO::Network
+      - Documentation on CIDR CTOR, and new As() method for CIDR (As<String> () so produces save to externalize format)
+      - https://stroika.atlassian.net/browse/STK-909: slight cleanup to CIDR constructors; added regtests for this issue;
+        and ObjectVariantMapper serializer now uses As<String> instead of ToString ();
+        workaround https://stroika.atlassian.net/browse/STK-910 issue - with CIDR - construction of optional CIDR
+      - Neighbors monitor code gets new option - fOmitAllFFHardwareAddresses - defaults true on windows
+      - Neighbors computed on Windows use : instead of - to separate octets in hardware address
+    - Foundation/Math:
+      - PinToMaxForType, IsOdd, IsEven constexpr
+    - Foundation::Traversal
+        Added Iterable<>::First() and Last() overloads which are much more convenient (return bool) - as thats what I document anyhow, and use mostly, though other case returning optioanl function that functional also makes sense
+- ThirdPartyCompoents
+  - sqlite 3.38.5; openssl 3.0.4; and libcurl 7.83.1
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13 }
+  - MSVC: { 15.9.49, 16.11.16, 17.2.4 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Monterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 21.10, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+
+---
+
 ### 2.1 {2022-05-20}
 
 #### TLDR
