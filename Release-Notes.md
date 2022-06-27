@@ -21,7 +21,7 @@ especially those they need to be aware of when upgrading.
 - Build System
   - Docker containers: use VS_17_2_4 and VS_16_11_16
 - RegressionTests and Sanitizers
-  - Add suppression for /Valgrind-Helgrind-qCompiler_lto_Buggy.supp
+  - Add suppression for Valgrind-Helgrind-qCompiler_lto_Buggy.supp
 - Documentation
   - Serveral small docs cleanups, method/class descriptions mostly
 - Library
@@ -35,12 +35,14 @@ especially those they need to be aware of when upgrading.
         workaround https://stroika.atlassian.net/browse/STK-910 issue - with CIDR - construction of optional CIDR
       - Neighbors monitor code gets new option - fOmitAllFFHardwareAddresses - defaults true on windows
       - Neighbors computed on Windows use : instead of - to separate octets in hardware address
-    - Foundation/Math:
+    - Math:
       - PinToMaxForType, IsOdd, IsEven constexpr
-    - Foundation::Traversal
+    - Traversal
         Added Iterable<>::First() and Last() overloads which are much more convenient (return bool) - as thats what I document anyhow, and use mostly, though other case returning optioanl function that functional also makes sense
 - ThirdPartyCompoents
-  - sqlite 3.38.5; openssl 3.0.4; and libcurl 7.83.1
+  - sqlite 3.38.5
+  - openssl 3.0.4
+  - libcurl 7.83.1
 
 #### Release-Validation
 
