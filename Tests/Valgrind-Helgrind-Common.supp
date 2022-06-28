@@ -116,3 +116,8 @@
    fun:exit
    fun:(below main)
 }
+{
+   https://stroika.atlassian.net/browse/STK-914
+   Helgrind:Race
+   fun:_ZNK7Stroika10Foundation5Debug33AssertExternallySynchronizedMutex5lock_Ev
+}
