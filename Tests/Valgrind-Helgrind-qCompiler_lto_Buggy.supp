@@ -144,14 +144,14 @@
 {
    <insert_a_suppression_name_here>
    Helgrind:UnlockForeign
-   ..
+   ...
    fun:*131RegressionTest10_BlockingQueue*
    ...
 }
 {
    <insert_a_suppression_name_here>
    Helgrind:Race
-   ..
+   ...
    fun:*131RegressionTest10_BlockingQueue*
    ...
 }
