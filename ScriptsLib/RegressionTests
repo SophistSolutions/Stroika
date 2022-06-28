@@ -477,7 +477,7 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 					# KISS  - include basically all the suppression files (later be smarter about which)
 					SUPPRESSION_LINES_="--suppressions=Tests/Valgrind-Helgrind-Common.supp"
 					if [[ `ScriptsLib/GetConfigurationParameter $cfg qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy` -eq 1 ]] ; then 
-						SUPPRESSION_LINES_="$SUPPRESSION_LINES_ Tests/Valgrind-Helgrind-qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp"
+						SUPPRESSION_LINES_="$SUPPRESSION_LINES_ --suppressions=Tests/Valgrind-Helgrind-qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp"
 					fi
 					echo -n "valgrind -q --tool=helgrind --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app ..."
 					echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=helgrind --gen-suppressions=all $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app..." >>$TEST_OUT_FILE 2>&1
