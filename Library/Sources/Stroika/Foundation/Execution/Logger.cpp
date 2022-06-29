@@ -210,6 +210,25 @@ void Logger::Shutdown ()
     Debug::TraceContextBumper ctx{"Logger::Shutdown"};
     // @todo FIX to assure all shutdown properly...
     // But this is OK for now pragmatically
+#if 1
+    // see https://stroika.atlassian.net/browse/STK-917
+    bool changed = false;
+    RequireNotNull (fRep_); // not yet destroyed
+    {
+        [[maybe_unused]] auto&& critSec = lock_guard{fRep_->fSuppressDuplicatesThreshold_};
+        if (fRep_->fSuppressDuplicatesThreshold_.load ()) {
+            fRep_->fSuppressDuplicatesThreshold_.store (nullopt);
+            changed = true;
+        }
+    }
+    if (fRep_->fBufferingEnabled_) {
+        fRep_->fBufferingEnabled_ = false;
+        changed                   = true;
+    }
+    if (changed) {
+        fRep_->UpdateBookkeepingThread_ ();
+    }
+#endif
     SetSuppressDuplicates (nullopt);
     SetBufferingEnabled (false);
     Flush ();
