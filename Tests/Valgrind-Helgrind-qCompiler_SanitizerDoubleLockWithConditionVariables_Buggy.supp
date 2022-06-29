@@ -130,3 +130,15 @@
    Helgrind:Race
    fun:_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv
 }
+{
+   https://stroika.atlassian.net/browse/STK-915
+   Helgrind:UnlockForeign
+   fun:*BlockingQueue*
+}
+{
+   https://stroika.atlassian.net/browse/STK-915
+   Helgrind:Race
+   fun:*BlockingQueue*
+}
+
+
