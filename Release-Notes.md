@@ -15,6 +15,7 @@ especially those they need to be aware of when upgrading.
 - https://stroika.atlassian.net/browse/STK-909: slight cleanup to CIDR constructors; and allow
   roundtrip As<String>/CIDR{String} to always work (and a few other types with ObjectVariantMapper - use As<String> not ToString())
 - Added Iterable<>::First() and Last() overloads which are much more convenient (callback return bool)
+- workaround Logger::Shutdown() issue
 
 #### Change Details
 
@@ -28,6 +29,8 @@ especially those they need to be aware of when upgrading.
   - Foundation
     - Debug
       - augmented initial tracelog output with Starting at, and qTraceToFile messages
+    - Execution
+      - Workaround Logger::Shutdown issue - https://stroika.atlassian.net/browse/STK-917
     - IO::Network
       - Documentation on CIDR CTOR, and new As() method for CIDR (As<String> () so produces save to externalize format)
       - https://stroika.atlassian.net/browse/STK-909: slight cleanup to CIDR constructors; added regtests for this issue;
