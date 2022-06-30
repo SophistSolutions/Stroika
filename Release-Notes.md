@@ -8,7 +8,8 @@ especially those they need to be aware of when upgrading.
 ## History
 
 ### 2.1.1  {20xxx0--working}
-
+taking a bit longer - will be next week - fixing issue
+with some valgrind tests I never ran before due ot script bug
 #### TLDR
 
 - Foundation::IO::Network::Neighbors on windows, return : separated hardware addresses

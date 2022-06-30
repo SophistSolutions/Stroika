@@ -133,12 +133,14 @@
 {
    https://stroika.atlassian.net/browse/STK-915
    Helgrind:UnlockForeign
+   ...
    fun:*BlockingQueue*
+   ...
 }
 {
    https://stroika.atlassian.net/browse/STK-915
    Helgrind:Race
+   ...
    fun:*BlockingQueue*
+   ...
 }
-
-
