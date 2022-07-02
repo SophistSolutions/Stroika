@@ -526,6 +526,13 @@ namespace Stroika::Foundation::Traversal {
          *
          *  Note that this used to be called 'ContainsWith' - because it can act the same way (due to
          *  operator bool () method of Iterator<T>).
+         * 
+         *  \note This is much like First(), except that it optional takes a different starting point, and 
+         *        it returns an Iterator<T> intead of an optional<T>
+         *        First () - often more handy.
+         * 
+         *  \note though semantically similar to iterating, it maybe faster, due to delegating 'search' to backend container
+         *        implementation (though then call to lambda/checker maybe indirected countering this performance benefit).
          *
          *  @see Apply
          *
@@ -540,8 +547,6 @@ namespace Stroika::Foundation::Traversal {
          *          }
          *      \endcode
          *
-         *  @see First () - often more handy
-         * 
          *  \note - because the lifetime of the iterable must exceed that of the iterator, its generally unsafe to use Find()
          *          on a temporary (except with the trick if (auto i = x().Find(...)) { ok to access i here cuz x() temporary
          *          not destroyed yet).

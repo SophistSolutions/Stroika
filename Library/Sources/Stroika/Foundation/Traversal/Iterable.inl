@@ -705,24 +705,47 @@ namespace Stroika::Foundation::Traversal {
     inline optional<T> Iterable<T>::First (const function<bool (ArgByValueType<T>)>& that) const
     {
         RequireNotNull (that);
-        for (const auto& i : *this) {
-            if (that (i)) {
-                return i;
-            }
+        constexpr bool kUseIterableRepIteration_ = true; // same semantics, but maybe faster cuz avoids Stroika iterator extra virtual calls overhead
+        if (kUseIterableRepIteration_) {
+            Iterator<T> t = this->_fRep->Find (that);
+            return t ? optional<T>{*t} : optional<T>{};
         }
-        return nullopt;
+        else {
+            for (const auto& i : *this) {
+                if (that (i)) {
+                    return i;
+                }
+            }
+            return nullopt;
+        }
     }
     template <typename T>
     template <typename RESULT_T>
     inline optional<RESULT_T> Iterable<T>::First (const function<optional<RESULT_T> (ArgByValueType<T>)>& that) const
     {
         RequireNotNull (that);
-        for (const auto& i : *this) {
-            if (auto r = that (i)) {
-                return r;
-            }
+        constexpr bool kUseIterableRepIteration_ = true; // same semantics, but maybe faster cuz avoids Stroika iterator extra virtual calls overhead
+        if (kUseIterableRepIteration_) {
+            optional<RESULT_T> result;
+            auto               f = [&that, &result] (ArgByValueType<T> i) {
+                if (result = that (i)) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            };
+            Iterator<T> t = this->_fRep->Find (f);
+            return t ? result : optional<RESULT_T>{};
         }
-        return nullopt;
+        else {
+            for (const auto& i : *this) {
+                if (auto r = that (i)) {
+                    return r;
+                }
+            }
+            return nullopt;
+        }
     }
     template <typename T>
     inline T Iterable<T>::FirstValue (ArgByValueType<T> defaultValue) const
