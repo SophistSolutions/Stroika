@@ -86,7 +86,6 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         using DataExchange::VariantValue;
-        using Stroika::Foundation::Common::KeyValuePair;
         fAddNew_Statement_.Reset ();
         fAddNew_Statement_.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ()));
         if constexpr (TRAITS::kTraceLogEachRequest) {
@@ -98,7 +97,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     void TableConnection<T, TRAITS>::AddOrUpdate (const T& v)
     {
         // this can and should be done more efficiently
-        if (auto i = GetByID (v)) {
+        if (GetByID (v)) {
             Update (v);
         }
         else {
