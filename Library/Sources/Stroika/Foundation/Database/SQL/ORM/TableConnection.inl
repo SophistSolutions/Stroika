@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         fGetByID_Statement_.Reset ();
-        fGetByID_Statement_.Bind (initializer_list<KeyValuePair<String, VariantValue>>{{fTableSchema_.GetIDField ()->fName, VariantValue{static_cast<Memory::BLOB> (id)}}});
+        fGetByID_Statement_.Bind (initializer_list<KeyValuePair<String, VariantValue>>{{fTableSchema_.GetIDField ()->fName, TRAITS::ID2VariantValue (id)}});
         if constexpr (TRAITS::kTraceLogEachRequest) {
             DbgTrace (L"SQL: %s", fGetByID_Statement_.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
         }

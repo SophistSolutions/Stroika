@@ -34,6 +34,23 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     struct TableConnectionTraits {
         using IDType                               = ID_TYPE;
         static constexpr bool kTraceLogEachRequest = TRACE_LOG_EACH_REQUEST;
+        static VariantValue   ID2VariantValue (const IDType& id)
+        {
+            if constexpr (is_convertible_v<ID_TYPE, Memory::BLOB> or is_same_v<ID_TYPE, Common::GUID>) {
+                return VariantValue{static_cast<Memory::BLOB> (id)};
+            }
+            else if constexpr (is_same_v<ID_TYPE, IO::Network::URI>) {
+                return VariantValue{id.As<Characters::String> ()};
+            }
+            else if constexpr (is_convertible_v<ID_TYPE, Characters::String>) {
+                return VariantValue{static_cast<Characters::String> (id)};
+            }
+            else {
+                AssertNotReached ();
+                return VariantValue{};
+                //static_assert (false, "specify your own ID2VariantValue function for this type");
+            }
+        }
     };
 
     /**
