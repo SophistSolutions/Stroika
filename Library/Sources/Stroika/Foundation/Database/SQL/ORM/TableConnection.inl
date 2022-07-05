@@ -95,6 +95,17 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         fAddNew_Statement_.Execute ();
     }
     template <typename T, typename TRAITS>
+    void TableConnection<T, TRAITS>::AddOrUpdate (const T& v)
+    {
+        // this can and should be done more efficiently
+        if (auto i = GetByID (v)) {
+            Update (v);
+        }
+        else {
+            AddNew (v);
+        }
+    }
+    template <typename T, typename TRAITS>
     void TableConnection<T, TRAITS>::Update (const T& v)
     {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};

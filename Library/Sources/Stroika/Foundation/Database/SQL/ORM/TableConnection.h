@@ -118,6 +118,12 @@ namespace Stroika::Foundation::Database::SQL::ORM {
 
     public:
         /**
+         *  Equivilent to checking GetByID () to see if present, and either calling AddNew or Update().
+         */
+        nonvirtual void AddOrUpdate (const T& v);
+
+    public:
+        /**
          *  Use the ID field from the argument object to update all the OTHER fields of that object in the database.
          *  The ID field is known because of the Table::Schema, and must be valid (else this will fail).
          */
