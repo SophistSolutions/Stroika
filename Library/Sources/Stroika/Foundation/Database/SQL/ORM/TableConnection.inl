@@ -46,13 +46,13 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     {
     }
     template <typename T, typename TRAITS>
-    optional<T> TableConnection<T, TRAITS>::GetByID (const typename TRAITS::IDType& id)
+    optional<T> TableConnection<T, TRAITS>::GetByID (const VariantValue& id)
     {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         fGetByID_Statement_.Reset ();
-        fGetByID_Statement_.Bind (initializer_list<KeyValuePair<String, VariantValue>>{{fTableSchema_.GetIDField ()->fName, TRAITS::ID2VariantValue (id)}});
+        fGetByID_Statement_.Bind (initializer_list<KeyValuePair<String, VariantValue>>{{fTableSchema_.GetIDField ()->fName, id}});
         if constexpr (TRAITS::kTraceLogEachRequest) {
             DbgTrace (L"SQL: %s", fGetByID_Statement_.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
         }
@@ -65,6 +65,11 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         }
         Ensure (rows.size () == 1); // cuz arg sb a key
         return *rows.First ();
+    }
+    template <typename T, typename TRAITS>
+    optional<T> TableConnection<T, TRAITS>::GetByID (const typename TRAITS::IDType& id)
+    {
+        return GetByID (TRAITS::ID2VariantValue (id));
     }
     template <typename T, typename TRAITS>
     Sequence<T> TableConnection<T, TRAITS>::GetAll ()
@@ -96,8 +101,9 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS>
     void TableConnection<T, TRAITS>::AddOrUpdate (const T& v)
     {
-        // this can and should be done more efficiently
-        if (GetByID (v)) {
+        // @todo: this can and should be done much more efficiently
+        Mapping<String, VariantValue> dbV = fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ());
+        if (GetByID (dbV[fTableSchema_.GetIDField ()->fName])) {
             Update (v);
         }
         else {

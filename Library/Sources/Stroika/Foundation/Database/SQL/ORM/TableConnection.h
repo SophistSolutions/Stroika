@@ -36,19 +36,19 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         static constexpr bool kTraceLogEachRequest = TRACE_LOG_EACH_REQUEST;
         static VariantValue   ID2VariantValue (const IDType& id)
         {
-            if constexpr (is_convertible_v<ID_TYPE, Memory::BLOB> or is_same_v<ID_TYPE, Common::GUID>) {
+            if constexpr (is_convertible_v<IDType, Memory::BLOB> or is_same_v<IDType, Common::GUID>) {
                 return VariantValue{static_cast<Memory::BLOB> (id)};
             }
-            else if constexpr (is_same_v<ID_TYPE, IO::Network::URI>) {
-                return VariantValue{id.As<Characters::String> ()};
+            else if constexpr (is_same_v<IDType, IO::Network::URI>) {
+                return VariantValue{id.template As<Characters::String> ()};
             }
-            else if constexpr (is_convertible_v<ID_TYPE, Characters::String>) {
+            else if constexpr (is_convertible_v<IDType, Characters::String>) {
                 return VariantValue{static_cast<Characters::String> (id)};
             }
             else {
+                //static_assert (false, "specify your own ID2VariantValue function for this type");
                 AssertNotReached ();
                 return VariantValue{};
-                //static_assert (false, "specify your own ID2VariantValue function for this type");
             }
         }
     };
@@ -99,6 +99,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
          *  Lookup the given object by ID. This does a select * from table where id=id, and maps the various
          *  SQL parameters that come back to a C++ object.
          */
+        nonvirtual optional<T> GetByID (const VariantValue& id);
         nonvirtual optional<T> GetByID (const typename TRAITS::IDType& id);
 
     public:
