@@ -192,7 +192,9 @@ namespace Stroika::Foundation::Database::SQL {
 
     public:
         /**
-         *  This mimics the sqlite3_reset () functionality/API.
+         *  \brief resets the prepared statement back to the beginning of its program (this does NOT clear bindings)
+         * 
+         *  \note This mimics the sqlite3_reset () functionality/API.
          * 
          *  This clears any ongoing query, so the next call to GetNextRow () will start with the first row from the current query.
          *  This does NOT affect any values currently bound.
