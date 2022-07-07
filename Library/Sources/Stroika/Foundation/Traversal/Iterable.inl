@@ -726,7 +726,7 @@ namespace Stroika::Foundation::Traversal {
         RequireNotNull (that);
         constexpr bool kUseIterableRepIteration_ = true; // same semantics, but maybe faster cuz avoids Stroika iterator extra virtual calls overhead
         if (kUseIterableRepIteration_) {
-            optional<RESULT_T> result;  // actual result captured in sife-effect of lambda
+            optional<RESULT_T> result; // actual result captured in sife-effect of lambda
             auto               f = [&that, &result] (ArgByValueType<T> i) {
                 return (result = that (i)).has_value ();
             };
