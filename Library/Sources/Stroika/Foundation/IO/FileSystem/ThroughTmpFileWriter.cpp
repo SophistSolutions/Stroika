@@ -45,7 +45,7 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
  */
 ThroughTmpFileWriter::ThroughTmpFileWriter (const filesystem::path& realFileName, const String& tmpSuffix)
     : fRealFilePath_{realFileName}
-    , fTmpFilePath_{realFileName / ToPath (tmpSuffix)}
+    , fTmpFilePath_{filesystem::path{realFileName}.operator+= (tmpSuffix.As<wstring> ())}
 {
     Require (not realFileName.empty ());
     Require (not tmpSuffix.empty ());
