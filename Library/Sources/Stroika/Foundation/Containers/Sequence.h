@@ -709,6 +709,16 @@ namespace Stroika::Foundation::Containers {
     bool operator> (const Sequence<T>& lhs, const Sequence<T>& rhs);
 #endif
 
+    /**
+     *  Basic operator overload with the obvious meaning (Sequence<T> copy and Sequence<T>::AppendAll)
+     */
+    template <typename T>
+    Sequence<T> operator+ (const Iterable<T>& lhs, const Sequence<T>& rhs);
+    template <typename T>
+    Sequence<T> operator+ (const Sequence<T>& lhs, const Iterable<T>& rhs);
+    template <typename T>
+    Sequence<T> operator+ (const Sequence<T>& lhs, const Sequence<T>& rhs);
+
 }
 
 /*

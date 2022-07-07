@@ -499,6 +499,33 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
 
+    /*
+     ********************************************************************************
+     ********************************* operator+ ************************************
+     ********************************************************************************
+     */
+    template <typename T>
+    Sequence<T> operator+ (const Iterable<T>& lhs, const Sequence<T>& rhs)
+    {
+        Sequence<T> result{lhs};
+        result += rhs;
+        return result;
+    }
+    template <typename T>
+    Sequence<T> operator+ (const Sequence<T>& lhs, const Iterable<T>& rhs)
+    {
+        Sequence<T> result{lhs};
+        result += rhs;
+        return result;
+    }
+    template <typename T>
+    Sequence<T> operator+ (const Sequence<T>& lhs, const Sequence<T>& rhs)
+    {
+        Sequence<T> result{lhs};
+        result += rhs;
+        return result;
+    }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Sequence_inl_ */
