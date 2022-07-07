@@ -262,8 +262,9 @@ namespace Stroika::Foundation::DataExchange {
         };
         Msg                        fMsg;
         optional<filesystem::path> fFileName;
+        optional<String>           fDetails;
 
-        LoggerMessage (Msg msg, const filesystem::path& fn);
+        LoggerMessage (Msg msg, const filesystem::path& fn, const optional<String>& details = nullopt);
         nonvirtual String FormatMessage () const;
     };
 
