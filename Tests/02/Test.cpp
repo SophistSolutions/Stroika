@@ -1570,6 +1570,23 @@ namespace {
 }
 
 namespace {
+    void Test53_vswprintf_on_2_strings_longish_Buggy_ ()
+    {
+        String a = L"'/var/opt/Put-Your-App-Name-Here/MyModule.json'";
+        String b = L"; No such file or directory {…-Name-Here/MyModule.json} while opening '/var/opt/Put-Your-App-Name-Here/MyModule.json' for read access.";
+        #if !qCompiler_vswprintf_on_2_strings_longish_Buggy
+        try {
+            String x = Characters::Format (L"Failed to read file: %s%s.", a.c_str (), b.c_str ());
+            VerifyTestResult (x == L"Failed to read file:" + a + b + L".");
+        }
+        catch (...) {
+            VerifyTestResult (false);   // means we have the bug...
+        }
+        #endif
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -1620,6 +1637,7 @@ namespace {
         Test50_Utf8Conversions_ ();
         Test51_Utf16Conversions_ ();
         Test52_Utf32Conversions_ ();
+        Test53_vswprintf_on_2_strings_longish_Buggy_ ();
     }
 }
 

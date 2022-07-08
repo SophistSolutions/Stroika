@@ -54,6 +54,32 @@ String OptionsFile::LoggerMessage::FormatMessage () const
         sb += *fDetails;
         details = sb.str ();
     }
+
+    #if qCompiler_vswprintf_on_2_strings_longish_Buggy
+    switch (fMsg) {
+        case Msg::eFailedToWriteFile:
+            return Characters::Format (L"Failed to write file: %s", Characters::ToString (NullCoalesce (fFileName)).c_str ()) + details + L".";
+        case Msg::eFailedToReadFile:
+            return Characters::Format (L"Failed to read file: %s", Characters::ToString (NullCoalesce (fFileName)).c_str ()) + details + L".";
+        case Msg::eFailedToParseReadFile:
+            return Characters::Format (L"Error analyzing configuration file %s - using defaults", Characters::ToString (NullCoalesce (fFileName)).c_str ()) + details + L".";
+        case Msg::eFailedToParseReadFileBadFormat:
+            return Characters::Format (L"Error analyzing configuration file (because bad format) %s - using defaults", Characters::ToString (NullCoalesce (fFileName)).c_str ()) + details + L".";
+        case Msg::eFailedToCompareReadFile:
+            return Characters::Format (L"Failed to compare configuration file: %s", Characters::ToString (NullCoalesce (fFileName)).c_str ()) + details + L".";
+        case Msg::eWritingConfigFile_SoDefaultsEditable:
+            return Characters::Format (L"Writing configuration file %s because not found (and so defaults are more easily seen and editable)", Characters::ToString (NullCoalesce (fFileName)).c_str ()) + details + L".";
+        case Msg::eWritingConfigFile_BecauseUpgraded:
+            return Characters::Format (L"Writing configuration file %s in a new location because the software has been upgraded", Characters::ToString (NullCoalesce (fFileName)).c_str ()) + details + L".";
+        case Msg::eWritingConfigFile_BecauseSomethingChanged:
+            return Characters::Format (L"Writing configuration file %s because something changed (e.g. a default, or field added/removed)", Characters::ToString (NullCoalesce (fFileName)).c_str ()) + details + L".";
+        case Msg::eFailedToWriteInUseValues:
+            return Characters::Format (L"Failed to write default (in use) values to file: %s", Characters::ToString (NullCoalesce (fFileName)).c_str ()) + details + L".";
+        default:
+            RequireNotReached ();
+            return String{};
+    }
+    #else
     switch (fMsg) {
         case Msg::eFailedToWriteFile:
             return Characters::Format (L"Failed to write file: %s%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
@@ -72,11 +98,12 @@ String OptionsFile::LoggerMessage::FormatMessage () const
         case Msg::eWritingConfigFile_BecauseSomethingChanged:
             return Characters::Format (L"Writing configuration file %s because something changed (e.g. a default, or field added/removed)%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         case Msg::eFailedToWriteInUseValues:
-            return Characters::Format (L"Failed to write default (in use) values to file: %s%s", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format (L"Failed to write default (in use) values to file: %s%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         default:
             RequireNotReached ();
             return String{};
     }
+    #endif
 }
 
 /*

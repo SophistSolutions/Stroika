@@ -1379,6 +1379,18 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 
 #endif
 
+
+#ifndef qCompiler_vswprintf_on_2_strings_longish_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+// first noticed in XCODE 13
+#define qCompiler_vswprintf_on_2_strings_longish_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (((__clang_major__ <= 13))
+#else
+#define qCompiler_vswprintf_on_2_strings_longish_Buggy 0
+#endif
+
+#endif
+
 /**
  * (compiler file 'd:\agent\_work\3\s\src\vctools\Compiler\CxxFE\sl\p1\c\ParseTreeActions.cpp', line 5799)
  To work around this problem, try simplifying or changing the program near the locations listed above.
