@@ -1244,8 +1244,13 @@ namespace {
     void Test30_LimitLength_ ()
     {
         Debug::TraceContextBumper ctx{L"Test30_LimitLength_"};
-        VerifyTestResult (String (L"12345").LimitLength (3) == L"12\u2026");
-        VerifyTestResult (String (L"12345").LimitLength (5) == L"12345");
+        if constexpr (qCompiler_vswprintf_on_elispisStr_Buggy) {
+            VerifyTestResult (String{L"12345"}.LimitLength (3) == L"...");
+        }
+        else {
+            VerifyTestResult (String{L"12345"}.LimitLength (3) == L"12\u2026");
+        }
+        VerifyTestResult (String{L"12345"}.LimitLength (5) == L"12345");
     }
 }
 
@@ -1254,7 +1259,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"Test31_OperatorINSERT_ostream_"};
         wstringstream             out;
-        out << String (L"abc");
+        out << String{L"abc"};
         VerifyTestResult (out.str () == L"abc");
     }
 }
