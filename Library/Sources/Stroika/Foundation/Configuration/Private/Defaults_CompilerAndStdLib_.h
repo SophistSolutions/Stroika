@@ -1384,7 +1384,7 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 
 #if defined(__clang__) && defined(__APPLE__)
 // first noticed in XCODE 13
-#define qCompiler_vswprintf_on_2_strings_longish_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (((__clang_major__ <= 13))
+#define qCompiler_vswprintf_on_2_strings_longish_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #else
 #define qCompiler_vswprintf_on_2_strings_longish_Buggy 0
 #endif
