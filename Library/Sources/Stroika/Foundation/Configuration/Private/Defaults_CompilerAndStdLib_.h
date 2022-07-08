@@ -1379,7 +1379,6 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 
 #endif
 
-
 #ifndef qCompiler_vswprintf_on_elispisStr_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)

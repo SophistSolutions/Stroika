@@ -1548,12 +1548,12 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"Test52_Utf32Conversions_"};
         {
-            VerifyTestResult (u32string (U"phred") == String (u32string (U"phred")).AsUTF32 ());
-            VerifyTestResult (u32string (U"שלום") == String (u32string (U"שלום")).AsUTF32 ());
+            VerifyTestResult (u32string{U"phred"} == String{u32string{U"phred"}}.AsUTF32 ());
+            VerifyTestResult (u32string{U"שלום"} == String{u32string{U"שלום"}}.AsUTF32 ());
         }
         {
-            VerifyTestResult (u32string (U"phred") == String (U"phred").AsUTF32 ());
-            VerifyTestResult (u32string (U"שלום") == String (U"שלום").AsUTF32 ());
+            VerifyTestResult (u32string{U"phred"} == String{U"phred"}.AsUTF32 ());
+            VerifyTestResult (u32string{U"שלום"} == String{U"שלום"}.AsUTF32 ());
         }
         {
             StringBuilder tmp;
@@ -1578,15 +1578,15 @@ namespace {
     void Test53_vswprintf_on_2_strings_longish_Buggy_ ()
     {
         String b = L"…";
-        #if !qCompiler_vswprintf_on_elispisStr_Buggy
-        try {
-            String x = Characters::Format (L"%s", b.c_str ());
-            VerifyTestResult (x == b);
+        if constexpr (not qCompiler_vswprintf_on_elispisStr_Buggy) {
+            try {
+                String x = Characters::Format (L"%s", b.c_str ());
+                VerifyTestResult (x == b);
+            }
+            catch (...) {
+                VerifyTestResult (false);   // means we have the bug...
+            }
         }
-        catch (...) {
-            VerifyTestResult (false);   // means we have the bug...
-        }
-        #endif
     }
 }
 
