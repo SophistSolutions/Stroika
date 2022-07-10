@@ -1584,7 +1584,7 @@ namespace {
                 VerifyTestResult (x == b);
             }
             catch (...) {
-                VerifyTestResult (false);   // means we have the bug...
+                VerifyTestResult (false); // means we have the bug...
             }
         }
     }
