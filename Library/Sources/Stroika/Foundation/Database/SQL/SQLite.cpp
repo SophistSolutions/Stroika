@@ -57,25 +57,29 @@ namespace {
                     Execution::Throw (Exception{Characters::Format (L"SQLITE_CONSTRAINT: %s", errMsgDetails->c_str ())});
                 }
                 else {
-                    Execution::Throw (Exception{L"SQLITE_CONSTRAINT"sv});
+                    static const auto kEx_ = Exception{L"SQLITE_CONSTRAINT"sv};
+                    Execution::Throw (kEx_);
                 }
             } break;
             case SQLITE_TOOBIG: {
-                Execution::Throw (Exception{L"SQLITE_TOOBIG"sv});
+                static const auto kEx_ = Exception{L"SQLITE_TOOBIG"sv};
+                Execution::Throw (kEx_);
             } break;
             case SQLITE_FULL: {
                 DbgTrace (L"SQLITE_FULL");
                 Execution::Throw (system_error{make_error_code (errc::no_space_on_device)});
             } break;
             case SQLITE_READONLY: {
-                Execution::Throw (Exception{L"SQLITE_READONLY"sv});
+                static const auto kEx_ = Exception{L"SQLITE_READONLY"sv};
+                Execution::Throw (kEx_);
             } break;
             case SQLITE_MISUSE: {
                 if (errMsgDetails) {
                     Execution::Throw (Exception{Characters::Format (L"SQLITE_MISUSE: %s", errMsgDetails->c_str ())});
                 }
                 else {
-                    Execution::Throw (Exception{L"SQLITE_MISUSE"sv});
+                    static const auto kEx_ = Exception{L"SQLITE_MISUSE"sv};
+                    Execution::Throw (kEx_);
                 }
             } break;
             case SQLITE_ERROR: {
@@ -83,7 +87,8 @@ namespace {
                     Execution::Throw (Exception{Characters::Format (L"SQLITE_ERROR: %s", errMsgDetails->c_str ())});
                 }
                 else {
-                    Execution::Throw (Exception{L"SQLITE_ERROR"sv});
+                    static const auto kEx_ = Exception{L"SQLITE_ERROR"sv};
+                    Execution::Throw (kEx_);
                 }
             } break;
             case SQLITE_NOMEM: {
