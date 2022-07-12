@@ -17,7 +17,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    TableConnection<T, TRAITS>::TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema, const ObjectVariantMapper& objectVariantMapper)
+    TableConnection<T, TRAITS>::TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema, const ObjectVariantMapper& objectVariantMapper, const OpertionCallbackPtr& operationCallback)
         : pConnection{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
             const TableConnection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &TableConnection::pConnection);
             return thisObj->fConnection_;
@@ -30,9 +30,14 @@ namespace Stroika::Foundation::Database::SQL::ORM {
             const TableConnection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &TableConnection::pObjectVariantMapper);
             return thisObj->fObjectVariantMapper_;
         }}
+        , pOperationCallback{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+            const TableConnection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &TableConnection::pOperationCallback);
+            return thisObj->fTableOpertionCallback_;
+        }}
         , fConnection_{conn}
         , fTableSchema_{tableSchema}
         , fObjectVariantMapper_{objectVariantMapper}
+        , fTableOpertionCallback_{operationCallback}
         , fGetByID_Statement_{conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.GetByID ())}
         , fGetAll_Statement_{conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.GetAllElements ())}
         , fAddNew_Statement_{conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.Insert ())}
@@ -42,7 +47,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     }
     template <typename T, typename TRAITS>
     inline TableConnection<T, TRAITS>::TableConnection (const TableConnection& src)
-        : TableConnection{src.fConnection_, src.fTableSchema_, src.fObjectVariantMapper_}
+        : TableConnection{src.fConnection_, src.fTableSchema_, src.fObjectVariantMapper_, src.fTableOpertionCallback_}
     {
     }
     template <typename T, typename TRAITS>
@@ -53,18 +58,12 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         using Stroika::Foundation::Common::KeyValuePair;
         fGetByID_Statement_.Reset ();
         fGetByID_Statement_.Bind (initializer_list<KeyValuePair<String, VariantValue>>{{fTableSchema_.GetIDField ()->fName, id}});
-        if constexpr (TRAITS::kTraceLogEachRequest) {
-            DbgTrace (L"SQL: %s", fGetByID_Statement_.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
+        optional<Statement::Row> row;
+        DoExecute_ ([&] (Statement& s) { row = s.GetNextRow (); }, fGetByID_Statement_, false);
+        if (row) {
+            return fObjectVariantMapper_.ToObject<T> (VariantValue{fTableSchema_.MapFromDB (*row)});
         }
-        auto rows = fGetByID_Statement_.GetAllRows ()
-                        .template Select<T> ([this] (const Statement::Row& r) {
-                            return fObjectVariantMapper_.ToObject<T> (VariantValue{fTableSchema_.MapFromDB (r)});
-                        });
-        if (rows.empty ()) {
-            return nullopt;
-        }
-        Ensure (rows.size () == 1); // cuz arg sb a key
-        return *rows.First ();
+        return nullopt;
     }
     template <typename T, typename TRAITS>
     optional<T> TableConnection<T, TRAITS>::GetByID (const typename TRAITS::IDType& id)
@@ -77,14 +76,11 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
-        if constexpr (TRAITS::kTraceLogEachRequest) {
-            DbgTrace (L"SQL: %s", fGetAll_Statement_.GetSQL ().c_str ());
-        }
-        auto rows = fGetAll_Statement_.GetAllRows ()
-                        .template Select<T> ([this] (const Statement::Row& r) {
-                            return fObjectVariantMapper_.ToObject<T> (VariantValue{fTableSchema_.MapFromDB (r)});
-                        });
-        return Sequence<T>{rows};
+        Sequence<Statement::Row> rows;
+        DoExecute_ ([&] (Statement& s) { rows = s.GetAllRows (); }, fGetAll_Statement_, false);
+        return Sequence<T>{rows.template Select<T> ([this] (const Statement::Row& r) {
+            return fObjectVariantMapper_.ToObject<T> (VariantValue{fTableSchema_.MapFromDB (r)});
+        })};
     }
     template <typename T, typename TRAITS>
     void TableConnection<T, TRAITS>::AddNew (const T& v)
@@ -93,10 +89,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         using DataExchange::VariantValue;
         fAddNew_Statement_.Reset ();
         fAddNew_Statement_.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ()));
-        if constexpr (TRAITS::kTraceLogEachRequest) {
-            DbgTrace (L"SQL: %s", fAddNew_Statement_.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
-        }
-        fAddNew_Statement_.Execute ();
+        DoExecute_ (fAddNew_Statement_, true);
     }
     template <typename T, typename TRAITS>
     void TableConnection<T, TRAITS>::AddOrUpdate (const T& v)
@@ -118,11 +111,40 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         using Stroika::Foundation::Common::KeyValuePair;
         fUpdate_Statement_.Reset ();
         fUpdate_Statement_.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ()));
-        if constexpr (TRAITS::kTraceLogEachRequest) {
-            DbgTrace (L"SQL: %s", fUpdate_Statement_.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
-        }
-        fUpdate_Statement_.Execute ();
+        DoExecute_ (fUpdate_Statement_, true);
     }
+    template <typename T, typename TRAITS>
+    template <typename FUN>
+    void TableConnection<T, TRAITS>::DoExecute_ (FUN&& f, Statement& s, bool write)
+    {
+        if (fTableOpertionCallback_ == nullptr) {
+            f (s);
+        }
+        else {
+            fTableOpertionCallback_ (write ? Operation::eStartingRead : Operation::eStartingWrite, this, &s);
+            try {
+                f (s);
+                fTableOpertionCallback_ (write ? Operation::eCompletedRead : Operation::eCompletedWrite, this, &s);
+            }
+            catch (...) {
+                fTableOpertionCallback_ (Operation::eNotifyError, this, &s);
+                fTableOpertionCallback_ (Operation::eCompletedWrite, this, &fUpdate_Statement_);
+            }
+        }
+    }
+    template <typename T, typename TRAITS>
+    inline void TableConnection<T, TRAITS>::DoExecute_ (Statement& s, bool write)
+    {
+        DoExecute_ ([] (Statement& s) { s.Execute (); }, s, write);
+    }
+    template <typename T, typename TRAITS>
+    const typename TableConnection<T, TRAITS>::OpertionCallbackPtr TableConnection<T, TRAITS>::kDefaultTracingOpertionCallback = [] (Operation op, const TableConnection* tableConn, const Statement* s) {
+        if (op == Operation::eStartingRead or op == Operation::eStartingWrite) {
+            if (s != nullptr) {
+                DbgTrace (L"SQL: %s", s->GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
+            }
+        }
+    };
 
 }
 
