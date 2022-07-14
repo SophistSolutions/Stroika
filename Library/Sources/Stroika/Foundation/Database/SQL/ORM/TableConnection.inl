@@ -127,8 +127,10 @@ namespace Stroika::Foundation::Database::SQL::ORM {
                 fTableOpertionCallback_ (write ? Operation::eCompletedRead : Operation::eCompletedWrite, this, &s);
             }
             catch (...) {
+                //DbgTrace (L"Captured error in TableConnection<>::DoExecute_: %s", Characters::ToString (current_exception ()).c_str ());
                 fTableOpertionCallback_ (Operation::eNotifyError, this, &s);
-                fTableOpertionCallback_ (Operation::eCompletedWrite, this, &fUpdate_Statement_);
+                fTableOpertionCallback_ (write ? Operation::eCompletedRead : Operation::eCompletedWrite, this, &fUpdate_Statement_);
+                Execution::ReThrow ();
             }
         }
     }
