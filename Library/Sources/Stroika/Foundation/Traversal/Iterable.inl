@@ -865,7 +865,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename RESULT_TYPE>
     optional<RESULT_TYPE> Iterable<T>::Mean () const
     {
-        Iterator<T>  i = begin ();
+        Iterator<T> i = begin ();
         if (i == end ()) {
             return nullopt;
         }
@@ -897,7 +897,7 @@ namespace Stroika::Foundation::Traversal {
         if (i == end ()) {
             return nullopt;
         }
-        return Math::Median (i, end (), compare);
+        return Math::Median<Iterator<T>, RESULT_TYPE> (i, end (), compare);
     }
     template <typename T>
     template <typename RESULT_TYPE>
