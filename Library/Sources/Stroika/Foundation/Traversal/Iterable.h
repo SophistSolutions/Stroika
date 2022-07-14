@@ -1115,9 +1115,26 @@ namespace Stroika::Foundation::Traversal {
          *  \note
          *      BASED ON Microsoft .net Linq. (Last)
          *      @see https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.any?view=netframework-4.7.2#System_Linq_Enumerable_Any__1_System_Collections_Generic_IEnumerable___0__System_Func___0_System_Boolean__
+         *
+         *  \note @see Count
+         *  \note @see Where
          */
         nonvirtual bool Any () const;
         nonvirtual bool Any (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
+
+    public:
+        /**
+         * \brief with no args, same as size, with function filter arg, returns number of items that pass.
+         *
+         *  \note
+         *      BASED ON Microsoft .net Linq. (Count)
+         *      @see https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.count?view=net-6.0
+         * 
+         *  \note Count/1 same as Where (i).size ();
+         *  \note @see Any
+         */
+        nonvirtual size_t Count () const;
+        nonvirtual size_t Count (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
 
     public:
         /**

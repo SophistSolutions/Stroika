@@ -953,6 +953,19 @@ namespace Stroika::Foundation::Traversal {
         return not Where (includeIfTrue).empty ();
     }
     template <typename T>
+    inline size_t Iterable<T>::Count () const
+    {
+        return size ();
+    }
+    template <typename T>
+    inline size_t Iterable<T>::Count (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
+    {
+        size_t cnt{};
+        Apply ([&] (ArgByValueType<T> a) { if (includeIfTrue (a)) ++cnt; });
+        Ensure (cnt == Where (includeIfTrue).size ());
+        return cnt;
+    }
+    template <typename T>
     inline size_t Iterable<T>::length () const
     {
         return size ();
