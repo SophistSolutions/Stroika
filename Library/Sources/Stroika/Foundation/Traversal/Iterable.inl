@@ -13,6 +13,7 @@
 #include <set>
 
 #include "../Debug/Assertions.h"
+#include "../Math/Statistics.h"
 
 #include "Generator.h"
 
@@ -864,13 +865,11 @@ namespace Stroika::Foundation::Traversal {
     template <typename RESULT_TYPE>
     optional<RESULT_TYPE> Iterable<T>::Mean () const
     {
-        RESULT_TYPE  result{};
-        unsigned int count{};
-        for (const T& i : *this) {
-            ++count;
-            result += i;
+        Iterator<T>  i = begin ();
+        if (i == end ()) {
+            return nullopt;
         }
-        return (count == 0) ? optional<RESULT_TYPE>{} : (result / count);
+        return Math::Mean (i, end ());
     }
     template <typename T>
     template <typename RESULT_TYPE>
@@ -894,18 +893,11 @@ namespace Stroika::Foundation::Traversal {
     template <typename RESULT_TYPE, typename INORDER_COMPARE_FUNCTION>
     optional<RESULT_TYPE> Iterable<T>::Median (const INORDER_COMPARE_FUNCTION& compare) const
     {
-        vector<T> tmp{begin (), end ()}; // Somewhat simplistic implementation
-        sort (tmp.begin (), tmp.end (), compare);
-        size_t sz{tmp.size ()};
-        if (sz == 0) [[UNLIKELY_ATTR]] {
+        Iterator<T> i = begin ();
+        if (i == end ()) {
             return nullopt;
         }
-        if ((sz % 2) == 0) {
-            return (static_cast<RESULT_TYPE> (tmp[sz / 2]) + static_cast<RESULT_TYPE> (tmp[sz / 2 - 1])) / static_cast<RESULT_TYPE> (2);
-        }
-        else {
-            return tmp[sz / 2];
-        }
+        return Math::Median (i, end (), compare);
     }
     template <typename T>
     template <typename RESULT_TYPE>
