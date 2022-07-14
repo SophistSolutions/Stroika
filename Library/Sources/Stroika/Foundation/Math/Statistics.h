@@ -54,14 +54,14 @@ namespace Stroika::Foundation::Math {
      *  SUPER ROUGH DRAFT
      *  \req not empty
      */
-    template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type>
-    RESULT_TYPE Median (ITERATOR_OF_T start, ITERATOR_OF_T end);
-    template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
-    RESULT_TYPE Median (const CONTAINER_OF_T& container);
+    template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type, typename INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
+    RESULT_TYPE Median (ITERATOR_OF_T start, ITERATOR_OF_T end, const INORDER_COMPARE_FUNCTION& compare = {});
+    template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type, typename INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
+    RESULT_TYPE Median (const CONTAINER_OF_T& container, const INORDER_COMPARE_FUNCTION& compare = {});
 
     /**
      *  SUPER ROUGH DRAFT
-     *  \req not empty
+     *  \req size of container >= 2
      *
      *  \brief Alias: sd, standard-deviation, stddev
      */
