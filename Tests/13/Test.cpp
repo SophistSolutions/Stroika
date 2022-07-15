@@ -73,9 +73,9 @@ namespace {
         {
             Debug::TraceContextBumper ctx{L"{}::RemoveAndUpdateIteratorUpdate_Test3"};
             {
-                Collection<int> c = {1, 2, 3, 4};
-                int sum = 0;
-                c   = {1, 2, 3, 4};
+                Collection<int> c   = {1, 2, 3, 4};
+                int             sum = 0;
+                c                   = {1, 2, 3, 4};
                 for (Iterator<int> i = c.begin (); i != c.end ();) {
                     sum += *i;
                     if (*i == 3) {
