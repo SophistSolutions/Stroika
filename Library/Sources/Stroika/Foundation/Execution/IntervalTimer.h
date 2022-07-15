@@ -42,6 +42,8 @@ namespace Stroika::Foundation::Execution {
         /**
          *  Note: these timers CAN throw, and SHOULD throw if interrupted, but the Idle Manager will 'eat' those
          *  exceptions.
+         *  
+         *  \req TimerCallback must be cancelable!
          */
         using TimerCallback = Function<void ()>;
 
@@ -49,12 +51,6 @@ namespace Stroika::Foundation::Execution {
         class Manager;
 
     public:
-        /**
-         *  \brief Adder adds the given function object to the (for now default; later optionally explicit) IntervalTimer manager, and
-         *         when its destroyed, the timer is removed.
-         * 
-         *  While the timer is registered, it will be called peridocially from some arbitrary thread.
-         */
         class Adder;
     };
 
@@ -80,7 +76,7 @@ namespace Stroika::Foundation::Execution {
         Manager (const shared_ptr<IRep>& rep);
 
     public:
-        ~Manager ();
+        ~Manager () = default;
 
     public:
         Manager& operator= (const Manager&) = delete;
@@ -147,6 +143,11 @@ namespace Stroika::Foundation::Execution {
     inline IntervalTimer::Manager IntervalTimer::Manager::sThe{make_shared<IntervalTimer::Manager::DefaultRep> ()};
 
     /**
+     *  \brief Adder adds the given function object to the (for now default; later optionally explicit) IntervalTimer manager, and
+     *         when its destroyed, the timer is removed.
+     * 
+     *  While the timer is registered, it will be called peridocially from some arbitrary thread.
+     * 
      *  Easiest way to add/remove idle manager. Construct one and its lifetime matches time when callback is potentially aftive.
      *  Destruction of Adder object removes from the Q. Be sure lifetime of these guys inside lifetime of main.
      */
