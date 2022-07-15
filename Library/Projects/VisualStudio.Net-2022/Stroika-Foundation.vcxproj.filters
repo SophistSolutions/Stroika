@@ -831,6 +831,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\IntervalTimer.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2117,6 +2120,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h">
       <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\IntervalTimer.h">
+      <Filter>Sources\Execution</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3476,6 +3482,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\InlineBuffer.inl">
       <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\IntervalTimer.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

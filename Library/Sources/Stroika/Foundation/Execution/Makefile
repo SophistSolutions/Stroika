@@ -30,6 +30,7 @@ Objs	=	\
 	$(ObjDir)DLLSupport${OBJ_SUFFIX}\
 	$(ObjDir)Exceptions${OBJ_SUFFIX}\
 	$(ObjDir)FeatureNotSupportedInThisVersionException${OBJ_SUFFIX}\
+	$(ObjDir)IntervalTimer${OBJ_SUFFIX}\
 	$(ObjDir)Logger${OBJ_SUFFIX}\
 	$(ObjDir)Module${OBJ_SUFFIX}\
 	$(ObjDir)OperationNotSupportedException${OBJ_SUFFIX}\
