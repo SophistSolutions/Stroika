@@ -104,7 +104,8 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
         else {
             sThread_.rwget ()->operator= (Thread::New ([this] () {
                 RunnerLoop_ ();
-            }, Thread::eAutoStart, L"Default-Idle-Timer"));
+            },
+                                                       Thread::eAutoStart, L"Default-Idle-Timer"));
         }
     }
 };

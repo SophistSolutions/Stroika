@@ -34,8 +34,10 @@ namespace Stroika::Foundation::Execution {
      *  Can support multiple 'managers' - but then you have to add explicitly. Or use Adder object to add
      *  to default/global IdleTimer manager.
      * 
+     *  \note https://stackoverflow.com/questions/33234403/using-setinterval-in-c
+     * 
      *  note TODO:
-     *      \todo  somtiems want to use threadpool/ Sometime async; sometimes a single thread iff stuff
+     *      \todo  sometimes want to use threadpool/ Sometime async; sometimes a single thread iff stuff
      */
     class IntervalTimer {
     public:
