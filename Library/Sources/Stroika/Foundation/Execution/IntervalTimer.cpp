@@ -31,10 +31,10 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
         lk->Add (Elt_{intervalTimer, Time::GetTickCount () + when.As<DurationSecondsType> ()});
         DataChanged_ ();
     }
-    void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& histeresis)
+    void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
     {
         auto lk = fData_.rwget ();
-        lk->Add (Elt_{intervalTimer, Time::GetTickCount () + repeatInterval.As<DurationSecondsType> (), repeatInterval, histeresis});
+        lk->Add (Elt_{intervalTimer, Time::GetTickCount () + repeatInterval.As<DurationSecondsType> (), repeatInterval, hysteresis});
         DataChanged_ ();
     }
     void RemoveRepeating (const TimerCallback& intervalTimer) noexcept
@@ -83,15 +83,16 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             // now reset the 'next' time for each run element
             auto rwDataLock = fData_.rwget ();
             now             = Time::GetTickCount ();
-            for (Iterator<Elt_> i = rwDataLock->begin (); i != rwDataLock->end (); ++i) {
-                if (i->fFrequency.has_value ()) {
-                    Elt_ newE = *i;
-                    // @todo add histeresis
-                    newE.fCallNextAt = now + i->fFrequency->As<DurationSecondsType> ();
-                    rwDataLock->Update (i, newE, &i);
+            for (Elt_ i : elts2Run) {
+                if (i.fFrequency.has_value ()) {
+                    Elt_ newE = i;
+                    // @todo add hysteresis
+                    newE.fCallNextAt = now + newE.fFrequency->As<DurationSecondsType> ();
+                    auto updateI     = rwDataLock->Find ([&] (const Elt_& ii) { return ii.fCallback == i.fCallback; });
+                    rwDataLock->Update (updateI, newE);
                 }
                 else {
-                    rwDataLock->Remove (i, &i);
+                    Verify (rwDataLock->RemoveIf ([&] (const Elt_& ii) { return ii.fCallback == i.fCallback; }));
                 }
             }
         }
@@ -103,10 +104,13 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             rwThreadLk->operator= (nullptr);
         }
         else {
-            sThread_.rwget ()->operator= (Thread::New ([this] () {
-                RunnerLoop_ ();
-            },
-                                                       Thread::eAutoStart, L"Default-Idle-Timer"));
+            auto lk = sThread_.rwget ();
+            if (lk.cref () == nullptr) {
+                lk->operator= (Thread::New ([this] () {
+                    RunnerLoop_ ();
+                },
+                                            Thread::eAutoStart, L"Default-Idle-Timer"sv));
+            }
         }
     }
 };
@@ -120,9 +124,9 @@ void IntervalTimer::Manager::DefaultRep::AddOneShot (const TimerCallback& interv
     fHiddenRep_->AddOneShot (intervalTimer, when);
 }
 
-void IntervalTimer::Manager::DefaultRep::AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& histeresis)
+void IntervalTimer::Manager::DefaultRep::AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
 {
-    fHiddenRep_->AddRepeating (intervalTimer, repeatInterval, histeresis);
+    fHiddenRep_->AddRepeating (intervalTimer, repeatInterval, hysteresis);
 }
 
 void IntervalTimer::Manager::DefaultRep::RemoveRepeating (const TimerCallback& intervalTimer) noexcept

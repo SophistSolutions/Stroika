@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when);
 
     public:
-        nonvirtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& histeresis = nullopt);
+        nonvirtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
 
     public:
         /**
@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Execution {
         virtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when) = 0;
 
     public:
-        virtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& histeresis) = 0;
+        virtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis) = 0;
 
     public:
         virtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept = 0;
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Execution {
         virtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when) override;
 
     public:
-        virtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& histeresis) override;
+        virtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis) override;
 
     public:
         virtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept override;
@@ -157,8 +157,8 @@ namespace Stroika::Foundation::Execution {
     public:
         Adder ()        = delete;
         Adder (Adder&&) = default;
-        Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& histeresis = nullopt);
-        Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& histeresis = nullopt);
+        Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
+        Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
 
     public:
         ~Adder ();
