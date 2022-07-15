@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Execution {
     {
         fRep_->AddRepeating (intervalTimer, repeatInterval, histeresis);
     }
-    void IntervalTimer::Manager::RemoveRepeating (const TimerCallback& intervalTimer) noexcept
+    inline void IntervalTimer::Manager::RemoveRepeating (const TimerCallback& intervalTimer) noexcept
     {
         fRep_->RemoveRepeating (intervalTimer);
     }
