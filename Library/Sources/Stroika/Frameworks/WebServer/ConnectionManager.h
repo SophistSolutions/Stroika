@@ -265,10 +265,17 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          *  We need some sort of status flag on connections - saying of they are OPEN or not - or done.
-         *  But this will return just those which are not 'done'. Of course - due to asyncrhony,
+         *  But this will return just those which are not 'done'. Of course - due to asynchrony,
          *  by the time one looks at the list, some may already be done.
          */
-        Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> connections;
+        Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> pConnections;
+
+    public:
+        /**
+         *  Here active refers to being currently processed, reading data, writing data or computing answers. This means
+         *  assigned into thread pool for handling.
+         */
+        Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> pActiveConnection;
 
     private:
         nonvirtual void onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s);

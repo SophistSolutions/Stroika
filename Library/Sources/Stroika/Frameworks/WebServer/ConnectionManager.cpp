@@ -151,11 +151,16 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
                             thisObj->fAfterInterceptors_ = afterInterceptors_;
                             thisObj->FixupInterceptorChain_ ();
                         }}
-    , connections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<shared_ptr<Connection>> {
-        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::connections);
+    , pConnections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<shared_ptr<Connection>> {
+        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pConnections);
         scoped_lock              critSec{thisObj->fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
         Ensure (Set<shared_ptr<Connection>>{thisObj->fActiveConnections_.load ()}.Intersection (thisObj->GetInactiveConnections_ ()).empty ());
         return thisObj->GetInactiveConnections_ () + thisObj->fActiveConnections_.load ();
+    }}
+    , pActiveConnection{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<shared_ptr<Connection>> {
+        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pActiveConnection);
+        scoped_lock              critSec{thisObj->fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
+        return thisObj->fActiveConnections_.load ();
     }}
     , fEffectiveOptions_{FillInDefaults_ (options)}
     , fDefaultErrorHandler_{DefaultFaultInterceptor{}}
