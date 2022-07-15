@@ -157,8 +157,8 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         Ensure (Set<shared_ptr<Connection>>{thisObj->fActiveConnections_.load ()}.Intersection (thisObj->GetInactiveConnections_ ()).empty ());
         return thisObj->GetInactiveConnections_ () + thisObj->fActiveConnections_.load ();
     }}
-    , pActiveConnection{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<shared_ptr<Connection>> {
-        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pActiveConnection);
+    , pActiveConnections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<shared_ptr<Connection>> {
+        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pActiveConnections);
         scoped_lock              critSec{thisObj->fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
         return thisObj->fActiveConnections_.load ();
     }}

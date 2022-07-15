@@ -275,7 +275,7 @@ namespace Stroika::Frameworks::WebServer {
          *  Here active refers to being currently processed, reading data, writing data or computing answers. This means
          *  assigned into thread pool for handling.
          */
-        Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> pActiveConnection;
+        Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> pActiveConnections;
 
     private:
         nonvirtual void onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s);
