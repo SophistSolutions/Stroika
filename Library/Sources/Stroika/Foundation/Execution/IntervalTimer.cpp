@@ -88,6 +88,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
                     Elt_ newE = *i;
                     // @todo add histeresis
                     newE.fCallNextAt = now + i->fFrequency->As<DurationSecondsType> ();
+                    rwDataLock->Update (i, newE, &i);
                 }
                 else {
                     rwDataLock->Remove (i, &i);
