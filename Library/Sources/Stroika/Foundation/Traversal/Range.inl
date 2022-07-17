@@ -368,6 +368,20 @@ namespace Stroika::Foundation::Traversal {
         return result;
     }
     template <typename T, typename TRAITS>
+    constexpr auto Range<T, TRAITS>::Extend (Configuration::ArgByValueType<T> value) const -> Range
+    {
+        if (empty ()) {
+            return Range{value, value, Openness::eClosed, Openness::eClosed};
+        }
+        if (value < GetLowerBound ()) {
+            return Range{value, GetUpperBound (), Openness::eClosed, GetUpperBoundOpenness ()};
+        }
+        if (GetUpperBound () < value) {
+            return Range{GetLowerBound (), value, GetLowerBoundOpenness (), Openness::eClosed};
+        }
+        return *this;
+    }
+    template <typename T, typename TRAITS>
     constexpr T Range<T, TRAITS>::GetLowerBound () const
     {
         Require (not empty ());

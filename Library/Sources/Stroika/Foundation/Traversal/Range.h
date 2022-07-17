@@ -486,6 +486,13 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         *  Construct a new range from this range, but including the given point
+         *  Note that can produce a range with different openness from the starting range (as the points added close the endpoints).
+         */
+        constexpr Range Extend (Configuration::ArgByValueType<T> value) const;
+
+    public:
+        /**
          *  \req not empty ();
          */
         constexpr T GetLowerBound () const;
