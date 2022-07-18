@@ -650,6 +650,15 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         *  Optional parameter to MakeCommonSerializer, and AddCommonType
+         */
+        struct RangeSerializerOptions {
+            optional<String> fLowerBoundFieldName;
+            optional<String> fUpperBoundFieldName;
+        };
+
+    public:
+        /**
          */
         template <typename ENUM_TYPE>
         static TypeMappingDetails MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
@@ -798,7 +807,7 @@ namespace Stroika::Foundation::DataExchange {
 
     private:
         template <typename RANGE_TYPE>
-        static TypeMappingDetails MakeCommonSerializer_Range_ ();
+        static TypeMappingDetails MakeCommonSerializer_Range_ (const RangeSerializerOptions& options = {});
 
     private:
         template <typename CLASS>

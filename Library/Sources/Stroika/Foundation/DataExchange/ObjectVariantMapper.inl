@@ -884,11 +884,13 @@ namespace Stroika::Foundation::DataExchange {
         return MakeCommonSerializer_WithKeyValuePairAdd_<KEY_TYPE, VALUE_TYPE, ACTUAL_CONTAINTER_TYPE> ();
     }
     template <typename RANGE_TYPE>
-    ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Range_ ()
+    ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Range_ (const RangeSerializerOptions& options)
     {
         static const String              kLowerBoundLabel_{L"LowerBound"sv};
         static const String              kUpperBoundLabel_{L"UpperBound"sv};
-        FromObjectMapperType<RANGE_TYPE> fromObjectMapper = [] (const ObjectVariantMapper& mapper, const RANGE_TYPE* fromObjOfTypeT) -> VariantValue {
+        String                           lowerBoundLabel  = options.fLowerBoundFieldName.value_or (kLowerBoundLabel_);
+        String                           upperBoundLabel  = options.fUpperBoundFieldName.value_or (kUpperBoundLabel_);
+        FromObjectMapperType<RANGE_TYPE> fromObjectMapper = [=] (const ObjectVariantMapper& mapper, const RANGE_TYPE* fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
             using value_type = typename RANGE_TYPE::value_type;
             Mapping<String, VariantValue> m;
@@ -897,12 +899,12 @@ namespace Stroika::Foundation::DataExchange {
             }
             else {
                 FromObjectMapperType<value_type> valueMapper{mapper.FromObjectMapper<value_type> ()};
-                m.Add (kLowerBoundLabel_, mapper.FromObject<value_type> (valueMapper, fromObjOfTypeT->GetLowerBound ()));
-                m.Add (kUpperBoundLabel_, mapper.FromObject<value_type> (valueMapper, fromObjOfTypeT->GetUpperBound ()));
+                m.Add (lowerBoundLabel, mapper.FromObject<value_type> (valueMapper, fromObjOfTypeT->GetLowerBound ()));
+                m.Add (upperBoundLabel, mapper.FromObject<value_type> (valueMapper, fromObjOfTypeT->GetUpperBound ()));
                 return VariantValue{m};
             }
         };
-        ToObjectMapperType<RANGE_TYPE> toObjectMapper = [] (const ObjectVariantMapper& mapper, const VariantValue& d, RANGE_TYPE* intoObjOfTypeT) -> void {
+        ToObjectMapperType<RANGE_TYPE> toObjectMapper = [=] (const ObjectVariantMapper& mapper, const VariantValue& d, RANGE_TYPE* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
             using value_type = typename RANGE_TYPE::value_type;
             Mapping<String, VariantValue> m{d.As<Mapping<String, VariantValue>> ()};
@@ -914,17 +916,17 @@ namespace Stroika::Foundation::DataExchange {
                     DbgTrace (L"Range ('%s') element needs LowerBound and UpperBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
                     Execution::Throw (BadFormatException{L"Range needs LowerBound and UpperBound"sv});
                 }
-                if (not m.ContainsKey (kLowerBoundLabel_)) [[UNLIKELY_ATTR]] {
+                if (not m.ContainsKey (lowerBoundLabel)) [[UNLIKELY_ATTR]] {
                     DbgTrace (L"Range ('%s') element needs LowerBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
                     Execution::Throw (BadFormatException{L"Range needs 'LowerBound' element"sv});
                 }
-                if (not m.ContainsKey (kUpperBoundLabel_)) [[UNLIKELY_ATTR]] {
+                if (not m.ContainsKey (upperBoundLabel)) [[UNLIKELY_ATTR]] {
                     DbgTrace (L"Range ('%s') element needs UpperBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
                     Execution::Throw (BadFormatException{L"Range needs 'UpperBound' element"sv});
                 }
                 ToObjectMapperType<value_type> valueMapper{mapper.ToObjectMapper<value_type> ()};
-                value_type                     from{mapper.ToObject<value_type> (valueMapper, *m.Lookup (kLowerBoundLabel_))};
-                value_type                     to{mapper.ToObject<value_type> (valueMapper, *m.Lookup (kUpperBoundLabel_))};
+                value_type                     from{mapper.ToObject<value_type> (valueMapper, *m.Lookup (lowerBoundLabel))};
+                value_type                     to{mapper.ToObject<value_type> (valueMapper, *m.Lookup (upperBoundLabel))};
                 *intoObjOfTypeT = CheckedConverter_Range<RANGE_TYPE> (from, to);
             }
         };
