@@ -705,10 +705,10 @@ namespace Stroika::Foundation::DataExchange {
     {
         return MakeCommonSerializer_Range_<Traversal::DiscreteRange<T, TRAITS>> ();
     }
-    template <typename T, typename TRAITS>
-    inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*)
+    template <typename T, typename TRAITS, typename... ARGS>
+    inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*, ARGS&&... args)
     {
-        return MakeCommonSerializer_Range_<Traversal::Range<T, TRAITS>> ();
+        return MakeCommonSerializer_Range_<Traversal::Range<T, TRAITS>> (forward<ARGS> (args)...);
     }
     template <typename T>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const T*, enable_if_t<is_enum_v<T>>*)
