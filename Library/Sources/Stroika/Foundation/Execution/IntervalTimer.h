@@ -155,8 +155,8 @@ namespace Stroika::Foundation::Execution {
      */
     class IntervalTimer::Adder {
     public:
-        Adder ()        = delete;
-        Adder (Adder&&) = default;
+        Adder () = delete;
+        Adder (Adder&& src);
         Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
         Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
 
@@ -165,11 +165,13 @@ namespace Stroika::Foundation::Execution {
 
     public:
         nonvirtual Adder& operator= (const Adder&) = delete;
-        nonvirtual Adder& operator= (Adder&&) = default;
+        nonvirtual Adder& operator                 = (Adder&& rhs);
 
     private:
-        IntervalTimer::Manager& fManager_;
-        Function<void (void)>   fFunction_;
+        const Time::Duration&    fRepeatInterval_;
+        optional<Time::Duration> fHysteresis_;
+        IntervalTimer::Manager*  fManager_;
+        Function<void (void)>    fFunction_;
     };
 
 }
