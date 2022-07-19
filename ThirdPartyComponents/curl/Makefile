@@ -18,7 +18,8 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 
-VERSION=7.83.1
+VERSION=7.84.0
+#VERSION=7.83.1
 #VERSION=7.83.0
 #VERSION=7.82.0
 #VERSION=7.81.0
