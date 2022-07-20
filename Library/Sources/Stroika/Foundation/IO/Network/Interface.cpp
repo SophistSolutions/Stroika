@@ -403,6 +403,9 @@ namespace {
                 // see if we can check if physical cable plugged in - https://stackoverflow.com/questions/808560/how-to-detect-the-physical-connected-state-of-a-network-cable-connector
 #if qPlatform_Linux
                 auto checkCarrierKnownSet = [] (const char* id) -> bool {
+#if !USE_NOISY_TRACE_IN_THIS_MODULE_
+                    Debug::TraceContextSuppressor suppressTraceInThisBlock; // needlessly noisy on linux systems (due to frequent throw), and more heat than light
+#endif
                     try {
                         auto         fs = FileInputStream::New (filesystem::path{"/sys/class/net"} / id, FileInputStream::eNotSeekable);
                         Memory::BLOB b  = fs.ReadAll ();
