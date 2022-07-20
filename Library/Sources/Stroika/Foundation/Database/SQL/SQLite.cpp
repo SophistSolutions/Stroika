@@ -49,7 +49,11 @@ namespace {
         }
         switch (errCode) {
             case SQLITE_BUSY: {
-                DbgTrace (L"SQLITE_BUSY");
+                DbgTrace (L"SQLITE_BUSY"); //  The database file is locked
+                Execution::Throw (system_error{make_error_code (errc::device_or_resource_busy)});
+            } break;
+            case SQLITE_LOCKED: {
+                DbgTrace (L"SQLITE_LOCKED"); //  A table in the database is locked
                 Execution::Throw (system_error{make_error_code (errc::device_or_resource_busy)});
             } break;
             case SQLITE_CONSTRAINT: {
