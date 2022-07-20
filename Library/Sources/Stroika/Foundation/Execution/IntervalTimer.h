@@ -111,6 +111,9 @@ namespace Stroika::Foundation::Execution {
      */
     class IntervalTimer::Manager::IRep {
     public:
+        virtual ~IRep () = default;
+
+    public:
         virtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when) = 0;
 
     public:
