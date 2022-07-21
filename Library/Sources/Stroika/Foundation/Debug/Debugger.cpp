@@ -30,7 +30,7 @@ using namespace Stroika::Foundation;
 #if qPlatform_Linux
 namespace {
     // From https://stackoverflow.com/questions/3596781/how-to-detect-if-the-current-process-is-being-run-by-gdb
-    bool debuggerIsAttached_ ()
+    bool DebuggerIsAttached_ ()
     {
         char      buf[4096];
         const int status_fd = ::open ("/proc/self/status", O_RDONLY);
@@ -62,7 +62,7 @@ namespace {
 
     // Returns true if the current process is being debugged (either
     // running under the debugger or has a debugger attached post facto).
-    bool AmIBeingDebugged_ ()
+    bool DebuggerIsAttached_ ()
     {
         // Initialize the flags so that, if sysctl fails for some bizarre
         // reason, we get a predictable result.
@@ -90,10 +90,10 @@ namespace {
 optional<bool> Debug::IsThisProcessBeingDebugged ()
 {
 #if qPlatform_Linux
-    return debuggerIsAttached_ ();
+    return DebuggerIsAttached_ ();
 #endif
 #if qPlatform_MacOS
-    return AmIBeingDebugged_ ();
+    return DebuggerIsAttached_ ();
 #endif
 #if qPlatform_POSIX
 #if 0
