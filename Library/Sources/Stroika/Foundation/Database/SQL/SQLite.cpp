@@ -276,7 +276,7 @@ struct Connection::Rep_ final : IRep {
     virtual void Exec (const String& sql) override
     {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-        [[maybe_ignored]] char*                             db_err{}; // could use but its embedded in the fDB_ error string anyhow, and thats already peeked at by ThrowSQLiteErrorIfNotOK_ and it generates better exceptions (maps some to std c++ exceptions)
+        [[maybe_unused]] char*                              db_err{}; // could use but its embedded in the fDB_ error string anyhow, and thats already peeked at by ThrowSQLiteErrorIfNotOK_ and it generates better exceptions (maps some to std c++ exceptions)
         int                                                 e = ::sqlite3_exec (fDB_, sql.AsUTF8 ().c_str (), NULL, 0, &db_err);
         if (e != SQLITE_OK) [[UNLIKELY_ATTR]] {
             ThrowSQLiteErrorIfNotOK_ (e, fDB_);
