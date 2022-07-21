@@ -21,6 +21,10 @@
 
 using namespace Stroika::Foundation;
 
+#ifndef __has_builtin
+  #define __has_builtin(x) 0  // Compatibility with non-clang compilers.
+#endif
+
 /*
  ********************************************************************************
  ************************ Debug::DropIntoDebuggerIfPresent **********************
@@ -28,7 +32,7 @@ using namespace Stroika::Foundation;
  */
 void Debug::DropIntoDebuggerIfPresent ()
 {
-#if __has_builtin(__builtin_trap)
+#if __has_builtin(__builtin_trap) || defined (__GCC__)
   __builtin_trap();
 #elif qPlatform_POSIX
 #if 0
