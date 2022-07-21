@@ -33,7 +33,7 @@ namespace {
     // From https://stackoverflow.com/questions/3596781/how-to-detect-if-the-current-process-is-being-run-by-gdb
     bool DebuggerIsAttached_ ()
     {
-        char      buf[4096];
+        char buf[4096];
         {
             const int status_fd = ::open ("/proc/self/status", O_RDONLY);
             if (status_fd == -1)

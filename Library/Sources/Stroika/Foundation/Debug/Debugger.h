@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Debug {
      * There is no perfect cross-platform way to check this. But this function tries, and returns true/false if it
      *  has a good guess and nullopt if it has no idea.
      */
-    optional<bool>  IsThisProcessBeingDebugged ();
+    optional<bool> IsThisProcessBeingDebugged ();
 
     /**
      *  Try to drop into the debugger, if IsThisProcessBeingDebugged () returns true.
