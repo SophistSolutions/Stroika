@@ -158,7 +158,6 @@ namespace Stroika::Foundation::Execution {
         shared_ptr<Rep_> fHiddenRep_;
     };
 
-
     /**
      *  \brief Adder adds the given function object to the (for now default; later optionally explicit) IntervalTimer manager, and
      *         when its destroyed, the timer is removed.
