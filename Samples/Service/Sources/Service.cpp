@@ -72,7 +72,7 @@ void SampleAppServiceRep::MainLoop (const std::function<void ()>& startedCB)
     bool                    successfullyStarted{false};
     [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () {
         if (not successfullyStarted) {
-            Logger::Get ().Log (Logger::Priority::eError, L"Failed to successfully start service");
+            Logger::sThe.Log (Logger::Priority::eError, L"Failed to successfully start service");
         }
     });
 #endif
@@ -89,13 +89,13 @@ void SampleAppServiceRep::MainLoop (const std::function<void ()>& startedCB)
     startedCB (); // Notify service control mgr that the service has started
 
 #if qUseLogger
-    Logger::Get ().Log (Logger::Priority::eInfo, L"%s (version %s) service started successfully", kServiceDescription_.fPrettyName.c_str (), Characters::ToString (AppVersion::kVersion).c_str ());
+    Logger::sThe.Log (Logger::Priority::eInfo, L"%s (version %s) service started successfully", kServiceDescription_.fPrettyName.c_str (), Characters::ToString (AppVersion::kVersion).c_str ());
     successfullyStarted = true;
 
     // the final object delcared on the stack before we wait, so its the first run when we are handling the
     // thread aboort exception, and unwinding this call.
     [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&] () {
-        Logger::Get ().Log (Logger::Priority::eInfo, L"Beginning service shutdown");
+        Logger::sThe.Log (Logger::Priority::eInfo, L"Beginning service shutdown");
     });
 #endif
 

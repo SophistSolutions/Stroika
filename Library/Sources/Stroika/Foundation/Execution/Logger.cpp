@@ -41,8 +41,6 @@ using Time::DurationSecondsType;
  ******************************** Execution::Logger *****************************
  ********************************************************************************
  */
-Logger Logger::sThe_;
-
 struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     bool                                          fBufferingEnabled_{false};
     Synchronized<IAppenderRepPtr>                 fAppender_;
@@ -176,36 +174,29 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
 };
 
 Logger::Logger ()
-    : fRep_{make_shared<Rep_> ()}
+    : fRep_{nullptr}
 {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    if (&sThe_ == this) {
-        DbgTrace (L"Allocating global logger: %p", this);
-    }
-#endif
 }
 
 #if qDebug
 Logger::~Logger ()
 {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    if (&sThe_ == this) {
-        DbgTrace (L"Destroying global logger: %p", this);
-    }
-#endif
-    RequireNotNull (fRep_);
-    fRep_.reset (); // so more likely debug checks for null say its null
+    Assert (&sThe == this);
+    Assert (fRep_ == nullptr); // since Stroika 2.1.1, must use activator and destroy it before this is destroyed
 }
 #endif
 
 void Logger::ShutdownSingleton ()
 {
-    Debug::TraceContextBumper ctx{"Logger::ShutdownSingleton"};
-    // @todo Assure done before end of main?? Or try???
-    sThe_.Shutdown ();
+    AssertNotReached (); // deprecated - use
 }
 
 void Logger::Shutdown ()
+{
+    AssertNotReached (); // deprecated - use
+}
+
+void Logger::Shutdown_ ()
 {
     Debug::TraceContextBumper ctx{"Logger::Shutdown"};
     // @todo FIX to assure all shutdown properly...
@@ -236,19 +227,19 @@ void Logger::Shutdown ()
 
 Logger::IAppenderRepPtr Logger::GetAppender () const
 {
-    RequireNotNull (fRep_);
+    AssertNotNull (fRep_); // must be called while Logger::Activator exists
     return fRep_->fAppender_;
 }
 
 void Logger::SetAppender (const shared_ptr<IAppenderRep>& rep)
 {
-    RequireNotNull (fRep_);
+    AssertNotNull (fRep_); // must be called while Logger::Activator exists
     fRep_->fAppender_ = rep;
 }
 
 void Logger::Log_ (Priority logLevel, const String& msg)
 {
-    AssertNotNull (fRep_);
+    AssertNotNull (fRep_);                            // must be called while Logger::Activator exists
     shared_ptr<IAppenderRep> tmp = fRep_->fAppender_; // avoid races/deadlocks and critical sections (between check and invoke)
     if (tmp != nullptr) {
         auto p = pair<Priority, String> (logLevel, msg);
@@ -512,7 +503,7 @@ void Logger::FileAppender::Log (Priority logLevel, const String& message)
  ********************************************************************************
  */
 Logger::WindowsEventLogAppender::WindowsEventLogAppender (const String& eventSourceName)
-    : fEventSourceName_ (eventSourceName)
+    : fEventSourceName_{eventSourceName}
 {
 }
 
@@ -568,3 +559,26 @@ void Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& mess
         NULL));
 }
 #endif
+
+/*
+ ********************************************************************************
+ ************************** Logger::Activator ***********************************
+ ********************************************************************************
+ */
+Logger::Activator::Activator (const Options& options)
+{
+    sThe.fRep_ = make_shared<Rep_> ();
+    sThe.SetSuppressDuplicates (options.fSuppressDuplicatesThreshold);
+    if (options.fLogBufferingEnabled) {
+        sThe.SetBufferingEnabled (*options.fLogBufferingEnabled);
+    }
+    if (options.fMinLogLevel) {
+        sThe.SetMinLogLevel (*options.fMinLogLevel);
+    }
+}
+
+Logger::Activator::~Activator ()
+{
+    sThe.Shutdown_ ();
+    sThe.fRep_.reset ();
+}

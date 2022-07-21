@@ -22,7 +22,7 @@
  *
  *  TODO:
  *      @todo   Consider allowingmultiple loggers (with different configs/params).
- *              Still wish to retain the magic singleton, but then you use Logger::Get ().
+ *              Still wish to retain the magic singleton, but then you use Logger::sThe
  *
  *              Then make possible to create (construct) own logger objects (possibly for various purposes)... like one to file, and one to syslog?
  *
@@ -107,6 +107,9 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     public:
+        static Logger sThe;
+
+    public:
         /**
          *  You CAN have multiple Loggers, but this singleton is what is used by default, and nearly
          *  always exists.
@@ -114,7 +117,13 @@ namespace Stroika::Foundation::Execution {
          *  Be sure to shut it down (@see ShutdownSingleton) near the end of Main - so that any threads it runs are shutdown
          *  before the end of main.
          */
-        static Logger& Get ();
+        [[deprecated ("Since Stroika 2.1.1, use Logger::sThe directyly")]] static Logger& Get ();
+
+    public:
+        struct Options;
+
+    public:
+        struct Activator;
 
     public:
         /**
@@ -123,17 +132,23 @@ namespace Stroika::Foundation::Execution {
          *
          *  @see Shutdown
          */
-        static void ShutdownSingleton ();
+        [[deprecated ("Since Stroika 2.1.1, use Logger::Activator object")]] static void ShutdownSingleton ();
+
+    public:
+        Logger (const Logger&) = delete;
+        Logger (Logger&&)      = delete;
 
     private:
         Logger ();
+
+    public:
+        Logger& operator= (const Logger&) = delete;
+        Logger& operator= (Logger&&) = delete;
+
 #if qDebug
     private:
         ~Logger ();
 #endif
-    public:
-        Logger (const Logger&) = delete;
-        const Logger& operator= (const Logger&) = delete;
 
     public:
         /**
@@ -180,7 +195,10 @@ namespace Stroika::Foundation::Execution {
          *
          *      \note   We may reconsider if sending log messages after shutdown is wise.
          */
-        nonvirtual void Shutdown ();
+        [[deprecated ("Since Stroika 2.1.1, use Logger::Activator object")]] nonvirtual void Shutdown ();
+
+    private:
+        nonvirtual void Shutdown_ ();
 
     public:
         /**
@@ -317,9 +335,24 @@ namespace Stroika::Foundation::Execution {
     private:
         shared_ptr<Rep_> fRep_;                          // unsure if we want to use shared_ptr or unique_ptr but shared among threads so easiest that way
         Priority         fMinLogLevel_{Priority::eInfo}; // Keep out of rep only so we can reference from inlines and put the Rep_ in the .cpp file for better hiding
+    };
 
-    private:
-        static Logger sThe_;
+    /**
+     */
+    struct Logger::Options {
+        optional<bool>           fLogBufferingEnabled;
+        optional<Time::Duration> fSuppressDuplicatesThreshold;
+        optional<Priority>       fMinLogLevel;
+    };
+
+    /**
+     *  At most one such object may exist. When it does, Logger::sThe is active and usable. 
+     *  Its illegal to make calls on Logger::sThe when there is no Activator active.
+     */
+    struct Logger::Activator {
+        Activator (const Options& options = {});
+        Activator (const Activator&) = delete;
+        ~Activator ();
     };
 
     /**
