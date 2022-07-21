@@ -109,7 +109,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
                 lk->operator= (Thread::New ([this] () {
                     RunnerLoop_ ();
                 },
-                                            Thread::eAutoStart, L"Default-Idle-Timer"sv));
+                                            Thread::eAutoStart, L"Default-Interval-Timer"sv));
             }
         }
     }
