@@ -33,19 +33,21 @@ namespace {
     bool DebuggerIsAttached_ ()
     {
         char      buf[4096];
-        const int status_fd = ::open ("/proc/self/status", O_RDONLY);
-        if (status_fd == -1)
-            return false;
-        const ssize_t num_read = ::read (status_fd, buf, sizeof (buf) - 1);
-        ::close (status_fd);
-        if (num_read <= 0)
-            return false;
-        buf[num_read]                    = '\0';
-        constexpr char tracerPidString[] = "TracerPid:";
-        const auto     tracer_pid_ptr    = ::strstr (buf, tracerPidString);
+        {
+            const int status_fd = ::open ("/proc/self/status", O_RDONLY);
+            if (status_fd == -1)
+                return false;
+            const ssize_t num_read = ::read (status_fd, buf, sizeof (buf) - 1);
+            ::close (status_fd);
+            if (num_read <= 0)
+                return false;
+            buf[num_read] = '\0';
+        }
+        constexpr char kTacerPidString_[] = "TracerPid:";
+        const auto     tracer_pid_ptr     = ::strstr (buf, kTacerPidString_);
         if (!tracer_pid_ptr)
             return false;
-        for (const char* characterPtr = tracer_pid_ptr + sizeof (tracerPidString) - 1; characterPtr <= buf + num_read; ++characterPtr) {
+        for (const char* characterPtr = tracer_pid_ptr + sizeof (kTacerPidString_) - 1; characterPtr <= buf + num_read; ++characterPtr) {
             if (::isspace (*characterPtr))
                 continue;
             else
