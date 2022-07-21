@@ -135,8 +135,6 @@ void IntervalTimer::Manager::DefaultRep::RemoveRepeating (const TimerCallback& i
     fHiddenRep_->RemoveRepeating (intervalTimer);
 }
 
-
-
 /*
  ********************************************************************************
  ********************* IntervalTimer::Manager::Activator ************************
