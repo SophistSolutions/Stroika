@@ -10,8 +10,8 @@
 #include "Stroika/Foundation/DataExchange/OptionsFile.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
-#include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
 #include "Stroika/Foundation/Execution/Logger.h"
+#include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
@@ -265,7 +265,7 @@ namespace {
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
-    Execution::Logger::Activator logMgrActivator;   // for OptionsFile test
+    Execution::Logger::Activator logMgrActivator; // for OptionsFile test
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
 }
