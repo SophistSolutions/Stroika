@@ -102,7 +102,8 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  At most one such object may exist. When it does, the IntervalTimer::Manager::sThe is active and usable. Its illegal to call otherwise.
+         *  At most one such object may exist. When it does, the IntervalTimer::Manager::sThe is active and usable. 
+         *  Its illegal to call otherwise.
          */
         struct Activator {
             Activator ();
@@ -141,7 +142,6 @@ namespace Stroika::Foundation::Execution {
     class IntervalTimer::Manager::DefaultRep : public IRep {
     public:
         DefaultRep ();
-        DefaultRep (nullptr_t);
 
     public:
         virtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when) override;
