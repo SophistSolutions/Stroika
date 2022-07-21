@@ -6,6 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../Configuration/Common.h"
 
 namespace Stroika::Foundation::Debug {

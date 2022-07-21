@@ -9,6 +9,7 @@
 #include <string>
 #include <unistd.h>
 #if defined(__APPLE__) && defined(__MACH__)
+#include <sys/sysctl.h>
 #include <sys/types.h>
 #endif
 #include <cstdio>
