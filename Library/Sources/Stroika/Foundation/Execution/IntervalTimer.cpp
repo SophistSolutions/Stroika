@@ -142,10 +142,12 @@ void IntervalTimer::Manager::DefaultRep::RemoveRepeating (const TimerCallback& i
  */
 IntervalTimer::Manager::Activator::Activator ()
 {
+    Require (Manager::sThe.fRep_ == nullptr); // only one activator object allowed
     Manager::sThe = move (Manager{make_shared<IntervalTimer::Manager::DefaultRep> ()});
 }
 
 IntervalTimer::Manager::Activator::~Activator ()
 {
+    Require (Manager::sThe.fRep_ != nullptr); // this is the only way to remove, and so must not be null here
     Manager::sThe.fRep_.reset ();
 }

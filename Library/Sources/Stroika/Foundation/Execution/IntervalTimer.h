@@ -104,6 +104,14 @@ namespace Stroika::Foundation::Execution {
         /**
          *  At most one such object may exist. When it does, the IntervalTimer::Manager::sThe is active and usable. 
          *  Its illegal to call otherwise.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          main () {
+         *              ...
+         *              // near the beginning, before IntervalManager used
+         *              Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator;
+         *      \endcode
          */
         struct Activator {
             Activator ();

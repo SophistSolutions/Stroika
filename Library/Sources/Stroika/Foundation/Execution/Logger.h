@@ -348,6 +348,14 @@ namespace Stroika::Foundation::Execution {
     /**
      *  At most one such object may exist. When it does, Logger::sThe is active and usable. 
      *  Its illegal to make calls on Logger::sThe when there is no Activator active.
+     * 
+     *  \par Example Usage
+     *      \code
+     *          main () {
+     *              ...
+     *              // near the beginning, before Logger::sThe used
+     *              Execution::Logger::Activator logMgrActivator;
+     *      \endcode
      */
     struct Logger::Activator {
         Activator (const Options& options = {});
