@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \par Example Usage
      *      \code
-     *          WhenTimeExceeded    whenTimeExceeded{1.0, [] (DurationSecondsType timeTaken) { Logger::Get ().Log (Logger::eWarning, "Took along time  to do 'x'"); }};
+     *          WhenTimeExceeded    whenTimeExceeded{1.0, [] (DurationSecondsType timeTaken) { Logger::sThe.Log (Logger::eWarning, "Took along time  to do 'x'"); }};
      *      \endcode
      * 
      *  \note this can be hopefully, mostly, optimized away if passed a nullptr_t constructor argument, or perhaps even if passed a null
