@@ -73,8 +73,11 @@ namespace Stroika::Foundation::Execution {
         class DefaultRep;
 
     public:
+        /**
+         *  Argument to Manager can be nullptr, but then not usable.
+         */
         Manager (const Manager&) = delete;
-        Manager (Manager&&)      = delete;
+        Manager (Manager&&)      = default;
         Manager (const shared_ptr<IRep>& rep);
 
     public:
@@ -82,7 +85,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         Manager& operator= (const Manager&) = delete;
-        Manager& operator= (Manager&&) = delete;
+        Manager& operator= (Manager&&) = default;
 
     public:
         nonvirtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when);
@@ -96,6 +99,15 @@ namespace Stroika::Foundation::Execution {
          *  \req argument internvalTimer is registered.
          */
         nonvirtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept;
+
+    public:
+        /**
+         *  At most one such object may exist. When it does, the IntervalTimer::Manager::sThe is active and usable. Its illegal to call otherwise.
+         */
+        struct Activator {
+            Activator ();
+            ~Activator ();
+        };
 
     public:
         /**
@@ -129,6 +141,7 @@ namespace Stroika::Foundation::Execution {
     class IntervalTimer::Manager::DefaultRep : public IRep {
     public:
         DefaultRep ();
+        DefaultRep (nullptr_t);
 
     public:
         virtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when) override;
@@ -145,7 +158,6 @@ namespace Stroika::Foundation::Execution {
         shared_ptr<Rep_> fHiddenRep_;
     };
 
-    inline IntervalTimer::Manager IntervalTimer::Manager::sThe{make_shared<IntervalTimer::Manager::DefaultRep> ()};
 
     /**
      *  \brief Adder adds the given function object to the (for now default; later optionally explicit) IntervalTimer manager, and

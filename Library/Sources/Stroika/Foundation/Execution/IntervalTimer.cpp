@@ -119,6 +119,7 @@ IntervalTimer::Manager::DefaultRep::DefaultRep ()
     : fHiddenRep_{make_shared<Rep_> ()}
 {
 }
+
 void IntervalTimer::Manager::DefaultRep::AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when)
 {
     fHiddenRep_->AddOneShot (intervalTimer, when);
@@ -132,4 +133,21 @@ void IntervalTimer::Manager::DefaultRep::AddRepeating (const TimerCallback& inte
 void IntervalTimer::Manager::DefaultRep::RemoveRepeating (const TimerCallback& intervalTimer) noexcept
 {
     fHiddenRep_->RemoveRepeating (intervalTimer);
+}
+
+
+
+/*
+ ********************************************************************************
+ ********************* IntervalTimer::Manager::Activator ************************
+ ********************************************************************************
+ */
+IntervalTimer::Manager::Activator::Activator ()
+{
+    Manager::sThe = move (Manager{make_shared<IntervalTimer::Manager::DefaultRep> ()});
+}
+
+IntervalTimer::Manager::Activator::~Activator ()
+{
+    Manager::sThe.fRep_.reset ();
 }
