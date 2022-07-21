@@ -28,10 +28,8 @@ using namespace Stroika::Foundation;
  */
 void Debug::DropIntoDebuggerIfPresent ()
 {
-#if qPlatform_Windows
-    if (::IsDebuggerPresent ()) {
-        ::DebugBreak ();
-    }
+#if __has_builtin(__builtin_trap)
+  __builtin_trap();
 #elif qPlatform_POSIX
 #if 0
     // not sure this is right, but its close...
@@ -52,11 +50,13 @@ void Debug::DropIntoDebuggerIfPresent ()
         ::raise (SIGTRAP);
     }
 #else
-// NYI
+    abort ();
 #endif
+#elif qPlatform_Windows
+    if (::IsDebuggerPresent ()) {
+        ::DebugBreak ();
+    }
 #else
-    // not sure (yet) how to te     Test28.exe!`anonymous-namespace'::AllSSLEncrytionRoundtrip::DoRegressionTests_::__l2::<lambda>(const Stroika::Foundation::Cryptography::Encoding::OpenSSLCryptoParams & cryptoParams, Stroika::Foundation::Memory::BLOB src) Line 316   C++
-    ll if being debugged...
-//abort ();
+    abort ();
 #endif
 }

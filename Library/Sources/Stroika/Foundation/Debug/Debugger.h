@@ -11,6 +11,8 @@
 namespace Stroika::Foundation::Debug {
 
     /**
+     * \note this may do bad things (like abort) if the debugger is not present, as there isn't a good universal way to tell you are running
+     *       under the debugger.
      */
     void DropIntoDebuggerIfPresent ();
 
