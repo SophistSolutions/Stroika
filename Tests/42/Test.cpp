@@ -250,7 +250,7 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-        Execution::Logger::Activator logMgrActivator;   // needed for OptionsFile test
+        Execution::Logger::Activator logMgrActivator; // needed for OptionsFile test
         Test1_Function_ ();
         Test2_CommandLine_ ();
         Test3_::DoAll ();
