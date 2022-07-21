@@ -11,8 +11,15 @@
 namespace Stroika::Foundation::Debug {
 
     /**
-     * \note this may do bad things (like abort) if the debugger is not present, as there isn't a good universal way to tell you are running
-     *       under the debugger.
+     * There is no perfect cross-platform way to check this. But this function tries, and returns true/false if it
+     *  has a good guess and nullopt if it has no idea.
+     */
+    optional<bool>  IsThisProcessBeingDebugged ();
+
+    /**
+     *  Try to drop into the debugger, if IsThisProcessBeingDebugged () returns true.
+     * 
+     *  \note - highly imperfect, may false positive/negative, especially debugging on quirks of your platform/OS.
      */
     void DropIntoDebuggerIfPresent ();
 
