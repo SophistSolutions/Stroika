@@ -73,8 +73,8 @@ namespace Stroika::Foundation::DataExchange {
      *                 return  IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName;
      *             }
      *         };
-     *         MyData_ m = of.Read<MyData_> (MyData_ ());  // will return default values if file not present
-     *         of.Write (m);                               // test writing
+     *         MyData_ m = of.Read<MyData_> (MyData_{});  // will return default values if file not present
+     *         of.Write (m);                              // test writing
      *      \endcode
      */
     class OptionsFile {

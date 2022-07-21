@@ -74,8 +74,8 @@ namespace {
             [] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
                 return IO::FileSystem::WellKnownLocations::GetTemporary () / IO::FileSystem::ToPath (moduleName + fileSuffix);
             }};
-        MyData_ m = of.Read<MyData_> (MyData_ ()); // will return default values if file not present
-        of.Write (m);                              // test writing
+        MyData_ m = of.Read<MyData_> (MyData_{}); // will return default values if file not present
+        of.Write (m);                             // test writing
     }
 }
 
@@ -229,14 +229,14 @@ namespace {
                 }
             }
             {
-                Debug::TraceContextBumper ctx1 ("InternetMediaTypeRegistry::Get ().GetMediaTypes()");
+                Debug::TraceContextBumper ctx1{"InternetMediaTypeRegistry::Get ().GetMediaTypes()"};
                 // enumerate all content types
                 for (auto ct : InternetMediaTypeRegistry::Get ().GetMediaTypes ()) {
                     DbgTrace (L"i=%s", Characters::ToString (ct).c_str ());
                 }
             }
             {
-                Debug::TraceContextBumper ctx1 ("InternetMediaTypeRegistry - updating");
+                Debug::TraceContextBumper ctx1{"InternetMediaTypeRegistry - updating"};
                 InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::Get ();
                 InternetMediaTypeRegistry updatedRegistry = origRegistry;
                 const auto                kHFType_        = InternetMediaType{L"application/fake-heatlthframe-phr+xml"};

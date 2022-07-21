@@ -113,7 +113,7 @@ namespace {
             DbgTrace ("u = 0x%x (%s)", u, StructuredException_error_category ().message (u).c_str ());
             if (pExp != nullptr) {
                 if (pExp->ContextRecord != nullptr) {
-                    TraceContextBumper ctx1 ("ContextRecord");
+                    TraceContextBumper ctx1{"ContextRecord"};
                     DbgTrace ("ContextRecord->ContextFlags = 0x%x", pExp->ContextRecord->ContextFlags);
                     DbgTrace ("ContextRecord->Dr0 = 0x%x", pExp->ContextRecord->Dr0);
 #if qPlatform_Win32
@@ -121,7 +121,7 @@ namespace {
 #endif
                 }
                 if (pExp->ExceptionRecord != nullptr) {
-                    TraceContextBumper ctx1 ("ExceptionRecord");
+                    TraceContextBumper ctx1{"ExceptionRecord"};
                     DbgTrace ("ExceptionRecord->ExceptionAddress = 0x%x", pExp->ExceptionRecord->ExceptionAddress);
                     DbgTrace ("ExceptionRecord->ExceptionCode = 0x%x", pExp->ExceptionRecord->ExceptionCode);
                     DbgTrace ("ExceptionRecord->ExceptionFlags = 0x%x", pExp->ExceptionRecord->ExceptionFlags);
@@ -136,10 +136,10 @@ namespace {
 }
 
 /*
-********************************************************************************
-****** Platform::Windows::RegisterDefaultHandler_StructuredException ***********
-********************************************************************************
-*/
+ ********************************************************************************
+ ******** Platform::Windows::RegisterDefaultHandler_StructuredException *********
+ ********************************************************************************
+ */
 void Execution::Platform::Windows::RegisterDefaultHandler_StructuredException ()
 {
     DISABLE_COMPILER_MSC_WARNING_START (4535) // disable warning cuz MSVC appears to offer no way to check if this function is available, and harmless to register if not available

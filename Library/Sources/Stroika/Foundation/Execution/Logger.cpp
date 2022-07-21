@@ -129,7 +129,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
             if (suppressDuplicates) {
                 newBookKeepThread = Thread::New (
                     [suppressDuplicatesThreshold, useRepInThread] () {
-                        Debug::TraceContextBumper ctx1 ("Logger::Rep_::UpdateBookkeepingThread_... internal thread/1");
+                        Debug::TraceContextBumper ctx1{"Logger::Rep_::UpdateBookkeepingThread_... internal thread/1"};
                         while (true) {
                             Duration time2Wait = max<Duration> (2s, suppressDuplicatesThreshold); // never wait less than this
                             if (auto p = useRepInThread->fOutMsgQ_.RemoveHeadIfPossible (time2Wait.As<DurationSecondsType> ())) {
