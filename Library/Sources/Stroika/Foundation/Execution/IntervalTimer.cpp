@@ -122,16 +122,19 @@ IntervalTimer::Manager::DefaultRep::DefaultRep ()
 
 void IntervalTimer::Manager::DefaultRep::AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when)
 {
+    AssertNotNull (fHiddenRep_);
     fHiddenRep_->AddOneShot (intervalTimer, when);
 }
 
 void IntervalTimer::Manager::DefaultRep::AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
 {
+    AssertNotNull (fHiddenRep_);
     fHiddenRep_->AddRepeating (intervalTimer, repeatInterval, hysteresis);
 }
 
 void IntervalTimer::Manager::DefaultRep::RemoveRepeating (const TimerCallback& intervalTimer) noexcept
 {
+    AssertNotNull (fHiddenRep_);
     fHiddenRep_->RemoveRepeating (intervalTimer);
 }
 
@@ -143,11 +146,11 @@ void IntervalTimer::Manager::DefaultRep::RemoveRepeating (const TimerCallback& i
 IntervalTimer::Manager::Activator::Activator ()
 {
     Require (Manager::sThe.fRep_ == nullptr); // only one activator object allowed
-    Manager::sThe = move (Manager{make_shared<IntervalTimer::Manager::DefaultRep> ()});
+    Manager::sThe = Manager{make_shared<IntervalTimer::Manager::DefaultRep> ()};
 }
 
 IntervalTimer::Manager::Activator::~Activator ()
 {
-    Require (Manager::sThe.fRep_ != nullptr); // this is the only way to remove, and so must not be null here
+    RequireNotNull (Manager::sThe.fRep_); // this is the only way to remove, and so must not be null here
     Manager::sThe.fRep_.reset ();
 }
