@@ -33,12 +33,13 @@ namespace {
     // From https://stackoverflow.com/questions/3596781/how-to-detect-if-the-current-process-is-being-run-by-gdb
     bool DebuggerIsAttached_ ()
     {
-        char buf[4096];
+        char    buf[4096];
+        ssize_t num_read;
         {
             const int status_fd = ::open ("/proc/self/status", O_RDONLY);
             if (status_fd == -1)
                 return false;
-            const ssize_t num_read = ::read (status_fd, buf, sizeof (buf) - 1);
+            num_read = ::read (status_fd, buf, sizeof (buf) - 1);
             ::close (status_fd);
             if (num_read <= 0)
                 return false;
@@ -46,7 +47,7 @@ namespace {
         }
         constexpr char kTacerPidString_[] = "TracerPid:";
         const auto     tracer_pid_ptr     = ::strstr (buf, kTacerPidString_);
-        if (!tracer_pid_ptr)
+        if (tracer_pid_ptr == nullptr)
             return false;
         for (const char* characterPtr = tracer_pid_ptr + sizeof (kTacerPidString_) - 1; characterPtr <= buf + num_read; ++characterPtr) {
             if (::isspace (*characterPtr))
