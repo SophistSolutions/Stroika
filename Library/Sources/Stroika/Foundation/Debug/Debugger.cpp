@@ -79,7 +79,7 @@ namespace {
             KERN_PROC_PID,
             getpid ()};
         size_t size = sizeof (info);
-        int    junk = sysctl (mib, sizeof (mib) / sizeof (*mib), &info, &size, NULL, 0);
+        [[maybe_unused]]int    junk = sysctl (mib, sizeof (mib) / sizeof (*mib), &info, &size, NULL, 0);
         Assert (junk == 0);
         return (info.kp_proc.p_flag & P_TRACED) != 0;
     }
