@@ -46,9 +46,12 @@ namespace Stroika::Foundation::Cache {
             }
         }
         else {
-            for (auto i = fData_.begin (); i != fData_.end (); ++i) {
+            for (auto i = fData_.begin (); i != fData_.end ();) {
                 if (i->fValue.fDataCapturedAt < t) {
-                    fData_.erase (i);
+                    fData_.Remove (i, &i);
+                }
+                else {
+                    ++i;
                 }
             }
         }
