@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Execution {
 
         /**
          */
-        static constexpr bool kSupportsTimedLocks = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex>;
+        static constexpr bool kSupportsTimedLocks = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex> or is_same_v<MUTEX, timed_mutex>;
 
         /**
          */
@@ -312,6 +312,8 @@ namespace Stroika::Foundation::Execution {
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>* = nullptr>
         nonvirtual T load () const;
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex and TEST_TYPE::kSupportsTimedLocks>* = nullptr>
+        nonvirtual T load (const chrono::duration<double>& tryFor) const;
 
     public:
         /**
@@ -328,6 +330,10 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void store (const T& v);
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>* = nullptr>
         nonvirtual void store (T&& v);
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex and TEST_TYPE::kSupportsTimedLocks>* = nullptr>
+        nonvirtual void store (const T& v, const chrono::duration<double>& tryFor);
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex and TEST_TYPE::kSupportsTimedLocks>* = nullptr>
+        nonvirtual void store (T&& v, const chrono::duration<double>& tryFor);
 
     public:
         /**
@@ -356,6 +362,8 @@ namespace Stroika::Foundation::Execution {
          *  \note - this creates a lock, so be sure TRAITS::kIsRecursiveReadMutex if using this in a place where the same thread may have a lock.
          */
         nonvirtual ReadableReference cget () const;
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportsTimedLocks>* = nullptr>
+        nonvirtual ReadableReference cget (const chrono::duration<double>& tryFor) const;
 
     public:
         /**
@@ -365,6 +373,8 @@ namespace Stroika::Foundation::Execution {
          *  \note - this creates a lock, so be sure TRAITS::kIsRecursiveLockMutex if using this in a place where the same thread may have a lock.
          */
         nonvirtual WritableReference rwget ();
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportsTimedLocks>* = nullptr>
+        nonvirtual WritableReference rwget (const chrono::duration<double>& tryFor);
 
     public:
         /*
@@ -425,6 +435,17 @@ namespace Stroika::Foundation::Execution {
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>* = nullptr>
         nonvirtual bool try_lock () const;
+
+    public:
+        /**
+         *  \note   This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
+         *          feature (e.g. with RWSynchronized<T>) - use cget (), or rwget ().
+         *
+         *  \note - This is only usable with TRAITS::kIsRecursiveLockMutex, because there would be no way to access the underlying value
+         *          otherwise.
+         */
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex and TEST_TYPE::kSupportsTimedLocks>* = nullptr>
+        nonvirtual bool try_lock_for (const chrono::duration<double>& tryFor) const;
 
     public:
         /**
@@ -575,6 +596,7 @@ namespace Stroika::Foundation::Execution {
          */
         ReadableReference (const Synchronized* s);
         ReadableReference (const Synchronized* s, _ExternallyLocked);
+        ReadableReference (const Synchronized* s, ReadLockType_&& readLock);
 
     public:
         ReadableReference (const ReadableReference& src) = delete; // must move because both src and dest cannot have the unique lock

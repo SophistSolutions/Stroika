@@ -114,6 +114,7 @@ namespace Stroika::Foundation::Execution {
      *  \note if this function returns (doesn't throw) - the required unique_lock<> OWNS the mutex.
      *
      *  \see also TryLockUntil
+     *  \see also TimedLockGuard
      */
     template <typename TIMED_MUTEX, typename EXCEPTION>
     unique_lock<TIMED_MUTEX> UniqueLock (TIMED_MUTEX& m, const chrono::duration<double>& d, const EXCEPTION& exception2Throw);
