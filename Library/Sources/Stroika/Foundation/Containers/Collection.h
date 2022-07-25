@@ -210,12 +210,15 @@ namespace Stroika::Foundation::Containers {
          * This function requires that the iterator 'i' came from this container.
          *
          * The value pointed to by 'i' is updated - replaced with the value 'newValue'.
-         *
-         *      @todo DOCUMENT SEMANTICS MORE CLEARLY - THINKING THROUGH SUBCLASS SORTEDCollection - DEFINE SO STILL MAKES SENSE THERE!!!
-         *      LIKE EQUIV TO REMOVE(i) and ADD newValue - but more efficient? No - maybe just does remove(i) and add (newValue?))
-         *      and document promised semantics about if you will encounter newvalue again when you continue iterating!
-         *
-         *      MAYBE best answer is to LOSE this Update() method for bag<> - useful for Sequence<> - but maybe not here!
+         * 
+         * \note if you update the container, and wish to continue iterating, you must pass in an &Iterator to nextI,
+         *       and continue using that iterator (i is invalid after this call). It is left undefined, whether or not you
+         *       will encounter the item 'i' again in iteration (for example, if the container is sorted, and you change
+         *       the associated value to larger, you probably will encounter it again).
+         * 
+         *  \note - this nextI value is therefore of very little value, since you cannot reliably continue iterating with it, knowing
+         *        what you will get next. @todo consider if this should be deprecated.
+         *        https://stroika.atlassian.net/browse/STK-922
          *
          *  \note mutates container
          */
@@ -229,7 +232,8 @@ namespace Stroika::Foundation::Containers {
          * 
          *  This will reduce the size of the container by one.
          *
-         *  \param nextI - if provided (not null) - will be filled in with the next value after where iterator i is pointing - since i is invalidated by changing the container)
+         *  \param nextI - if provided (not null) - will be filled in with the next value after where iterator i
+         *         is pointing - since i is invalidated by changing the container)
          *
          *   \note mutates container
          */

@@ -1060,7 +1060,11 @@ bool String::IsWhitespace () const
 
 String String::LimitLength (size_t maxLen, bool keepLeft) const
 {
+#if qCompiler_vswprintf_on_elispisStr_Buggy
+    static const String kELIPSIS_{L"..."sv};
+#else
     static const String kELIPSIS_{L"\u2026"sv}; // OR L"..."
+#endif
     return LimitLength (maxLen, keepLeft, kELIPSIS_);
 }
 

@@ -1244,8 +1244,13 @@ namespace {
     void Test30_LimitLength_ ()
     {
         Debug::TraceContextBumper ctx{L"Test30_LimitLength_"};
-        VerifyTestResult (String (L"12345").LimitLength (3) == L"12\u2026");
-        VerifyTestResult (String (L"12345").LimitLength (5) == L"12345");
+        if constexpr (qCompiler_vswprintf_on_elispisStr_Buggy) {
+            VerifyTestResult (String{L"12345"}.LimitLength (3) == L"...");
+        }
+        else {
+            VerifyTestResult (String{L"12345"}.LimitLength (3) == L"12\u2026");
+        }
+        VerifyTestResult (String{L"12345"}.LimitLength (5) == L"12345");
     }
 }
 
@@ -1254,7 +1259,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"Test31_OperatorINSERT_ostream_"};
         wstringstream             out;
-        out << String (L"abc");
+        out << String{L"abc"};
         VerifyTestResult (out.str () == L"abc");
     }
 }
@@ -1543,12 +1548,12 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"Test52_Utf32Conversions_"};
         {
-            VerifyTestResult (u32string (U"phred") == String (u32string (U"phred")).AsUTF32 ());
-            VerifyTestResult (u32string (U"שלום") == String (u32string (U"שלום")).AsUTF32 ());
+            VerifyTestResult (u32string{U"phred"} == String{u32string{U"phred"}}.AsUTF32 ());
+            VerifyTestResult (u32string{U"שלום"} == String{u32string{U"שלום"}}.AsUTF32 ());
         }
         {
-            VerifyTestResult (u32string (U"phred") == String (U"phred").AsUTF32 ());
-            VerifyTestResult (u32string (U"שלום") == String (U"שלום").AsUTF32 ());
+            VerifyTestResult (u32string{U"phred"} == String{U"phred"}.AsUTF32 ());
+            VerifyTestResult (u32string{U"שלום"} == String{U"שלום"}.AsUTF32 ());
         }
         {
             StringBuilder tmp;
@@ -1565,6 +1570,22 @@ namespace {
             StringBuilder tmp;
             tmp += U"שלום";
             Verify (tmp.str () == U"שלום");
+        }
+    }
+}
+
+namespace {
+    void Test53_vswprintf_on_2_strings_longish_Buggy_ ()
+    {
+        String b = L"…";
+        if constexpr (not qCompiler_vswprintf_on_elispisStr_Buggy) {
+            try {
+                String x = Characters::Format (L"%s", b.c_str ());
+                VerifyTestResult (x == b);
+            }
+            catch (...) {
+                VerifyTestResult (false); // means we have the bug...
+            }
         }
     }
 }
@@ -1620,6 +1641,7 @@ namespace {
         Test50_Utf8Conversions_ ();
         Test51_Utf16Conversions_ ();
         Test52_Utf32Conversions_ ();
+        Test53_vswprintf_on_2_strings_longish_Buggy_ ();
     }
 }
 

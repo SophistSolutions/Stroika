@@ -644,6 +644,15 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         *  Optional parameter to MakeCommonSerializer, and AddCommonType
+         */
+        struct RangeSerializerOptions {
+            optional<String> fLowerBoundFieldName;
+            optional<String> fUpperBoundFieldName;
+        };
+
+    public:
+        /**
          */
         template <typename ENUM_TYPE>
         static TypeMappingDetails MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
@@ -749,8 +758,8 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const optional<T>*);
         template <typename T, typename KEY_TYPE, typename TRAITS>
         static TypeMappingDetails MakeCommonSerializer_ (const Containers::KeyedCollection<T, KEY_TYPE, TRAITS>*);
-        template <typename T, typename TRAITS>
-        static TypeMappingDetails MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*);
+        template <typename T, typename TRAITS, typename... ARGS>
+        static TypeMappingDetails MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*, ARGS&&... args);
         template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const Sequence<T>*);
         template <typename T>
@@ -792,7 +801,7 @@ namespace Stroika::Foundation::DataExchange {
 
     private:
         template <typename RANGE_TYPE>
-        static TypeMappingDetails MakeCommonSerializer_Range_ ();
+        static TypeMappingDetails MakeCommonSerializer_Range_ (const RangeSerializerOptions& options = {});
 
     private:
         template <typename CLASS>

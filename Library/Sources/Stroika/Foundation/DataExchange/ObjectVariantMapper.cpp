@@ -299,10 +299,10 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const InternetMed
 {
     using T                                  = InternetMediaType;
     FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
-        return VariantValue{fromObjOfTypeT->ToString ()};
+        return VariantValue{fromObjOfTypeT->As<String> ()};
     };
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
-        *intoObjOfTypeT = T (d.As<String> ());
+        *intoObjOfTypeT = T{d.As<String> ()};
     };
     return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }
@@ -311,10 +311,10 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
 {
     using T                                  = IO::Network::CIDR;
     FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
-        return VariantValue{fromObjOfTypeT->ToString ()};
+        return VariantValue{fromObjOfTypeT->As<String> ()};
     };
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
-        *intoObjOfTypeT = T (d.As<String> ());
+        *intoObjOfTypeT = T{d.As<String> ()};
     };
     return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }
@@ -323,10 +323,10 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
 {
     using T                                  = IO::Network::InternetAddress;
     FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
-        return VariantValue{fromObjOfTypeT->ToString ()};
+        return VariantValue{fromObjOfTypeT->As<String> ()};
     };
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
-        *intoObjOfTypeT = T (d.As<String> ());
+        *intoObjOfTypeT = T{d.As<String> ()};
     };
     return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }
@@ -520,4 +520,34 @@ String ObjectVariantMapper::ToString () const
     sb += L"type-map-registry: " + Characters::ToString (fTypeMappingRegistry_);
     sb += L"}";
     return sb.str ();
+}
+
+//  https://stroika.atlassian.net/browse/STK-910
+template <>
+ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const optional<IO::Network::CIDR>*)
+{
+    using T                                            = IO::Network::CIDR;
+    FromObjectMapperType<optional<T>> fromObjectMapper = [] (const ObjectVariantMapper& mapper, const optional<T>* fromObjOfTypeT) -> VariantValue {
+        RequireNotNull (fromObjOfTypeT);
+        if (fromObjOfTypeT->has_value ()) {
+            return mapper.FromObject<T> (**fromObjOfTypeT);
+        }
+        else {
+            return VariantValue{};
+        }
+    };
+    ToObjectMapperType<optional<T>> toObjectMapper = [] (const ObjectVariantMapper& mapper, const VariantValue& d, optional<T>* intoObjOfTypeT) -> void {
+        RequireNotNull (intoObjOfTypeT);
+        if (d.GetType () == VariantValue::eNull) {
+            *intoObjOfTypeT = nullopt;
+        }
+        else {
+            // SEE https://stroika.atlassian.net/browse/STK-910
+            // fix here - I KNOW I have something there, but how to construct
+            T tmp{IO::Network::V4::kLocalhost};
+            mapper.ToObject<T> (d, &tmp);
+            *intoObjOfTypeT = tmp;
+        }
+    };
+    return TypeMappingDetails{typeid (optional<T>), fromObjectMapper, toObjectMapper};
 }

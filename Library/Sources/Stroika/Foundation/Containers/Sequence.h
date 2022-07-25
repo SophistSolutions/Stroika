@@ -522,13 +522,11 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * This function requires that the iterator 'i' came from this container.
+         *  This function requires that the iterator 'i' came from this container.
          *
-         * The value pointed to by 'i' is removed.
+         *  The value pointed to by 'i' is removed.
          *
-         * Not an error to remove an item that is not an element of the list, instead has no effect.
-         *
-         *      Remove the item at the given position of the sequence. Make sure
+         *  Remove the item at the given position of the sequence. Make sure
          *  that iteration is not disturbed by this removal. In particular, any
          *  items (other than the one at index) that would have been seen, will
          *  still be, and no new items will be seen that wouldn't have been.
@@ -684,6 +682,16 @@ namespace Stroika::Foundation::Containers {
     private:
         friend Sequence<T>;
     };
+
+    /**
+     *  Basic operator overload with the obvious meaning (Sequence<T> copy and Sequence<T>::AppendAll)
+     */
+    template <typename T>
+    Sequence<T> operator+ (const Iterable<T>& lhs, const Sequence<T>& rhs);
+    template <typename T>
+    Sequence<T> operator+ (const Sequence<T>& lhs, const Iterable<T>& rhs);
+    template <typename T>
+    Sequence<T> operator+ (const Sequence<T>& lhs, const Sequence<T>& rhs);
 
 }
 

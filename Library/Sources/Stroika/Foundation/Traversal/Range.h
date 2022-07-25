@@ -479,8 +479,20 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          * if two regions are disjoint, this can encompass a larger region than the actual union would
+         * 
+         *  \note See also Extend ();
+         *  \note See also Union ();
          */
         constexpr Range UnionBounds (const Range& rhs) const;
+
+    public:
+        /**
+         *  Construct a new range from this range, but including the given point
+         *  Note that can produce a range with different openness from the starting range (as the points added close the endpoints).
+         * 
+         *  \note See also UnionBounds ();
+         */
+        constexpr Range Extend (Configuration::ArgByValueType<T> value) const;
 
     public:
         /**

@@ -59,12 +59,12 @@ namespace {
         Thread::SuppressInterruptionInContext suppressCtx;
         DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
 #if qUseLogger
-        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Fatal Error: %s; Aborting...", String::FromSDKString (msg).c_str ());
-        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Backtrace: %s", Debug::BackTrace::Capture ().c_str ());
+        Logger::sThe.Log (Logger::Priority::eCriticalError, L"Fatal Error: %s; Aborting...", String::FromSDKString (msg).c_str ());
+        Logger::sThe.Log (Logger::Priority::eCriticalError, L"Backtrace: %s", Debug::BackTrace::Capture ().c_str ());
         if (std::exception_ptr exc = std::current_exception ()) {
-            Logger::Get ().Log (Logger::Priority::eCriticalError, L"Uncaught exception: %s", Characters::ToString (exc).c_str ());
+            Logger::sThe.Log (Logger::Priority::eCriticalError, L"Uncaught exception: %s", Characters::ToString (exc).c_str ());
         }
-        Logger::Get ().Flush ();
+        Logger::sThe.Flush ();
 #endif
         std::_Exit (EXIT_FAILURE); // skip
     }
@@ -73,9 +73,9 @@ namespace {
         Thread::SuppressInterruptionInContext suppressCtx;
         DbgTrace (L"Fatal Signal encountered: %s", Execution::SignalToName (signal).c_str ());
 #if qUseLogger
-        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Fatal Signal: %s; Aborting...", Execution::SignalToName (signal).c_str ());
-        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Backtrace: %s", Debug::BackTrace::Capture ().c_str ());
-        Logger::Get ().Flush ();
+        Logger::sThe.Log (Logger::Priority::eCriticalError, L"Fatal Signal: %s; Aborting...", Execution::SignalToName (signal).c_str ());
+        Logger::sThe.Log (Logger::Priority::eCriticalError, L"Backtrace: %s", Debug::BackTrace::Capture ().c_str ());
+        Logger::sThe.Flush ();
 #endif
         std::_Exit (EXIT_FAILURE); // skip
     }
@@ -152,20 +152,23 @@ int main (int argc, const char* argv[])
      *  Setup Logging to the OS logging facility.
      */
 #if qUseLogger
-    [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () {
-        Logger::ShutdownSingleton (); // make sure Logger threads shutdown before the end of main (), and flush buffered messages
-    });
-#if qHas_Syslog
-    Logger::Get ().SetAppender (make_shared<Logger::SysLogAppender> (L"Stroika-Sample-Service"));
-#elif qPlatform_Windows
-    Logger::Get ().SetAppender (make_shared<Logger::WindowsEventLogAppender> (L"Stroika-Sample-Service"));
-#endif
     /*
      *  Optional - use buffering feature
      *  Optional - use suppress duplicates in a 15 second window
      */
-    Logger::Get ().SetBufferingEnabled (true);
-    Logger::Get ().SetSuppressDuplicates (15s);
+#if __cpp_designated_initializers
+    Logger::Activator loggerActivation{Logger::Options{
+        .fLogBufferingEnabled         = true,
+        .fSuppressDuplicatesThreshold = 15s,
+    }};
+#else
+    Logger::Activator loggerActivation{Logger::Options{true, 15s}};
+#endif
+#if qHas_Syslog
+    Logger::sThe.SetAppender (make_shared<Logger::SysLogAppender> (L"Stroika-Sample-Service"));
+#elif qPlatform_Windows
+    Logger::sThe.SetAppender (make_shared<Logger::WindowsEventLogAppender> (L"Stroika-Sample-Service"));
+#endif
 #endif
 
     /*
@@ -211,7 +214,7 @@ int main (int argc, const char* argv[])
     catch (...) {
         String exceptMsg = Characters::ToString (current_exception ());
 #if qUseLogger
-        Logger::Get ().Log (Logger::Priority::eError, L"%s", exceptMsg.c_str ());
+        Logger::sThe.Log (Logger::Priority::eError, L"%s", exceptMsg.c_str ());
 #endif
         cerr << "FAILED: " << exceptMsg.AsNarrowSDKString () << endl;
         return EXIT_FAILURE;

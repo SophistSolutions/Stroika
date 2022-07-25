@@ -38,33 +38,41 @@ using Memory::BLOB;
  ***************** DataExchange::OptionsFile::LoggerMessage *********************
  ********************************************************************************
  */
-OptionsFile::LoggerMessage::LoggerMessage (Msg msg, const filesystem::path& fn)
+OptionsFile::LoggerMessage::LoggerMessage (Msg msg, const filesystem::path& fn, const optional<String>& details)
     : fMsg{msg}
     , fFileName{fn}
+    , fDetails{details}
 {
 }
 
 String OptionsFile::LoggerMessage::FormatMessage () const
 {
+    String details{};
+    if (fDetails) {
+        StringBuilder sb;
+        sb += L"; ";
+        sb += *fDetails;
+        details = sb.str ();
+    }
     switch (fMsg) {
         case Msg::eFailedToWriteFile:
-            return Characters::Format (L"Failed to write file: %s", Characters::ToString (NullCoalesce (fFileName)).c_str ());
+            return Characters::Format (L"Failed to write file: %s%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         case Msg::eFailedToReadFile:
-            return Characters::Format (L"Failed to read file: %s", Characters::ToString (NullCoalesce (fFileName)).c_str ());
+            return Characters::Format (L"Failed to read file: %s%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         case Msg::eFailedToParseReadFile:
-            return Characters::Format (L"Error analyzing configuration file %s - using defaults.", Characters::ToString (NullCoalesce (fFileName)).c_str ());
+            return Characters::Format (L"Error analyzing configuration file %s - using defaults%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         case Msg::eFailedToParseReadFileBadFormat:
-            return Characters::Format (L"Error analyzing configuration file (because bad format) '%s' - using defaults.", Characters::ToString (NullCoalesce (fFileName)).c_str ());
+            return Characters::Format (L"Error analyzing configuration file (because bad format) %s - using defaults%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         case Msg::eFailedToCompareReadFile:
-            return Characters::Format (L"Failed to compare configuration file: %s", Characters::ToString (NullCoalesce (fFileName)).c_str ());
+            return Characters::Format (L"Failed to compare configuration file: %s%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         case Msg::eWritingConfigFile_SoDefaultsEditable:
-            return Characters::Format (L"Writing configuration file %s because not found (and so defaults are more easily seen and editable).", Characters::ToString (NullCoalesce (fFileName)).c_str ());
+            return Characters::Format (L"Writing configuration file %s because not found (and so defaults are more easily seen and editable)%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         case Msg::eWritingConfigFile_BecauseUpgraded:
-            return Characters::Format (L"Writing configuration file %s in a new location because the software has been upgraded.", Characters::ToString (NullCoalesce (fFileName)).c_str ());
+            return Characters::Format (L"Writing configuration file %s in a new location because the software has been upgraded%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         case Msg::eWritingConfigFile_BecauseSomethingChanged:
-            return Characters::Format (L"Writing configuration file %s because something changed (e.g. a default, or field added/removed).", Characters::ToString (NullCoalesce (fFileName)).c_str ());
+            return Characters::Format (L"Writing configuration file %s because something changed (e.g. a default, or field added/removed)%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         case Msg::eFailedToWriteInUseValues:
-            return Characters::Format (L"Failed to write default (in use) values to file: %s", Characters::ToString (NullCoalesce (fFileName)).c_str ());
+            return Characters::Format (L"Failed to write default (in use) values to file: %s%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         default:
             RequireNotReached ();
             return String{};
@@ -101,7 +109,7 @@ const OptionsFile::LoggerType OptionsFile::kDefaultLogger =
                 priority = Logger::Priority::eCriticalError;
                 break;
         }
-        Logger::Get ().Log (priority, L"%s", message.FormatMessage ().c_str ());
+        Logger::sThe.Log (priority, L"%s", message.FormatMessage ().c_str ());
     };
 
 OptionsFile::ModuleNameToFileNameMapperType OptionsFile::mkFilenameMapper (const String& appName)
@@ -191,14 +199,14 @@ void OptionsFile::WriteRaw (const BLOB& blob)
         }
     }
     try {
-        IO::FileSystem::ThroughTmpFileWriter  tmpFile (GetWriteFilePath_ ());
+        IO::FileSystem::ThroughTmpFileWriter  tmpFile{GetWriteFilePath_ ()};
         IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream::New (tmpFile.GetFilePath ());
         outStream.Write (blob);
         outStream.Close (); // so any errors can be displayed as exceptions, and so closed before commit/rename
         tmpFile.Commit ();
     }
     catch (...) {
-        fLogger_ (LoggerMessage (LoggerMessage::Msg::eFailedToWriteFile, GetWriteFilePath_ ()));
+        fLogger_ (LoggerMessage{LoggerMessage::Msg::eFailedToWriteFile, GetWriteFilePath_ (), Characters::ToString (current_exception ())});
     }
 }
 
@@ -221,7 +229,7 @@ optional<VariantValue> OptionsFile::Read ()
         DbgTrace (L"exception");
 #endif
         // @todo - check different exception cases and for some - like file not found - just no warning...
-        fLogger_ (LoggerMessage (LoggerMessage::Msg::eFailedToReadFile, GetReadFilePath_ ()));
+        fLogger_ (LoggerMessage{LoggerMessage::Msg::eFailedToReadFile, GetReadFilePath_ (), Characters::ToString (current_exception ())});
         return nullopt;
     }
 }

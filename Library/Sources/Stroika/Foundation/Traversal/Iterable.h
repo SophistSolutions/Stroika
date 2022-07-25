@@ -523,6 +523,13 @@ namespace Stroika::Foundation::Traversal {
          *
          *  Note that this used to be called 'ContainsWith' - because it can act the same way (due to
          *  operator bool () method of Iterator<T>).
+         * 
+         *  \note This is much like First(), except that it optional takes a different starting point, and 
+         *        it returns an Iterator<T> intead of an optional<T>
+         *        First () - often more handy.
+         * 
+         *  \note though semantically similar to iterating, it maybe faster, due to delegating 'search' to backend container
+         *        implementation (though then call to lambda/checker maybe indirected countering this performance benefit).
          *
          *  @see Apply
          *
@@ -537,8 +544,6 @@ namespace Stroika::Foundation::Traversal {
          *          }
          *      \endcode
          *
-         *  @see First () - often more handy
-         * 
          *  \note - because the lifetime of the iterable must exceed that of the iterator, its generally unsafe to use Find()
          *          on a temporary (except with the trick if (auto i = x().Find(...)) { ok to access i here cuz x() temporary
          *          not destroyed yet).
@@ -850,6 +855,7 @@ namespace Stroika::Foundation::Traversal {
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.first(v=vs.110).aspx
          */
         nonvirtual optional<T> First () const;
+        nonvirtual optional<T> First (const function<bool (ArgByValueType<T>)>& that) const;
         template <typename RESULT_T = T>
         nonvirtual optional<RESULT_T> First (const function<optional<RESULT_T> (ArgByValueType<T>)>& that) const;
 
@@ -885,6 +891,7 @@ namespace Stroika::Foundation::Traversal {
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.last(v=vs.110).aspx
          */
         nonvirtual optional<T> Last () const;
+        nonvirtual optional<T> Last (const function<bool (ArgByValueType<T>)>& that) const;
         template <typename RESULT_T = T>
         nonvirtual optional<RESULT_T> Last (const function<optional<RESULT_T> (ArgByValueType<T>)>& that) const;
 
@@ -1105,9 +1112,26 @@ namespace Stroika::Foundation::Traversal {
          *  \note
          *      BASED ON Microsoft .net Linq. (Last)
          *      @see https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.any?view=netframework-4.7.2#System_Linq_Enumerable_Any__1_System_Collections_Generic_IEnumerable___0__System_Func___0_System_Boolean__
+         *
+         *  \note @see Count
+         *  \note @see Where
          */
         nonvirtual bool Any () const;
         nonvirtual bool Any (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
+
+    public:
+        /**
+         * \brief with no args, same as size, with function filter arg, returns number of items that pass.
+         *
+         *  \note
+         *      BASED ON Microsoft .net Linq. (Count)
+         *      @see https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.count?view=net-6.0
+         * 
+         *  \note Count/1 same as Where (i).size ();
+         *  \note @see Any
+         */
+        nonvirtual size_t Count () const;
+        nonvirtual size_t Count (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
 
     public:
         /**

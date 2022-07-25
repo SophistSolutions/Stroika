@@ -18,7 +18,9 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 # because we list multiple targets in PRODUCED_OUTPUT_ARTIFACTS, all of which are built with the same script
 .NOTPARALLEL:
 
-VERSION=3380300
+VERSION=3390100
+#VERSION=3380500
+#VERSION=3380300
 #VERSION=3370200
 #VERSION=3370100
 

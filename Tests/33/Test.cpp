@@ -8,6 +8,8 @@
 #include "Stroika/Foundation/Configuration/Locale.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
@@ -703,12 +705,6 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_CustomMapper_11_"};
         {
-            ObjectVariantMapper mapper;
-            using IO::Network::CIDR;
-            mapper.Add<CIDR> ([] ([[maybe_unused]] const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { return obj->ToString (); },
-                              [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { *intoObj = CIDR{d.As<String> ()}; });
-        }
-        {
             struct RGBColor {
                 uint8_t red;
                 uint8_t green;
@@ -762,22 +758,6 @@ namespace {
 }
 
 namespace {
-    namespace aaa {
-        struct dev {
-            static const ObjectVariantMapper kMapper_;
-        };
-    }
-    using namespace aaa;
-    const ObjectVariantMapper dev::kMapper_ = [] () {
-        ObjectVariantMapper mapper;
-        using IO::Network::CIDR;
-        mapper.Add<CIDR> ([] ([[maybe_unused]] const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { return obj->ToString (); },
-                          [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { *intoObj = CIDR{d.As<String> ()}; });
-        return mapper;
-    }();
-}
-
-namespace {
     void DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_ ()
     {
         Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_"};
@@ -801,7 +781,7 @@ namespace {
             Fred fEnum1;
 
             SharedContactsConfig_ ()
-                : fEnum1 (Fred::a)
+                : fEnum1{Fred::a}
             {
             }
 
@@ -854,6 +834,38 @@ namespace {
 }
 
 namespace {
+    // https://stroika.atlassian.net/browse/STK-909
+    namespace Test14_ObjVarMapperAsStringVsToString_STK_909_ {
+        void DoIt ()
+        {
+            ObjectVariantMapper mapper;
+            struct T {
+                IO::Network::InternetAddress    ia;
+                optional<IO::Network::CIDR>     cidr;
+                DataExchange::InternetMediaType mediaType;
+                bool                            operator== (const T& rhs) const
+                {
+                    return ia == rhs.ia and cidr == rhs.cidr and mediaType == rhs.mediaType;
+                }
+            };
+            mapper.AddCommonType<IO::Network::CIDR> ();
+            mapper.AddCommonType<optional<IO::Network::CIDR>> ();
+            mapper.AddClass<T> ({
+                {L"ia", StructFieldMetaInfo{&T::ia}},
+                {L"cidr", StructFieldMetaInfo{&T::cidr}},
+                {L"mediaType", StructFieldMetaInfo{&T::mediaType}},
+            });
+            T g1{IO::Network::V4::kLocalhost, IO::Network::CIDR{IO::Network::V6::kAddrAny, 64}, DataExchange::InternetMediaTypes::kJPEG};
+            VerifyTestResult (mapper.ToObject<T> (mapper.FromObject (g1)) == g1);
+            T g2{IO::Network::V4::kLocalhost, IO::Network::CIDR{IO::Network::V4::kLocalhost, 16}, DataExchange::InternetMediaTypes::kGIF};
+            VerifyTestResult (mapper.ToObject<T> (mapper.FromObject (g2)) == g2);
+            T g3{IO::Network::V4::kLocalhost, IO::Network::CIDR{IO::Network::InternetAddress{"192.22.4.4"}, 9}, DataExchange::InternetMediaTypes::kGIF};
+            VerifyTestResult (mapper.ToObject<T> (mapper.FromObject (g3)) == g3);
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         DoRegressionTests_BasicDataRoundtrips_1_::DoAll ();
@@ -869,6 +881,7 @@ namespace {
         DoRegressionTests_CustomMapper_11_ ();
         DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_ ();
         Test13_ObjVarMapperAndGUID_::DoIt ();
+        Test14_ObjVarMapperAsStringVsToString_STK_909_::DoIt ();
     }
 }
 

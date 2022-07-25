@@ -144,12 +144,13 @@ namespace Stroika::Foundation::Math {
      *      \endcode
      */
     template <typename NEW_T, typename T>
-    NEW_T PinToMaxForType (T initialValue);
+    constexpr NEW_T PinToMaxForType (T initialValue);
 
     /**
      *      \note   we define this as an alertnative to std::abs () - since that is not extendible to other types (just an overload for floating point and int types)
      *
      *  \note   when we port stroika bignum package - this shoudl support those bignums.
+     *  \note std::abs() not constexpr until C++ 23 (which is why this isn't)
      */
     template <typename T, typename RESULT_TYPE = T>
     RESULT_TYPE Abs (T v);
@@ -158,13 +159,13 @@ namespace Stroika::Foundation::Math {
      *  \note - when we port stroika bignum package - this should support those bignums.
      */
     template <typename T>
-    bool IsOdd (T v);
+    constexpr bool IsOdd (T v);
 
     /**
      *  Note - when we port stroika bignum package - this should support those bignums.
      */
     template <typename T>
-    bool IsEven (T v);
+    constexpr bool IsEven (T v);
 
     /**
      *  Note - when we port stroika bignum package - this shoudl support those bignums.

@@ -87,9 +87,9 @@ namespace Stroika::Foundation::Memory {
     inline T* ManuallyBlockAllocated<T>::New (ARGS&&... args)
     {
 #if qAllowBlockAllocation
-        return new (BlockAllocator<T>{}.allocate (1)) T (forward<ARGS> (args)...);
+        return new (BlockAllocator<T>{}.allocate (1)) T{forward<ARGS> (args)...};
 #else
-        return new T (forward<ARGS> (args)...);
+        return new T{forward<ARGS> (args)...};
 #endif
     }
     template <typename T>

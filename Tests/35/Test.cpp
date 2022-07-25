@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/DataExchange/OptionsFile.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Logger.h"
 #include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
@@ -73,8 +74,8 @@ namespace {
             [] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
                 return IO::FileSystem::WellKnownLocations::GetTemporary () / IO::FileSystem::ToPath (moduleName + fileSuffix);
             }};
-        MyData_ m = of.Read<MyData_> (MyData_ ()); // will return default values if file not present
-        of.Write (m);                              // test writing
+        MyData_ m = of.Read<MyData_> (MyData_{}); // will return default values if file not present
+        of.Write (m);                             // test writing
     }
 }
 
@@ -228,14 +229,14 @@ namespace {
                 }
             }
             {
-                Debug::TraceContextBumper ctx1 ("InternetMediaTypeRegistry::Get ().GetMediaTypes()");
+                Debug::TraceContextBumper ctx1{"InternetMediaTypeRegistry::Get ().GetMediaTypes()"};
                 // enumerate all content types
                 for (auto ct : InternetMediaTypeRegistry::Get ().GetMediaTypes ()) {
                     DbgTrace (L"i=%s", Characters::ToString (ct).c_str ());
                 }
             }
             {
-                Debug::TraceContextBumper ctx1 ("InternetMediaTypeRegistry - updating");
+                Debug::TraceContextBumper ctx1{"InternetMediaTypeRegistry - updating"};
                 InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::Get ();
                 InternetMediaTypeRegistry updatedRegistry = origRegistry;
                 const auto                kHFType_        = InternetMediaType{L"application/fake-heatlthframe-phr+xml"};
@@ -264,6 +265,7 @@ namespace {
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
+    Execution::Logger::Activator logMgrActivator; // for OptionsFile test
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
 }

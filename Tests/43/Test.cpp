@@ -549,6 +549,12 @@ namespace {
                 auto cidr = CIDR{InternetAddress{"172.17.185.1"}, 28};
                 VerifyTestResult (Characters::ToString (cidr) == L"172.17.185.0/28");
             }
+            {
+                // fix for https://stroika.atlassian.net/browse/STK-909
+                auto cidr = CIDR{V6::kAddrAny, 64};
+                VerifyTestResult (Characters::ToString (cidr) == L"in6addr_any/64");
+                VerifyTestResult (CIDR{cidr.As<String> ()} == cidr); // can roundtrip numeric form
+            }
         }
     }
 }

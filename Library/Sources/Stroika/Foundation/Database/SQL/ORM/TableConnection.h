@@ -30,10 +30,26 @@ namespace Stroika::Foundation::Database::SQL::ORM {
 
     /**
      */
-    template <typename T, typename ID_TYPE = Common::GUID, bool TRACE_LOG_EACH_REQUEST = false>
+    template <typename T, typename ID_TYPE = Common::GUID>
     struct TableConnectionTraits {
-        using IDType                               = ID_TYPE;
-        static constexpr bool kTraceLogEachRequest = TRACE_LOG_EACH_REQUEST;
+        using IDType = ID_TYPE;
+        static VariantValue ID2VariantValue (const IDType& id)
+        {
+            if constexpr (is_convertible_v<IDType, Memory::BLOB> or is_same_v<IDType, Common::GUID>) {
+                return VariantValue{static_cast<Memory::BLOB> (id)};
+            }
+            else if constexpr (is_same_v<IDType, IO::Network::URI>) {
+                return VariantValue{id.template As<Characters::String> ()};
+            }
+            else if constexpr (is_convertible_v<IDType, Characters::String>) {
+                return VariantValue{static_cast<Characters::String> (id)};
+            }
+            else {
+                //static_assert (false, "specify your own ID2VariantValue function for this type");
+                AssertNotReached ();
+                return VariantValue{};
+            }
+        }
     };
 
     /**
@@ -58,8 +74,24 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS = TableConnectionTraits<T>>
     class TableConnection : private Debug::AssertExternallySynchronizedMutex {
     public:
+        /**
+         * Optionally passed to TableConnection for the purpose of logging
+         */
+        enum Operation { eStartingRead,
+                         eCompletedRead,
+                         eStartingWrite,
+                         eCompletedWrite,
+                         eNotifyError };
+
+    public:
+        /**
+         * Optionally passed to TableConnection for the purpose of logging
+         */
+        using OpertionCallbackPtr = function<void (Operation op, const TableConnection* tableConn, const Statement* s)>;
+
+    public:
         TableConnection () = delete;
-        TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema, const ObjectVariantMapper& objectVariantMapper);
+        TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema, const ObjectVariantMapper& objectVariantMapper, const OpertionCallbackPtr& operationCallback = nullptr);
         TableConnection (const TableConnection& src);
 
     public:
@@ -79,9 +111,18 @@ namespace Stroika::Foundation::Database::SQL::ORM {
 
     public:
         /**
+         */
+        Common::ReadOnlyProperty<OpertionCallbackPtr> pOperationCallback;
+
+    public:
+        static const OpertionCallbackPtr kDefaultTracingOpertionCallback;
+
+    public:
+        /**
          *  Lookup the given object by ID. This does a select * from table where id=id, and maps the various
          *  SQL parameters that come back to a C++ object.
          */
+        nonvirtual optional<T> GetByID (const VariantValue& id);
         nonvirtual optional<T> GetByID (const typename TRAITS::IDType& id);
 
     public:
@@ -101,6 +142,12 @@ namespace Stroika::Foundation::Database::SQL::ORM {
 
     public:
         /**
+         *  Equivilent to checking GetByID () to see if present, and either calling AddNew or Update().
+         */
+        nonvirtual void AddOrUpdate (const T& v);
+
+    public:
+        /**
          *  Use the ID field from the argument object to update all the OTHER fields of that object in the database.
          *  The ID field is known because of the Table::Schema, and must be valid (else this will fail).
          */
@@ -110,10 +157,16 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         Connection::Ptr     fConnection_;
         Schema::Table       fTableSchema_;
         ObjectVariantMapper fObjectVariantMapper_;
+        OpertionCallbackPtr fTableOpertionCallback_;
         Statement           fGetByID_Statement_;
         Statement           fGetAll_Statement_;
         Statement           fAddNew_Statement_;
         Statement           fUpdate_Statement_;
+
+    private:
+        template <typename FUN>
+        nonvirtual void DoExecute_ (FUN&& f, Statement& s, bool write);
+        nonvirtual void DoExecute_ (Statement& s, bool write);
     };
 
 }

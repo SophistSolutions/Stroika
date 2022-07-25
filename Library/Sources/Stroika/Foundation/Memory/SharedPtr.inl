@@ -498,7 +498,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename... ARG_TYPES>
     inline SharedPtr<T> MakeSharedPtr (ARG_TYPES&&... args)
     {
-        return SharedPtr<T> (new T (forward<ARG_TYPES> (args)...));
+        return SharedPtr<T> (new T{forward<ARG_TYPES> (args)...});
     }
 }
 

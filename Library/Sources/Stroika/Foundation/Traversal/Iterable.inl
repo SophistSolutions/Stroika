@@ -13,6 +13,7 @@
 #include <set>
 
 #include "../Debug/Assertions.h"
+#include "../Math/Statistics.h"
 
 #include "Generator.h"
 
@@ -702,16 +703,45 @@ namespace Stroika::Foundation::Traversal {
         return i ? *i : optional<T>{};
     }
     template <typename T>
+    inline optional<T> Iterable<T>::First (const function<bool (ArgByValueType<T>)>& that) const
+    {
+        RequireNotNull (that);
+        constexpr bool kUseIterableRepIteration_ = true; // same semantics, but maybe faster cuz avoids Stroika iterator extra virtual calls overhead
+        if (kUseIterableRepIteration_) {
+            Iterator<T> t = this->_fRep->Find (that);
+            return t ? optional<T>{*t} : optional<T>{};
+        }
+        else {
+            for (const auto& i : *this) {
+                if (that (i)) {
+                    return i;
+                }
+            }
+            return nullopt;
+        }
+    }
+    template <typename T>
     template <typename RESULT_T>
     inline optional<RESULT_T> Iterable<T>::First (const function<optional<RESULT_T> (ArgByValueType<T>)>& that) const
     {
         RequireNotNull (that);
-        for (const auto& i : *this) {
-            if (auto r = that (i)) {
-                return r;
-            }
+        constexpr bool kUseIterableRepIteration_ = true; // same semantics, but maybe faster cuz avoids Stroika iterator extra virtual calls overhead
+        if (kUseIterableRepIteration_) {
+            optional<RESULT_T> result; // actual result captured in sife-effect of lambda
+            auto               f = [&that, &result] (ArgByValueType<T> i) {
+                return (result = that (i)).has_value ();
+            };
+            Iterator<T> t = this->_fRep->Find (f);
+            return t ? result : optional<RESULT_T>{};
         }
-        return nullopt;
+        else {
+            for (const auto& i : *this) {
+                if (auto r = that (i)) {
+                    return r;
+                }
+            }
+            return nullopt;
+        }
     }
     template <typename T>
     inline T Iterable<T>::FirstValue (ArgByValueType<T> defaultValue) const
@@ -736,6 +766,18 @@ namespace Stroika::Foundation::Traversal {
             return *prev;
         }
         return nullopt;
+    }
+    template <typename T>
+    inline optional<T> Iterable<T>::Last (const function<bool (ArgByValueType<T>)>& that) const
+    {
+        RequireNotNull (that);
+        optional<T> result;
+        for (const auto& i : *this) {
+            if (that (i)) {
+                result = i;
+            }
+        }
+        return result;
     }
     template <typename T>
     template <typename RESULT_T>
@@ -823,13 +865,11 @@ namespace Stroika::Foundation::Traversal {
     template <typename RESULT_TYPE>
     optional<RESULT_TYPE> Iterable<T>::Mean () const
     {
-        RESULT_TYPE  result{};
-        unsigned int count{};
-        for (const T& i : *this) {
-            ++count;
-            result += i;
+        Iterator<T> i = begin ();
+        if (i == end ()) {
+            return nullopt;
         }
-        return (count == 0) ? optional<RESULT_TYPE>{} : (result / count);
+        return Math::Mean (i, end ());
     }
     template <typename T>
     template <typename RESULT_TYPE>
@@ -853,18 +893,11 @@ namespace Stroika::Foundation::Traversal {
     template <typename RESULT_TYPE, typename INORDER_COMPARE_FUNCTION>
     optional<RESULT_TYPE> Iterable<T>::Median (const INORDER_COMPARE_FUNCTION& compare) const
     {
-        vector<T> tmp{begin (), end ()}; // Somewhat simplistic implementation
-        sort (tmp.begin (), tmp.end (), compare);
-        size_t sz{tmp.size ()};
-        if (sz == 0) [[unlikely]] {
+        Iterator<T> i = begin ();
+        if (i == end ()) {
             return nullopt;
         }
-        if ((sz % 2) == 0) {
-            return (static_cast<RESULT_TYPE> (tmp[sz / 2]) + static_cast<RESULT_TYPE> (tmp[sz / 2 - 1])) / static_cast<RESULT_TYPE> (2);
-        }
-        else {
-            return tmp[sz / 2];
-        }
+        return Math::Median<Iterator<T>, RESULT_TYPE> (i, end (), compare);
     }
     template <typename T>
     template <typename RESULT_TYPE>
@@ -910,6 +943,19 @@ namespace Stroika::Foundation::Traversal {
     inline bool Iterable<T>::Any (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
     {
         return not Where (includeIfTrue).empty ();
+    }
+    template <typename T>
+    inline size_t Iterable<T>::Count () const
+    {
+        return size ();
+    }
+    template <typename T>
+    inline size_t Iterable<T>::Count (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
+    {
+        size_t cnt{};
+        Apply ([&] (ArgByValueType<T> a) { if (includeIfTrue (a)) ++cnt; });
+        Ensure (cnt == Where (includeIfTrue).size ());
+        return cnt;
     }
     template <typename T>
     inline size_t Iterable<T>::length () const

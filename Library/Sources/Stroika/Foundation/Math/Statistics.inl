@@ -47,13 +47,13 @@ namespace Stroika::Foundation::Math {
      ********************************** Median **************************************
      ********************************************************************************
      */
-    template <typename ITERATOR_OF_T, typename RESULT_TYPE>
-    RESULT_TYPE Median (ITERATOR_OF_T start, ITERATOR_OF_T end)
+    template <typename ITERATOR_OF_T, typename RESULT_TYPE, typename INORDER_COMPARE_FUNCTION>
+    RESULT_TYPE Median (ITERATOR_OF_T start, ITERATOR_OF_T end, const INORDER_COMPARE_FUNCTION& compare)
     {
         Require (start != end);                           // the median of no values would be undefined
         Memory::StackBuffer<RESULT_TYPE> tmp{start, end}; // copy cuz data modified
         size_t                           size = distance (start, end);
-        nth_element (tmp.begin (), tmp.begin () + size / 2, tmp.end ());
+        nth_element (tmp.begin (), tmp.begin () + size / 2, tmp.end (), compare);
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\""); // warning with gcc cross-compile to raspberrypi - no idea why --LGP 2018-09-13
         RESULT_TYPE result{tmp[size / 2]};
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"");
@@ -61,18 +61,18 @@ namespace Stroika::Foundation::Math {
             Assert (size >= 2); // cuz require at start >=1 and since even
             // NB: Could use sort instead of nth_element, and some on the web suggest faster, but sort is O(n*log(n)), and nth_elemnet is O(n) (even
             // when you do it twice.
-            nth_element (tmp.begin (), tmp.begin () + size / 2 - 1, tmp.end ());
+            nth_element (tmp.begin (), tmp.begin () + size / 2 - 1, tmp.end (), compare);
             result += tmp[size / 2 - 1];
             result /= static_cast<RESULT_TYPE> (2);
         }
         return result;
     }
-    template <typename CONTAINER_OF_T, typename RESULT_TYPE>
-    inline RESULT_TYPE Median (const CONTAINER_OF_T& container)
+    template <typename CONTAINER_OF_T, typename RESULT_TYPE, typename INORDER_COMPARE_FUNCTION>
+    inline RESULT_TYPE Median (const CONTAINER_OF_T& container, const INORDER_COMPARE_FUNCTION& compare)
     {
         Require (not container.empty ());
         using ITERATOR_TYPE = decltype (begin (container));
-        return Median<ITERATOR_TYPE, RESULT_TYPE> (begin (container), end (container));
+        return Median<ITERATOR_TYPE, RESULT_TYPE, INORDER_COMPARE_FUNCTION> (begin (container), end (container), compare);
     }
 
     /*
@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Math {
         return sqrt (accum / (n - 1));
     }
     template <typename CONTAINER_OF_T, typename RESULT_TYPE>
-    RESULT_TYPE StandardDeviation (const CONTAINER_OF_T& container)
+    inline RESULT_TYPE StandardDeviation (const CONTAINER_OF_T& container)
     {
         Require (container.size () >= 2);
         using ITERATOR_TYPE = decltype (begin (container));

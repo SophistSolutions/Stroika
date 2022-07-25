@@ -355,7 +355,7 @@ namespace Stroika::Foundation::Traversal {
             // lhs/rhs ends are closed iff BOTH lhs/rhs contains that point
             Openness lhsO = Contains (l) and rhs.Contains (l) ? Openness::eClosed : Openness::eOpen;
             Openness rhsO = Contains (r) and rhs.Contains (r) ? Openness::eClosed : Openness::eOpen;
-            result        = Range (l, r, lhsO, rhsO);
+            result        = Range{l, r, lhsO, rhsO};
         }
         Ensure (result.GetLowerBound () <= GetLowerBound ());
         Ensure (result.GetLowerBound () <= GetUpperBound ());
@@ -366,6 +366,20 @@ namespace Stroika::Foundation::Traversal {
         Ensure (result.GetUpperBound () >= rhs.GetLowerBound ());
         Ensure (result.GetUpperBound () >= rhs.GetUpperBound ());
         return result;
+    }
+    template <typename T, typename TRAITS>
+    constexpr auto Range<T, TRAITS>::Extend (Configuration::ArgByValueType<T> value) const -> Range
+    {
+        if (empty ()) {
+            return Range{value, value, Openness::eClosed, Openness::eClosed};
+        }
+        if (value < GetLowerBound ()) {
+            return Range{value, GetUpperBound (), Openness::eClosed, GetUpperBoundOpenness ()};
+        }
+        if (GetUpperBound () < value) {
+            return Range{GetLowerBound (), value, GetLowerBoundOpenness (), Openness::eClosed};
+        }
+        return *this;
     }
     template <typename T, typename TRAITS>
     constexpr T Range<T, TRAITS>::GetLowerBound () const
@@ -393,13 +407,13 @@ namespace Stroika::Foundation::Traversal {
     constexpr auto Range<T, TRAITS>::Offset (SignedDifferenceType o) const -> Range
     {
         Require (not empty ());
-        return Range (static_cast<T> (GetLowerBound () + o), static_cast<T> (GetUpperBound () + o), GetLowerBoundOpenness (), GetUpperBoundOpenness ());
+        return Range{static_cast<T> (GetLowerBound () + o), static_cast<T> (GetUpperBound () + o), GetLowerBoundOpenness (), GetUpperBoundOpenness ()};
     }
     template <typename T, typename TRAITS>
     constexpr auto Range<T, TRAITS>::Times (T o) const -> Range
     {
         Require (not empty ());
-        return Range (static_cast<T> (GetLowerBound () * o), static_cast<T> (GetUpperBound () * o), GetLowerBoundOpenness (), GetUpperBoundOpenness ());
+        return Range{static_cast<T> (GetLowerBound () * o), static_cast<T> (GetUpperBound () * o), GetLowerBoundOpenness (), GetUpperBoundOpenness ()};
     }
     template <typename T, typename TRAITS>
     Characters::String Range<T, TRAITS>::ToString (const function<Characters::String (T)>& eltToString) const

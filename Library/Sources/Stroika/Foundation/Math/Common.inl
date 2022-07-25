@@ -265,9 +265,9 @@ namespace Stroika::Foundation::Math {
      ********************************************************************************
      */
     template <typename NEW_T, typename T>
-    NEW_T PinToMaxForType (T initialValue)
+    constexpr NEW_T PinToMaxForType (T initialValue)
     {
-        using LargerType = decltype (NEW_T () + T ()); // maybe should use conditional<> for this?
+        using LargerType = decltype (NEW_T{} + T{}); // maybe should use conditional<> for this?
         return static_cast<NEW_T> (min<LargerType> (initialValue, numeric_limits<NEW_T>::max ()));
     }
 
@@ -353,8 +353,9 @@ namespace Stroika::Foundation::Math {
      ********************************************************************************
      */
     template <typename T>
-    bool IsOdd (T v)
+    constexpr bool IsOdd (T v)
     {
+        static_assert (is_integral_v<T>);
         return v % 2 == 1;
     }
 
@@ -364,8 +365,9 @@ namespace Stroika::Foundation::Math {
      ********************************************************************************
      */
     template <typename T>
-    bool IsEven (T v)
+    constexpr bool IsEven (T v)
     {
+        static_assert (is_integral_v<T>);
         return v % 2 == 0;
     }
 
@@ -378,15 +380,16 @@ namespace Stroika::Foundation::Math {
     bool IsPrime (T v)
     {
         Require (v >= 0); // no negative numbers
+        static_assert (is_integral_v<T>);
         // @todo - redo this as http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes but this is simpler and
-        // good enuf for me to test...
+        // has no memory requirements and is good enuf for me to test...
         if (v == 1) {
             return false;
         }
         if (v == 2) {
             return true; // special case
         }
-        T checkUpTo = T (::sqrt (v) + 1);
+        T checkUpTo = static_cast<T> (::sqrt (v)) + static_cast<T> (1);
         // Check each number from 3 up to checkUpTo and see if its a divisor
         for (T d = 2; d <= checkUpTo; ++d) {
             if (v % d == 0) {

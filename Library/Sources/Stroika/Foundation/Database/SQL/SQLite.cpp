@@ -49,7 +49,11 @@ namespace {
         }
         switch (errCode) {
             case SQLITE_BUSY: {
-                DbgTrace (L"SQLITE_BUSY");
+                DbgTrace (L"SQLITE_BUSY"); //  The database file is locked
+                Execution::Throw (system_error{make_error_code (errc::device_or_resource_busy)});
+            } break;
+            case SQLITE_LOCKED: {
+                DbgTrace (L"SQLITE_LOCKED"); //  A table in the database is locked
                 Execution::Throw (system_error{make_error_code (errc::device_or_resource_busy)});
             } break;
             case SQLITE_CONSTRAINT: {
@@ -57,25 +61,29 @@ namespace {
                     Execution::Throw (Exception{Characters::Format (L"SQLITE_CONSTRAINT: %s", errMsgDetails->c_str ())});
                 }
                 else {
-                    Execution::Throw (Exception{L"SQLITE_CONSTRAINT"sv});
+                    static const auto kEx_ = Exception{L"SQLITE_CONSTRAINT"sv};
+                    Execution::Throw (kEx_);
                 }
             } break;
             case SQLITE_TOOBIG: {
-                Execution::Throw (Exception{L"SQLITE_TOOBIG"sv});
+                static const auto kEx_ = Exception{L"SQLITE_TOOBIG"sv};
+                Execution::Throw (kEx_);
             } break;
             case SQLITE_FULL: {
                 DbgTrace (L"SQLITE_FULL");
                 Execution::Throw (system_error{make_error_code (errc::no_space_on_device)});
             } break;
             case SQLITE_READONLY: {
-                Execution::Throw (Exception{L"SQLITE_READONLY"sv});
+                static const auto kEx_ = Exception{L"SQLITE_READONLY"sv};
+                Execution::Throw (kEx_);
             } break;
             case SQLITE_MISUSE: {
                 if (errMsgDetails) {
                     Execution::Throw (Exception{Characters::Format (L"SQLITE_MISUSE: %s", errMsgDetails->c_str ())});
                 }
                 else {
-                    Execution::Throw (Exception{L"SQLITE_MISUSE"sv});
+                    static const auto kEx_ = Exception{L"SQLITE_MISUSE"sv};
+                    Execution::Throw (kEx_);
                 }
             } break;
             case SQLITE_ERROR: {
@@ -83,7 +91,8 @@ namespace {
                     Execution::Throw (Exception{Characters::Format (L"SQLITE_ERROR: %s", errMsgDetails->c_str ())});
                 }
                 else {
-                    Execution::Throw (Exception{L"SQLITE_ERROR"sv});
+                    static const auto kEx_ = Exception{L"SQLITE_ERROR"sv};
+                    Execution::Throw (kEx_);
                 }
             } break;
             case SQLITE_NOMEM: {
@@ -267,15 +276,10 @@ struct Connection::Rep_ final : IRep {
     virtual void Exec (const String& sql) override
     {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-        char*                                               db_err{};
+        [[maybe_unused]] char*                              db_err{}; // could use but its embedded in the fDB_ error string anyhow, and thats already peeked at by ThrowSQLiteErrorIfNotOK_ and it generates better exceptions (maps some to std c++ exceptions)
         int                                                 e = ::sqlite3_exec (fDB_, sql.AsUTF8 ().c_str (), NULL, 0, &db_err);
         if (e != SQLITE_OK) [[unlikely]] {
-            if (db_err == nullptr or *db_err == '\0') {
-                ThrowSQLiteErrorIfNotOK_ (e, fDB_);
-            }
-            else {
-                Execution::Throw (Exception{Characters::Format (L"SQLite Error %d: %s", e, String::FromUTF8 (db_err).c_str ())});
-            }
+            ThrowSQLiteErrorIfNotOK_ (e, fDB_);
         }
     }
     virtual ::sqlite3* Peek () override

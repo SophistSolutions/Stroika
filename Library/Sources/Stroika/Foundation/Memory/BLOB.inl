@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Memory {
         }
         else if constexpr (Memory::UsesBlockAllocation<T> ()) {
             // almost as good, but still does two allocs, above does one shared alloc of the block allocated controlblock+T
-            //return shared_ptr<T> (new T (forward<ARGS_TYPE> (args)...));
+            //return shared_ptr<T> (new T {forward<ARGS_TYPE> (args)...});
             return allocate_shared<T> (Memory::BlockAllocator<T>{}, forward<ARGS_TYPE> (args)...);
         }
         else {

@@ -20,6 +20,7 @@ namespace Stroika::Foundation::IO::Network {
     inline CIDR::CIDR (const InternetAddress& internetAddress, optional<unsigned int> significantBits)
         : CIDR{internetAddress, significantBits.value_or (static_cast<unsigned int> (*internetAddress.GetAddressSize () * 8))}
     {
+        Require (internetAddress.GetAddressFamily () == InternetAddress::AddressFamily::V4 or internetAddress.GetAddressFamily () == InternetAddress::AddressFamily::V6);
     }
     inline InternetAddress CIDR::GetBaseInternetAddress () const
     {

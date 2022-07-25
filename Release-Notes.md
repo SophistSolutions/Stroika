@@ -7,6 +7,121 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1.1  {2022-07-24}
+#### TLDR
+
+- Foundation::IO::Network::Neighbors on windows, return : separated hardware addresses, and other small networking class improvements
+- Several ObjectVariantMapper improvements (CIDR, MakeCommonSerializer improvements for ranges)
+- Iterable cleanups: added Iterable<>::First() and Last() overloads which are much more convenient (callback return bool), and Count() etc overloads
+- Various fixes/cleanups to Logger (some not fully backward compatible)
+- SQLite and ORM improvements (mostly exception handling)
+- Fixed serious bug with ThroughTmpFileWriter
+- New IntervalTimer class / Mgr etc
+
+#### Change Details
+
+- Compiler and System Compatability
+  - Visual Studio.net 2019 16.11.17
+  - Visual Studio.net 2022 17.2.6
+    - _MSC_VER_2k22_17Pt2_ (2 new bugs and nothing fixed)
+- RegressionTests and Sanitizers
+  - Add suppression for Valgrind-Helgrind-qCompiler_lto_Buggy.supp
+  - more https://stroika.atlassian.net/browse/STK-915 (sanitzer) workarounds
+- Documentation
+  - Serveral small docs cleanups, method/class descriptions mostly
+- Library
+  - Foundation
+    - Configuration
+      - new bug workaround and regression test qCompiler_vswprintf_on_elispisStr_Buggy
+    - Containers
+      - A little more docs on iterator patching in Sequence, COllection etc
+    - Database 
+      - ORM
+        - Added TableConnectionTraits::ID2VariantValue () method/factoring to Database/SQL/ORM/TableConnection
+        - https://stroika.atlassian.net/browse/STK-919 - added draft impl of TableConnection<T, TRAITS>::AddOrUpdate
+        - SQL:ORM: Added optinal argument OperationCallbackPtr to TableConnection, use that to replace TRAITS::kTraceLogEachRequest with kDefaultTracingOpertionCallback as that callback (so that operation callback can be used for other logging/tracking)
+        - Treat SQLITE_LOCKED the same way we treat SQLITE_BUSY: throws errc::device_or_resource_busy
+        - Improved exception message/throws (mapping to hgiher level types better) in SQLIte call (vector through ThrowSQLiteErrorIfNotOK_ in one more place)
+    - DataExchange
+      - ObjectVariantMapper
+        - new optional parameter RangeSerializerOptions for ObjectVariantMapper MakeCommonSerializer, and AddCommonType
+      - OptionsFile
+        - slightly improved error reporting
+    - Debug
+      - augmented initial tracelog output with Starting at, and qTraceToFile messages
+      - Added Debug::TraceContextSuppressor suppressTraceInThisBlock in one place where tracelogs were needlessly noisy for WTF
+      - new Debug::IsThisProcessBeingDebugged ()
+      - Debug::DropIntoDebuggerIfPresent () more aggressive, and now works on unix, but may do bad things (abort) if debugger not present - so dont call lightly ;-)
+    - Execution
+      - Workaround Logger::Shutdown issue - https://stroika.atlassian.net/browse/STK-917
+      - New IntervalTimer class / Mgr etc
+      - Logger
+        - **NOT BACKWARD COMPATIBLE**
+        - replaced Logger::Get () with Logger::sThe (just deprecated)), but now REQUIRE use of Logger::Activator object in place of old shutdown code
+    - IO::Filesystem
+      - fixed serious regression/bug in ThroughTmpFileWriter - appending suffix was wrong since conversion to std::path code
+    - IO::Network
+      - Documentation on CIDR CTOR, and new As() method for CIDR (As<String> () so produces save to externalize format)
+      - https://stroika.atlassian.net/browse/STK-909: slight cleanup to CIDR constructors; added regtests for this issue;
+        and ObjectVariantMapper serializer now uses As<String> instead of ToString ();
+        workaround https://stroika.atlassian.net/browse/STK-910 issue - with CIDR - construction of optional CIDR
+      - Neighbors monitor code gets new option - fOmitAllFFHardwareAddresses - defaults true on windows
+      - Neighbors computed on Windows use : instead of - to separate octets in hardware address
+    - Math:
+      - PinToMaxForType, IsOdd, IsEven constexpr
+      - Added optional typename INORDER_COMPARE_FUNCTION to Math::Median
+    - Traversal
+      - Iterable<T>
+        - Added Iterable<>::First() and Last() overloads which are much more convenient (return bool) - as thats what I document anyhow, and use mostly, though other case returning optioanl function that functional also makes sense
+        - Iterable<>::First() implemtation now uses kUseIterableRepIteration_ and Rep->Find() - so probably faster (testing); and related docs
+        - operator+ (Sequence/Iterable or Iterable/Sequence or Sequence/Sequence
+        - Added Iterable<T>::Count
+        - Iterable<T>::Mean/Median use Math::Mean/Median routines(added #include but pulls in little), and is faster (uses nth instead of sort)
+  - Frameworks
+    - WebServer
+      - ConnectionManager, renamed connections property to pConnections, and added pActiveConnections property
+- ThirdPartyCompoents
+  - sqlite 3.39.1
+  - openssl 3.0.5;
+  - libcurl 7.83.1 (7.84.0 doesn't build on Ubuntu 18.04)
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13 }
+  - MSVC: { 15.9.49, 16.11.17, 17.2.6 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Monterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 21.10, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+
+---
+
 ### 2.1 {2022-05-20}
 
 #### TLDR

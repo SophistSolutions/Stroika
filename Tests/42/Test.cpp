@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Function.h"
+#include "Stroika/Foundation/Execution/Logger.h"
 #include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/Duration.h"
@@ -196,7 +197,7 @@ namespace {
                               return mapper;
                           }(),
                           OptionsFile::kDefaultUpgrader, OptionsFile::mkFilenameMapper (L"Put-Your-App-Name-Here")}
-                    , fActualCurrentConfigData_ (fOptionsFile_.Read<MyData_> (MyData_ ()))
+                    , fActualCurrentConfigData_{fOptionsFile_.Read<MyData_> (MyData_{})}
                 {
                     Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
                 }
@@ -249,6 +250,7 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
+        Execution::Logger::Activator logMgrActivator; // needed for OptionsFile test
         Test1_Function_ ();
         Test2_CommandLine_ ();
         Test3_::DoAll ();
