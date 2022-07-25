@@ -20,8 +20,6 @@ especially those they need to be aware of when upgrading.
 
 #### Change Details
 
-- Build System
-  - Docker containers: use VS_17_2_4 and VS_16_11_16
 - Compiler and System Compatability
   - Visual Studio.net 2019 16.11.17
   - Visual Studio.net 2022 17.2.6
