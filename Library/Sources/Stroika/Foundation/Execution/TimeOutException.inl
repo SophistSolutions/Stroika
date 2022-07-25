@@ -81,6 +81,21 @@ namespace Stroika::Foundation::Execution {
         ThrowIfTimeout (conditionVariableStatus, TimeOutException::kThe);
     }
 
+    /*
+     ********************************************************************************
+     ***************************** Execution::UniqueLock ****************************
+     ********************************************************************************
+     */
+    template <typename TIMED_MUTEX>
+    inline unique_lock<TIMED_MUTEX> UniqueLock (TIMED_MUTEX& m, const Time::Duration& d)
+    {
+        unique_lock<TIMED_MUTEX> lock{m, d};
+        if (not lock.owns_lock ()) {
+            ThrowTimeOutException ();
+        }
+        return lock;
+    }
+
 }
 
 #endif /*_Stroika_Foundation_Execution_TimeOutException_inl_*/

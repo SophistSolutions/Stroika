@@ -108,6 +108,16 @@ namespace Stroika::Foundation::Execution {
     void ThrowIfTimeout (cv_status conditionVariableStatus, const EXCEPTION& exception2Throw = EXCEPTION ());
     void ThrowIfTimeout (cv_status conditionVariableStatus);
 
+    /**
+     *  Simple wrapper on construction of unique_lock<TIMED_MUTEX> - which translates the timeout into a TimeOutException.
+     * 
+     *  \note if this function returns (doesn't throw) - the required unique_lock<> OWNS the mutex.
+     *
+     *  \see also TryLockUntil
+     */
+    template <typename TIMED_MUTEX>
+    unique_lock<TIMED_MUTEX> UniqueLock (TIMED_MUTEX& m, const Time::Duration& d);
+
 }
 
 /*
