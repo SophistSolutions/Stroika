@@ -133,6 +133,10 @@ struct Connection::Rep_ final : IRep {
                 AssertNotImplemented ();
                 return String{};
             }
+            virtual bool RequireStatementResetAfterModifyingStatmentToCompleteTransaction () const override
+            {
+                return false;
+            }
             virtual bool SupportsNestedTransactions () const override
             {
                 return false;
