@@ -155,6 +155,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
 
     private:
         Connection::Ptr     fConnection_;
+        EngineProperties    fEngineProperties_;
         Schema::Table       fTableSchema_;
         ObjectVariantMapper fObjectVariantMapper_;
         OpertionCallbackPtr fTableOpertionCallback_;

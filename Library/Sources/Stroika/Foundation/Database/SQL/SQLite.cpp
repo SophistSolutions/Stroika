@@ -255,6 +255,10 @@ struct Connection::Rep_ final : IRep {
                 AssertNotReached ();
                 return String{};
             }
+            virtual bool RequireStatementResetAfterModifyingStatmentToCompleteTransaction () const override
+            {
+                return true;
+            }
             virtual bool SupportsNestedTransactions () const override
             {
                 return false;

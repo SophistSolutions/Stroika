@@ -35,6 +35,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
             return thisObj->fTableOpertionCallback_;
         }}
         , fConnection_{conn}
+        , fEngineProperties_{conn->GetEngineProperties ()}
         , fTableSchema_{tableSchema}
         , fObjectVariantMapper_{objectVariantMapper}
         , fTableOpertionCallback_{operationCallback}
@@ -90,6 +91,10 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         fAddNew_Statement_.Reset ();
         fAddNew_Statement_.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ()));
         DoExecute_ (fAddNew_Statement_, true);
+        if (fEngineProperties_->RequireStatementResetAfterModifyingStatmentToCompleteTransaction ()) {
+            // could potentially avoid this if I added way to track if existing transaction object, but not clearly any point
+            fAddNew_Statement_.Reset ();
+        }
     }
     template <typename T, typename TRAITS>
     void TableConnection<T, TRAITS>::AddOrUpdate (const T& v)
@@ -112,6 +117,10 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         fUpdate_Statement_.Reset ();
         fUpdate_Statement_.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ()));
         DoExecute_ (fUpdate_Statement_, true);
+        if (fEngineProperties_->RequireStatementResetAfterModifyingStatmentToCompleteTransaction ()) {
+            // could potentially avoid this if I added way to track if existing transaction object, but not clearly any point
+            fUpdate_Statement_.Reset ();
+        }
     }
     template <typename T, typename TRAITS>
     template <typename FUN>
