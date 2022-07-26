@@ -1334,7 +1334,7 @@ namespace {
             },
             Thread::eAutoStart,
             L"t1");
-        Time::DurationSecondsType waitStart = Time::GetTickCount ();
+        [[maybe_unused]]Time::DurationSecondsType waitStart = Time::GetTickCount ();
         Sleep (1s); // long enough so t1 running
         try {
             test.load (Time::Duration{5ms});
