@@ -1322,6 +1322,45 @@ namespace {
     }
 }
 
+
+namespace {
+    void RegressionTest23_SycnhonizedWithTimeout_ ()
+    {
+        TimedSynchronized<int> test;
+        static_assert (Synchronized_Traits<timed_mutex>::kSupportsTimedLocks);
+        Thread::Ptr t1 = Thread::New (
+            [&] () {
+                auto lk = test.cget ();
+                Sleep (30s);
+            },
+            Thread::eAutoStart,
+            L"t1");
+        Time::DurationSecondsType waitStart = Time::GetTickCount ();
+        Sleep (1s); // long enough so t1 running
+        try {
+            test.load (Time::Duration{5ms});
+            VerifyTestResult (false); // NOT REACHED
+        }
+        catch (...) {
+            DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
+        }
+        try {
+           auto c = test.cget (Time::Duration{5ms});
+            VerifyTestResult (false); // NOT REACHED
+        }
+        catch (...) {
+            DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
+        }
+        t1.AbortAndWaitForDone ();
+        try {
+            auto c = test.cget (Time::Duration{5ms});
+        }
+        catch (...) {
+            VerifyTestResult (false); // NOT REACHED
+        }
+    }
+}
+
 namespace {
     void DoRegressionTests_ ()
     {
@@ -1359,6 +1398,7 @@ namespace {
         RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_ ();
         RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_ ();
         RegressionTest22_SycnhonizedUpgradeLock_ ();
+        RegressionTest23_SycnhonizedWithTimeout_ ();
     }
 }
 

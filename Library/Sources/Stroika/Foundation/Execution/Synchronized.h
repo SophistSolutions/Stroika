@@ -807,6 +807,11 @@ namespace Stroika::Foundation::Execution {
     using QuickSynchronized = conditional_t<kSpinLock_IsFasterThan_mutex, Synchronized<T, Synchronized_Traits<SpinLock>>, Synchronized<T, Synchronized_Traits<mutex>>>;
 
     /**
+     */
+    template <typename T>
+    using TimedSynchronized = Synchronized<T, Synchronized_Traits<recursive_timed_mutex>>;
+
+    /**
      * RWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer.
      * Typically, using shared_mutex (or shared_timed_mutex).
      *
