@@ -23,16 +23,13 @@ build-images:
 ifeq (${DETECTED_HOST_OS},Linux)
 	docker build -f Ubuntu1804-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-small .
 	docker build -f Ubuntu2004-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2004-small .
-	docker build -f Ubuntu2110-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2110-small .
 	docker build -f Ubuntu2204-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2204-small .
 	docker build -f Ubuntu1804-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests .
 	docker build -f Ubuntu2004-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests .
-	docker build -f Ubuntu2110-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests .
 	docker build -f Ubuntu2204-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-1804 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2004 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests .
-	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2110 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2204 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests .
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
@@ -66,8 +63,6 @@ ifeq (${DETECTED_HOST_OS},Linux)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests  sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2004-small sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2110-small sophistsolutionsinc/stroika-buildvm-ubuntu2110-small:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2204-small sophistsolutionsinc/stroika-buildvm-ubuntu2204-small:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:$(STROIKA_VERSION)
 	#docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
@@ -97,11 +92,9 @@ push-images:
 ifeq (${DETECTED_HOST_OS},Linux)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:latest
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2110-small:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2204-small:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:latest
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:latest
 	#no need to push this yet/now
 	#docker push sophistsolutionsinc/stroika-dev:latest
@@ -116,11 +109,9 @@ ifeq ($(STROIKA_VERSION_Final),true)
 ifeq (${DETECTED_HOST_OS},Linux)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:$(STROIKA_VERSION)
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2110-small:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2204-small:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:$(STROIKA_VERSION)
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2110-regression-tests:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:$(STROIKA_VERSION)
 	#no need to push this yet/now
 	#docker push sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
