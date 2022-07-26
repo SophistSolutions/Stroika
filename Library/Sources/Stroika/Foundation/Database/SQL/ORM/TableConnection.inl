@@ -130,14 +130,14 @@ namespace Stroika::Foundation::Database::SQL::ORM {
             f (s);
         }
         else {
-            fTableOpertionCallback_ (write ? Operation::eStartingRead : Operation::eStartingWrite, this, &s, nullptr);
+            fTableOpertionCallback_ (write ? Operation::eStartingWrite : Operation::eStartingRead, this, &s, nullptr);
             try {
                 f (s);
                 fTableOpertionCallback_ (write ? Operation::eCompletedRead : Operation::eCompletedWrite, this, &s, nullptr);
             }
             catch (...) {
                 fTableOpertionCallback_ (Operation::eNotifyError, this, &s, current_exception ());
-                fTableOpertionCallback_ (write ? Operation::eCompletedRead : Operation::eCompletedWrite, this, &fUpdate_Statement_, nullptr);
+                fTableOpertionCallback_ (write ? Operation::eCompletedWrite : Operation::eCompletedRead, this, &fUpdate_Statement_, nullptr);
                 Execution::ReThrow ();
             }
         }
