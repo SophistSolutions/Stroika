@@ -567,13 +567,13 @@ struct Transaction::MyRep_ : public SQL::Transaction::IRep {
     {
         switch (f) {
             case Flag::eDeferred:
-                db->Exec (L"BEGIN DEFERRED"sv);
+                db->Exec (L"BEGIN DEFERRED TRANSACTION;"sv);
                 break;
             case Flag::eExclusive:
-                db->Exec (L"BEGIN EXCLUSIVE"sv);
+                db->Exec (L"BEGIN EXCLUSIVE TRANSACTION;"sv);
                 break;
             case Flag::eImmediate:
-                db->Exec (L"BEGIN IMMEDIATE"sv);
+                db->Exec (L"BEGIN IMMEDIATE TRANSACTION;"sv);
                 break;
             default:
                 RequireNotReached ();
@@ -583,13 +583,13 @@ struct Transaction::MyRep_ : public SQL::Transaction::IRep {
     {
         Require (not fCompleted_);
         fCompleted_ = true;
-        fConnectionPtr_->Exec (L"COMMIT;"sv);
+        fConnectionPtr_->Exec (L"COMMIT TRANSACTION;"sv);
     }
     virtual void Rollback () override
     {
         Require (not fCompleted_);
         fCompleted_ = true;
-        fConnectionPtr_->Exec (L"ROLLBACK;"sv);
+        fConnectionPtr_->Exec (L"ROLLBACK TRANSACTION;"sv);
     }
     virtual Disposition GetDisposition () const override
     {
