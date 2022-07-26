@@ -1322,7 +1322,6 @@ namespace {
     }
 }
 
-
 namespace {
     void RegressionTest23_SycnhonizedWithTimeout_ ()
     {
@@ -1345,7 +1344,7 @@ namespace {
             DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
         }
         try {
-           auto c = test.cget (Time::Duration{5ms});
+            auto c = test.cget (Time::Duration{5ms});
             VerifyTestResult (false); // NOT REACHED
         }
         catch (...) {

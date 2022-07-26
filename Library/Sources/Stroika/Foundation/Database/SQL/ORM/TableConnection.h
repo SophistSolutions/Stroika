@@ -85,9 +85,10 @@ namespace Stroika::Foundation::Database::SQL::ORM {
 
     public:
         /**
-         * Optionally passed to TableConnection for the purpose of logging
+         * Optionally passed to TableConnection for the purpose of logging; 
+         * note exception_ptr is only provided for eNotifyError, and is typically current_exception () but can be nullptr
          */
-        using OpertionCallbackPtr = function<void (Operation op, const TableConnection* tableConn, const Statement* s)>;
+        using OpertionCallbackPtr = function<void (Operation op, const TableConnection* tableConn, const Statement* s, const exception_ptr& e)>;
 
     public:
         TableConnection () = delete;
