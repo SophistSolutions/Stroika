@@ -298,7 +298,7 @@ struct Connection::Rep_ final : IRep {
     {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         optional<int>                                       d;
-        auto          callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
+        auto                                                callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
             optional<int>* pd = reinterpret_cast<optional<int>*> (lamdaArg);
             AssertNotNull (pd);
             Assert (argc == 1);
@@ -320,7 +320,7 @@ struct Connection::Rep_ final : IRep {
     virtual JournalModeType GetJournalMode () const override
     {
         optional<string> d;
-        auto          callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
+        auto             callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
             optional<string>* pd = reinterpret_cast<optional<string>*> (lamdaArg);
             AssertNotNull (pd);
             Assert (argc == 1);
@@ -330,22 +330,31 @@ struct Connection::Rep_ final : IRep {
         };
         ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode;", callback, &d, nullptr));
         Assert (d);
-        if (d == "delete")      { return JournalModeType::eDelete;  }
-        if (d == "truncate")      { return JournalModeType::eTruncate;  }
-        if (d == "persist")      { return JournalModeType::ePersist;  }
-        if (d == "memory")      { return JournalModeType::eMemory;  }
-        if (d == "wal")      { return JournalModeType::eWAL;  }
-        if (d == "off")      { return JournalModeType::eOff;  }
+        if (d == "delete") {
+            return JournalModeType::eDelete;
+        }
+        if (d == "truncate") {
+            return JournalModeType::eTruncate;
+        }
+        if (d == "persist") {
+            return JournalModeType::ePersist;
+        }
+        if (d == "memory") {
+            return JournalModeType::eMemory;
+        }
+        if (d == "wal") {
+            return JournalModeType::eWAL;
+        }
+        if (d == "off") {
+            return JournalModeType::eOff;
+        }
         AssertNotReached ();
         return JournalModeType::eDelete;
-        
     }
     virtual void SetJournalMode (JournalModeType journalMode) override
     {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         [[maybe_unused]] char*                              db_err{};
-        AssertNotReached ();
-        char buf[1024];
         switch (journalMode) {
             case JournalModeType::eDelete:
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'delete';", nullptr, 0, &db_err));

@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         fGetByID_Statement_.Bind (initializer_list<KeyValuePair<String, VariantValue>>{{fTableSchema_.GetIDField ()->fName, id}});
         optional<Statement::Row> row;
         DoExecute_ ([&] (Statement& s) { row = s.GetNextRow (); }, fGetByID_Statement_, false);
-        [[maybe_unused]] auto&& cleanup = Execution::Finally([&]() {
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () {
             if (fEngineProperties_->RequireStatementResetAfterModifyingStatmentToCompleteTransaction ()) {
                 // could potentially avoid this if I added way to track if existing transaction object, but not clearly any point
                 fGetByID_Statement_.Reset ();
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         using Stroika::Foundation::Common::KeyValuePair;
         Sequence<Statement::Row> rows;
         DoExecute_ ([&] (Statement& s) { rows = s.GetAllRows (); }, fGetAll_Statement_, false);
-        [[maybe_unused]] auto&& cleanup = Execution::Finally([&]() {
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () {
             if (fEngineProperties_->RequireStatementResetAfterModifyingStatmentToCompleteTransaction ()) {
                 // could potentially avoid this if I added way to track if existing transaction object, but not clearly any point
                 fGetAll_Statement_.Reset ();
@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         fAddNew_Statement_.Reset ();
         fAddNew_Statement_.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ()));
         DoExecute_ (fAddNew_Statement_, true);
-        [[maybe_unused]] auto&& cleanup = Execution::Finally([&]() {
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () {
             if (fEngineProperties_->RequireStatementResetAfterModifyingStatmentToCompleteTransaction ()) {
                 // could potentially avoid this if I added way to track if existing transaction object, but not clearly any point
                 fAddNew_Statement_.Reset ();
@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         fUpdate_Statement_.Reset ();
         fUpdate_Statement_.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ()));
         DoExecute_ (fUpdate_Statement_, true);
-        [[maybe_unused]] auto&& cleanup = Execution::Finally([&]() {
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () {
             if (fEngineProperties_->RequireStatementResetAfterModifyingStatmentToCompleteTransaction ()) {
                 // could potentially avoid this if I added way to track if existing transaction object, but not clearly any point
                 fUpdate_Statement_.Reset ();
