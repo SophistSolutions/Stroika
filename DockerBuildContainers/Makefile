@@ -78,7 +78,6 @@ pull-base-images:
 ifeq (${DETECTED_HOST_OS},Linux)
 	docker pull ubuntu:18.04
 	docker pull ubuntu:20.04
-	docker pull ubuntu:21.10
 	docker pull ubuntu:22.04
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
