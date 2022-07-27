@@ -71,6 +71,11 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Aliases         Tally (Stroika 1.0), Bag (from SmallTalk-80)
      *
+     *  \note   Though the name (and function) is quite similar to the std::multiset<>, this version is generally MUCH
+     *          more convenient to use, in that when you iterate over it, you get the items with their counts, not
+     *          each element repeated that many times (in some arbitrary order). To get the std::multiset behavior, use
+     *          MultiSet<T>::Elements ().
+     *
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *
