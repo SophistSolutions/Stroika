@@ -779,6 +779,10 @@ namespace Stroika::Foundation::Execution {
             ~CleanupPtr ();
 
         public:
+            /**
+             *  Assigning a new Thread::Ptr object just replaces the thread that will be 'cleaned up' in the
+             *  CleanupPtr destructor. It doesn't force the previous thread to be terminated.
+             */
             nonvirtual CleanupPtr& operator= (const Ptr&);
             nonvirtual CleanupPtr& operator= (const CleanupPtr&) = delete;
 
