@@ -59,7 +59,8 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     DurationSecondsType GetNextWakeupTime_ ()
     {
         auto dataLock = fData_.cget ();
-        Assert (not dataLock->empty ());
+        // note: usually (not dataLock->empty ()), but it can be empty temporarily as we are shutting down this process
+        // from one thread, while checking this simultaneously from another
         DurationSecondsType r = kInfinite;
         for (const Elt_& i : dataLock.cref ()) {
             r = min (r, i.fCallNextAt);
