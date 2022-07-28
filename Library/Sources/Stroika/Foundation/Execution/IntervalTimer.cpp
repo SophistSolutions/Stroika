@@ -61,7 +61,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
         auto dataLock = fData_.cget ();
         Assert (not dataLock->empty ());
         DurationSecondsType r = kInfinite;
-        for (Elt_ i : dataLock.cref ()) {
+        for (const Elt_& i : dataLock.cref ()) {
             r = min (r, i.fCallNextAt);
         }
         return r;

@@ -424,7 +424,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
         // @todo see https://stroika.atlassian.net/browse/STK-465
         Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fDirectSignalHandlersCache_)));
         vector<function<void (SignalID)>> shs;
-        for (SignalHandler sh : l->LookupValue (signal)) {
+        for (const SignalHandler& sh : l->LookupValue (signal)) {
             shs.push_back (sh);
         }
         {

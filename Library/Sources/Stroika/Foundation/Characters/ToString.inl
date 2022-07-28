@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Characters {
             StringBuilder sb;
             sb << L"[";
             bool didFirst{false};
-            for (auto i : t) {
+            for (const auto i : t) {
                 if (didFirst) {
                     sb << L", ";
                 }

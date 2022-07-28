@@ -191,7 +191,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     Vector<T> operator- (T lhs, const Vector<T>& rhs)
     {
         vector<T> tmp;
-        for (T i : rhs.GetItems ()) {
+        for (const T& i : rhs.GetItems ()) {
             tmp.push_back (lhs - i);
         }
         return tmp;

@@ -108,7 +108,7 @@ String Cookie::As<String> () const
     sb += fKey;
     sb += L"=";
     sb += fValue;
-    for (KeyValuePair<String, String> kvp : GetAttributes ()) {
+    for (const KeyValuePair<String, String>& kvp : GetAttributes ()) {
         sb += L"; ";
         sb += kvp.fKey;
         static const Set<String> kNoValueAttributes_{kSecureAttributeLabel, kHttpOnlyAttributeLabel};

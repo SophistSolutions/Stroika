@@ -87,7 +87,7 @@ public:
         // only stopped by thread abort
         Execution::WaitForIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
         while (true) {
-            for (ConnectionlessSocket::Ptr s : readyChecker.Wait ()) {
+            for (const ConnectionlessSocket::Ptr& s : readyChecker.Wait ()) {
                 try {
                     byte          buf[8 * 1024]; // not sure of max packet size
                     SocketAddress from;
