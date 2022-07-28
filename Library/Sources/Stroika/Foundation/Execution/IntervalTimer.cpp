@@ -22,24 +22,26 @@ using namespace Stroika::Foundation::Time;
  ********************************************************************************
  */
 struct IntervalTimer::Manager::DefaultRep ::Rep_ {
-    Rep_ ()
-    {
-    }
+    Rep_ ()          = default;
+    virtual ~Rep_ () = default;
     void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when)
     {
-        auto lk = fData_.rwget ();
+        Debug::TraceContextBumper ctx{L"IntervalTimer: default implementation: AddOneShot"};
+        auto                      lk = fData_.rwget ();
         lk->Add (Elt_{intervalTimer, Time::GetTickCount () + when.As<DurationSecondsType> ()});
         DataChanged_ ();
     }
     void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
     {
-        auto lk = fData_.rwget ();
+        Debug::TraceContextBumper ctx{L"IntervalTimer: default implementation: AddRepeating"};
+        auto                      lk = fData_.rwget ();
         lk->Add (Elt_{intervalTimer, Time::GetTickCount () + repeatInterval.As<DurationSecondsType> (), repeatInterval, hysteresis});
         DataChanged_ ();
     }
     void RemoveRepeating (const TimerCallback& intervalTimer) noexcept
     {
-        auto lk = fData_.rwget ();
+        Debug::TraceContextBumper ctx{L"IntervalTimer: default implementation: RemoveRepeating"};
+        auto                      lk = fData_.rwget ();
         Verify (lk->RemoveIf ([&] (const Elt_& i) { return i.fCallback == intervalTimer; }));
         DataChanged_ ();
     }
@@ -51,9 +53,9 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
         optional<Duration>    fHisteresis;
     };
     // @todo - re-implement using priority q, with next time at top of q
-    Synchronized<Collection<Elt_>>   fData_;
-    Synchronized<Thread::CleanupPtr> sThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
-    WaitableEvent                    fDataChanged_{WaitableEvent::ResetType::eAutoReset};
+    Synchronized<Collection<Elt_>>               fData_;
+    Synchronized<shared_ptr<Thread::CleanupPtr>> fThread_{};
+    WaitableEvent                                fDataChanged_{WaitableEvent::ResetType::eAutoReset};
 
     // this is where a priorityq would be better
     DurationSecondsType GetNextWakeupTime_ ()
@@ -78,13 +80,13 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             // NOTE - to avoid holding a lock (in case these guys remove themselves or whatever) - lock/run through list twice
             DurationSecondsType now      = Time::GetTickCount ();
             Collection<Elt_>    elts2Run = fData_.cget ()->Where ([=] (const Elt_& i) { return i.fCallNextAt <= now; });
-            for (Elt_ i : elts2Run) {
+            for (const Elt_& i : elts2Run) {
                 IgnoreExceptionsExceptThreadAbortForCall (i.fCallback ());
             }
             // now reset the 'next' time for each run element
             auto rwDataLock = fData_.rwget ();
             now             = Time::GetTickCount ();
-            for (Elt_ i : elts2Run) {
+            for (const Elt_& i : elts2Run) {
                 if (i.fFrequency.has_value ()) {
                     Elt_ newE = i;
                     // @todo add hysteresis
@@ -100,17 +102,19 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     }
     void DataChanged_ ()
     {
-        auto rwThreadLk = sThread_.rwget ();
+        auto rwThreadLk = fThread_.rwget ();
         if (fData_.cget ()->empty ()) {
-            rwThreadLk->operator= (nullptr);
+            rwThreadLk.store (nullptr); // destroy thread
         }
         else {
-            auto lk = sThread_.rwget ();
+            auto lk = fThread_.rwget ();
             if (lk.cref () == nullptr) {
-                lk->operator= (Thread::New ([this] () {
-                    RunnerLoop_ ();
-                },
-                                            Thread::eAutoStart, L"Default-Interval-Timer"sv));
+                using namespace Execution;
+                lk.store (make_shared<Thread::CleanupPtr> (Thread::CleanupPtr::eAbortBeforeWaiting,
+                                                           Thread::New ([this] () {
+                                                               RunnerLoop_ ();
+                                                           },
+                                                                        Thread::eAutoStart, L"Default-Interval-Timer"sv)));
             }
         }
     }
