@@ -2701,6 +2701,14 @@ if ($onlyGenerateIfCompilerExists) {
 			$generateBecause = "GCC (" . $COMPILER_DRIVER_CPlusPlus . ") versions < 8 (v=" . $itsVersion . ") are missing <filesystem> code and wont work with this version of Stroika";
 		}
 	}
+	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
+		foreach my $i (0 .. $#sanitizerFlags) {
+			if ($sanitizerFlags[$i] eq "thread") {
+				$generate = false;
+				$generateBecause = "qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy - see https://stroika.atlassian.net/browse/STK-717 AND https://gcc.gnu.org/bugzilla//show_bug.cgi?id=101978 ";
+			}
+		}
+	}
 }
 
 if ($generate) {
