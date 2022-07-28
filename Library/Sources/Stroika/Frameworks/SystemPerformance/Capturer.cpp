@@ -43,7 +43,7 @@ Capturer::Capturer ()
                        thisObj->fCaptureSets_ = captureSets;
                    }}
 {
-    Assert (Debug::AppearsDuringMainLifetime ());
+    Require (Debug::AppearsDuringMainLifetime ());
 }
 
 Capturer::Capturer (const CaptureSet& cs)

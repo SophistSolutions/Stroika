@@ -112,6 +112,8 @@ namespace Stroika::Foundation::Execution {
          *              // near the beginning, before IntervalManager used
          *              Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator;
          *      \endcode
+         *
+         *  \req (Debug::AppearsDuringMainLifetime ()); during activator lifetime
          */
         struct Activator {
             Activator ();
