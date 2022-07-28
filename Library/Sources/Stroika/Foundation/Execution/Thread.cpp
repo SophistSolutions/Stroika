@@ -17,6 +17,7 @@
 #include "../Characters/String.h"
 #include "../Characters/ToString.h"
 #include "../Containers/Set.h"
+#include "../Debug/Main.h"
 #include "../Debug/Trace.h"
 #include "../Time/Realtime.h"
 
@@ -83,23 +84,9 @@ namespace {
     thread_local InterruptSuppressCountType_ t_InterruptionSuppressDepth_{0};
 }
 
-#if qDebug
-namespace {
-    /*
-     *  This wont work 100% of the time, but try to detect threads running before main, or after the end of main ()
-     */
-    bool sKnownBadBeforeMainOrAfterMain_{true};
-    struct MainDetector_ {
-        MainDetector_ () { sKnownBadBeforeMainOrAfterMain_ = false; }
-        ~MainDetector_ () { sKnownBadBeforeMainOrAfterMain_ = true; }
-    };
-    MainDetector_ sMainDetector_;
-}
-#endif
-
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
 namespace {
-    // use mutext and set<> to avoid interdependencies between low level Stroika facilities
+    // use mutex and set<> to avoid interdependencies between low level Stroika facilities
     mutex               sThreadSupportStatsMutex_;
     set<Thread::IDType> sRunningThreads_; // protected by sThreadSupportStatsMutex_
 
@@ -542,10 +529,10 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
 {
     RequireNotNull (thisThreadRep);
     TraceContextBumper ctx{"Thread::Rep_::ThreadMain_"};
-    Require (not sKnownBadBeforeMainOrAfterMain_);
+    Require (Debug::AppearsDuringMainLifetime ());
 
 #if qDebug
-    [[maybe_unused]] auto&& cleanupCheckMain = Finally ([] () noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
+    [[maybe_unused]] auto&& cleanupCheckMain = Finally ([] () noexcept { Require (Debug::AppearsDuringMainLifetime ()); });
 #endif
 
     try {
@@ -564,7 +551,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
 
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
         {
-            Require (not sKnownBadBeforeMainOrAfterMain_);
+            Require (Debug::AppearsDuringMainLifetime ());
             [[maybe_unused]] auto&& critSec = lock_guard{sThreadSupportStatsMutex_};
 #if qStroika_Foundation_Debug_Trace_ShowThreadIndex
             DbgTrace (L"Adding thread index %s to sRunningThreads_ (%s)",
@@ -578,7 +565,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
         [[maybe_unused]] auto&& cleanup = Finally (
             [thisThreadID] () noexcept {
                 SuppressInterruptionInContext suppressThreadInterrupts; // may not be needed, but safer/harmless
-                Require (not sKnownBadBeforeMainOrAfterMain_);          // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
+                Require (Debug::AppearsDuringMainLifetime ());          // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
                 [[maybe_unused]] auto&& critSec = lock_guard{sThreadSupportStatsMutex_};
 #if qStroika_Foundation_Debug_Trace_ShowThreadIndex
                 DbgTrace (L"removing thread index %s from sRunningThreads_ (%s)",

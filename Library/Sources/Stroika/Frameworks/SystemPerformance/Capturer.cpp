@@ -4,6 +4,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../../Foundation/Containers/SortedMapping.h"
+#include "../../Foundation/Debug/Main.h"
 #include "../../Foundation/Execution/Sleep.h"
 
 #include "Capturer.h"
@@ -42,6 +43,7 @@ Capturer::Capturer ()
                        thisObj->fCaptureSets_ = captureSets;
                    }}
 {
+    Assert (Debug::AppearsDuringMainLifetime ());
 }
 
 Capturer::Capturer (const CaptureSet& cs)

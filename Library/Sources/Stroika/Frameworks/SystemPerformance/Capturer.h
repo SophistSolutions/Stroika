@@ -52,6 +52,8 @@ namespace Stroika::Frameworks::SystemPerformance {
      *
      *  Note - there is no reason you cannot use the rest of the SystemPerformance framework without this class,
      *  if its pattern doesn't meet your needs.
+     * 
+     *  \req  Debug::AppearsDuringMainLifetime() at all points during the Capturer lifetime since it owns threads.
      *
      *  \par Example Usage
      *      This example shows using capturer with callbacks, and raw mode - treating the measurements as 'untyped'

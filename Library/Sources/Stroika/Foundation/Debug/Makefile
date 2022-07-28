@@ -27,6 +27,7 @@ Objs	=	\
 	$(ObjDir)Demangle${OBJ_SUFFIX}\
 	$(ObjDir)Fatal${OBJ_SUFFIX}\
 	$(ObjDir)MallocGuard${OBJ_SUFFIX}\
+	$(ObjDir)Main${OBJ_SUFFIX}\
 	$(ObjDir)Trace${OBJ_SUFFIX}\
 
 
