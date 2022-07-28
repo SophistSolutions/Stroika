@@ -97,14 +97,14 @@ namespace Stroika::Frameworks::SystemPerformance {
      *              }
      *          };
      * 
-     *          static MyCapturer_ sCapturer_;  // capturer internally syncrhonized so no need for extra sync...
+     *          MyCapturer_ capturer;  // capturer internally syncrhonized so no need for extra sync...; must must respect Require (Debug::AppearsDuringMainLifetime ());
      *
      *          // Now do from any thread as often as desired, reporting latest data:
-     *          auto     measurements = sCapturer_.GetMostRecentMeasurements (); // capture results on a regular cadence with MyCapturer, and just report the latest stats
+     *          auto     measurements = capturer.GetMostRecentMeasurements (); // capture results on a regular cadence with MyCapturer, and just report the latest stats
      *          DateTime now          = DateTime::Now ();
      *          optional<double> runQLength;
      *          optional<double> totalCPUUsage;
-     *          if (auto om = sCapturer_.fCPUInstrument.MeasurementAs<Instruments::CPU::Info> (measurements)) {
+     *          if (auto om = capturer.fCPUInstrument.MeasurementAs<Instruments::CPU::Info> (measurements)) {
      *              runQLength    = om->fRunQLength;
      *              totalCPUUsage = om->fTotalCPUUsage;
      *          }
@@ -112,7 +112,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *          optional<double>   averageCPUTimeUsed;
      *          optional<uint64_t> workingOrResidentSetSize;
      *          optional<double>   combinedIORate;
-     *          if (auto om = sCapturer_.fProcessInstrument.MeasurementAs<Instruments::Process::Info> (measurements)) {
+     *          if (auto om = capturer.fProcessInstrument.MeasurementAs<Instruments::Process::Info> (measurements)) {
      *              Assert (om->size () == 1);
      *              Instruments::Process::ProcessType thisProcess = (*om)[Execution::GetCurrentProcessID ()];
      *              if (auto o = thisProcess.fProcessStartedAt) {

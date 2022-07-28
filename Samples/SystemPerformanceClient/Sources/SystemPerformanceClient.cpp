@@ -159,7 +159,7 @@ namespace {
             }
         };
     }
-    void Demo_Using_Capturer_GetMostRecentMeasurements_ ()
+    void Demo_Using_Capturer_GetMostRecentMeasurements_ (const Duration& runFor)
     {
         /*
          *  The idea here is that the capturer runs in the thread in the background capturing stuff (on a periodic schedule).
@@ -170,18 +170,19 @@ namespace {
          */
         using namespace Demo_Using_Capturer_GetMostRecentMeasurements__Private_;
 
-        static MyCapturer_ sCapturer_; // initialized threadsafe, but internally syncrhonized class
+        MyCapturer_ capturer; // initialized threadsafe, but internally syncrhonized class
 
+        Time::DurationSecondsType doneAt = Time::GetTickCount () + runFor.As<Time::DurationSecondsType> ();
         unsigned int pass{};
         cout << "Printing most recent measurements (in loop):" << endl;
-        while (true) {
-            auto     measurements = sCapturer_.pMostRecentMeasurements (); // capture results on a regular cadence with MyCapturer, and just report the latest stats
+        while (Time::GetTickCount () < doneAt) {
+            auto     measurements = capturer.pMostRecentMeasurements (); // capture results on a regular cadence with MyCapturer, and just report the latest stats
             DateTime now          = DateTime::Now ();
 
             optional<double> runQLength;
             optional<double> totalCPUUsage;
             optional<double> totalCPURatio;
-            if (auto om = sCapturer_.fCPUInstrument.MeasurementAs<Instruments::CPU::Info> (measurements)) {
+            if (auto om = capturer.fCPUInstrument.MeasurementAs<Instruments::CPU::Info> (measurements)) {
                 runQLength    = om->fRunQLength;
                 totalCPUUsage = om->fTotalCPUUsage;
                 totalCPURatio = om->GetTotalCPURatio ();
@@ -190,7 +191,7 @@ namespace {
             optional<double>   thisProcAverageCPUTimeUsed;
             optional<uint64_t> thisProcWorkingOrResidentSetSize;
             optional<double>   thisProcCombinedIORate;
-            if (auto om = sCapturer_.fProcessInstrument.MeasurementAs<Instruments::Process::Info> (measurements)) {
+            if (auto om = capturer.fProcessInstrument.MeasurementAs<Instruments::Process::Info> (measurements)) {
                 // It might not be found for some instruments (not implemented?)
                 Assert (om->size () <= 1);
                 if (om->size () == 1) {
@@ -295,7 +296,7 @@ int main (int argc, const char* argv[])
             Demo_PrintInstruments_ ();
         }
         else if (mostRecentCaptureMode) {
-            Demo_Using_Capturer_GetMostRecentMeasurements_ ();
+            Demo_Using_Capturer_GetMostRecentMeasurements_ (Duration{runFor});
         }
         else if (runFor > 0) {
             Demo_UsingCapturerWithCallbacks_ (run, oneLineMode, Duration{captureInterval}, Duration{runFor});
