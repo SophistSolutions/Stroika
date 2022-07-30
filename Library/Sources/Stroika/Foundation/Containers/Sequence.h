@@ -519,7 +519,10 @@ namespace Stroika::Foundation::Containers {
          *
          * The value pointed to by 'i' is updated - replaced with the value 'newValue'.
          *
-         *  \param nextI - if provided (not null) - will be filled in with the next value after where iterator i is pointing - since i is invalidated by changing the container)
+         *  \param nextI - if provided (not null) - will be filled in with a valid iterator pointing where i is pointing - since i is invalidated by changing the container)
+         * 
+         *  \note - this differers from Collection::Update() (which adnvances *nextI); since for a sequence, there is no need to ever
+         *          invalidate the current item on a removal (order doesnt change on update to a Sequence).
          *
          *  \note mutates container
          */
