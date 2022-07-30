@@ -143,8 +143,13 @@ namespace Stroika::Foundation::Database::SQL {
          *  If iterable argument to Bind (), the if the arguments have parameter names, the association will be done by name.
          *  if they do not have names, the order in the bind argument list will be interpretted as argument order (parameter order) for that item)
          * 
+         *  The overload of Bind() with zero parameters, clears all bindings.
+         *  Bind with an Iterable argument first calls Bind() - to clear all bindings - before calling Bind(argi) of each
+         *  individual argument.
+         * 
          *  \see GetParameters ()
          */
+        nonvirtual void Bind ();
         nonvirtual void Bind (unsigned int parameterIndex, const VariantValue& v);
         nonvirtual void Bind (const String& parameterName, const VariantValue& v);
         nonvirtual void Bind (const Traversal::Iterable<ParameterDescription>& parameters);
@@ -285,6 +290,7 @@ namespace Stroika::Foundation::Database::SQL {
         virtual Sequence<ParameterDescription> GetParameters () const = 0;
 
     public:
+        virtual void Bind ()                                                   = 0;
         virtual void Bind (unsigned int parameterIndex, const VariantValue& v) = 0;
         virtual void Bind (const String& parameterName, const VariantValue& v) = 0;
 

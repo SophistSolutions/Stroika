@@ -511,6 +511,11 @@ struct Statement::MyRep_ : IRep {
         shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
         return fParameters_;
     };
+    virtual void Bind () override
+    {
+        lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+        ThrowSQLiteErrorIfNotOK_ (::sqlite3_clear_bindings (fStatementObj_));
+    }
     virtual void Bind (unsigned int parameterIndex, const VariantValue& v) override
     {
         lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};

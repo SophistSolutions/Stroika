@@ -30,6 +30,12 @@ namespace Stroika::Foundation::Database::SQL {
         RequireNotNull (_fRep); // Statement object moved
         return _fRep->GetParameters ();
     }
+    inline void Statement::Bind ()
+    {
+        lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+        RequireNotNull (_fRep); // Statement object moved
+        _fRep->Bind ();
+    }
     inline void Statement::Bind (unsigned int parameterIndex, const VariantValue& v)
     {
         lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
