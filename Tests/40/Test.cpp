@@ -1414,6 +1414,7 @@ namespace {
             recursive_timed_mutex::unlock ();
         }
     };
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-const-variable\""); // kIsRecursiveLockMutex
     struct xxSynchronized_Traits {
         using MutexType                                    = mymutex_;
         static constexpr bool kIsRecursiveReadMutex        = true;
@@ -1424,6 +1425,7 @@ namespace {
         using ReadLockType                                 = conditional_t<kSupportSharedLocks, shared_lock<MutexType>, unique_lock<MutexType>>;
         using WriteLockType                                = unique_lock<MutexType>;
     };
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-const-variable\""); // kIsRecursiveLockMutex
     void RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_ ()
     {
         Synchronized<int, xxSynchronized_Traits> test;

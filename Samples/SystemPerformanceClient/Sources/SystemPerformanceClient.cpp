@@ -173,7 +173,7 @@ namespace {
         MyCapturer_ capturer; // initialized threadsafe, but internally syncrhonized class
 
         Time::DurationSecondsType doneAt = Time::GetTickCount () + runFor.As<Time::DurationSecondsType> ();
-        unsigned int pass{};
+        unsigned int              pass{};
         cout << "Printing most recent measurements (in loop):" << endl;
         while (Time::GetTickCount () < doneAt) {
             auto     measurements = capturer.pMostRecentMeasurements (); // capture results on a regular cadence with MyCapturer, and just report the latest stats
