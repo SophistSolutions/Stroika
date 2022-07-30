@@ -223,7 +223,7 @@ struct Statement::MyRep_ : IRep {
         shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
         return fParameters_;
     };
-    virtual void Bind (unsigned int parameterIndex, const VariantValue& v) override
+    virtual void Bind () override
     {
         lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
         for (auto i = fParameters_.begin (); i != fParameters_.end (); ++i) {
@@ -231,7 +231,6 @@ struct Statement::MyRep_ : IRep {
             p.fValue = VariantValue{};
             fParameters_.Update (i, p, &i);
         }
-        fParameters_[parameterIndex].fValue = v;
         AssertNotImplemented ();
     }
     virtual void Bind (unsigned int parameterIndex, const VariantValue& v) override
