@@ -7,6 +7,84 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1.2  {2022-08-01}
+#### TLDR
+- Fixed bug with CallerStalenessCache
+- SQL/SQLite: various fixes/enhancements (journalmode, and stuff relating to busy timeouts)
+- Syncrhonized<> helper suports timed waits now
+- Debug::AppearsDuringMainLifetime ()
+
+#### Change Details
+- Compiler and System Compatability
+  - lose support for Ubuntu 2110 since cannot build docker containers anymore (deprecated OS version)
+- RegressionTests and Sanitizers
+  - more aggressive workaround for Compiler_SanitizerDoubleLockWithConditionVariables_Buggy and https://stroika.atlassian.net/browse/STK-717 ;
+    just dont use tsan on that platform - too buggy; another regtest RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_
+- Documentation
+  - Misc minor improvements
+- Library
+  - Foundation
+    - Cache
+      - Fixed bug with CallerStalenessCache - regression due to (many months ago) change 'it' Remove/Safe iteration. 
+        Must use overload of Remove taking &i, and use updated I; and added relating comments in Mapping.h docs
+    - Containers
+     - fixed docs on Sequence<>::Update - so clearly does NOT advance iterator (just ensures valid/allowed to reuse nextI) and improved regtests
+    - Database
+      - SQL
+        - SQL add to EngineProperties: RequireStatementResetAfterModifyingStatmentToCompleteTransaction () to address (possible/apparent) issue with SQLITE where I was seeing sporadic 'SQLITE_ERROR:
+          cannot start a transaction within a transaction from' errors: docs ofr sqlite appear to suggest this CAN happen if no explicit transaction
+        - SQL Statement::Bind() overload with no arguments to reset all bindings. Then enforce that Bind(iterables) first implicitly does Bind() to reset all bindnings.
+        - SQL RequireStatementResetAfterModifyingStatmentToCompleteTransaction support (to workaround issue with SQLite - 'automatic transations not guaraneed to complete and no nested transactions so need extra reset) - so far untested
+        - ORM
+          - extra (exception_ptr) optional argument to OpertionCallbackPtr in SQL::ORM code
+        - SQLite
+          - SQLite - add new fJournalMode to Options, and pJournalMode to the Connection::Ptr object (cuz WAL has much better DB performance for WTF - multiple readers/writers/threads
+    - Debug
+      - new Debug::AppearsDuringMainLifetime () utility and added assertions calling it in a few places
+    - Execution
+      - new Execution::UniqueLock() utility
+      - support in Synchronized<> class for timeout args to Lock calls (cget, load, rwget etc) - untested; and RegressionTest23_SycnhonizedWithTimeout_, and TimedSynchronized to test
+      - fixed serious (shutdown) bug with new IntervalTimer::Manager - was improperly using Thread::CleanupPtr ; so better documented and fixed use (and a few releated code cleanups)
+  - Frameworks
+    - SystemPerformance
+      - fixed usage of (demo) Capturer to respect new Require (Debug::AppearsDuringMainLifetime ()); rules; and  imprved SystemPerformanceClient sample app to respect duration flag for -m mode of UI/Demo
+
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13 }
+  - MSVC: { 15.9.49, 16.11.17, 17.2.6 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Monterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+
+---
+
 ### 2.1.1  {2022-07-24}
 #### TLDR
 
