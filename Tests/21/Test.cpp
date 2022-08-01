@@ -369,7 +369,7 @@ namespace {
                 ++cnt;
             }
             for (size_t i = 0; i < 100; ++i) {
-                VerifyTestResult (EQUALS_COMPARER {}  (s[i], i * 2));
+                VerifyTestResult (EQUALS_COMPARER{}(s[i], i * 2));
             }
         }
     }
