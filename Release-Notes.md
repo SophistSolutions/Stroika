@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1.2  {2022-08-01}
+### 2.1.2  {2022-08-02}
 #### TLDR
 - Fixed bug with CallerStalenessCache
 - SQL/SQLite: various fixes/enhancements (journalmode, and stuff relating to busy timeouts)
