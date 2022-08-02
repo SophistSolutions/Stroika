@@ -87,6 +87,23 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
     };
 
     /**
+     *  https://www.sqlite.org/pragma.html#pragma_journal_mode
+     * 
+     *  In my experience, it appears WAL provides the best performance, for multithreaded applications.
+     *      \see https://sqlite.org/wal.html
+     *              "WAL provides more concurrency as readers do not block writers and a writer"
+     *              "does not block readers. Reading and writing can proceed concurrently."
+     */
+    enum JournalModeType {
+        eDelete,
+        eTruncate,
+        ePersist,
+        eMemory,
+        eWAL,
+        eOff
+    };
+
+    /**
      *  These are options used to create a database Connection::Ptr object (with Connection::New).
      *
      *  Since this is also how you create a database, in a sense, its those options too.
@@ -189,6 +206,11 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
          *  within the same app, or multiple applications).
          */
         optional<Duration> fBusyTimeout;
+
+        /**
+         *  \note - see JournalModeType and Connection::Ptr::pJournalMode
+         */
+        optional<JournalModeType> fJournalMode;
     };
 
     /**
@@ -251,6 +273,16 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
          */
         virtual void SetBusyTimeout (const Duration& timeout) = 0;
 
+    public:
+        /**
+         */
+        virtual JournalModeType GetJournalMode () const = 0;
+
+    public:
+        /**
+         */
+        virtual void SetJournalMode (JournalModeType journalMode) = 0;
+
     private:
         friend class Ptr;
     };
@@ -307,6 +339,12 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
          *  and retry up to this long, to avoid the timeout.
          */
         Common::Property<Duration> pBusyTimeout;
+
+    public:
+        /**
+         *  This can significantly accect database performance, and reliability.
+         */
+        Common::Property<JournalModeType> pJournalMode;
     };
 
     /**

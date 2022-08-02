@@ -7,6 +7,7 @@
 #include "../Characters/Format.h"
 #include "../Characters/StringBuilder.h"
 #include "../Characters/ToString.h"
+#include "../Debug/Main.h"
 #include "../Execution/Finally.h"
 #include "../Memory/BlockAllocated.h"
 
@@ -97,11 +98,13 @@ private:
 ThreadPool::ThreadPool (unsigned int nThreads, const optional<String>& threadPoolName)
     : fThreadPoolName_{threadPoolName}
 {
+    Require (Debug::AppearsDuringMainLifetime ());
     SetPoolSize (nThreads);
 }
 
 ThreadPool::~ThreadPool ()
 {
+    Require (Debug::AppearsDuringMainLifetime ());
     AbortAndWaitForDone_ ();
 }
 

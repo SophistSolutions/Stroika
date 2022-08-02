@@ -133,6 +133,10 @@ struct Connection::Rep_ final : IRep {
                 AssertNotImplemented ();
                 return String{};
             }
+            virtual bool RequireStatementResetAfterModifyingStatmentToCompleteTransaction () const override
+            {
+                return false;
+            }
             virtual bool SupportsNestedTransactions () const override
             {
                 return false;
@@ -219,6 +223,16 @@ struct Statement::MyRep_ : IRep {
         shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
         return fParameters_;
     };
+    virtual void Bind () override
+    {
+        lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+        for (auto i = fParameters_.begin (); i != fParameters_.end (); ++i) {
+            auto p   = *i;
+            p.fValue = VariantValue{};
+            fParameters_.Update (i, p, &i);
+        }
+        AssertNotImplemented ();
+    }
     virtual void Bind (unsigned int parameterIndex, const VariantValue& v) override
     {
         lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};

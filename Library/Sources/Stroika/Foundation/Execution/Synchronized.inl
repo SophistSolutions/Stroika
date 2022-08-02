@@ -109,6 +109,16 @@ namespace Stroika::Foundation::Execution {
         return fProtectedValue_;
     }
     template <typename T, typename TRAITS>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex and TEST_TYPE::kSupportsTimedLocks>*>
+    inline T Synchronized<T, TRAITS>::load (const chrono::duration<double>& tryFor) const
+    {
+        ReadLockType_ critSec{fMutex_, tryFor};
+        if (not critSec) {
+            ThrowTimeOutException ();
+        }
+        return fProtectedValue_;
+    }
+    template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>*>
     inline void Synchronized<T, TRAITS>::store (const T& v)
     {
@@ -129,14 +139,60 @@ namespace Stroika::Foundation::Execution {
         fProtectedValue_ = std::move (v);
     }
     template <typename T, typename TRAITS>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex and TEST_TYPE::kSupportsTimedLocks>*>
+    inline void Synchronized<T, TRAITS>::store (const T& v, const chrono::duration<double>& tryFor)
+    {
+        [[maybe_unused]] auto&& critSec = unique_lock{fMutex_, tryFor};
+        if (not critSec) {
+            ThrowTimeOutException ();
+        }
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
+        NoteLockStateChanged_ (L"Locked");
+        ++fWriteLockCount_;
+        fProtectedValue_ = v;
+    }
+    template <typename T, typename TRAITS>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex and TEST_TYPE::kSupportsTimedLocks>*>
+    inline void Synchronized<T, TRAITS>::store (T&& v, const chrono::duration<double>& tryFor)
+    {
+        [[maybe_unused]] auto&& critSec = unique_lock{fMutex_, tryFor};
+        if (not critSec) {
+            ThrowTimeOutException ();
+        }
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
+        NoteLockStateChanged_ (L"Locked");
+        ++fWriteLockCount_;
+        fProtectedValue_ = std::move (v);
+    }
+    template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::cget () const -> ReadableReference
     {
         return ReadableReference{this};
     }
     template <typename T, typename TRAITS>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportsTimedLocks>*>
+    inline auto Synchronized<T, TRAITS>::cget (const chrono::duration<double>& tryFor) const -> ReadableReference
+    {
+        ReadLockType_ critSec{fMutex_, tryFor};
+        if (not critSec) {
+            ThrowTimeOutException ();
+        }
+        return ReadableReference{this, move (critSec)};
+    }
+    template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::rwget () -> WritableReference
     {
         return WritableReference{this};
+    }
+    template <typename T, typename TRAITS>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportsTimedLocks>*>
+    inline auto Synchronized<T, TRAITS>::rwget (const chrono::duration<double>& tryFor) -> WritableReference
+    {
+        [[maybe_unused]] auto&& critSec = unique_lock{fMutex_, tryFor};
+        if (not critSec) {
+            ThrowTimeOutException ();
+        }
+        return WritableReference{this, move (critSec)};
     }
     template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::operator-> () const -> ReadableReference
@@ -182,6 +238,20 @@ namespace Stroika::Foundation::Execution {
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::try_lock", L"&fMutex_=%p", &fMutex_};
 #endif
         bool result = fMutex_.try_lock ();
+        if (result) {
+            NoteLockStateChanged_ (L"Locked");
+            ++fWriteLockCount_;
+        }
+        return result;
+    }
+    template <typename T, typename TRAITS>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex and TEST_TYPE::kSupportsTimedLocks>*>
+    inline bool Synchronized<T, TRAITS>::try_lock_for (const chrono::duration<double>& tryFor) const
+    {
+#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::try_lock_for", L"&fMutex_=%p", &fMutex_};
+#endif
+        bool result = fMutex_.try_lock_for (tryFor);
         if (result) {
             NoteLockStateChanged_ (L"Locked");
             ++fWriteLockCount_;
@@ -319,6 +389,19 @@ namespace Stroika::Foundation::Execution {
         RequireNotNull (s);
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"ReadableReference::CTOR -- locks (_eExternallyLocked)");
+#endif
+        if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {
+            this->fDbgTraceLocksName = s->fDbgTraceLocksName;
+        }
+    }
+    template <typename T, typename TRAITS>
+    inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (const Synchronized* s, ReadLockType_&& readLock)
+        : fT{(RequireNotNull (s), &s->fProtectedValue_)}
+        , fSharedLock_{move (readLock)}
+    {
+        RequireNotNull (s);
+#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"ReadableReference::CTOR -- locks (readLock)");
 #endif
         if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {
             this->fDbgTraceLocksName = s->fDbgTraceLocksName;

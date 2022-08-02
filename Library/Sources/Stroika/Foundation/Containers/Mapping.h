@@ -550,6 +550,9 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          * \brief STL-ish alias for Remove ().
+         * 
+         *  \note - beware of using erase(iterator) - probably should use Stroika 'Remove' so you can pass extra parameter to get iterator patched.
+         *        At any rate, beware its illegal to use 'i' after erasing at i (detected by Stroika when use use it).
          */
         nonvirtual void erase (ArgByValueType<key_type> key);
         nonvirtual Iterator<value_type> erase (const Iterator<value_type>& i);

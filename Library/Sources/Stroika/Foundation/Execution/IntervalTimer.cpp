@@ -4,6 +4,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Containers/Collection.h"
+#include "../Debug/Main.h"
 #include "../Time/Realtime.h"
 
 #include "Synchronized.h"
@@ -22,24 +23,26 @@ using namespace Stroika::Foundation::Time;
  ********************************************************************************
  */
 struct IntervalTimer::Manager::DefaultRep ::Rep_ {
-    Rep_ ()
-    {
-    }
+    Rep_ ()          = default;
+    virtual ~Rep_ () = default;
     void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when)
     {
-        auto lk = fData_.rwget ();
+        Debug::TraceContextBumper ctx{L"IntervalTimer: default implementation: AddOneShot"};
+        auto                      lk = fData_.rwget ();
         lk->Add (Elt_{intervalTimer, Time::GetTickCount () + when.As<DurationSecondsType> ()});
         DataChanged_ ();
     }
     void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
     {
-        auto lk = fData_.rwget ();
+        Debug::TraceContextBumper ctx{L"IntervalTimer: default implementation: AddRepeating"};
+        auto                      lk = fData_.rwget ();
         lk->Add (Elt_{intervalTimer, Time::GetTickCount () + repeatInterval.As<DurationSecondsType> (), repeatInterval, hysteresis});
         DataChanged_ ();
     }
     void RemoveRepeating (const TimerCallback& intervalTimer) noexcept
     {
-        auto lk = fData_.rwget ();
+        Debug::TraceContextBumper ctx{L"IntervalTimer: default implementation: RemoveRepeating"};
+        auto                      lk = fData_.rwget ();
         Verify (lk->RemoveIf ([&] (const Elt_& i) { return i.fCallback == intervalTimer; }));
         DataChanged_ ();
     }
@@ -51,17 +54,18 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
         optional<Duration>    fHisteresis;
     };
     // @todo - re-implement using priority q, with next time at top of q
-    Synchronized<Collection<Elt_>>   fData_;
-    Synchronized<Thread::CleanupPtr> sThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
-    WaitableEvent                    fDataChanged_{WaitableEvent::ResetType::eAutoReset};
+    Synchronized<Collection<Elt_>>               fData_;
+    Synchronized<shared_ptr<Thread::CleanupPtr>> fThread_{};
+    WaitableEvent                                fDataChanged_{WaitableEvent::ResetType::eAutoReset};
 
     // this is where a priorityq would be better
     DurationSecondsType GetNextWakeupTime_ ()
     {
         auto dataLock = fData_.cget ();
-        Assert (not dataLock->empty ());
+        // note: usually (not dataLock->empty ()), but it can be empty temporarily as we are shutting down this process
+        // from one thread, while checking this simultaneously from another
         DurationSecondsType r = kInfinite;
-        for (Elt_ i : dataLock.cref ()) {
+        for (const Elt_& i : dataLock.cref ()) {
             r = min (r, i.fCallNextAt);
         }
         return r;
@@ -70,6 +74,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     {
         // keep checking for timer events to run
         while (true) {
+            Require (Debug::AppearsDuringMainLifetime ());
             DurationSecondsType wakeupAt = GetNextWakeupTime_ ();
             fDataChanged_.WaitUntilQuietly (wakeupAt);
             // now process any timer events that are ready (could easily be more than one).
@@ -77,13 +82,13 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             // NOTE - to avoid holding a lock (in case these guys remove themselves or whatever) - lock/run through list twice
             DurationSecondsType now      = Time::GetTickCount ();
             Collection<Elt_>    elts2Run = fData_.cget ()->Where ([=] (const Elt_& i) { return i.fCallNextAt <= now; });
-            for (Elt_ i : elts2Run) {
+            for (const Elt_& i : elts2Run) {
                 IgnoreExceptionsExceptThreadAbortForCall (i.fCallback ());
             }
             // now reset the 'next' time for each run element
             auto rwDataLock = fData_.rwget ();
             now             = Time::GetTickCount ();
-            for (Elt_ i : elts2Run) {
+            for (const Elt_& i : elts2Run) {
                 if (i.fFrequency.has_value ()) {
                     Elt_ newE = i;
                     // @todo add hysteresis
@@ -99,17 +104,19 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     }
     void DataChanged_ ()
     {
-        auto rwThreadLk = sThread_.rwget ();
+        auto rwThreadLk = fThread_.rwget ();
         if (fData_.cget ()->empty ()) {
-            rwThreadLk->operator= (nullptr);
+            rwThreadLk.store (nullptr); // destroy thread
         }
         else {
-            auto lk = sThread_.rwget ();
+            auto lk = fThread_.rwget ();
             if (lk.cref () == nullptr) {
-                lk->operator= (Thread::New ([this] () {
-                    RunnerLoop_ ();
-                },
-                                            Thread::eAutoStart, L"Default-Interval-Timer"sv));
+                using namespace Execution;
+                lk.store (make_shared<Thread::CleanupPtr> (Thread::CleanupPtr::eAbortBeforeWaiting,
+                                                           Thread::New ([this] () {
+                                                               RunnerLoop_ ();
+                                                           },
+                                                                        Thread::eAutoStart, L"Default-Interval-Timer"sv)));
             }
         }
     }
@@ -146,11 +153,13 @@ void IntervalTimer::Manager::DefaultRep::RemoveRepeating (const TimerCallback& i
 IntervalTimer::Manager::Activator::Activator ()
 {
     Require (Manager::sThe.fRep_ == nullptr); // only one activator object allowed
+    Require (Debug::AppearsDuringMainLifetime ());
     Manager::sThe = Manager{make_shared<IntervalTimer::Manager::DefaultRep> ()};
 }
 
 IntervalTimer::Manager::Activator::~Activator ()
 {
     RequireNotNull (Manager::sThe.fRep_); // this is the only way to remove, and so must not be null here
+    Require (Debug::AppearsDuringMainLifetime ());
     Manager::sThe.fRep_.reset ();
 }

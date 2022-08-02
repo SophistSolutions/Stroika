@@ -221,7 +221,7 @@ namespace Stroika::Foundation::Math::ReBin {
                     *  Each bucket returned may have little overall contribution from the source bucket. We look at
                     *  the degree of overlap.
                     */
-                for (auto targetBucket : trgData->GetIntersectingBuckets (curSrcBucketX)) {
+                for (const auto& targetBucket : trgData->GetIntersectingBuckets (curSrcBucketX)) {
                     Range<typename SRC_DATA_DESCRIPTOR::XType> trgBucketIntersectRange = trgData->GetBucketRange (targetBucket).Intersection (curSrcBucketX);
                     auto                                       trgBucketXWidth         = trgBucketIntersectRange.GetDistanceSpanned ();
                     trgData->AccumulateValue (targetBucket, thisSrcBucketValue * (trgBucketXWidth / curSrcBucketXWidth));

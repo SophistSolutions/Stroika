@@ -63,7 +63,7 @@ cat Getting-Started-With-Stroika.md
 Windows:
 
 ```bash
-docker run -it sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+docker run -it sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
 cat Getting-Started-With-Stroika.md
 ```
 

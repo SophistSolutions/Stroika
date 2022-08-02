@@ -231,6 +231,9 @@ struct Connection::Rep_ final : IRep {
         if (options.fBusyTimeout) {
             SetBusyTimeout (*options.fBusyTimeout);
         }
+        if (options.fJournalMode) {
+            SetJournalMode (*options.fJournalMode);
+        }
         EnsureNotNull (fDB_);
     }
     ~Rep_ ()
@@ -254,6 +257,10 @@ struct Connection::Rep_ final : IRep {
                 }
                 AssertNotReached ();
                 return String{};
+            }
+            virtual bool RequireStatementResetAfterModifyingStatmentToCompleteTransaction () const override
+            {
+                return true;
             }
             virtual bool SupportsNestedTransactions () const override
             {
@@ -289,8 +296,9 @@ struct Connection::Rep_ final : IRep {
     }
     virtual Duration GetBusyTimeout () const override
     {
-        optional<int> d;
-        auto          callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        optional<int>                                       d;
+        auto                                                callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
             optional<int>* pd = reinterpret_cast<optional<int>*> (lamdaArg);
             AssertNotNull (pd);
             Assert (argc == 1);
@@ -309,6 +317,66 @@ struct Connection::Rep_ final : IRep {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         ThrowSQLiteErrorIfNotOK_ (::sqlite3_busy_timeout (fDB_, (int)(timeout.As<float> () * 1000)), fDB_);
     }
+    virtual JournalModeType GetJournalMode () const override
+    {
+        optional<string> d;
+        auto             callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
+            optional<string>* pd = reinterpret_cast<optional<string>*> (lamdaArg);
+            AssertNotNull (pd);
+            Assert (argc == 1);
+            Assert (::strcmp (azColName[0], "journal_mode") == 0);
+            *pd = argv[0];
+            return 0;
+        };
+        ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode;", callback, &d, nullptr));
+        Assert (d);
+        if (d == "delete") {
+            return JournalModeType::eDelete;
+        }
+        if (d == "truncate") {
+            return JournalModeType::eTruncate;
+        }
+        if (d == "persist") {
+            return JournalModeType::ePersist;
+        }
+        if (d == "memory") {
+            return JournalModeType::eMemory;
+        }
+        if (d == "wal") {
+            return JournalModeType::eWAL;
+        }
+        if (d == "off") {
+            return JournalModeType::eOff;
+        }
+        AssertNotReached ();
+        return JournalModeType::eDelete;
+    }
+    virtual void SetJournalMode (JournalModeType journalMode) override
+    {
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        [[maybe_unused]] char*                              db_err{};
+        switch (journalMode) {
+            case JournalModeType::eDelete:
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'delete';", nullptr, 0, &db_err));
+                break;
+            case JournalModeType::eTruncate:
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'truncate';", nullptr, 0, &db_err));
+                break;
+            case JournalModeType::ePersist:
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'persist';", nullptr, 0, &db_err));
+                break;
+            case JournalModeType::eMemory:
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'memory';", nullptr, 0, &db_err));
+                break;
+            case JournalModeType::eWAL:
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'wal';", nullptr, 0, &db_err));
+                break;
+            case JournalModeType::eOff:
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'off';", nullptr, 0, &db_err));
+                break;
+        }
+    }
+
     ::sqlite3* fDB_{};
 };
 
@@ -329,6 +397,17 @@ SQL::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
               Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pBusyTimeout);
               RequireNotNull (thisObj->operator-> ());
               thisObj->operator-> ()->SetBusyTimeout (timeout);
+          }}
+    , pJournalMode{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+              const Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pJournalMode);
+              RequireNotNull (thisObj->operator-> ());
+              return thisObj->operator-> ()->GetJournalMode ();
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto journalMode) {
+              Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pJournalMode);
+              RequireNotNull (thisObj->operator-> ());
+              thisObj->operator-> ()->SetJournalMode (journalMode);
           }}
 {
 }
@@ -432,6 +511,11 @@ struct Statement::MyRep_ : IRep {
         shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
         return fParameters_;
     };
+    virtual void Bind () override
+    {
+        lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+        ThrowSQLiteErrorIfNotOK_ (::sqlite3_clear_bindings (fStatementObj_));
+    }
     virtual void Bind (unsigned int parameterIndex, const VariantValue& v) override
     {
         lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
@@ -563,13 +647,13 @@ struct Transaction::MyRep_ : public SQL::Transaction::IRep {
     {
         switch (f) {
             case Flag::eDeferred:
-                db->Exec (L"BEGIN DEFERRED"sv);
+                db->Exec (L"BEGIN DEFERRED TRANSACTION;"sv);
                 break;
             case Flag::eExclusive:
-                db->Exec (L"BEGIN EXCLUSIVE"sv);
+                db->Exec (L"BEGIN EXCLUSIVE TRANSACTION;"sv);
                 break;
             case Flag::eImmediate:
-                db->Exec (L"BEGIN IMMEDIATE"sv);
+                db->Exec (L"BEGIN IMMEDIATE TRANSACTION;"sv);
                 break;
             default:
                 RequireNotReached ();
@@ -579,13 +663,13 @@ struct Transaction::MyRep_ : public SQL::Transaction::IRep {
     {
         Require (not fCompleted_);
         fCompleted_ = true;
-        fConnectionPtr_->Exec (L"COMMIT;"sv);
+        fConnectionPtr_->Exec (L"COMMIT TRANSACTION;"sv);
     }
     virtual void Rollback () override
     {
         Require (not fCompleted_);
         fCompleted_ = true;
-        fConnectionPtr_->Exec (L"ROLLBACK;"sv);
+        fConnectionPtr_->Exec (L"ROLLBACK TRANSACTION;"sv);
     }
     virtual Disposition GetDisposition () const override
     {

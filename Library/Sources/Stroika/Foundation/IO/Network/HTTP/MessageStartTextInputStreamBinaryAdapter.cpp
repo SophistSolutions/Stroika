@@ -194,7 +194,7 @@ protected:
         size_t outN = 0;
         for (Character* outChar = intoStart; outChar != intoEnd; ++outChar) {
             if (fOffset_ < fBufferFilledUpValidBytes_) {
-                *outChar = Characters::Character ((char)*(fAllDataReadBuf_.begin () + fOffset_));
+                *outChar = Characters::Character{(char)*(fAllDataReadBuf_.begin () + fOffset_)};
                 fOffset_++;
                 outN++;
             }

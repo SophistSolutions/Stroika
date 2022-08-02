@@ -1323,6 +1323,148 @@ namespace {
 }
 
 namespace {
+    void RegressionTest23_SycnhonizedWithTimeout_ ()
+    {
+        TimedSynchronized<int> test;
+        Thread::Ptr            t1 = Thread::New (
+            [&] () {
+                auto lk = test.cget ();
+                Sleep (30s);
+            },
+            Thread::eAutoStart,
+            L"t1");
+        [[maybe_unused]] Time::DurationSecondsType waitStart = Time::GetTickCount ();
+        Sleep (1s); // long enough so t1 running
+        try {
+            test.load (Time::Duration{5ms});
+            VerifyTestResult (false); // NOT REACHED
+        }
+        catch (...) {
+            DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
+        }
+        try {
+            auto c = test.cget (Time::Duration{5ms});
+            VerifyTestResult (false); // NOT REACHED
+        }
+        catch (...) {
+            DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
+        }
+        t1.AbortAndWaitForDone ();
+        try {
+            auto c = test.cget (Time::Duration{5ms});
+        }
+        catch (...) {
+            VerifyTestResult (false); // NOT REACHED
+        }
+    }
+}
+
+namespace {
+    constexpr bool kDoLoggingToStdErr_ = false;
+    struct mymutex_ : recursive_timed_mutex {
+        using recursive_timed_mutex::recursive_timed_mutex;
+        void lock ()
+        {
+            if (kDoLoggingToStdErr_) {
+                cerr << this_thread::get_id () << "] ENtering lock" << endl;
+            }
+            recursive_timed_mutex::lock ();
+        }
+        bool try_lock () noexcept
+        {
+            if (kDoLoggingToStdErr_) {
+                cerr << this_thread::get_id () << "]ENtering try_lock" << endl;
+            }
+            auto r = recursive_timed_mutex::try_lock ();
+            if (kDoLoggingToStdErr_) {
+                cerr << this_thread::get_id () << "] and the try_lock returned " << r << endl;
+            }
+            return r;
+        }
+        template <class _Rep, class _Period>
+        bool try_lock_for (const chrono::duration<_Rep, _Period>& __rtime)
+        {
+            if (kDoLoggingToStdErr_) {
+                cerr << this_thread::get_id () << "]ENtering try_lock_for" << endl;
+            }
+            auto r = recursive_timed_mutex::try_lock_for (__rtime);
+            if (kDoLoggingToStdErr_) {
+                cerr << this_thread::get_id () << "]and the try_lock_for returned " << r << endl;
+            }
+            return r;
+        }
+        template <class _Clock, class _Duration>
+        bool
+        try_lock_until (const chrono::time_point<_Clock, _Duration>& __atime)
+        {
+            if (kDoLoggingToStdErr_) {
+                cerr << this_thread::get_id () << "]ENtering try_lock_until" << endl;
+            }
+            auto r = recursive_timed_mutex::try_lock_until (__atime);
+            if (kDoLoggingToStdErr_) {
+                cerr << this_thread::get_id () << "]and the try_lock_until returned " << r << endl;
+            }
+            return r;
+        }
+        void unlock ()
+        {
+            if (kDoLoggingToStdErr_) {
+                cerr << this_thread::get_id () << "] Entering unlock" << endl;
+            }
+            recursive_timed_mutex::unlock ();
+        }
+    };
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-const-variable\""); // kIsRecursiveLockMutex
+    struct xxSynchronized_Traits {
+        using MutexType                                    = mymutex_;
+        static constexpr bool kIsRecursiveReadMutex        = true;
+        static constexpr bool kIsRecursiveLockMutex        = true;
+        static constexpr bool kDbgTraceLockUnlockIfNameSet = qDefaultTracingOn;
+        static constexpr bool kSupportsTimedLocks          = true;
+        static constexpr bool kSupportSharedLocks          = false;
+        using ReadLockType                                 = conditional_t<kSupportSharedLocks, shared_lock<MutexType>, unique_lock<MutexType>>;
+        using WriteLockType                                = unique_lock<MutexType>;
+    };
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-const-variable\""); // kIsRecursiveLockMutex
+    void RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_ ()
+    {
+        Synchronized<int, xxSynchronized_Traits> test;
+        Thread::Ptr                              t1 = Thread::New (
+            [&] () {
+                auto lk = test.cget ();
+                Sleep (30s);
+            },
+            Thread::eAutoStart,
+            L"t1");
+        [[maybe_unused]] Time::DurationSecondsType waitStart = Time::GetTickCount ();
+        Sleep (1s); // long enough so t1 running
+        try {
+            test.load (Time::Duration{5ms});
+            VerifyTestResult (false); // NOT REACHED
+        }
+        catch (...) {
+            DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
+        }
+        try {
+            auto c = test.cget (Time::Duration{5ms});
+            VerifyTestResult (false); // NOT REACHED
+        }
+        catch (...) {
+            DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
+        }
+        t1.AbortAndWaitForDone ();
+        // doing this last part is what triggers TSAN failure if SanitizerDoubleLockWithConditionVariables
+        // see https://stroika.atlassian.net/browse/STK-717
+        try {
+            auto c = test.cget (Time::Duration{5ms});
+        }
+        catch (...) {
+            VerifyTestResult (false); // NOT REACHED
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
@@ -1359,6 +1501,8 @@ namespace {
         RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_ ();
         RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_ ();
         RegressionTest22_SycnhonizedUpgradeLock_ ();
+        RegressionTest23_SycnhonizedWithTimeout_ ();
+        RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_ ();
     }
 }
 

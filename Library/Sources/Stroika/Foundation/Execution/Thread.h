@@ -766,6 +766,10 @@ namespace Stroika::Foundation::Execution {
             ~CleanupPtr ();
 
         public:
+            /**
+             *  Assigning a new Thread::Ptr object just replaces the thread that will be 'cleaned up' in the
+             *  CleanupPtr destructor. It doesn't force the previous thread to be terminated.
+             */
             nonvirtual CleanupPtr& operator= (const Ptr&);
             nonvirtual CleanupPtr& operator= (const CleanupPtr&) = delete;
 
@@ -902,6 +906,10 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   Unlike std::thread, a Stroika Thread is not started automatically (unless you pass eAutoStart as a constructor argument),
          *          and it can run in the background after the Thread has gone out of scope (std::thread you can do this but must call detach).
+         *
+         *  \req    Debug::AppearsDuringMainLifetime() at all points during the threads lifetime. It must be stopped
+         *          before Debug::AppearsDuringMainLifetime() becomes untrue. This is somewhat checked by the Stroika
+         *          thread infrastructure, but may not be fully reliably asserted (see AllThreadsDeadDetector_)
          *
          *  \par Example Usage
          *      \code

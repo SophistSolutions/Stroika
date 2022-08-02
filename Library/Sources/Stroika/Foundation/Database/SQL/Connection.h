@@ -81,7 +81,6 @@ namespace Stroika::Foundation::Database::SQL {
         /**
          *  Transaction object factory
          */
-
         virtual Transaction mkTransaction () = 0;
 
     public:

@@ -141,6 +141,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Demangle.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Main.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.cpp" />
@@ -500,6 +501,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Demangle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Main.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Sanitizer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\TimingTrace.h" />

@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Traversal {
             using namespace Traversal;
             using value_type = typename RANGETYPE::value_type;
             SortedMapping<value_type, RANGETYPE> tmp;
-            for (RANGETYPE r : iterable) {
+            for (const RANGETYPE& r : iterable) {
                 tmp.Add (r.GetLowerBound (), r);
             }
             optional<value_type> upperBoundSeenSoFar;

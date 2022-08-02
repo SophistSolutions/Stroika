@@ -1359,7 +1359,7 @@ pid_t Execution::DetachedProcessRunner (const filesystem::path& executable, cons
         bool  bInheritHandles = true;
         TCHAR cmdLineBuf[32768]; // crazy MSFT definition! - why this should need to be non-const!
         cmdLineBuf[0] = '\0';
-        for (String i : useArgs) {
+        for (const String& i : useArgs) {
             //quickie/weak impl...
             if (cmdLineBuf[0] != '\0') {
                 Characters::CString::Cat (cmdLineBuf, Memory::NEltsOf (cmdLineBuf), SDKSTR (" "));

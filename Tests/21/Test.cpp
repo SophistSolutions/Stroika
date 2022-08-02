@@ -358,6 +358,20 @@ namespace {
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
         }
+        {
+            // Update just 'fixes' iterator for re-use but we still hit every item
+            for (size_t i = 0; i < 100; ++i) {
+                s.Append (i);
+            }
+            unsigned int cnt{};
+            for (auto i = s.begin (); i != s.end (); ++i) {
+                s.Update (i, cnt * 2, &i);
+                ++cnt;
+            }
+            for (size_t i = 0; i < 100; ++i) {
+                VerifyTestResult (EQUALS_COMPARER{}(s[i], i * 2));
+            }
+        }
     }
 }
 

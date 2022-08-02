@@ -113,7 +113,7 @@ shared_ptr<const MessageUtilities> MessageUtiltiesManager::LookupHandler (const 
     }
     cachedVal = [&] () {
         //  search here user installed ones with AddHandler ()
-        for (shared_ptr<const MessageUtilities> h : fMessageHandlers_) {
+        for (const shared_ptr<const MessageUtilities>& h : fMessageHandlers_) {
             if (h->AppliesToThisLocale (String::FromNarrowSDKString (l.name ()))) {
                 return Common::KeyValuePair<locale, shared_ptr<const MessageUtilities>>{l, h};
             }

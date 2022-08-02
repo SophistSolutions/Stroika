@@ -184,3 +184,9 @@
    ...
    fun:main
 }
+{
+   https://stroika.atlassian.net/browse/STK-915
+   Helgrind:UnlockUnlocked
+   ...
+   fun:main
+}

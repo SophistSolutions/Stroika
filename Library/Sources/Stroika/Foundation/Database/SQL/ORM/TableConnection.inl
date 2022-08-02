@@ -8,6 +8,7 @@
 #define _Stroika_Foundation_Database_SQL_ORM_TableConnection_inl_ 1
 
 #include "../../../Debug/Trace.h"
+#include "../../../Execution/Finally.h"
 
 namespace Stroika::Foundation::Database::SQL::ORM {
 
@@ -35,6 +36,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
             return thisObj->fTableOpertionCallback_;
         }}
         , fConnection_{conn}
+        , fEngineProperties_{conn->GetEngineProperties ()}
         , fTableSchema_{tableSchema}
         , fObjectVariantMapper_{objectVariantMapper}
         , fTableOpertionCallback_{operationCallback}
@@ -60,6 +62,12 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         fGetByID_Statement_.Bind (initializer_list<KeyValuePair<String, VariantValue>>{{fTableSchema_.GetIDField ()->fName, id}});
         optional<Statement::Row> row;
         DoExecute_ ([&] (Statement& s) { row = s.GetNextRow (); }, fGetByID_Statement_, false);
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () {
+            if (fEngineProperties_->RequireStatementResetAfterModifyingStatmentToCompleteTransaction ()) {
+                // could potentially avoid this if I added way to track if existing transaction object, but not clearly any point
+                fGetByID_Statement_.Reset ();
+            }
+        });
         if (row) {
             return fObjectVariantMapper_.ToObject<T> (VariantValue{fTableSchema_.MapFromDB (*row)});
         }
@@ -78,6 +86,12 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         using Stroika::Foundation::Common::KeyValuePair;
         Sequence<Statement::Row> rows;
         DoExecute_ ([&] (Statement& s) { rows = s.GetAllRows (); }, fGetAll_Statement_, false);
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () {
+            if (fEngineProperties_->RequireStatementResetAfterModifyingStatmentToCompleteTransaction ()) {
+                // could potentially avoid this if I added way to track if existing transaction object, but not clearly any point
+                fGetAll_Statement_.Reset ();
+            }
+        });
         return Sequence<T>{rows.template Select<T> ([this] (const Statement::Row& r) {
             return fObjectVariantMapper_.ToObject<T> (VariantValue{fTableSchema_.MapFromDB (r)});
         })};
@@ -90,6 +104,12 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         fAddNew_Statement_.Reset ();
         fAddNew_Statement_.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ()));
         DoExecute_ (fAddNew_Statement_, true);
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () {
+            if (fEngineProperties_->RequireStatementResetAfterModifyingStatmentToCompleteTransaction ()) {
+                // could potentially avoid this if I added way to track if existing transaction object, but not clearly any point
+                fAddNew_Statement_.Reset ();
+            }
+        });
     }
     template <typename T, typename TRAITS>
     void TableConnection<T, TRAITS>::AddOrUpdate (const T& v)
@@ -112,6 +132,12 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         fUpdate_Statement_.Reset ();
         fUpdate_Statement_.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ()));
         DoExecute_ (fUpdate_Statement_, true);
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () {
+            if (fEngineProperties_->RequireStatementResetAfterModifyingStatmentToCompleteTransaction ()) {
+                // could potentially avoid this if I added way to track if existing transaction object, but not clearly any point
+                fUpdate_Statement_.Reset ();
+            }
+        });
     }
     template <typename T, typename TRAITS>
     template <typename FUN>
@@ -121,15 +147,14 @@ namespace Stroika::Foundation::Database::SQL::ORM {
             f (s);
         }
         else {
-            fTableOpertionCallback_ (write ? Operation::eStartingRead : Operation::eStartingWrite, this, &s);
+            fTableOpertionCallback_ (write ? Operation::eStartingWrite : Operation::eStartingRead, this, &s, nullptr);
             try {
                 f (s);
-                fTableOpertionCallback_ (write ? Operation::eCompletedRead : Operation::eCompletedWrite, this, &s);
+                fTableOpertionCallback_ (write ? Operation::eCompletedWrite : Operation::eCompletedRead, this, &s, nullptr);
             }
             catch (...) {
-                //DbgTrace (L"Captured error in TableConnection<>::DoExecute_: %s", Characters::ToString (current_exception ()).c_str ());
-                fTableOpertionCallback_ (Operation::eNotifyError, this, &s);
-                fTableOpertionCallback_ (write ? Operation::eCompletedRead : Operation::eCompletedWrite, this, &fUpdate_Statement_);
+                fTableOpertionCallback_ (Operation::eNotifyError, this, &s, current_exception ());
+                fTableOpertionCallback_ (write ? Operation::eCompletedWrite : Operation::eCompletedRead, this, &fUpdate_Statement_, nullptr);
                 Execution::ReThrow ();
             }
         }

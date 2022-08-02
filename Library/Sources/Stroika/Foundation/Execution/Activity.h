@@ -57,6 +57,9 @@ namespace Stroika::Foundation::Execution {
      *          // then for how to use activity object - see DeclareActivity
      *      \endcode
      *
+     *  \note the intended purpose of this is to provide better 'context' for default exception messages, when exceptions are
+     *        created/thrown. @see CaptureCurrentActivities
+     * 
      *  \note   for now, constexpr Activity<wstring_view> kActivity;    // FAILS
      *          This is because AsStringObj_ has a virtual destructor (necesary for other types). Thats crazy
      *          becuse constexpr objects are never destroyed, so its crazy to care that they have a virtual DTOR.
@@ -127,6 +130,9 @@ namespace Stroika::Foundation::Execution {
      *
      *  'render' each current activity on the current threads activity stack as a Activity<> (so String based), and return the full
      *  list as a copyable stack of activities.
+     * 
+     *  \note the intended purpose of this is to provide better 'context' for default exception messages, when exceptions are
+     *        created/thrown.
      */
     Containers::Stack<Activity<>> CaptureCurrentActivities ();
 
