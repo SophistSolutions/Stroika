@@ -274,6 +274,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *      @see GetSuppressDuplicates ()
+         *      @see Options::fSuppressDuplicatesThreshold
          *
          *  \par Example Usage
          *      \code
@@ -310,21 +311,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void Log (Priority logLevel, const wchar_t* format, ...); // varargs logger
 
     public:
-        /**
-         *  \brief  Like Log() - but taking an extra parameter which filters out identical messages,
-         *          if they've occurred in the suppressionTimeWindow
-         *
-         *  @see Log
-         *
-         *  \par Example Usage
-         *      \code
-         *          // same as Log, but don't emit this error if we've seen the message in the last 60 seconds
-         *          Logger::sThe.LogIfNew (Logger::Priority::eError, Duration {60.0}, L"Failed to correct something important in file %s", fileName.c_str ());
-         *          Logger::sThe.LogIfNew (Logger::Priority::eError, "PT1M"_duration, L"Failed to correct something important in file %s", fileName.c_str ());
-         *          Logger::sThe.LogIfNew (Logger::Priority::eError, 60s, L"Failed to correct something important in file %s", fileName.c_str ());
-         *      \endcode
-         */
-        nonvirtual void LogIfNew (Priority logLevel, const Time::Duration& suppressionTimeWindow, const wchar_t* format, ...);
+        [[deprecated ("Since Stroika 2.1.3, use Logger::GetSupressDuplicates () or Options::fSuppressDuplicatesThreshold")]] void LogIfNew (Priority logLevel, const Time::Duration& suppressionTimeWindow, const wchar_t* format, ...);
 
     private:
         nonvirtual void Log_ (Priority logLevel, const String& msg);
