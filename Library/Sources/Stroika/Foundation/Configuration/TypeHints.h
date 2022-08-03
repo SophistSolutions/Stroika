@@ -11,7 +11,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Release">Release</a>
  */
 
 namespace Stroika::Foundation::Configuration {
