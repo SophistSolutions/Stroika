@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Execution {
          *  Be sure to shut it down (@see ShutdownSingleton) near the end of Main - so that any threads it runs are shutdown
          *  before the end of main.
          */
-        [[deprecated ("Since Stroika 2.1.1, use Logger::sThe directyly")]] static Logger& Get ();
+        [[deprecated ("Since Stroika 2.1.1, use Logger::sThe directly")]] static Logger& Get ();
 
     public:
         struct Options;
