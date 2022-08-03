@@ -225,13 +225,13 @@ void Logger::Shutdown_ ()
     Flush ();
 }
 
-Logger::IAppenderRepPtr Logger::GetAppender () const
+auto Logger::GetAppender () const -> IAppenderRepPtr
 {
     AssertNotNull (fRep_); // must be called while Logger::Activator exists
     return fRep_->fAppender_;
 }
 
-void Logger::SetAppender (const shared_ptr<IAppenderRep>& rep)
+void Logger::SetAppender (const IAppenderRepPtr& rep)
 {
     AssertNotNull (fRep_); // must be called while Logger::Activator exists
     fRep_->fAppender_ = rep;
