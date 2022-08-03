@@ -3,6 +3,10 @@
 Each module will be marked with a 'Status' flag, indicating how
 stable the API is, and something about the implmentation quality.
 
+- Release
+
+  Stable and final (though nothing is ever truely final). Not reconsidering right now.
+
 - Beta
 
   Ready to evaluate, and useable. API probably fairly stable for v2.
