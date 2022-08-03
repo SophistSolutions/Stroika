@@ -275,6 +275,10 @@ namespace Stroika::Foundation::Execution {
         /**
          *      @see GetSuppressDuplicates ()
          *      @see Options::fSuppressDuplicatesThreshold
+         * 
+         *  \note Currently only suppresses the last message. See https://stroika.atlassian.net/browse/STK-450
+         *        should supress ALL for that window. Re-use fMsgSentMaybeSuppressed_ (or something similar) to track all
+         *        from current interval, maybe with some max size so cannot grow too much.
          *
          *  \par Example Usage
          *      \code
