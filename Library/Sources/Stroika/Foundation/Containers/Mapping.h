@@ -269,6 +269,8 @@ namespace Stroika::Foundation::Containers {
          *      \req    Ensure (item == nullptr or returnValue == item->has_value());
          *
          *  \note   Alias - Lookup (key, mapped_type* value) - is equivilent to .Net TryGetValue ()
+         * 
+         *  \@todo https://stroika.atlassian.net/browse/STK-928 - add overload 'returning' Iterator<>, so can use with Update method
          */
         nonvirtual optional<mapped_type> Lookup (ArgByValueType<key_type> key) const;
         nonvirtual bool                  Lookup (ArgByValueType<key_type> key, optional<mapped_type>* item) const;
