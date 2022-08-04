@@ -72,8 +72,8 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"Logger::Rep_::FlushSuppressedDuplicates_"};
 #endif
-        shared_ptr<IAppenderRep> tmp = fAppender_; // avoid races and critical sections (appender internally threadsafe)
-        auto lastMsgsLocked = fLastMessages_.rwget ();
+        shared_ptr<IAppenderRep> tmp            = fAppender_; // avoid races and critical sections (appender internally threadsafe)
+        auto                     lastMsgsLocked = fLastMessages_.rwget ();
         if (not lastMsgsLocked->empty ()) {
             Time::Duration suppressDuplicatesThreshold = fSuppressDuplicatesThreshold_.cget ()->value_or (0s);
             for (auto i = lastMsgsLocked->begin (); i != lastMsgsLocked->end ();) {
