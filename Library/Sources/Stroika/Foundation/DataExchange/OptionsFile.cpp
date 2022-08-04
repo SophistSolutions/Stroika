@@ -91,22 +91,22 @@ const OptionsFile::ModuleDataUpgraderType OptionsFile::kDefaultUpgrader = [] (co
 const OptionsFile::LoggerType OptionsFile::kDefaultLogger =
     [] (const LoggerMessage& message) {
         using Execution::Logger;
-        Logger::Priority priority = Logger::Priority::eError;
+        Logger::Priority priority = Logger::eError;
         using Msg                 = OptionsFile::LoggerMessage::Msg;
         switch (message.fMsg) {
             case Msg::eFailedToReadFile:
-                priority = Logger::Priority::eWarning; // could be just because new system, no file
+                priority = Logger::eWarning; // could be just because new system, no file
                 break;
             case Msg::eWritingConfigFile_SoDefaultsEditable:
             case Msg::eWritingConfigFile_BecauseUpgraded:
             case Msg::eWritingConfigFile_BecauseSomethingChanged:
-                priority = Logger::Priority::eInfo;
+                priority = Logger::eInfo;
                 break;
 
             case Msg::eFailedToParseReadFile:
             case Msg::eFailedToParseReadFileBadFormat:
                 // Most likely very bad - as critical configuration data will be lost, and overwritten with 'defaults'
-                priority = Logger::Priority::eCriticalError;
+                priority = Logger::eCriticalError;
                 break;
         }
         Logger::sThe.Log (priority, L"%s", message.FormatMessage ().c_str ());

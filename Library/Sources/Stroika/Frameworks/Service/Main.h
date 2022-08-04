@@ -34,7 +34,7 @@
  *              Hacked something mostly for UNIX.
  *
  *      @todo   Window service not fully working - see why when you start/stop we don't see
- *              Logger::Get ().Log (Logger::Priority::eNotice, L"User-service code is shut down");
+ *              Logger::Get ().Log (Logger::eNotice, L"User-service code is shut down");
  *              message printed out. Basic startup/shutdown seems roughly OK though.
  *
  *      @todo   Fix Main::BasicUNIXServiceImpl::SignalHandler_() use of static variable. Race conditions

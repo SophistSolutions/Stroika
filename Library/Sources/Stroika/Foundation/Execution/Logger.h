@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \par Example Usage
      *      \code
-     *          Logger::sThe.Log (Logger::Priority::eError, L"Failed to correct something important in file %s", fileName.c_str ());
+     *          Logger::sThe.Log (Logger::eError, L"Failed to correct something important in file %s", fileName.c_str ());
      *      \endcode
      *
      *  @see DbgTrace
@@ -176,14 +176,14 @@ namespace Stroika::Foundation::Execution {
         };
 
     public:
+        using Priority::eAlertError;
+        using Priority::eCriticalError;
         using Priority::eDebug;
+        using Priority::eEmergency;
+        using Priority::eError;
         using Priority::eInfo;
         using Priority::eNotice;
         using Priority::eWarning;
-        using Priority::eError;
-        using Priority::eCriticalError;
-        using Priority::eAlertError;
-        using Priority::eEmergency;
 
     public:
         /**
@@ -303,7 +303,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \par Example Usage
          *      \code
-         *          Logger::sThe.Log (Logger::Priority::eError, L"Failed to correct something important in file %s", fileName.c_str ());
+         *          Logger::sThe.Log (Logger::eError, L"Failed to correct something important in file %s", fileName.c_str ());
          *      \endcode
          */
         nonvirtual void Log (Priority logLevel, const wchar_t* format, ...); // varargs logger
