@@ -26,18 +26,6 @@
  *
  *              Then make possible to create (construct) own logger objects (possibly for various purposes)... like one to file, and one to syslog?
  *
- *      @todo   Consider some shortcut for
- *              Logger::sThe.Log ()
- *
- *              Thats not very long - but its long.
- *              Apparently cannot do operator()() as a static method (appears not allowed in C++).
- *              And cannot overload static/non-static methods with same params (cuz in definition how would you distinguish them).
- *
- *              COULD do:
- *                  Logger::LOG()
- *                  Logger::GlobalLog()/CommonLog() or just
- *                  Execution::DefaultLogger()      -- that maybe best but even longer than what we were replacing, unless you import Execution ns.
- *
  *      @todo   Finish support for Windows Event Manager Log Appender -- WindowsEventLogAppender. Its
  *              printing some data, but very minimally and wrongly handling categories etc. Probably could get close
  *              by specifying hardwired/hacked values in the CTOR args.
@@ -276,10 +264,6 @@ namespace Stroika::Foundation::Execution {
          *      @see GetSuppressDuplicates ()
          *      @see Options::fSuppressDuplicatesThreshold
          * 
-         *  \note Currently only suppresses the last message. See https://stroika.atlassian.net/browse/STK-450
-         *        should supress ALL for that window. Re-use fMsgSentMaybeSuppressed_ (or something similar) to track all
-         *        from current interval, maybe with some max size so cannot grow too much.
-         *
          *  \par Example Usage
          *      \code
          *          Logger::sThe.SetSuppressDuplicates (nullopt);         // disable the feature
