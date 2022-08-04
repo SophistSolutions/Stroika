@@ -176,6 +176,16 @@ namespace Stroika::Foundation::Execution {
         };
 
     public:
+        using Priority::eDebug;
+        using Priority::eInfo;
+        using Priority::eNotice;
+        using Priority::eWarning;
+        using Priority::eError;
+        using Priority::eCriticalError;
+        using Priority::eAlertError;
+        using Priority::eEmergency;
+
+    public:
         /**
          *  Flush all buffers, and disable any buffering for this logger. This also has the
          *  side effect of shutting down any threads associated with the logger. It is
