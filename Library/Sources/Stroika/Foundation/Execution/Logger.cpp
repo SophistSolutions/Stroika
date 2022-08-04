@@ -74,6 +74,12 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
 #endif
         shared_ptr<IAppenderRep> tmp            = fAppender_; // avoid races and critical sections (appender internally threadsafe)
         auto                     lastMsgsLocked = fLastMessages_.rwget ();
+        /**
+         *  @todo restructure so we dont hold the lock while we call the tmp->Log() - since that append could in principle do something calling us back/deadlock
+         *        Maybe queue up the messages/and push them at the end of the loop. Advantage of no deadlock, but disavantage of
+         *        there being a window where messages could get lost (error on tmp->Log - not sure we can handle that anyhow).
+         *          -- LGP 2022-08-24
+         */
         if (not lastMsgsLocked->empty ()) {
             Time::Duration suppressDuplicatesThreshold = fSuppressDuplicatesThreshold_.cget ()->value_or (0s);
             for (auto i = lastMsgsLocked->begin (); i != lastMsgsLocked->end ();) {
