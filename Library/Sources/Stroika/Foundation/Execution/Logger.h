@@ -176,14 +176,14 @@ namespace Stroika::Foundation::Execution {
         };
 
     public:
-        using Priority::eAlertError;
-        using Priority::eCriticalError;
-        using Priority::eDebug;
-        using Priority::eEmergency;
-        using Priority::eError;
-        using Priority::eInfo;
-        using Priority::eNotice;
-        using Priority::eWarning;
+        static constexpr Priority eDebug         = Priority::eDebug;
+        static constexpr Priority eInfo          = Priority::eInfo;
+        static constexpr Priority eNotice        = Priority::eNotice;
+        static constexpr Priority eWarning       = Priority::eWarning;
+        static constexpr Priority eCriticalError = Priority::eCriticalError;
+        static constexpr Priority eError         = Priority::eError;
+        static constexpr Priority eAlertError    = Priority::eAlertError;
+        static constexpr Priority eEmergency     = Priority::eEmergency;
 
     public:
         /**
