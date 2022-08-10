@@ -101,10 +101,12 @@ namespace Stroika::Foundation::Execution {
          *  This (ThreadAbortCheckFrequency) API shouldnt be needed - if we had a better underlying implementation, and beware, the API could go away
          *  if we find a better way. But callers may find it advisible to control this timeout to tune performance.
          *
-         *  The WaitableEvent class internally uses condition_variable::wait_for () - and this doesn't advertise support for
+         *  The ConditionVariable class internally uses condition_variable::wait_for () - and this doesn't advertise support for
          *  EINTR or using Windows SDK 'alertable states' - so its not clear how often it returns to allow checking
          *  for aborts. This 'feature' allows us to periodically check. You don't want to check too often, or you
          *  effecitvely busy wait, and this checking is ONLY needed for the special, rare case of thread abort.
+         * 
+         *  @see https://stroika.atlassian.net/browse/STK-930 - @todo - want to lose this!
          */
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         static Time::DurationSecondsType sThreadAbortCheckFrequency_Default;
