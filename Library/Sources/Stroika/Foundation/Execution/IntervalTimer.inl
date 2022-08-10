@@ -43,17 +43,6 @@ namespace Stroika::Foundation::Execution {
      ***************************** IntervalTimer::Adder *****************************
      ********************************************************************************
      */
-    inline IntervalTimer::Adder::Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis)
-        : fRepeatInterval_{repeatInterval}
-        , fHysteresis_{hysteresis}
-        , fManager_{&manager}
-        , fFunction_{f}
-    {
-        Manager::sThe.AddRepeating (fFunction_, repeatInterval, hysteresis);
-        if (runImmediately == RunImmediatelyFlag::eRunImmediately) {
-            IgnoreExceptionsExceptThreadAbortForCall (fFunction_ ());
-        }
-    }
     inline IntervalTimer::Adder::Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis)
         : Adder{Manager::sThe, f, repeatInterval, runImmediately, hysteresis}
     {

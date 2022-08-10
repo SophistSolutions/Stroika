@@ -166,3 +166,20 @@ IntervalTimer::Manager::Activator::~Activator ()
     Require (Debug::AppearsDuringMainLifetime ());
     Manager::sThe.fRep_.reset ();
 }
+
+/*
+ ********************************************************************************
+ ********************************* IntervalTimer::Adder *************************
+ ********************************************************************************
+ */
+IntervalTimer::Adder::Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis)
+    : fRepeatInterval_{repeatInterval}
+    , fHysteresis_{hysteresis}
+    , fManager_{&manager}
+    , fFunction_{f}
+{
+    Manager::sThe.AddRepeating (fFunction_, repeatInterval, hysteresis);
+    if (runImmediately == RunImmediatelyFlag::eRunImmediately) {
+        IgnoreExceptionsExceptThreadAbortForCall (fFunction_ ());
+    }
+}
