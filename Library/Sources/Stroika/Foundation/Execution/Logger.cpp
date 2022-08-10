@@ -231,6 +231,7 @@ void Logger::Shutdown_ ()
     SetSuppressDuplicates (nullopt);
     SetBufferingEnabled (false);
     Flush ();
+    Ensure (fRep_->fBookkeepingThread_.load () == nullptr);
 }
 
 auto Logger::GetAppender () const -> IAppenderRepPtr
