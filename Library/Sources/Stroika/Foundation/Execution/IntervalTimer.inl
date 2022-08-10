@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Execution {
     {
         Manager::sThe.AddRepeating (fFunction_, repeatInterval, hysteresis);
         if (runImmediately == RunImmediatelyFlag::eRunImmediately) {
-            fFunction_ ();
+            IgnoreExceptionsExceptThreadAbortForCall (fFunction_ ());
         }
     }
     inline IntervalTimer::Adder::Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis)
