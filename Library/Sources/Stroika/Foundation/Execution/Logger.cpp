@@ -573,6 +573,7 @@ void Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& mess
  */
 Logger::Activator::Activator (const Options& options)
 {
+    Debug::TraceContextBumper ctx{L"Logger::Activator::Activator"};
     Assert (sThe.fRep_ == nullptr); // only one acivator object at a time
     sThe.fRep_ = make_shared<Rep_> ();
     sThe.SetSuppressDuplicates (options.fSuppressDuplicatesThreshold);
@@ -586,6 +587,7 @@ Logger::Activator::Activator (const Options& options)
 
 Logger::Activator::~Activator ()
 {
+    Debug::TraceContextBumper ctx{L"Logger::Activator::~Activator"};
     Assert (sThe.fRep_ != nullptr); // this is the only way it gets cleared so better not be null
     sThe.Shutdown_ ();              // @todo maybe cleanup this code now that we have activator architecture?
     sThe.fRep_.reset ();
