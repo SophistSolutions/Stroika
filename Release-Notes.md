@@ -7,114 +7,65 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1.3  {2022-08-11}
+#### TLDR
+  - AddReplaceMode support in CallerStalenessCache
+  - Logger::LogIfNew () deprecated, and new Logger 'dupplicate suppression' support (should work much better), including supressing all in time range
+  - ConditionVariable default/constant change (makes stopping threads more responsive)
+  - IntervalTimer::Adder takes optional RunImmediatelyFlag
 
+#### Change Details
+- Documentation
+  - Added Release status to Documentation/Code-Status.md (and used a couple places)
+- Library
+  - Foundation
+    - Cache
+      - Add optional AddReplaceMode arg to Add method of CallerStalenessCache (and SynchronizedCallerStalenessCache)
+    - Execution
+      - Logger
+        - doc/comments and marked Logger::LogIfNew () deprecated
+        - https://stroika.atlassian.net/browse/STK-450 - fixed (via new experimental implementation of Logger suppression that tracks all entries from the suppression window)
+        - in Logger, added (equivilent of) using Priority::eDebug, using Priority::eInfo, etc to allow briefer usage
+      - IntervalTimer
+        - https://stroika.atlassian.net/browse/STK-929 : IntervalTimer::Adder takes optional RunImmediatelyFlag, and IntervalTimer::Adder::GetCallback () added
+      - ConditionVariable
+        - https://stroika.atlassian.net/browse/STK-930 (RELATED): sThreadAbortCheckFrequency_Default - NOT FIX/REMOVEAL - but switched from 2.5s to 0.25s - since makes service restart (really thread shutdown) much more responsive. And in (limited) testing had no (apprecable) impact on CPU percent usage (tested WTF only)
 
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13 }
+  - MSVC: { 15.9.49, 16.11.17, 17.2.6 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Monterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
 
-
-
-
-
-
-#if 0
-commit d63002804958a10167cd6ad1194b44715fa111bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 3 10:28:48 2022 -0400
-
-    start 2.1.3x
-
-commit ea96d7d9c889efbeac392aa0c8676cb4d2bba8a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 3 11:03:03 2022 -0400
-
-    Add optional  AddReplaceMode arg to Add method of CallerStalenessCache (and SynchronizedCallerStalenessCache); and use Configuration::ArgByValueType<> on several of those arguments
-
-commit 51adad487e355c8fec8e4adbf4ce868558e97a0c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 3 11:03:49 2022 -0400
-
-    Added Release status to Documentation/Code-Status.md and use that in Foundation/Configuration/TypeHints.h
-
-commit c7327cd8e02ec0ce00d105a0b9b04118f647c9c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 3 11:06:12 2022 -0400
-
-    fixed typo
-
-commit c9b4e831c1418dd56713175b1248a9e89710d5e7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 3 12:20:29 2022 -0400
-
-    doc/commentsa nd marked Logger::LogIfNew () deprecated
-
-commit ee23be22cb5d44807050c321d272079056ca55ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 3 13:45:26 2022 -0400
-
-    docs/comments
-
-commit c8b18729a55d9847fcd2e0795fa8e3ed2e9be1e1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 3 14:33:05 2022 -0400
-
-    cosmetic cleanups to Logger
-
-commit 9a16dd42a7feb6bc9eaf7135771f772a14f3e81a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 3 20:42:03 2022 -0400
-
-    todo notes
-
-commit 4752274283e711704221ae2918e942d4fc1807ba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 3 23:24:26 2022 -0400
-
-    new experimental implementation of Logger suppression that tracks all entries from the suppression window
-
-commit 5a4b48f2cd2d492594dc1a2fcac9487ac13202e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 3 23:24:52 2022 -0400
-
-    cosmetic
-
-commit e3318cf266250672a089cf0daa90ad05a9717b3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 4 08:38:10 2022 -0400
-
-    notes on recent Logger change
-
-commit f62727bb1aeed8acc9d1cefb5b7e732f066f9de5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 4 08:46:08 2022 -0400
-
-    more comments cleanups about closed https://stroika.atlassian.net/browse/STK-450 - Logger issue
-
-commit 7e3289877bc2712445fc2b539348573d1311867d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 4 12:59:55 2022 -0400
-
-    in Logger, added Using Priority::eDebug etc to allow briefer usage
-
-commit 8c36721f9e25de8a41ebdefbcc7c4d6ac056e528
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 4 13:06:14 2022 -0400
-
-    in Logger, added Using Priority::eDebug etc to allow briefer usage
-
-commit 2853c4958c3c6873dc6fd0c8bf2e13af0b70c5d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 7 13:40:14 2022 -0400
-
-    fixed typo
-
-commit 1ce1cad8bb1c53f5126629ad098b36d8d4f346f5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 8 20:16:12 2022 -0400
-
-    release 2.1.3 started
-#endif
-
-
-
+---
 
 ### 2.1.2  {2022-08-02}
 #### TLDR
