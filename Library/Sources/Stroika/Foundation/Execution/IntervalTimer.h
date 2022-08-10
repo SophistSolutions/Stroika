@@ -179,10 +179,33 @@ namespace Stroika::Foundation::Execution {
      */
     class IntervalTimer::Adder {
     public:
+        /**
+         */
+        enum class RunImmediatelyFlag {
+            eDontRunImmediately,
+            /**
+             *  If specified as argument to Adder, then the callback function 'f' will be invoked DIRECTLY from constructor once
+             *  as well as being added as a repeated item.
+             * 
+             *  Pretty commonly, if we have a task you want done every x seconds, you will also want it done IMMEDIATELY
+             *  as well.
+             */
+            eRunImmediately
+        };
+
+    public:
+        static constexpr RunImmediatelyFlag eDontRunImmediately = RunImmediatelyFlag::eDontRunImmediately;
+        static constexpr RunImmediatelyFlag eRunImmediately     = RunImmediatelyFlag::eRunImmediately;
+
+    public:
         Adder () = delete;
         Adder (Adder&& src);
+        Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately);
         Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
+        Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis = nullopt);
+        Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately);
         Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
+        Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis = nullopt);
 
     public:
         ~Adder ();
@@ -190,6 +213,11 @@ namespace Stroika::Foundation::Execution {
     public:
         nonvirtual Adder& operator= (const Adder&) = delete;
         nonvirtual Adder& operator                 = (Adder&& rhs);
+
+    public:
+        /**
+         */
+        nonvirtual Function<void (void)> GetCallback () const;
 
     private:
         const Time::Duration&    fRepeatInterval_;
