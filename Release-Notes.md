@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1.3  {2022-08-11}
+### 2.1.3  {2022-08-12}
 #### TLDR
   - AddReplaceMode support in CallerStalenessCache
   - Logger::LogIfNew () deprecated, and new Logger 'dupplicate suppression' support (should work much better), including supressing all in time range
