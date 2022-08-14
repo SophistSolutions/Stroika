@@ -760,7 +760,7 @@ namespace {
         template <typename CONTAINER>
         void CopyContainerByValue (CONTAINER c, int nMoreCalls)
         {
-            auto checkContains = [] (const CONTAINER& c) {
+            auto checkContains = [] ([[maybe_unused]]const CONTAINER& c) {
                 using ELEMENTTYPE = typename CONTAINER::value_type;
                 for (int i = 0; i < 500; ++i) {
                     if constexpr (is_same_v<set<ELEMENTTYPE>, CONTAINER>) {
