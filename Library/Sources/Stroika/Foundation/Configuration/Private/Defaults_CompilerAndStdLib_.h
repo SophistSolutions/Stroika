@@ -147,6 +147,9 @@
 // _MSC_VER=1932
 #define _MSC_VER_2k22_17Pt2_ 1932
 
+// _MSC_VER=1933
+#define _MSC_VER_2k22_17Pt3_ 1933
+
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017 (use Stroika v2.0 or earlier)"
 #elif _MSC_VER <= _MSC_VER_2k17_15Pt7_
@@ -293,6 +296,21 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy 0
+#endif
+
+#endif
+
+/*
+ *https://developercommunity.visualstudio.com/t/__sanitizer_annotate_contiguous_containe/10119696?entry=problem&ref=native&refTime=1660499588239&refUserId=b9c6175e-9d87-6b50-bc33-61424496814f
+ */
+
+#ifndef qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy
+
+#if defined(_MSC_VER)
+// first broken in _MSC_VER_2k22_17Pt3_
+#define qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt3_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt3_)
+#else
+#define qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy 0
 #endif
 
 #endif

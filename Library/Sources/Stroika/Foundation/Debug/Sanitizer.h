@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy
+#define __sanitizer_annotate_contiguous_container __BWA__sanitizer_annotate_contiguous_container
+#endif
+
 #if __has_include(<sanitizer/asan_interface.h>)
 #include <sanitizer/asan_interface.h>
 #endif
@@ -14,6 +18,10 @@
 #endif
 #if __has_include(<sanitizer/tsan_interface.h>)
 #include <sanitizer/tsan_interface.h>
+#endif
+
+#if qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy
+#undef __sanitizer_annotate_contiguous_container
 #endif
 
 /**
