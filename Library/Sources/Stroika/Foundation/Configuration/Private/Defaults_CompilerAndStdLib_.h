@@ -224,7 +224,9 @@ foo.cpp:
 // include __config which defines _LIBCPP_VERSION by including ciso646 (see http://stackoverflow.com/questions/31657499/how-to-detect-stdlib-libc-in-the-preprocessor)
 // For libc++ it is recommended to #include <ciso646> which serves no purpose in C++ and declares nothing, but for libc++ does define the _LIBCPP_VERSION macro
 // note if this file is not found, check sudo apt-get install libc++-dev
+#if __cplusplus < 202002L
 #include <ciso646>
+#endif
 #endif
 
 // For pre C++20, to get _GLIBCXX_RELEASE define

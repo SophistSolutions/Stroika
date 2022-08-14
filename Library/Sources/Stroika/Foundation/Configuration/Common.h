@@ -4,7 +4,6 @@
 #ifndef _Stroika_Foundation_Configuration_Common_h_
 #define _Stroika_Foundation_Configuration_Common_h_ 1
 
-#include <ciso646>
 #include <cstddef>
 #include <cstdint>
 
