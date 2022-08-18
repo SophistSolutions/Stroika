@@ -621,6 +621,23 @@ namespace Stroika::Foundation::DataExchange {
                 *intoObj = make_pair (mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1]));
             }}};
     }
+    template <typename T1, typename T2>
+    ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Common::KeyValuePair<T1, T2>*)
+    {
+        // render as array of two elements
+        return TypeMappingDetails{
+            typeid (Common::KeyValuePair<T1, T2>),
+            FromObjectMapperType<Common::KeyValuePair<T1, T2>>{[] (const ObjectVariantMapper& mapper, const Common::KeyValuePair<T1, T2>* fromObj) -> VariantValue {
+                return VariantValue{Sequence<VariantValue>{mapper.FromObject<T1> (fromObj->fKey), mapper.FromObject<T2> (fromObj->fValue)}};
+            }},
+            ToObjectMapperType<pair<T1, T2>>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, Common::KeyValuePair<T1, T2>* intoObj) -> void {
+                Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
+                if (s.size () < 2) {
+                    Execution::Throw (BadFormatException{L"Array size out of range for KeyValuePair"sv});
+                };
+                *intoObj = Common::KeyValuePair<T1, T2>{mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1])};
+            }}};
+    }
     template <typename T1>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const tuple<T1>*)
     {
