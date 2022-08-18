@@ -432,6 +432,14 @@ namespace Stroika::Foundation::DataExchange {
         (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
 #endif
     }
+    template <typename T1, typename T2>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Common::KeyValuePair<T1, T2>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
+        (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
+#endif
+    }
     template <typename T1>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const tuple<T1>*)
     {
@@ -630,7 +638,7 @@ namespace Stroika::Foundation::DataExchange {
             FromObjectMapperType<Common::KeyValuePair<T1, T2>>{[] (const ObjectVariantMapper& mapper, const Common::KeyValuePair<T1, T2>* fromObj) -> VariantValue {
                 return VariantValue{Sequence<VariantValue>{mapper.FromObject<T1> (fromObj->fKey), mapper.FromObject<T2> (fromObj->fValue)}};
             }},
-            ToObjectMapperType<pair<T1, T2>>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, Common::KeyValuePair<T1, T2>* intoObj) -> void {
+            ToObjectMapperType<Common::KeyValuePair<T1, T2>>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, Common::KeyValuePair<T1, T2>* intoObj) -> void {
                 Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
                 if (s.size () < 2) {
                     Execution::Throw (BadFormatException{L"Array size out of range for KeyValuePair"sv});
