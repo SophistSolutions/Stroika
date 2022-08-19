@@ -620,8 +620,8 @@ C :\Sandbox\Stroika\DevRoot\Tests\48\Test.cpp : 750
 // still broken in in _MSC_VER_2k19_16Pt10_
 // APPEARS FIXED in _MSC_VER_2k22_17Pt0_
 // And then RE-BROKEN in _MSC_VER_2k22_17Pt2_
-// APPEARS FIXED _MSC_VER_2k22_17Pt3_
-#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER_2k19_16Pt6_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt10_) || (_MSC_VER_2k22_17Pt2_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt2_)) && !qDebug && defined (_M_IX86))
+// APPEARS still BROKEN in _MSC_VER_2k22_17Pt3_
+#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER_2k19_16Pt6_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt10_) || (_MSC_VER_2k22_17Pt2_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt3_)) && !qDebug && defined (_M_IX86))
 #else
 #define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy 0
 #endif
