@@ -153,14 +153,10 @@ endif
 	@$(MAKE) --silent configureAndBuild_
 
 
-B2FullPath=$(PER_CONFIGURATION_BUILDS_DIR)/b2
+B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/b2
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-B2FullPath:=$(B2FullPath).exe
 #unsure why windows and unix builds go to such different places, but they do. Probably not too hard to unify them, but not a priority
-# ifneq ($(wildcard $(B2FullPath)),)
-# $(info himom switching fullpath2)
-# B2FullPath=$(PER_CONFIGURATION_BUILDS_DIR)bin/b2.exe
-# endif
+B2FullPath=$(PER_CONFIGURATION_BUILDS_DIR)/b2.exe
 endif
 
 ScriptsLibPath=$(shell realpath ../../ScriptsLib)
