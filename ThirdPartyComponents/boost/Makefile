@@ -38,9 +38,6 @@ VERSION=1_80_0
 #VERSION=1_79_0
 #VERSION=1_78_0
 #VERSION=1_78_0_b1
-#VERSION=1_77_0
-#VERSION=1_76_0
-#VERSION=1_75_0
 VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed s/_/\./g)
 VERSION_WITH_2DOTS=$(shell echo $(VERSION_WITH_DOTS) | sed 's/\.[ab][0-9]//')
 ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
@@ -156,11 +153,14 @@ endif
 	@$(MAKE) --silent configureAndBuild_
 
 
-#unsure why windows and unix builds go to such different places, but they do. Probably not too hard to unify them, but not a priority
+B2FullPath=$(PER_CONFIGURATION_BUILDS_DIR)/b2
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-B2FullPath=$(PER_CONFIGURATION_BUILDS_DIR)bin/b2.exe
-else
-B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/b2
+B2FullPath:=$(B2FullPath).exe
+#unsure why windows and unix builds go to such different places, but they do. Probably not too hard to unify them, but not a priority
+# ifneq ($(wildcard $(B2FullPath)),)
+# $(info himom switching fullpath2)
+# B2FullPath=$(PER_CONFIGURATION_BUILDS_DIR)bin/b2.exe
+# endif
 endif
 
 ScriptsLibPath=$(shell realpath ../../ScriptsLib)
