@@ -100,6 +100,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
         ePersist,
         eMemory,
         eWAL,
+        eWAL2,
         eOff
     };
 

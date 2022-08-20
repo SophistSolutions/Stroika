@@ -345,6 +345,9 @@ struct Connection::Rep_ final : IRep {
         if (d == "wal") {
             return JournalModeType::eWAL;
         }
+        if (d == "wal2") {
+            return JournalModeType::eWAL2;
+        }
         if (d == "off") {
             return JournalModeType::eOff;
         }
@@ -370,6 +373,12 @@ struct Connection::Rep_ final : IRep {
                 break;
             case JournalModeType::eWAL:
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'wal';", nullptr, 0, &db_err));
+                break;
+            case JournalModeType::eWAL2:
+                if (GetJournalMode () == JournalModeType::eWAL) {
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'delete';", nullptr, 0, &db_err));
+                }
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'wal2';", nullptr, 0, &db_err));
                 break;
             case JournalModeType::eOff:
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'off';", nullptr, 0, &db_err));
