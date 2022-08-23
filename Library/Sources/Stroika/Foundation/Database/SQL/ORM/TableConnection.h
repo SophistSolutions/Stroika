@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
          *  or skip it if the function returns nullopt;
          */
         nonvirtual Sequence<T> GetAll ();
-        nonvirtual Sequence<T> GetAll (function<optional<T> (const Statement::Row& r, const exception_ptr& e)>& onItemException);
+        nonvirtual Sequence<T> GetAll (const function<optional<T> (const Statement::Row& r, const exception_ptr& e)>& onItemException);
 
     public:
         /**

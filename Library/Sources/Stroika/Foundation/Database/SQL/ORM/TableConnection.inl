@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         })};
     }
     template <typename T, typename TRAITS>
-    Sequence<T> TableConnection<T, TRAITS>::GetAll (function<optional<T> (const Statement::Row&, const exception_ptr&)>& onItemException)
+    Sequence<T> TableConnection<T, TRAITS>::GetAll (const function<optional<T> (const Statement::Row&, const exception_ptr&)>& onItemException)
     {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         using DataExchange::VariantValue;
