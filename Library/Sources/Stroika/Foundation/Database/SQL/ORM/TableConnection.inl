@@ -97,6 +97,29 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         })};
     }
     template <typename T, typename TRAITS>
+    Sequence<T> TableConnection<T, TRAITS>::GetAll (function<optional<T> (const Statement::Row&, const exception_ptr&)>& onItemException)
+    {
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        using DataExchange::VariantValue;
+        using Stroika::Foundation::Common::KeyValuePair;
+        Sequence<Statement::Row> rows;
+        DoExecute_ ([&] (Statement& s) { rows = s.GetAllRows (); }, fGetAll_Statement_, false);
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () {
+            if (fEngineProperties_->RequireStatementResetAfterModifyingStatmentToCompleteTransaction ()) {
+                // could potentially avoid this if I added way to track if existing transaction object, but not clearly any point
+                fGetAll_Statement_.Reset ();
+            }
+        });
+        return Sequence<T>{rows.template Select<T> ([this, &onItemException] (const Statement::Row& r) -> optional<T> {
+            try {
+                return fObjectVariantMapper_.ToObject<T> (VariantValue{fTableSchema_.MapFromDB (r)});
+            }
+            catch (...) {
+                return onItemException (r, current_exception ());
+            }
+        })};
+    }
+    template <typename T, typename TRAITS>
     void TableConnection<T, TRAITS>::AddNew (const T& v)
     {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
