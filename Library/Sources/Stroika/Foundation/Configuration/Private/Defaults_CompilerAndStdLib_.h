@@ -673,6 +673,23 @@ READ of size 6 at 0x0110ed9d thread T0
 
 #endif
 
+
+/*
+ * https://developercommunity.visualstudio.com/t/Fatal-Corruption-in-X86-ASAN-regression/10130063?port=1025&fsid=7a8d8e50-f549-4b33-a16d-c10fbf32b8fc&entry=problem
+ */
+
+#ifndef qCompilerAndStdLib_Debug32_asan_Poison_Buggy
+
+#if defined(_MSC_VER)
+// first/only found broken in _MSC_VER_2k22_17Pt3_
+#define qCompilerAndStdLib_Debug32_asan_Poison_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER == _MSC_VER_2k22_17Pt3_)) && qDebug && defined (_M_IX86))
+#else
+#define qCompilerAndStdLib_Debug32_asan_Poison_Buggy 0
+#endif
+
+#endif
+
+
 /*
 1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(95): error C2061: syntax error: identifier 'CountedValue<unsigned int,unsigned int>'
 1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(190): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::PRIVATE_::Test1_MiscStarterTests_::MultiSetIteratorTests_<DEFAULT_TESTING_SCHEMA>(const DEFAULT_TESTING_SCHEMA &,Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<T>> &)' being compiled

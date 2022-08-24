@@ -46,7 +46,7 @@ namespace {
                 VerifyTestResult (false);
             }
             catch (const std::exception& e) {
-                VerifyTestResult (strcmp (e.what (), "HiMom") == 0);
+                VerifyTestResult (strcmp (e.what (), "HiMom") == 0);    // IF THIS FAILS SEE qCompilerAndStdLib_Debug32_asan_Poison_Buggy
             }
         }
     }

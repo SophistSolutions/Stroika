@@ -60,6 +60,9 @@ namespace Stroika::Foundation::Execution {
     }
     inline const char* ExceptionStringHelper::_PeekAtNarrowSDKString_ () const
     {
+#if qCompilerAndStdLib_Debug32_asan_Poison_Buggy
+        const_cast<char*> (fSDKCharString_.c_str ())[fSDKCharString_.length ()] = '\0';
+#endif
         return fSDKCharString_.c_str ();
     }
 
