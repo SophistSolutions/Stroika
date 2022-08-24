@@ -673,7 +673,6 @@ READ of size 6 at 0x0110ed9d thread T0
 
 #endif
 
-
 /*
  * https://developercommunity.visualstudio.com/t/Fatal-Corruption-in-X86-ASAN-regression/10130063?port=1025&fsid=7a8d8e50-f549-4b33-a16d-c10fbf32b8fc&entry=problem
  */
@@ -688,7 +687,6 @@ READ of size 6 at 0x0110ed9d thread T0
 #endif
 
 #endif
-
 
 /*
 1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(95): error C2061: syntax error: identifier 'CountedValue<unsigned int,unsigned int>'
@@ -1572,6 +1570,14 @@ STILL:
 #define qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
 #else
 #define qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy 0
+#endif
+#endif
+
+#ifndef qCompilerAndStdLib_need_ciso646_Buggy
+#if defined(_MSC_VER)
+#define qCompilerAndStdLib_need_ciso646_Buggy (_MSC_VER < _MSC_VER_2k19_16Pt0_)
+#else
+#define qCompilerAndStdLib_need_ciso646_Buggy 0
 #endif
 #endif
 
@@ -3246,5 +3252,9 @@ namespace Stroika::Foundation::Configuration {
 #endif
 
 #endif /*defined(__cplusplus)*/
+
+#if qCompilerAndStdLib_need_ciso646_Buggy
+#include <ciso646>
+#endif
 
 #endif /*_Stroika_Foundation_Configuration_Private_Defaults_CompilerAndStdLib_h_*/
