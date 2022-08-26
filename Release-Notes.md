@@ -7,27 +7,26 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-
-### 2.1.4  {2022-08-??} - DRAFT
+### 2.1.4 {2022-08-26}
 #### TLDR
-  - 
+  - Support Visual Studio.Net 17.3 compiler (several new bugs to workaround)
+  - Updated SQLite/Boost to latest versions
 
 #### Change Details
-
-- use vs2k 17.3.1 compiler in docker containers
--- see if compiler BWA in right section (see past relnotes)
-
+- Compiler and System Compatability
+  - use vs2k 17.3.1 compiler in docker containers
+  - lose #include <ciso646> since not needed anymore (except NEW qCompilerAndStdLib_need_ciso646_Buggy), and breaks on latest visual studio (deprecated)
+  - workaround aligned_union_t now deprecated in C++23
+  - new bug workaroudn for qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy - breaks in msvc 17.3
+  - fixed qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy bug define for vs2k17.3
+  - qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy workaround new vs 2k 17.3.1 bug on x86
+  - qCompilerAndStdLib_Debug32_asan_Poison_Buggy bug define and workaround
+- RegressionTests and Sanitizers
+  - anopther  https://stroika.atlassian.net/browse/STK-774 helgrind workaround
 - Documentation
   - update readme docs
 - Library
   - Foundation
-    - Configuration
-      - lose #include <ciso646> since not needed anymore (except NEW qCompilerAndStdLib_need_ciso646_Buggy), and breaks on latest visual studio (deprecated)
-      - workaround aligned_union_t now deprecated in C++23
-      - new bug workaroudn for qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy - breaks in msvc 17.3
-      - fixed qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy bug define for vs2k17.3
-      - qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy workaround new vs 2k 17.3.1 bug on x86
-      - qCompilerAndStdLib_Debug32_asan_Poison_Buggy bug define and workaround
     - Database
       - SQLite WAL2 support
       - ORM
@@ -38,8 +37,8 @@ especially those they need to be aware of when upgrading.
     - Execution
       - Synchronized<T, TRAITS>::operator= (T&& rhs) support
 - ThirdPartyCompoents
-  - sqlite 3.39.2
-  - boost Version 1.80.0
+  - sqlite - 3.39.2
+  - boost - 1.80.0
 
 #### Release-Validation
 - Compilers Tested/Supported
