@@ -327,7 +327,13 @@ namespace {
             }
             if (threadID == sMainThread_) {
                 static const string kMAIN_{"MAIN"sv};
+#if qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy
+                auto r   = make_pair (wasNew, kMAIN_);
+                r.second = "MAIN";
+                return r;
+#else
                 return make_pair (wasNew, kMAIN_);
+#endif
             }
             else {
                 char buf[1024];

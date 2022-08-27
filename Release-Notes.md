@@ -7,6 +7,135 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1.4 {2022-08-26}
+#### TLDR
+  - Support Visual Studio.Net 17.3 compiler (several new bugs to workaround)
+  - Updated SQLite/Boost to latest versions
+
+#### Change Details
+- Compiler and System Compatability
+  - use vs2k 17.3.1 compiler in docker containers
+  - lose #include <ciso646> since not needed anymore (except NEW qCompilerAndStdLib_need_ciso646_Buggy), and breaks on latest visual studio (deprecated)
+  - workaround aligned_union_t now deprecated in C++23
+  - new bug workaroudn for qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy - breaks in msvc 17.3
+  - fixed qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy bug define for vs2k17.3
+  - qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy workaround new vs 2k 17.3.1 bug on x86
+  - qCompilerAndStdLib_Debug32_asan_Poison_Buggy bug define and workaround
+- RegressionTests and Sanitizers
+  - anopther  https://stroika.atlassian.net/browse/STK-774 helgrind workaround
+- Documentation
+  - update readme docs
+- Library
+  - Foundation
+    - Database
+      - SQLite WAL2 support
+      - ORM
+        - TableConnection<T, TRAITS>::GetAll ( error handling  overload)
+        - Schema::CatchAllField::kDefaultMapper_CombinedToRaw* variants - treat missing data (empty string/blob) as producing empty mapping
+    - DataExchange
+      - ObjectVariantMapper support for KeyValuePair
+    - Execution
+      - Synchronized<T, TRAITS>::operator= (T&& rhs) support
+- ThirdPartyCompoents
+  - sqlite - 3.39.2
+  - boost - 1.80.0
+
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13 }
+  - MSVC: { 15.9.50, 16.11.18, 17.3.1 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Monterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+
+---
+
+### 2.1.3  {2022-08-12}
+#### TLDR
+  - AddReplaceMode support in CallerStalenessCache
+  - Logger::LogIfNew () deprecated, and new Logger 'dupplicate suppression' support (should work much better), including supressing all in time range
+  - ConditionVariable default/constant change (makes stopping threads more responsive)
+  - IntervalTimer::Adder takes optional RunImmediatelyFlag
+
+#### Change Details
+- Documentation
+  - Added Release status to Documentation/Code-Status.md (and used a couple places)
+- Library
+  - Foundation
+    - Cache
+      - Add optional AddReplaceMode arg to Add method of CallerStalenessCache (and SynchronizedCallerStalenessCache)
+    - Execution
+      - Logger
+        - doc/comments and marked Logger::LogIfNew () deprecated
+        - https://stroika.atlassian.net/browse/STK-450 - fixed (via new experimental implementation of Logger suppression that tracks all entries from the suppression window)
+        - in Logger, added (equivilent of) using Priority::eDebug, using Priority::eInfo, etc to allow briefer usage
+      - IntervalTimer
+        - https://stroika.atlassian.net/browse/STK-929 : IntervalTimer::Adder takes optional RunImmediatelyFlag, and IntervalTimer::Adder::GetCallback () added
+      - ConditionVariable
+        - https://stroika.atlassian.net/browse/STK-930 (RELATED): sThreadAbortCheckFrequency_Default - NOT FIX/REMOVEAL - but switched from 2.5s to 0.25s - since makes service restart (really thread shutdown) much more responsive. And in (limited) testing had no (apprecable) impact on CPU percent usage (tested WTF only)
+
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13 }
+  - MSVC: { 15.9.49, 16.11.17, 17.2.6 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Monterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+
+---
+
 ### 2.1.2  {2022-08-02}
 #### TLDR
 - Fixed bug with CallerStalenessCache

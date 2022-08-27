@@ -267,6 +267,7 @@ namespace Stroika::Foundation::Execution {
         /**
          */
         nonvirtual Synchronized& operator= (const Synchronized& rhs);
+        nonvirtual Synchronized& operator= (T&& rhs);
         nonvirtual Synchronized& operator= (const T& rhs);
 
     public:

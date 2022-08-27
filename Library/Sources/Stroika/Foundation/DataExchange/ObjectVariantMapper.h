@@ -736,6 +736,8 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const vector<T>*);
         template <typename T1, typename T2>
         nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const pair<T1, T2>*);
+        template <typename T1, typename T2>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Common::KeyValuePair<T1, T2>*);
         template <typename T1>
         nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const tuple<T1>*);
         template <typename T1, typename T2>
@@ -784,6 +786,8 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const vector<T>*);
         template <typename T1, typename T2>
         static TypeMappingDetails MakeCommonSerializer_ (const pair<T1, T2>*);
+        template <typename T1, typename T2>
+        static TypeMappingDetails MakeCommonSerializer_ (const Common::KeyValuePair<T1, T2>*);
         template <typename T1>
         static TypeMappingDetails MakeCommonSerializer_ (const tuple<T1>*);
         template <typename T1, typename T2>

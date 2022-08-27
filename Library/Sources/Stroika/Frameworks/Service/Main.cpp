@@ -379,56 +379,56 @@ Main::State Main::LoggerServiceWrapper::_GetState () const
 
 void Main::LoggerServiceWrapper::_Install ()
 {
-    Logger::sThe.Log (Logger::Priority::eNotice, L"Installing service...");
+    Logger::sThe.Log (Logger::eNotice, L"Installing service...");
     try {
         fDelegateTo_->_Install ();
     }
     catch (...) {
         String exceptMsg = Characters::ToString (current_exception ());
-        Logger::sThe.Log (Logger::Priority::eError, L"Failed to install - %s - aborting...", exceptMsg.c_str ());
+        Logger::sThe.Log (Logger::eError, L"Failed to install - %s - aborting...", exceptMsg.c_str ());
         Execution::ReThrow ();
     }
 }
 
 void Main::LoggerServiceWrapper::_UnInstall ()
 {
-    Logger::sThe.Log (Logger::Priority::eNotice, L"UnInstalling service...");
+    Logger::sThe.Log (Logger::eNotice, L"UnInstalling service...");
     try {
         fDelegateTo_->_UnInstall ();
     }
     catch (...) {
         String exceptMsg = Characters::ToString (current_exception ());
-        Logger::sThe.Log (Logger::Priority::eError, L"Failed to uninstall - %s - aborting...", exceptMsg.c_str ());
+        Logger::sThe.Log (Logger::eError, L"Failed to uninstall - %s - aborting...", exceptMsg.c_str ());
         Execution::ReThrow ();
     }
 }
 
 void Main::LoggerServiceWrapper::_RunAsService ()
 {
-    Logger::sThe.Log (Logger::Priority::eInfo, L"Service starting..."); // only info level cuz inside app RunAs
+    Logger::sThe.Log (Logger::eInfo, L"Service starting..."); // only info level cuz inside app RunAs
     try {
         fDelegateTo_->_RunAsService ();
     }
     catch (...) {
         String exceptMsg = Characters::ToString (current_exception ());
-        Logger::sThe.Log (Logger::Priority::eError, L"Exception running service - %s - aborting...", exceptMsg.c_str ());
+        Logger::sThe.Log (Logger::eError, L"Exception running service - %s - aborting...", exceptMsg.c_str ());
         Execution::ReThrow ();
     }
-    Logger::sThe.Log (Logger::Priority::eNotice, L"Service stopped normally");
+    Logger::sThe.Log (Logger::eNotice, L"Service stopped normally");
 }
 
 void Main::LoggerServiceWrapper::_RunDirectly (const optional<Time::Duration>& runFor)
 {
-    Logger::sThe.Log (Logger::Priority::eNotice, L"Service starting in Run-Direct (non service) mode.");
+    Logger::sThe.Log (Logger::eNotice, L"Service starting in Run-Direct (non service) mode.");
     try {
         fDelegateTo_->_RunDirectly (runFor);
     }
     catch (...) {
         String exceptMsg = Characters::ToString (current_exception ());
-        Logger::sThe.Log (Logger::Priority::eError, L"Exception running service service - %s - aborting...", exceptMsg.c_str ());
+        Logger::sThe.Log (Logger::eError, L"Exception running service service - %s - aborting...", exceptMsg.c_str ());
         Execution::ReThrow ();
     }
-    Logger::sThe.Log (Logger::Priority::eNotice, L"Service stopped normally");
+    Logger::sThe.Log (Logger::eNotice, L"Service stopped normally");
 }
 
 void Main::LoggerServiceWrapper::_Start (Time::DurationSecondsType timeout)
@@ -1022,7 +1022,7 @@ void Main::WindowsService::ServiceMain_ ([[maybe_unused]] DWORD dwArgc, [[maybe_
     ///@TODO - FIXUP EXCEPTION HANLDING HERE!!!
 
     // do file create stuff here
-    //Logger::sThe.Log (Logger::Priority::eInfo, L"entering ServiceMain_");
+    //Logger::sThe.Log (Logger::eInfo, L"entering ServiceMain_");
 
     // Register the control request handler
     fServiceStatus_.dwCurrentState = SERVICE_START_PENDING;
@@ -1042,7 +1042,7 @@ void Main::WindowsService::ServiceMain_ ([[maybe_unused]] DWORD dwArgc, [[maybe_
             appRep->MainLoop ([] () {});
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_);
-    //Logger::sThe.Log (Logger::Priority::eInfo, L"in ServiceMain_ about to set SERVICE_RUNNING");
+    //Logger::sThe.Log (Logger::eInfo, L"in ServiceMain_ about to set SERVICE_RUNNING");
     SetServiceStatus_ (SERVICE_RUNNING);
 
     try {

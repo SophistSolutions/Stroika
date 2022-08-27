@@ -130,8 +130,14 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         /**
          *  Get ALL the c++ objects in this table. This does a select * from table, and maps the various
          *  SQL parameters that come back to C++ objects.
+         * 
+         *  If optional onItemException is provided, each conversion to an object that results
+         *  in an exception is passed to onItemException. It can rethrow, or eat the exception as desired.
+         *  The function returns optional<T> - so the caller can either return the would-be object
+         *  or skip it if the function returns nullopt;
          */
         nonvirtual Sequence<T> GetAll ();
+        nonvirtual Sequence<T> GetAll (const function<optional<T> (const Statement::Row& r, const exception_ptr& e)>& onItemException);
 
     public:
         /**

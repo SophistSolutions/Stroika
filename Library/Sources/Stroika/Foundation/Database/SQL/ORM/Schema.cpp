@@ -81,11 +81,17 @@ VariantValue ORM::Schema::CatchAllField::kDefaultMapper_RawToCombined_String (co
 
 Mapping<String, VariantValue> ORM::Schema::CatchAllField::kDefaultMapper_CombinedToRaw_BLOB (const VariantValue& fields2Map)
 {
+    if (fields2Map.empty ()) {
+        return Mapping<String, VariantValue>{};
+    }
     return DataExchange::Variant::JSON::Reader{}.Read (fields2Map.As<Memory::BLOB> ()).As<Mapping<String, VariantValue>> ();
 }
 
 Mapping<String, VariantValue> ORM::Schema::CatchAllField::kDefaultMapper_CombinedToRaw_String (const VariantValue& fields2Map)
 {
+    if (fields2Map.empty ()) {
+        return Mapping<String, VariantValue>{};
+    }
     return DataExchange::Variant::JSON::Reader{}.Read (fields2Map.As<String> ()).As<Mapping<String, VariantValue>> ();
 }
 

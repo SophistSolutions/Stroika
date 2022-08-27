@@ -43,16 +43,16 @@ namespace Stroika::Foundation::Execution {
      ***************************** IntervalTimer::Adder *****************************
      ********************************************************************************
      */
-    inline IntervalTimer::Adder::Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
-        : fRepeatInterval_{repeatInterval}
-        , fHysteresis_{hysteresis}
-        , fManager_{&manager}
-        , fFunction_{f}
+    inline IntervalTimer::Adder::Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis)
+        : Adder{Manager::sThe, f, repeatInterval, runImmediately, hysteresis}
     {
-        Manager::sThe.AddRepeating (fFunction_, repeatInterval, hysteresis);
+    }
+    inline IntervalTimer::Adder::Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
+        : Adder{manager, f, repeatInterval, RunImmediatelyFlag::eDontRunImmediately, hysteresis}
+    {
     }
     inline IntervalTimer::Adder::Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
-        : Adder{Manager::sThe, f, repeatInterval, hysteresis}
+        : Adder{Manager::sThe, f, repeatInterval, RunImmediatelyFlag::eDontRunImmediately, hysteresis}
     {
     }
     inline IntervalTimer::Adder::Adder (Adder&& src)
@@ -82,6 +82,10 @@ namespace Stroika::Foundation::Execution {
             Manager::sThe.AddRepeating (fFunction_, fRepeatInterval_, fHysteresis_);
         }
         return *this;
+    }
+    inline Function<void (void)> IntervalTimer::Adder::GetCallback () const
+    {
+        return fFunction_;
     }
 
 }

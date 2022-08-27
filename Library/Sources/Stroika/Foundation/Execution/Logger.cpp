@@ -30,6 +30,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Configuration;
 using namespace Stroika::Foundation::Execution;
 
+using Containers::Mapping;
 using Time::Duration;
 using Time::DurationSecondsType;
 
@@ -42,20 +43,20 @@ using Time::DurationSecondsType;
  ********************************************************************************
  */
 struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
-    bool                                          fBufferingEnabled_{false};
-    Synchronized<IAppenderRepPtr>                 fAppender_;
-    BlockingQueue<pair<Logger::Priority, String>> fOutMsgQ_;
+    using PriorityAndMessageType_ = pair<Logger::Priority, String>;
+    bool                                   fBufferingEnabled_{false};
+    Synchronized<IAppenderRepPtr>          fAppender_;
+    BlockingQueue<PriorityAndMessageType_> fOutMsgQ_;
     // @todo FIX - fOutQMaybeNeedsFlush_ setting can cause race - maybe lose this optimization - pretty harmless, but can lose a message
     // race at end of Flush_()
     bool                             fOutQMaybeNeedsFlush_{true}; // slight optimization when using buffering
     Synchronized<optional<Duration>> fSuppressDuplicatesThreshold_;
 
-    struct LastMsg_ {
-        pair<Logger::Priority, String> fLastMsgSent_{};
-        Time::DurationSecondsType      fLastSentAt{};
-        unsigned int                   fRepeatCount_{};
+    struct LastMsgInfoType_ {
+        Time::DurationSecondsType fLastSentAt{};
+        unsigned int              fRepeatCount_{};
     };
-    Synchronized<LastMsg_> fLastMsg_;
+    Synchronized<Mapping<PriorityAndMessageType_, LastMsgInfoType_>> fLastMessages_; // if suppressing duplicates, must save all messages in timerange of suppression to compare with, and track suppression counts
 
     Synchronized<Execution::Thread::Ptr>                                  fBookkeepingThread_;
     atomic<Time::DurationSecondsType>                                     fMaxWindow_{};
@@ -66,28 +67,40 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
         // @todo minor bug - fix!!!
         Stroika_Foundation_Debug_ValgrindDisableHelgrind (fOutQMaybeNeedsFlush_); // not worth worrying valgrind output about - so supress til we get around to fixing
     }
-
-    void FlushDupsWarning_ ()
+    void FlushSuppressedDuplicates_ (bool forceEvenIfNotOutOfDate = false)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{"Logger::Rep_::FlushDupsWarning_"};
+        Debug::TraceContextBumper ctx{"Logger::Rep_::FlushSuppressedDuplicates_"};
 #endif
-        shared_ptr<IAppenderRep> tmp           = fAppender_; // avoid races and critical sections (appender internally threadsafe)
-        auto                     lastMsgLocked = fLastMsg_.rwget ();
-        if (lastMsgLocked->fRepeatCount_ > 0) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"fLastMsg_.fRepeatCount_ = %d", lastMsgLocked->fRepeatCount_);
-#endif
-            if (tmp != nullptr) {
-                if (lastMsgLocked->fRepeatCount_ == 1) {
-                    tmp->Log (lastMsgLocked->fLastMsgSent_.first, lastMsgLocked->fLastMsgSent_.second);
+        shared_ptr<IAppenderRep> tmp            = fAppender_; // avoid races and critical sections (appender internally threadsafe)
+        auto                     lastMsgsLocked = fLastMessages_.rwget ();
+        /**
+         *  @todo restructure so we dont hold the lock while we call the tmp->Log() - since that append could in principle do something calling us back/deadlock
+         *        Maybe queue up the messages/and push them at the end of the loop. Advantage of no deadlock, but disavantage of
+         *        there being a window where messages could get lost (error on tmp->Log - not sure we can handle that anyhow).
+         *          -- LGP 2022-08-24
+         */
+        if (not lastMsgsLocked->empty ()) {
+            Time::Duration suppressDuplicatesThreshold = fSuppressDuplicatesThreshold_.cget ()->value_or (0s);
+            for (auto i = lastMsgsLocked->begin (); i != lastMsgsLocked->end ();) {
+                bool writeThisOne = forceEvenIfNotOutOfDate or i->fValue.fLastSentAt + suppressDuplicatesThreshold.As<DurationSecondsType> () < Time::GetTickCount ();
+                if (writeThisOne) {
+                    switch (i->fValue.fRepeatCount_) {
+                        case 0:
+                            break; // nothing to write
+                        case 1:
+                            tmp->Log (i->fKey.first, i->fKey.second);
+                            break;
+                        default:
+                            tmp->Log (i->fKey.first, Characters::Format (L"[%d duplicates suppressed]: %s", i->fValue.fRepeatCount_ - 1, i->fKey.second.c_str ()));
+                            break;
+                    }
+                    lastMsgsLocked->Remove (i, &i);
                 }
                 else {
-                    tmp->Log (lastMsgLocked->fLastMsgSent_.first, Characters::Format (L"[%d duplicates suppressed]: %s", lastMsgLocked->fRepeatCount_ - 1, lastMsgLocked->fLastMsgSent_.second.c_str ()));
+                    ++i;
                 }
             }
-            lastMsgLocked->fRepeatCount_ = 0;
-            lastMsgLocked->fLastMsgSent_.second.clear ();
         }
     }
     void Flush_ ()
@@ -98,7 +111,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
         shared_ptr<IAppenderRep> tmp = fAppender_; // avoid races and critical sections (between check and invoke)
         if (tmp != nullptr) {
             while (true) {
-                optional<pair<Logger::Priority, String>> p = fOutMsgQ_.RemoveHeadIfPossible ();
+                optional<PriorityAndMessageType_> p = fOutMsgQ_.RemoveHeadIfPossible ();
                 if (p.has_value ()) {
                     tmp->Log (p->first, p->second);
                 }
@@ -132,16 +145,11 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                         Debug::TraceContextBumper ctx1{"Logger::Rep_::UpdateBookkeepingThread_... internal thread/1"};
                         while (true) {
                             Duration time2Wait = max<Duration> (2s, suppressDuplicatesThreshold); // never wait less than this
+                            useRepInThread->FlushSuppressedDuplicates_ ();
                             if (auto p = useRepInThread->fOutMsgQ_.RemoveHeadIfPossible (time2Wait.As<DurationSecondsType> ())) {
                                 shared_ptr<IAppenderRep> tmp = useRepInThread->fAppender_; // avoid races and critical sections (between check and invoke)
                                 if (tmp != nullptr) {
                                     IgnoreExceptionsExceptThreadAbortForCall (tmp->Log (p->first, p->second));
-                                }
-                            }
-                            {
-                                auto lastMsgLocked = useRepInThread->fLastMsg_.cget ();
-                                if (lastMsgLocked->fRepeatCount_ > 0 and lastMsgLocked->fLastSentAt + suppressDuplicatesThreshold.As<DurationSecondsType> () < Time::GetTickCount ()) {
-                                    IgnoreExceptionsExceptThreadAbortForCall (useRepInThread->FlushDupsWarning_ ());
                                 }
                             }
                         }
@@ -223,15 +231,16 @@ void Logger::Shutdown_ ()
     SetSuppressDuplicates (nullopt);
     SetBufferingEnabled (false);
     Flush ();
+    Ensure (fRep_->fBookkeepingThread_.load () == nullptr);
 }
 
-Logger::IAppenderRepPtr Logger::GetAppender () const
+auto Logger::GetAppender () const -> IAppenderRepPtr
 {
     AssertNotNull (fRep_); // must be called while Logger::Activator exists
     return fRep_->fAppender_;
 }
 
-void Logger::SetAppender (const shared_ptr<IAppenderRep>& rep)
+void Logger::SetAppender (const IAppenderRepPtr& rep)
 {
     AssertNotNull (fRep_); // must be called while Logger::Activator exists
     fRep_->fAppender_ = rep;
@@ -242,21 +251,19 @@ void Logger::Log_ (Priority logLevel, const String& msg)
     AssertNotNull (fRep_);                            // must be called while Logger::Activator exists
     shared_ptr<IAppenderRep> tmp = fRep_->fAppender_; // avoid races/deadlocks and critical sections (between check and invoke)
     if (tmp != nullptr) {
-        auto p = pair<Priority, String> (logLevel, msg);
+        auto p = make_pair (logLevel, msg);
         if (fRep_->fSuppressDuplicatesThreshold_.cget ()->has_value ()) {
-            auto lastMsgLocked = fRep_->fLastMsg_.rwget ();
-            if (p == lastMsgLocked->fLastMsgSent_) {
-                ++lastMsgLocked->fRepeatCount_;
-                lastMsgLocked->fLastSentAt = Time::GetTickCount ();
-                return; // so will be handled later
+            auto lastMsgLocked = fRep_->fLastMessages_.rwget ();
+            // @todo fix performance when we fix https://stroika.atlassian.net/browse/STK-928 -
+            if (auto msgInfo = lastMsgLocked->Lookup (p)) {
+                Rep_::LastMsgInfoType_ mi = *msgInfo;
+                ++mi.fRepeatCount_;
+                mi.fLastSentAt = Time::GetTickCount ();
+                lastMsgLocked->Add (p, mi); // this is the 928 - part - above - that could be Update
+                return;                     // so will be handled later
             }
             else {
-                if (lastMsgLocked->fRepeatCount_ > 0) {
-                    fRep_->FlushDupsWarning_ ();
-                }
-                lastMsgLocked->fLastMsgSent_ = p;
-                lastMsgLocked->fRepeatCount_ = 0;
-                lastMsgLocked->fLastSentAt   = Time::GetTickCount ();
+                lastMsgLocked->Add (p, Rep_::LastMsgInfoType_{Time::GetTickCount ()}); // add empty one so we can recognize this as a DUP
             }
         }
         if (GetBufferingEnabled ()) {
@@ -567,6 +574,7 @@ void Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& mess
  */
 Logger::Activator::Activator (const Options& options)
 {
+    Debug::TraceContextBumper ctx{L"Logger::Activator::Activator"};
     Assert (sThe.fRep_ == nullptr); // only one acivator object at a time
     sThe.fRep_ = make_shared<Rep_> ();
     sThe.SetSuppressDuplicates (options.fSuppressDuplicatesThreshold);
@@ -580,6 +588,7 @@ Logger::Activator::Activator (const Options& options)
 
 Logger::Activator::~Activator ()
 {
+    Debug::TraceContextBumper ctx{L"Logger::Activator::~Activator"};
     Assert (sThe.fRep_ != nullptr); // this is the only way it gets cleared so better not be null
     sThe.Shutdown_ ();              // @todo maybe cleanup this code now that we have activator architecture?
     sThe.fRep_.reset ();

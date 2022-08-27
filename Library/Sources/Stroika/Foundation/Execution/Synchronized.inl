@@ -86,6 +86,16 @@ namespace Stroika::Foundation::Execution {
         return *this;
     }
     template <typename T, typename TRAITS>
+    inline auto Synchronized<T, TRAITS>::operator= (T&& rhs) -> Synchronized&
+    {
+        [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
+        NoteLockStateChanged_ (L"Locked");
+        fProtectedValue_ = move (rhs);
+        ++fWriteLockCount_;
+        return *this;
+    }
+    template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::operator= (const T& rhs) -> Synchronized&
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};

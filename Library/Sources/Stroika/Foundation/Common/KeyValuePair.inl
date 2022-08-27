@@ -35,6 +35,7 @@ namespace Stroika::Foundation::Common {
         : fKey (key)
         , fValue (value)
     {
+        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     template <typename K2, typename V2,
@@ -44,6 +45,7 @@ namespace Stroika::Foundation::Common {
         : fKey (key)
         , fValue (value)
     {
+        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     template <typename KEY_TYPE2, typename VALUE_TYPE2,
@@ -53,6 +55,7 @@ namespace Stroika::Foundation::Common {
         : fKey (src.first)
         , fValue (src.second)
     {
+        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     template <typename KEY_TYPE2, typename VALUE_TYPE2,
@@ -62,6 +65,7 @@ namespace Stroika::Foundation::Common {
         : fKey (src.first)
         , fValue (src.second)
     {
+        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     template <typename KEY_TYPE2, typename VALUE_TYPE2,
@@ -71,6 +75,7 @@ namespace Stroika::Foundation::Common {
         : fKey (src.fKey)
         , fValue (src.fValue)
     {
+        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     template <typename KEY_TYPE2, typename VALUE_TYPE2,
@@ -80,6 +85,7 @@ namespace Stroika::Foundation::Common {
         : fKey (src.fKey)
         , fValue (src.fValue)
     {
+        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     template <typename KEY_TYPE2, typename VALUE_TYPE2>

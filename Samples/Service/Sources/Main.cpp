@@ -59,10 +59,10 @@ namespace {
         Thread::SuppressInterruptionInContext suppressCtx;
         DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
 #if qUseLogger
-        Logger::sThe.Log (Logger::Priority::eCriticalError, L"Fatal Error: %s; Aborting...", String::FromSDKString (msg).c_str ());
-        Logger::sThe.Log (Logger::Priority::eCriticalError, L"Backtrace: %s", Debug::BackTrace::Capture ().c_str ());
+        Logger::sThe.Log (Logger::eCriticalError, L"Fatal Error: %s; Aborting...", String::FromSDKString (msg).c_str ());
+        Logger::sThe.Log (Logger::eCriticalError, L"Backtrace: %s", Debug::BackTrace::Capture ().c_str ());
         if (std::exception_ptr exc = std::current_exception ()) {
-            Logger::sThe.Log (Logger::Priority::eCriticalError, L"Uncaught exception: %s", Characters::ToString (exc).c_str ());
+            Logger::sThe.Log (Logger::eCriticalError, L"Uncaught exception: %s", Characters::ToString (exc).c_str ());
         }
         Logger::sThe.Flush ();
 #endif
@@ -73,8 +73,8 @@ namespace {
         Thread::SuppressInterruptionInContext suppressCtx;
         DbgTrace (L"Fatal Signal encountered: %s", Execution::SignalToName (signal).c_str ());
 #if qUseLogger
-        Logger::sThe.Log (Logger::Priority::eCriticalError, L"Fatal Signal: %s; Aborting...", Execution::SignalToName (signal).c_str ());
-        Logger::sThe.Log (Logger::Priority::eCriticalError, L"Backtrace: %s", Debug::BackTrace::Capture ().c_str ());
+        Logger::sThe.Log (Logger::eCriticalError, L"Fatal Signal: %s; Aborting...", Execution::SignalToName (signal).c_str ());
+        Logger::sThe.Log (Logger::eCriticalError, L"Backtrace: %s", Debug::BackTrace::Capture ().c_str ());
         Logger::sThe.Flush ();
 #endif
         std::_Exit (EXIT_FAILURE); // skip
@@ -214,7 +214,7 @@ int main (int argc, const char* argv[])
     catch (...) {
         String exceptMsg = Characters::ToString (current_exception ());
 #if qUseLogger
-        Logger::sThe.Log (Logger::Priority::eError, L"%s", exceptMsg.c_str ());
+        Logger::sThe.Log (Logger::eError, L"%s", exceptMsg.c_str ());
 #endif
         cerr << "FAILED: " << exceptMsg.AsNarrowSDKString () << endl;
         return EXIT_FAILURE;

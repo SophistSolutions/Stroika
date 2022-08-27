@@ -5,6 +5,7 @@
 
 #include "../Containers/Collection.h"
 #include "../Debug/Main.h"
+#include "../Debug/Trace.h"
 #include "../Time/Realtime.h"
 
 #include "Synchronized.h"
@@ -152,6 +153,7 @@ void IntervalTimer::Manager::DefaultRep::RemoveRepeating (const TimerCallback& i
  */
 IntervalTimer::Manager::Activator::Activator ()
 {
+    Debug::TraceContextBumper ctx{L"IntervalTimer::Manager::Activator::Activator"};
     Require (Manager::sThe.fRep_ == nullptr); // only one activator object allowed
     Require (Debug::AppearsDuringMainLifetime ());
     Manager::sThe = Manager{make_shared<IntervalTimer::Manager::DefaultRep> ()};
@@ -159,7 +161,25 @@ IntervalTimer::Manager::Activator::Activator ()
 
 IntervalTimer::Manager::Activator::~Activator ()
 {
+    Debug::TraceContextBumper ctx{L"IntervalTimer::Manager::Activator::~Activator"};
     RequireNotNull (Manager::sThe.fRep_); // this is the only way to remove, and so must not be null here
     Require (Debug::AppearsDuringMainLifetime ());
     Manager::sThe.fRep_.reset ();
+}
+
+/*
+ ********************************************************************************
+ ********************************* IntervalTimer::Adder *************************
+ ********************************************************************************
+ */
+IntervalTimer::Adder::Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis)
+    : fRepeatInterval_{repeatInterval}
+    , fHysteresis_{hysteresis}
+    , fManager_{&manager}
+    , fFunction_{f}
+{
+    Manager::sThe.AddRepeating (fFunction_, repeatInterval, hysteresis);
+    if (runImmediately == RunImmediatelyFlag::eRunImmediately) {
+        IgnoreExceptionsExceptThreadAbortForCall (fFunction_ ());
+    }
 }

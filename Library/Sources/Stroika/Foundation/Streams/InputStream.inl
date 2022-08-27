@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Streams {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed
         ElementType b{};
-        return (_GetRepRWRef ().Read (&b, &b + 1) == 0) ? optional<ElementType> () : b;
+        return (_GetRepRWRef ().Read (&b, &b + 1) == 0) ? optional<ElementType>{} : b;
     }
     template <typename ELEMENT_TYPE>
     inline size_t InputStream<ELEMENT_TYPE>::Ptr::Read (ElementType* intoStart, ElementType* intoEnd) const

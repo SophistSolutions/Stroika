@@ -21,8 +21,25 @@ namespace Stroika::Foundation::Common {
     template <class T>
     inline T& Immortalize ()
     {
-        static once_flag             sFlag_{};
-        static aligned_union_t<1, T> sStorage_{};
+        struct StorageImpl_ {
+            union {
+                T _Storage;
+            };
+            constexpr StorageImpl_ () noexcept
+                : _Storage{}
+            {
+            }
+            StorageImpl_ (const StorageImpl_&) = delete;
+            StorageImpl_& operator= (const StorageImpl_&) = delete;
+#if __has_cpp_attribute(msvc::noop_dtor)
+            [[msvc::noop_dtor]]
+#endif
+            ~StorageImpl_ ()
+            {
+            }
+        };
+        static once_flag    sFlag_{};
+        static StorageImpl_ sStorage_{};
         call_once (sFlag_, [] () { ::new (&sStorage_) T{}; });
         return reinterpret_cast<T&> (sStorage_);
     }
