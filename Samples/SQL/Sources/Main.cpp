@@ -27,7 +27,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     {
 #if qHasFeature_sqlite
         auto connectionFactory = [=] () {
-        // Use InMemory DB
+            // Use InMemory DB
             return SQLite::Connection::New (SQLite::Options{.fInMemoryDB = u"direct-employees-test"});
         };
         DirectEmployeesDB (connectionFactory);
@@ -39,7 +39,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "direct-employees-test.db";
         (void)std::filesystem::remove (dbPath);
         auto connectionFactory = [=] () {
-        // Same DirectEmployeesDB test, but write to a file so you can explore DB from command-line
+            // Same DirectEmployeesDB test, but write to a file so you can explore DB from command-line
             return SQLite::Connection::New (SQLite::Options{.fDBPath = dbPath});
         };
         DirectEmployeesDB (connectionFactory);
@@ -63,7 +63,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-test.db";
         (void)std::filesystem::remove (dbPath);
         auto connectionFactory = [=] () {
-        // default to 1 second fBusyTimeout for these tests
+            // default to 1 second fBusyTimeout for these tests
             auto conn = SQLite::Connection::New (SQLite::Options{.fDBPath = dbPath, .fThreadingMode = SQLite::Options::ThreadingMode::eMultiThread, .fBusyTimeout = 1s});
             Assert (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
             return conn;
@@ -78,7 +78,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "orm-employees-test.db";
         (void)std::filesystem::remove (dbPath);
         auto connectionFactory = [=] () {
-        // default to 1 second fBusyTimeout for these tests
+            // default to 1 second fBusyTimeout for these tests
             auto conn = SQLite::Connection::New (SQLite::Options{.fDBPath = dbPath, .fThreadingMode = SQLite::Options::ThreadingMode::eMultiThread, .fBusyTimeout = 1s});
             Assert (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
             return conn;

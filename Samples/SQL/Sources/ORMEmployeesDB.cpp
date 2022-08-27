@@ -106,13 +106,7 @@ namespace {
          *  for ID, just as an example.
          */
         Collection<Schema::Field>{
-        {.fName = L"ID", .fVariantValueName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
-        , {.fName = L"NAME", .fVariantValueName = L"Name"sv, .fVariantValueType = VariantValue::eString}
-        , {.fName = L"AGE", .fVariantValueName = L"Age"sv, .fVariantValueType = VariantValue::eInteger}
-        , {.fName = L"ADDRESS", .fVariantValueName = L"Address"sv, .fVariantValueType = VariantValue::eString}
-        , {.fName = L"SALARY", .fVariantValueName = L"Salary"sv, .fVariantValueType = VariantValue::eFloat}
-        , {.fName = L"STILL_EMPLOYED", .fVariantValueName = L"Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}
-        },
+            {.fName = L"ID", .fVariantValueName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}, {.fName = L"NAME", .fVariantValueName = L"Name"sv, .fVariantValueType = VariantValue::eString}, {.fName = L"AGE", .fVariantValueName = L"Age"sv, .fVariantValueType = VariantValue::eInteger}, {.fName = L"ADDRESS", .fVariantValueName = L"Address"sv, .fVariantValueType = VariantValue::eString}, {.fName = L"SALARY", .fVariantValueName = L"Salary"sv, .fVariantValueType = VariantValue::eFloat}, {.fName = L"STILL_EMPLOYED", .fVariantValueName = L"Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}},
         Schema::CatchAllField{}};
 
     /*
@@ -122,11 +116,12 @@ namespace {
     const Schema::Table kPaychecksTableSchema_{
         L"PAYCHECKS",
         Collection<Schema::Field>{
-        {.fName = L"ID", .fVariantValueName = L"id"sv,  .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
-        , {.fName = L"EMPLOYEEREF", .fVariantValueName = L"Employee-Ref"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger}
-        , {.fName = L"AMOUNT", .fVariantValueName = L"Amount"sv, .fVariantValueType = VariantValue::eFloat}
-        , {.fName = L"DATE", .fVariantValueName = L"Date"sv, .fVariantValueType = VariantValue::eDate}
-        }};
+            // clang-format off
+            {.fName = L"ID", .fVariantValueName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
+            , {.fName = L"EMPLOYEEREF", .fVariantValueName = L"Employee-Ref"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger}
+            , {.fName = L"AMOUNT", .fVariantValueName = L"Amount"sv, .fVariantValueType = VariantValue::eFloat}
+            , {.fName = L"DATE", .fVariantValueName = L"Date"sv, .fVariantValueType = VariantValue::eDate}}};
+    // clang-format on
 
     /*
      * Example thread making updates to the employees table.
@@ -139,7 +134,7 @@ namespace {
 
         // Add Initial Employees
         // @todo use __cpp_designated_initializers when we can assume it
-        employeeTableConnection->AddNew (Employee{.fName = L"Paul", .fAge = 32, .fAddress = L"California", .fSalary = 20000.00, .fStillEmployed=true});
+        employeeTableConnection->AddNew (Employee{.fName = L"Paul", .fAge = 32, .fAddress = L"California", .fSalary = 20000.00, .fStillEmployed = true});
         employeeTableConnection->AddNew (Employee{.fName = L"Allen", .fAge = 25, .fAddress = L"Texas", .fSalary = 15000.00, .fStillEmployed = true});
         employeeTableConnection->AddNew (Employee{.fName = L"Teddy", .fAge = 23, .fAddress = L"Norway", .fSalary = 20000.00, .fStillEmployed = true});
         employeeTableConnection->AddNew (Employee{.fName = L"Mark", .fAge = 25, .fAddress = L"Rich-Mond", .fSalary = 65000.00, .fStillEmployed = true});

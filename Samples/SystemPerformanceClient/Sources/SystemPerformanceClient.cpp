@@ -131,9 +131,8 @@ namespace {
             Instruments::Process::Instrument fProcessInstrument;
 
             MyCapturer_ ()
-                : fProcessInstrument {
-                    Instruments::Process::Options { .fRestrictToPIDs = Set<pid_t> { Execution::GetCurrentProcessID () }  }
-                }
+                : fProcessInstrument{
+                      Instruments::Process::Options{.fRestrictToPIDs = Set<pid_t>{Execution::GetCurrentProcessID ()}}}
             {
                 AddCaptureSet (CaptureSet{30s, {fCPUInstrument, fProcessInstrument}});
             }

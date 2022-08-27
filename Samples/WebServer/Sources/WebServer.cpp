@@ -49,9 +49,8 @@ namespace {
      *  get the best web-server performance.
      */
     const ConstantProperty<FileSystemRequestHandler::Options> kFileSystemRouterOptions_{[] () {
-        Sequence<pair<RegularExpression, CacheControl>> cacheControlSettings_ {
-            { RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { .fMaxAge = Duration{24h}.As<int32_t> () } }
-        };
+        Sequence<pair<RegularExpression, CacheControl>> cacheControlSettings_{
+            {RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl{.fMaxAge = Duration{24h}.As<int32_t> ()}}};
         return FileSystemRequestHandler::Options{L"Files"_k, Sequence<String>{L"index.html"_k}, nullopt, cacheControlSettings_};
     }};
 
@@ -86,18 +85,14 @@ namespace {
 
         MyWebServer_ (uint16_t portNumber)
             : kRoutes_{
-                Route{L""_RegEx, DefaultPage_},
-                Route{HTTP::MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
-                Route{L"FRED"_RegEx, [] (Request*, Response* response) {
-                    response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-                    response->write (L"FRED");
-                }},
-                Route{L"Files/.*"_RegEx, FileSystemRequestHandler { Execution::GetEXEDir () / L"html", kFileSystemRouterOptions_ }}
-            }
-            , fConnectionMgr_ {
-                SocketAddresses (InternetAddresses_Any (), portNumber),
-                kRoutes_,
-                ConnectionManager::Options { .fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_ }}
+                  Route{L""_RegEx, DefaultPage_},
+                  Route{HTTP::MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
+                  Route{L"FRED"_RegEx, [] (Request*, Response* response) {
+                            response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                            response->write (L"FRED");
+                        }},
+                  Route{L"Files/.*"_RegEx, FileSystemRequestHandler{Execution::GetEXEDir () / L"html", kFileSystemRouterOptions_}}}
+            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_, ConnectionManager::Options{.fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
         {
         }
         // Can declare arguments as Request*,Response*

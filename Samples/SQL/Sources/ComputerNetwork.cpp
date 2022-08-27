@@ -91,8 +91,7 @@ namespace {
              *  For ID, generate random GUID (BLOB) automatically in database
              */
             {.fName = L"ID", .fVariantValueName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eBLOB, .fIsKeyField = true, .fDefaultExpression = L"randomblob(16)"sv},
-            {.fName = L"name", .fRequired = true, .fVariantValueType = VariantValue::eString}
-        },
+            {.fName = L"name", .fRequired = true, .fVariantValueType = VariantValue::eString}},
         SQL::ORM::Schema::CatchAllField{}};
 }
 

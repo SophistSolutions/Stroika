@@ -131,50 +131,41 @@ public:
               /*
                *    plus, minus, times, and divide, test-void-return all all demonstrate passing in variables through either the POST body, or query-arguments.
                */
-              Route{HTTP::MethodsRegEx::kPost, L"plus"_RegEx, mkRequestHandler (kPlus_, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }})},
-              Route{HTTP::MethodsRegEx::kPost, L"minus"_RegEx, mkRequestHandler (kMinus, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->minus (arg1, arg2); }})},
-              Route{HTTP::MethodsRegEx::kPost, L"times"_RegEx, mkRequestHandler (kTimes, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->times (arg1, arg2); }})},
-              Route{HTTP::MethodsRegEx::kPost, L"divide"_RegEx, mkRequestHandler (kDivide, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->divide (arg1, arg2); }})},
-              Route{L"test-void-return"_RegEx, mkRequestHandler (WebServiceMethodDescription{}, Model::kMapper, Traversal::Iterable<String>{L"err-if-more-than-10"}, function<void (double)>{[] (double check) {
+              Route{HTTP::MethodsRegEx::kPost, L"plus"_RegEx, mkRequestHandler (kPlus_, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }})}, Route{HTTP::MethodsRegEx::kPost, L"minus"_RegEx, mkRequestHandler (kMinus, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->minus (arg1, arg2); }})}, Route{HTTP::MethodsRegEx::kPost, L"times"_RegEx, mkRequestHandler (kTimes, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->times (arg1, arg2); }})}, Route{HTTP::MethodsRegEx::kPost, L"divide"_RegEx, mkRequestHandler (kDivide, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->divide (arg1, arg2); }})}, Route{L"test-void-return"_RegEx, mkRequestHandler (WebServiceMethodDescription{}, Model::kMapper, Traversal::Iterable<String>{L"err-if-more-than-10"}, function<void (double)>{[] (double check) {
                                     if (check > 10) {
                                         Execution::Throw (Execution::Exception{L"more than 10"sv});
                                     } }})},
 
-        , fWSImpl_ { wsImpl }
-        , fConnectionMgr_ {
-            SocketAddresses (InternetAddresses_Any (), portNumber),
-                kRoutes_,
-                ConnectionManager::Options { .fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_ }
-        }
-    {
-        // @todo - move this to some framework-specific regtests...
-        using VariantValue         = DataExchange::VariantValue;
-        Sequence<VariantValue> tmp = OrderParamValues (Iterable<String>{L"page", L"xxx"}, PickoutParamValuesFromURL (URI{L"http://www.sophist.com?page=5"}));
-        Assert (tmp.size () == 2);
-        Assert (tmp[0] == 5);
-        Assert (tmp[1] == nullptr);
-    }
-    // Can declare arguments as Request*,Response*
-    static void DefaultPage_ (Request*, Response* response)
-    {
-        WriteDocsPage (
-            response,
-            Sequence<WebServiceMethodDescription>{
-                kVariables_,
-                kPlus_,
-                kMinus,
-                kTimes,
-                kDivide,
-            },
-            DocsOptions{L"Stroika Sample WebService - Web Methods"_k, L"Note - curl lines all in bash quoting syntax"_k});
-    }
-    static void SetAppState_ (Message* message)
-    {
-        String argsAsString = Streams::TextReader::New (message->rwRequest ().GetBody ()).ReadAll ();
-        message->rwResponse ().writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
-        message->rwResponse ().contentType = InternetMediaTypes::kHTML;
-    }
-};
+              , fWSImpl_{wsImpl}, fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_, ConnectionManager::Options{.fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_}} {// @todo - move this to some framework-specific regtests...
+                                                                                                                                                                                                                                         using VariantValue = DataExchange::VariantValue;
+    Sequence<VariantValue> tmp = OrderParamValues (Iterable<String>{L"page", L"xxx"}, PickoutParamValuesFromURL (URI{L"http://www.sophist.com?page=5"}));
+    Assert (tmp.size () == 2);
+    Assert (tmp[0] == 5);
+    Assert (tmp[1] == nullptr);
+}
+// Can declare arguments as Request*,Response*
+static void
+DefaultPage_ (Request*, Response* response)
+{
+    WriteDocsPage (
+        response,
+        Sequence<WebServiceMethodDescription>{
+            kVariables_,
+            kPlus_,
+            kMinus,
+            kTimes,
+            kDivide,
+        },
+        DocsOptions{L"Stroika Sample WebService - Web Methods"_k, L"Note - curl lines all in bash quoting syntax"_k});
+}
+static void SetAppState_ (Message* message)
+{
+    String argsAsString = Streams::TextReader::New (message->rwRequest ().GetBody ()).ReadAll ();
+    message->rwResponse ().writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
+    message->rwResponse ().contentType = InternetMediaTypes::kHTML;
+}
+}
+;
 
 /*
  *  Documentation on WSAPIs
