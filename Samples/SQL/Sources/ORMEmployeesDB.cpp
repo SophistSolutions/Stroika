@@ -133,7 +133,6 @@ namespace {
         auto employeeTableConnection = make_unique<SQL::ORM::TableConnection<Employee>> (conn, kEmployeesTableSchema_, kDBObjectMapper_);
 
         // Add Initial Employees
-        // @todo use __cpp_designated_initializers when we can assume it
         employeeTableConnection->AddNew (Employee{.fName = L"Paul", .fAge = 32, .fAddress = L"California", .fSalary = 20000.00, .fStillEmployed = true});
         employeeTableConnection->AddNew (Employee{.fName = L"Allen", .fAge = 25, .fAddress = L"Texas", .fSalary = 15000.00, .fStillEmployed = true});
         employeeTableConnection->AddNew (Employee{.fName = L"Teddy", .fAge = 23, .fAddress = L"Norway", .fSalary = 20000.00, .fStillEmployed = true});
