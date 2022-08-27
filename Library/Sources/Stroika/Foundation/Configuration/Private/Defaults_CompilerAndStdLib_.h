@@ -292,8 +292,6 @@ SUMMARY: AddressSanitizer: stack-use-after-scope C:\Program Files\Microsoft Visu
 
 #endif
 
-
-
 /*
  *https://developercommunity.visualstudio.com/t/__sanitizer_annotate_contiguous_containe/10119696?entry=problem&ref=native&refTime=1660499588239&refUserId=b9c6175e-9d87-6b50-bc33-61424496814f
  */
@@ -308,7 +306,6 @@ SUMMARY: AddressSanitizer: stack-use-after-scope C:\Program Files\Microsoft Visu
 #endif
 
 #endif
-
 
 // First broken vs2k19 16.11.0, but seems to have same MSC_VER, so lump in with previous compiler
 #ifndef qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy
