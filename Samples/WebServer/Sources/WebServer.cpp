@@ -49,15 +49,9 @@ namespace {
      *  get the best web-server performance.
      */
     const ConstantProperty<FileSystemRequestHandler::Options> kFileSystemRouterOptions_{[] () {
-        // clang-format off
         Sequence<pair<RegularExpression, CacheControl>> cacheControlSettings_ {
-#if __cpp_designated_initializers
             { RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { .fMaxAge = Duration{24h}.As<int32_t> () } }
-#else
-            { RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { nullopt, Duration{24h}.As<int32_t> () } }
-#endif
         };
-        // clang-format on
         return FileSystemRequestHandler::Options{L"Files"_k, Sequence<String>{L"index.html"_k}, nullopt, cacheControlSettings_};
     }};
 
@@ -91,7 +85,6 @@ namespace {
         ConnectionManager fConnectionMgr_;
 
         MyWebServer_ (uint16_t portNumber)
-            // clang-format off
             : kRoutes_{
                 Route{L""_RegEx, DefaultPage_},
                 Route{HTTP::MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
@@ -104,12 +97,7 @@ namespace {
             , fConnectionMgr_ {
                 SocketAddresses (InternetAddresses_Any (), portNumber),
                 kRoutes_,
-#if __cpp_designated_initializers
                 ConnectionManager::Options { .fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_ }}
-#else
-                ConnectionManager::Options { nullopt, nullopt, Socket::BindFlags{}, kDefaultResponseHeaders_ }}
-#endif
-        // clang-format on
         {
         }
         // Can declare arguments as Request*,Response*

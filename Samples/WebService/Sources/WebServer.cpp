@@ -140,22 +140,12 @@ public:
                                         Execution::Throw (Execution::Exception{L"more than 10"sv});
                                     } }})},
 
-          } // clang-format off
         , fWSImpl_ { wsImpl }
-#if __cpp_designated_initializers
         , fConnectionMgr_ {
             SocketAddresses (InternetAddresses_Any (), portNumber),
                 kRoutes_,
                 ConnectionManager::Options { .fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_ }
         }
-#else
-        , fConnectionMgr_ {
-            SocketAddresses (InternetAddresses_Any (), portNumber),
-                kRoutes_,
-                ConnectionManager::Options { nullopt, nullopt, Socket::BindFlags{}, kDefaultResponseHeaders_ }
-        }
-#endif
-    // clang-format on
     {
         // @todo - move this to some framework-specific regtests...
         using VariantValue         = DataExchange::VariantValue;

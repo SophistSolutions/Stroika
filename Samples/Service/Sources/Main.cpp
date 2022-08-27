@@ -156,14 +156,10 @@ int main (int argc, const char* argv[])
      *  Optional - use buffering feature
      *  Optional - use suppress duplicates in a 15 second window
      */
-#if __cpp_designated_initializers
     Logger::Activator loggerActivation{Logger::Options{
         .fLogBufferingEnabled         = true,
         .fSuppressDuplicatesThreshold = 15s,
     }};
-#else
-    Logger::Activator loggerActivation{Logger::Options{true, 15s}};
-#endif
 #if qHas_Syslog
     Logger::sThe.SetAppender (make_shared<Logger::SysLogAppender> (L"Stroika-Sample-Service"));
 #elif qPlatform_Windows

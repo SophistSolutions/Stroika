@@ -105,23 +105,13 @@ namespace {
          *  use the same names as the ObjectVariantMapper for simpler mapping, or specify an alternate name
          *  for ID, just as an example.
          */
-        // clang-format off
         Collection<Schema::Field>{
-#if __cpp_designated_initializers
         {.fName = L"ID", .fVariantValueName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
         , {.fName = L"NAME", .fVariantValueName = L"Name"sv, .fVariantValueType = VariantValue::eString}
         , {.fName = L"AGE", .fVariantValueName = L"Age"sv, .fVariantValueType = VariantValue::eInteger}
         , {.fName = L"ADDRESS", .fVariantValueName = L"Address"sv, .fVariantValueType = VariantValue::eString}
         , {.fName = L"SALARY", .fVariantValueName = L"Salary"sv, .fVariantValueType = VariantValue::eFloat}
         , {.fName = L"STILL_EMPLOYED", .fVariantValueName = L"Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}
-#else
-        {L"ID", L"id"sv, true, VariantValue::eInteger, nullopt, true, nullopt, Schema::Field::kDefaultExpression_AutoIncrement}
-        , {L"name", L"Name"sv, false, VariantValue::eString}
-        , {L"AGE", L"Age"sv, false, VariantValue::eInteger}
-        , {L"ADDRESS", L"Address"sv, false, VariantValue::eString}
-        , {L"SALARY", L"Salary"sv, false, VariantValue::eFloat}
-        , {L"STILL_EMPLOYED", L"Still-Employed"sv, false, VariantValue::eInteger}
-#endif
         },
         Schema::CatchAllField{}};
 
@@ -132,19 +122,11 @@ namespace {
     const Schema::Table kPaychecksTableSchema_{
         L"PAYCHECKS",
         Collection<Schema::Field>{
-#if __cpp_designated_initializers
         {.fName = L"ID", .fVariantValueName = L"id"sv,  .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
         , {.fName = L"EMPLOYEEREF", .fVariantValueName = L"Employee-Ref"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger}
         , {.fName = L"AMOUNT", .fVariantValueName = L"Amount"sv, .fVariantValueType = VariantValue::eFloat}
         , {.fName = L"DATE", .fVariantValueName = L"Date"sv, .fVariantValueType = VariantValue::eDate}
-#else
-        {L"ID", L"id"sv, true, VariantValue::eInteger, nullopt, true, nullopt, Schema::Field::kDefaultExpression_AutoIncrement}
-        , {L"EMPLOYEEREF", L"Employee-Ref"sv, true, VariantValue::eInteger, nullopt, false, nullopt, nullopt}
-        , {L"AMOUNT", L"Amount"sv, false, VariantValue::eFloat}
-        , {L"DATE", L"Date"sv, false, VariantValue::eDate}
-#endif
         }};
-    // clang-format on
 
     /*
      * Example thread making updates to the employees table.
@@ -157,13 +139,13 @@ namespace {
 
         // Add Initial Employees
         // @todo use __cpp_designated_initializers when we can assume it
-        employeeTableConnection->AddNew (Employee{nullopt, L"Paul", 32, L"California", 20000.00, true});
-        employeeTableConnection->AddNew (Employee{nullopt, L"Allen", 25, L"Texas", 15000.00, true});
-        employeeTableConnection->AddNew (Employee{nullopt, L"Teddy", 23, L"Norway", 20000.00, true});
-        employeeTableConnection->AddNew (Employee{nullopt, L"Mark", 25, L"Rich-Mond", 65000.00, true});
-        employeeTableConnection->AddNew (Employee{nullopt, L"David", 27, L"Texas", 85000.00, true});
-        employeeTableConnection->AddNew (Employee{nullopt, L"Kim", 22, L"South-Hall", 45000.00, true});
-        employeeTableConnection->AddNew (Employee{nullopt, L"James", 24, L"Houston", 10000.00, true});
+        employeeTableConnection->AddNew (Employee{.fName = L"Paul", .fAge = 32, .fAddress = L"California", .fSalary = 20000.00, .fStillEmployed=true});
+        employeeTableConnection->AddNew (Employee{.fName = L"Allen", .fAge = 25, .fAddress = L"Texas", .fSalary = 15000.00, .fStillEmployed = true});
+        employeeTableConnection->AddNew (Employee{.fName = L"Teddy", .fAge = 23, .fAddress = L"Norway", .fSalary = 20000.00, .fStillEmployed = true});
+        employeeTableConnection->AddNew (Employee{.fName = L"Mark", .fAge = 25, .fAddress = L"Rich-Mond", .fSalary = 65000.00, .fStillEmployed = true});
+        employeeTableConnection->AddNew (Employee{.fName = L"David", .fAge = 27, .fAddress = L"Texas", .fSalary = 85000.00, .fStillEmployed = true});
+        employeeTableConnection->AddNew (Employee{.fName = L"Kim", .fAge = 22, .fAddress = L"South-Hall", .fSalary = 45000.00, .fStillEmployed = true});
+        employeeTableConnection->AddNew (Employee{.fName = L"James", .fAge = 24, .fAddress = L"Houston", .fSalary = 10000.00, .fStillEmployed = true});
 
         default_random_engine         generator;
         uniform_int_distribution<int> distribution{1, 6};

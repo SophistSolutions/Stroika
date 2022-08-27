@@ -87,16 +87,11 @@ namespace {
          *  for ID, just as an example.
          */
         Collection<SQL::ORM::Schema::Field>{
-#if __cpp_designated_initializers
             /**
              *  For ID, generate random GUID (BLOB) automatically in database
              */
             {.fName = L"ID", .fVariantValueName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eBLOB, .fIsKeyField = true, .fDefaultExpression = L"randomblob(16)"sv},
             {.fName = L"name", .fRequired = true, .fVariantValueType = VariantValue::eString}
-#else
-            {L"ID", L"id"sv, true, VariantValue::eBLOB, nullopt, true, nullopt, L"randomblob(16)"sv},
-            {L"name", nullopt, true, VariantValue::eString}
-#endif
         },
         SQL::ORM::Schema::CatchAllField{}};
 }

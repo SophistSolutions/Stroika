@@ -125,35 +125,15 @@ namespace {
     namespace Demo_Using_Capturer_GetMostRecentMeasurements__Private_ {
         using namespace Stroika::Frameworks::SystemPerformance;
 
-#if __cpp_designated_initializers < 201707L
-        Instruments::Process::Options mkProcessInstrumentOptions_ ()
-        {
-            auto o            = Instruments::Process::Options{};
-            o.fRestrictToPIDs = Set<pid_t>{Execution::GetCurrentProcessID ()};
-            return o;
-        }
-#endif
-
         struct MyCapturer_ : Capturer {
         public:
             Instruments::CPU::Instrument     fCPUInstrument;
             Instruments::Process::Instrument fProcessInstrument;
 
             MyCapturer_ ()
-#if __cpp_designated_initializers >= 201707L
-                : fProcessInstrument
-            {
-                Instruments::Process::Options
-                {
-                    .fRestrictToPIDs = Set<pid_t> { Execution::GetCurrentProcessID () }
+                : fProcessInstrument {
+                    Instruments::Process::Options { .fRestrictToPIDs = Set<pid_t> { Execution::GetCurrentProcessID () }  }
                 }
-            }
-#else
-                : fProcessInstrument
-            {
-                mkProcessInstrumentOptions_ ()
-            }
-#endif
             {
                 AddCaptureSet (CaptureSet{30s, {fCPUInstrument, fProcessInstrument}});
             }

@@ -199,26 +199,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     template <>
     Characters::String CacheControl::As () const;
 
-#if __cpp_designated_initializers
     inline constexpr const CacheControl CacheControl::kImmutable{.fCacheability = CacheControl::ePublic, .fMaxAge = CacheControl::kMaximumAgeValue, .fImmutable = true};
-#else
-    inline constexpr const CacheControl CacheControl::kImmutable{CacheControl::ePublic, CacheControl::kMaximumAgeValue, false, true};
-#endif
-#if __cpp_designated_initializers
     inline constexpr const CacheControl CacheControl::kDisableCaching{.fCacheability = CacheControl::eNoStore};
-#else
-    inline constexpr const CacheControl CacheControl::kDisableCaching{CacheControl::eNoStore};
-#endif
-#if __cpp_designated_initializers
     inline constexpr const CacheControl CacheControl::kMustRevalidatePublic{.fCacheability = CacheControl::eNoCache};
-#else
-    inline constexpr const CacheControl CacheControl::kMustRevalidatePublic{CacheControl::eNoCache};
-#endif
-#if __cpp_designated_initializers
     inline constexpr const CacheControl CacheControl::kMustRevalidatePrivate{.fCacheability = CacheControl::ePrivate, .fMustRevalidate = true};
-#else
-    inline constexpr const CacheControl CacheControl::kMustRevalidatePrivate{CacheControl::ePrivate, nullopt, true};
-#endif
 
 }
 
