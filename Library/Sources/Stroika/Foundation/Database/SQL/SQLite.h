@@ -385,6 +385,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
              *  Don't really start the transaction until the command to read/update the database
              */
             eDeferred,
+
             /**
              *  Start writing to the DB immediately (as of the transaction start); note this affects when you might
              *  get SQL_BUSY errors.
@@ -393,7 +394,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
 
             /**
              *  Depends on WAL mode, but generally prevents other database connections from reading the
-             *  database while the transaction is underway
+             *  database while the transaction is underway.
              */
             eExclusive,
 
