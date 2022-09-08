@@ -663,6 +663,53 @@ C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(885): note: N
 
 #endif
 
+
+
+/*
+*  on Windows DEBUG x86 builds only...
+==2736==ERROR: AddressSanitizer: container-overflow on address 0x0110ed9d at pc 0x0020f13a bp 0x0110df2c sp 0x0110db0c
+READ of size 6 at 0x0110ed9d thread T0
+    #0 0x20f155 in __asan_wrap_strnlen D:\a\_work\1\s\src\vctools\asan\llvm\compiler-rt\lib\sanitizer_common\sanitizer_common_interceptors.inc:389
+    #1 0x5c5548 in __crt_stdio_output::output_processor<char,__crt_stdio_output::string_output_adapter<char>,__crt_stdio_output::standard_base<char,__crt_stdio_output::string_output_adapter<char> > >::type_case_s_compute_narrow_string_length minkernel\crts\ucrt\inc\corecrt_internal_stdio_output.h:2323
+    #2 0x5c4e8e in __crt_stdio_output::output_processor<char,__crt_stdio_output::string_output_adapter<char>,__crt_stdio_output::standard_base<char,__crt_stdio_output::string_output_adapter<char> > >::type_case_s minkernel\crts\ucrt\inc\corecrt_internal_stdio_output.h:2310
+    #3 0x5ba7f1 in __crt_stdio_output::output_processor<char,__crt_stdio_output::string_output_adapter<char>,__crt_stdio_output::standard_base<char,__crt_stdio_output::string_output_adapter<char> > >::state_case_type minkernel\crts\ucrt\inc\corecrt_internal_stdio_output.h:2054
+    #4 0x5b2ba8 in __crt_stdio_output::output_processor<char,__crt_stdio_output::string_output_adapter<char>,__crt_stdio_output::standard_base<char,__crt_stdio_output::string_output_adapter<char> > >::process minkernel\crts\ucrt\inc\corecrt_internal_stdio_output.h:1699
+    #5 0x5a6104 in common_vsprintf<__crt_stdio_output::standard_base,char> minkernel\crts\ucrt\src\appcrt\stdio\output.cpp:167
+    #6 0x5c9d75 in __stdio_common_vsprintf minkernel\crts\ucrt\src\appcrt\stdio\output.cpp:239
+    #7 0x23b80e in vsnprintf C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdio.h:1439
+    #8 0x23b770 in snprintf C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt\stdio.h:1931
+    #9 0x2278cc in Stroika::Foundation::Debug::Emitter::DoEmitMessage_<wchar_t> C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.cpp:354
+    #10 0x221f6e in Stroika::Foundation::Debug::Emitter::EmitTraceMessage C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.cpp:259
+    #11 0x224555 in Stroika::Foundation::Debug::Private_::EmitFirstTime C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.cpp:159
+    #12 0x1bf670 in `Stroika::Foundation::Debug::Emitter::Get'::`2'::<lambda_1>::operator() C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.inl:34
+    #13 0x1b607a in std::invoke<`Stroika::Foundation::Debug::Emitter::Get'::`2'::<lambda_1> > C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.33.31629\include\type_traits:1548
+    #14 0x1b4f65 in std::call_once<`Stroika::Foundation::Debug::Emitter::Get'::`2'::<lambda_1> > C:\Program Files\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.33.31629\include\mutex:558
+    #15 0x1c1012 in Stroika::Foundation::Debug::Emitter::Get C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.inl:33
+    #16 0x223534 in Stroika::Foundation::Debug::TraceContextBumper::TraceContextBumper C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.cpp:526
+    #17 0x223328 in Stroika::Foundation::Debug::TraceContextBumper::TraceContextBumper C:\Stroika\Library\Sources\Stroika\Foundation\Debug\Trace.cpp:559
+    #18 0x372092 in Stroika::Foundation::Execution::SignalHandlerRegistry::SignalHandlerRegistry C:\Stroika\Library\Sources\Stroika\Foundation\Execution\SignalHandlers.cpp:317
+    #19 0x371f21 in Stroika::Foundation::Execution::SignalHandlerRegistry::Get C:\Stroika\Library\Sources\Stroika\Foundation\Execution\SignalHandlers.cpp:306
+    #20 0x1cba70 in Stroika::TestHarness::Setup C:\Stroika\Tests\TestHarness\TestHarness.cpp:69
+    #21 0x1ad737 in main C:\Stroika\Tests\04\Test.cpp:251
+    #22 0x587b22 in invoke_main D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:78
+    #23 0x587a26 in __scrt_common_main_seh D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:288
+    #24 0x5878cc in __scrt_common_main D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:330
+    #25 0x587b87 in mainCRTStartup D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_main.cpp:16
+    #26 0x76f06708 in BaseThreadInitThunk+0x18 (C:\Windows\System32\KERNEL32.DLL+0x6b816708)
+    #27 0x77567cfc in RtlGetFullPathName_UEx+0xac (C:\Windows\SYSTEM32\ntdll.dll+0x4b2e7cfc)
+    #28 0x77567cca in RtlGetFullPathName_UEx+0x7a (C:\Windows\SYSTEM32\ntdll.dll+0x4b2e7cca)
+*/
+#ifndef qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy
+
+#if defined(_MSC_VER)
+// first/only found broken in _MSC_VER_2k22_17Pt3_
+#define qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER == _MSC_VER_2k22_17Pt3_)) && qDebug && defined (_M_IX86))
+#else
+#define qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy 0
+#endif
+
+#endif
+
 /*
  * https://developercommunity.visualstudio.com/t/Fatal-Corruption-in-X86-ASAN-regression/10130063?port=1025&fsid=7a8d8e50-f549-4b33-a16d-c10fbf32b8fc&entry=problem
  */
