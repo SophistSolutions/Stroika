@@ -245,7 +245,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
      * 
      *  Typically don't use this directly, but use Connecion::Ptr, a smart ptr wrapper on this interface.
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
      *          threadsafe (even if accessed across processes) - depending on its construction OPtions::ThreadSafety
      *
@@ -254,8 +254,12 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
      * 
      *          @see https://www.sqlite.org/threadsafe.html
      *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
+     * 
+     *          NOTE ALSO - its POSSIBLE we could lift this Debug::AssertExternallySynchronizedMutex code / restriction.
+     *          But sqlite docs not super clear. Maybe I need to use thier locking APIs myself internally to use
+     *          those locks to make a sequence of bindings safe? But for now just don't assume this is threadsafe and we'll be OK.
      */
-    class Connection::IRep : public SQL::Connection::IRep {
+    class Connection::IRep : public SQL::Connection::IRep, protected Debug::AssertExternallySynchronizedMutex {
     public:
         /**
          *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
@@ -288,12 +292,14 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
         friend class Ptr;
     };
 
+    class Statement;
+
     /**
      *  Connection provides an API for accessing an SQLite database.
      *
      *  A new Connection::Ptr is typically created SQLite::Connection::New()
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
      *          threadsafe (even if accessed across processes) - depending on its construction OPtions::ThreadSafety
      *
@@ -302,6 +308,9 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
      * 
      *          @see https://www.sqlite.org/threadsafe.html
      *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
+     * 
+     *          NOTE - two Connection::Ptr objects refering to the same underlying REP is NOT (probably) safe with SQLITE. But referring
+     *          to the same database is safe.
      *
      */
     class Connection::Ptr : public SQL::Connection::Ptr {
@@ -346,9 +355,14 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
          *  This can significantly accect database performance, and reliability.
          */
         Common::Property<JournalModeType> pJournalMode;
+
+    private:
+        friend class Statement;
     };
 
     /**
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
+     *          See notes about thread safety for Connection::Ptr - since this copies around a Connection::Ptr.
      */
     class Statement : public SQL::Statement {
     private:

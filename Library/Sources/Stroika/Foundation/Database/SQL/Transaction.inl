@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Database::SQL {
         : _fRep{move (rep)}
     {
 #if qDebug
-        _fSharedContext = _fRep->_fSharedContext;
+        this->SetAssertExternallySynchronizedMutexContext (_fRep->GetSharedContext ());
 #endif
     }
     inline Transaction::~Transaction ()

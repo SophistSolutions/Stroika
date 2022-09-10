@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Debug {
         // throws. There is no good answer in this case. We declare the constructors noexcept so the footprint of
         // AssertExternallySynchronizedMutex is as light as possible and the same (API/constraints) between debug and release
         // builds. And if we run out of memory here, there isn't much we can do to continue -- LGP 2018-10-02
-        : _fSharedContext{sharedContext ? sharedContext : make_shared<SharedContext> ()}
+        : fSharedContext_{sharedContext ? sharedContext : make_shared<SharedContext> ()}
     {
     }
     inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext, const AssertExternallySynchronizedMutex& src) noexcept
@@ -64,10 +64,14 @@ namespace Stroika::Foundation::Debug {
         return *this;
     }
 #if qDebug
+    inline auto AssertExternallySynchronizedMutex::GetSharedContext () const -> shared_ptr<SharedContext>
+    {
+        return fSharedContext_;
+    }
     inline void AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext (const shared_ptr<SharedContext>& sharedContext)
     {
         Require (sharedContext != nullptr);
-        _fSharedContext = sharedContext;
+        fSharedContext_ = sharedContext;
     }
 #endif
     inline void AssertExternallySynchronizedMutex::lock () const noexcept

@@ -419,6 +419,9 @@ SQL::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
               thisObj->operator-> ()->SetJournalMode (journalMode);
           }}
 {
+#if qDebug
+    SetAssertExternallySynchronizedMutexContext (src->GetSharedContext ());
+#endif
 }
 
 /*
@@ -446,7 +449,7 @@ struct Statement::MyRep_ : IRep {
         RequireNotNull (db);
         RequireNotNull (db->Peek ());
 #if qDebug
-        _fSharedContext = fConnectionPtr_.GetSharedContext ();
+        SetAssertExternallySynchronizedMutexContext (fConnectionPtr_.GetSharedContext ());
 #endif
         string                                                     queryUTF8 = query.AsUTF8 ();
         lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};

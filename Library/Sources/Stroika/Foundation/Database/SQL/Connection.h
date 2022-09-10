@@ -53,11 +53,9 @@ namespace Stroika::Foundation::Database::SQL {
     /**
      *  Connection::IRep provides an (abstract) API for accessing an SQL database.
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
-     *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
-     *          threadsafe (even if accessed across processes).
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype</a>
      */
-    class Connection::IRep : protected Debug::AssertExternallySynchronizedMutex, public enable_shared_from_this<Connection::IRep> {
+    class Connection::IRep : public enable_shared_from_this<Connection::IRep> {
     public:
         /**
          */
@@ -105,7 +103,7 @@ namespace Stroika::Foundation::Database::SQL {
      *          The Connection::Ptr itself is standardC++ thread safety. The thread-safety of the underlying database depends on how the underlying
      *          shared_ptr<IRep> was created.
      */
-    class Connection::Ptr : private Debug::AssertExternallySynchronizedMutex {
+    class Connection::Ptr : protected Debug::AssertExternallySynchronizedMutex {
     public:
         /**
          */
@@ -161,13 +159,6 @@ namespace Stroika::Foundation::Database::SQL {
          *  \todo - EXTEND this to write the RESPONSE (use the callback) to DbgTrace () calls - perhaps optionally?)
          */
         nonvirtual void Exec (const String& sql) const;
-
-#if qDebug
-    public:
-        /**
-         */
-        nonvirtual shared_ptr<SharedContext> GetSharedContext () const;
-#endif
 
     public:
         /**

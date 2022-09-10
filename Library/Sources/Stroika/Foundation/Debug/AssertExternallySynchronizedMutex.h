@@ -216,7 +216,10 @@ namespace Stroika::Foundation::Debug {
         nonvirtual AssertExternallySynchronizedMutex& operator= (const AssertExternallySynchronizedMutex& rhs) noexcept;
 
 #if qDebug
-    protected:
+    public:
+        nonvirtual shared_ptr<SharedContext> GetSharedContext () const;
+
+    public:
         /**
          *  Make it easy for subclasses to expose SetAssertExternallySynchronizedMutexContext () functionality, so those
          *  subclasses can allow users of those classes to share a sharing context.
@@ -275,8 +278,8 @@ namespace Stroika::Foundation::Debug {
         nonvirtual void lock_shared_ () const noexcept;
         nonvirtual void unlock_shared_ () const noexcept;
 
-    protected:
-        shared_ptr<SharedContext> _fSharedContext;
+    private:
+        shared_ptr<SharedContext> fSharedContext_;
 
     private:
         static mutex& GetSharedLockMutexThreads_ (); // MUTEX ONLY FOR fSharedLockThreads_ (could do one mutex per AssertExternallySynchronizedMutex but static probably performs better)

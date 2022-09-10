@@ -79,10 +79,12 @@ namespace Stroika::Foundation::Database::SQL::ODBC {
      * 
      *  Typically don't use this directly, but use Connecion::Ptr, a smart ptr wrapper on this interface.
      */
-    class Connection::IRep : public SQL::Connection::IRep {
+    class Connection::IRep : public SQL::Connection::IRep, protected Debug::AssertExternallySynchronizedMutex {
     private:
         friend class Ptr;
     };
+
+    class Statement;
 
     /**
      *  Connection provides an API for accessing an ODBC database.
@@ -112,6 +114,9 @@ namespace Stroika::Foundation::Database::SQL::ODBC {
         /**
          */
         nonvirtual IRep* operator-> () const noexcept;
+
+    private:
+        friend class Statement;
     };
 
     /**

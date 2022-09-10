@@ -28,11 +28,6 @@ namespace Stroika::Foundation::Database::SQL {
     {
         if (this != &src) {
             _fRep = src._fRep;
-#if qDebug
-            if (_fRep) {
-                _fSharedContext = _fRep->_fSharedContext;
-            }
-#endif
         }
         return *this;
     }
@@ -40,11 +35,6 @@ namespace Stroika::Foundation::Database::SQL {
     {
         if (this != &src) {
             _fRep = move (src._fRep);
-#if qDebug
-            if (_fRep) {
-                _fSharedContext = _fRep->_fSharedContext;
-            }
-#endif
         }
         return *this;
     }
@@ -72,12 +62,6 @@ namespace Stroika::Foundation::Database::SQL {
     {
         return Characters::Format (L"%p", _fRep.get ());
     }
-#if qDebug
-    inline auto Connection::Ptr::GetSharedContext () const -> shared_ptr<SharedContext>
-    {
-        return this->_fSharedContext;
-    }
-#endif
 
 }
 

@@ -196,7 +196,7 @@ struct Statement::MyRep_ : IRep {
 #endif
         RequireNotNull (db);
 #if qDebug
-        _fSharedContext = fConnectionPtr_.GetSharedContext ();
+        SetAssertExternallySynchronizedMutexContext (fConnectionPtr_.GetSharedContext ());
 #endif
         string                                                     queryUTF8 = query.AsUTF8 ();
         lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};

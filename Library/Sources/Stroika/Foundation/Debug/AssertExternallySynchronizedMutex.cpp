@@ -23,7 +23,7 @@ using namespace Stroika::Foundation::Debug;
 void AssertExternallySynchronizedMutex::lock_ () const noexcept
 {
     try {
-        SharedContext* sharedContext = _fSharedContext.get ();
+        SharedContext* sharedContext = fSharedContext_.get ();
         if (sharedContext->fLocks_++ == 0) {
             // If first time in, save thread-id
             sharedContext->fCurLockThread_ = this_thread::get_id ();
@@ -51,7 +51,7 @@ void AssertExternallySynchronizedMutex::lock_ () const noexcept
 
 void AssertExternallySynchronizedMutex::unlock_ () const noexcept
 {
-    SharedContext* sharedContext = _fSharedContext.get ();
+    SharedContext* sharedContext = fSharedContext_.get ();
     Require (sharedContext->fCurLockThread_ == this_thread::get_id ());
     Require (sharedContext->fLocks_ > 0); // else unbalanced
     --sharedContext->fLocks_;
@@ -60,7 +60,7 @@ void AssertExternallySynchronizedMutex::unlock_ () const noexcept
 void AssertExternallySynchronizedMutex::lock_shared_ () const noexcept
 {
     try {
-        SharedContext* sharedContext = _fSharedContext.get ();
+        SharedContext* sharedContext = fSharedContext_.get ();
         // OK to shared lock from various threads
         // But if already locked, NOT OK (would have blocked in real impl) - if you try to shared lock from another thread while locked
         if (sharedContext->fLocks_ != 0) {
@@ -84,7 +84,7 @@ void AssertExternallySynchronizedMutex::lock_shared_ () const noexcept
 void AssertExternallySynchronizedMutex::unlock_shared_ () const noexcept
 {
     try {
-        SharedContext* sharedContext = _fSharedContext.get ();
+        SharedContext* sharedContext = fSharedContext_.get ();
         sharedContext->RemoveSharedLock_ (this_thread::get_id ());
     }
     catch (...) {
