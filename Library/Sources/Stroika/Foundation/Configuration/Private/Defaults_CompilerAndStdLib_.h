@@ -1132,7 +1132,8 @@ In file included from Namespace.cpp:10:
 #ifndef qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+// also broken in clang++-13
+#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
 // First noted in C++20 mode on clang++-10
 // broken in clang++-11
