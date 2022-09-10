@@ -53,8 +53,8 @@ Message::Message (Request&& srcRequest, Response&& srcResponse, const optional<I
     , fResponse_{move (srcResponse)}
 {
 #if qDebug
-    fRequest_.SetAssertExternallySynchronizedMutexContext (_fSharedContext);
-    fResponse_.SetAssertExternallySynchronizedMutexContext (_fSharedContext);
+    fRequest_.SetAssertExternallySynchronizedMutexContext (GetSharedContext ());
+    fResponse_.SetAssertExternallySynchronizedMutexContext (GetSharedContext ());
 #endif
 }
 
@@ -62,9 +62,9 @@ Message::Message (Request&& srcRequest, Response&& srcResponse, const optional<I
 void Message::SetAssertExternallySynchronizedMutexContext (const shared_ptr<SharedContext>& sharedContext)
 {
     AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext (sharedContext);
-    Assert (_fSharedContext == sharedContext);
-    fRequest_.SetAssertExternallySynchronizedMutexContext (_fSharedContext);
-    fResponse_.SetAssertExternallySynchronizedMutexContext (_fSharedContext);
+    Assert (GetSharedContext () == sharedContext);
+    fRequest_.SetAssertExternallySynchronizedMutexContext (sharedContext);
+    fResponse_.SetAssertExternallySynchronizedMutexContext (sharedContext);
 }
 #endif
 

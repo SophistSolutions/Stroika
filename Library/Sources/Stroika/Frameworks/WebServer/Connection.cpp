@@ -239,7 +239,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #endif
         fMessage_ = make_unique<MyMessage_> (fSocket_, fSocketStream_, fDefaultResponseHeaders_, fAutoComputeETagResponse_);
 #if qDebug
-        fMessage_->SetAssertExternallySynchronizedMutexContext (_fSharedContext);
+        fMessage_->SetAssertExternallySynchronizedMutexContext (GetSharedContext ());
 #endif
 
         // First read the HTTP request line, and the headers (and abort this attempt if not ready)
