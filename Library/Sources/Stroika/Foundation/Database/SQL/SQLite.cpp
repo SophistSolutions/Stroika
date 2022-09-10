@@ -420,7 +420,9 @@ SQL::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
           }}
 {
 #if qDebug
-    SetAssertExternallySynchronizedMutexContext (src->GetSharedContext ());
+    if (src != nullptr) {
+        SetAssertExternallySynchronizedMutexContext (src->GetSharedContext ());
+    }
 #endif
 }
 

@@ -168,6 +168,11 @@ struct Connection::Rep_ final : IRep {
 SQL::ODBC::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
     : inherited{src}
 {
+#if qDebug
+    if (src != nullptr) {
+        SetAssertExternallySynchronizedMutexContext (src->GetSharedContext ());
+    }
+#endif
 }
 
 /*
