@@ -102,6 +102,8 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  \brief  Having explicit activator object allows for users to control the starting/stopping of facility in a managed fashion.
+         * 
          *  At most one such object may exist. When it does, the IntervalTimer::Manager::sThe is active and usable. 
          *  Its illegal to call otherwise.
          * 
