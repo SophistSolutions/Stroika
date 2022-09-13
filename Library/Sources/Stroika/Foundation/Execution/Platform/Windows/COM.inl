@@ -36,6 +36,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
                 if (worksWithAnyCoInitFlag) {
                     fNeedsShutdown_ = true;
                     DbgTrace ("RPC_E_CHANGED_MODE being ignored");
+                    return; // harmless, already initialized and we don't care how
                 }
                 else {
                     ThrowIfErrorHRESULT (RPC_E_CHANGED_MODE);
