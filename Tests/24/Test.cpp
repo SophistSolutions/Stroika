@@ -111,6 +111,9 @@ namespace {
 
         struct PrioritizedNames : Containers::SortedCollection<PrioritizedName> {
             PrioritizedNames ()
+                // @todo see https://stroika.atlassian.net/browse/STK-933 for why this decay_t in various CTOR calls to Factory
+                // I THINK https://en.cppreference.com/w/cpp/language/reference#Forwarding_references should have allowed this to work
+                // without that decay_t;
                 : SortedCollection<PrioritizedName>{kDefaultPrioritizedName_OrderByDefault_Less}
             {
             }

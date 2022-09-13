@@ -25,7 +25,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>*>
     inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer)
-        : inherited{Factory::Set_Factory<T, Configuration::remove_cvref_t<EQUALS_COMPARER>> (forward<EQUALS_COMPARER> (equalsComparer)) ()}
+        // @todo see https://stroika.atlassian.net/browse/STK-933 for why this decay_t is needed - unclear why!
+        : inherited{Factory::Set_Factory<T, decay_t<EQUALS_COMPARER>> (forward<EQUALS_COMPARER> (equalsComparer)) ()}
     {
         static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Set constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
         _AssertRepValidType ();
