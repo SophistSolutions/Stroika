@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Containers {
          */
         SortedCollection ();
         template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
-        explicit SortedCollection (INORDER_COMPARER&& inorderComparer);
+        explicit SortedCollection (const INORDER_COMPARER& inorderComparer);
         SortedCollection (SortedCollection&& src) noexcept      = default;
         SortedCollection (const SortedCollection& src) noexcept = default;
         SortedCollection (const initializer_list<T>& src);
