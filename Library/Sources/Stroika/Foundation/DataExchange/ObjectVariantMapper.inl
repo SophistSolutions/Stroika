@@ -488,10 +488,10 @@ namespace Stroika::Foundation::DataExchange {
         };
         ToObjectMapperType<ACTUAL_CONTAINER_TYPE> toObjectMapper = [] (const ObjectVariantMapper& mapper, const VariantValue& d, ACTUAL_CONTAINER_TYPE* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
+            Require (intoObjOfTypeT->empty ());
             Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
             if (not s.empty ()) {
                 ToObjectMapperType<T> valueMapper{mapper.ToObjectMapper<T> ()};
-                Assert (intoObjOfTypeT->empty ());
                 for (const auto& i : s) {
                     Containers::Adapters::Adder<ACTUAL_CONTAINER_TYPE>::Add (intoObjOfTypeT, mapper.ToObject<T> (valueMapper, i));
                 }
