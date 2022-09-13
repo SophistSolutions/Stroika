@@ -330,25 +330,25 @@ struct Connection::Rep_ final : IRep {
         };
         ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode;", callback, &d, nullptr));
         Assert (d);
-        if (d == "delete") {
+        if (d == "delete"sv) {
             return JournalModeType::eDelete;
         }
-        if (d == "truncate") {
+        if (d == "truncate"sv) {
             return JournalModeType::eTruncate;
         }
-        if (d == "persist") {
+        if (d == "persist"sv) {
             return JournalModeType::ePersist;
         }
-        if (d == "memory") {
+        if (d == "memory"sv) {
             return JournalModeType::eMemory;
         }
-        if (d == "wal") {
+        if (d == "wal"sv) {
             return JournalModeType::eWAL;
         }
-        if (d == "wal2") {
+        if (d == "wal2"sv) {
             return JournalModeType::eWAL2;
         }
-        if (d == "off") {
+        if (d == "off"sv) {
             return JournalModeType::eOff;
         }
         AssertNotReached ();
