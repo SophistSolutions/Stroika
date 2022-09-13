@@ -972,7 +972,7 @@ namespace Stroika::Foundation::DataExchange {
             }
             for (const auto& i : t) {
                 bool alreadyInListOfFields = not(i.fCount == 1);
-                Require (not alreadyInListOfFields); //  not necessarily something we want to prohibit, but overwhelmingly likely a bug/typo
+                WeakAssert (not alreadyInListOfFields); //  not necessarily something we want to prohibit, but overwhelmingly likely a bug/typo
             }
         }
         {
