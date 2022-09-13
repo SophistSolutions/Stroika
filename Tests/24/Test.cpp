@@ -65,6 +65,93 @@ namespace {
 }
 
 namespace {
+    namespace Test6_SortedCollection_NoDefaultSortFunctionExplicitOne_ {
+        using Characters::String;
+
+        struct PrioritizedName {
+            String       fName;
+            unsigned int fPriority{};
+
+            bool operator== (const PrioritizedName& rhs) const
+            {
+                if (fName != rhs.fName) {
+                    return false;
+                }
+                if (fPriority != rhs.fPriority) {
+                    return false;
+                }
+                return true;
+            }
+#if __cpp_impl_three_way_comparison < 201711
+            bool operator!= (const PrioritizedName& rhs) const
+            {
+                return not(*this == rhs);
+            }
+#endif
+            String ToString () const
+            {
+                Characters::StringBuilder sb;
+                sb += L"{";
+                sb += L"Name: " + Characters::ToString (fName) + L",";
+                sb += L"Priority: " + Characters::ToString (fPriority);
+                sb += L"}";
+                return sb.str ();
+            }
+        };
+
+        constexpr auto kDefaultPrioritizedName_OrderByDefault_Less = Stroika::Foundation::Common::DeclareInOrderComparer ([] (const PrioritizedName& lhs, const PrioritizedName& rhs) -> bool {
+            if (lhs.fPriority > rhs.fPriority) {
+                return true;
+            }
+            else if (lhs.fPriority < rhs.fPriority) {
+                return false;
+            }
+            return lhs.fName < rhs.fName;
+        });
+
+        struct PrioritizedNames : Containers::SortedCollection<PrioritizedName> {
+            PrioritizedNames ()
+                // @todo understand why removeref is needed
+                //: SortedCollection<PrioritizedName>{kDefaultPrioritizedName_OrderByDefault_Less}
+                : SortedCollection<PrioritizedName>{Configuration::remove_cvref_t<decltype (kDefaultPrioritizedName_OrderByDefault_Less)> (kDefaultPrioritizedName_OrderByDefault_Less)}
+            {
+            }
+            PrioritizedNames (const PrioritizedNames& src) = default;
+
+            PrioritizedNames& operator= (PrioritizedNames&& rhs) noexcept = default;
+            PrioritizedNames& operator= (const PrioritizedNames& rhs)     = default;
+
+            String GetName () const
+            {
+                for (auto i : *this) {
+                    return i.fName;
+                }
+                return L"Unknown"sv;
+            }
+            void AddName (const String& name, unsigned int priority)
+            {
+                for (auto i = begin (); i != end (); ++i) {
+                    if (i->fName == name) {
+                        if (priority > i->fPriority) {
+                            Update (i, PrioritizedName{name, priority});
+                        }
+                        return;
+                    }
+                }
+                Add (PrioritizedName{name, priority});
+            }
+        };
+
+        void DoIt ()
+        {
+            PrioritizedNames t1, t2;
+            [[maybe_unused]]bool             t = (t1 == t2);
+        }
+
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -88,6 +175,7 @@ namespace {
         RunTests_<SortedCollection_stdmultiset<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, [] () { return SortedCollection_stdmultiset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
 
         TestOverwriteContainerWhileIteratorRunning_ ();
+        Test6_SortedCollection_NoDefaultSortFunctionExplicitOne_::DoIt ();
 
         VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }

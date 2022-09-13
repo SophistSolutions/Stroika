@@ -118,12 +118,35 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline bool SortedCollection<T>::operator== (const SortedCollection& rhs) const
     {
-        return typename Iterable<T>::SequentialEqualsComparer{Common::EqualsComparerAdapter (GetInOrderComparer ())}(*this, rhs);
+        auto elementEqualsComparer = Common::EqualsComparerAdapter{this->GetInOrderComparer ()};
+        // @todo understand/fix why decltype(elementEqualsComparer>) needed, and not deduced
+        return typename Iterable<T>::template SequentialEqualsComparer<decltype (elementEqualsComparer)>{elementEqualsComparer}(*this, rhs);
     }
     template <typename T>
     inline strong_ordering SortedCollection<T>::operator<=> (const SortedCollection& rhs) const
     {
-        return typename Iterable<T>::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetInOrderComparer ())}(*this, rhs);
+        auto elementThreeWayComparer = Common::ThreeWayComparerAdapter{this->GetInOrderComparer ()};
+        // @todo understand/fix why decltype(elementEqualsComparer>) needed, and not deduced
+        return typename Iterable<T>::template SequentialThreeWayComparer<decltype (elementThreeWayComparer)>{elementThreeWayComparer}(*this, rhs);
+    }
+#endif
+
+#if __cpp_impl_three_way_comparison < 201907
+    /*
+     ********************************************************************************
+     ********************* SortedCollection<T> comparison operators *****************
+     ********************************************************************************
+     */
+    template <typename T>
+    inline bool operator== (const SortedCollection<T>& lhs, const SortedCollection<T>& rhs)
+    {
+        auto elementEqualsComparer = Common::EqualsComparerAdapter{lhs.GetInOrderComparer ()};
+        return typename Iterable<T>::template SequentialEqualsComparer<decltype (elementEqualsComparer)>{elementEqualsComparer}(lhs, rhs);
+    }
+    template <typename T>
+    inline bool operator!= (const SortedCollection<T>& lhs, const SortedCollection<T>& rhs)
+    {
+        return not (lhs == rhs);
     }
 #endif
 
