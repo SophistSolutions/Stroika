@@ -111,15 +111,13 @@ namespace {
 
         struct PrioritizedNames : Containers::SortedCollection<PrioritizedName> {
             PrioritizedNames ()
-                // @todo understand why removeref is needed
-                //: SortedCollection<PrioritizedName>{kDefaultPrioritizedName_OrderByDefault_Less}
-                : SortedCollection<PrioritizedName>{Configuration::remove_cvref_t<decltype (kDefaultPrioritizedName_OrderByDefault_Less)> (kDefaultPrioritizedName_OrderByDefault_Less)}
+                : SortedCollection<PrioritizedName>{kDefaultPrioritizedName_OrderByDefault_Less}
             {
             }
             PrioritizedNames (const PrioritizedNames& src) = default;
 
             PrioritizedNames& operator= (PrioritizedNames&& rhs) noexcept = default;
-            PrioritizedNames& operator= (const PrioritizedNames& rhs)     = default;
+            PrioritizedNames& operator= (const PrioritizedNames& rhs) = default;
 
             String GetName () const
             {
@@ -144,8 +142,8 @@ namespace {
 
         void DoIt ()
         {
-            PrioritizedNames t1, t2;
-            [[maybe_unused]]bool             t = (t1 == t2);
+            PrioritizedNames      t1, t2;
+            [[maybe_unused]] bool t = (t1 == t2);
         }
 
     }

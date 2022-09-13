@@ -22,6 +22,14 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    inline SortedCollection<T>::SortedCollection (const INORDER_COMPARER& inorderComparer)
+        : inherited{Factory::SortedCollection_Factory<T, INORDER_COMPARER>{inorderComparer}()}
+    {
+        static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedCollection");
+        _AssertRepValidType ();
+    }
+    template <typename T>
+    template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
     inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inorderComparer)
         : inherited{Factory::SortedCollection_Factory<T, INORDER_COMPARER>{forward<INORDER_COMPARER> (inorderComparer)}()}
     {
@@ -146,7 +154,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline bool operator!= (const SortedCollection<T>& lhs, const SortedCollection<T>& rhs)
     {
-        return not (lhs == rhs);
+        return not(lhs == rhs);
     }
 #endif
 
