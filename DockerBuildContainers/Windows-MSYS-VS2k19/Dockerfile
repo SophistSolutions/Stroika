@@ -51,9 +51,10 @@ ARG VS_16_11_13=https://download.visualstudio.microsoft.com/download/pr/d935ace6
 ARG VS_16_11_14=https://download.visualstudio.microsoft.com/download/pr/f4685935-e4ae-4242-93bc-38dbe6477fb9/235d263c0b61c75da5c79938ad70e7fe67c83ed0d9bca7773ddc50a74c9dcc59/vs_BuildTools.exe
 ARG VS_16_11_16=https://download.visualstudio.microsoft.com/download/pr/b29e5b57-df7c-4e38-acaf-5f8187a76fd0/1345ca588d22a3a5373e62c7d0ba3458d05422c24136e04846754086e252b431/vs_BuildTools.exe
 ARG VS_16_11_17=https://download.visualstudio.microsoft.com/download/pr/d59287e5-e208-462b-8894-db3142c39eca/d5b3a9695dfd9f13cbf3ffdbbcc66abc5e8cb36f61f1042141f4cd5993aa89a4/vs_BuildTools.exe
+ARG VS_16_11_19=https://download.visualstudio.microsoft.com/download/pr/6d7709aa-465b-4604-b797-3f9c1d911e67/bf33ca62eacd6ffb4f9e9f8e9e72294ed2b055c1ccbd7a299f5c5451d16c8447/vs_BuildTools.exe
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_16_11_17" \
+RUN Invoke-WebRequest "$env:VS_16_11_19" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 SHELL ["cmd", "/S", "/C"]
 RUN %TEMP%\vs_buildtools.exe \
@@ -73,8 +74,9 @@ RUN %TEMP%\vs_buildtools.exe \
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 ARG MSYS_LatestRelease=https://github.com/msys2/msys2-installer/releases/download/nightly-x86_64/msys2-base-x86_64-latest.sfx.exe
 ARG MSYS_20220118=https://github.com/msys2/msys2-installer/releases/download/2022-01-18/msys2-base-x86_64-20220118.sfx.exe
+ARG MSYS_20220904=https://github.com/msys2/msys2-installer/releases/download/2022-09-04/msys2-base-x86_64-20220904.sfx.exe
 RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
-  Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20220118" -OutFile msys2.exe; \
+  Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20220904" -OutFile msys2.exe; \
   .\msys2.exe -y -oC:\; \
   Remove-Item msys2.exe ; \
   function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
