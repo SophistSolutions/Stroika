@@ -472,7 +472,7 @@ sub MapArraysOfFiles2Path_
 		my $f = $conditionalPaths[$i];
 		if (-e $f) {
 			if (not ($result eq "")) {
-				$result .= ":";
+				$result .= ";";
 			}
 			$result .=  trim (`cygpath --windows $f`);
 		}
@@ -482,7 +482,7 @@ sub MapArraysOfFiles2Path_
 		{
 			my $f = $backupPaths[$i];
 			if (not ($result eq "")) {
-				$result .= ":";
+				$result .= ";";
 			}
 			$result .=  trim (`cygpath --windows $f`);
 		}
