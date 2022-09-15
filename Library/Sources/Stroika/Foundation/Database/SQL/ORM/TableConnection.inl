@@ -44,6 +44,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         , fGetAll_Statement_{conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.GetAllElements ())}
         , fAddNew_Statement_{conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.Insert ())}
         , fUpdate_Statement_{conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.UpdateByID ())}
+        , fDeleteByID_Statement_{conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.DeleteByID ())}
     {
         Require (conn != nullptr); // too late, but good docs
     }
@@ -161,6 +162,27 @@ namespace Stroika::Foundation::Database::SQL::ORM {
                 fUpdate_Statement_.Reset ();
             }
         });
+    }
+    template <typename T, typename TRAITS>
+    void TableConnection<T, TRAITS>::DeleteByID (const VariantValue& id)
+    {
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        using DataExchange::VariantValue;
+        using Stroika::Foundation::Common::KeyValuePair;
+        fDeleteByID_Statement_.Reset ();
+        fDeleteByID_Statement_.Bind (initializer_list<KeyValuePair<String, VariantValue>>{{fTableSchema_.GetIDField ()->fName, id}});
+        DoExecute_ (fDeleteByID_Statement_, true);
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () {
+            if (fEngineProperties_->RequireStatementResetAfterModifyingStatmentToCompleteTransaction ()) {
+                // could potentially avoid this if I added way to track if existing transaction object, but not clearly any point
+                fDeleteByID_Statement_.Reset ();
+            }
+        });
+    }
+    template <typename T, typename TRAITS>
+    inline void TableConnection<T, TRAITS>::DeleteByID (const typename TRAITS::IDType& id)
+    {
+        DeleteByID (TRAITS::ID2VariantValue (id));
     }
     template <typename T, typename TRAITS>
     template <typename FUN>

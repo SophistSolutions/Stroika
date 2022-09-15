@@ -160,6 +160,12 @@ namespace Stroika::Foundation::Database::SQL::ORM {
          */
         nonvirtual void Update (const T& v);
 
+    public:
+        /**
+         */
+        nonvirtual void DeleteByID (const VariantValue& id);
+        nonvirtual void DeleteByID (const typename TRAITS::IDType& id);
+
     private:
         Connection::Ptr                    fConnection_;
         shared_ptr<const EngineProperties> fEngineProperties_;
@@ -170,6 +176,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         Statement                          fGetAll_Statement_;
         Statement                          fAddNew_Statement_;
         Statement                          fUpdate_Statement_;
+        Statement                          fDeleteByID_Statement_;
 
     private:
         template <typename FUN>
