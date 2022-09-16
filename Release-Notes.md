@@ -7,6 +7,75 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1.5 {2022-0-16xxxxx}
+#### TLDR
+- Fixed issue with visual studio project files not working properly sometimes (ScriptsLib/ApplyConfiguration path separators)
+- https://stroika.atlassian.net/browse/STK-933 - INORDER_COMPARER for now use decat_t<> in container factory calls
+- ObjectVariantMapper revised assertions
+- new TableConnection<T, TRAITS>::DeleteByID
+
+#### Change Details
+- Build Scripts
+  - fixed ScriptsLib/ApplyConfiguration to do right separators for paths generated in visual studio project macro files
+- Compiler and System Compatability
+  - docker containers for windows: use MSYS_20220904 (when using MSYS);
+  - VS 16.11.19
+  - VS 17.3.4 
+- Library
+  - Foundation
+    - Containers
+      - Template issue with containers call to factories - https://stroika.atlassian.net/browse/STK-933 - INORDER_COMPARER for now use decat_t<> in call to factory
+    - Database
+      - ORM
+      - Added ORM TableConnection<T, TRAITS>::DeleteByID
+    - DataExchange
+      - ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ () changed check for alreadyInListOfFields to weak assert cuz there maybe some reasons to have entry in list twice - likely bug - but not definitely
+    - Execution
+      - Platform::Windows
+        - fixed error handling bug with COMInitializer::CTOR - if worksWithAnyCoInitFlag argument passed
+  - Frameworks
+    - WebServices
+      - ExpectedMethod() overload has extra default argument
+- ThirdPartyCompoents
+  - libcurl 7.85.0
+  - SQLite 3.39.3
+
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13 }
+  - MSVC: { 15.9.50, 16.11.19, 17.3.4 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Monterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+
+---
+
 ### 2.1.4 {2022-08-26}
 #### TLDR
   - Support Visual Studio.Net 17.3 compiler (several new bugs to workaround)
