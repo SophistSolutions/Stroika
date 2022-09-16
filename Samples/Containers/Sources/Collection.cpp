@@ -31,7 +31,7 @@ namespace {
         /*
          *  A Collection is the simplest form of Stroika container. You can add things, and remove them, and iterate over them.
          *  The order items appear (in iteration) is undefined.
-         *  There are almost no requirements on the type of things you can add to a collection (except thqt it must be copyable). In particular,
+         *  There are almost no requirements on the type of things you can add to a collection (except that it must be copyable). In particular,
          *  there is no need for comparison operators etc to be defined.
          *  View the class declaration, with all the methods well documented, must with examples of usage.
          */
@@ -194,6 +194,10 @@ namespace {
         fruits += L"cherries";
 
         {
+            // Note how Stroika iterators have a type that depends on the type of thing you are iterating over, but
+            // UNLIKE STL containers, their type does NOT depend on the type of the underlying container you are iterating over.
+            // This is a great simplication of APIs (passing iterators to functions no longer requires templates), but
+            // comes at a slight cost (operator++ involves a virtual function call to get the next item).
             Iterator<String> i = fruits.Find ([] (String i) { return i == L"apple"; });
             Assert (i != fruits.end ());
             Assert (fruits.size () == 4);
