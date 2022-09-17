@@ -23,7 +23,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
     inline SortedSet<T>::SortedSet (INORDER_COMPARER&& inorderComparer)
-        : inherited{Factory::SortedSet_Factory<T, INORDER_COMPARER> (forward<INORDER_COMPARER> (inorderComparer)) ()}
+        // @todo see https://stroika.atlassian.net/browse/STK-933 for why this decay_t is needed - unclear why!
+        : inherited{Factory::SortedSet_Factory<T, decay_t<INORDER_COMPARER>> (forward<INORDER_COMPARER> (inorderComparer)) ()}
     {
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedSet");
         _AssertRepValidType ();

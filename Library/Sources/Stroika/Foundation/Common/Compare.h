@@ -37,15 +37,6 @@ namespace std {
 
 namespace Stroika::Foundation::Common {
 
-    /**
-     *  In C++, you can only use strong_ordering, strong_ordering::less, strong_ordering::equal, strong_ordering::greater if 
-     *  __cpp_impl_three_way_comparison >= 201907
-     *
-     *  In Stroika, these defines are usable no matter what (in in C++ correspond to the C++ type/value)
-     * 
-     *  \todo DEPRECATE THESE NAMES AND USE C++ names directly --LGP 2022-01-10
-     */
-    //    using  [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] strong_ordering              = std::strong_ordering;
     constexpr std::strong_ordering kLess [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]    = std::strong_ordering::less;
     constexpr std::strong_ordering kEqual [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]   = std::strong_ordering::equal;
     constexpr std::strong_ordering kGreater [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::greater;

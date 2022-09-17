@@ -23,7 +23,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
     inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inorderComparer)
-        : inherited{Factory::SortedCollection_Factory<T, INORDER_COMPARER>{forward<INORDER_COMPARER> (inorderComparer)}()}
+        // @todo see https://stroika.atlassian.net/browse/STK-933 for why this decay_t is needed - unclear why!
+        : inherited{Factory::SortedCollection_Factory<T, decay_t<INORDER_COMPARER>>{forward<INORDER_COMPARER> (inorderComparer)}()}
     {
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedCollection");
         _AssertRepValidType ();
@@ -117,12 +118,16 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline bool SortedCollection<T>::operator== (const SortedCollection& rhs) const
     {
-        return typename Iterable<T>::SequentialEqualsComparer{Common::EqualsComparerAdapter (GetInOrderComparer ())}(*this, rhs);
+        auto elementEqualsComparer = Common::EqualsComparerAdapter{this->GetInOrderComparer ()};
+        // @todo understand/fix why decltype(elementEqualsComparer>) needed, and not deduced
+        return typename Iterable<T>::template SequentialEqualsComparer<decltype (elementEqualsComparer)>{elementEqualsComparer}(*this, rhs);
     }
     template <typename T>
     inline strong_ordering SortedCollection<T>::operator<=> (const SortedCollection& rhs) const
     {
-        return typename Iterable<T>::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetInOrderComparer ())}(*this, rhs);
+        auto elementThreeWayComparer = Common::ThreeWayComparerAdapter{this->GetInOrderComparer ()};
+        // @todo understand/fix why decltype(elementEqualsComparer>) needed, and not deduced
+        return typename Iterable<T>::template SequentialThreeWayComparer<decltype (elementThreeWayComparer)>{elementThreeWayComparer}(*this, rhs);
     }
 
 }

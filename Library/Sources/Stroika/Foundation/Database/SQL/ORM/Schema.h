@@ -113,6 +113,10 @@ namespace Stroika::Foundation::Database::SQL::ORM {
              */
             static inline constexpr wstring_view kDefaultExpression_AutoIncrement = L"<<auto-increment>>"sv;
 
+            /**
+             *  Each field has two names - the field name in the object map and the fieldname used in the database.
+             *  This returns the one from the object representation (result of model->ToObject()).
+             */
             nonvirtual String GetVariantValueFieldName () const;
         };
 

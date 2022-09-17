@@ -28,11 +28,6 @@
  *              >   Set_stlunordered_set (really is hashset)
  *              >   Set_Treap
  *
- *      @todo   Experiment with new operator+/operator- set difference/union functions for ease of use
- *              Would it be better to have global functions (overloading issues?). Or is this OK.
- *
- *              Then see if we can lose the STL/SetUtils code? Gradually ...
- *
  *      @todo   Consider if Union/Difference etc methods should delegate to virtual reps? Or other better
  *              performance approaches? One closely related issue is the backend type returned. Now we use
  *              default but maybe should use left or right side type?

@@ -39,7 +39,7 @@ namespace Stroika::Frameworks::WebService::Server {
 
     /**
      */
-    void ExpectedMethod (const Request& request, const Iterable<String>& methods, const optional<String>& fromInMessage);
+    void ExpectedMethod (const Request& request, const Iterable<String>& methods, const optional<String>& fromInMessage = nullopt);
     void ExpectedMethod (const Request& request, const WebServiceMethodDescription& wsMethodDescription);
 
     /**

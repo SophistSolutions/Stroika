@@ -123,8 +123,12 @@ namespace Stroika::Foundation::Database::SQL::ORM {
          *  Lookup the given object by ID. This does a select * from table where id=id, and maps the various
          *  SQL parameters that come back to a C++ object.
          */
-        nonvirtual optional<T> GetByID (const VariantValue& id);
-        nonvirtual optional<T> GetByID (const typename TRAITS::IDType& id);
+        nonvirtual optional<T> Get (const VariantValue& id);
+        nonvirtual optional<T> Get (const typename TRAITS::IDType& id);
+
+    public:
+        [[deprecated ("Since Stroika 2.1.5, use Get ()")]] nonvirtual void GetByID (const VariantValue& id) { return Get (id); }
+        [[deprecated ("Since Stroika 2.1.5, use Get ()")]] nonvirtual void GetByID (const typename TRAITS::IDType& id) { return Get (id); }
 
     public:
         /**
@@ -160,6 +164,17 @@ namespace Stroika::Foundation::Database::SQL::ORM {
          */
         nonvirtual void Update (const T& v);
 
+    public:
+        /**
+         */
+        nonvirtual void Delete (const VariantValue& id);
+        nonvirtual void Delete (const typename TRAITS::IDType& id);
+        nonvirtual void Delete (const T& v);
+
+    public:
+        [[deprecated ("Since Stroika 2.1.5, use Delete ()")]] nonvirtual void DeleteByID (const VariantValue& id) { Delete (id); }
+        [[deprecated ("Since Stroika 2.1.5, use Delete ()")]] nonvirtual void DeleteByID (const typename TRAITS::IDType& id) { Delete (id); }
+
     private:
         Connection::Ptr                    fConnection_;
         shared_ptr<const EngineProperties> fEngineProperties_;
@@ -170,6 +185,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         Statement                          fGetAll_Statement_;
         Statement                          fAddNew_Statement_;
         Statement                          fUpdate_Statement_;
+        Statement                          fDeleteByID_Statement_;
 
     private:
         template <typename FUN>
