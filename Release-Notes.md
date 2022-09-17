@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1.5 {2022-0-16}
+### 2.1.5 {2022-09-17}
 #### TLDR
 - Fixed issue with visual studio project files not working properly sometimes (ScriptsLib/ApplyConfiguration path separators)
 - https://stroika.atlassian.net/browse/STK-933 - INORDER_COMPARER for now use decat_t<> in container factory calls
