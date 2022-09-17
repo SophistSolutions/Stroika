@@ -190,7 +190,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         using DataExchange::VariantValue;
         Mapping<String, VariantValue> objFields = fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ();
-        VariantValue                  idField   = *objFields.Lookup (fTableSchema_.GetIDField ().GetVariantValueFieldName ()); // req its present - id field
+        VariantValue                  idField   = *objFields.Lookup (fTableSchema_.GetIDField ()->GetVariantValueFieldName ()); // req its present - id field
         Delete (idField);
     }
     template <typename T, typename TRAITS>
