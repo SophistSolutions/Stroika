@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     {
     }
     template <typename T, typename TRAITS>
-    optional<T> TableConnection<T, TRAITS>::GetByID (const VariantValue& id)
+    optional<T> TableConnection<T, TRAITS>::Get (const VariantValue& id)
     {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         using DataExchange::VariantValue;
@@ -75,9 +75,9 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         return nullopt;
     }
     template <typename T, typename TRAITS>
-    optional<T> TableConnection<T, TRAITS>::GetByID (const typename TRAITS::IDType& id)
+    optional<T> TableConnection<T, TRAITS>::Get (const typename TRAITS::IDType& id)
     {
-        return GetByID (TRAITS::ID2VariantValue (id));
+        return Get (TRAITS::ID2VariantValue (id));
     }
     template <typename T, typename TRAITS>
     Sequence<T> TableConnection<T, TRAITS>::GetAll ()
@@ -164,7 +164,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         });
     }
     template <typename T, typename TRAITS>
-    void TableConnection<T, TRAITS>::DeleteByID (const VariantValue& id)
+    void TableConnection<T, TRAITS>::Delete (const VariantValue& id)
     {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         using DataExchange::VariantValue;
@@ -180,9 +180,18 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         });
     }
     template <typename T, typename TRAITS>
-    inline void TableConnection<T, TRAITS>::DeleteByID (const typename TRAITS::IDType& id)
+    inline void TableConnection<T, TRAITS>::Delete (const typename TRAITS::IDType& id)
     {
-        DeleteByID (TRAITS::ID2VariantValue (id));
+        Delete (TRAITS::ID2VariantValue (id));
+    }
+    template <typename T, typename TRAITS>
+    inline void TableConnection<T, TRAITS>::Delete (const T& v)
+    {
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        using DataExchange::VariantValue;
+        Mapping<String, VariantValue> objFields = fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ();
+        VariantValue                  idField   = *objFields.Lookup (fTableSchema_.GetIDField ().GetVariantValueFieldName ()); // req its present - id field
+        Delete (idField);
     }
     template <typename T, typename TRAITS>
     template <typename FUN>
