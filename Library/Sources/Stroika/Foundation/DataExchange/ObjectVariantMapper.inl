@@ -584,7 +584,7 @@ namespace Stroika::Foundation::DataExchange {
         if (not options.fTMapper.has_value ()) {
             return MakeCommonSerializer_ ((const optional<T>*)nullptr);
         }
-        FromObjectMapperType<optional<T>> fromObjectMapper = [] (const ObjectVariantMapper&, const optional<T>* fromObjOfTypeT) -> VariantValue {
+        FromObjectMapperType<optional<T>> fromObjectMapper = [options] (const ObjectVariantMapper&, const optional<T>* fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
             if (fromObjOfTypeT->has_value ()) {
                 return options.fTMapper->FromObjectMapper<T> (**fromObjOfTypeT);
@@ -593,7 +593,7 @@ namespace Stroika::Foundation::DataExchange {
                 return VariantValue{};
             }
         };
-        ToObjectMapperType<optional<T>> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, optional<T>* intoObjOfTypeT) -> void {
+        ToObjectMapperType<optional<T>> toObjectMapper = [options] (const ObjectVariantMapper&, const VariantValue& d, optional<T>* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
             if (d.GetType () == VariantValue::eNull) {
                 *intoObjOfTypeT = nullopt;
