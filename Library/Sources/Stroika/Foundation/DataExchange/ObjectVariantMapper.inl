@@ -584,16 +584,16 @@ namespace Stroika::Foundation::DataExchange {
         if (not options.fTMapper.has_value ()) {
             return MakeCommonSerializer_ ((const optional<T>*)nullptr);
         }
-        FromObjectMapperType<optional<T>> fromObjectMapper = [options] (const ObjectVariantMapper&, const optional<T>* fromObjOfTypeT) -> VariantValue {
+        FromObjectMapperType<optional<T>> fromObjectMapper = [options] (const ObjectVariantMapper& mapper, const optional<T>* fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
             if (fromObjOfTypeT->has_value ()) {
-                return options.fTMapper->FromObjectMapper<T> (**fromObjOfTypeT);
+                return options.fTMapper->FromObjectMapper<T> (mapper, &**fromObjOfTypeT);
             }
             else {
                 return VariantValue{};
             }
         };
-        ToObjectMapperType<optional<T>> toObjectMapper = [options] (const ObjectVariantMapper&, const VariantValue& d, optional<T>* intoObjOfTypeT) -> void {
+        ToObjectMapperType<optional<T>> toObjectMapper = [options] (const ObjectVariantMapper& mapper, const VariantValue& d, optional<T>* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
             if (d.GetType () == VariantValue::eNull) {
                 *intoObjOfTypeT = nullopt;
@@ -601,7 +601,9 @@ namespace Stroika::Foundation::DataExchange {
             else {
                 // SEE https://stroika.atlassian.net/browse/STK-910
                 // fix here - I KNOW I have something there, but how to construct
-                *intoObjOfTypeT = options.fTMapper->ToObjectMapper<T> (d);
+                T tmp{};
+                options.fTMapper->ToObjectMapper<T> (mapper, d, &tmp);
+                *intoObjOfTypeT = tmp;
             }
         };
         return TypeMappingDetails{typeid (optional<T>), fromObjectMapper, toObjectMapper};
