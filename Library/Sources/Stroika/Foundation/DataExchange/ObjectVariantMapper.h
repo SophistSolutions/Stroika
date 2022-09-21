@@ -653,6 +653,15 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         *  Optional parameter to MakeCommonSerializer, and AddCommonType for object of type optional<T>, where you want to
+         *  replace the underlying "T" serialization/deserialization as well.
+         */
+        struct OptionalSerializerOptions {
+            optional<TypeMappingDetails> fTMapper;
+        };
+
+    public:
+        /**
          */
         template <typename ENUM_TYPE>
         static TypeMappingDetails MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
@@ -758,6 +767,8 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE>*);
         template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const optional<T>*);
+        template <typename T>
+        static TypeMappingDetails MakeCommonSerializer_ (const optional<T>*, const OptionalSerializerOptions& options);
         template <typename T, typename KEY_TYPE, typename TRAITS>
         static TypeMappingDetails MakeCommonSerializer_ (const Containers::KeyedCollection<T, KEY_TYPE, TRAITS>*);
         template <typename T, typename TRAITS, typename... ARGS>
