@@ -584,6 +584,34 @@ namespace Stroika::Foundation::DataExchange {
         };
         return TypeMappingDetails{typeid (optional<T>), fromObjectMapper, toObjectMapper};
     }
+    template <typename T>
+    ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const optional<T>*, const OptionalSerializerOptions& options)
+    {
+        if (not options.fTMapper.has_value ()) {
+            return MakeCommonSerializer_ ((const optional<T>*)nullptr);
+        }
+        FromObjectMapperType<optional<T>> fromObjectMapper = [] (const ObjectVariantMapper&, const optional<T>* fromObjOfTypeT) -> VariantValue {
+            RequireNotNull (fromObjOfTypeT);
+            if (fromObjOfTypeT->has_value ()) {
+                return options.fTMapper->FromObjectMapper<T> (**fromObjOfTypeT);
+            }
+            else {
+                return VariantValue{};
+            }
+        };
+        ToObjectMapperType<optional<T>> toObjectMapper = [] (const ObjectVariantMapper& , const VariantValue& d, optional<T>* intoObjOfTypeT) -> void {
+            RequireNotNull (intoObjOfTypeT);
+            if (d.GetType () == VariantValue::eNull) {
+                *intoObjOfTypeT = nullopt;
+            }
+            else {
+                // SEE https://stroika.atlassian.net/browse/STK-910
+                // fix here - I KNOW I have something there, but how to construct
+                *intoObjOfTypeT = options.fTMapper->ToObjectMapper<T> (d);
+            }
+        };
+        return TypeMappingDetails{typeid (optional<T>), fromObjectMapper, toObjectMapper};
+    }
     //  https://stroika.atlassian.net/browse/STK-910
     template <>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const optional<IO::Network::CIDR>*);
