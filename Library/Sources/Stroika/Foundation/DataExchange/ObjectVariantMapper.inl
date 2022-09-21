@@ -599,7 +599,7 @@ namespace Stroika::Foundation::DataExchange {
                 return VariantValue{};
             }
         };
-        ToObjectMapperType<optional<T>> toObjectMapper = [] (const ObjectVariantMapper& , const VariantValue& d, optional<T>* intoObjOfTypeT) -> void {
+        ToObjectMapperType<optional<T>> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, optional<T>* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
             if (d.GetType () == VariantValue::eNull) {
                 *intoObjOfTypeT = nullopt;
