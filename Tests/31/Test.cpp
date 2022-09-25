@@ -266,7 +266,7 @@ namespace {
                 using namespace IO::Network;
                 auto                 digesterWithDefaultResult  = Digester<Digest::Algorithm::SuperFastHash>{};
                 auto                 digesterWithResult_uint8_t = Digester<Digest::Algorithm::SuperFastHash, uint8_t>{};
-                auto                 digesterWithResult_GUID_t = Digester<Digest::Algorithm::SuperFastHash, Common::GUID>{};
+                auto                 digesterWithResult_GUID_t  = Digester<Digest::Algorithm::SuperFastHash, Common::GUID>{};
                 Memory::BLOB         value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
                 auto                 h1                         = digesterWithDefaultResult (value2Hash);
                 uint8_t              h2                         = digesterWithResult_uint8_t (value2Hash);
@@ -346,6 +346,13 @@ namespace {
                     VerifyTestResult (h2 == 240);                                                                     // before Stroika 2.1b10, value was 14
                     VerifyTestResult (h3[0] == std::byte{0xf0} and h3[1] == std::byte{1} and h3[39] == std::byte{0}); // before Stroika 2.1b10, value was 14, 63, ...0
                 }
+            }
+            {
+                // verify can do digest of an Iterable<T>
+                Characters::String s1 = L"abc";
+                auto               r1 = Digest::ComputeDigest<Digest::Algorithm::MD5> (s1);
+                auto               r2 = Digest::ComputeDigest<Digest::Algorithm::SuperFastHash> (s1);
+                auto               r3 = Digest::ComputeDigest<Digest::Algorithm::SuperFastHash> (L"abc"_k);
             }
         }
     }
