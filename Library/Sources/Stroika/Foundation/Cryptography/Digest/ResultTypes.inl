@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         template <typename OUT_RESULT, typename IN_RESULT>
         constexpr OUT_RESULT mkReturnType_ (IN_RESULT hashVal, enable_if_t<is_constructible_v<OUT_RESULT, IN_RESULT>, void>* = nullptr)
         {
-            return OUT_RESULT (hashVal);
+            return OUT_RESULT (hashVal); // intentionally allow narrowing conversions (so () not {})
         }
         // Else if both (IN AND OUT) values trivially copyable, use memcpy (and zero fill result as needed)
         template <typename OUT_RESULT, typename IN_RESULT>
@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
                                       not is_constructible_v<OUT_RESULT, IN_RESULT> and (is_trivially_copyable_v<IN_RESULT> and is_trivially_copyable_v<OUT_RESULT>), char>* = nullptr)
         {
             size_t     mBytes2Copy = std::min (sizeof (OUT_RESULT), sizeof (IN_RESULT));
-            OUT_RESULT result{}; // zero initialize non-copied bits (@todo could just zero-fill end bit)
+            OUT_RESULT result{}; // zero initialize non-copied bits (@todo could just zero-fill end bits)
             ::memcpy (&result, &hashVal, mBytes2Copy);
             return result;
         }
@@ -37,6 +37,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         // specialization -- LGP 2020-10-02
         template <typename OUT_RESULT, typename IN_RESULT>
         inline OUT_RESULT mkReturnType_ (IN_RESULT hashVal, enable_if_t<not is_constructible_v<OUT_RESULT, IN_RESULT> and
+                                                                            not(is_trivially_copyable_v<IN_RESULT> and is_trivially_copyable_v<OUT_RESULT>) and
                                                                             (is_same_v<OUT_RESULT, string> or is_same_v<OUT_RESULT, Characters::String> or is_same_v<OUT_RESULT, Common::GUID>),
                                                                         short>* = nullptr)
         {

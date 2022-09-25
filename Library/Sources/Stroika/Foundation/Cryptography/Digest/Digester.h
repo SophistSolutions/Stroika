@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *
      *  A digest is generally of fixed length - often 4, or 16, or 20 bytes long.
      *
-     *  RETURN_TYPE is typically uint32_t, uint64_t, or Result128BitType, Result128BitType etc,
+     *  RETURN_TYPE is typically uint32_t, uint64_t, Common::GUID, or Result128BitType, Result128BitType etc,
      *  but could in principle be anything.
      *
      *  \note Endianness - these algorithms logically operate on bytes, so if you use RETURN_TYPE=uin32_t (or anything but byte array) -
