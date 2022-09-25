@@ -11,6 +11,7 @@
 #include "../../Configuration/Common.h"
 #include "../../Memory/BLOB.h"
 #include "../../Streams/InputStream.h"
+#include "../../Traversal/Iterable.h"
 
 #include "Algorithm/Algorithm.h"
 
@@ -76,6 +77,12 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *          }
      *      \endcode
      *
+     *  \par Example Usage
+     *      \code
+     *          String s1 = L"abc";
+     *          auto   r1 = Digest::ComputeDigest<Digest::Algorithm::MD5> (s1);
+     *      \endcode
+     *
      *  @see  Hash ()
      *  @see  IncrementalDigester ()
      *  @see  Digester ()
@@ -87,6 +94,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
     RETURN_TYPE ComputeDigest (const std::byte* from, const std::byte* to);
     template <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
     RETURN_TYPE ComputeDigest (const BLOB& from);
+    template <typename ALGORITHM, typename TRIVIALLY_COPYABLE_T, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType, enable_if_t<is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>>* = nullptr>
+    RETURN_TYPE ComputeDigest (const Traversal::Iterable<TRIVIALLY_COPYABLE_T>& from);
 
     /**
      *  \brief IncrementalDigester<ALGORITHM> () is the low level way to call Digest algorithms, appropriate for streamed sources of data (because it a stateful object you can call Write on multiple times before extracting the digest)
@@ -140,9 +149,11 @@ namespace Stroika::Foundation::Cryptography::Digest {
          * 
          *  \req not CompleteHasBeenCalled ();
          */
-        nonvirtual void Write (const std::byte* start, const std::byte* end);
+        nonvirtual void Write (const std::byte* from, const std::byte* to);
         nonvirtual void Write (const BLOB& from);
         nonvirtual void Write (const Streams::InputStream<std::byte>::Ptr& from);
+        template <typename TRIVIALLY_COPYABLE_T, enable_if_t<is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>>* = nullptr>
+        nonvirtual void Write (const Traversal::Iterable<TRIVIALLY_COPYABLE_T>& from);
 
     public:
         /**
@@ -243,6 +254,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
         nonvirtual ReturnType operator() (const Streams::InputStream<std::byte>::Ptr& from) const;
         nonvirtual ReturnType operator() (const std::byte* from, const std::byte* to) const;
         nonvirtual ReturnType operator() (const BLOB& from) const;
+        template <typename TRIVIALLY_COPYABLE_T, enable_if_t<is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>>* = nullptr>
+        nonvirtual ReturnType operator() (const Traversal::Iterable<TRIVIALLY_COPYABLE_T>& from) const;
     };
 
 }
