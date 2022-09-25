@@ -266,10 +266,12 @@ namespace {
                 using namespace IO::Network;
                 auto                 digesterWithDefaultResult  = Digester<Digest::Algorithm::SuperFastHash>{};
                 auto                 digesterWithResult_uint8_t = Digester<Digest::Algorithm::SuperFastHash, uint8_t>{};
+                auto                 digesterWithResult_GUID_t = Digester<Digest::Algorithm::SuperFastHash, Common::GUID>{};
                 Memory::BLOB         value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
                 auto                 h1                         = digesterWithDefaultResult (value2Hash);
                 uint8_t              h2                         = digesterWithResult_uint8_t (value2Hash);
                 std::array<byte, 40> h3                         = ComputeDigest<Digest::Algorithm::SuperFastHash, std::array<byte, 40>> (value2Hash);
+                Common::GUID         h4                         = digesterWithResult_GUID_t (value2Hash);
 
                 /*
                  *  NOTE - basically ALL these tests vary on a number of parameters.
