@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         }
     }
     template <typename ALGORITHM, typename RETURN_TYPE>
-    template <typename TRIVIALLY_COPYABLE_T, enable_if_t<is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>>* >
+    template <typename TRIVIALLY_COPYABLE_T, enable_if_t<is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>>*>
     void IncrementalDigester<ALGORITHM, RETURN_TYPE>::Write (const Traversal::Iterable<TRIVIALLY_COPYABLE_T>& from)
     {
         for (auto ci : from) {
@@ -137,9 +137,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
     {
         // copy to inline stack buffer, and that can be passed as array to other overloads
         Memory::StackBuffer<TRIVIALLY_COPYABLE_T> buf{from.begin (), from.end ()};
-        return ComputeDigest<ALGORITHM, RETURN_TYPE> (reinterpret_cast<const std::byte *> (buf.begin ()), reinterpret_cast<const std::byte *> (buf.end ()));
+        return ComputeDigest<ALGORITHM, RETURN_TYPE> (reinterpret_cast<const std::byte*> (buf.begin ()), reinterpret_cast<const std::byte*> (buf.end ()));
     }
-
 
 }
 
