@@ -131,6 +131,7 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String,
         }
         else if (fi.fRequired) {
             // throw or assert?
+            DbgTrace (L"IN ORM::Schema::Table::MapToDB for field %s: field required, but not present in the argument list to Map function", fi.fName.c_str ());
             AssertNotReached ();
         }
     }
