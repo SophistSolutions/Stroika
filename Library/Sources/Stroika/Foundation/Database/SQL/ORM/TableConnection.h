@@ -127,8 +127,8 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         nonvirtual optional<T> Get (const typename TRAITS::IDType& id);
 
     public:
-        [[deprecated ("Since Stroika 2.1.5, use Get ()")]] nonvirtual void GetByID (const VariantValue& id) { return Get (id); }
-        [[deprecated ("Since Stroika 2.1.5, use Get ()")]] nonvirtual void GetByID (const typename TRAITS::IDType& id) { return Get (id); }
+        [[deprecated ("Since Stroika 2.1.5, use Get ()")]] nonvirtual optional<T> GetByID (const VariantValue& id) { return Get (id); }
+        [[deprecated ("Since Stroika 2.1.5, use Get ()")]] nonvirtual optional<T> GetByID (const typename TRAITS::IDType& id) { return Get (id); }
 
     public:
         /**
