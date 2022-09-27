@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     {
         // @todo: this can and should be done much more efficiently
         Mapping<String, VariantValue> dbV = fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ());
-        if (GetByID (dbV[fTableSchema_.GetIDField ()->fName])) {
+        if (Get (dbV[fTableSchema_.GetIDField ()->fName])) {
             Update (v);
         }
         else {
