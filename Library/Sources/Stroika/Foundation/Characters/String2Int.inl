@@ -74,8 +74,8 @@ namespace Stroika::Foundation::Characters {
                 if (ec == errc::result_out_of_range) [[UNLIKELY_ATTR]] {
                     return *b == '-' ? numeric_limits<T>::min () : numeric_limits<T>::max ();
                 }
-                // if error or trailing crap - return nan
-                T result = (ec == std::errc () and ptr == e) ? r : 0;                   // a wierd default, but what the algorithm advertises and for its not sure there is better?
+                // if error or trailing crap - return 0
+                T result = (ec == std::errc{} and ptr == e) ? r : 0;                    // a weird default, but what the algorithm advertises and for its not sure there is better?
                 Ensure (result == Private_::String2IntOrUInt_<T> (String{start, end})); // test backward compat with old algorithm --LGP 2021-11-08
                 return result;
             }
