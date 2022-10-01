@@ -1097,6 +1097,9 @@ namespace {
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
             runLocaleIndepTest ();
         }
+        {
+            VerifyTestResult (String2Int (L"0587:c413:5500:0000:0000:0000:0001]:60000") == 0);
+        }
     }
 }
 

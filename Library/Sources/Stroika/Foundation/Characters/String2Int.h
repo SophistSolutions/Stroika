@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Characters {
 
     /**
      *  Convert the given decimal-format integral string to any integer type
-     *  ( e.g. signed char, unsigned short int, long long int, uint32_t etc).
+     *  (e.g. signed char, unsigned short int, long long int, uint32_t etc).
      *
      *  String2Int will return 0 if no valid parse, and numeric_limits<T>::min on underflow,
      *  numeric_limits<T>::max on overflow.
@@ -51,6 +51,7 @@ namespace Stroika::Foundation::Characters {
      *      \code
      *          uint32_t    n1      =   String2Int<uint32_t> (L"33");
      *          int         n2      =   String2Int (L"33");
+     *          int         n3      =   String2Int (L"33aaa");  // invalid parse, so returns zero!
      *      \endcode
      * 
      *  TODO:
