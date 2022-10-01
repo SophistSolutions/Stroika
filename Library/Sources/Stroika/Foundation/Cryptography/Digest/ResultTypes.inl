@@ -29,8 +29,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
                                       not is_constructible_v<OUT_RESULT, IN_RESULT> and (is_trivially_copyable_v<IN_RESULT> and is_trivially_copyable_v<OUT_RESULT>), char>* = nullptr)
         {
             size_t     mBytes2Copy = std::min (sizeof (OUT_RESULT), sizeof (IN_RESULT));
-            OUT_RESULT result{}; // zero initialize non-copied bits (@todo could just zero-fill end bits)
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wclass-memaccess\"")     // memcpy only requires trivially_copyable, not is_trivial
+            OUT_RESULT result{};                                                                // zero initialize non-copied bits (@todo could just zero-fill end bits)
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wclass-memaccess\"") // memcpy only requires trivially_copyable, not is_trivial
             ::memcpy (&result, &hashVal, mBytes2Copy);
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wclass-memaccess\"")
             return result;
