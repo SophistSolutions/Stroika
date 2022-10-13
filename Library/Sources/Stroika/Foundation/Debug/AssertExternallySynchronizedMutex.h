@@ -125,8 +125,10 @@ namespace Stroika::Foundation::Debug {
          * 
          *  To have N cooperating classes (e.g. object, and a few direct members) all share the same rules of single-threading (treating them all
          *  as one object for the purpose of the rules of safe multithread access) - arrange for them to share a common 'sharedContext'
+         * 
+         *  \note class marked final to make more clear why safe to not have virtual destructor
          */
-        struct SharedContext {
+        struct SharedContext final {
         public:
             SharedContext () noexcept            = default;
             SharedContext (const SharedContext&) = delete;
