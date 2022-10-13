@@ -11,7 +11,7 @@
 : ${BUILD_CONFIGURATIONS_MAKEFILE_TARGET:=default-configurations}
 : ${PRIVATE_COMPILER_BUILDS_DIR:-/private-compiler-builds}
 : ${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests}
-: ${PARALELLMAKEFLAG:=-j5}
+: ${PARALELLMAKEFLAG:=-j10}
 
 if [ "$USE_TEST_BASENAME" == "" ] ; then 
 	echo "ERROR: Required setting USE_TEST_BASENAME as argument to RunRemoteRegressionTest."
