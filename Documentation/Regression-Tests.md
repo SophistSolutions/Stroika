@@ -77,7 +77,6 @@ checkin from one spot.
       USE_TEST_BASENAME=Ubuntu1804_x86_64 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests \
-      PRIVATE_COMPILER_BUILDS_DIR=/private-compiler-builds-Ununtu-1804-x64 \
       MACHINE=Hercules \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
@@ -91,7 +90,6 @@ checkin from one spot.
       USE_TEST_BASENAME=Ubuntu2004_x86_64 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests \
-      PRIVATE_COMPILER_BUILDS_DIR=/private-compiler-builds-Ununtu-2004-x64 \
       MACHINE=Hercules \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
@@ -105,7 +103,6 @@ checkin from one spot.
       USE_TEST_BASENAME=Ubuntu2204_x86_64 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
-      PRIVATE_COMPILER_BUILDS_DIR=/private-compiler-builds-Ununtu-2204-x64 \
       MACHINE=Hercules \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
