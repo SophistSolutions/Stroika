@@ -113,3 +113,36 @@ cat /Getting-Started-With-Stroika.md
 
 - `make stroika-dev-containers`
 - `for i in Stroika-Dev Stroika-Dev-1804 Stroika-Dev-2004 Stroika-Dev-2204; do docker start $i; docker exec -it $i sudo service ssh start; done`
+
+## Troubleshooting
+
+### Windows
+
+Docker for windows is exceedingly flakey, nearly to the point of unusability. These tricks may help
+edge it into the usuable domain.
+
+- DNS Resolution error on Docker Desktop windows
+  "Invoke-WebRequest : The remote name could not be resolved: 'github.com'"
+  - See https://stroika.atlassian.net/browse/STK-742
+  - See https://forums.docker.com/t/dns-broken-on-docker-desktop-for-windows/130121
+  - See https://github.com/docker/for-win/issues/3810
+
+  - Workaround
+    ~~~
+    --network "Default Switch"
+    ~~~
+    in docker run command
+  
+  - Hang building MSYS docker containers
+  
+  ~~~
+  Database directory: /var/lib/pacman/
+  :: Do you want to remove unused repositories? [Y/n]
+  removing unused sync repositories...
+  ~~~
+
+  when you see this, and the build appears to be 'hung', in another 'Administrator' shell do this
+  ~~~
+  cd /c/ProgramData/Docker/tmp
+  rm -rf hcs*/Files/\$Recycle.Bin
+  ~~~
