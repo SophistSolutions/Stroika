@@ -40,8 +40,8 @@ ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	docker build --network "Default Switch" -f Windows-Cygwin-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 .
 	docker build --network "Default Switch" -f Windows-Cygwin-VS2k22/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 .
 	echo "BEWARE DOCKER BUG: https://stroika.atlassian.net/browse/STK-766 - see that for instructions on workaorund for hang building MSYS containers"
-	docker build -f Windows-MSYS-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 .
-	docker build -f Windows-MSYS-VS2k22/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 .
+	docker build --network "Default Switch" -f Windows-MSYS-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 .
+	docker build --network "Default Switch" -f Windows-MSYS-VS2k22/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 .
 endif
 
 
