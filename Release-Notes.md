@@ -7,19 +7,26 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1.6 {2022-09-27 DRAFT}
+### 2.1.6 {2022-10-18 DRAFT}
 
-.review changes since 9/27 - quite a few
 #### TLDR
 - Improve Crypography to support return type Common::GUID better, and taking Iterable<TRIVIALLY_COPYABLE_T> (so strings) as arg more easily
 - New ObjectVariantMapper::MakeCommonSerializer (OptionalSerializerOptions ...)
 - TableConnection<> method renames (deprecating old names)
+- fixed internal assertion error in String2Int ()
 
 #### Change Details
 - Build Scripts
   - fixed ScriptsLib/ApplyConfiguration to do right separators for paths generated in visual studio project macro files
+- Compiler and System Compatability
+  - in windows docker containers, use VS_17_3_6 and VS_16_11_20
+  - Better docs about docker container windows build workarounds, and need to specify --network "Default Switch" in docker build script in one more place
+  - fixed value for GLIBCXX_11x_ - was set for ubuntu g++11 glibc, but newer version with clang++-14 and a few other compilers
+  - Lose PRIVATE_COMPILER_BUILDS_DIR use from regression tests, since released compilers stable enuf now, haven't built private builds in a while (and may have contributed to linux/docker instability)
 - Library
   - Foundation
+    - Characters
+     - fixed internal assertion error in String2Int () impl for bad arguments and added similar regtest for this case
     - Crypography
       - Fixed Digester<> to fully support a RETURN_TYPE=Common::GUID - adding regression test and fixing template (worked with MD5 but now works with SuperFastHash and others)
       - Digest::ComputeDigest () and Digester<> etc - now support taking Iterable<TRIVIALLY_COPYABLE_T> - so for example String
@@ -28,12 +35,14 @@ especially those they need to be aware of when upgrading.
         - TableConnection<> : renamed DeleteByID to Delete (and added overload) and renamed GetByID -> Get - deprecating old names
     - DataExcahnge
       - Added ObjectVariantMapper::MakeCommonSerializer (OptionalSerializerOptions ...) so it can take explicit T serializer
+    - Debug
+      - marked AssertExternallySynchronizedMutex SharedContext final (worked around clang bug and a good idea)
 
 #### Release-Validation
 - Compilers Tested/Supported
   - g++ { 8, 9, 10, 11, 12 }
   - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13 }
-  - MSVC: { 15.9.50, 16.11.19, 17.3.4 }
+  - MSVC: { 15.9.50, 16.11.20, 17.3.6 }
 - OS/Platforms Tested/Supported
   - Windows
     - Windows 10 version 21H2
