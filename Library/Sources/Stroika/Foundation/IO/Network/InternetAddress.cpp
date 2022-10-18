@@ -387,7 +387,7 @@ InternetAddress InternetAddress::KeepSignifcantBits (unsigned int significantBit
 
 InternetAddress InternetAddress::Offset (uint64_t o) const
 {
-    vector<uint8_t> addressAsArrayOfBytes = As<vector<uint8_t>> ();
+    vector<uint8_t> addressAsArrayOfBytes = As<vector<uint8_t>> (); // As<> defined to return high order bytes first
     Require (addressAsArrayOfBytes.size () >= 4);
     size_t idx = addressAsArrayOfBytes.size () - 1;
     while (o != 0) {

@@ -167,6 +167,9 @@ namespace Stroika::Foundation::IO::Network {
          *  InternetAddress (Traversal::Iterable<uint8_t> octets, AddressFamily af);
          *  InternetAddress (Traversal::Iterable<byte> octets, AddressFamily af);
          *      Construct an InternetAddress octets, either 4 or 16 in length, and which must agree with provided address-family
+         * 
+         *  \note Constructors taking array/vector arguments, expect bytes with high order data
+         *        first in array.
          */
         constexpr InternetAddress ();
         constexpr InternetAddress (const InternetAddress&) noexcept = default;
@@ -260,6 +263,8 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  As<T> (ByteOrder) is only defined for T==in_addr, and then the byte order is determined by the parameter.
          *
+         *  As<array<...>> or As<vector<>>... returns high order bytes first.
+         * 
          *  As<array<byte,4>> () returns the high order (in this case 'network') byte
          *  in the first part of the array, so
          *      Assert (InternetAddress { 1, 2, 3, 4 }.As<array<byte,4>> ()[0] == 1);
