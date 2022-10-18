@@ -87,6 +87,10 @@ namespace Stroika::Foundation::IO::Network {
      *  Also, for IPv6 addresses, since they can be represented as bytes, or shorts, or longs,
      *  its ambiguous what host byte order might mean, so no 'host byte order' API is provided
      *  for IPv6 addresses: just network byte order.
+     * 
+     *  When constructing or extracting arrays/vectors etc from an InternetAddress, the high order
+     *  bytes come before the lower order bytes (so b[0] is high order byte). The ByteOrder enum
+     *  can generally be used when assigning/extracting structures from the internet address object.
      *
      *  \note Site-Local addresses
      *      This class provides no support for site-local addresses because they have been deprecated
@@ -274,6 +278,9 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  \note   As<String> () will always produce a numerical representation, whereas ToString () - will sometimes produce
          *          a textual shortcut, like "INADDR_ANY".
+         * 
+         *  \note   As (ByteOrder) overload only applies to certain types (structured types) where byte order might make sense,
+         *          and is not allowed for arrays (which are always returned high order elements first in the array).
          */
         template <typename T>
         nonvirtual T As () const;
@@ -366,7 +373,7 @@ namespace Stroika::Foundation::IO::Network {
     private:
         AddressFamily fAddressFamily_;
         union {
-            // EACH Stored in network byte order
+            // EACH Stored in network byte order (for arrays, high order bytes first in array)
             in_addr            fV4_;
             in6_addr           fV6_;
             array<uint8_t, 4>  fArray_4_uint_;
