@@ -69,7 +69,7 @@ void AssertExternallySynchronizedMutex::lock_shared_ () const noexcept
                 // Duplicate the  Require() below, but with more debug information, because this is a COMMON and IMPORANT case;
                 // If this happens, this means one thread has (the object containing this) is using this object (fake locked)
                 // while we are trying to use it (again doing fake write lock) - so we want to PRINT INFO about that thread!!!
-                DbgTrace (L"ATTEMPT TO sharked_lock (lock for READ) an object which is already in use (debuglocked for WRITE) in another thread");
+                DbgTrace (L"ATTEMPT TO shared_lock (lock for READ) an object which is already in use (debuglocked for WRITE) in another thread");
                 DbgTrace ("Original thread holding (write) lock: threadID=%s, and DbgTraceThreadName=%s", Execution::Thread::FormatThreadID_A (sharedContext->fCurLockThread_).c_str (), Debug::GetDbgTraceThreadName_A (sharedContext->fCurLockThread_).c_str ());
             }
             Require (sharedContext->fCurLockThread_ == this_thread::get_id ());
