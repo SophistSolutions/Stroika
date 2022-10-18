@@ -88,9 +88,9 @@ namespace Stroika::Foundation::IO::Network {
      *  its ambiguous what host byte order might mean, so no 'host byte order' API is provided
      *  for IPv6 addresses: just network byte order.
      * 
-     *  When constructing or extracting arrays/vectors etc from an InternetAddress, the high order
-     *  bytes come before the lower order bytes (so b[0] is high order byte). The ByteOrder enum
-     *  can generally be used when assigning/extracting structures from the internet address object.
+     *  \note   When constructing or extracting arrays/vectors etc from an InternetAddress, the high order
+     *          (most significant) octet come before the lower order octets (so b[0] is high order byte). The ByteOrder enum
+     *          can generally be used when assigning/extracting structures from the internet address object.
      *
      *  \note Site-Local addresses
      *      This class provides no support for site-local addresses because they have been deprecated
@@ -128,8 +128,6 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  A handy way to access the octets of an IPv4 address without worry about endian stuff.
          *
-         *  IPv4AddressOctets[0] is always the high-order (most significant) octet.
-         *
          *  \note prior to Stroika v2.1d13, this was tuple<uint8_t,uint8_t,uint8_t,uint8_t>;
          */
         using IPv4AddressOctets = array<uint8_t, 4>;
@@ -137,8 +135,6 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          *  A handy way to access the octets of an IPv6 address without worry about endian stuff.
-         *
-         *  IPv6AddressOctets[0] is always the high-order (most significant) octet.
          */
         using IPv6AddressOctets = array<uint8_t, 16>;
 
@@ -373,7 +369,7 @@ namespace Stroika::Foundation::IO::Network {
     private:
         AddressFamily fAddressFamily_;
         union {
-            // EACH Stored in network byte order (for arrays, high order bytes first in array)
+            // EACH Stored in network byte order
             in_addr            fV4_;
             in6_addr           fV6_;
             array<uint8_t, 4>  fArray_4_uint_;
