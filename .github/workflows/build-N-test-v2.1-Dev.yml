@@ -182,7 +182,7 @@ jobs:
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
     container: ${{ matrix.container_image }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build System Info
         if: ${{ matrix.os=='unix' }}
         run: |
@@ -225,19 +225,19 @@ jobs:
         run: |
           make tools samples
       - name: Archive Samples Results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Sample apps (${{ matrix.displayTargetName }})
           path: |
             Builds/${{ matrix.config_name }}/Samples-*
       - name: Archive Documentation Results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Doxygen Documentation
           path: |
             Builds/Stroika-Doxygen-Help.tar.gz
       - name: Archive Log Results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Log Data (${{ matrix.displayTargetName }})
           path: |
@@ -266,7 +266,7 @@ jobs:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build System Info
         run: |
           echo "CWD: `pwd`"
@@ -313,7 +313,7 @@ jobs:
         run: |
           df -h
       - name: Archive Log Results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Log Results (${{ matrix.displayTargetName }})
           path: |
@@ -321,7 +321,7 @@ jobs:
             /tmp/LOGS-ARCHIVE
             #${{ env.TMPDIR }}/Trace*.txt
       - name: Archive Sample Results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Samples (${{ matrix.displayTargetName }})
           path: |
@@ -387,7 +387,7 @@ jobs:
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
       ARTIFACTS_DIR: "c:/Artifacts/"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       # https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
       - name: Extract branch name
         shell: bash
@@ -446,14 +446,14 @@ jobs:
           docker cp buildContainer:Stroika/TRACE_LOGS $ARTIFACTS_DIR 2> /dev/null
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
       - name: Archive Log Results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Log Results (${{ matrix.displayTargetName }})
           path: |
             ${{ env.ARTIFACTS_DIR }}PerformanceDump.txt
             ${{ env.ARTIFACTS_DIR }}TRACE_LOGS
       - name: Archive Sample Results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Samples (${{ matrix.displayTargetName }})
           path: |
@@ -481,7 +481,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Install tools required to build Stroika
       run: |
@@ -502,7 +502,7 @@ jobs:
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v1
+      uses: github/codeql-action/init@v2
       with:
         languages: ${{ matrix.language }}
         # If you wish to specify custom queries, you can do so here or in a config file.
@@ -514,4 +514,4 @@ jobs:
       run: make all
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v1
+      uses: github/codeql-action/analyze@v2
