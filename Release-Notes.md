@@ -28,7 +28,7 @@ especially those they need to be aware of when upgrading.
 - Library
   - Foundation
     - Characters
-     - fixed internal assertion error in String2Int () impl for bad arguments and added similar regtest for this case
+      - fixed internal assertion error in String2Int () impl for bad arguments and added similar regtest for this case
     - Crypography
       - Fixed Digester<> to fully support a RETURN_TYPE=Common::GUID - adding regression test and fixing template (worked with MD5 but now works with SuperFastHash and others)
       - Digest::ComputeDigest () and Digester<> etc - now support taking Iterable<TRIVIALLY_COPYABLE_T> - so for example String
