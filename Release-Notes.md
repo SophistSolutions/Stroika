@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1.6 {2022-10-18}
+### 2.1.6 {2022-10-19}
 
 #### TLDR
 - Improve Crypography to support return type Common::GUID better, and taking Iterable<TRIVIALLY_COPYABLE_T> (so strings) as arg more easily
