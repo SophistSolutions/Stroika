@@ -14,10 +14,12 @@ especially those they need to be aware of when upgrading.
 - New ObjectVariantMapper::MakeCommonSerializer (OptionalSerializerOptions ...) - so can modify behavior of optional<T> serializations more easily
 - TableConnection<> method renames (deprecating old names)
 - fixed internal assertion error in String2Int ()
+- adjust .github action/workflows to accomodate various github script changes (deprecations)
 
 #### Change Details
 - Build Scripts
   - fixed ScriptsLib/ApplyConfiguration to do right separators for paths generated in visual studio project macro files
+  - adjust .github action/workflows to accomodate various github script changes (deprecations)
 - Compiler and System Compatability
   - in windows docker containers, use VS_17_3_6 and VS_16_11_20
   - Better docs about docker container windows build workarounds, and need to specify --network "Default Switch" in docker build script in one more place
