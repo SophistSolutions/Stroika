@@ -32,8 +32,6 @@
 
 namespace Stroika::Foundation::Execution {
 
-    using Characters::SDKString;
-
     /**
      *  qStroika_Foundation_Exection_Throw_TraceThrowpoint controls whether or not Stroika will DbgTrace () on
      *  (essentially) all exception throws.
