@@ -534,7 +534,7 @@ void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, 
     parser->setContentHandler (&handler);
     parser->setErrorHandler (&sMyErrorReproter_);
     const XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e', '\0'};
-    parser->parse (StdIStream_InputSourceWithProgress (in, ProgressMonitor::Updater (progress, 0.1f, 0.9f), kBufID));
+    parser->parse (StdIStream_InputSourceWithProgress (in, ProgressMonitor::Updater{progress, 0.1f, 0.9f}, kBufID));
 #else
     Execution::Throw (Execution::RequiredComponentMissingException (Execution::RequiredComponentMissingException::kSAXFactory));
 #endif
