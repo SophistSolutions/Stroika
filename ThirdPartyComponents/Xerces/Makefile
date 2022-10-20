@@ -27,7 +27,8 @@ endif
 .PHONY:	all clean clobber check doBuilds_
 
 
-VERSION=3.2.3
+VERSION=3.2.4
+#VERSION=3.2.3
 #VERSION=3.2.2
 #VERSION=3.2.1
 BASENAME=xerces-c-$(VERSION)

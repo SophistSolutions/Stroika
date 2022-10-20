@@ -530,6 +530,7 @@ void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, 
     AssureXercesInitialized_ ();
     SAX2PrintHandlers_        handler{callback};
     shared_ptr<SAX2XMLReader> parser = shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
+
     SetupCommonParserFeatures_ (*parser, false);
     parser->setContentHandler (&handler);
     parser->setErrorHandler (&sMyErrorReproter_);
