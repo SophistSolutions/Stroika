@@ -534,13 +534,12 @@ void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, 
 #if qHasFeature_Xerces
     AssureXercesInitialized_ ();
     SAX2PrintHandlers_        handler{callback};
-    shared_ptr<SAX2XMLReader> parser = shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
-
+    shared_ptr<SAX2XMLReader> parser = make_shared<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
     SetupCommonParserFeatures_ (*parser, false);
     parser->setContentHandler (&handler);
     parser->setErrorHandler (&sMyErrorReproter_);
     const XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e', '\0'};
-    parser->parse (StdIStream_InputSourceWithProgress (in, ProgressMonitor::Updater{progress, 0.1f, 0.9f}, kBufID));
+    parser->parse (StdIStream_InputSourceWithProgress{in, ProgressMonitor::Updater{progress, 0.1f, 0.9f}, kBufID});
 #else
     Execution::Throw (Execution::RequiredComponentMissingException (Execution::RequiredComponentMissingException::kSAXFactory));
 #endif
@@ -558,11 +557,11 @@ void    XML::SAXParse (istream& in, const Schema& schema, SAXCallbackInterface& 
     if (schema.HasSchema ()) {
         SAX2PrintHandlers   handler (callback);
         Schema::AccessCompiledXSD   accessSchema (schema);// REALLY need READLOCK - cuz this just prevents UPDATE of Scehma (never happens anyhow) -- LGP 2009-05-19
-        shared_ptr<SAX2XMLReader>    parser  =   shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema.GetCachedTRep ()));
+        shared_ptr<SAX2XMLReader>    parser  =   make_shared<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema.GetCachedTRep ()));
         SetupCommonParserFeatures_ (*parser, true);
         parser->setContentHandler (&handler);
         parser->setErrorHandler (&sMyErrorReproter_);
-        parser->parse (StdIStream_InputSourceWithProgress (in, ProgressSubTask (progressCallback, 0.1f, 0.9f), L"XMLDB::SAX::Parse"));
+        parser->parse (StdIStream_InputSourceWithProgress (in, ProgressSubTask{progressCallback, 0.1f, 0.9f}, L"XMLDB::SAX::Parse"));
     }
     else {
         Parse (in, callback, progressCallback);
