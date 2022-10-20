@@ -534,7 +534,7 @@ void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, 
 #if qHasFeature_Xerces
     AssureXercesInitialized_ ();
     SAX2PrintHandlers_        handler{callback};
-    shared_ptr<SAX2XMLReader> parser = make_shared<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
+    shared_ptr<SAX2XMLReader> parser = shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
     SetupCommonParserFeatures_ (*parser, false);
     parser->setContentHandler (&handler);
     parser->setErrorHandler (&sMyErrorReproter_);
@@ -557,7 +557,7 @@ void    XML::SAXParse (istream& in, const Schema& schema, SAXCallbackInterface& 
     if (schema.HasSchema ()) {
         SAX2PrintHandlers   handler (callback);
         Schema::AccessCompiledXSD   accessSchema (schema);// REALLY need READLOCK - cuz this just prevents UPDATE of Scehma (never happens anyhow) -- LGP 2009-05-19
-        shared_ptr<SAX2XMLReader>    parser  =   make_shared<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema.GetCachedTRep ()));
+        shared_ptr<SAX2XMLReader>    parser  =   shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema.GetCachedTRep ()));
         SetupCommonParserFeatures_ (*parser, true);
         parser->setContentHandler (&handler);
         parser->setErrorHandler (&sMyErrorReproter_);
