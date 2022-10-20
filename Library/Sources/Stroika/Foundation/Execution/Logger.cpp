@@ -30,6 +30,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Configuration;
 using namespace Stroika::Foundation::Execution;
 
+using Characters::SDKString;
 using Containers::Mapping;
 using Time::Duration;
 using Time::DurationSecondsType;
