@@ -277,6 +277,11 @@ namespace {
         // we only want to use loaded schemas - don't save any more into the grammar cache, since that
         // is global/shared.
         reader.setFeature (XMLUni::fgXercesCacheGrammarFromParse, false);
+
+        // https://github.com/SophistSolutions/Stroika/security/code-scanning/13
+        // https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing
+        // See https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+        reader.setFeature (XMLUni::fgXercesDisableDefaultEntityResolution, true);
     }
 #endif
 }
