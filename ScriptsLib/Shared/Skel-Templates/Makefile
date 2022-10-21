@@ -95,7 +95,7 @@ apply-configurations-to-vscode:
 		MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)ScriptsLib/ApplyConfiguration --only-vscode $$i;\
 	done
 
-list-configurations list-configuration-tags:
+list-configurations list-configuration-tags project-files:
 	@$(MAKE) --directory ThirdPartyComponents/Stroika/StroikaRoot --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
 
 clean clobber:
@@ -122,7 +122,6 @@ else
 	@$(MAKE) --directory ${APP_NAME} --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-
 
 update-submodules:
 	git submodule update --init --recursive
