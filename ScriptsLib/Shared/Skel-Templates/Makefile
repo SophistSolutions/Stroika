@@ -88,6 +88,9 @@ endif
 build-root:
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) Making BuildRoot...
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd ThirdPartyComponents/Stroika/StroikaRoot && ./ScriptsLib/MakeBuildRoot ../../../
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+	@$(MAKE) --silent Builds/__AUTOMATIC_MAKE_PROEJCT_FILES__
+endif
 
 apply-configurations-to-vscode:
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Applying configuration(s) to vscode:"
@@ -123,6 +126,16 @@ else
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+# This mechanism isn't strictly necessary, and slows builds slightly on windows. BUT, it can be very confusing the
+# errors you get out of the box with visual studio projects without doing a make project-files, so include
+# this to make the out of box experience installing Stroika a little more seemless.
+# SEE https://stroika.atlassian.net/browse/STK-940
+Builds/__AUTOMATIC_MAKE_PROEJCT_FILES__:
+	@make project-files
+	@touch Builds/__AUTOMATIC_MAKE_PROEJCT_FILES__
+endif
+
 update-submodules:
 	git submodule update --init --recursive
 
@@ -132,6 +145,7 @@ ifeq ($(BRANCH),)
 else
 	(cd $(StroikaRoot) && git checkout $(BRANCH) && git pull)
 endif
+
 
 format-code:
 	@$(MAKE) --directory=${APP_NAME} --no-print-directory format-code
