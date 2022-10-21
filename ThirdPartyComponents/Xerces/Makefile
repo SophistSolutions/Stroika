@@ -31,10 +31,12 @@ VERSION=3.2.4
 #VERSION=3.2.3
 #VERSION=3.2.2
 #VERSION=3.2.1
+ifeq (Unix,$(ProjectPlatformSubdir))
 ifeq ($(VERSION), 3.2.4)
 # This version of xerces requires more recent copy of cmake
 ifeq ($(shell cmake --version | awk '{print $$3}' | awk 'FNR == 1'), 3.10.2)
 VERSION=3.2.3
+endif
 endif
 endif
 BASENAME=xerces-c-$(VERSION)
