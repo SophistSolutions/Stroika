@@ -15,7 +15,7 @@ GIT_STROIKA_BRANCH=`git rev-parse --abbrev-ref HEAD`
 help_()
 {
   echo "Skel";
-  echo "  --appRoot <DIR>         # top level directory generated (DEFAULT: ${APP_ROOT})"
+  echo "  --appRoot <DIR>         # top level directory generated (required)"
   echo '  --appName <NAME>        # top level directory generated (DEFAULT: `basename \$\{APP_ROOT\}`)'
   echo "  --stroika-source (git | download)"
 }
@@ -48,6 +48,10 @@ parse_command_line_ () {
     esac
   done
 
+  if [[ "$APP_ROOT" == "" ]] ; then
+    help_;
+    exit 1
+  fi
   if [[ "$APP_NAME" == "" ]] ; then
     APP_NAME=`basename ${APP_ROOT}`
   fi
