@@ -6,7 +6,7 @@
 #       --stroika-source (git | download)
 #
 POSITIONAL_ARGS=()
-APP_ROOT="app"
+APP_ROOT=""
 APP_NAME=""
 STROIKA_SOURCE="git"
 GIT_REMOTE="https://github.com/SophistSolutions/Stroika.git"
