@@ -2,7 +2,7 @@ export TOP_ROOT=$(abspath ./)/
 StroikaRoot=$(TOP_ROOT)ThirdPartyComponents/Stroika/StroikaRoot/
 
 ifeq (,$(wildcard $(StroikaRoot)Makefile))
-$(error  "submodules missing: perhaps you should run `git submodule update --init --recursive`")
+$(warning "submodules missing: perhaps you should run `git submodule update --init --recursive`")
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
@@ -87,7 +87,7 @@ endif
 
 build-root:
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) Making BuildRoot...
-	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd ThirdPartyComponents/Stroika/StroikaRoot && ./ScriptsLib/MakeBuildRoot ../../../
+	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./ScriptsLib/MakeBuildRoot ../../../
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	@$(MAKE) --silent Builds/__AUTOMATIC_MAKE_PROEJCT_FILES__
 endif
@@ -98,8 +98,13 @@ apply-configurations-to-vscode:
 		MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)ScriptsLib/ApplyConfiguration --only-vscode $$i;\
 	done
 
-list-configurations list-configuration-tags project-files:
-	@$(MAKE) --directory ThirdPartyComponents/Stroika/StroikaRoot --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
+list-configurations list-configuration-tags:
+	@$(MAKE) --directory $(StroikaRoot) --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
+
+project-files:
+	@$(MAKE) --directory $(StroikaRoot) --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
+	@rm -f Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
+	@cd Workspaces/VisualStudio.Net; $(StroikaRoot)/ScriptsLib/MakeSymbolicLink $(StroikaRoot)/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
