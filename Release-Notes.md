@@ -7,71 +7,81 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1.7 {2022-10-23 XXXXXXXXXXXXX}
 
-### START RELNOTES
+#### TLDR
 
-- never checkin Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
-- Lose defaults in Microsoft.Cpp.stroika.user-default.props - better to use computed values from applyconfigurations by default
+- Latest Xerces release (3.2.4) and a few security patches on systems that support it (newer cmake) and else fallback to older Xerces
+- FIXED https://stroika.atlassian.net/browse/STK-940 - Project built with Skel - by default - is DOA in visual studio 2022, due to quirks of loading .props files
+- FIXED https://stroika.atlassian.net/browse/STK-941 - which caused builds using MSYS default terminal/shell non-functional (configure script)
+- .props files (Visual Studio.net) handling generally improved
 
-- Xerces-C 3.2.4 (except on systems with older cmake - those still use Xerces 3.2.3)
-  - use new  VersionCompare to check installed cmake version
+#### Change Details
 
-- https://github.com/SophistSolutions/Stroika/security/code-scanning/13 / https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing workaround in xerces SAX parser code
-
-- Cosmetic cleanup/docs for LazyEvalActivity
-
-- lose unneeded using Characters::SDKString from Foundation/Execution/Throw.h
+- Build Scripts
+  - new Scripts/VersionCompare
+  - Configure bug broken on MTTY shell
+    - fix for bug https://stroika.atlassian.net/browse/STK-941. must run cmd shell with /E:ON to avoid failure (unclear why)
+  - Project File Support
+    - never checkin Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
+    - Lose defaults in Microsoft.Cpp.stroika.user-default.props - better to use computed values from applyconfigurations by default
+  - more cleanups to Skel template makefile - for https://stroika.atlassian.net/browse/STK-940 - so sets up project files properly on visual studio
+  - Skel Utility
+    - changed skel script so appRoot required, and call with no args prints out help
+    - ./ScriptsLib/Skel built makefile supports make project-files
+    -  workaround https://stroika.atlassian.net/browse/STK-940 - issue with skel produced makefile not autoamtically calling make project-files and having project files not work properly due to import of non-existent .props file
+  - fix recent Skel change so no default APP_ROOT
+- Compiler and System Compatability
+- Library
+  - Foundation
+    - DataExchange
+      - XML
+        - https://github.com/SophistSolutions/Stroika/security/code-scanning/13 / https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing workaround in xerces SAX parser code
+    - Execution
+      - Cosmetic cleanup/docs for LazyEvalActivity
+      - lose unneeded using Characters::SDKString from Foundation/Execution/Throw.h
+- ThirdPartyCompoents
+  - Xerces
+    - Xerces-C 3.2.4 (except on systems with older cmake - those still use Xerces 3.2.3)
+      - use new  VersionCompare to check installed cmake version
 - zlib 1.2.13
 - SQLITE 3.39.4
 
-- Skel
-  - changed skel script so appRoot required, and call with no args prints out help
-  - ./ScriptsLib/Skel built makefile supports make project-files
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13 }
+  - MSVC: { 15.9.50, 16.11.20, 17.3.6 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Monterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
 
-  -  workaround https://stroika.atlassian.net/browse/STK-940 - issue with skel produced makefile not autoamtically calling make project-files and having project files not work properly due to import of non-existent .props file
-
-- new Scripts/VersionCompare
-
-
-#if 0
-
-
-commit e146260b7bb92b9afc628df8b322663612cda009
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 21 18:03:08 2022 -0400
-
-    fixed last script checkin
-
-commit 1128b1f4a275d42e19182b262c158cffc1b783b1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 21 18:11:23 2022 -0400
-
-    changed Xerces version autodetect to use new VersionCompare scripts to better check installed cmake version
-
-commit d75723e10c34a3aaaa2850e0a46e597316077274
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Oct 21 20:41:26 2022 -0400
-
-    fix recent Skel change so no default APP_ROOT
-
-commit d96093f1f84b8a5ba369eb0935cc25f79870ca93
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 22 10:20:54 2022 -0400
-
-    fix for bug https://stroika.atlassian.net/browse/STK-941. must run cmd shell with /E:ON to avoid failure (unclear why)
-
-commit 5eb3a6ccfd8b9eb84ca6cc0c474f6224d6e73ef3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 22 10:50:10 2022 -0400
-
-    more cleanups to Skel template makefile - for https://stroika.atlassian.net/browse/STK-940 - so sets up project files properly on visual studio
-
-commit 3ebd53a1d691945b1e08366a02323d336bcd5bc1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Oct 22 11:42:33 2022 -0400
-
-    2.1.7
-#endif
+---
 
 ### 2.1.6 {2022-10-19}
 
@@ -101,7 +111,7 @@ Date:   Sat Oct 22 11:42:33 2022 -0400
     - Database
       - ORM
         - TableConnection<> : renamed DeleteByID to Delete (and added overload) and renamed GetByID -> Get - deprecating old names
-    - DataExcahnge
+    - DataExchange
       - Added ObjectVariantMapper::MakeCommonSerializer (OptionalSerializerOptions ...) so it can take explicit T serializer
     - Debug
       - marked AssertExternallySynchronizedMutex SharedContext final (worked around clang bug and a good idea)
@@ -13542,7 +13552,7 @@ arguments, including this)
     <li>Fixes to SystemPerformance::Instruments::MountedFileSystem code</li>
     <li>Implemented new SystemPerformance::Instruments::Memory code</li>
     <li>New String::Tokenize() API and deprecated older Characters::Tokenize() API</li>
-    <li>New DataExcahnge::CharacterDelimitedLines reader</li>
+    <li>New DataExchange::CharacterDelimitedLines reader</li>
     <li>Docs</li>
     <li>new BinaryFileInputStream::mk helper, to simplify buffering. And added support for not-seekable</li>
     <li>Major rework of InternetAddress code: constexpr support, more constructors, fixed/documented net/host byte order issues,
