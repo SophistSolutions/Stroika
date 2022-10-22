@@ -7,6 +7,72 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+### START RELNOTES
+
+- never checkin Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
+- Lose defaults in Microsoft.Cpp.stroika.user-default.props - better to use computed values from applyconfigurations by default
+
+- Xerces-C 3.2.4 (except on systems with older cmake - those still use Xerces 3.2.3)
+  - use new  VersionCompare to check installed cmake version
+
+- https://github.com/SophistSolutions/Stroika/security/code-scanning/13 / https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing workaround in xerces SAX parser code
+
+- Cosmetic cleanup/docs for LazyEvalActivity
+
+- lose unneeded using Characters::SDKString from Foundation/Execution/Throw.h
+- zlib 1.2.13
+- SQLITE 3.39.4
+
+- Skel
+  - changed skel script so appRoot required, and call with no args prints out help
+  - ./ScriptsLib/Skel built makefile supports make project-files
+
+  -  workaround https://stroika.atlassian.net/browse/STK-940 - issue with skel produced makefile not autoamtically calling make project-files and having project files not work properly due to import of non-existent .props file
+
+- new Scripts/VersionCompare
+
+
+#if 0
+
+
+commit e146260b7bb92b9afc628df8b322663612cda009
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 21 18:03:08 2022 -0400
+
+    fixed last script checkin
+
+commit 1128b1f4a275d42e19182b262c158cffc1b783b1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 21 18:11:23 2022 -0400
+
+    changed Xerces version autodetect to use new VersionCompare scripts to better check installed cmake version
+
+commit d75723e10c34a3aaaa2850e0a46e597316077274
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 21 20:41:26 2022 -0400
+
+    fix recent Skel change so no default APP_ROOT
+
+commit d96093f1f84b8a5ba369eb0935cc25f79870ca93
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 22 10:20:54 2022 -0400
+
+    fix for bug https://stroika.atlassian.net/browse/STK-941. must run cmd shell with /E:ON to avoid failure (unclear why)
+
+commit 5eb3a6ccfd8b9eb84ca6cc0c474f6224d6e73ef3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 22 10:50:10 2022 -0400
+
+    more cleanups to Skel template makefile - for https://stroika.atlassian.net/browse/STK-940 - so sets up project files properly on visual studio
+
+commit 3ebd53a1d691945b1e08366a02323d336bcd5bc1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 22 11:42:33 2022 -0400
+
+    2.1.7
+#endif
+
 ### 2.1.6 {2022-10-19}
 
 #### TLDR
