@@ -158,7 +158,8 @@ sub RunBackTickWithVCVarsSetInEnvironment_
 	print $fh $result;
 	print $fh $cmd2Run . "\r\n";
 	close $fh;
-	local $result = `cmd /C $tmpFileName`;
+	# https://stroika.atlassian.net/browse/STK-941 /E:ON needed for this ticket
+	local $result = `cmd /E:ON/C $tmpFileName`;
 	unlink ($tmpFileName);
 	return $result;
 }
