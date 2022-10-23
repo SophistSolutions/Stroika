@@ -86,7 +86,7 @@ especially those they need to be aware of when upgrading.
 ### 2.1.6 {2022-10-19}
 
 #### TLDR
-- Improve Crypography to support return type Common::GUID better, and taking Iterable<TRIVIALLY_COPYABLE_T> (so strings) as arg more easily
+- Improve Cryptography to support return type Common::GUID better, and taking Iterable<TRIVIALLY_COPYABLE_T> (so strings) as arg more easily
 - New ObjectVariantMapper::MakeCommonSerializer (OptionalSerializerOptions ...) - so can modify behavior of optional<T> serializations more easily
 - TableConnection<> method renames (deprecating old names)
 - fixed internal assertion error in String2Int ()
@@ -105,7 +105,7 @@ especially those they need to be aware of when upgrading.
   - Foundation
     - Characters
       - fixed internal assertion error in String2Int () impl for bad arguments and added similar regtest for this case
-    - Crypography
+    - Cryptography
       - Fixed Digester<> to fully support a RETURN_TYPE=Common::GUID - adding regression test and fixing template (worked with MD5 but now works with SuperFastHash and others)
       - Digest::ComputeDigest () and Digester<> etc - now support taking Iterable<TRIVIALLY_COPYABLE_T> - so for example String
     - Database
@@ -2212,7 +2212,7 @@ especially those they need to be aware of when upgrading.
       - Collection\<T>::Remove (ArgByValueType\<T> item, const EQUALS_COMPARER& equalsComparer) now returns bool instead of void
       - simplified CTOR for one overload of Set<> template overload CTOR (fixed Set\<T> CTOR arg when its the second arg cuz not confusable with copy CTOR)
       - Fixed overload of Collection::RemoveAll() to add extra enable_if_t restriction to avoid ambiguity
-  - Crypography
+  - Cryptography
     - Digtest
       - new (refactoring but largely unused) Cryptography/Digest/Algorithm API
       - Only CHANGE was changed the definition of SuperFastHash algorithmn so that its windowable.
