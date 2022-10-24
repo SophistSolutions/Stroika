@@ -15,7 +15,7 @@ GIT_STROIKA_BRANCH=`git rev-parse --abbrev-ref HEAD`
 help_()
 {
   echo "Skel";
-  echo "  --appRoot <DIR>         # top level directory generated (required)"
+  echo "  --appRoot <DIR>         # top level directory generated (required - e.g. ../myApp)"
   echo '  --appName <NAME>        # top level directory generated (DEFAULT: `basename \$\{APP_ROOT\}`)'
   echo "  --stroika-source (git | download)"
 }
