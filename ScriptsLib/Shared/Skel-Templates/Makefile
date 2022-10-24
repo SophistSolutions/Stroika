@@ -80,6 +80,9 @@ else
 	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Debug --build-by-default $(DETECTED_HOST_OS) --config-tag Unix --only-if-has-compiler $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_DEBUG));
 	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Release --build-by-default $(DETECTED_HOST_OS) --config-tag Unix --only-if-has-compiler $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
 endif
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+	@$(MAKE) --silent Builds/__AUTOMATIC_MAKE_PROJECT_FILES__
+endif
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Applying configuration(s) to vscode:"
 	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations --all` ; do\
 		$(StroikaRoot)ScriptsLib/ApplyConfiguration --only-vscode $$i;\
@@ -88,9 +91,6 @@ endif
 build-root:
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) Making BuildRoot...
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./ScriptsLib/MakeBuildRoot ../../../
-ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	@$(MAKE) --silent Builds/__AUTOMATIC_MAKE_PROEJCT_FILES__
-endif
 
 apply-configurations-to-vscode:
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Applying configuration(s) to vscode:"
@@ -131,9 +131,9 @@ ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 # errors you get out of the box with visual studio projects without doing a make project-files, so include
 # this to make the out of box experience installing Stroika a little more seemless.
 # SEE https://stroika.atlassian.net/browse/STK-940
-Builds/__AUTOMATIC_MAKE_PROEJCT_FILES__:
+Builds/__AUTOMATIC_MAKE_PROJECT_FILES__:
 	@make project-files
-	@touch Builds/__AUTOMATIC_MAKE_PROEJCT_FILES__
+	@touch Builds/__AUTOMATIC_MAKE_PROJECT_FILES__
 endif
 
 update-submodules:
