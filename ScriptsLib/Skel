@@ -123,6 +123,8 @@ mkMyApp_()
   (cd $APP_ROOT/Workspaces/VisualStudio.Net; touch ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props)
   (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props)
   (cd $APP_ROOT; $StroikaRoot/ScriptsLib/MakeSymbolicLink ThirdPartyComponents/Stroika/StroikaRoot/.clang-format)
+  (cd $APP_ROOT/Workspaces/VisualStudio.Net; $cp $StroikaRoot/Workspaces/VisualStudio.Net/.gitignore .)
+  
   cp $StroikaRoot/.gitignore $APP_ROOT
 
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/launch.json > $APP_ROOT/.vscode/launch.json
