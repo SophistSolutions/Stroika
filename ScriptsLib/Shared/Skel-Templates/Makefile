@@ -104,7 +104,8 @@ list-configurations list-configuration-tags:
 project-files:
 	@$(MAKE) --directory $(StroikaRoot) --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
 	@rm -f Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
-	@cd Workspaces/VisualStudio.Net; $(StroikaRoot)/ScriptsLib/MakeSymbolicLink $(StroikaRoot)/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
+	@#NB: Better for symbolic link to use relative paths, since Visual Studio.Net happiear about interpretting these
+	@cd Workspaces/VisualStudio.Net; $(StroikaRoot)/ScriptsLib/MakeSymbolicLink ../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
