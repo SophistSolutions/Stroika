@@ -29,7 +29,8 @@ especially those they need to be aware of when upgrading.
   - Skel Utility
     - changed skel script so appRoot required, and call with no args prints out help
     - ./ScriptsLib/Skel built makefile supports make project-files
-    -  workaround https://stroika.atlassian.net/browse/STK-940 - issue with skel produced makefile not autoamtically calling make project-files and having project files not work properly due to import of non-existent .props file
+    - workaround https://stroika.atlassian.net/browse/STK-940 - issue with skel produced makefile not autoamtically calling make project-files and having project files not work properly due to import of non-existent .props file
+    - workaround https://stroika.atlassian.net/browse/STK-943 (restore / checkout from git messes up profile stuff too)
   - fix recent Skel change so no default APP_ROOT
 - Compiler and System Compatability
 - Library
