@@ -19,15 +19,30 @@ MY_PATH=$(get_script_dir)
 
 DETECTED_HOST_OS=`${MY_PATH}/DetectedHostOS`
 
+# target file must exist for MakeSymbolicLink, but we dont want to really create an empty file, so remove after
+# Comes up in Skel script
+FORCE_FILE_EXISTS_FIRST=0
 if [[ "$DETECTED_HOST_OS" == "Cygwin"  ]] ; then
-export CYGWIN="winsymlinks:nativestrict;$CYGWIN"
+    export CYGWIN="winsymlinks:nativestrict;$CYGWIN"
+    if [ ! -e $TARGET ] ; then
+        FORCE_FILE_EXISTS_FIRST=1
+    fi
 fi
 if [[ "$DETECTED_HOST_OS" == "MSYS"  ]] ; then
-export MSYS="winsymlinks:nativestrict;$MSYS"
+    export MSYS="winsymlinks:nativestrict;$MSYS"
+    if [ ! -e $TARGET ] ; then
+        FORCE_FILE_EXISTS_FIRST=1
+    fi
 fi
 
+if [ $FORCE_FILE_EXISTS_FIRST == 1 ] ; then
+    touch $TARGET
+fi
 if [ $# == 2 ] ; then
     ln -s $TARGET $ALIASPATH
 else
     ln -s $TARGET
+fi
+if [ $FORCE_FILE_EXISTS_FIRST == 1 ] ; then
+    rm $TARGET
 fi
