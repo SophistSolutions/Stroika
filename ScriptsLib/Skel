@@ -120,10 +120,11 @@ mkMyApp_()
   cp $MY_PATH_/Shared/Skel-Templates/VERSION $APP_ROOT/
   cp $MY_PATH_/Shared/Skel-Templates/ReadMe.md $APP_ROOT/
 
-  (cd $APP_ROOT/Workspaces/VisualStudio.Net; touch ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props)
-  (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props)
+  # target file must exist for MakeSymbolicLink, but we dont want to really create an empty file, so remove after
+  (cd $APP_ROOT/Workspaces/VisualStudio.Net; touch ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props; rm ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props)
+  (cd $APP_ROOT/Workspaces/VisualStudio.Net; touch ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props; rm ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props)
   (cd $APP_ROOT; $StroikaRoot/ScriptsLib/MakeSymbolicLink ThirdPartyComponents/Stroika/StroikaRoot/.clang-format)
-  (cd $APP_ROOT/Workspaces/VisualStudio.Net; $cp $StroikaRoot/Workspaces/VisualStudio.Net/.gitignore .)
+  (cd $APP_ROOT/Workspaces/VisualStudio.Net; cp $StroikaRoot/Workspaces/VisualStudio.Net/.gitignore .)
   
   cp $StroikaRoot/.gitignore $APP_ROOT
 
