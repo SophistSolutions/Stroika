@@ -47,7 +47,7 @@ Some project files are pre-checked in. For example, look in
 ```bash
 make project-files
 ```
-to build some of them.
+to build some of them (note, if you do a make all, as suggested above, then this will be taken care of automatically).
 
 ### <a name="build-with-docker">Build with Docker</a>
 
@@ -496,6 +496,13 @@ And it includes two important macros (set reasonably by default, but that you ma
 <JOBS_FLAG>-j 8</JOBS_FLAG>
 ~~~
 
+Note users can provide their own overrides to these values in 
+
+~~~
+Library/Projects/VisualStudio.Net/Microsoft.Cpp.stroika.user-default.props
+~~~
+
+
 ### Using Visual Studio Code
 
 Visual Studio Code works well with Stroika. Just open the workspace file Workspaces/VSCode/Stroika.code-workspace.
@@ -596,6 +603,16 @@ But - even with just plain make, you need some sort of configure script to estab
 - rm: cannot remove '.../boost/libs/beast/test/extern/zlib-1.2.11/contrib/dotzlib': Device or resource busy
 
   This appears to be some weird issue with visual studio code. Quit vs code, and try again.
+
+- VisualStudio.Net project fails to load
+~~~
+C:\Sandbox\Stroika\appFoo\appFoo\Projects\VisualStudio.Net-2022\appFoo.vcxproj : error  : The imported project file "C:\Sandbox\Stroika\appFoo\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.ConfigurationBased.props" could not be loaded. Could not find file 'C:\Sandbox\Stroika\appFoo\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.ConfigurationBased.props'.
+~~~
+
+You probably just never built, and so must run 
+~~~
+make project-files
+~~~
 
 - On raspberry pi
 
