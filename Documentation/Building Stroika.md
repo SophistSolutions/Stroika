@@ -47,7 +47,7 @@ Some project files are pre-checked in. For example, look in
 ```bash
 make project-files
 ```
-to build some of them.
+to build some of them (note, if you do a make all, as suggested above, then this will be taken care of automatically).
 
 ### <a name="build-with-docker">Build with Docker</a>
 
@@ -496,6 +496,13 @@ And it includes two important macros (set reasonably by default, but that you ma
 <JOBS_FLAG>-j 8</JOBS_FLAG>
 ~~~
 
+Note users can provide their own overrides to these values in 
+
+~~~
+Library/Projects/VisualStudio.Net/Microsoft.Cpp.stroika.user-default.props
+~~~
+
+
 ### Using Visual Studio Code
 
 Visual Studio Code works well with Stroika. Just open the workspace file Workspaces/VSCode/Stroika.code-workspace.
@@ -597,6 +604,27 @@ But - even with just plain make, you need some sort of configure script to estab
 
   This appears to be some weird issue with visual studio code. Quit vs code, and try again.
 
+- VisualStudio.Net project fails to load
+  ~~~
+  C:\Sandbox\Stroika\appFoo\appFoo\Projects\VisualStudio.Net-2022\appFoo.vcxproj : error  : The imported project file "C:\Sandbox\Stroika\appFoo\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.ConfigurationBased.props" could not be loaded. Could not find file 'C:\Sandbox\Stroika\appFoo\Workspaces\VisualStudio.net\Microsoft.Cpp.stroika.ConfigurationBased.props'.
+  ~~~
+
+  You probably just never built, and so must run 
+  ~~~
+  make project-files
+  ~~~
+
+  See also [STK-943](https://stroika.atlassian.net/browse/STK-943)
+
+- ThirdParty components not automatically rebuilt from Visual Studio project files
+    ~~~
+    1>C:\Sandbox\Stroika\appTest\ThirdPartyComponents\Stroika\StroikaRoot\Library\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.cpp(7): fatal error C1083: Cannot open include file: 'openssl/evp.h': No such file or directory
+    ~~~
+
+    Due to performance reasons, and weaknesses with the Stroika makefiles, we don't automatically rebuild third party components from the project files when you say 'build'. This almost never matters. But occasionally it can cause confusion - especially getting started.
+
+    The simplest rule to remember is - build from the command line if building from the project file produces errors that sound like missing files.
+  
 - On raspberry pi
 
   > /tmp/Test43: /lib/arm-linux-gnueabihf/libc.so.6: version `GLIBC_2.28' not found (required by /tmp/Test43)

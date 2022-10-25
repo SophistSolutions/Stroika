@@ -2,7 +2,7 @@ export TOP_ROOT=$(abspath ./)/
 StroikaRoot=$(TOP_ROOT)ThirdPartyComponents/Stroika/StroikaRoot/
 
 ifeq (,$(wildcard $(StroikaRoot)Makefile))
-$(error  "submodules missing: perhaps you should run `git submodule update --init --recursive`")
+$(warning "submodules missing: perhaps you should run `git submodule update --init --recursive`")
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
@@ -80,6 +80,9 @@ else
 	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Debug --build-by-default $(DETECTED_HOST_OS) --config-tag Unix --only-if-has-compiler $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_DEBUG));
 	@(export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./configure Release --build-by-default $(DETECTED_HOST_OS) --config-tag Unix --only-if-has-compiler $(STROIKA_CONFIG_PARAMS_COMMON) $(STROIKA_CONFIG_PARAMS_RELEASE));
 endif
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+	@$(MAKE) --silent Builds/__AUTOMATIC_MAKE_PROJECT_FILES__
+endif
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Applying configuration(s) to vscode:"
 	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations --all` ; do\
 		$(StroikaRoot)ScriptsLib/ApplyConfiguration --only-vscode $$i;\
@@ -87,7 +90,7 @@ endif
 
 build-root:
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) Making BuildRoot...
-	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd ThirdPartyComponents/Stroika/StroikaRoot && ./ScriptsLib/MakeBuildRoot ../../../
+	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && cd $(StroikaRoot) && ./ScriptsLib/MakeBuildRoot ../../../
 
 apply-configurations-to-vscode:
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Applying configuration(s) to vscode:"
@@ -96,7 +99,13 @@ apply-configurations-to-vscode:
 	done
 
 list-configurations list-configuration-tags:
-	@$(MAKE) --directory ThirdPartyComponents/Stroika/StroikaRoot --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
+	@$(MAKE) --directory $(StroikaRoot) --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
+
+project-files:
+	@$(MAKE) --directory $(StroikaRoot) --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
+	@#Workaround https://stroika.atlassian.net/browse/STK-943
+	@cd Workspaces/VisualStudio.Net; rm -f Microsoft.Cpp.stroika.ConfigurationBased.props; $(StroikaRoot)/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props
+	@cd Workspaces/VisualStudio.Net; rm -f Microsoft.Cpp.stroika.user.props; $(StroikaRoot)/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
@@ -123,6 +132,15 @@ else
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+# This mechanism isn't strictly necessary, and slows builds slightly on windows. BUT, it can be very confusing the
+# errors you get out of the box with visual studio projects without doing a make project-files, so include
+# this to make the out of box experience installing Stroika a little more seemless.
+# SEE https://stroika.atlassian.net/browse/STK-940
+Builds/__AUTOMATIC_MAKE_PROJECT_FILES__:
+	@make project-files
+	@touch Builds/__AUTOMATIC_MAKE_PROJECT_FILES__
+endif
 
 update-submodules:
 	git submodule update --init --recursive
@@ -133,6 +151,7 @@ ifeq ($(BRANCH),)
 else
 	(cd $(StroikaRoot) && git checkout $(BRANCH) && git pull)
 endif
+
 
 format-code:
 	@$(MAKE) --directory=${APP_NAME} --no-print-directory format-code

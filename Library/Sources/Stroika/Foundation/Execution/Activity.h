@@ -105,12 +105,18 @@ namespace Stroika::Foundation::Execution {
      *  an actual string if/when CaptureCurrentActivities is called.
      *
      *  \note would LIKE to know how to do this as a template specialization of Activity, but haven't figured that out yet.
+     * 
+     *  \par Example Usage
+     *      \code
+     *          auto            scanningThisAddress = LazyEvalActivity ([&] () -> String { return Characters::Format (L"scanning ports on %s", Characters::ToString (ia).c_str ()); });
+     *          DeclareActivity da{&scanningThisAddress};
+     *      \endcode
      */
     template <typename CTOR_ARG, enable_if_t<is_invocable_r_v<Characters::String, CTOR_ARG>>* = nullptr>
     class LazyEvalActivity final : public Private_::Activities_::AsStringObj_ {
     public:
         LazyEvalActivity (const CTOR_ARG& arg)
-            : fArg_ (arg)
+            : fArg_{arg}
         {
         }
 

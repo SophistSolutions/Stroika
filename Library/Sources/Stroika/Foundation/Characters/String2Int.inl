@@ -76,7 +76,30 @@ namespace Stroika::Foundation::Characters {
             return result;
         }
         else {
-            return Private_::String2IntOrUInt_<T> (String{start, end});
+            /*
+             *  Most of the time we can do this very efficiently, because there are just ascii characters.
+             *  Else, fallback on older algorithm that understands full unicode character set.
+             */
+            Memory::StackBuffer<char> asciiS;
+            if (String::AsASCIIQuietly (start, end, &asciiS)) {
+                T    r; // intentionally uninitialized
+                auto b = asciiS.begin ();
+                auto e = asciiS.end ();
+                if (b != e and *b == '+') {
+                    ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
+                }
+                auto [ptr, ec] = from_chars (b, e, r);
+                if (ec == errc::result_out_of_range) [[UNLIKELY_ATTR]] {
+                    return *b == '-' ? numeric_limits<T>::min () : numeric_limits<T>::max ();
+                }
+                // if error or trailing crap - return 0
+                T result = (ec == std::errc{} and ptr == e) ? r : 0;                    // a weird default, but what the algorithm advertises and for its not sure there is better?
+                Ensure (result == Private_::String2IntOrUInt_<T> (String{start, end})); // test backward compat with old algorithm --LGP 2021-11-08
+                return result;
+            }
+            else {
+                return Private_::String2IntOrUInt_<T> (String{start, end});
+            }
         }
     }
     template <typename T>

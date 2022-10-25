@@ -19,7 +19,8 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
-VERSION=1.2.12
+VERSION=1.2.13
+#VERSION=1.2.12
 #VERSION=1.2.11
 # last stable version
 #VERSION=1.2.8

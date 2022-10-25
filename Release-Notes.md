@@ -7,10 +7,87 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1.7 {2022-10-24}
+
+#### TLDR
+
+- Latest Xerces release (3.2.4) and a few security patches on systems that support it (newer cmake) and else fallback to older Xerces
+- FIXED https://stroika.atlassian.net/browse/STK-940 - Project built with Skel - by default - is DOA in visual studio 2022, due to quirks of loading .props files
+- FIXED https://stroika.atlassian.net/browse/STK-941 - which caused builds using MSYS default terminal/shell non-functional (configure script)
+- .props files (Visual Studio.net) handling generally improved
+
+#### Change Details
+
+- Build Scripts
+  - new Scripts/VersionCompare
+  - Configure bug broken on MTTY shell
+    - fix for bug https://stroika.atlassian.net/browse/STK-941. must run cmd shell with /E:ON to avoid failure (unclear why)
+  - Project File Support
+    - never checkin Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
+    - Lose defaults in Microsoft.Cpp.stroika.user-default.props - better to use computed values from applyconfigurations by default
+  - more cleanups to Skel template makefile - for https://stroika.atlassian.net/browse/STK-940 - so sets up project files properly on visual studio
+  - Skel Utility
+    - changed skel script so appRoot required, and call with no args prints out help
+    - ./ScriptsLib/Skel built makefile supports make project-files
+    - workaround https://stroika.atlassian.net/browse/STK-940 - issue with skel produced makefile not autoamtically calling make project-files and having project files not work properly due to import of non-existent .props file
+    - workaround https://stroika.atlassian.net/browse/STK-943 (restore / checkout from git messes up profile stuff too)
+  - fix recent Skel change so no default APP_ROOT
+- Compiler and System Compatability
+- Library
+  - Foundation
+    - DataExchange
+      - XML
+        - https://github.com/SophistSolutions/Stroika/security/code-scanning/13 / https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing workaround in xerces SAX parser code
+    - Execution
+      - Cosmetic cleanup/docs for LazyEvalActivity
+      - lose unneeded using Characters::SDKString from Foundation/Execution/Throw.h
+- ThirdPartyCompoents
+  - Xerces
+    - Xerces-C 3.2.4 (except on systems with older cmake - those still use Xerces 3.2.3)
+      - use new  VersionCompare to check installed cmake version
+- zlib 1.2.13
+- SQLITE 3.39.4
+
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13 }
+  - MSVC: { 15.9.50, 16.11.20, 17.3.6 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 12.0 (Monterey) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+
+---
+
 ### 2.1.6 {2022-10-19}
 
 #### TLDR
-- Improve Crypography to support return type Common::GUID better, and taking Iterable<TRIVIALLY_COPYABLE_T> (so strings) as arg more easily
+- Improve Cryptography to support return type Common::GUID better, and taking Iterable<TRIVIALLY_COPYABLE_T> (so strings) as arg more easily
 - New ObjectVariantMapper::MakeCommonSerializer (OptionalSerializerOptions ...) - so can modify behavior of optional<T> serializations more easily
 - TableConnection<> method renames (deprecating old names)
 - fixed internal assertion error in String2Int ()
@@ -29,13 +106,13 @@ especially those they need to be aware of when upgrading.
   - Foundation
     - Characters
       - fixed internal assertion error in String2Int () impl for bad arguments and added similar regtest for this case
-    - Crypography
+    - Cryptography
       - Fixed Digester<> to fully support a RETURN_TYPE=Common::GUID - adding regression test and fixing template (worked with MD5 but now works with SuperFastHash and others)
       - Digest::ComputeDigest () and Digester<> etc - now support taking Iterable<TRIVIALLY_COPYABLE_T> - so for example String
     - Database
       - ORM
         - TableConnection<> : renamed DeleteByID to Delete (and added overload) and renamed GetByID -> Get - deprecating old names
-    - DataExcahnge
+    - DataExchange
       - Added ObjectVariantMapper::MakeCommonSerializer (OptionalSerializerOptions ...) so it can take explicit T serializer
     - Debug
       - marked AssertExternallySynchronizedMutex SharedContext final (worked around clang bug and a good idea)
@@ -2136,7 +2213,7 @@ especially those they need to be aware of when upgrading.
       - Collection\<T>::Remove (ArgByValueType\<T> item, const EQUALS_COMPARER& equalsComparer) now returns bool instead of void
       - simplified CTOR for one overload of Set<> template overload CTOR (fixed Set\<T> CTOR arg when its the second arg cuz not confusable with copy CTOR)
       - Fixed overload of Collection::RemoveAll() to add extra enable_if_t restriction to avoid ambiguity
-  - Crypography
+  - Cryptography
     - Digtest
       - new (refactoring but largely unused) Cryptography/Digest/Algorithm API
       - Only CHANGE was changed the definition of SuperFastHash algorithmn so that its windowable.
@@ -13476,7 +13553,7 @@ arguments, including this)
     <li>Fixes to SystemPerformance::Instruments::MountedFileSystem code</li>
     <li>Implemented new SystemPerformance::Instruments::Memory code</li>
     <li>New String::Tokenize() API and deprecated older Characters::Tokenize() API</li>
-    <li>New DataExcahnge::CharacterDelimitedLines reader</li>
+    <li>New DataExchange::CharacterDelimitedLines reader</li>
     <li>Docs</li>
     <li>new BinaryFileInputStream::mk helper, to simplify buffering. And added support for not-seekable</li>
     <li>Major rework of InternetAddress code: constexpr support, more constructors, fixed/documented net/host byte order issues,

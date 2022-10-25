@@ -32,8 +32,6 @@
 
 namespace Stroika::Foundation::Execution {
 
-    using Characters::SDKString;
-
     /**
      *  qStroika_Foundation_Exection_Throw_TraceThrowpoint controls whether or not Stroika will DbgTrace () on
      *  (essentially) all exception throws.
@@ -95,7 +93,7 @@ namespace Stroika::Foundation::Execution {
      *  If the first argument is null, throw the second argument exception (or if none, throw bad_alloc)
      */
     template <typename E>
-    void ThrowIfNull (const void* p, const E& e = E ());
+    void ThrowIfNull (const void* p, const E& e = E{});
     void ThrowIfNull (const void* p);
     template <typename T>
     void ThrowIfNull (const unique_ptr<T>& p);

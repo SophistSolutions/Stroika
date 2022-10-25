@@ -277,6 +277,11 @@ namespace {
         // we only want to use loaded schemas - don't save any more into the grammar cache, since that
         // is global/shared.
         reader.setFeature (XMLUni::fgXercesCacheGrammarFromParse, false);
+
+        // https://github.com/SophistSolutions/Stroika/security/code-scanning/13
+        // https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing
+        // See https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+        reader.setFeature (XMLUni::fgXercesDisableDefaultEntityResolution, true);
     }
 #endif
 }
@@ -534,7 +539,7 @@ void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, 
     parser->setContentHandler (&handler);
     parser->setErrorHandler (&sMyErrorReproter_);
     const XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e', '\0'};
-    parser->parse (StdIStream_InputSourceWithProgress (in, ProgressMonitor::Updater (progress, 0.1f, 0.9f), kBufID));
+    parser->parse (StdIStream_InputSourceWithProgress{in, ProgressMonitor::Updater{progress, 0.1f, 0.9f}, kBufID});
 #else
     Execution::Throw (Execution::RequiredComponentMissingException (Execution::RequiredComponentMissingException::kSAXFactory));
 #endif
@@ -556,7 +561,7 @@ void    XML::SAXParse (istream& in, const Schema& schema, SAXCallbackInterface& 
         SetupCommonParserFeatures_ (*parser, true);
         parser->setContentHandler (&handler);
         parser->setErrorHandler (&sMyErrorReproter_);
-        parser->parse (StdIStream_InputSourceWithProgress (in, ProgressSubTask (progressCallback, 0.1f, 0.9f), L"XMLDB::SAX::Parse"));
+        parser->parse (StdIStream_InputSourceWithProgress (in, ProgressSubTask{progressCallback, 0.1f, 0.9f}, L"XMLDB::SAX::Parse"));
     }
     else {
         Parse (in, callback, progressCallback);

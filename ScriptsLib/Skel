@@ -6,7 +6,7 @@
 #       --stroika-source (git | download)
 #
 POSITIONAL_ARGS=()
-APP_ROOT="app"
+APP_ROOT=""
 APP_NAME=""
 STROIKA_SOURCE="git"
 GIT_REMOTE="https://github.com/SophistSolutions/Stroika.git"
@@ -15,7 +15,7 @@ GIT_STROIKA_BRANCH=`git rev-parse --abbrev-ref HEAD`
 help_()
 {
   echo "Skel";
-  echo "  --appRoot <DIR>         # top level directory generated (DEFAULT: ${APP_ROOT})"
+  echo "  --appRoot <DIR>         # top level directory generated (required - e.g. ../myApp)"
   echo '  --appName <NAME>        # top level directory generated (DEFAULT: `basename \$\{APP_ROOT\}`)'
   echo "  --stroika-source (git | download)"
 }
@@ -48,6 +48,10 @@ parse_command_line_ () {
     esac
   done
 
+  if [[ "$APP_ROOT" == "" ]] ; then
+    help_;
+    exit 1
+  fi
   if [[ "$APP_NAME" == "" ]] ; then
     APP_NAME=`basename ${APP_ROOT}`
   fi
@@ -116,9 +120,10 @@ mkMyApp_()
   cp $MY_PATH_/Shared/Skel-Templates/VERSION $APP_ROOT/
   cp $MY_PATH_/Shared/Skel-Templates/ReadMe.md $APP_ROOT/
 
-  (cd $APP_ROOT/Workspaces/VisualStudio.Net; touch ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props)
+  (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.ConfigurationBased.props)
   (cd $APP_ROOT/Workspaces/VisualStudio.Net; $StroikaRoot/ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props)
   (cd $APP_ROOT; $StroikaRoot/ScriptsLib/MakeSymbolicLink ThirdPartyComponents/Stroika/StroikaRoot/.clang-format)
+  
   cp $StroikaRoot/.gitignore $APP_ROOT
 
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/launch.json > $APP_ROOT/.vscode/launch.json
