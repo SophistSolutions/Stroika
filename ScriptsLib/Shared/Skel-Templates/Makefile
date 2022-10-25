@@ -98,7 +98,7 @@ apply-configurations-to-vscode:
 		MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)ScriptsLib/ApplyConfiguration --only-vscode $$i;\
 	done
 
-list-configurations list-configuration-tags:
+list-configurations list-configuration-tags apply-configurations apply-configuration apply-configurations-if-needed reconfigure:
 	@$(MAKE) --directory $(StroikaRoot) --silent CONFIGURATION_TAGS="$(CONFIGURATION_TAGS)" $@
 
 project-files:
