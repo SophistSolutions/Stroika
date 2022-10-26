@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Cache {
                 i->second.fLastAccessedAt = Time::GetTickCount ();
             }
             this->IncrementHits ();
-            return optional<VALUE> (i->second.fResult);
+            return i->second.fResult;
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
