@@ -27,29 +27,27 @@ namespace Stroika::Foundation::Cache {
         Require (fTimeout_ > 0.0f);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    Time::Duration TimedCache<KEY, VALUE, TRAITS>::GetTimeout () const
+    Time::Duration TimedCache<KEY, VALUE, TRAITS>::GetMinimumAllowedFreshness () const
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fTimeout_;
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    void TimedCache<KEY, VALUE, TRAITS>::SetTimeout (Stroika::Foundation::Time::Duration timeoutInSeconds)
+    void TimedCache<KEY, VALUE, TRAITS>::SetMinimumAllowedFreshness (Stroika::Foundation::Time::Duration timeoutInSeconds)
     {
         Require (timeoutInSeconds > 0.0s);
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         if (fTimeout_ != timeoutInSeconds) {
-            ClearIfNeeded_ ();
             fTimeout_ = timeoutInSeconds.As<Time::DurationSecondsType> ();
             ClearIfNeeded_ ();
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key)
+    optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, Time::DurationSecondsType* lastRefreshedAt) const
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-        ClearIfNeeded_ ();
-        typename MyMapType_::iterator i   = fMap_.find (key);
-        Time::DurationSecondsType     now = Time::GetTickCount ();
+        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+        typename MyMapType_::const_iterator                  i   = fMap_.find (key);
+        Time::DurationSecondsType                            now = Time::GetTickCount ();
         if (i == fMap_.end ()) {
             fStats_.IncrementMisses ();
             return nullopt;
@@ -57,11 +55,49 @@ namespace Stroika::Foundation::Cache {
         else {
             Stroika::Foundation::Time::DurationSecondsType lastAccessThreshold = now - fTimeout_;
             if (i->second.fLastAccessedAt < lastAccessThreshold) {
-                i = fMap_.erase (i);
+                /**
+                 *  Before Stroika 3.0d1, we used to remove the entry from the list (an optimization). But
+                 * that required Lookup to be non-const (with synchronization in mind probably a pessimization).
+                 * So instead, count on PurgeUnusedData being called automatically on future adds,
+                 * explicit user calls to purge unused data.
+                 *
+                 *      i = fMap_.erase (i);
+                 */
                 fStats_.IncrementMisses ();
                 return nullopt;
             }
-            if (TraitsType::kTrackReadAccess) {
+            fStats_.IncrementHits ();
+            if (lastRefreshedAt != nullptr) {
+                *lastRefreshedAt = i->second.fLastAccessedAt;
+            }
+            return i->second.fResult;
+        }
+    }
+    template <typename KEY, typename VALUE, typename TRAITS>
+    optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag)
+    {
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        typename MyMapType_::iterator                       i   = fMap_.find (key);
+        Time::DurationSecondsType                           now = Time::GetTickCount ();
+        if (i == fMap_.end ()) {
+            fStats_.IncrementMisses ();
+            return nullopt;
+        }
+        else {
+            Stroika::Foundation::Time::DurationSecondsType lastAccessThreshold = now - fTimeout_;
+            if (i->second.fLastAccessedAt < lastAccessThreshold) {
+                /**
+                 *  Before Stroika 3.0d1, we used to remove the entry from the list (an optimization). But
+                 * that required Lookup to be non-const (with synchronization in mind probably a pessimization).
+                 * So instead, count on PurgeUnusedData being called automatically on future adds,
+                 * explicit user calls to purge unused data.
+                 *
+                 *      i = fMap_.erase (i);
+                 */
+                fStats_.IncrementMisses ();
+                return nullopt;
+            }
+            if (successfulLookupRefreshesAcceesFlag == LookupMarksDataAsRefreshed::eTreatFoundThroughLookupAsRefreshed) {
                 i->second.fLastAccessedAt = Time::GetTickCount ();
             }
             fStats_.IncrementHits ();
@@ -69,9 +105,9 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller)
+    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag)
     {
-        if (optional<VALUE> o = Lookup (key)) {
+        if (optional<VALUE> o = Lookup (key, successfulLookupRefreshesAcceesFlag)) {
             return *o;
         }
         else {
@@ -81,10 +117,12 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    void TimedCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result)
+    void TimedCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, PurgeSpoiledDataFlagType prgeSpoiledData)
     {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-        ClearIfNeeded_ ();
+        if (prgeSpoiledData == PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData) {
+            ClearIfNeeded_ ();
+        }
         typename MyMapType_::iterator i = fMap_.find (key);
         if (i == fMap_.end ()) {
             fMap_.insert (typename MyMapType_::value_type (key, MyResult_ (result)));
@@ -106,7 +144,7 @@ namespace Stroika::Foundation::Cache {
         fMap_.clear ();
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    inline void TimedCache<KEY, VALUE, TRAITS>::DoBookkeeping ()
+    inline void TimedCache<KEY, VALUE, TRAITS>::PurgeSpoiledData ()
     {
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         ClearOld_ ();

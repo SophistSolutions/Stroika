@@ -191,20 +191,20 @@ namespace {
                 using Time::DurationSecondsType;
 
                 using ScanFolderKey_ = String;
-                static const Duration kAgeForScanPersistenceCache_{5min};
+                const Duration kAgeForScanPersistenceCache_{5min};
                 struct FolderDetails_ {
                     int size; // ...info to cache about a folder
                 };
                 Synchronized<Cache::TimedCache<
                     ScanFolderKey_,
                     shared_ptr<FolderDetails_>,
-                    TimedCacheSupport::DefaultTraits<ScanFolderKey_, shared_ptr<FolderDetails_>, less<ScanFolderKey_>, true>>>
+                    TimedCacheSupport::DefaultTraits<ScanFolderKey_, shared_ptr<FolderDetails_>, less<ScanFolderKey_>>>>
                     sCachedScanFoldersDetails_{kAgeForScanPersistenceCache_};
 
                 shared_ptr<FolderDetails_> AccessFolder_ (const ScanFolderKey_& folder)
                 {
                     auto lockedCache = sCachedScanFoldersDetails_.rwget ();
-                    if (optional<shared_ptr<FolderDetails_>> o = lockedCache->Lookup (folder)) {
+                    if (optional<shared_ptr<FolderDetails_>> o = lockedCache->Lookup (folder, TimedCacheSupport::LookupMarksDataAsRefreshed::eTreatFoundThroughLookupAsRefreshed)) {
                         return *o;
                     }
                     else {

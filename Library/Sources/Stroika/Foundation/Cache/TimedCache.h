@@ -23,13 +23,11 @@
 /**
  *      \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
- *      @todo   fNextAutoclearAt is HORRIBLE mechnism to figure out if we need to walk list and
- *              clear. Use a time value (max age), and time last checked or something like that).
  *
- *      @todo   This class is logically a map. But you may want to have individual values with timed cache!
+ @todo   This class is logically a map. But you may want to have individual values with timed cache!
  *              Basically - KEY=RESULT? And then the arg to add/lookup don't take key? Maybe key is void?
  *
  *              That maybe best. Template specialization where KEY=void?
@@ -67,8 +65,12 @@ namespace Stroika::Foundation::Cache {
     namespace TimedCacheSupport {
         /**
          * The DefaultTraits<> is a simple default traits implementation for building an TimedCache<>.
+         * 
+         *  \note This class was incompatibly changed in Stroika 3.0d1. It used to have a TRACK_READ_ACCESS parameter.
+         *        Since Stroika 3.0d1, instead, if you wish to set that true, call Lookup (..., eTreatFoundThroughLookupAsRefreshed) instead
+         *        of Lookup ()
          */
-        template <typename KEY, typename VALUE, typename STRICT_INORDER_COMPARER = less<KEY>, bool TRACK_READ_ACCESS = false>
+        template <typename KEY, typename VALUE, typename STRICT_INORDER_COMPARER = less<KEY>>
         struct DefaultTraits {
             using KeyType    = KEY;
             using ResultType = VALUE;
@@ -76,26 +78,35 @@ namespace Stroika::Foundation::Cache {
             using StatsType = Statistics::StatsType_DEFAULT;
 
             /**
-             * This may make sense to be true for things where you are combining a staleness of data cache with an LRU-style cache
-             * - to track objects where you want to keep the most recent around. This is like LRUCache + explicit timeout.
-             */
-            static constexpr bool kTrackReadAccess = TRACK_READ_ACCESS;
-
-            /**
              */
             using InOrderComparerType = STRICT_INORDER_COMPARER;
+        };
+
+        /**
+         *  Flag to facilitate automatic cleanup of internal data structures as data tracked becomes uneeded.
+         */
+        enum class PurgeSpoiledDataFlagType {
+            eAutomaticallyPurgeSpoiledData,
+            eDontAutomaticallyPurgeSpoiledData
+        };
+
+        /**
+         *  
+         */
+        enum class LookupMarksDataAsRefreshed {
+            eTreatFoundThroughLookupAsRefreshed,
+            eDontTreatFoundThroughLookupAsRefreshed
         };
     }
 
     /**
+     *  \brief Keep track of a bunch of objects, each with an associated 'freshness' which meet a TimedCache-associated minimal reshness limit.
+     * 
+     *  We define 'fresheness' somewhat arbitrarily, but by default, this means since the item was added. However, the TimedCache
+     *  also provides other apis to update the 'freshness' of a stored object, depending on application needs.
+     *
      *  Keeps track of all items - indexed by Key - but throws away items which are any more
-     *  stale than given by the TIMEOUT. Staleness is defined as time since item was added.
-     *
-     *  \note   Note - this class doesn't employ a thread to throw away old items, so if you count on that
-     *          happening (e.g. because the VALUE object DTOR has a side-effect like closing a file), then
-     *          you may call DoBookkeeping () peridocially.
-     *
-     *          This does check the staleness on lookup however, to assure proper staleness semantics.
+     *  stale than given by the staleness limit.
      *
      *  \note   Principal difference between CallerStalenessCache and TimedCache lies in where you specify the
      *          max-age for an item: with CallerStalenessCache, its specified on each lookup call (ie with the caller), and with
@@ -108,10 +119,12 @@ namespace Stroika::Foundation::Cache {
      *          now.
      *
      *  \par Example Usage
+     *      Use TimedCache to avoid needlessly redundant lookups
+     *
      *      \code
      *          optional<String> ReverseDNSLookup_ (const InternetAddress& inetAddr)
      *          {
-     *              static const Time::Duration                                             kCacheTTL_{5min}; // @todo fix when Stroika Duration bug supports constexpr this should
+     *              const Time::Duration                                        kCacheTTL_{5min};
      *              static Cache::TimedCache<InternetAddress, optional<String>> sCache_{kCacheTTL_};
      *              return sCache_.LookupValue (inetAddr, [] (const InternetAddress& inetAddr) {
      *                  return DNS::kThe.ReverseLookup (inetAddr);
@@ -120,8 +133,6 @@ namespace Stroika::Foundation::Cache {
      *      \endcode
      *
      *  \par Example Usage
-     *      Use TimedCache to avoid needlessly redundant lookups
-     *
      *      Assume 'LookupDiskStats_' returns DiskSpaceUsageType, but its expensive, and the results change only slowly...
      *
      *      \code
@@ -131,12 +142,12 @@ namespace Stroika::Foundation::Cache {
      *          // do the actual lookup part which maybe slow
      *          auto LookupDiskStats_ ([[maybe_unused]] const String& filename) -> DiskSpaceUsageType { return DiskSpaceUsageType{33}; };
      *
-     *          Cache::TimedCache<String, DiskSpaceUsageType> sDiskUsageCache_{5.0};
+     *          Cache::TimedCache<String, DiskSpaceUsageType> sDiskUsageCache_{5.0_duration};
      *
      *          // explicitly caller maintaining the cache
      *          optional<DiskSpaceUsageType> LookupDiskStats_Try1 (String diskName)
      *          {
-     *              optional<DiskSpaceUsageType> o = sDiskUsageCache_.Lookup (diskName);
+     *              optional<DiskSpaceUsageType> o = sDiskUsageCache_.Lookup (diskName);    // maybe use eTreatFoundThroughLookupAsRefreshed depending on your application
      *              if (not o.has_value ()) {
      *                  o = LookupDiskStats_ (diskName);
      *                  if (o) {
@@ -149,7 +160,8 @@ namespace Stroika::Foundation::Cache {
      *          // more automatic maintainance of that update pattern
      *          DiskSpaceUsageType LookupDiskStats_Try2 (String diskName)
      *          {
-     *              return sDiskUsageCache_.Lookup (diskName,
+     *              // maybe use eTreatFoundThroughLookupAsRefreshed depending on your application
+     *              return sDiskUsageCache_.LookupValue (diskName,
      *                                              [](String diskName) -> DiskSpaceUsageType {
      *                                                  return LookupDiskStats_ (diskName);
      *                                              });
@@ -158,7 +170,8 @@ namespace Stroika::Foundation::Cache {
      *          // or still simpler
      *          DiskSpaceUsageType LookupDiskStats_Try3 (String diskName)
      *          {
-     *              return sDiskUsageCache_.Lookup (diskName, LookupDiskStats_);
+     *              // maybe use eTreatFoundThroughLookupAsRefreshed depending on your application
+     *              return sDiskUsageCache_.LookupValue (diskName, LookupDiskStats_);
      *          }
      *          void DoIt ()
      *          {
@@ -169,19 +182,22 @@ namespace Stroika::Foundation::Cache {
      *          }
      *      \endcode
      *
-     *  \note   Only calls to @Add cause the time (used for throwing away old items) to be updated,
-     *          unless you specify kTrackReadAccess in the TRAITS object. In that case, Lookup OR
-     *          Add () causes the last-accessed time to be updated.
+     *  \note   Only calls to @Add, @Lookup (...,eTreatFoundThroughLookupAsRefreshed), and @LookupValue (on a cache miss when updating) update the
+     *          lastRefreshed time.
      *
      *          For most use cases (when caching something) - the default behavior of only updating
      *          the last-access time on Add makes sense. But for the case where this class is used
-     *          to OWN an object (see shared_ptr example below) - then specifying kTrackReadAccess
-     *          true can be helpful.
+     *          to OWN an object (see shared_ptr example below) - then treating a read asccess as a refresh can be helpful.
+     * 
+     *          Before Stroika 3.0d1, there was a template parameter which allowed treating Lookup () this way. But that
+     *          has significant downsides (making lookup non-const which has threading implications). Instead now, we have
+     *          non-const methods you can use todo this instead of Lookup, and then there is no need for special
+     *          template paremeters, or non-cost Lookup.
      *
      *  \par Example Usage
      *      To use TimedCache<> to 'own' a set of objects (say a set caches where we are the only
-     *      possible updater) - you can make the 'VALUE' type a shared_ptr<X>, and specify
-     *      kTrackReadAccess = true through the TRAITS object.
+     *      possible updater) - you can make the 'VALUE' type a shared_ptr<X>, and  use Lookup (...,eTreatFoundThroughLookupAsRefreshed) instead 
+     *      of Lookup ().
      *
      *      In this example, there is a set of files on disk in a folder, which is complex to analyze
      *      but once analyzed, lots of calls come in at once to read (and maybe update) the set of files
@@ -198,13 +214,13 @@ namespace Stroika::Foundation::Cache {
      *          Synchronized<Cache::TimedCache<
      *              ScanFolderKey_,
      *              shared_ptr<FolderDetails_>,
-     *              TimedCacheSupport::DefaultTraits<ScanFolderKey_, shared_ptr<FolderDetails_>, less<ScanFolderKey_>, true>>>
+     *              TimedCacheSupport::DefaultTraits<ScanFolderKey_, shared_ptr<FolderDetails_>, less<ScanFolderKey_>>>>
      *              sCachedScanFoldersDetails_{kAgeForScanPersistenceCache_};
      *
      *          shared_ptr<FolderDetails_> AccessFolder_ (const ScanFolderKey_& folder)
      *          {
      *              auto lockedCache = sCachedScanFoldersDetails_.rwget ();
-     *              if (optional<shared_ptr<FolderDetails_>> o = lockedCache->Lookup (folder)) {
+     *              if (optional<shared_ptr<FolderDetails_>> o = lockedCache->Lookup (folder, eTreatFoundThroughLookupAsRefreshed)) {
      *                  return *o;
      *              }
      *              else {
@@ -222,8 +238,6 @@ namespace Stroika::Foundation::Cache {
      *          }
      *      \endcode
      *
-     *  @todo   ANOTHER EXAMPLE - USE DNS CACHE... - or current use for LDAP lookups
-     *
      *  \note   This cache will keep using more and more memory until the cached items become
      *          out of date. For a cache that limits the max number of entries, use the @see LRUCache.
      *
@@ -233,7 +247,7 @@ namespace Stroika::Foundation::Cache {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      * 
      *  \note   we REQUIRE (without a way to enforce) - that the STATS object be internally synchronized, so that we can
-     *          maintain statistics, without requiring the lookup method be non-const
+     *          maintain statistics, without requiring the lookup method be non-const; this is only for tuning/debugging, anyhow...
      *
      *  @see SynchronizedTimedCache<> - for internally synchonized implementation
      *
@@ -250,6 +264,12 @@ namespace Stroika::Foundation::Cache {
         static_assert (Common::IsStrictInOrderComparer<typename TraitsType::InOrderComparerType> (), "TraitsType::InOrderComparerType - comparer not valid IsStrictInOrderComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool(T, T)>");
 
     public:
+        using LookupMarksDataAsRefreshed = TimedCacheSupport::LookupMarksDataAsRefreshed;
+
+    public:
+        using PurgeSpoiledDataFlagType = TimedCacheSupport::PurgeSpoiledDataFlagType;
+
+    public:
         /**
          */
         explicit TimedCache (const Time::Duration& timeout);
@@ -263,21 +283,31 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          */
-        nonvirtual Time::Duration GetTimeout () const;
+        nonvirtual Time::Duration GetMinimumAllowedFreshness () const;
 
     public:
         /**
          */
-        nonvirtual void SetTimeout (Time::Duration timeout);
+        nonvirtual void SetMinimumAllowedFreshness (Time::Duration timeout);
 
     public:
         /**
-         *  However, the overload returing an optional is occasionally useful, if you don't want to fill the cache
-         *  but just see if a value is present.
+         *  \brief Returns the value associated with argument 'key', or nullopt, if its missing (missing same as expired). Can be used to retrieve lastRefreshedAt
+         * 
+         *  If lastRefreshedAt is provided, it is ignored, except if Lookup returns true, the value pointed to will contain the last time
+         *  the data was refreshed.
+         * 
+         *  Occasionally, a caller might want to have the ACT of doing a lookup mark the item as fresh, in which case call
+         *  Lookup (..., eTreatFoundThroughLookupAsRefreshed) instead.
+         * 
+         *  Occasionally, a caller might want to ASSURE it gets data, and just use the cached value if fresh enuf, and specify
+         *  a lookup lambda to fetch the actual data if its not fresh, in which case call LookupValue ().
          *
-         *  \note   if TraitsType::kTrackReadAccess is true (defaults false), this will also update the last-accessed date
+         *  \note   Before Stroika 3.0d1, this used to support TraitsType::kTrackReadAccess, and if it was true did the same
+         *          as the newer Lookup (..., eTreatFoundThroughLookupAsRefreshed)
          */
-        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key);
+        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key, Time::DurationSecondsType* lastRefreshedAt = nullptr) const;
+        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag);
 
     public:
         /**
@@ -291,15 +321,19 @@ namespace Stroika::Foundation::Cache {
          *
          *  The overload with cacheFiller, will update the 'time stored' for the argument key if a new value is fetched.
          *
-         *  \note   if TraitsType::kTrackReadAccess is true (defaults false), this will also update the last-accessed date
+         *  \note   This function may update the ?? (do we want to pass flag to always update freshAsOf?_
          */
-        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller);
+        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag = LookupMarksDataAsRefreshed::eDontTreatFoundThroughLookupAsRefreshed);
 
     public:
         /**
          *  Updates/adds the given value associated with key, and updates the last-access date to now.
+         * 
+         *  The parameter PurgeSpoiledData defaults to eAutomaticallyPurgeSpoiledData; this allows the accumulated data
+         *  to automatically be purged as it becomes irrelevant (@see PurgeSpoiledData). But for performance sake,
+         *  callers may call Add (..., eDontAutomaticallyPurgeSpoiledData)
          */
-        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result);
+        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
 
     public:
         /**
@@ -315,9 +349,25 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          *  May be called occasionally to free resources used by cached items that are out of date.
-         *  Not necessary to call, as done internally during access.
+         *  Not necessary to call - but can save memory.
+         * 
+         *  Can be triggered automatically (so not explicitly) by passing eAutomaticallyPurgeSpoiledData to Add ()
          */
-        nonvirtual void DoBookkeeping (); // optional - need not be called
+        nonvirtual void PurgeSpoiledData ();
+
+    public:
+        [[deprecated ("Since Stroika v3.0d1, use PurgeSpoiledData or count on Add's purgeSpoiledData parameter)")]] nonvirtual void DoBookkeeping ()
+        {
+            PurgeSpoiledData ();
+        }
+        [[deprecated ("Since Stroika 3.0d1 use GetMinimumAllowedFreshness")]] Time::Duration GetTimeout () const
+        {
+            return GetMinimumAllowedFreshness ();
+        }
+        [[deprecated ("Since Stroika 3.0d1 use GetMinimumAllowedFreshness")]] void SetTimeout (Time::Duration timeout)
+        {
+            SetMinimumAllowedFreshness (timeout);
+        }
 
     private:
         Time::DurationSecondsType fTimeout_;
