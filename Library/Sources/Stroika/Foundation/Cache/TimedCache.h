@@ -272,7 +272,7 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          */
-        explicit TimedCache (const Time::Duration& timeout);
+        explicit TimedCache (const Time::Duration& minimumAllowedFreshness);
         TimedCache (TimedCache&&)      = default;
         TimedCache (const TimedCache&) = default;
 
@@ -288,7 +288,7 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          */
-        nonvirtual void SetMinimumAllowedFreshness (Time::Duration timeout);
+        nonvirtual void SetMinimumAllowedFreshness (Time::Duration minimumAllowedFreshness);
 
     public:
         /**

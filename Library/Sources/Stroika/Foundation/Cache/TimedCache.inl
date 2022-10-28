@@ -20,9 +20,9 @@ namespace Stroika::Foundation::Cache {
      ********************************************************************************
      */
     template <typename KEY, typename VALUE, typename TRAITS>
-    TimedCache<KEY, VALUE, TRAITS>::TimedCache (const Time::Duration& timeout)
-        : fTimeout_{timeout.As<Time::DurationSecondsType> ()}
-        , fNextAutoClearAt_{Time::GetTickCount () + timeout.As<Time::DurationSecondsType> ()}
+    TimedCache<KEY, VALUE, TRAITS>::TimedCache (const Time::Duration& minimumAllowedFreshness)
+        : fTimeout_{minimumAllowedFreshness.As<Time::DurationSecondsType> ()}
+        , fNextAutoClearAt_{Time::GetTickCount () + minimumAllowedFreshness.As<Time::DurationSecondsType> ()}
     {
         Require (fTimeout_ > 0.0f);
     }
@@ -30,15 +30,15 @@ namespace Stroika::Foundation::Cache {
     Time::Duration TimedCache<KEY, VALUE, TRAITS>::GetMinimumAllowedFreshness () const
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
-        return fTimeout_;
+        return Time::Duration{fTimeout_};
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    void TimedCache<KEY, VALUE, TRAITS>::SetMinimumAllowedFreshness (Stroika::Foundation::Time::Duration timeoutInSeconds)
+    void TimedCache<KEY, VALUE, TRAITS>::SetMinimumAllowedFreshness (Stroika::Foundation::Time::Duration minimumAllowedFreshness)
     {
-        Require (timeoutInSeconds > 0.0s);
+        Require (minimumAllowedFreshness > 0.0s);
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-        if (fTimeout_ != timeoutInSeconds) {
-            fTimeout_ = timeoutInSeconds.As<Time::DurationSecondsType> ();
+        if (fTimeout_ != minimumAllowedFreshness.As<Time::DurationSecondsType> ()) {
+            fTimeout_ = minimumAllowedFreshness.As<Time::DurationSecondsType> ();
             ClearIfNeeded_ ();
         }
     }

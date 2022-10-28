@@ -35,6 +35,7 @@ namespace Stroika::Foundation::Cache {
      */
     template <typename KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
     class SynchronizedTimedCache : private TimedCache<KEY, VALUE, TRAITS> {
+    private:
         using inherited = TimedCache<KEY, VALUE, TRAITS>;
 
     public:
@@ -59,7 +60,7 @@ namespace Stroika::Foundation::Cache {
          *
          *  @see TimedCache constructor for more examples
          */
-        SynchronizedTimedCache (const Time::Duration& timeout);
+        SynchronizedTimedCache (const Time::Duration& minimumAllowedFreshness);
         SynchronizedTimedCache (const SynchronizedTimedCache& src);
 
     public:
@@ -70,7 +71,7 @@ namespace Stroika::Foundation::Cache {
         /*
          *  Note:   We choose to not hold any lock while filling the cache (fHoldWriteLockDuringCacheFill false by default).
          *  This is because typically, filling the cache
-         *  will be slow (otherwise you wouldbe us using the SynchronizedTimedCache).
+         *  will be slow (otherwise you would be us using the SynchronizedTimedCache).
          *
          *  But this has the downside, that you could try filling the cache multiple times with the same value.
          *
@@ -84,9 +85,9 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-          * @see TimedCache::SetTimeout
+          * @see TimedCache::SetMinimumAllowedFreshness
           */
-        nonvirtual void SetTimeout (Time::Duration timeout);
+        nonvirtual void SetMinimumAllowedFreshness (Time::Duration minimumAllowedFreshness);
 
     public:
         /**
@@ -104,7 +105,7 @@ namespace Stroika::Foundation::Cache {
         /**
           * @see TimedCache::Add
          */
-        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result);
+        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, TimedCacheSupport::PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
 
     public:
         /**
@@ -120,9 +121,19 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         * @see TimedCache::DoBookkeeping
+         * @see TimedCache::PurgeSpoiledData
          */
-        nonvirtual void DoBookkeeping ();
+        nonvirtual void PurgeSpoiledData ();
+
+    public:
+        [[deprecated ("Since Stroika v3.0d1, use PurgeSpoiledData or count on Add's purgeSpoiledData parameter)")]] nonvirtual void DoBookkeeping ()
+        {
+            PurgeSpoiledData ();
+        }
+        [[deprecated ("Since Stroika 3.0d1 use GetMinimumAllowedFreshness")]] void SetTimeout (Time::Duration timeout)
+        {
+            SetMinimumAllowedFreshness (timeout);
+        }
 
     private:
         mutable shared_timed_mutex fMutex_;
