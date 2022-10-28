@@ -56,20 +56,20 @@ namespace Stroika::Foundation::Cache {
         typename MyMapType_::iterator i   = fMap_.find (key);
         Time::DurationSecondsType     now = Time::GetTickCount ();
         if (i == fMap_.end ()) {
-            this->IncrementMisses ();
+            fStats_.IncrementMisses ();
             return nullopt;
         }
         else {
             Stroika::Foundation::Time::DurationSecondsType lastAccessThreshold = now - fTimeout_;
             if (i->second.fLastAccessedAt < lastAccessThreshold) {
                 i = fMap_.erase (i);
-                this->IncrementMisses ();
+                fStats_.IncrementMisses ();
                 return nullopt;
             }
             if (TraitsType::kTrackReadAccess) {
                 i->second.fLastAccessedAt = Time::GetTickCount ();
             }
-            this->IncrementHits ();
+            fStats_.IncrementHits ();
             return i->second.fResult;
         }
     }

@@ -231,17 +231,18 @@ namespace Stroika::Foundation::Cache {
      *          @see CallerStalenessCache.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     * 
+     *  \note   we REQUIRE (without a way to enforce) - that the STATS object be internally synchronized, so that we can
+     *          maintain statistics, without requiring the lookup method be non-const
      *
-     *  @see SynchronizedTimedCache<> - for internally ynchonized implementation
-     *
-     *  \note   Implementation Note: inherit from TRAITS::StatsType to take advantage of zero-sized base object rule.
+     *  @see SynchronizedTimedCache<> - for internally synchonized implementation
      *
      *  @see SyncrhonizedCallerStalenessCache
      *  @see CallerStalenessCache
      *  @see LRUCache
      */
     template <typename KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
-    class TimedCache : private Debug::AssertExternallySynchronizedMutex, private TRAITS::StatsType {
+    class TimedCache : private Debug::AssertExternallySynchronizedMutex {
     public:
         using TraitsType = TRAITS;
 
@@ -339,6 +340,9 @@ namespace Stroika::Foundation::Cache {
     private:
         using MyMapType_ = map<KEY, MyResult_, typename TRAITS::InOrderComparerType>;
         MyMapType_ fMap_;
+
+    private:
+        [[no_unique_address]] mutable TRAITS::StatsType fStats_;
     };
 
 }
