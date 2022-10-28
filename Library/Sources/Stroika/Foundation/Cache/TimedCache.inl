@@ -20,31 +20,26 @@ namespace Stroika::Foundation::Cache {
      ********************************************************************************
      */
     template <typename KEY, typename VALUE, typename TRAITS>
-    TimedCache<KEY, VALUE, TRAITS>::TimedCache (Time::DurationSecondsType timeout)
-        : fTimeout_{timeout}
-        , fNextAutoClearAt_{Time::GetTickCount () + timeout}
+    TimedCache<KEY, VALUE, TRAITS>::TimedCache (const Time::Duration& timeout)
+        : fTimeout_{timeout.As<Time::DurationSecondsType> ()}
+        , fNextAutoClearAt_{Time::GetTickCount () + timeout.As<Time::DurationSecondsType> ()}
     {
         Require (fTimeout_ > 0.0f);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    TimedCache<KEY, VALUE, TRAITS>::TimedCache (const Time::Duration& timeout)
-        : TimedCache{timeout.As<Time::DurationSecondsType> ()}
-    {
-    }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    Time::DurationSecondsType TimedCache<KEY, VALUE, TRAITS>::GetTimeout () const
+    Time::Duration TimedCache<KEY, VALUE, TRAITS>::GetTimeout () const
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fTimeout_;
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    void TimedCache<KEY, VALUE, TRAITS>::SetTimeout (Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds)
+    void TimedCache<KEY, VALUE, TRAITS>::SetTimeout (Stroika::Foundation::Time::Duration timeoutInSeconds)
     {
-        Require (timeoutInSeconds > 0.0f);
+        Require (timeoutInSeconds > 0.0s);
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
         if (fTimeout_ != timeoutInSeconds) {
             ClearIfNeeded_ ();
-            fTimeout_ = timeoutInSeconds;
+            fTimeout_ = timeoutInSeconds.As<Time::DurationSecondsType> ();
             ClearIfNeeded_ ();
         }
     }

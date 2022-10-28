@@ -151,7 +151,8 @@ namespace {
                 // do the actual lookup part which maybe slow
                 auto LookupDiskStats_ ([[maybe_unused]] const String& filename) -> DiskSpaceUsageType { return DiskSpaceUsageType{33}; };
 
-                Cache::TimedCache<String, DiskSpaceUsageType> sDiskUsageCache_{5.0};
+                using namespace Time;
+                Cache::TimedCache<String, DiskSpaceUsageType> sDiskUsageCache_{5.0_duration};
                 // explicitly caller maintaining the cache
                 optional<DiskSpaceUsageType> LookupDiskStats_Try1 (String diskName)
                 {
@@ -186,10 +187,11 @@ namespace {
             }
             namespace Example2_ {
                 using Execution::Synchronized;
+                using Time::Duration;
                 using Time::DurationSecondsType;
 
                 using ScanFolderKey_ = String;
-                static constexpr DurationSecondsType kAgeForScanPersistenceCache_{5 * 60.0};
+                static const Duration kAgeForScanPersistenceCache_{5min};
                 struct FolderDetails_ {
                     int size; // ...info to cache about a folder
                 };

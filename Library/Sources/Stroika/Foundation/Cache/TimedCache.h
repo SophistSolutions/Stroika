@@ -252,22 +252,23 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          */
-        TimedCache (Time::DurationSecondsType timeout);
-        TimedCache (const Time::Duration& timeout);
+        explicit TimedCache (const Time::Duration& timeout);
+        TimedCache (TimedCache&&)      = default;
         TimedCache (const TimedCache&) = default;
 
     public:
+        nonvirtual TimedCache& operator= (TimedCache&&) = default;
         nonvirtual TimedCache& operator= (const TimedCache&) = default;
 
     public:
         /**
          */
-        nonvirtual Time::DurationSecondsType GetTimeout () const;
+        nonvirtual Time::Duration GetTimeout () const;
 
     public:
         /**
          */
-        nonvirtual void SetTimeout (Time::DurationSecondsType timeoutInSeconds);
+        nonvirtual void SetTimeout (Time::Duration timeout);
 
     public:
         /**

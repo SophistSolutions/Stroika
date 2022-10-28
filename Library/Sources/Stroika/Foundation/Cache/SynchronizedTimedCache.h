@@ -59,7 +59,6 @@ namespace Stroika::Foundation::Cache {
          *
          *  @see TimedCache constructor for more examples
          */
-        SynchronizedTimedCache (Time::DurationSecondsType timeoutInSeconds);
         SynchronizedTimedCache (const Time::Duration& timeout);
         SynchronizedTimedCache (const SynchronizedTimedCache& src);
 
@@ -87,7 +86,7 @@ namespace Stroika::Foundation::Cache {
         /**
           * @see TimedCache::SetTimeout
           */
-        nonvirtual void SetTimeout (Time::DurationSecondsType timeoutInSeconds);
+        nonvirtual void SetTimeout (Time::Duration timeout);
 
     public:
         /**

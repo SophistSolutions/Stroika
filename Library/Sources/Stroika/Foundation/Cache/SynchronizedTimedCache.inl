@@ -15,11 +15,6 @@ namespace Stroika::Foundation::Cache {
      ********************************************************************************
      */
     template <typename KEY, typename VALUE, typename TRAITS>
-    inline SynchronizedTimedCache<KEY, VALUE, TRAITS>::SynchronizedTimedCache (Time::DurationSecondsType timeout)
-        : inherited{timeout}
-    {
-    }
-    template <typename KEY, typename VALUE, typename TRAITS>
     inline SynchronizedTimedCache<KEY, VALUE, TRAITS>::SynchronizedTimedCache (const Time::Duration& timeout)
         : inherited{timeout}
     {
@@ -30,10 +25,10 @@ namespace Stroika::Foundation::Cache {
     {
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::SetTimeout (Time::DurationSecondsType timeoutInSeconds)
+    inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::SetTimeout (Time::Duration timeout)
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
-        inherited::SetTimeout (timeoutInSeconds);
+        inherited::SetTimeout (timeout);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline optional<VALUE> SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key)
