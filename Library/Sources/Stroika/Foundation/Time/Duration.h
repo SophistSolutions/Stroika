@@ -417,13 +417,14 @@ namespace Stroika::Foundation::Time {
     /**
      *  \brief user defined literal for Duration, specified in ISO8601 format.
      */
-    Duration operator"" _duration (const char* str, size_t len) noexcept;
-    Duration operator"" _duration (const wchar_t* str, size_t len) noexcept;
+    [[nodiscard]] Duration operator"" _duration (const char* str, size_t len) noexcept;
+    [[nodiscard]] Duration operator"" _duration (const wchar_t* str, size_t len) noexcept;
 #if __cpp_char8_t >= 201811L
-    Duration operator"" _duration (const char8_t* str, size_t len) noexcept;
+    [[nodiscard]] Duration operator"" _duration (const char8_t* str, size_t len) noexcept;
 #endif
-    Duration operator"" _duration (const char16_t* str, size_t len) noexcept;
-    Duration operator"" _duration (const char32_t* str, size_t len) noexcept;
+    [[nodiscard]] Duration operator"" _duration (const char16_t* str, size_t len) noexcept;
+    [[nodiscard]] Duration operator"" _duration (const char32_t* str, size_t len) noexcept;
+    [[nodiscard]] Duration operator"" _duration (long double _Val) noexcept;
 
     /**
      *  Return the sum of the two durations.
