@@ -18,12 +18,14 @@ namespace Stroika::Foundation::Cache::Statistics {
 
     /**
      *  Helper detail class for analyzing and tuning cache statistics.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     struct Stats_Basic {
-        size_t fCachedCollected_Hits{};
-        size_t fCachedCollected_Misses{};
-        void   IncrementHits ();
-        void   IncrementMisses ();
+        atomic<size_t> fCachedCollected_Hits{};
+        atomic<size_t> fCachedCollected_Misses{};
+        void           IncrementHits ();
+        void           IncrementMisses ();
 
         /**
          *  @see Characters::ToString ();
@@ -33,6 +35,8 @@ namespace Stroika::Foundation::Cache::Statistics {
 
     /**
      *  Helper for DefaultTraits - when not collecting stats.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     struct Stats_Null {
         void IncrementHits ();
@@ -46,6 +50,8 @@ namespace Stroika::Foundation::Cache::Statistics {
 
     /**
      *  Helper for DefaultTraits.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     using StatsType_DEFAULT = conditional_t<qDebug, Stats_Basic, Stats_Null>;
 
