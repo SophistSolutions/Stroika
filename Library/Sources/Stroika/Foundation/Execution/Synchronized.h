@@ -253,6 +253,13 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  Create a Syncrhonized with any argument type the underlying type will be constructed with the same
+         *  (perfectly) forwarded arguments.
+         * 
+         *  And plain copy constructor.
+         * 
+         *  FOR NOW, avoid MOVE constructor (cuz syncrhonized is a combination of original data with lock, and not sure what moving
+         *  the lock means).
          */
         template <typename... ARGUMENT_TYPES>
         Synchronized (ARGUMENT_TYPES&&... args);
