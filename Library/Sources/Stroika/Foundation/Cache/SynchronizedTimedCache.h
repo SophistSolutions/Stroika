@@ -42,6 +42,9 @@ namespace Stroika::Foundation::Cache {
         using LookupMarksDataAsRefreshed = typename inherited::LookupMarksDataAsRefreshed;
 
     public:
+        using CacheElement = typename inherited::CacheElement;
+
+    public:
         /**
          *  \par Example Usage
          *      \code
@@ -97,6 +100,12 @@ namespace Stroika::Foundation::Cache {
          * @see TimedCache::SetMinimumAllowedFreshness
          */
         nonvirtual void SetMinimumAllowedFreshness (Time::Duration minimumAllowedFreshness);
+
+    public:
+        /**
+         * @see TimedCache::GetElements
+         */
+        nonvirtual Traversal::Iterable<CacheElement> GetElements () const;
 
     public:
         /**

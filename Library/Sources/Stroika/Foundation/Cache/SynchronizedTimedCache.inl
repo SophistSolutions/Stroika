@@ -23,14 +23,15 @@ namespace Stroika::Foundation::Cache {
     inline SynchronizedTimedCache<KEY, VALUE, TRAITS>::SynchronizedTimedCache (const SynchronizedTimedCache& src)
         : inherited{}
     {
-        // @todo fix must lock
-        [[maybe_unused]] auto&& srcLock = shared_lock{src.fMutex_}; // shared locks intrinsically recursive
+        [[maybe_unused]] auto&& srcLock = shared_lock{src.fMutex_}; // shared locks intrinsically recursive - not needed here but good to assure no locks in between
         [[maybe_unused]] auto&& lock    = lock_guard{fMutex_};
         inherited::SetMinimumAllowedFreshness (src.GetMinimumAllowedFreshness ());
-        // todo copy data - but base needs iterator getallentries
+        for (const auto& ci : src.GetElements ()) {
+            inherited::Add (ci.fKey, ci.fValue, ci.fFreshness);
+        }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    Time::Duration SynchronizedTimedCache<KEY, VALUE, TRAITS>::GetMinimumAllowedFreshness () const
+    inline Time::Duration SynchronizedTimedCache<KEY, VALUE, TRAITS>::GetMinimumAllowedFreshness () const
     {
         [[maybe_unused]] auto&& lock = shared_lock{fMutex_};
         return inherited::GetMinimumAllowedFreshness ();
@@ -40,6 +41,12 @@ namespace Stroika::Foundation::Cache {
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         inherited::SetMinimumAllowedFreshness (minimumAllowedFreshness);
+    }
+    template <typename KEY, typename VALUE, typename TRAITS>
+    inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::GetElements () const -> Traversal::Iterable<CacheElement>
+    {
+        [[maybe_unused]] auto&& lock = shared_lock{fMutex_};
+        return inherited::GetElements ();
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline optional<VALUE> SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, Time::DurationSecondsType* lastRefreshedAt) const
@@ -54,7 +61,7 @@ namespace Stroika::Foundation::Cache {
         return inherited::Lookup (key);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag) -> VALUE
+    inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag) -> VALUE
     {
         auto&& lock = lock_guard{fMutex_};
         return inherited::LookupValue (key, cacheFiller, successfulLookupRefreshesAcceesFlag);

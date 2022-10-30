@@ -292,6 +292,20 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         */
+        struct CacheElement {
+            KEY            fKey;
+            VALUE          fValue;
+            Time::Duration fFreshness;
+        };
+
+    public:
+        /**
+         */
+        nonvirtual Traversal::Iterable<CacheElement> GetElements () const;
+
+    public:
+        /**
          *  \brief Returns the value associated with argument 'key', or nullopt, if its missing (missing same as expired). Can be used to retrieve lastRefreshedAt
          * 
          *  If lastRefreshedAt is provided, it is ignored, except if Lookup returns true, the value pointed to will contain the last time
@@ -334,6 +348,7 @@ namespace Stroika::Foundation::Cache {
          *  callers may call Add (..., eDontAutomaticallyPurgeSpoiledData)
          */
         nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
+        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, Time::Duration freshAsOf);
 
     public:
         /**
@@ -379,13 +394,8 @@ namespace Stroika::Foundation::Cache {
 
     private:
         struct MyResult_ {
-            MyResult_ (const VALUE& r)
-                : fResult{r}
-                , fLastAccessedAt{Time::GetTickCount ()}
-            {
-            }
             VALUE                     fResult;
-            Time::DurationSecondsType fLastAccessedAt;
+            Time::DurationSecondsType fLastAccessedAt{Time::GetTickCount ()};
         };
 
     private:

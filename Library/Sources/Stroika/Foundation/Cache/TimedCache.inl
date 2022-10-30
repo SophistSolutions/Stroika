@@ -43,6 +43,19 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
+    auto TimedCache<KEY, VALUE, TRAITS>::GetElements () const -> Traversal::Iterable<CacheElement>
+    {
+        vector<CacheElement> r;
+        r.reserve (fMap_.count ());
+        Stroika::Foundation::Time::DurationSecondsType lastAccessThreshold = Time::GetTickCount () - fTimeout_;
+        for (const auto& i : fMap_) {
+            if (i.second.fLastAccessedAt >= lastAccessThreshold) {
+                r.push_back (CacheElement{i.first, i.second.fResult, i.second.fLastAccessedAt});
+            }
+        }
+        return r;
+    }
+    template <typename KEY, typename VALUE, typename TRAITS>
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, Time::DurationSecondsType* lastRefreshedAt) const
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
@@ -125,11 +138,17 @@ namespace Stroika::Foundation::Cache {
         }
         typename MyMapType_::iterator i = fMap_.find (key);
         if (i == fMap_.end ()) {
-            fMap_.insert (typename MyMapType_::value_type (key, MyResult_ (result)));
+            fMap_.insert (typename MyMapType_::value_type{key, MyResult_{result}});
         }
         else {
-            i->second = MyResult_ (result); // overwrite if its already there
+            i->second = MyResult_{result}; // overwrite if its already there
         }
+    }
+    template <typename KEY, typename VALUE, typename TRAITS>
+    void TimedCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, Time::Duration freshAsOf)
+    {
+        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        fMap_.insert (typename MyMapType_::value_type{key, MyResult_{result, freshAsOf}});
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::Remove (typename Configuration::ArgByValueType<KEY> key)
