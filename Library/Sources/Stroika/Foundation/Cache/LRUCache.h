@@ -47,11 +47,12 @@
 namespace Stroika::Foundation::Cache {
 
     /**
-     *  \brief LRUCache implements a simple least-recently-used caching strategy, with optional (key) hashing to make it faster.
+     *  \brief LRUCache implements a simple least-recently-used caching strategy, with optional hashing (of keys) to make it faster.
      *
-     *  \note   LRUCache destroys objects when they are cleared from the cache. This guarantee is
-     *          relevant only in case where the objects use significant resources, or where their lifetime has
-     *          externally visible (e.g. lockfiles) impact.
+     *  \note Comparison with TimedCache
+     *        The main difference beweeen an LRUCache and TimedCache has to do with when an element is evicted from the Cache.
+     *        With a TimedCache, its evicted only when its overly aged. With an LRUCache, its more random, and depends a
+     *        bit on luck (when using hashing) and how recently an item was last accessed.
      *
      *  \par Example Usage
      *      \code
@@ -77,6 +78,10 @@ namespace Stroika::Foundation::Cache {
      *          VerifyTestResult (tmp.Lookup ("b") == "2");
      *          VerifyTestResult (tmp.Lookup ("d") == "4");
      *      \endcode
+     *
+     *  \note   LRUCache destroys objects when they are cleared from the cache. This guarantee is
+     *          relevant only in case where the objects use significant resources, or where their lifetime has
+     *          externally visible (e.g. lockfiles) impact.
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o No comparison of LRUCache objects is currently supported. It might make sense, but would be of questionable use.
