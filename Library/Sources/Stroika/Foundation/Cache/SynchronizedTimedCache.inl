@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Cache {
         : inherited{}
     {
         // @todo fix must lock
-        [[maybe_unused]] auto&& srcLock = shared_lock{src.fMutex_};
+        [[maybe_unused]] auto&& srcLock = shared_lock{src.fMutex_}; // shared locks intrinsically recursive
         [[maybe_unused]] auto&& lock    = lock_guard{fMutex_};
         inherited::SetMinimumAllowedFreshness (src.GetMinimumAllowedFreshness ());
         // todo copy data - but base needs iterator getallentries

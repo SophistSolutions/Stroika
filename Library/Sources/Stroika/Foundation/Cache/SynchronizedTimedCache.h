@@ -150,7 +150,7 @@ namespace Stroika::Foundation::Cache {
         }
 
     private:
-        mutable shared_timed_mutex fMutex_;
+        mutable shared_timed_mutex fMutex_; // careful this is non-recursive
     };
 
 }
