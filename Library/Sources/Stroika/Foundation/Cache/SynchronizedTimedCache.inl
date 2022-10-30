@@ -11,7 +11,7 @@ namespace Stroika::Foundation::Cache {
 
     /*
      ********************************************************************************
-     ************** SynchronizedTimedCache<KEY, VALUE, TRAITS> **********************
+     ***************** SynchronizedTimedCache<KEY, VALUE, TRAITS> *******************
      ********************************************************************************
      */
     template <typename KEY, typename VALUE, typename TRAITS>
