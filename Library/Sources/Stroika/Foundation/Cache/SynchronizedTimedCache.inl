@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Cache {
         return inherited::Lookup (key);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag) -> VALUE
+    inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag, PurgeSpoiledDataFlagType purgeSpoiledData) -> VALUE
     {
         auto&& lock = lock_guard{fMutex_};
         return inherited::LookupValue (key, cacheFiller, successfulLookupRefreshesAcceesFlag);

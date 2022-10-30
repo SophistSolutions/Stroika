@@ -102,6 +102,11 @@ namespace Stroika::Foundation::Cache {
      *  Keeps track of all items - indexed by Key - but throws away items which are any more
      *  stale than given by the staleness limit.
      *
+     *  \note Comparison with LRUCache
+     *        The main difference beweeen an LRUCache and TimedCache has to do with when an element is evicted from the Cache.
+     *        With a TimedCache, its evicted only when its overly aged. With an LRUCache, its more random, and depends a
+     *        bit on luck (when using hashing) and how recently an item was last accessed.
+     *
      *  \note   Principal difference between CallerStalenessCache and TimedCache lies in where you specify the
      *          max-age for an item: with CallerStalenessCache, its specified on each lookup call (ie with the caller), and with
      *          TimedCache, the expiry is stored with each cached item.
@@ -276,11 +281,14 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         *  When items are added to the timed cache, there is a universal (for the entire cache) minimum allowed freshness (how old item
+         *  allowed to be before thrown away).
          */
         nonvirtual Time::Duration GetMinimumAllowedFreshness () const;
 
     public:
         /**
+         *  @see GetMinimumAllowedFreshness ()
          */
         nonvirtual void SetMinimumAllowedFreshness (Time::Duration minimumAllowedFreshness);
 
@@ -290,11 +298,12 @@ namespace Stroika::Foundation::Cache {
         struct CacheElement {
             KEY            fKey;
             VALUE          fValue;
-            Time::Duration fFreshness;
+            Time::Duration fLastRefreshedAt;
         };
 
     public:
         /**
+         *  \note This returns the non-expired elements of the current cache object.
          */
         nonvirtual Traversal::Iterable<CacheElement> GetElements () const;
 
@@ -331,7 +340,7 @@ namespace Stroika::Foundation::Cache {
          *
          *  \note   This function may update the TimedCache (which is why it is non-const).
          */
-        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag = LookupMarksDataAsRefreshed::eDontTreatFoundThroughLookupAsRefreshed);
+        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag = LookupMarksDataAsRefreshed::eDontTreatFoundThroughLookupAsRefreshed, PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
 
     public:
         /**
@@ -379,7 +388,7 @@ namespace Stroika::Foundation::Cache {
         }
 
     private:
-        Time::DurationSecondsType fTimeout_;
+        Time::DurationSecondsType fMinimumAllowedFreshness_;
         Time::DurationSecondsType fNextAutoClearAt_;
 
     private:
@@ -389,7 +398,7 @@ namespace Stroika::Foundation::Cache {
     private:
         struct MyResult_ {
             VALUE                     fResult;
-            Time::DurationSecondsType fLastAccessedAt{Time::GetTickCount ()};
+            Time::DurationSecondsType fLastRefreshedAt{Time::GetTickCount ()};
         };
 
     private:

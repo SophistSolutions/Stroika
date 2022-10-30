@@ -15,8 +15,6 @@
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  *
  * TODO:
- *      @todo   Add Debug::AssertExternallySynchronizedMutex usage.
- *
  *      @todo   Add StatsType support (like other caches).
  *
  *      @todo   Add() overload where caller provides the time data was captured (don't assume now)
@@ -123,6 +121,9 @@ namespace Stroika::Foundation::Cache {
      *              });
      *          }
      *      \endcode
+     *
+     *  \note   Implementation Note - no reason to bother using Debug::AssertExternallySynchronized since uses Mapping,
+     *          which does that internally.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *

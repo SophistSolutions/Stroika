@@ -21,24 +21,24 @@ namespace Stroika::Foundation::Cache {
      */
     template <typename KEY, typename VALUE, typename TRAITS>
     TimedCache<KEY, VALUE, TRAITS>::TimedCache (const Time::Duration& minimumAllowedFreshness)
-        : fTimeout_{minimumAllowedFreshness.As<Time::DurationSecondsType> ()}
+        : fMinimumAllowedFreshness_{minimumAllowedFreshness.As<Time::DurationSecondsType> ()}
         , fNextAutoClearAt_{Time::GetTickCount () + minimumAllowedFreshness.As<Time::DurationSecondsType> ()}
     {
-        Require (fTimeout_ > 0.0f);
+        Require (fMinimumAllowedFreshness_ > 0.0f);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     Time::Duration TimedCache<KEY, VALUE, TRAITS>::GetMinimumAllowedFreshness () const
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
-        return Time::Duration{fTimeout_};
+        return Time::Duration{fMinimumAllowedFreshness_};
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::SetMinimumAllowedFreshness (Stroika::Foundation::Time::Duration minimumAllowedFreshness)
     {
         Require (minimumAllowedFreshness > 0.0s);
         lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-        if (fTimeout_ != minimumAllowedFreshness.As<Time::DurationSecondsType> ()) {
-            fTimeout_ = minimumAllowedFreshness.As<Time::DurationSecondsType> ();
+        if (fMinimumAllowedFreshness_ != minimumAllowedFreshness.As<Time::DurationSecondsType> ()) {
+            fMinimumAllowedFreshness_ = minimumAllowedFreshness.As<Time::DurationSecondsType> ();
             ClearIfNeeded_ ();
         }
     }
@@ -47,10 +47,10 @@ namespace Stroika::Foundation::Cache {
     {
         vector<CacheElement> r;
         r.reserve (fMap_.count ());
-        Stroika::Foundation::Time::DurationSecondsType lastAccessThreshold = Time::GetTickCount () - fTimeout_;
+        Stroika::Foundation::Time::DurationSecondsType lastAccessThreshold = Time::GetTickCount () - fMinimumAllowedFreshness_;
         for (const auto& i : fMap_) {
-            if (i.second.fLastAccessedAt >= lastAccessThreshold) {
-                r.push_back (CacheElement{i.first, i.second.fResult, i.second.fLastAccessedAt});
+            if (i.second.fLastRefreshedAt >= lastAccessThreshold) {
+                r.push_back (CacheElement{i.first, i.second.fResult, i.second.fLastRefreshedAt});
             }
         }
         return r;
@@ -66,8 +66,8 @@ namespace Stroika::Foundation::Cache {
             return nullopt;
         }
         else {
-            Stroika::Foundation::Time::DurationSecondsType lastAccessThreshold = now - fTimeout_;
-            if (i->second.fLastAccessedAt < lastAccessThreshold) {
+            Stroika::Foundation::Time::DurationSecondsType lastAccessThreshold = now - fMinimumAllowedFreshness_;
+            if (i->second.fLastRefreshedAt < lastAccessThreshold) {
                 /**
                  *  Before Stroika 3.0d1, we used to remove the entry from the list (an optimization). But
                  * that required Lookup to be non-const (with synchronization in mind probably a pessimization).
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Cache {
             }
             fStats_.IncrementHits ();
             if (lastRefreshedAt != nullptr) {
-                *lastRefreshedAt = i->second.fLastAccessedAt;
+                *lastRefreshedAt = i->second.fLastRefreshedAt;
             }
             return i->second.fResult;
         }
@@ -97,8 +97,8 @@ namespace Stroika::Foundation::Cache {
             return nullopt;
         }
         else {
-            Stroika::Foundation::Time::DurationSecondsType lastAccessThreshold = now - fTimeout_;
-            if (i->second.fLastAccessedAt < lastAccessThreshold) {
+            Stroika::Foundation::Time::DurationSecondsType lastAccessThreshold = now - fMinimumAllowedFreshness_;
+            if (i->second.fLastRefreshedAt < lastAccessThreshold) {
                 /**
                  *  Before Stroika 3.0d1, we used to remove the entry from the list (an optimization). But
                  * that required Lookup to be non-const (with synchronization in mind probably a pessimization).
@@ -111,21 +111,21 @@ namespace Stroika::Foundation::Cache {
                 return nullopt;
             }
             if (successfulLookupRefreshesAcceesFlag == LookupMarksDataAsRefreshed::eTreatFoundThroughLookupAsRefreshed) {
-                i->second.fLastAccessedAt = Time::GetTickCount ();
+                i->second.fLastRefreshedAt = Time::GetTickCount ();
             }
             fStats_.IncrementHits ();
             return i->second.fResult;
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag)
+    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag, PurgeSpoiledDataFlagType purgeSpoiledData)
     {
         if (optional<VALUE> o = Lookup (key, successfulLookupRefreshesAcceesFlag)) {
             return *o;
         }
         else {
             VALUE v = cacheFiller (key);
-            Add (key, v);
+            Add (key, v, purgeSpoiledData);
             return v;
         }
     }
@@ -179,10 +179,10 @@ namespace Stroika::Foundation::Cache {
     void TimedCache<KEY, VALUE, TRAITS>::ClearOld_ ()
     {
         Stroika::Foundation::Time::DurationSecondsType now                 = Time::GetTickCount ();
-        fNextAutoClearAt_                                                  = now + fTimeout_ * 0.75; // somewhat arbitrary how far into the future we do this...
-        Stroika::Foundation::Time::DurationSecondsType lastAccessThreshold = now - fTimeout_;
+        fNextAutoClearAt_                                                  = now + fMinimumAllowedFreshness_ * 0.75; // somewhat arbitrary how far into the future we do this...
+        Stroika::Foundation::Time::DurationSecondsType lastAccessThreshold = now - fMinimumAllowedFreshness_;
         for (typename MyMapType_::iterator i = fMap_.begin (); i != fMap_.end ();) {
-            if (i->second.fLastAccessedAt < lastAccessThreshold) {
+            if (i->second.fLastRefreshedAt < lastAccessThreshold) {
                 i = fMap_.erase (i);
             }
             else {
