@@ -321,7 +321,7 @@ namespace Stroika::Foundation::Cache {
          *
          *  The overload with cacheFiller, will update the 'time stored' for the argument key if a new value is fetched.
          *
-         *  \note   This function may update the ?? (do we want to pass flag to always update freshAsOf?_
+         *  \note   This function may update the TimedCache (which is why it is non-const).
          */
         nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag = LookupMarksDataAsRefreshed::eDontTreatFoundThroughLookupAsRefreshed);
 
