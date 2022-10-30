@@ -73,6 +73,12 @@ namespace Stroika::Foundation::Cache {
         inherited::Add (key, result, purgeSpoiledData);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
+    inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, Time::Duration freshAsOf)
+    {
+        [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
+        inherited::Add (key, result, freshAsOf);
+    }
+    template <typename KEY, typename VALUE, typename TRAITS>
     inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::Remove (typename Configuration::ArgByValueType<KEY> key)
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};

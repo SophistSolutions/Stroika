@@ -14,11 +14,8 @@
 /**
  *      \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- * TODO:
- *      @todo   Add 'overrides' for Add/Remove methods - so those are safe too!
- *              and add more overloads (from base class) of Lookup
  */
 
 namespace Stroika::Foundation::Cache {
@@ -40,6 +37,9 @@ namespace Stroika::Foundation::Cache {
 
     public:
         using LookupMarksDataAsRefreshed = typename inherited::LookupMarksDataAsRefreshed;
+
+    public:
+        using PurgeSpoiledDataFlagType = typename inherited::PurgeSpoiledDataFlagType;
 
     public:
         using CacheElement = typename inherited::CacheElement;
@@ -125,6 +125,7 @@ namespace Stroika::Foundation::Cache {
          * @see TimedCache::Add
          */
         nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, TimedCacheSupport::PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
+        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, Time::Duration freshAsOf);
 
     public:
         /**

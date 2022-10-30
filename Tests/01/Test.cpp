@@ -197,8 +197,7 @@ namespace {
                 };
                 Synchronized<Cache::TimedCache<
                     ScanFolderKey_,
-                    shared_ptr<FolderDetails_>,
-                    TimedCacheSupport::DefaultTraits<ScanFolderKey_, shared_ptr<FolderDetails_>, less<ScanFolderKey_>>>>
+                    shared_ptr<FolderDetails_>>>
                     sCachedScanFoldersDetails_{kAgeForScanPersistenceCache_};
 
                 shared_ptr<FolderDetails_> AccessFolder_ (const ScanFolderKey_& folder)

@@ -27,7 +27,7 @@
  *
  * TODO:
  *
- @todo   This class is logically a map. But you may want to have individual values with timed cache!
+ *      @todo   This class is logically a map. But you may want to have individual values with timed cache!
  *              Basically - KEY=RESULT? And then the arg to add/lookup don't take key? Maybe key is void?
  *
  *              That maybe best. Template specialization where KEY=void?
@@ -46,12 +46,6 @@
  *              specified map impl - so can use HASHING or BTREE, based on passed in arg. So we don't ahve problem with
  *              creating the default, specify default type to create in the TRAITS object (so for example, if using Hash,
  *              we don't force having operator< for BTREE map).
- *
- *      @todo   add bool option to TRAITS for 'accessDoesBookkeeping' - if false, then this ASSUMES/REQUIRES
- *              caller respponsability to arragen for periodic call of bookkeeping task.
- *
- *              Maybe have ENUM for bookkeeping strategy - caller repsonsabilty, on access, or threaded, wtih
- *              on access what we do now (and probably the default since seems lowest overhead).
  *
  *  Implementation Note:
  *
@@ -214,7 +208,7 @@ namespace Stroika::Foundation::Cache {
      *          Synchronized<Cache::TimedCache<
      *              ScanFolderKey_,
      *              shared_ptr<FolderDetails_>,
-     *              TimedCacheSupport::DefaultTraits<ScanFolderKey_, shared_ptr<FolderDetails_>, less<ScanFolderKey_>>>>
+     *              shared_ptr<FolderDetails_>>>
      *              sCachedScanFoldersDetails_{kAgeForScanPersistenceCache_};
      *
      *          shared_ptr<FolderDetails_> AccessFolder_ (const ScanFolderKey_& folder)
@@ -403,7 +397,7 @@ namespace Stroika::Foundation::Cache {
         MyMapType_ fMap_;
 
     private:
-        [[no_unique_address]] mutable TRAITS::StatsType fStats_;
+        [[no_unique_address]] mutable typename TRAITS::StatsType fStats_;
     };
 
 }
