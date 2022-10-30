@@ -39,6 +39,9 @@ namespace Stroika::Foundation::Cache {
         using inherited = TimedCache<KEY, VALUE, TRAITS>;
 
     public:
+        using LookupMarksDataAsRefreshed = typename inherited::LookupMarksDataAsRefreshed;
+
+    public:
         /**
          *  \par Example Usage
          *      \code
@@ -85,25 +88,32 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-          * @see TimedCache::SetMinimumAllowedFreshness
-          */
+         * @see TimedCache::GetMinimumAllowedFreshness
+         */
+        nonvirtual Time::Duration GetMinimumAllowedFreshness () const;
+
+    public:
+        /**
+         * @see TimedCache::SetMinimumAllowedFreshness
+         */
         nonvirtual void SetMinimumAllowedFreshness (Time::Duration minimumAllowedFreshness);
 
     public:
         /**
-          * @see TimedCache::Lookup
+         * @see TimedCache::Lookup
          */
-        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key);
+        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key, Time::DurationSecondsType* lastRefreshedAt = nullptr) const;
+        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag);
 
     public:
         /**
-          * @see TimedCache::LookupValue
-          */
-        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller);
+         * @see TimedCache::LookupValue
+         */
+        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag = LookupMarksDataAsRefreshed::eDontTreatFoundThroughLookupAsRefreshed);
 
     public:
         /**
-          * @see TimedCache::Add
+         * @see TimedCache::Add
          */
         nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, TimedCacheSupport::PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
 
@@ -129,6 +139,10 @@ namespace Stroika::Foundation::Cache {
         [[deprecated ("Since Stroika v3.0d1, use PurgeSpoiledData or count on Add's purgeSpoiledData parameter)")]] nonvirtual void DoBookkeeping ()
         {
             PurgeSpoiledData ();
+        }
+        [[deprecated ("Since Stroika 3.0d1 use GetMinimumAllowedFreshness")]] Time::Duration GetTimeout () const
+        {
+            return GetMinimumAllowedFreshness ();
         }
         [[deprecated ("Since Stroika 3.0d1 use GetMinimumAllowedFreshness")]] void SetTimeout (Time::Duration timeout)
         {

@@ -21,8 +21,19 @@ namespace Stroika::Foundation::Cache {
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline SynchronizedTimedCache<KEY, VALUE, TRAITS>::SynchronizedTimedCache (const SynchronizedTimedCache& src)
-        : inherited{src}
+        : inherited{}
     {
+        // @todo fix must lock
+        [[maybe_unused]] auto&& srcLock = shared_lock{src.fMutex_};
+        [[maybe_unused]] auto&& lock    = lock_guard{fMutex_};
+        inherited::SetMinimumAllowedFreshness (src.GetMinimumAllowedFreshness ());
+        // todo copy data - but base needs iterator getallentries
+    }
+    template <typename KEY, typename VALUE, typename TRAITS>
+    Time::Duration SynchronizedTimedCache<KEY, VALUE, TRAITS>::GetMinimumAllowedFreshness () const
+    {
+        [[maybe_unused]] auto&& lock = shared_lock{fMutex_};
+        return inherited::GetMinimumAllowedFreshness ();
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::SetMinimumAllowedFreshness (Time::Duration minimumAllowedFreshness)
@@ -31,38 +42,22 @@ namespace Stroika::Foundation::Cache {
         inherited::SetMinimumAllowedFreshness (minimumAllowedFreshness);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    inline optional<VALUE> SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key)
+    inline optional<VALUE> SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, Time::DurationSecondsType* lastRefreshedAt) const
+    {
+        [[maybe_unused]] auto&& lock = shared_lock{fMutex_};
+        return inherited::Lookup (key);
+    }
+    template <typename KEY, typename VALUE, typename TRAITS>
+    inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag) -> optional<VALUE>
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         return inherited::Lookup (key);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    VALUE SynchronizedTimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller)
+    auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag) -> VALUE
     {
-        /*
-         *  The main reason for this class, is this logic: unlocking the shared lock and then fetching the new value (with a write lock).
-         */
         auto&& lock = lock_guard{fMutex_};
-        if (optional<VALUE> o = inherited::Lookup (key)) {
-            return *o;
-        }
-        else {
-            lock.unlock ();
-            if (fHoldWriteLockDuringCacheFill) {
-                // Avoid two threds calling cache for same key value at the same time
-                [[maybe_unused]] auto&& newRWLock = lock_guard{fMutex_};
-                VALUE                   v         = cacheFiller (key);
-                this->Add (key, v);
-                return v;
-            }
-            else {
-                // Avoid needlessly blocking lookups (shared_lock above) until after we've filled the cache (typically slow)
-                // and keep it to minimum logically required (inherited add).
-                VALUE v = cacheFiller (key);
-                this->Add (key, v);
-                return v;
-            }
-        }
+        return inherited::LookupValue (key, cacheFiller, successfulLookupRefreshesAcceesFlag);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, TimedCacheSupport::PurgeSpoiledDataFlagType purgeSpoiledData)
