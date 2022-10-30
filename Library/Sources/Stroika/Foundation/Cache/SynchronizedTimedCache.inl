@@ -63,13 +63,38 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename TRAITS>
     inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag, PurgeSpoiledDataFlagType purgeSpoiledData) -> VALUE
     {
-        auto&& lock = lock_guard{fMutex_};
-        return inherited::LookupValue (key, cacheFiller, successfulLookupRefreshesAcceesFlag);
+        /*
+         *  The main reason for this class (as opposed to Syncrhonized<TimedCache>), is this logic: unlocking the shared 
+         *  lock and then fetching the new value (oprionally with a write lock).
+         */
+        auto&& readLock = shared_lock{fMutex_};
+        if (optional<VALUE> o = inherited::Lookup (key)) {
+            return *o;
+        }
+        else {
+            readLock.unlock (); // don't hold read lock, upgrade to write, and condition when we hold the write lock
+            if (fHoldWriteLockDuringCacheFill) {
+                // Avoid two threds calling cache for same key value at the same time
+                [[maybe_unused]] auto&& newRWLock = lock_guard{fMutex_};
+                VALUE                   v         = cacheFiller (key);
+                inherited::Add (key, v, purgeSpoiledData); // if purgeSpoiledData must be done, do while holding lock
+                return v;
+            }
+            else {
+                // Avoid needlessly blocking lookups (shared_lock above) until after we've filled the cache (typically slow)
+                // and keep it to minimum logically required (inherited add).
+                VALUE v = cacheFiller (key);
+                Add (key, v, purgeSpoiledData); // OUR top-level implementation does right thing with locking and purgeSpoiledData, so can use that.
+                return v;
+            }
+        }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, TimedCacheSupport::PurgeSpoiledDataFlagType purgeSpoiledData)
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
+        // NOTE - COULD handle purgeSpoiledData directly here, and use two lock_guards, so other callers get a chance before purge loop
+        // but this is probably better as fewer lock calls and not likely doing a purge loop anyhow...
         inherited::Add (key, result, purgeSpoiledData);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
