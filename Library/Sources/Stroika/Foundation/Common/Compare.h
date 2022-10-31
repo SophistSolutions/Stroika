@@ -41,6 +41,7 @@ namespace Stroika::Foundation::Common {
     constexpr std::strong_ordering kEqual [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]   = std::strong_ordering::equal;
     constexpr std::strong_ordering kGreater [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::greater;
 
+// clang-format off
     /**
      *  \brief like std::compare_three_way{} (lhs, rhs), except class templated on T1/T2 instead of function, so you can bind function object for example in templates expecting one
      *
@@ -52,7 +53,7 @@ namespace Stroika::Foundation::Common {
     // @TODO SEEMS STILL NEEDED ON CLANG++-10???
     // @TODO PROBABLY DEPRECATE THIS CLASS - and use std::compare_three_way directly
 #if __cpp_lib_three_way_comparison < 201907L
-    struct ThreeWayComparer {
+    struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer {
         template <class LT, class RT>
         constexpr auto operator() (LT&& lhs, RT&& rhs) const
         {
@@ -66,7 +67,7 @@ namespace Stroika::Foundation::Common {
         }
     };
 #else
-    struct ThreeWayComparer {
+    struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer {
         template <class LT, class RT>
         constexpr auto operator() (LT&& lhs, RT&& rhs) const
         {
@@ -74,6 +75,8 @@ namespace Stroika::Foundation::Common {
         }
     };
 #endif
+
+// clang-format on
 
     /**
      *  \brief trivial wrapper calling ThreeWayComparer<TL,TR>{}(lhs,rhs) i.e. std::compare_three_way{} (lhs, rhs)
@@ -257,10 +260,12 @@ namespace Stroika::Foundation::Common {
     struct ExtractComparisonTraits<greater_equal<T>> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eInOrderOrEquals;
     };
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
     template <>
     struct ExtractComparisonTraits<ThreeWayComparer> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
     };
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
 #if __cpp_lib_three_way_comparison >= 201907
     template <>
     struct ExtractComparisonTraits<std::compare_three_way> {

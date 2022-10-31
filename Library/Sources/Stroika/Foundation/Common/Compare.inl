@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Common {
     template <typename LT, typename RT>
     constexpr strong_ordering ThreeWayCompare (LT&& lhs, RT&& rhs)
     {
-        return ThreeWayComparer{}(forward<LT> (lhs), forward<RT> (rhs));
+        return compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
     }
 
     /*
