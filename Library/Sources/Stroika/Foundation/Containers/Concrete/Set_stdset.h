@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         nonvirtual Set_stdset& operator= (Set_stdset&& rhs) noexcept = default;
-        nonvirtual Set_stdset& operator= (const Set_stdset& rhs) = default;
+        nonvirtual Set_stdset& operator= (const Set_stdset& rhs)     = default;
 
     protected:
         using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;

@@ -29,23 +29,15 @@ namespace Stroika::Foundation::IO::Network {
     constexpr InternetAddress::InternetAddress (const in_addr_t& i)
         : fAddressFamily_ (AddressFamily::V4)
 #if qPlatform_POSIX
-        , fV4_
-    {
-        i
-    }
+        , fV4_{
+              i}
 #elif qPlatform_Windows
-        , fV4_
-    {
-        in_addr
-        {
-            {
-                static_cast<uint8_t> (Memory::BitSubstring (i, 0, 8)),
-                    static_cast<uint8_t> (Memory::BitSubstring (i, 8, 16)),
-                    static_cast<uint8_t> (Memory::BitSubstring (i, 16, 24)),
-                    static_cast<uint8_t> (Memory::BitSubstring (i, 24, 32))
-            }
-        }
-    }
+        , fV4_{
+              in_addr{
+                  {static_cast<uint8_t> (Memory::BitSubstring (i, 0, 8)),
+                   static_cast<uint8_t> (Memory::BitSubstring (i, 8, 16)),
+                   static_cast<uint8_t> (Memory::BitSubstring (i, 16, 24)),
+                   static_cast<uint8_t> (Memory::BitSubstring (i, 24, 32))}}}
 #endif
     {
 #if qPlatform_Windows
@@ -53,15 +45,10 @@ namespace Stroika::Foundation::IO::Network {
 #endif
     }
     inline InternetAddress::InternetAddress (const in_addr_t& i, ByteOrder byteOrder)
-        : fAddressFamily_
-    {
-        AddressFamily::V4
-    }
+        : fAddressFamily_{
+              AddressFamily::V4}
 #if qPlatform_POSIX
-    , fV4_
-    {
-        i
-    }
+        , fV4_{i}
 #endif
     {
 #if qPlatform_Windows

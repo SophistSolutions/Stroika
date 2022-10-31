@@ -147,10 +147,8 @@ namespace {
     public:
         MyXercesMemMgr_ ()
 #if qXMLDBTrackAllocs
-            : fAllocator
-        {
-            fBaseAllocator
-        }
+            : fAllocator{
+                  fBaseAllocator}
 #endif
         {
         }
@@ -200,7 +198,7 @@ namespace {
 #if qXMLDBTrackAllocs
                 return fAllocator.Deallocate (p);
 #else
-                ::operator delete (p);
+                ::       operator delete (p);
 #endif
             }
         }

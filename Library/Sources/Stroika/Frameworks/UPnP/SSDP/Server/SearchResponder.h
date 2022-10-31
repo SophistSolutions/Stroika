@@ -35,8 +35,8 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
      */
     class SearchResponder {
     public:
-        SearchResponder ()                       = default;
-        SearchResponder (const SearchResponder&) = delete;
+        SearchResponder ()                                       = default;
+        SearchResponder (const SearchResponder&)                 = delete;
         const SearchResponder operator= (const SearchResponder&) = delete;
         ~SearchResponder ()                                      = default;
 

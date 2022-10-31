@@ -151,7 +151,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         };
 
     public:
-        nonvirtual SrcStream& GetSrcStream () const;
+        nonvirtual SrcStream&  GetSrcStream () const;
         nonvirtual SinkStream& GetSinkStream () const;
 
     private:
@@ -342,7 +342,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void Write () = 0;
 
     public:
-        nonvirtual SrcStream& GetSrcStream () const;
+        nonvirtual SrcStream&  GetSrcStream () const;
         nonvirtual SinkStream& GetSinkStream () const;
 
     private:
@@ -774,7 +774,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     private: // prevent accidental copying
         StyledTextIOWriterSinkStream_Memory (const StyledTextIOWriterSinkStream_Memory&) = delete;
-        void operator= (const StyledTextIOWriterSinkStream_Memory&) = delete;
+        void operator= (const StyledTextIOWriterSinkStream_Memory&)                      = delete;
 
     public:
         virtual size_t current_offset () const override;

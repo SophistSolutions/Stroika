@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         nonvirtual Deque_DoublyLinkedList<T>& operator= (Deque_DoublyLinkedList<T>&& rhs) noexcept = default;
-        nonvirtual Deque_DoublyLinkedList<T>& operator= (const Deque_DoublyLinkedList<T>& rhs) = default;
+        nonvirtual Deque_DoublyLinkedList<T>& operator= (const Deque_DoublyLinkedList<T>& rhs)     = default;
 
     protected:
         using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;

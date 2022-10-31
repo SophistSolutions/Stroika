@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual Deque& operator= (Deque&& rhs) noexcept = default;
-        nonvirtual Deque& operator= (const Deque& rhs) = default;
+        nonvirtual Deque& operator= (const Deque& rhs)     = default;
 
     public:
         /**

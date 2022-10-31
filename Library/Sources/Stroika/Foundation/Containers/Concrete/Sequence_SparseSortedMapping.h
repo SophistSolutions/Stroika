@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         nonvirtual const Rep_& GetRep_ () const;
-        nonvirtual Rep_& GetRep_ ();
+        nonvirtual Rep_&       GetRep_ ();
     };
 }
 

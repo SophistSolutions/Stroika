@@ -22,7 +22,7 @@ using namespace Stroika::Foundation::Cryptography::Digest;
 #define get16bits_ref_(d) (*((const uint16_t*)(d)))
 #endif
 #if !defined(get16bits_ref_)
-#define get16bits_ref_(d) ((((uint32_t) (((const uint8_t*)(d))[1])) << 8) + (uint32_t) (((const uint8_t*)(d))[0]))
+#define get16bits_ref_(d) ((((uint32_t)(((const uint8_t*)(d))[1])) << 8) + (uint32_t)(((const uint8_t*)(d))[0]))
 #endif
 
 namespace {

@@ -50,7 +50,7 @@ namespace Stroika::Frameworks::Led {
         virtual ~SimpleTextImager ();
 
     private:
-        SimpleTextImager (const SimpleTextImager&) = delete;
+        SimpleTextImager (const SimpleTextImager&)          = delete;
         nonvirtual void operator= (const SimpleTextImager&) = delete;
 
     protected:

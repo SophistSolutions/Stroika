@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         Logger& operator= (const Logger&) = delete;
-        Logger& operator= (Logger&&) = delete;
+        Logger& operator= (Logger&&)      = delete;
 
 #if qDebug
     private:

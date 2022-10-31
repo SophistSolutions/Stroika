@@ -114,7 +114,7 @@ namespace {
             PrioritizedNames (const PrioritizedNames& src) = default;
 
             PrioritizedNames& operator= (PrioritizedNames&& rhs) noexcept = default;
-            PrioritizedNames& operator= (const PrioritizedNames& rhs) = default;
+            PrioritizedNames& operator= (const PrioritizedNames& rhs)     = default;
 
             String GetName () const
             {

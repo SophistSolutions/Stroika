@@ -192,7 +192,7 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         constexpr InternetAddress& operator= (const InternetAddress&) noexcept = default;
-        constexpr InternetAddress& operator= (InternetAddress&&) noexcept = default;
+        constexpr InternetAddress& operator= (InternetAddress&&) noexcept      = default;
 
     public:
         /**

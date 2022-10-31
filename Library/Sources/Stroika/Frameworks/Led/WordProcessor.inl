@@ -1056,7 +1056,7 @@ namespace Stroika::Frameworks::Led {
         AssertNotNull (fCellEditor);
         return *fCellEditor;
     }
-    inline WordProcessor::Table::EmbeddedTableWordProcessor* WordProcessor::Table::TemporarilyAllocateCellWP::operator-> ()
+    inline WordProcessor::Table::EmbeddedTableWordProcessor* WordProcessor::Table::TemporarilyAllocateCellWP::operator->()
     {
         AssertNotNull (fCellEditor);
         return fCellEditor;
@@ -1081,7 +1081,7 @@ namespace Stroika::Frameworks::Led {
     {
         return *fWP;
     }
-    inline WordProcessor::Table::EmbeddedTableWordProcessor* WordProcessor::Table::TemporarilyAllocateCellWithTablet::operator-> ()
+    inline WordProcessor::Table::EmbeddedTableWordProcessor* WordProcessor::Table::TemporarilyAllocateCellWithTablet::operator->()
     {
         return fWP;
     }

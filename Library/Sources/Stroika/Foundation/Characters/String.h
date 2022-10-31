@@ -360,7 +360,7 @@ namespace Stroika::Foundation::Characters {
         String (_SharedPtrIRep&& rep) noexcept;
 
     public:
-        nonvirtual String& operator= (String&& rhs) noexcept = default;
+        nonvirtual String& operator= (String&& rhs) noexcept      = default;
         nonvirtual String& operator= (const String& rhs) noexcept = default;
 
     public:

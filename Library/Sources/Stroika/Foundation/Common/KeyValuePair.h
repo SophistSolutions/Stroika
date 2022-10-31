@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Common {
         /**
          */
         nonvirtual KeyValuePair& operator= (const KeyValuePair& rhs) = default;
-        nonvirtual KeyValuePair& operator= (KeyValuePair&& rhs) = default;
+        nonvirtual KeyValuePair& operator= (KeyValuePair&& rhs)      = default;
         template <typename KEY_TYPE2, typename VALUE_TYPE2>
         nonvirtual KeyValuePair& operator= (const pair<KEY_TYPE2, VALUE_TYPE2>& rhs);
         template <typename KEY_TYPE2, typename VALUE_TYPE2>

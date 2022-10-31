@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
         if (fSlotsAllocated_ != slotsAlloced) {
             if (slotsAlloced == 0) {
-                delete[](char*) fItems_;
+                delete[] (char*)fItems_;
                 fItems_ = nullptr;
             }
             else {
@@ -190,7 +190,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                         uninitialized_copy_n (&fItems_[0], n2Copy, newV);
                     }
                     catch (...) {
-                        delete[](char*) newV;
+                        delete[] (char*)newV;
                         throw;
                     }
                     {
@@ -199,7 +199,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                             destroy_at (p);
                         }
                     }
-                    delete[](char*) fItems_;
+                    delete[] (char*)fItems_;
                     fItems_ = newV;
 #else
                     fItems_ = (T*)realloc (fItems_, sizeof (T) * slotsAlloced);
@@ -313,7 +313,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline Array<T>::~Array ()
     {
         RemoveAll (); // call destructors on elements
-        delete[](char*) fItems_;
+        delete[] (char*)fItems_;
     }
     template <typename T>
     inline void Array<T>::MoveIteratorHereAfterClone (IteratorBase* pi, [[maybe_unused]] const Array<T>* movedFrom) const

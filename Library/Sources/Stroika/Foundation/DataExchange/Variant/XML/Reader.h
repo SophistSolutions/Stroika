@@ -53,7 +53,7 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
 
     private:
         nonvirtual const Rep_& GetRep_ () const;
-        nonvirtual Rep_& GetRep_ ();
+        nonvirtual Rep_&       GetRep_ ();
     };
 
 }

@@ -112,8 +112,8 @@ namespace {
             }
             {
                 const auto                 kReference_ = Mapping<String, String>{{L"Cache-Control", L"no-cache"},
-                                                                 {L"blah-blah", L"unknown-header"},
-                                                                 {L"Content-Length", L"3"}};
+                                                                                 {L"blah-blah", L"unknown-header"},
+                                                                                 {L"Content-Length", L"3"}};
                 IO::Network::HTTP::Headers h{kReference_};
                 VerifyTestResult (h.contentLength () == 3);
                 VerifyTestResult (h.cacheControl () == CacheControl{CacheControl::eNoCache});

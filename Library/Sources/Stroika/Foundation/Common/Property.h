@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Common {
         constexpr ReadOnlyProperty (G getter);
 
     public:
-        nonvirtual ReadOnlyProperty& operator= (const ReadOnlyProperty&) = delete;
+        nonvirtual ReadOnlyProperty& operator= (const ReadOnlyProperty&)  = delete;
         nonvirtual ReadOnlyProperty& operator= (const ReadOnlyProperty&&) = delete;
 
     public:
@@ -220,7 +220,7 @@ namespace Stroika::Foundation::Common {
          *  we cannot generically read from a write-only property to copy its value.
          */
         nonvirtual WriteOnlyProperty& operator= (Configuration::ArgByValueType<T> value);
-        nonvirtual WriteOnlyProperty& operator= (const WriteOnlyProperty&) = delete;
+        nonvirtual WriteOnlyProperty& operator= (const WriteOnlyProperty&)  = delete;
         nonvirtual WriteOnlyProperty& operator= (const WriteOnlyProperty&&) = delete;
 
     public:
@@ -574,7 +574,7 @@ namespace Stroika::Foundation::Common {
          *          bool checkIsImage2 = PredefinedInternetMediaType::kPNG->IsImageFormat ();
          *      \endcode
          */
-        nonvirtual const T* operator-> () const;
+        nonvirtual const T* operator->() const;
 
     private:
         const function<T ()> fOneTimeGetter_;

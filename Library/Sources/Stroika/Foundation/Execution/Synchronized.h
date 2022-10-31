@@ -395,7 +395,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  @see load ()
          */
-        nonvirtual ReadableReference operator-> () const;
+        nonvirtual ReadableReference operator->() const;
 
     public:
         /**
@@ -619,7 +619,7 @@ namespace Stroika::Foundation::Execution {
          *          But you don't need to use it, and this really does act as a smart pointer so it should most often just be
          *          more clear.
          */
-        nonvirtual const T* operator-> () const;
+        nonvirtual const T* operator->() const;
 
     public:
         /**
@@ -670,8 +670,8 @@ namespace Stroika::Foundation::Execution {
 
     public:
         WritableReference (WritableReference&& src);
-        nonvirtual WritableReference& operator= (const WritableReference& rhs) = delete;
-        nonvirtual const WritableReference& operator                           = (T rhs);
+        nonvirtual WritableReference&       operator= (const WritableReference& rhs) = delete;
+        nonvirtual const WritableReference& operator= (T rhs);
 
     public:
         /**
@@ -679,8 +679,8 @@ namespace Stroika::Foundation::Execution {
          *          But you don't need to use it, and this really does act as a smart pointer so it should most often just be
          *          more clear.
          */
-        nonvirtual T*    operator-> ();
-        nonvirtual const T* operator-> () const;
+        nonvirtual T*       operator->();
+        nonvirtual const T* operator->() const;
 
     public:
         /**

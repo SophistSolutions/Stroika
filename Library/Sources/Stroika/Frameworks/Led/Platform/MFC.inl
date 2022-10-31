@@ -90,7 +90,7 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         return &fTablet;
     }
-    inline Tablet* Led_MFC_TabletFromCDC::operator-> ()
+    inline Tablet* Led_MFC_TabletFromCDC::operator->()
     {
         return &fTablet;
     }
@@ -593,7 +593,7 @@ namespace Stroika::Frameworks::Led::Platform {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
         Assert (::IsWindow (this->m_hWnd));
-        return (BOOL)::SendMessage (this->m_hWnd, EM_SETTABSTOPS, 1, (LPARAM) (LPINT)&cxEachStop);
+        return (BOOL)::SendMessage (this->m_hWnd, EM_SETTABSTOPS, 1, (LPARAM)(LPINT)&cxEachStop);
     }
     template <typename BASECLASS>
     inline BOOL Led_MFC_MimicMFCAPIHelper<BASECLASS>::Undo ()
@@ -1022,11 +1022,11 @@ namespace Stroika::Frameworks::Led::Platform {
         size_t                                 ucSelStart = (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetStart () : this->GetSelectionStart ();
         size_t                                 ucSelEnd   = (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetEnd () : this->GetSelectionEnd ();
         TextInteractor::UndoableContextHelper  undoContext (
-            *this,
+             *this,
             (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? GetCommandNames ().fDragNDropCommandName : GetCommandNames ().fDropCommandName,
-            this->GetSelectionStart (), this->GetSelectionEnd (),
-            ucSelStart, ucSelEnd,
-            false);
+             this->GetSelectionStart (), this->GetSelectionEnd (),
+             ucSelStart, ucSelEnd,
+             false);
         {
             try {
                 this->InternalizeBestFlavor (flavors);
@@ -1317,9 +1317,9 @@ namespace Stroika::Frameworks::Led::Platform {
         Led_Rect useRect    = AsLedRect (winRect);
         Led_Rect marginRect = Led_MFC_TabletFromCDC (pDC)->CvtFromTWIPS (fPrintMargins);
         useRect             = Led_Rect (useRect.GetTop () + marginRect.GetTop (),
-                            useRect.GetLeft () + marginRect.GetLeft (),
-                            useRect.GetHeight () - (marginRect.GetTop () + marginRect.GetBottom ()),
-                            useRect.GetWidth () - (marginRect.GetLeft () + marginRect.GetRight ()));
+                                        useRect.GetLeft () + marginRect.GetLeft (),
+                                        useRect.GetHeight () - (marginRect.GetTop () + marginRect.GetBottom ()),
+                                        useRect.GetWidth () - (marginRect.GetLeft () + marginRect.GetRight ()));
         return useRect;
     }
     template <typename BASECLASS>

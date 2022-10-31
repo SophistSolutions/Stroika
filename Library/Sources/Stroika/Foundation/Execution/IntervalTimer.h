@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         Manager& operator= (const Manager&) = delete;
-        Manager& operator= (Manager&&) = default;
+        Manager& operator= (Manager&&)      = default;
 
     public:
         nonvirtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when);
@@ -212,7 +212,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         nonvirtual Adder& operator= (const Adder&) = delete;
-        nonvirtual Adder& operator                 = (Adder&& rhs);
+        nonvirtual Adder& operator= (Adder&& rhs);
 
     public:
         /**

@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Common {
                 : _Storage{}
             {
             }
-            StorageImpl_ (const StorageImpl_&) = delete;
+            StorageImpl_ (const StorageImpl_&)            = delete;
             StorageImpl_& operator= (const StorageImpl_&) = delete;
 #if __has_cpp_attribute(msvc::noop_dtor)
             [[msvc::noop_dtor]]

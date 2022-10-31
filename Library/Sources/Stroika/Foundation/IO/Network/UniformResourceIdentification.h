@@ -132,7 +132,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     public:
         nonvirtual SchemeType& operator= (const SchemeType&) = default;
-        nonvirtual SchemeType& operator= (SchemeType&&) = default;
+        nonvirtual SchemeType& operator= (SchemeType&&)      = default;
 
     public:
         /**
@@ -204,7 +204,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         Host () = default;
 
     public:
-        nonvirtual Host& operator= (const Host&) = default;
+        nonvirtual Host& operator= (const Host&)     = default;
         nonvirtual Host& operator= (Host&&) noexcept = default;
 
     public:
@@ -334,7 +334,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     public:
         nonvirtual UserInfo& operator= (const UserInfo&) noexcept = default;
-        nonvirtual UserInfo& operator= (UserInfo&&) noexcept = default;
+        nonvirtual UserInfo& operator= (UserInfo&&) noexcept      = default;
 
     public:
         /**
@@ -419,7 +419,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         Authority (Authority&&) noexcept = default;
 
     public:
-        nonvirtual Authority& operator= (const Authority&) = default;
+        nonvirtual Authority& operator= (const Authority&)     = default;
         nonvirtual Authority& operator= (Authority&&) noexcept = default;
 
     public:
@@ -534,7 +534,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     public:
         nonvirtual Query& operator= (const Query&) = default;
-        nonvirtual Query& operator= (Query&&) = default;
+        nonvirtual Query& operator= (Query&&)      = default;
 
     public:
         nonvirtual const Containers::Mapping<String, String>& GetMap () const;

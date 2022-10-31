@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Memory {
 
         BasicRep_ (const initializer_list<pair<const byte*, const byte*>>& startEndPairs);
         BasicRep_ (const initializer_list<BLOB>& list2Concatenate);
-        BasicRep_ (const BasicRep_&) = delete;
+        BasicRep_ (const BasicRep_&)            = delete;
         BasicRep_& operator= (const BasicRep_&) = delete;
 
         virtual pair<const byte*, const byte*> GetBounds () const override;
@@ -45,8 +45,8 @@ namespace Stroika::Foundation::Memory {
 
     struct BLOB::ZeroRep_ : public _IRep, public Memory::UseBlockAllocationIfAppropriate<ZeroRep_> {
         virtual pair<const byte*, const byte*> GetBounds () const override;
-        ZeroRep_ ()                = default;
-        ZeroRep_ (const ZeroRep_&) = delete;
+        ZeroRep_ ()                           = default;
+        ZeroRep_ (const ZeroRep_&)            = delete;
         ZeroRep_& operator= (const ZeroRep_&) = delete;
     };
 

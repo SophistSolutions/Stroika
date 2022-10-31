@@ -24,7 +24,7 @@ namespace Stroika {
         SimpleClass (size_t v);
         ~SimpleClass ();
 
-        SimpleClass& operator= (SimpleClass&& rhs) = default;
+        SimpleClass& operator= (SimpleClass&& rhs)  = default;
         SimpleClass& operator= (const SimpleClass&) = default;
 
         nonvirtual size_t GetValue () const;
@@ -34,7 +34,7 @@ namespace Stroika {
         explicit    operator size_t () const;
 
         bool operator== (const SimpleClass& rhs) const;
-        bool operator< (const SimpleClass& rhs) const;
+        bool operator<(const SimpleClass& rhs) const;
 
     private:
         size_t        fValue_;
@@ -53,7 +53,7 @@ namespace Stroika {
         SimpleClassWithoutComparisonOperators (size_t v);
         ~SimpleClassWithoutComparisonOperators ();
 
-        SimpleClassWithoutComparisonOperators& operator= (SimpleClassWithoutComparisonOperators&& rhs) = default;
+        SimpleClassWithoutComparisonOperators& operator= (SimpleClassWithoutComparisonOperators&& rhs)  = default;
         SimpleClassWithoutComparisonOperators& operator= (const SimpleClassWithoutComparisonOperators&) = default;
 
         nonvirtual size_t GetValue () const;

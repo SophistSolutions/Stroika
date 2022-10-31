@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Memory {
         /**
          */
         nonvirtual BLOB& operator= (BLOB&& rhs) noexcept = default;
-        nonvirtual BLOB& operator= (const BLOB& rhs) = default;
+        nonvirtual BLOB& operator= (const BLOB& rhs)     = default;
 
     public:
         /**

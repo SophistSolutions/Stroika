@@ -882,7 +882,7 @@ namespace Stroika::Foundation::Execution {
         class SuppressInterruptionInContext {
         public:
             SuppressInterruptionInContext ();
-            SuppressInterruptionInContext (const SuppressInterruptionInContext&) = delete;
+            SuppressInterruptionInContext (const SuppressInterruptionInContext&)            = delete;
             SuppressInterruptionInContext& operator= (const SuppressInterruptionInContext&) = delete;
             ~SuppressInterruptionInContext ();
         };

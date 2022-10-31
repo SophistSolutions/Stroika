@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Time {
         /**
          */
         nonvirtual Timezone& operator= (Timezone&& rhs) noexcept = default;
-        nonvirtual Timezone& operator= (const Timezone& rhs) = default;
+        nonvirtual Timezone& operator= (const Timezone& rhs)     = default;
 
     public:
         /**

@@ -356,7 +356,7 @@ const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = 'DIB ';
 #elif qPlatform_Windows
 const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = CF_DIB;
 #elif qStroika_FeatureSupported_XWindows
-const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = 666; // X-TMP-HACK-LGP991214
+const Led_ClipFormat StandardDIBStyleMarker::kClipFormat     = 666;    // X-TMP-HACK-LGP991214
 #endif
 const Led_PrivateEmbeddingTag StandardDIBStyleMarker::kEmbeddingTag = "DIB";
 
@@ -1311,7 +1311,7 @@ StandardUnknownTypeStyleMarker::StandardUnknownTypeStyleMarker (Led_ClipFormat f
 
 StandardUnknownTypeStyleMarker::~StandardUnknownTypeStyleMarker ()
 {
-    delete[](char*) fData;
+    delete[] (char*)fData;
 }
 
 /*
@@ -1352,7 +1352,7 @@ TWIPS_Point StandardUnknownTypeStyleMarker::CalcStaticDefaultShownSize ()
     RequireNotNull (sUnknownPict);
     Led_Size pixelSize = Led_GetDIBImageSize (sUnknownPict);
 #elif qStroika_FeatureSupported_XWindows
-    Led_Size pixelSize = Led_Size (10, 10); //  X-TMP-HACK-LGP2000-06-13
+    Led_Size pixelSize = Led_Size (10, 10);                            //  X-TMP-HACK-LGP2000-06-13
 #endif
 
     return TWIPS_Point (Led_CvtScreenPixelsToTWIPSV (pixelSize.v), Led_CvtScreenPixelsToTWIPSH (pixelSize.h));
@@ -1613,7 +1613,7 @@ static void DIBDrawSegment (const Led_DIB*         dib,
 #else
         ::CopyBits (reinterpret_cast<BitMap*> (pmPtr), &destPort->portBits, &pmPtr->bounds, &rr, srcCopy, nullptr);
 #endif
-        delete[](char*) pmPtr->baseAddr;
+        delete[] (char*)pmPtr->baseAddr;
         ::DisposePixMap (pm);
     }
     catch (...) {
@@ -1675,7 +1675,7 @@ static PixMap** MakePixMapFromDIB (const Led_DIB* dib)
 
     PixMap** result = ::NewPixMap ();
     if (result == nullptr) {
-        delete[](char*) newImageData;
+        delete[] (char*)newImageData;
         Execution::Throw (bad_alloc{});
     }
     (*result)->bounds.top    = 0;
@@ -1719,7 +1719,7 @@ static PixMap** MakePixMapFromDIB (const Led_DIB* dib)
 
         CTabHandle newCLUT = (CTabHandle)::NewHandle (sizeof (ColorTable) + (nColors - 1) * sizeof (ColorSpec));
         if (newCLUT == nullptr) {
-            delete[](char*) newImageData;
+            delete[] (char*)newImageData;
             ::DisposePixMap (result);
             Execution::Throw (bad_alloc{});
         }

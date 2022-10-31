@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Database::SQL {
     public:
         /**
          */
-        nonvirtual IRep* operator-> () const noexcept;
+        nonvirtual IRep* operator->() const noexcept;
 
     public:
         /**

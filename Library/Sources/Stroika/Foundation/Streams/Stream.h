@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Streams {
     public:
         /**
          */
-        nonvirtual Ptr& operator= (const Ptr&) = default;
+        nonvirtual Ptr& operator= (const Ptr&)     = default;
         nonvirtual Ptr& operator= (Ptr&&) noexcept = default;
 
     protected:

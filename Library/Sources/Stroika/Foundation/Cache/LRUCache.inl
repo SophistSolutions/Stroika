@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Cache {
             RequireNotNull (fCur);
             return fCur->fElement;
         }
-        optional<KeyValuePair_>* operator-> ()
+        optional<KeyValuePair_>* operator->()
         {
             RequireNotNull (fCur);
             return &fCur->fElement;

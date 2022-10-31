@@ -230,7 +230,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             std::byte*                operatingOnObj      = reinterpret_cast<std::byte*> (this->fValuePtr_);
             std::byte*                operatingOnObjField = operatingOnObj + ti->fOffset;
             ReaderFromVoidStarFactory factory             = LookupFactoryForName_ (name);
-            return (factory) (operatingOnObjField);
+            return (factory)(operatingOnObjField);
         }
         else if (fThrowOnUnrecongizedelts_) {
             ThrowUnRecognizedStartElt (name);
@@ -248,7 +248,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             std::byte*                operatingOnObj      = reinterpret_cast<std::byte*> (this->fValuePtr_);
             std::byte*                operatingOnObjField = operatingOnObj + fValueFieldMetaInfo_->fOffset;
             ReaderFromVoidStarFactory factory             = LookupFactoryForName_ (Name{Name::NameType::eValue});
-            fValueFieldConsumer_                          = (factory) (operatingOnObjField);
+            fValueFieldConsumer_                          = (factory)(operatingOnObjField);
             fValueFieldConsumer_->Activated (*fActiveContext_);
             fValueFieldMetaInfo_ = nullopt;
         }

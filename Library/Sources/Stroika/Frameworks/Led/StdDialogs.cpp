@@ -2257,8 +2257,8 @@ void StdColorPickBox::OnOK ()
     gtk_color_selection_get_color (GTK_COLOR_SELECTION (GTK_COLOR_SELECTION_DIALOG (GetWindow ())->colorsel), colors);
     using CV = Color::ColorValue;
     fColor   = Color (static_cast<CV> (colors[0] * Color::kColorValueMax),
-                    static_cast<CV> (colors[1] * Color::kColorValueMax),
-                    static_cast<CV> (colors[2] * Color::kColorValueMax));
+                      static_cast<CV> (colors[1] * Color::kColorValueMax),
+                      static_cast<CV> (colors[2] * Color::kColorValueMax));
 }
 #endif
 #endif

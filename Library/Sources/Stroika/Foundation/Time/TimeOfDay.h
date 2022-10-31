@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Time {
         /**
          */
         nonvirtual TimeOfDay& operator= (TimeOfDay&&) noexcept = default;
-        nonvirtual TimeOfDay& operator= (const TimeOfDay&) = default;
+        nonvirtual TimeOfDay& operator= (const TimeOfDay&)     = default;
 
     public:
         /**

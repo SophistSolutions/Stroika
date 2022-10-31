@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Streams {
 
     public:
         nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-        nonvirtual Ptr& operator= (Ptr&& rhs) = default;
+        nonvirtual Ptr& operator= (Ptr&& rhs)      = default;
 
     public:
         nonvirtual size_t GetBufferSize () const;

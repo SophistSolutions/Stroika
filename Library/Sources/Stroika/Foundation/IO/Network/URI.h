@@ -122,7 +122,7 @@ namespace Stroika::Foundation::IO::Network {
         // clang-format on
 
     public:
-        nonvirtual URI& operator= (const URI&) = default;
+        nonvirtual URI& operator= (const URI&)     = default;
         nonvirtual URI& operator= (URI&&) noexcept = default;
 
     public:

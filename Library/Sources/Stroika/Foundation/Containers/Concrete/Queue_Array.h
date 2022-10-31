@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         nonvirtual Queue_Array& operator= (Queue_Array&& rhs) noexcept = default;
-        nonvirtual Queue_Array& operator= (const Queue_Array& rhs) = default;
+        nonvirtual Queue_Array& operator= (const Queue_Array& rhs)     = default;
 
     public:
         /*

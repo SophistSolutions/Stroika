@@ -131,7 +131,7 @@ public:
     BEGIN_INTERFACE_PART (ObjSafe, IObjectSafety)
     STDMETHOD_ (HRESULT, GetInterfaceSafetyOptions)
     (
-        /* [in] */ REFIID riid,
+        /* [in] */ REFIID            riid,
         /* [out] */ DWORD __RPC_FAR* pdwSupportedOptions,
         /* [out] */ DWORD __RPC_FAR* pdwEnabledOptions);
 
@@ -264,12 +264,12 @@ private:
     CComPtr<IDispatch> fAcceleratorTable;
 
 protected:
-    afx_msg VARIANT OLE_GetContextMenu ();
-    afx_msg void    OLE_SetContextMenu (VARIANT& newValue);
-    afx_msg VARIANT OLE_GetToolbarList ();
-    afx_msg void    OLE_SetToolbarList (VARIANT& newValue);
-    afx_msg VARIANT OLE_GetBuiltinCommands ();
-    afx_msg VARIANT OLE_GetPredefinedMenus ();
+    afx_msg VARIANT    OLE_GetContextMenu ();
+    afx_msg void       OLE_SetContextMenu (VARIANT& newValue);
+    afx_msg VARIANT    OLE_GetToolbarList ();
+    afx_msg void       OLE_SetToolbarList (VARIANT& newValue);
+    afx_msg VARIANT    OLE_GetBuiltinCommands ();
+    afx_msg VARIANT    OLE_GetPredefinedMenus ();
     afx_msg IDispatch* OLE_GetDefaultContextMenu ();
     afx_msg IDispatch* OLE_GetDefaultAcceleratorTable ();
     afx_msg IDispatch* OLE_MakeNewPopupMenuItem ();
@@ -280,16 +280,16 @@ protected:
     afx_msg BOOL       OLE_CommandChecked (const VARIANT& command);
     afx_msg IDispatch* OLE_MakeNewToolbarList ();
     nonvirtual CComPtr<IDispatch> MakeNewToolbar ();
-    afx_msg IDispatch* OLE_MakeNewToolbar ();
-    afx_msg IDispatch* OLE_MakeIconButtonToolbarItem ();
+    afx_msg IDispatch*            OLE_MakeNewToolbar ();
+    afx_msg IDispatch*            OLE_MakeIconButtonToolbarItem ();
     nonvirtual CComPtr<IDispatch> MakeSeparatorToolbarItem ();
-    afx_msg IDispatch* OLE_MakeSeparatorToolbarItem ();
+    afx_msg IDispatch*            OLE_MakeSeparatorToolbarItem ();
     nonvirtual CComPtr<IDispatch> MakeBuiltinToolbar (LPCOLESTR builtinToolbarName);
-    afx_msg IDispatch* OLE_MakeBuiltinToolbar (LPCOLESTR builtinToolbarName);
+    afx_msg IDispatch*            OLE_MakeBuiltinToolbar (LPCOLESTR builtinToolbarName);
     nonvirtual CComPtr<IDispatch> MakeBuiltinToolbarItem (LPCOLESTR builtinToolbarItemName);
-    afx_msg IDispatch* OLE_MakeBuiltinToolbarItem (LPCOLESTR builtinToolbarItemName);
-    afx_msg VARIANT    OLE_GetAcceleratorTable ();
-    afx_msg void       OLE_SetAcceleratorTable (VARIANT& newValue);
+    afx_msg IDispatch*            OLE_MakeBuiltinToolbarItem (LPCOLESTR builtinToolbarItemName);
+    afx_msg VARIANT               OLE_GetAcceleratorTable ();
+    afx_msg void                  OLE_SetAcceleratorTable (VARIANT& newValue);
 
 private:
     struct ToolBarIconSpec {

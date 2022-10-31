@@ -66,7 +66,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         nonvirtual VariantValue Read (wistream& in);
 
     protected:
-        nonvirtual _IRep& _GetRep ();
+        nonvirtual _IRep&       _GetRep ();
         nonvirtual const _IRep& _GetRep () const;
 
     protected:

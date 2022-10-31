@@ -72,7 +72,7 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         nonvirtual Listener& operator= (Listener&&) noexcept = default;
-        nonvirtual Listener& operator= (const Listener&) = delete;
+        nonvirtual Listener& operator= (const Listener&)     = delete;
 
     private:
         struct Rep_;

@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Containers {
 
     protected:
         nonvirtual const _IRep& _GetRep () const;
-        nonvirtual _IRep& _GetRep ();
+        nonvirtual _IRep&       _GetRep ();
     };
 
     /**

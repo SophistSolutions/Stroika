@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Memory {
         /**
          *  \em Note - this CAN NOT return nullptr (because -> semantics are typically invalid for a logically null pointer)
          */
-        nonvirtual T* operator-> () const noexcept;
+        nonvirtual T* operator->() const noexcept;
 
     public:
         /**

@@ -61,7 +61,7 @@ namespace {
                 Execution::ReThrow ();
             }
         }
-        InOutStrmCommon_ (const InOutStrmCommon_&) = delete;
+        InOutStrmCommon_ (const InOutStrmCommon_&)            = delete;
         InOutStrmCommon_& operator= (const InOutStrmCommon_&) = delete;
         virtual ~InOutStrmCommon_ ()
         {

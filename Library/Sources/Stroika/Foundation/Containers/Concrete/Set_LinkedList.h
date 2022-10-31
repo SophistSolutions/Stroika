@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         nonvirtual Set_LinkedList& operator= (Set_LinkedList&& rhs) noexcept = default;
-        nonvirtual Set_LinkedList& operator= (const Set_LinkedList& rhs) = default;
+        nonvirtual Set_LinkedList& operator= (const Set_LinkedList& rhs)     = default;
 
     protected:
         using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;

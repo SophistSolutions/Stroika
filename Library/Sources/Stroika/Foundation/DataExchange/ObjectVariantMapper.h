@@ -280,7 +280,7 @@ namespace Stroika::Foundation::DataExchange {
             TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
 
             nonvirtual TypeMappingDetails& operator= (TypeMappingDetails&& rhs) noexcept = default;
-            nonvirtual TypeMappingDetails& operator= (const TypeMappingDetails& rhs) = default;
+            nonvirtual TypeMappingDetails& operator= (const TypeMappingDetails& rhs)     = default;
 
             /**
              */

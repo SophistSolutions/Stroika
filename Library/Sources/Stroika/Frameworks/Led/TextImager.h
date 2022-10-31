@@ -880,7 +880,7 @@ namespace Stroika::Frameworks::Led {
             AssertNotNull (fTablet);
             return (fTablet);
         }
-        Tablet* operator-> ()
+        Tablet* operator->()
         {
             return fTablet;
         }

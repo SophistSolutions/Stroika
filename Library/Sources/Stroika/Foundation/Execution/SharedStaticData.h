@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  Note - though THIS is fully threadsafe, use of the reference T& is only as threadsafe as T itself.
          */
-        nonvirtual T&    Get ();
+        nonvirtual T&       Get ();
         nonvirtual const T& Get () const;
 
     private:

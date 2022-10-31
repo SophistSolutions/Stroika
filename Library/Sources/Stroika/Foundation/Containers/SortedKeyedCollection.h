@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual SortedKeyedCollection& operator= (SortedKeyedCollection&& rhs) noexcept = default;
-        nonvirtual SortedKeyedCollection& operator= (const SortedKeyedCollection& rhs) = default;
+        nonvirtual SortedKeyedCollection& operator= (const SortedKeyedCollection& rhs)     = default;
 
     public:
         /**

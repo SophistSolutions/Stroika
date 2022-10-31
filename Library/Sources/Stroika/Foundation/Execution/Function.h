@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
-        nonvirtual Function& operator= (Function&&) = default;
+        nonvirtual Function& operator= (Function&&)      = default;
         nonvirtual Function& operator= (const Function&) = default;
 
     public:

@@ -39,7 +39,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  For copyability, use ConnectionlessSocket::Ptr for assigned-to type.
          */
-        nonvirtual ConnectionlessSocket& operator= (ConnectionlessSocket&& s) = delete;
+        nonvirtual ConnectionlessSocket& operator= (ConnectionlessSocket&& s)      = delete;
         nonvirtual ConnectionlessSocket& operator= (const ConnectionlessSocket& s) = delete;
 
     public:
@@ -104,7 +104,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
         */
         nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-        nonvirtual Ptr& operator= (Ptr&& rhs) = default;
+        nonvirtual Ptr& operator= (Ptr&& rhs)      = default;
 
     public:
         /**

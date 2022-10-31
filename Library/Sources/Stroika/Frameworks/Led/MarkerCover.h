@@ -59,7 +59,7 @@ namespace Stroika::Frameworks::Led {
 
         // prevent accidental copying
     private:
-        MarkerCover (const MarkerCover&) = delete;
+        MarkerCover (const MarkerCover&)    = delete;
         void operator= (const MarkerCover&) = delete;
 
     public:

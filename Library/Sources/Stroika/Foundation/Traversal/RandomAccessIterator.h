@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Traversal {
          *  Get a reference to the IRep owned by the iterator.
          *  This is an implementation detail, mainly intended for implementors.
          */
-        nonvirtual IRep& GetRep ();
+        nonvirtual IRep&       GetRep ();
         nonvirtual const IRep& GetRep () const;
     };
 

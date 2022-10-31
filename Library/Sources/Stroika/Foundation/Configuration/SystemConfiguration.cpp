@@ -678,7 +678,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         String kernelOSBuildVersion;
         String kernelVersion;
         {
-            /*
+             /*
              *  How you do this seems to change alot. But as of 2019-03-16:
              *      from https://docs.microsoft.com/en-us/windows/desktop/sysinfo/getting-the-system-version
              *          To obtain the full version number for the operating system, 
@@ -712,72 +712,72 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         optional<String> productName;
         optional<String> currentVersion; // windows major-minor version
         try {
-            const Configuration::Platform::Windows::RegistryKey kWinVersionInfo_{HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"sv};
-            if (auto o = kWinVersionInfo_.Lookup (L"ReleaseId"sv)) {
-                platformVersion = o.As<String> ();
+             const Configuration::Platform::Windows::RegistryKey kWinVersionInfo_{HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"sv};
+             if (auto o = kWinVersionInfo_.Lookup (L"ReleaseId"sv)) {
+                 platformVersion = o.As<String> ();
             }
-            if (auto o = kWinVersionInfo_.Lookup (L"ProductName"sv)) {
-                productName = o.As<String> ();
+             if (auto o = kWinVersionInfo_.Lookup (L"ProductName"sv)) {
+                 productName = o.As<String> ();
             }
-            // try to get current version from CurrentMajorVersionNumber/CurrentMinorVersionNumber which appears
-            // to be the new way
-            try {
-                if (auto oMajor = kWinVersionInfo_.Lookup (L"CurrentMajorVersionNumber"sv)) {
-                    if (auto oMinor = kWinVersionInfo_.Lookup (L"CurrentMinorVersionNumber"sv)) {
-                        currentVersion = oMajor.As<String> () + L"." + oMinor.As<String> ();
+             // try to get current version from CurrentMajorVersionNumber/CurrentMinorVersionNumber which appears
+             // to be the new way
+             try {
+                 if (auto oMajor = kWinVersionInfo_.Lookup (L"CurrentMajorVersionNumber"sv)) {
+                     if (auto oMinor = kWinVersionInfo_.Lookup (L"CurrentMinorVersionNumber"sv)) {
+                         currentVersion = oMajor.As<String> () + L"." + oMinor.As<String> ();
                     }
                 }
             }
-            catch (...) {
-                // ignore - older OS may not have this so fallthrough (though that shouldn't cause exception but in case)
+             catch (...) {
+                 // ignore - older OS may not have this so fallthrough (though that shouldn't cause exception but in case)
             }
-            if (not currentVersion) {
-                if (auto o = kWinVersionInfo_.Lookup (L"CurrentVersion"sv)) {
-                    currentVersion = o.As<String> ();
+             if (not currentVersion) {
+                 if (auto o = kWinVersionInfo_.Lookup (L"CurrentVersion"sv)) {
+                     currentVersion = o.As<String> ();
                 }
             }
         }
         catch (...) {
-            DbgTrace (L"Exception suppressed looking up windows version in registry: %s", Characters::ToString (current_exception ()).c_str ());
+             DbgTrace (L"Exception suppressed looking up windows version in registry: %s", Characters::ToString (current_exception ()).c_str ());
         }
 
         if (tmp.fShortPrettyName.empty ()) {
-            tmp.fShortPrettyName = productName.value_or (L"Windows"sv);
+             tmp.fShortPrettyName = productName.value_or (L"Windows"sv);
         }
         tmp.fPrettyNameWithMajorVersion = tmp.fShortPrettyName;
 
         {
-            StringBuilder sb = tmp.fShortPrettyName;
-            if (platformVersion) {
-                sb += L" Version "sv + *platformVersion;
+             StringBuilder sb = tmp.fShortPrettyName;
+             if (platformVersion) {
+                 sb += L" Version "sv + *platformVersion;
             }
-            if (not kernelVersion.empty ()) {
-                sb += L" (OS Build "sv + kernelOSBuildVersion + L")"sv;
+             if (not kernelVersion.empty ()) {
+                 sb += L" (OS Build "sv + kernelOSBuildVersion + L")"sv;
             }
-            tmp.fPrettyNameWithVersionDetails = sb.str ();
+             tmp.fPrettyNameWithVersionDetails = sb.str ();
         }
 
         tmp.fMajorMinorVersionString              = currentVersion.value_or (L"unknown"sv);
         tmp.fRFC1945CompatProductTokenWithVersion = L"Windows/"sv + tmp.fMajorMinorVersionString;
         if constexpr (sizeof (void*) == 4) {
-            tmp.fBits = 32;
-            //IsWow64Process is not available on all supported versions of Windows.
-            //Use GetModuleHandle to get a handle to the DLL that contains the function
-            //and GetProcAddress to get a pointer to the function if available.
-            typedef BOOL (WINAPI * LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
-            DISABLE_COMPILER_MSC_WARNING_START (6387) // ignore check for null GetModuleHandle - if that fails - we have bigger problems and a crash sounds imminent
-            LPFN_ISWOW64PROCESS isWow64Process = (LPFN_ISWOW64PROCESS)::GetProcAddress (::GetModuleHandle (TEXT ("kernel32")), "IsWow64Process");
-            DISABLE_COMPILER_MSC_WARNING_END (6387)
-            if (nullptr != isWow64Process) {
-                BOOL isWOW64 = false;
-                (void)isWow64Process (::GetCurrentProcess (), &isWOW64);
-                if (isWOW64) {
-                    tmp.fBits = 64;
+             tmp.fBits = 32;
+             //IsWow64Process is not available on all supported versions of Windows.
+             //Use GetModuleHandle to get a handle to the DLL that contains the function
+             //and GetProcAddress to get a pointer to the function if available.
+             typedef BOOL (WINAPI * LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
+             DISABLE_COMPILER_MSC_WARNING_START (6387) // ignore check for null GetModuleHandle - if that fails - we have bigger problems and a crash sounds imminent
+             LPFN_ISWOW64PROCESS isWow64Process = (LPFN_ISWOW64PROCESS)::GetProcAddress (::GetModuleHandle (TEXT ("kernel32")), "IsWow64Process");
+             DISABLE_COMPILER_MSC_WARNING_END (6387)
+             if (nullptr != isWow64Process) {
+                 BOOL isWOW64 = false;
+                 (void)isWow64Process (::GetCurrentProcess (), &isWOW64);
+                 if (isWOW64) {
+                     tmp.fBits = 64;
                 }
             }
         }
         else {
-            // In windows, a 64 bit app cannot run on 32-bit windows
+             // In windows, a 64 bit app cannot run on 32-bit windows
             Assert (sizeof (void*) == 8);
             tmp.fBits = 64;
         }
@@ -913,7 +913,7 @@ unsigned int Configuration::GetNumberOfLogicalCPUCores (const chrono::duration<d
         return sysConfigLogCores;
     };
 #else
-    auto compute = computeViaGetSystemConfiguration_CPU; // maybe choose based on OS, etc???, like if I know which library does a good job with std::thread::hardware_concurrency
+    auto compute     = computeViaGetSystemConfiguration_CPU; // maybe choose based on OS, etc???, like if I know which library does a good job with std::thread::hardware_concurrency
 #endif
 
     static atomic<Time::DurationSecondsType> sCachedAt_    = 0;

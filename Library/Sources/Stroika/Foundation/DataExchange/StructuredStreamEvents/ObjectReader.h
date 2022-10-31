@@ -610,7 +610,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         IConsumerDelegateToContext (Context&& r);
         IConsumerDelegateToContext (const Registry& registry);
         IConsumerDelegateToContext (const Registry& registry, const shared_ptr<IElementConsumer>& initialTop);
-        IConsumerDelegateToContext (const IConsumerDelegateToContext& r) = delete;
+        IConsumerDelegateToContext (const IConsumerDelegateToContext& r)          = delete;
         IConsumerDelegateToContext& operator= (const IConsumerDelegateToContext&) = delete;
 
     public:

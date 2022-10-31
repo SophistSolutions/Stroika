@@ -276,7 +276,7 @@ namespace Stroika::Foundation::Cache {
         TimedCache (const TimedCache&) = default;
 
     public:
-        nonvirtual TimedCache& operator= (TimedCache&&) = default;
+        nonvirtual TimedCache& operator= (TimedCache&&)      = default;
         nonvirtual TimedCache& operator= (const TimedCache&) = default;
 
     public:

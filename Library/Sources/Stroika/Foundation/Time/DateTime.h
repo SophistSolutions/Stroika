@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Time {
         /**
          */
         nonvirtual DateTime& operator= (DateTime&& rhs) noexcept = default;
-        nonvirtual DateTime& operator= (const DateTime& rhs) = default;
+        nonvirtual DateTime& operator= (const DateTime& rhs)     = default;
 
     public:
         /**

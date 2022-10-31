@@ -58,10 +58,8 @@ public:
         , fDirName_ (dir)
         , fReportPrefix_ (mkReportPrefix_ (ToPath (dir), iteratorReturns))
 #if qPlatform_POSIX
-        , fDirIt_
-    {
-        ::opendir (dir.AsSDKString ().c_str ())
-    }
+        , fDirIt_{
+              ::opendir (dir.AsSDKString ().c_str ())}
 #endif
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

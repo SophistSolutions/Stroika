@@ -153,7 +153,7 @@ namespace Stroika::Frameworks::Led::Platform {
 
     public:
                 operator Tablet* ();
-        Tablet* operator-> ();
+        Tablet* operator->();
 
     private:
         Tablet fTablet;

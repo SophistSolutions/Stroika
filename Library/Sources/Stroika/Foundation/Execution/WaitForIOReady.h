@@ -234,7 +234,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         nonvirtual WaitForIOReady& operator= (WaitForIOReady&&) noexcept = default;
-        nonvirtual WaitForIOReady& operator= (const WaitForIOReady&) = default;
+        nonvirtual WaitForIOReady& operator= (const WaitForIOReady&)     = default;
 
     public:
         /**

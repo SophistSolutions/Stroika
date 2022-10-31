@@ -564,7 +564,7 @@ namespace {
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
                      kInitList_
 #else
-                     initializer_list<URI> {URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"} }
+                     initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}}
 #endif
                 ) {
                     try {
@@ -635,7 +635,7 @@ namespace {
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
                      kInitList_
 #else
-                     initializer_list<URI> {URI{L"http://httpbin.org/get" }, URI{L"http://www.google.com" }, URI { L"http://www.cnn.com" } }
+                     initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}}
 #endif
                 ) {
                     Connection::Ptr c = factory (u);

@@ -439,8 +439,8 @@ namespace Stroika::Frameworks::Led {
     public:
         nonvirtual StandardMacPictureStyleMarker::PictureHandle GetPictureHandle () const;
         nonvirtual size_t                                       GetPictureByteSize () const;
-        nonvirtual const Led_URLD& GetURLData () const;
-        nonvirtual void            SetURLData (const Led_URLD& urlData);
+        nonvirtual const Led_URLD&                              GetURLData () const;
+        nonvirtual void                                         SetURLData (const Led_URLD& urlData);
 
     private:
         StandardMacPictureStyleMarker::PictureHandle fPictureHandle;

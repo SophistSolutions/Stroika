@@ -53,7 +53,7 @@ namespace Stroika::Foundation::DataExchange::Archive {
         nonvirtual BLOB GetData (const String& fileName) const;
 
     protected:
-        nonvirtual _IRep& _GetRep ();
+        nonvirtual _IRep&       _GetRep ();
         nonvirtual const _IRep& _GetRep () const;
 
     private:

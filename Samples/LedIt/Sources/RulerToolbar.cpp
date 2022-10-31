@@ -446,7 +446,7 @@ BOOL RulerBar::Create (CWnd* pParentWnd, DWORD dwStyle, UINT nID)
     CRect rect;
     rect.SetRectEmpty ();
     LPCTSTR lpszClass = AfxRegisterWndClass (0, ::LoadCursor (NULL, IDC_ARROW),
-                                             (HBRUSH) (COLOR_BTNFACE + 1), NULL);
+                                             (HBRUSH)(COLOR_BTNFACE + 1), NULL);
 
     if (!CWnd::Create (lpszClass, NULL, dwStyle, rect, pParentWnd, nID))
         return FALSE;

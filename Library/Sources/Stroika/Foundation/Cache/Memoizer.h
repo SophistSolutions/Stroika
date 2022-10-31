@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Cache {
 
     public:
         nonvirtual Memoizer& operator= (Memoizer&& rhs) noexcept = default;
-        nonvirtual Memoizer& operator= (const Memoizer& rhs) = default;
+        nonvirtual Memoizer& operator= (const Memoizer& rhs)     = default;
 
     public:
         /**

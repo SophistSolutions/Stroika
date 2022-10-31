@@ -399,24 +399,24 @@ SQL::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
     , pBusyTimeout{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
               const Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pBusyTimeout);
-              RequireNotNull (thisObj->operator-> ());
-              return thisObj->operator-> ()->GetBusyTimeout ();
+              RequireNotNull (thisObj->operator->());
+              return thisObj->operator->()->GetBusyTimeout ();
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto timeout) {
               Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pBusyTimeout);
-              RequireNotNull (thisObj->operator-> ());
-              thisObj->operator-> ()->SetBusyTimeout (timeout);
+              RequireNotNull (thisObj->operator->());
+              thisObj->operator->()->SetBusyTimeout (timeout);
           }}
     , pJournalMode{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
               const Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pJournalMode);
-              RequireNotNull (thisObj->operator-> ());
-              return thisObj->operator-> ()->GetJournalMode ();
+              RequireNotNull (thisObj->operator->());
+              return thisObj->operator->()->GetJournalMode ();
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto journalMode) {
               Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pJournalMode);
-              RequireNotNull (thisObj->operator-> ());
-              thisObj->operator-> ()->SetJournalMode (journalMode);
+              RequireNotNull (thisObj->operator->());
+              thisObj->operator->()->SetJournalMode (journalMode);
           }}
 {
 #if qDebug

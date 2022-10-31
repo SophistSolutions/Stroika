@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Database::SQL {
         }
         return *this;
     }
-    inline Connection::IRep* Connection::Ptr::operator-> () const noexcept
+    inline Connection::IRep* Connection::Ptr::operator->() const noexcept
     {
         return _fRep.get ();
     }

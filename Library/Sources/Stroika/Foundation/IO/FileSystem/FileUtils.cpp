@@ -160,14 +160,14 @@ String IO::FileSystem::GetVolumeName (const filesystem::path& driveLetterAbsPath
     SDKChar volNameBuf[1024]{};
     SDKChar igBuf[1024]{};
     BOOL    result = ::GetVolumeInformation (
-        driveLetterAbsPath.c_str (),
-        volNameBuf,
-        static_cast<DWORD> (NEltsOf (volNameBuf)),
-        nullptr,
-        &ignored,
-        &ignored,
-        igBuf,
-        static_cast<DWORD> (NEltsOf (igBuf)));
+           driveLetterAbsPath.c_str (),
+           volNameBuf,
+           static_cast<DWORD> (NEltsOf (volNameBuf)),
+           nullptr,
+           &ignored,
+           &ignored,
+           igBuf,
+           static_cast<DWORD> (NEltsOf (igBuf)));
     if (result) {
         return String::FromSDKString (volNameBuf);
     }

@@ -38,8 +38,8 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
      */
     class PeriodicNotifier {
     public:
-        PeriodicNotifier ()                        = default;
-        PeriodicNotifier (const PeriodicNotifier&) = delete;
+        PeriodicNotifier ()                                        = default;
+        PeriodicNotifier (const PeriodicNotifier&)                 = delete;
         const PeriodicNotifier operator= (const PeriodicNotifier&) = delete;
         ~PeriodicNotifier ()                                       = default;
 

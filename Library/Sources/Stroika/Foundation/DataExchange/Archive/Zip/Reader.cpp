@@ -1024,7 +1024,7 @@ namespace {
                 uBackRead += BUFREADCOMMENT;
             uReadPos = uSizeFile - uBackRead;
 
-            uReadSize = ((BUFREADCOMMENT + 4) < (uSizeFile - uReadPos)) ? (BUFREADCOMMENT + 4) : (uLong) (uSizeFile - uReadPos);
+            uReadSize = ((BUFREADCOMMENT + 4) < (uSizeFile - uReadPos)) ? (BUFREADCOMMENT + 4) : (uLong)(uSizeFile - uReadPos);
             if (ZSEEK64 (*pzlib_filefunc_def, filestream, uReadPos, ZLIB_FILEFUNC_SEEK_SET) != 0)
                 break;
 
@@ -1082,7 +1082,7 @@ namespace {
                 uBackRead += BUFREADCOMMENT;
             uReadPos = uSizeFile - uBackRead;
 
-            uReadSize = ((BUFREADCOMMENT + 4) < (uSizeFile - uReadPos)) ? (BUFREADCOMMENT + 4) : (uLong) (uSizeFile - uReadPos);
+            uReadSize = ((BUFREADCOMMENT + 4) < (uSizeFile - uReadPos)) ? (BUFREADCOMMENT + 4) : (uLong)(uSizeFile - uReadPos);
             if (ZSEEK64 (*pzlib_filefunc_def, filestream, uReadPos, ZLIB_FILEFUNC_SEEK_SET) != 0)
                 break;
 
@@ -1397,14 +1397,14 @@ namespace {
     void unz64local_DosDateToTmuDate_ (ZPOS64_T ulDosDate, tm_unz* ptm)
     {
         ZPOS64_T uDate;
-        uDate        = (ZPOS64_T) (ulDosDate >> 16);
-        ptm->tm_mday = (uInt) (uDate & 0x1f);
-        ptm->tm_mon  = (uInt) ((((uDate)&0x1E0) / 0x20) - 1);
-        ptm->tm_year = (uInt) (((uDate & 0x0FE00) / 0x0200) + 1980);
+        uDate        = (ZPOS64_T)(ulDosDate >> 16);
+        ptm->tm_mday = (uInt)(uDate & 0x1f);
+        ptm->tm_mon  = (uInt)((((uDate)&0x1E0) / 0x20) - 1);
+        ptm->tm_year = (uInt)(((uDate & 0x0FE00) / 0x0200) + 1980);
 
-        ptm->tm_hour = (uInt) ((ulDosDate & 0xF800) / 0x800);
-        ptm->tm_min  = (uInt) ((ulDosDate & 0x7E0) / 0x20);
-        ptm->tm_sec  = (uInt) (2 * (ulDosDate & 0x1f));
+        ptm->tm_hour = (uInt)((ulDosDate & 0xF800) / 0x800);
+        ptm->tm_min  = (uInt)((ulDosDate & 0x7E0) / 0x20);
+        ptm->tm_sec  = (uInt)(2 * (ulDosDate & 0x1f));
     }
 
     /*
@@ -1682,8 +1682,8 @@ namespace {
         s->pos_in_central_dir = s->offset_central_dir;
         s->num_file           = 0;
         err                   = unz64local_GetCurrentFileInfoInternal_ (file, &s->cur_file_info,
-                                                      &s->cur_file_info_internal,
-                                                      NULL, 0, NULL, 0, NULL, 0);
+                                                                        &s->cur_file_info_internal,
+                                                                        NULL, 0, NULL, 0, NULL, 0);
         s->current_file_ok    = (err == UNZ_OK);
         return err;
     }
@@ -1711,8 +1711,8 @@ namespace {
                                  s->cur_file_info.size_file_extra + s->cur_file_info.size_file_comment;
         s->num_file++;
         err                = unz64local_GetCurrentFileInfoInternal_ (file, &s->cur_file_info,
-                                                      &s->cur_file_info_internal,
-                                                      NULL, 0, NULL, 0, NULL, 0);
+                                                                     &s->cur_file_info_internal,
+                                                                     NULL, 0, NULL, 0, NULL, 0);
         s->current_file_ok = (err == UNZ_OK);
         return err;
     }
@@ -2290,9 +2290,9 @@ namespace {
 
                 pfile_in_zip_read_info->total_out_64 = pfile_in_zip_read_info->total_out_64 + uOutThis;
 
-                pfile_in_zip_read_info->crc32 = crc32 (pfile_in_zip_read_info->crc32, bufBefore, (uInt) (uOutThis));
+                pfile_in_zip_read_info->crc32 = crc32 (pfile_in_zip_read_info->crc32, bufBefore, (uInt)(uOutThis));
                 pfile_in_zip_read_info->rest_read_uncompressed -= uOutThis;
-                iRead += (uInt) (uTotalOutAfter - uTotalOutBefore);
+                iRead += (uInt)(uTotalOutAfter - uTotalOutBefore);
 
                 pfile_in_zip_read_info->stream.next_in   = (Bytef*)pfile_in_zip_read_info->bstream.next_in;
                 pfile_in_zip_read_info->stream.avail_in  = pfile_in_zip_read_info->bstream.avail_in;
@@ -2334,12 +2334,12 @@ namespace {
 
                 pfile_in_zip_read_info->crc32 =
                     crc32 (pfile_in_zip_read_info->crc32, bufBefore,
-                           (uInt) (uOutThis));
+                           (uInt)(uOutThis));
 
                 pfile_in_zip_read_info->rest_read_uncompressed -=
                     uOutThis;
 
-                iRead += (uInt) (uTotalOutAfter - uTotalOutBefore);
+                iRead += (uInt)(uTotalOutAfter - uTotalOutBefore);
 
                 if (err == Z_STREAM_END)
                     return (iRead == 0) ? UNZ_EOF : iRead;
@@ -2574,8 +2574,8 @@ namespace {
         s->pos_in_central_dir = pos;
         s->num_file           = s->gi.number_entry; /* hack */
         err                   = unz64local_GetCurrentFileInfoInternal_ (file, &s->cur_file_info,
-                                                      &s->cur_file_info_internal,
-                                                      NULL, 0, NULL, 0, NULL, 0);
+                                                                        &s->cur_file_info_internal,
+                                                                        NULL, 0, NULL, 0, NULL, 0);
         s->current_file_ok    = (err == UNZ_OK);
         return err;
     }
