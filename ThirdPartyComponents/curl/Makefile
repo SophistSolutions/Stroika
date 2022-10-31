@@ -18,7 +18,8 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 
-VERSION=7.85.0
+VERSION=7.86.0
+#VERSION=7.85.0
 #VERSION=7.84.0	-- doesnt build on Ubuntu 1804, so dont bother with this version
 #VERSION=7.83.1
 #VERSION=7.83.0
