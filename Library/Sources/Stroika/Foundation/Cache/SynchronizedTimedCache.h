@@ -103,9 +103,9 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         * @see TimedCache::GetElements
+         * @see TimedCache::Elements
          */
-        nonvirtual Traversal::Iterable<CacheElement> GetElements () const;
+        nonvirtual Traversal::Iterable<CacheElement> Elements () const;
 
     public:
         /**

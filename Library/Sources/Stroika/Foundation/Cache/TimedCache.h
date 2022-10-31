@@ -305,7 +305,7 @@ namespace Stroika::Foundation::Cache {
         /**
          *  \note This returns the non-expired elements of the current cache object.
          */
-        nonvirtual Traversal::Iterable<CacheElement> GetElements () const;
+        nonvirtual Traversal::Iterable<CacheElement> Elements () const;
 
     public:
         /**

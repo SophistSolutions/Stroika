@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    auto TimedCache<KEY, VALUE, TRAITS>::GetElements () const -> Traversal::Iterable<CacheElement>
+    auto TimedCache<KEY, VALUE, TRAITS>::Elements () const -> Traversal::Iterable<CacheElement>
     {
         vector<CacheElement> r;
         r.reserve (fMap_.count ());

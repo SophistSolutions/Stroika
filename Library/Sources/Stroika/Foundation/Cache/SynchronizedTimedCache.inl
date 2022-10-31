@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Cache {
         [[maybe_unused]] auto&& srcLock = shared_lock{src.fMutex_}; // shared locks intrinsically recursive - not needed here but good to assure no locks in between
         [[maybe_unused]] auto&& lock    = lock_guard{fMutex_};
         inherited::SetMinimumAllowedFreshness (src.GetMinimumAllowedFreshness ());
-        for (const auto& ci : src.GetElements ()) {
+        for (const auto& ci : src.Elements ()) {
             inherited::Add (ci.fKey, ci.fValue, ci.fFreshness);
         }
     }
@@ -43,10 +43,10 @@ namespace Stroika::Foundation::Cache {
         inherited::SetMinimumAllowedFreshness (minimumAllowedFreshness);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::GetElements () const -> Traversal::Iterable<CacheElement>
+    inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::Elements () const -> Traversal::Iterable<CacheElement>
     {
         [[maybe_unused]] auto&& lock = shared_lock{fMutex_};
-        return inherited::GetElements ();
+        return inherited::Elements ();
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline optional<VALUE> SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, Time::DurationSecondsType* lastRefreshedAt) const
@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Cache {
          *  The main reason for this class (as opposed to Syncrhonized<TimedCache>), is this logic: unlocking the shared 
          *  lock and then fetching the new value (oprionally with a write lock).
          */
-        auto&& readLock = shared_lock{fMutex_};
+        auto&& readLock = shared_lock{fMutex_}; // try shared_lock for case where present, and then lose it if we need to update object
         if (optional<VALUE> o = inherited::Lookup (key)) {
             return *o;
         }
