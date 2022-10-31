@@ -41,43 +41,6 @@ namespace Stroika::Foundation::Common {
     constexpr std::strong_ordering kEqual [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]   = std::strong_ordering::equal;
     constexpr std::strong_ordering kGreater [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::greater;
 
-// clang-format off
-    /**
-     *  \brief like std::compare_three_way{} (lhs, rhs), except class templated on T1/T2 instead of function, so you can bind function object for example in templates expecting one
-     *
-     *  \see See also ThreeWayCompare - nearly identical - but function template and can be used to deduce template arguments more easily
-     *  
-     *  \note DO NOT SPECIALIZE ThreeWayComparer<>, since its just a utility which trivailly wraps
-     *        std::compare_three_way in c++20, so just specialize std::compare_three_way<>::operator()...
-     */
-    // @TODO SEEMS STILL NEEDED ON CLANG++-10???
-    // @TODO PROBABLY DEPRECATE THIS CLASS - and use std::compare_three_way directly
-#if __cpp_lib_three_way_comparison < 201907L
-    struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer {
-        template <class LT, class RT>
-        constexpr auto operator() (LT&& lhs, RT&& rhs) const
-        {
-            using CT = common_type_t<LT, RT>;
-            // ISSUE HERE - PRE C++20, no distinction made between strong_ordering, weak_ordering, and partial_ordering, because
-            // this counts on cooperation with various types and mechanismns like operator<=> = default which we don't have (and declared strong_ordering=int)
-            if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
-                return strong_ordering::equal;
-            }
-            return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
-        }
-    };
-#else
-    struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer {
-        template <class LT, class RT>
-        constexpr auto operator() (LT&& lhs, RT&& rhs) const
-        {
-            return std::compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
-        }
-    };
-#endif
-
-// clang-format on
-
     /**
      *  \brief trivial wrapper calling ThreeWayComparer<TL,TR>{}(lhs,rhs) i.e. std::compare_three_way{} (lhs, rhs)
      *
@@ -119,7 +82,7 @@ namespace Stroika::Foundation::Common {
      *  to use a case insensitive comparer for the strings, is tricky. THIS class solves that, by letting you pass in explicitly the 
      *  'base comparer'.
      */
-    template <typename T, typename TCOMPARER = ThreeWayComparer>
+    template <typename T, typename TCOMPARER = compare_three_way>
     struct OptionalThreeWayComparer {
         constexpr OptionalThreeWayComparer (TCOMPARER&& tComparer);
         constexpr OptionalThreeWayComparer (const TCOMPARER& tComparer);
@@ -260,12 +223,6 @@ namespace Stroika::Foundation::Common {
     struct ExtractComparisonTraits<greater_equal<T>> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eInOrderOrEquals;
     };
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    template <>
-    struct ExtractComparisonTraits<ThreeWayComparer> {
-        static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
-    };
-    DISABLE_COMPILER_MSC_WARNING_END (4996)
 #if __cpp_lib_three_way_comparison >= 201907
     template <>
     struct ExtractComparisonTraits<std::compare_three_way> {
@@ -435,6 +392,48 @@ namespace Stroika::Foundation::Common {
         [[NO_UNIQUE_ADDRESS_ATTR]] BASE_COMPARER fBASE_COMPARER_;
     };
 
+    // clang-format off
+    /**
+     *  \brief like std::compare_three_way{} (lhs, rhs), except class templated on T1/T2 instead of function, so you can bind function object for example in templates expecting one
+     *
+     *  \see See also ThreeWayCompare - nearly identical - but function template and can be used to deduce template arguments more easily
+     *  
+     *  \note DO NOT SPECIALIZE ThreeWayComparer<>, since its just a utility which trivailly wraps
+     *        std::compare_three_way in c++20, so just specialize std::compare_three_way<>::operator()...
+     */
+    // @TODO SEEMS STILL NEEDED ON CLANG++-10???
+    // @TODO PROBABLY DEPRECATE THIS CLASS - and use std::compare_three_way directly
+#if __cpp_lib_three_way_comparison < 201907L
+    struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer {
+        template <class LT, class RT>
+        constexpr auto operator() (LT&& lhs, RT&& rhs) const
+        {
+            using CT = common_type_t<LT, RT>;
+            // ISSUE HERE - PRE C++20, no distinction made between strong_ordering, weak_ordering, and partial_ordering, because
+            // this counts on cooperation with various types and mechanismns like operator<=> = default which we don't have (and declared strong_ordering=int)
+            if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
+                return strong_ordering::equal;
+            }
+            return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
+        }
+    };
+#else
+    struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer {
+        template <class LT, class RT>
+        constexpr auto operator() (LT&& lhs, RT&& rhs) const
+        {
+            return std::compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
+        }
+    };
+#endif
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    template <>
+    struct ExtractComparisonTraits<ThreeWayComparer> {
+        static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
+    };
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
+
+// clang-format on
 }
 
 /*
