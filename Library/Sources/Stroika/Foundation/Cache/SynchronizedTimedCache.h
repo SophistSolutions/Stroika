@@ -86,6 +86,11 @@ namespace Stroika::Foundation::Cache {
          *  Which is better depends on the likihood the caller will make multiple requests for the same non-existent value at
          *  the same time. If yes, you should set fHoldWriteLockDuringCacheFill. If no (or if you care more about being able to
          *  read the rest of the data and not having threads block needlessly for other values) set fHoldWriteLockDuringCacheFill false (default).
+         * 
+         *  \note Design Note
+         *        This probably should be a constructor parameter, but if its a plain bool, looks potentially confusing.
+         *        Forcing explicit name probably better, and typically will be set just after construction before any threads could access
+         *        so no real race risk.
          */
         bool fHoldWriteLockDuringCacheFill{false};
 
