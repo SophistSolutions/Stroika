@@ -7,7 +7,6 @@
 #ifndef _Stroika_Foundation_Cache_TimedCache_inl_
 #define _Stroika_Foundation_Cache_TimedCache_inl_ 1
 
-#include "../Containers/STL/Compare.h"
 #include "../Debug/Assertions.h"
 #include "../Debug/Trace.h"
 #include "../Execution/Common.h"
