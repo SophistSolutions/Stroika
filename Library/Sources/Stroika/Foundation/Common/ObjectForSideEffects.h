@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Common {
          *              static constexpr Activity                            kContructing_WSAPI_WebServer_{L"constructing WSAPI webserver"sv};
          *              optional<DeclareActivity<Activity<wstring_view>>>    fEstablishActivity1_{&kContructing_WSAPI_WebServer_};
          *              ConnectionManager                                    fWSConnectionMgr_;
-         *              [[NO_UNIQUE_ADDRESS_ATTR]] EmptyObjectForSideEffects fIgnore1_{[this]() { fEstablishActivity1_.reset (); }};
+         *              [[no_unique_address]] EmptyObjectForSideEffects fIgnore1_{[this]() { fEstablishActivity1_.reset (); }};
          *              ...
          *          };
          *      \endcode

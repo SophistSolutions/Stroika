@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Common {
         constexpr strong_ordering operator() (const optional<T>& lhs, const optional<T>& rhs) const;
 
     private:
-        [[NO_UNIQUE_ADDRESS_ATTR]] TCOMPARER fTComparer_;
+        [[no_unique_address]] TCOMPARER fTComparer_;
     };
 
     /**
@@ -281,7 +281,7 @@ namespace Stroika::Foundation::Common {
     struct ComparisonRelationDeclaration {
         static_assert (not is_reference_v<ACTUAL_COMPARER>);
         static constexpr inline ComparisonRelationType kComparisonRelationKind{KIND}; // accessed by ExtractComparisonTraits<>
-        [[NO_UNIQUE_ADDRESS_ATTR]] ACTUAL_COMPARER     fActualComparer;
+        [[no_unique_address]] ACTUAL_COMPARER          fActualComparer;
 
         /**
          */
@@ -348,7 +348,7 @@ namespace Stroika::Foundation::Common {
         constexpr bool operator() (const T& lhs, const T& rhs) const;
 
     private:
-        [[NO_UNIQUE_ADDRESS_ATTR]] BASE_COMPARER fBASE_COMPARER_;
+        [[no_unique_address]] BASE_COMPARER fBASE_COMPARER_;
     };
 
     /**
@@ -369,7 +369,7 @@ namespace Stroika::Foundation::Common {
         constexpr bool operator() (const T& lhs, const T& rhs) const;
 
     private:
-        [[NO_UNIQUE_ADDRESS_ATTR]] BASE_COMPARER fBASE_COMPARER_;
+        [[no_unique_address]] BASE_COMPARER fBASE_COMPARER_;
     };
 
     /**
@@ -390,7 +390,7 @@ namespace Stroika::Foundation::Common {
         constexpr strong_ordering operator() (const T& lhs, const T& rhs) const;
 
     private:
-        [[NO_UNIQUE_ADDRESS_ATTR]] BASE_COMPARER fBASE_COMPARER_;
+        [[no_unique_address]] BASE_COMPARER fBASE_COMPARER_;
     };
 
     // clang-format off

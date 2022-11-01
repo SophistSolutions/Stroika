@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers::Factory {
         static void Register (Set<T> (*factory) (const EQUALS_COMPARER&) = nullptr);
 
     private:
-        [[NO_UNIQUE_ADDRESS_ATTR]] const EQUALS_COMPARER fEqualsComparer_;
+        [[no_unique_address]] const EQUALS_COMPARER fEqualsComparer_;
 
     private:
         static Set<T> Default_ (const EQUALS_COMPARER& equalsComparer);

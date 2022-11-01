@@ -49,8 +49,8 @@ namespace Stroika::Foundation::Containers::Factory {
         static void Register (SortedKeyedCollection<T, KEY_TYPE, TRAITS> (*factory) (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer) = nullptr);
 
     private:
-        [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_EXTRACTOR        fKeyExtractor_;
-        [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_INORDER_COMPARER fInOrderComparer_;
+        [[no_unique_address]] const KEY_EXTRACTOR        fKeyExtractor_;
+        [[no_unique_address]] const KEY_INORDER_COMPARER fInOrderComparer_;
 
     private:
         static SortedKeyedCollection<T, KEY_TYPE, TRAITS> Default_ (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer);

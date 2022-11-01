@@ -377,6 +377,7 @@ namespace Stroika::Frameworks::Led {
          */
         constexpr strong_ordering operator<=> (const Color& rhs) const = default;
         constexpr bool            operator== (const Color& rhs) const  = default;
+
     private:
         ColorValue fRed;
         ColorValue fGreen;
@@ -972,8 +973,8 @@ namespace Stroika::Frameworks::Led {
         operator const FontInfo* () const;
         operator FontInfo* ();
 #elif qPlatform_Windows
-                   operator const TEXTMETRIC* () const;
-                   operator TEXTMETRIC* ();
+        operator const TEXTMETRIC* () const;
+        operator TEXTMETRIC* ();
 #endif
 
     private:
@@ -1020,7 +1021,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         nonvirtual operator GrafPtr () const;
 #elif qPlatform_Windows
-        nonvirtual          operator HDC () const;
+        nonvirtual operator HDC () const;
 #endif
 
     public:
@@ -1063,7 +1064,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual BOOL GetTextMetrics (LPTEXTMETRIC lpMetrics) const;
         nonvirtual HBITMAP SelectObject (HBITMAP hBitmap);
 #if defined(STRICT)
-        nonvirtual HFONT   SelectObject (HFONT hFont);
+        nonvirtual HFONT SelectObject (HFONT hFont);
 #endif
         nonvirtual POINT SetWindowOrg (int x, int y);
         nonvirtual int GetDeviceCaps (int nIndex) const;

@@ -244,9 +244,9 @@ namespace Stroika::Foundation::Cache {
         nonvirtual size_t H_ (typename Configuration::ArgByValueType<KEY> k) const;
 
     private:
-        [[NO_UNIQUE_ADDRESS_ATTR]] const KeyEqualsCompareFunctionType fKeyEqualsComparer_;
-        [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_HASH_FUNCTION            fHashFunction_;
-        [[NO_UNIQUE_ADDRESS_ATTR]] STATS_TYPE                         fStats_;
+        [[no_unique_address]] const KeyEqualsCompareFunctionType fKeyEqualsComparer_;
+        [[no_unique_address]] const KEY_HASH_FUNCTION            fHashFunction_;
+        [[no_unique_address]] STATS_TYPE                         fStats_;
 
         struct CacheElement_;
         struct CacheIterator_;

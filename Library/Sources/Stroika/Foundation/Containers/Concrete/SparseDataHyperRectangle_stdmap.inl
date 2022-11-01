@@ -190,9 +190,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = MyIteratorImplHelper_<DataStructureImplType_>;
 
     private:
-        T                                                               fDefaultValue_;
-        DataStructureImplType_                                          fData_;
-        [[NO_UNIQUE_ADDRESS_ATTR]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        T                                                          fDefaultValue_;
+        DataStructureImplType_                                     fData_;
+        [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

@@ -2341,6 +2341,7 @@ stHarness/SimpleClass.cpp ...
 /*
  * https://en.cppreference.com/w/User:D41D8CD98F/feature_testing_macros
  * https://en.cppreference.com/w/cpp/language/attributes/no_unique_address
+ *      *** DEPRECATED IN STROIKA 3.0d1 *** (can directly use attributes since assuming C++20)
  */
 #if defined(__has_cpp_attribute)
 #if __has_cpp_attribute(no_unique_address)
@@ -2355,7 +2356,7 @@ stHarness/SimpleClass.cpp ...
 /*
  * https://en.cppreference.com/w/User:D41D8CD98F/feature_testing_macros
  * https://en.cppreference.com/w/cpp/language/attributes/likely
- *      *** DEPRECATED IN STROIKA 3.0d1 ***
+ *      *** DEPRECATED IN STROIKA 3.0d1 *** (can directly use attributes since assuming C++20)
  */
 #if defined(__has_cpp_attribute)
 #if __has_cpp_attribute(likely)
@@ -2370,7 +2371,7 @@ stHarness/SimpleClass.cpp ...
 /*
  * https://en.cppreference.com/w/User:D41D8CD98F/feature_testing_macros
  * https://en.cppreference.com/w/cpp/language/attributes/likely
- *      *** DEPRECATED IN STROIKA 3.0d1 ***
+ *      *** DEPRECATED IN STROIKA 3.0d1 *** (can directly use attributes since assuming C++20)
  */
 #if defined(__has_cpp_attribute)
 #if __has_cpp_attribute(unlikely)

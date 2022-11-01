@@ -30,8 +30,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     class KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::Rep_ : public IImplRep_, public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EXTRACTOR, KEY_EQUALS_COMPARER>> {
     private:
         using inherited = IImplRep_;
-        [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_EXTRACTOR       fKeyExtractor_;
-        [[NO_UNIQUE_ADDRESS_ATTR]] const KEY_EQUALS_COMPARER fKeyComparer_;
+        [[no_unique_address]] const KEY_EXTRACTOR       fKeyExtractor_;
+        [[no_unique_address]] const KEY_EQUALS_COMPARER fKeyComparer_;
 
     public:
         Rep_ (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer)
@@ -172,8 +172,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
-        DataStructureImplType_                                          fData_;
-        [[NO_UNIQUE_ADDRESS_ATTR]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        DataStructureImplType_                                     fData_;
+        [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
     private:
-        [[NO_UNIQUE_ADDRESS_ATTR]] const EQUALS_COMPARER fEqualsComparer_;
+        [[no_unique_address]] const EQUALS_COMPARER fEqualsComparer_;
 
         // Iterable<T>::_IRep overrides
     public:
@@ -255,8 +255,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
-        DataStructureImplType_                                          fData_;
-        [[NO_UNIQUE_ADDRESS_ATTR]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        DataStructureImplType_                                     fData_;
+        [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
 
     private:
         static constexpr size_t kNotFound_ = (size_t)-1;

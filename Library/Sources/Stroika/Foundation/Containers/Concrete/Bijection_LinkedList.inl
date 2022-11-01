@@ -50,9 +50,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
     private:
-        const Bijection_Base::InjectivityViolationPolicy        fInjectivityViolationPolicy_;
-        [[NO_UNIQUE_ADDRESS_ATTR]] const DOMAIN_EQUALS_COMPARER fDomainEqualsComparer_;
-        [[NO_UNIQUE_ADDRESS_ATTR]] const RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
+        const Bijection_Base::InjectivityViolationPolicy   fInjectivityViolationPolicy_;
+        [[no_unique_address]] const DOMAIN_EQUALS_COMPARER fDomainEqualsComparer_;
+        [[no_unique_address]] const RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
 
         // Iterable<T>::_IRep overrides
     public:
@@ -245,8 +245,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
-        DataStructureImplType_                                          fData_;
-        [[NO_UNIQUE_ADDRESS_ATTR]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        DataStructureImplType_                                     fData_;
+        [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Memory {
      *          vs. just constructing the object on the fly the way we do for comparison functions like std::less<T> {} etc.
      * 
      *          PRO embed: If constructor cost for COPIER non-trivial, best todo once. If size can be zero, doesn't really
-     *          matter/cost anything ([[NO_UNIQUE_ADDRESS_ATTR]]). If you want to have some data in copier, and have that specific to
+     *          matter/cost anything ([[no_unique_address]]). If you want to have some data in copier, and have that specific to
      *          the instance (I can think of no use case for this) - very tricky unless embedded.
      * 
      *          PRO NOT EMBED: Simpler todo access functions (default parameter instead of overload passing fCopier).
@@ -252,8 +252,8 @@ namespace Stroika::Foundation::Memory {
         nonvirtual unsigned int use_count () const;
 
     private:
-        [[NO_UNIQUE_ADDRESS_ATTR]] element_copier_type fCopier_; // often zero sized
-        shared_ptr_type                                fSharedImpl_;
+        [[no_unique_address]] element_copier_type fCopier_; // often zero sized
+        shared_ptr_type                           fSharedImpl_;
 
     public:
         /**
