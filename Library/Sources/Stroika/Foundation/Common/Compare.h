@@ -35,6 +35,23 @@ namespace std {
 }
 #endif
 
+// Quirky workaround for clang++-14 on XCode 14 (and probably others).
+// No bug define for now - specific to clang++, because not sure what it depends on besides this, and this is bad enuf...
+// this value being too low...
+#if __cpp_lib_three_way_comparison < 201907L
+namespace std {
+    struct compare_three_way {
+        template <class _T1, class _T2>
+        constexpr auto operator() (_T1&& __t, _T2&& __u) const
+            noexcept (noexcept (_VSTD::forward<_T1> (__t) <=> _VSTD::forward<_T2> (__u)))
+        {
+            return _VSTD::forward<_T1> (__t) <=> _VSTD::forward<_T2> (__u);
+        }
+        using is_transparent = void;
+    };
+}
+#endif
+
 namespace Stroika::Foundation::Common {
 
     constexpr std::strong_ordering kLess [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]    = std::strong_ordering::less;
@@ -191,7 +208,7 @@ namespace Stroika::Foundation::Common {
     };
 #if __cpp_lib_three_way_comparison >= 201907
     template <>
-    struct ExtractComparisonTraits<std::compare_three_way> {
+    struct ExtractComparisonTraits<compare_three_way> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
     };
 #endif
@@ -368,7 +385,7 @@ namespace Stroika::Foundation::Common {
      *        std::compare_three_way in c++20, so just specialize std::compare_three_way<>::operator()...
      */
     // @TODO SEEMS STILL NEEDED ON CLANG++-10???
-    // @TODO PROBABLY DEPRECATE THIS CLASS - and use std::compare_three_way directly
+    // @TODO PROBABLY DEPRECATE THIS CLASS - and use compare_three_way directly
 #if __cpp_lib_three_way_comparison < 201907L
     struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer {
         template <class LT, class RT>
@@ -388,7 +405,7 @@ namespace Stroika::Foundation::Common {
         template <class LT, class RT>
         constexpr auto operator() (LT&& lhs, RT&& rhs) const
         {
-            return std::compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
+            return compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
         }
     };
 #endif
