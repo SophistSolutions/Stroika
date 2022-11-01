@@ -853,7 +853,7 @@ Duration DateTime::Difference (const DateTime& rhs) const
 strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& lhs, const DateTime& rhs) const
 {
     if (lhs.GetTimezone () == rhs.GetTimezone () or (lhs.GetTimezone () == Timezone::kUnknown) or (rhs.GetTimezone () == Timezone::kUnknown)) {
-        if (auto cmp = compare_three_way{}(lhs.GetDate (), rhs.GetDate ()); cmp != strong_ordering::equal) {
+        if (auto cmp = lhs.GetDate () <=> rhs.GetDate (); cmp != strong_ordering::equal) {
             return cmp;
         }
         return compare_three_way{}(lhs.GetTimeOfDay (), rhs.GetTimeOfDay ());
@@ -866,7 +866,7 @@ strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& lhs, con
         // with first index being date, and then time, and only if those are the same use timezone as tie breaker
         //
         // This isn't a clearly good choice, so leave open the possability of changing this in the future -- LGP 2020-05-24
-        if (auto cmp = compare_three_way{}(lhs.GetDate (), rhs.GetDate ()); cmp != strong_ordering::equal) {
+        if (auto cmp = lhs.GetDate () <=> rhs.GetDate (); cmp != strong_ordering::equal) {
             return cmp;
         }
         if (auto cmp = compare_three_way{}(lhs.GetTimeOfDay (), rhs.GetTimeOfDay ()); cmp != strong_ordering::equal) {

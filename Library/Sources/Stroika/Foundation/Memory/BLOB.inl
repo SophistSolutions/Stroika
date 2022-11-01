@@ -351,7 +351,7 @@ namespace Stroika::Foundation::Memory {
         if (nCommonBytes != 0) {
             // see http://stackoverflow.com/questions/16362925/can-i-pass-a-null-pointer-to-memcmp -- illegal to pass nullptr to memcmp() even if size 0
             if (int tmp = ::memcmp (l.first, r.first, nCommonBytes)) {
-                return compare_three_way{}(tmp, 0);
+                return tmp <=> 0;
             }
         }
         // if tmp is zero, and same size - its really zero. But if lhs shorter than right, say lhs < right
