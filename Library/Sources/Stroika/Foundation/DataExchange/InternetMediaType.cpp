@@ -97,15 +97,19 @@ String InternetMediaType::As () const
 
 strong_ordering InternetMediaType::THREEWAYCOMPARE_ (const InternetMediaType& rhs) const
 {
-    strong_ordering cmp = compare_three_way{}(fType_, rhs.fType_);
+    strong_ordering cmp = fType_ <=> rhs.fType_;
     if (cmp != strong_ordering::equal) {
         return cmp;
     }
-    cmp = compare_three_way{}(fSubType_, rhs.fSubType_);
+    cmp = fSubType_ <=> rhs.fSubType_;
     if (cmp != strong_ordering::equal) {
         return cmp;
     }
-    cmp = compare_three_way{}(fSuffix_, rhs.fSuffix_);
+#if __cpp_lib_three_way_comparison < 201907L
+    cmp = compare_three_way{}(fSuffix_, rhs.fSuffix_);      // Use BWA from Common/Compare.h
+#else
+    cmp = fSuffix_ <=> rhs.fSuffix_;
+#endif
     if (cmp != strong_ordering::equal) {
         return cmp;
     }

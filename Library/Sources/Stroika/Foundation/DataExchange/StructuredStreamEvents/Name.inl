@@ -60,14 +60,14 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
     {
         // Treat EITHER side missing namespace as 'wildcard' matching any namespace
         if (lhs.fNamespaceURI.has_value () and rhs.fNamespaceURI.has_value ()) {
-            if (auto cmp = compare_three_way{}(*lhs.fNamespaceURI, *rhs.fNamespaceURI); cmp != strong_ordering::equal) {
+            if (auto cmp = *lhs.fNamespaceURI <=> *rhs.fNamespaceURI; cmp != strong_ordering::equal) {
                 return cmp;
             }
         }
-        if (auto cmp = compare_three_way{}(lhs.fLocalName, rhs.fLocalName); cmp != strong_ordering::equal) {
+        if (auto cmp = lhs.fLocalName <=> rhs.fLocalName; cmp != strong_ordering::equal) {
             return cmp;
         }
-        return compare_three_way{}(lhs.fType, rhs.fType);
+        return lhs.fType <=> rhs.fType;
     }
 
 }

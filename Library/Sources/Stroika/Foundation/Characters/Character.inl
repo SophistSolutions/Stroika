@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Characters {
             case CompareOptions::eCaseInsensitive:
                 return Character::Compare (&lhs, &lhs + 1, &rhs, &rhs + 1, CompareOptions::eCaseInsensitive);
             case CompareOptions::eWithCase:
-                return compare_three_way{}(static_cast<SIGNED_WCHART_> (lhs.GetCharacterCode ()), static_cast<SIGNED_WCHART_> (rhs.GetCharacterCode ()));
+                return static_cast<SIGNED_WCHART_> (lhs.GetCharacterCode ()) <=> static_cast<SIGNED_WCHART_> (rhs.GetCharacterCode ());
             default:
                 AssertNotReached ();
                 return strong_ordering::equal;

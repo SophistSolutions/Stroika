@@ -843,7 +843,7 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
     if (fExactTypeMatchOnly) {
         // No obvious way to compare elements of different type, so just use the ordering of the types (new in Stroika v2.1d5, and ONLY if new (not default) fExactTypeMatchOnly flag set
         if (lt != rt) {
-            return compare_three_way{}(lt, rt);
+            return lt <=> rt;
         }
     }
     switch (lt) {
@@ -852,9 +852,9 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
         case VariantValue::eBoolean:
             return lhs.As<bool> () <=> rhs.As<bool> ();
         case VariantValue::eInteger:
-            return compare_three_way{}(lhs.As<IntegerType_> (), rhs.As<IntegerType_> ());
+            return lhs.As<IntegerType_> () <=> rhs.As<IntegerType_> ();
         case VariantValue::eUnsignedInteger:
-            return compare_three_way{}(lhs.As<UnsignedIntegerType_> (), rhs.As<UnsignedIntegerType_> ());
+            return lhs.As<UnsignedIntegerType_> () <=> rhs.As<UnsignedIntegerType_> ();
         case VariantValue::eFloat: {
             // explicit test so we can do NearlyEquals()
             FloatType_ l = lhs.As<FloatType_> ();
@@ -870,18 +870,34 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
             }
         }
         case VariantValue::eDate:
-            return compare_three_way{}(lhs.As<Date> (), rhs.As<Date> ());
+            return lhs.As<Date> () <=> rhs.As<Date> ();
         case VariantValue::eDateTime:
-            return compare_three_way{}(lhs.As<DateTime> (), rhs.As<DateTime> ());
+            return lhs.As<DateTime> () <=> rhs.As<DateTime> ();
         case VariantValue::eString:
-            return compare_three_way{}(lhs.As<String> (), rhs.As<String> ());
+            return lhs.As<String> () <=> rhs.As<String> ();
         case VariantValue::eArray:
-            return compare_three_way{}(lhs.As<Sequence<VariantValue>> (), rhs.As<Sequence<VariantValue>> ());
+            return lhs.As<Sequence<VariantValue>> () <=> rhs.As<Sequence<VariantValue>> ();
         case VariantValue::eMap: {
-// Cannot do cuz Keys() NYI
-// @todo - fix!!!
+                // @todo FIX - THIS IS LOGICALLY WRONG... CUZ MAPPINGS COULD BE IN DIFFERENT ORDER!
+                // MUST FORCE TO SAME ORDER AND THEN ITERABLE NEEDS METHOD TO CREATE ITERABLE COMPARE - SequentialThreeWayComparer
+                //  NOT RIGHT unless you order things properly first
+                //  return lhs.As<Mapping<String, VariantValue>> () <=> rhs.As<Mapping<String, VariantValue>> ();
+
 #if 0
-                return compare_three_way{} (As<Mapping<String, VariantValue>> ().Keys (), rhs.As<Mapping<String, VariantValue>>.Keys () ());
+    &&& @todo PUT THIS SOMEHOW INTO MAPPING - THREEWAY COMPARE WITH OPTION OF FIRST SORTING BY KEY
+// expensive for rare case, but if we must compare parameters, need some standardized way to iterate over them (key)
+        using namespace Containers;
+        using namespace Characters;
+        auto sortedMapping = [] (auto m) { return SortedMapping<String, String>{String::LessComparer{CompareOptions::eCaseInsensitive}, m}; };
+#if qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy
+        return Mapping<String, String>::SequentialThreeWayComparer{compare_three_way{}}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
+#else
+        return Mapping<String, String>::SequentialThreeWayComparer{}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
+#endif
+#endif
+
+#if 0
+                return As<Mapping<String, VariantValue>> ().Keys () <=> rhs.As<Mapping<String, VariantValue>>.Keys () ();
 #endif
             // same iff all elts same
             Mapping<String, VariantValue> lhsM{lhs.As<Mapping<String, VariantValue>> ()};
@@ -894,7 +910,7 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
                 }
                 if (*li != *ri) {
                     //return false; CHANGE IN BEHAVIOR (I THINK FIX) 2020-05-04
-                    return compare_three_way{}(*li, *ri);
+                    return *li <=> *ri;
                 }
             }
             Ensure (li == lhsM.end ());

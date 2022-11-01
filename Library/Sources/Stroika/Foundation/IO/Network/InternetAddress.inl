@@ -255,7 +255,7 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline strong_ordering InternetAddress::TWC_ (const InternetAddress& lhs, const InternetAddress& rhs)
     {
-        if (auto cmp = compare_three_way{}(lhs.fAddressFamily_, rhs.fAddressFamily_); cmp != strong_ordering::equal) {
+        if (auto cmp = lhs.fAddressFamily_ <=> rhs.fAddressFamily_; cmp != strong_ordering::equal) {
             return cmp;
         }
         switch (lhs.fAddressFamily_) {

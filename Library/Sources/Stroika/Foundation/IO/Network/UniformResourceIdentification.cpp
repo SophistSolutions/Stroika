@@ -336,7 +336,11 @@ strong_ordering Query::TWC_ (const Query& lhs, const Query& rhs)
     for (String i : (Set<String>{lhs.GetMap ().Keys ()} + Set<String>{rhs.GetMap ().Keys ()}).OrderBy (less<String>{})) {
         optional<String> lhsVal = lhs.GetMap ().Lookup (i);
         optional<String> rhsVal = rhs.GetMap ().Lookup (i);
-        strong_ordering  cmp    = compare_three_way{}(lhsVal, rhsVal);
+#if __cpp_lib_three_way_comparison < 201907L
+        strong_ordering cmp = compare_three_way{}(lhsVal, rhsVal);      // Use BWA from Common/Compare.h
+#else
+        strong_ordering  cmp    = lhsVal <=> rhsVal;
+#endif
         if (cmp != strong_ordering::equal) {
             return cmp;
         }
