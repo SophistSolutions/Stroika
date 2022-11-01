@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Common {
      *  to use a case insensitive comparer for the strings, is tricky. THIS class solves that, by letting you pass in explicitly the 
      *  'base comparer'.
      */
-    template <typename T, typename TCOMPARER = compare_three_way>
+    template <typename T, typename TCOMPARER = std::compare_three_way>
     struct OptionalThreeWayComparer {
         constexpr OptionalThreeWayComparer (TCOMPARER&& tComparer);
         constexpr OptionalThreeWayComparer (const TCOMPARER& tComparer);
