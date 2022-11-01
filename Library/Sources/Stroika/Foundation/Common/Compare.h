@@ -38,14 +38,19 @@ namespace std {
 // Quirky workaround for clang++-14 on XCode 14 (and probably others).
 // No bug define for now - specific to clang++, because not sure what it depends on besides this, and this is bad enuf...
 // this value being too low...
+// This is PROBABLY an issue with the LIBC++ STD LIBRARY, and not CLANG COMPILER, BUT VERIFY THIS....
 #if __cpp_lib_three_way_comparison < 201907L
 namespace std {
     struct compare_three_way {
-        template <class _T1, class _T2>
-        constexpr auto operator() (_T1&& __t, _T2&& __u) const
-            noexcept (noexcept (_VSTD::forward<_T1> (__t) <=> _VSTD::forward<_T2> (__u)))
+        // NOTE - this workaround is GENERALLY INADEQUATE, but is adequate for my current use in Stroika -- LGP 2022-11-01
+        template <class LT, class RT>
+        constexpr auto operator() (LT&& lhs, RT&& rhs) const
         {
-            return _VSTD::forward<_T1> (__t) <=> _VSTD::forward<_T2> (__u);
+            using CT = common_type_t<LT, RT>;
+            if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
+                return strong_ordering::equal;
+            }
+            return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
         }
         using is_transparent = void;
     };
