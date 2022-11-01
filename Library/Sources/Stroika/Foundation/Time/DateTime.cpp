@@ -733,12 +733,10 @@ time_t DateTime::As () const
 template <>
 tm DateTime::As () const
 {
-    // clang-format off
     if (GetDate ().GetYear () < Year{1900}) [[unlikely]] {
         static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1900"};
         Execution::Throw (kRangeErrror_);
     }
-    // clang-format on
     tm tm{};
     tm.tm_year                         = static_cast<int> (fDate_.GetYear ()) - 1900;
     tm.tm_mon                          = static_cast<int> (fDate_.GetMonth ()) - 1;

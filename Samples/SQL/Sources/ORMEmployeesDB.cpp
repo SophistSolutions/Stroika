@@ -105,9 +105,14 @@ namespace {
          *  use the same names as the ObjectVariantMapper for simpler mapping, or specify an alternate name
          *  for ID, just as an example.
          */
+        // clang-format off
         Collection<Schema::Field>{
-            {.fName = L"ID", .fVariantValueName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}, {.fName = L"NAME", .fVariantValueName = L"Name"sv, .fVariantValueType = VariantValue::eString}, {.fName = L"AGE", .fVariantValueName = L"Age"sv, .fVariantValueType = VariantValue::eInteger}, {.fName = L"ADDRESS", .fVariantValueName = L"Address"sv, .fVariantValueType = VariantValue::eString}, {.fName = L"SALARY", .fVariantValueName = L"Salary"sv, .fVariantValueType = VariantValue::eFloat}, {.fName = L"STILL_EMPLOYED", .fVariantValueName = L"Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}},
+            {.fName = L"ID", .fVariantValueName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
+            , {.fName = L"NAME", .fVariantValueName = L"Name"sv, .fVariantValueType = VariantValue::eString}
+            , {.fName = L"AGE", .fVariantValueName = L"Age"sv, .fVariantValueType = VariantValue::eInteger}, {.fName = L"ADDRESS", .fVariantValueName = L"Address"sv, .fVariantValueType = VariantValue::eString}
+            , {.fName = L"SALARY", .fVariantValueName = L"Salary"sv, .fVariantValueType = VariantValue::eFloat}, {.fName = L"STILL_EMPLOYED", .fVariantValueName = L"Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}},
         Schema::CatchAllField{}};
+    // clang-format on
 
     /*
      * Define the schema, and how to map between the VariantValue objects and the database

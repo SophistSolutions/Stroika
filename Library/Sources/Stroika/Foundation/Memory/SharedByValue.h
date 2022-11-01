@@ -157,10 +157,8 @@ namespace Stroika::Foundation::Memory {
     public:
         nonvirtual SharedByValue& operator= (SharedByValue&& src) noexcept      = default;
         nonvirtual SharedByValue& operator= (const SharedByValue& src) noexcept = default;
-        // clang-format off
         nonvirtual SharedByValue& operator= (shared_ptr_type&& from) noexcept;
         nonvirtual SharedByValue& operator= (const shared_ptr_type& from) noexcept;
-        // clang-format on
 
     public:
         /**

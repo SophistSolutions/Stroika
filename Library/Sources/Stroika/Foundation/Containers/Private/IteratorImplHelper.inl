@@ -28,18 +28,14 @@ namespace Stroika::Foundation::Containers::Private {
 #endif
     inline ContainerDebugChangeCounts_::ContainerDebugChangeCounts_ ()
 #if qDebug
-        // clang-format off
         : fChangeCount{mkInitial_ ()}
-    // clang-format on
 #endif
     {
     }
     inline ContainerDebugChangeCounts_::ContainerDebugChangeCounts_ ([[maybe_unused]] const ContainerDebugChangeCounts_& src)
 #if qDebug
-        // clang-format off
         : fDeleted{src.fDeleted}
         , fChangeCount{src.fChangeCount.load ()}
-    // clang-format on
 #endif
     {
     }
@@ -65,13 +61,11 @@ namespace Stroika::Foundation::Containers::Private {
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
     template <typename... ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS>
     inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, [[maybe_unused]] const ContainerDebugChangeCounts_* changeCounter, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args)
-        // clang-format off
         : fIterator{data, forward<ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS> (args)...}
 #if qDebug
         , fChangeCounter{changeCounter}
-        , fLastCapturedChangeCount { (changeCounter == nullptr) ? 0 : changeCounter->fChangeCount.load () }
+        , fLastCapturedChangeCount{(changeCounter == nullptr) ? 0 : changeCounter->fChangeCount.load ()}
 #endif
-    // clang-format on
     {
         RequireNotNull (data);
     }
@@ -84,13 +78,11 @@ namespace Stroika::Foundation::Containers::Private {
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
     template <typename... ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS>
     inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, [[maybe_unused]] const ContainerDebugChangeCounts_* changeCounter, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args)
-        // clang-format off
         : fIterator{data, forward<ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS> (args)...}
 #if qDebug
         , fChangeCounter{changeCounter}
-        , fLastCapturedChangeCount { (changeCounter == nullptr) ? 0 : changeCounter->fChangeCount.load () }
+        , fLastCapturedChangeCount{(changeCounter == nullptr) ? 0 : changeCounter->fChangeCount.load ()}
 #endif
-    // clang-format on
     {
         RequireNotNull (data);
     }
