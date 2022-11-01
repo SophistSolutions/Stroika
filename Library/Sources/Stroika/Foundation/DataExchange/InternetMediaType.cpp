@@ -118,7 +118,7 @@ strong_ordering InternetMediaType::THREEWAYCOMPARE_ (const InternetMediaType& rh
         using namespace Characters;
         auto sortedMapping = [] (auto m) { return SortedMapping<String, String>{String::LessComparer{CompareOptions::eCaseInsensitive}, m}; };
 #if qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy
-        return Mapping<String, String>::SequentialThreeWayComparer{Common::ThreeWayComparer{}}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
+        return Mapping<String, String>::SequentialThreeWayComparer{compare_three_way{}}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
 #else
         return Mapping<String, String>::SequentialThreeWayComparer{}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
 #endif

@@ -44,9 +44,10 @@ namespace Stroika::Foundation::Common {
     /**
      *  \brief trivial wrapper calling ThreeWayComparer<TL,TR>{}(lhs,rhs) i.e. std::compare_three_way{} (lhs, rhs)
      *
+     * &&& WRONG - DEPRECATED
      *  Since the type of ThreeWayComparer cannot be deduced, you must write a painful:
      *      \code
-     *          Common::ThreeWayComparer<T1,T2>{} (lhs, rhs);   // this often looks much worse when 'T' is a long typename
+     *          compare_three_way{} (lhs, rhs);   // this often looks much worse when 'T' is a long typename
      *      \endcode
      *
      *  This helper function allows for the type deduction, at the cost of not working with arguments to
@@ -426,12 +427,16 @@ namespace Stroika::Foundation::Common {
         }
     };
 #endif
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_MSC_WARNING_START (4996)
     template <>
     struct ExtractComparisonTraits<ThreeWayComparer> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
     };
     DISABLE_COMPILER_MSC_WARNING_END (4996)
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
 // clang-format on
 }
