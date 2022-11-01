@@ -126,7 +126,9 @@
 			"ranges": "cpp",
 			"span": "cpp",
 			"charconv": "cpp",
-			"scoped_allocator": "cpp"
+			"scoped_allocator": "cpp",
+			"bit": "cpp",
+			"numbers": "cpp"
 		},
 		"git.ignoreLimitWarning": true,
 		"files.watcherExclude": {
