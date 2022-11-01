@@ -179,7 +179,7 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
-     *  Like std::compare_three_way<Character,Character> but allow optional case insensitive compares
+     *  Like compare_three_way but allow optional case insensitive compares
      */
     struct Character::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         /**

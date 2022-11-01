@@ -29,7 +29,7 @@ namespace Stroika::Foundation::DataExchange {
 
     /*
      ********************************************************************************
-     ********************** ObjectVariantMapper::StructFieldInfo ********************
+     ******************** ObjectVariantMapper::StructFieldInfo **********************
      ********************************************************************************
      */
     inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper, NullFieldHandling nullFields)
@@ -87,26 +87,11 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline strong_ordering ObjectVariantMapper::TypeMappingDetails::operator<=> (const TypeMappingDetails& rhs) const
     {
-        // NOT SURE WHY THIS CHEKC FAILS ON XCODE 13 @todo
-#if __cpp_lib_three_way_comparison >= 201907
-        return std::compare_three_way{}(fForType, rhs.fForType);
-#else
-        if (fForType < rhs.fForType) {
-            return strong_ordering::less;
-        }
-        if (fForType == rhs.fForType) {
-            return strong_ordering::equal;
-        }
-        if (fForType > rhs.fForType) {
-            return strong_ordering::greater;
-        }
-        AssertNotReached ();
-        return strong_ordering::equal;
-#endif
+        return fForType <=> rhs.fForType;   // just compare types, not functions
     }
     inline bool ObjectVariantMapper::TypeMappingDetails::operator== (const TypeMappingDetails& rhs) const
     {
-        return fForType == rhs.fForType;
+        return fForType == rhs.fForType;    // just compare types, not functions
     }
     template <typename T>
     inline ObjectVariantMapper::FromObjectMapperType<T> ObjectVariantMapper::TypeMappingDetails::FromObjectMapper (const FromGenericObjectMapperType& fromObjectMapper)
