@@ -47,7 +47,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      **************************** SchemeType operators ******************************
      ********************************************************************************
      */
-    inline bool operator< (const SchemeType& lhs, const SchemeType& rhs)
+    inline bool operator<(const SchemeType& lhs, const SchemeType& rhs)
     {
         return SchemeType::TWC_ (lhs, rhs) < 0;
     }
@@ -149,7 +149,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      ******************************** Host operators ********************************
      ********************************************************************************
      */
-    inline bool operator< (const Host& lhs, const Host& rhs)
+    inline bool operator<(const Host& lhs, const Host& rhs)
     {
         return Host::TWC_ (lhs, rhs) < 0;
     }
@@ -229,7 +229,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      ****************************** UserInfo operators ******************************
      ********************************************************************************
      */
-    inline bool operator< (const UserInfo& lhs, const UserInfo& rhs)
+    inline bool operator<(const UserInfo& lhs, const UserInfo& rhs)
     {
         return UserInfo::TWC_ (lhs, rhs) < 0;
     }
@@ -317,7 +317,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *********************** Authority comparison operators *************************
      ********************************************************************************
      */
-    inline bool operator< (const Authority& lhs, const Authority& rhs)
+    inline bool operator<(const Authority& lhs, const Authority& rhs)
     {
         return Authority::TWC_ (lhs, rhs) < 0;
     }
@@ -393,7 +393,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      **************************** Query::operators **********************************
      ********************************************************************************
      */
-    inline bool operator< (const Query& lhs, const Query& rhs)
+    inline bool operator<(const Query& lhs, const Query& rhs)
     {
         return Query::TWC_ (lhs, rhs) < 0;
     }

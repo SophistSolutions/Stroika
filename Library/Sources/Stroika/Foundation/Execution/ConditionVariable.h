@@ -122,8 +122,8 @@ namespace Stroika::Foundation::Execution {
 
         /**
          */
-        ConditionVariable ()                         = default;
-        ConditionVariable (const ConditionVariable&) = delete;
+        ConditionVariable ()                                               = default;
+        ConditionVariable (const ConditionVariable&)                       = delete;
         nonvirtual ConditionVariable& operator= (const ConditionVariable&) = delete;
 
         MutexType          fMutex;

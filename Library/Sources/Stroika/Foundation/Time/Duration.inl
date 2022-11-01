@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Time {
                 }
             }
             inherited::operator= (rhs);
-            fRepType_          = rhs.fRepType_;
+            fRepType_ = rhs.fRepType_;
         }
         return *this;
     }
@@ -158,8 +158,8 @@ namespace Stroika::Foundation::Time {
                 }
             }
             inherited::operator= (move (rhs));
-            fRepType_          = rhs.fRepType_;
-            rhs.fRepType_      = eEmpty_;
+            fRepType_     = rhs.fRepType_;
+            rhs.fRepType_ = eEmpty_;
         }
         return *this;
     }

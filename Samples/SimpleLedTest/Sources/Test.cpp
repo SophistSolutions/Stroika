@@ -135,7 +135,7 @@ ATOM MyRegisterClass (HINSTANCE hInstance)
     wcex.hInstance     = hInstance;
     wcex.hIcon         = LoadIcon (hInstance, (LPCTSTR)IDI_LEDTESTWIN32);
     wcex.hCursor       = LoadCursor (NULL, IDC_ARROW);
-    wcex.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
+    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     wcex.lpszMenuName  = (LPCTSTR)IDC_LEDTESTWIN32;
     wcex.lpszClassName = szWindowClass;
     wcex.hIconSm       = LoadIcon (wcex.hInstance, (LPCTSTR)IDI_SMALL);

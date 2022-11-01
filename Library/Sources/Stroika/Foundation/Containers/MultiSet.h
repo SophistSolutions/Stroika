@@ -206,7 +206,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         nonvirtual MultiSet& operator= (MultiSet&& rhs) noexcept = default;
-        nonvirtual MultiSet& operator= (const MultiSet& rhs) = default;
+        nonvirtual MultiSet& operator= (const MultiSet& rhs)     = default;
 
     public:
         /**

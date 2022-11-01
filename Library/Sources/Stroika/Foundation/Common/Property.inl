@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Common {
         return Getter_ ();
     }
     template <typename T>
-    inline const T* ConstantProperty<T>::operator-> () const
+    inline const T* ConstantProperty<T>::operator->() const
     {
         return &(Getter_ ());
     }

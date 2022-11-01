@@ -82,7 +82,7 @@ namespace Stroika::Foundation::IO::Network {
         LinkMonitor (const LinkMonitor&)         = delete;
 
         LinkMonitor& operator= (LinkMonitor&& rhs) noexcept = default;
-        LinkMonitor& operator= (const LinkMonitor&) = delete;
+        LinkMonitor& operator= (const LinkMonitor&)         = delete;
 
         enum class LinkChange {
             eAdded,

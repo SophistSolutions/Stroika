@@ -36,7 +36,7 @@ namespace Stroika::Foundation::DataExchange {
      ********************* StructFieldMetaInfo operators ****************************
      ********************************************************************************
      */
-    inline bool operator< (const StructFieldMetaInfo& lhs, const StructFieldMetaInfo& rhs)
+    inline bool operator<(const StructFieldMetaInfo& lhs, const StructFieldMetaInfo& rhs)
     {
         if (lhs.fOffset < rhs.fOffset) {
             return true;

@@ -136,9 +136,9 @@ namespace Stroika::Foundation::Execution {
         nonvirtual strong_ordering operator<=> (const SignalHandler& rhs) const = default;
 #else
     public:
-        nonvirtual bool operator== (const SignalHandler& rhs) const;
-        nonvirtual bool operator!= (const SignalHandler& rhs) const;
-        nonvirtual bool operator< (const SignalHandler& rhs) const;
+        nonvirtual bool         operator== (const SignalHandler& rhs) const;
+        nonvirtual bool         operator!= (const SignalHandler& rhs) const;
+        nonvirtual bool         operator<(const SignalHandler& rhs) const;
 #endif
 
     private:

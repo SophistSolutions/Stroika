@@ -417,10 +417,10 @@ namespace {
         l[3]      = L"FRED";
         VerifyTestResult (l[3] == L"FRED");
         VerifyTestResult (l[99] == L"");
-        delete[](l);
+        delete[] (l);
         size_t nSlots = 100;
         l             = new String[size_t (nSlots)];
-        delete[](l);
+        delete[] (l);
     }
 
     namespace Test6_PRIVATE_ {
@@ -442,11 +442,11 @@ namespace {
             constexpr int kRecurseDepth = 10;
 #else
 #ifdef __arm__
-            constexpr bool kArm_ = true;
+            constexpr bool kArm_         = true;
 #else
             constexpr bool kArm_ = false;
 #endif
-            constexpr int kRecurseDepth = (kArm_ and Debug::kBuiltWithAddressSanitizer) ? 7 : 8; // reduction only needed with sanitizer on rasberrypi
+            constexpr int  kRecurseDepth = (kArm_ and Debug::kBuiltWithAddressSanitizer) ? 7 : 8; // reduction only needed with sanitizer on rasberrypi
 #endif
             STRING testString = L"some dump test";
 #if qPrintTimings

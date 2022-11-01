@@ -326,7 +326,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
     public:
         /**
          */
-        nonvirtual IRep* operator-> () const noexcept;
+        nonvirtual IRep* operator->() const noexcept;
 
     public:
         /**

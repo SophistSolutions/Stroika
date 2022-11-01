@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Execution {
         return WritableReference{this, move (critSec)};
     }
     template <typename T, typename TRAITS>
-    inline auto Synchronized<T, TRAITS>::operator-> () const -> ReadableReference
+    inline auto Synchronized<T, TRAITS>::operator->() const -> ReadableReference
     {
         return ReadableReference{this};
     }
@@ -456,7 +456,7 @@ namespace Stroika::Foundation::Execution {
         }
     }
     template <typename T, typename TRAITS>
-    inline const T* Synchronized<T, TRAITS>::ReadableReference::operator-> () const
+    inline const T* Synchronized<T, TRAITS>::ReadableReference::operator->() const
     {
         EnsureNotNull (fT);
         return fT;
@@ -542,16 +542,16 @@ namespace Stroika::Foundation::Execution {
         return *this;
     }
     template <typename T, typename TRAITS>
-    inline T* Synchronized<T, TRAITS>::WritableReference::operator-> ()
+    inline T* Synchronized<T, TRAITS>::WritableReference::operator->()
     {
         // const_cast Safe because the only way to construct one of these is from a non-const pointer, or another WritableReference
         EnsureNotNull (this->fT);
         return const_cast<T*> (this->fT);
     }
     template <typename T, typename TRAITS>
-    inline const T* Synchronized<T, TRAITS>::WritableReference::operator-> () const
+    inline const T* Synchronized<T, TRAITS>::WritableReference::operator->() const
     {
-        return ReadableReference::operator-> ();
+        return ReadableReference::operator->();
     }
     template <typename T, typename TRAITS>
     inline T& Synchronized<T, TRAITS>::WritableReference::rwref ()
@@ -578,17 +578,17 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    inline bool operator< (const Synchronized<T, TRAITS>& lhs, T rhs)
+    inline bool operator<(const Synchronized<T, TRAITS>& lhs, T rhs)
     {
         return lhs.load () < rhs;
     }
     template <typename T, typename TRAITS>
-    inline bool operator< (T lhs, const Synchronized<T, TRAITS>& rhs)
+    inline bool operator<(T lhs, const Synchronized<T, TRAITS>& rhs)
     {
         return lhs < rhs.load ();
     }
     template <typename T, typename TRAITS>
-    inline bool operator< (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
+    inline bool operator<(const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
     {
         // preload to avoid possible deadlock
         auto l = lhs.load ();

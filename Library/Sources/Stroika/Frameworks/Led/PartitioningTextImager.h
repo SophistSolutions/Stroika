@@ -231,8 +231,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual PartitionMarker* GetFirstPartitionMarker () const;
 
     public:
-        nonvirtual size_t GetStartOfPartitionContainingPosition (size_t charPosition) const;
-        nonvirtual size_t GetEndOfPartitionContainingPosition (size_t charPosition) const;
+        nonvirtual size_t           GetStartOfPartitionContainingPosition (size_t charPosition) const;
+        nonvirtual size_t           GetEndOfPartitionContainingPosition (size_t charPosition) const;
         nonvirtual PartitionMarker* GetPartitionMarkerContainingPosition (size_t charPosition) const;
 
     public:

@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         nonvirtual Bijection_LinkedList& operator= (Bijection_LinkedList&& rhs) noexcept = default;
-        nonvirtual Bijection_LinkedList& operator= (const Bijection_LinkedList& rhs) = default;
+        nonvirtual Bijection_LinkedList& operator= (const Bijection_LinkedList& rhs)     = default;
 
     protected:
         using _IterableRepSharedPtr  = typename inherited::_IterableRepSharedPtr;

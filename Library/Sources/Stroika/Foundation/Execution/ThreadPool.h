@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Execution {
         ThreadPool (const ThreadPool&) = delete;
 
     public:
-        nonvirtual ThreadPool& operator= (ThreadPool&&) = delete;
+        nonvirtual ThreadPool& operator= (ThreadPool&&)      = delete;
         nonvirtual ThreadPool& operator= (const ThreadPool&) = delete;
 
     public:

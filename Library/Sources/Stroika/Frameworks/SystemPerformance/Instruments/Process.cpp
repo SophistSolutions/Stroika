@@ -171,7 +171,7 @@ namespace {
                 }
             }
         }
-        SetPrivilegeInContext_ (const SetPrivilegeInContext_&) = delete;
+        SetPrivilegeInContext_ (const SetPrivilegeInContext_&)            = delete;
         SetPrivilegeInContext_& operator= (const SetPrivilegeInContext_&) = delete;
         ~SetPrivilegeInContext_ ()
         {
@@ -857,67 +857,67 @@ namespace {
             [[maybe_unused]] unsigned long long ignoredUnsignedLongLong{};
             [[maybe_unused]] unsigned long int  ignored_unsigned_long{};
             [[maybe_unused]] int                num = ::sscanf (
-                S,
+                               S,
 
-                // (3 - char state)...
-                "%c "
+                               // (3 - char state)...
+                               "%c "
 
-                // (4 - 'int' - ppid,pgrp,session,tty_nr,tpgid)...
-                "%d %d %d %d %d "
+                               // (4 - 'int' - ppid,pgrp,session,tty_nr,tpgid)...
+                               "%d %d %d %d %d "
 
-                // (9 unsigned long  - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
-                "%lu %lu %lu %lu %lu "
+                               // (9 unsigned long  - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
+                               "%lu %lu %lu %lu %lu "
 
-                // (14 - unint but use ulonglong for safety - utime stime)...
-                "%llu %llu "
+                               // (14 - unint but use ulonglong for safety - utime stime)...
+                               "%llu %llu "
 
-                // (16 - unint but use ulonglong for safety- cutime cstime - docs say signed int but thats crazy--LGP2015-09-16)...
-                "%llu %llu "
+                               // (16 - unint but use ulonglong for safety- cutime cstime - docs say signed int but thats crazy--LGP2015-09-16)...
+                               "%llu %llu "
 
-                // (18 long priority, nice)...
-                "%ld %ld "
+                               // (18 long priority, nice)...
+                               "%ld %ld "
 
-                // (20  docs say long but thats nuts %ld   num_threads)...
-                "%d "
+                               // (20  docs say long but thats nuts %ld   num_threads)...
+                               "%d "
 
-                // (21  %ld - itrealvalue)...
-                "%d "
+                               // (21  %ld - itrealvalue)...
+                               "%d "
 
-                // (22 llu -   starttime %llu)...
-                "%llu "
+                               // (22 llu -   starttime %llu)...
+                               "%llu "
 
-                // (23 unsigned long by docs but use ull   vsize, rss)...
-                "%llu %llu ",
+                               // (23 unsigned long by docs but use ull   vsize, rss)...
+                               "%llu %llu ",
 
-                // (3 - char state)...
-                &result.state,
+                               // (3 - char state)...
+                               &result.state,
 
-                // (4 - 'int' - ppid,pgrp,session,tty_nr,tpgid)...
-                &result.ppid, &ignoredInt, &ignoredInt, &ignoredInt, &ignoredInt,
+                               // (4 - 'int' - ppid,pgrp,session,tty_nr,tpgid)...
+                               &result.ppid, &ignoredInt, &ignoredInt, &ignoredInt, &ignoredInt,
 
-                // (9 unsigned long - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
-                &ignoredUnsignedLong, &result.minflt, &ignoredUnsignedLong, &result.majflt, &ignoredUnsignedLong,
+                               // (9 unsigned long - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
+                               &ignoredUnsignedLong, &result.minflt, &ignoredUnsignedLong, &result.majflt, &ignoredUnsignedLong,
 
-                // (14 - unint but use ulonglong for safety - utime stime)...
-                &result.utime, &result.stime,
+                               // (14 - unint but use ulonglong for safety - utime stime)...
+                               &result.utime, &result.stime,
 
-                // (16 - unint but use ulonglong for safety- cutime cstime - docs say signed int but thats crazy--LGP2015-09-16)...
-                &ignoredUnsignedLongLong, &ignoredUnsignedLongLong,
+                               // (16 - unint but use ulonglong for safety- cutime cstime - docs say signed int but thats crazy--LGP2015-09-16)...
+                               &ignoredUnsignedLongLong, &ignoredUnsignedLongLong,
 
-                // (18 long priority, nice)
-                &ignoredLong, &ignoredLong,
+                               // (18 long priority, nice)
+                               &ignoredLong, &ignoredLong,
 
-                // (20  docs say long but thats nuts %ld   num_threads)
-                &result.nlwp,
+                               // (20  docs say long but thats nuts %ld   num_threads)
+                               &result.nlwp,
 
-                // (21  %ld - itrealvalue)
-                &ignoredInt,
+                               // (21  %ld - itrealvalue)
+                               &ignoredInt,
 
-                // (22 llu -   starttime %llu)...
-                &result.start_time,
+                               // (22 llu -   starttime %llu)...
+                               &result.start_time,
 
-                // (23 unsigned long by docs but use ull   vsize, rss)...
-                &result.vsize, &result.rss);
+                               // (23 unsigned long by docs but use ull   vsize, rss)...
+                               &result.vsize, &result.rss);
             DISABLE_COMPILER_MSC_WARNING_END (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
 
             Assert (num == 22); // if not probably throw away???

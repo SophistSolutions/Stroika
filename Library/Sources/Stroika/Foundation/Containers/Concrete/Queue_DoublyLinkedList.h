@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         nonvirtual Queue_DoublyLinkedList& operator= (Queue_DoublyLinkedList&& rhs) noexcept = default;
-        nonvirtual Queue_DoublyLinkedList& operator= (const Queue_DoublyLinkedList& rhs) = default;
+        nonvirtual Queue_DoublyLinkedList& operator= (const Queue_DoublyLinkedList& rhs)     = default;
 
     protected:
         using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;

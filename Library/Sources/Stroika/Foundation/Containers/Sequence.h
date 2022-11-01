@@ -277,7 +277,7 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual Sequence& operator= (Sequence&& rhs) noexcept = default;
-        nonvirtual Sequence& operator= (const Sequence& rhs) = default;
+        nonvirtual Sequence& operator= (const Sequence& rhs)     = default;
 
     public:
         /**
@@ -697,7 +697,7 @@ namespace Stroika::Foundation::Containers {
      *  @Sequence<>::ThreeWayComparer and equal_to<Sequence<>>
      */
     template <typename T>
-    bool operator< (const Sequence<T>& lhs, const Sequence<T>& rhs);
+    bool operator<(const Sequence<T>& lhs, const Sequence<T>& rhs);
     template <typename T>
     bool operator<= (const Sequence<T>& lhs, const Sequence<T>& rhs);
     template <typename T>

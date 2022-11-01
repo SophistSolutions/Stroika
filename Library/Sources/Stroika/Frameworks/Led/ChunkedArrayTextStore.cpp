@@ -33,9 +33,9 @@ public:
      *  insert past end of buffer - or to delete too many characters.
      */
 public:
-    nonvirtual size_t GetLength () const noexcept;
-    nonvirtual size_t GetBytesCanAccommodate () const noexcept;
-    nonvirtual void   CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept;
+    nonvirtual size_t           GetLength () const noexcept;
+    nonvirtual size_t           GetBytesCanAccommodate () const noexcept;
+    nonvirtual void             CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept;
     nonvirtual const Led_tChar* PeekAfter (size_t charPos) const noexcept;
     nonvirtual void             InsertAfter (const Led_tChar* what, size_t howMany, size_t after) noexcept;
     nonvirtual void             DeleteAfter (size_t howMany, size_t after) noexcept;
@@ -377,14 +377,14 @@ public:
         fCache{2}
         ,
 #endif
-        fRootMarker
-    {
-    }
+        fRootMarker{}
 #if qKeepChunkedArrayStatistics
-    , fTotalMarkersPresent{0}, fTotalHackMarkersPresent{0}, fPeakTotalMarkersPresent{0}, fPeakHackMarkersPresent{0}, fTotalHackMarkersAlloced
-    {
-        0
-    }
+        , fTotalMarkersPresent{0}
+        , fTotalHackMarkersPresent{0}
+        , fPeakTotalMarkersPresent{0}
+        , fPeakHackMarkersPresent{0}
+        , fTotalHackMarkersAlloced{
+              0}
 #endif
     {
         Assert (fRootMarker.fTextStoreHook == NULL);

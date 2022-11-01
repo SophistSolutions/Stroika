@@ -125,7 +125,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         nonvirtual Router& operator= (Router&&) noexcept = default;
-        nonvirtual Router& operator= (const Router&) = default;
+        nonvirtual Router& operator= (const Router&)     = default;
 
     public:
         /**

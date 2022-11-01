@@ -57,8 +57,8 @@ namespace {
             { RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { nullopt, Duration{24h}.As<int32_t> () } }
 #endif
         };
-        // clang-format on
-        return FileSystemRequestHandler::Options{L"Files"_k, Sequence<String>{L"index.html"_k}, nullopt, cacheControlSettings_};
+            // clang-format on
+            return FileSystemRequestHandler::Options{L"Files"_k, Sequence<String>{L"index.html"_k}, nullopt, cacheControlSettings_};
     }};
 
     /**

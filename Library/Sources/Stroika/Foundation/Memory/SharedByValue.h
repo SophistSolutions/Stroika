@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Memory {
         explicit SharedByValue (element_type* from, const element_copier_type& copier = element_copier_type{});
 
     public:
-        nonvirtual SharedByValue& operator= (SharedByValue&& src) noexcept = default;
+        nonvirtual SharedByValue& operator= (SharedByValue&& src) noexcept      = default;
         nonvirtual SharedByValue& operator= (const SharedByValue& src) noexcept = default;
         // clang-format off
         nonvirtual SharedByValue& operator= (shared_ptr_type&& from) noexcept;
@@ -201,8 +201,8 @@ namespace Stroika::Foundation::Memory {
          * 
          *  \note This can be confusing, because at the point of call, its unclear if this may invoke BreakReferences or not
          */
-        nonvirtual const element_type* operator-> () const;
-        nonvirtual element_type* operator-> ();
+        nonvirtual const element_type* operator->() const;
+        nonvirtual element_type*       operator->();
 
     public:
         /**

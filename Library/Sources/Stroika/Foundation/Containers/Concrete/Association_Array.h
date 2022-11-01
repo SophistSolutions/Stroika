@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         nonvirtual Association_Array& operator= (Association_Array&& rhs) noexcept = default;
-        nonvirtual Association_Array& operator= (const Association_Array& rhs) = default;
+        nonvirtual Association_Array& operator= (const Association_Array& rhs)     = default;
 
     public:
         /*

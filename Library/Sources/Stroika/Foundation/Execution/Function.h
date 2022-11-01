@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
-        nonvirtual Function& operator= (Function&&) = default;
+        nonvirtual Function& operator= (Function&&)      = default;
         nonvirtual Function& operator= (const Function&) = default;
 
     public:
@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Execution {
 #if __cpp_impl_three_way_comparison < 201907
     private:
         template <typename FS>
-        friend bool operator< (const Function<FS>& lhs, const Function<FS>& rhs);
+        friend bool operator<(const Function<FS>& lhs, const Function<FS>& rhs);
         template <typename FS>
         friend bool operator<= (const Function<FS>& lhs, const Function<FS>& rhs);
         template <typename FS>
@@ -142,7 +142,7 @@ namespace Stroika::Foundation::Execution {
 
 #if __cpp_impl_three_way_comparison < 201907
     template <typename FUNCTION_SIGNATURE>
-    bool operator< (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
+    bool operator<(const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
     template <typename FUNCTION_SIGNATURE>
     bool operator<= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
     template <typename FUNCTION_SIGNATURE>

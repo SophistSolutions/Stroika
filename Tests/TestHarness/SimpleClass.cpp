@@ -84,7 +84,7 @@ bool SimpleClass::operator== (const SimpleClass& rhs) const
     return fValue_ == rhs.fValue_;
 }
 
-bool SimpleClass::operator< (const SimpleClass& rhs) const
+bool SimpleClass::operator<(const SimpleClass& rhs) const
 {
     VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
     VerifyTestResult (rhs.fConstructed_ == kKnownGoodBitPatternValue_);

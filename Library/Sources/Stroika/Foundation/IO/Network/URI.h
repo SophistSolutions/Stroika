@@ -125,7 +125,7 @@ namespace Stroika::Foundation::IO::Network {
         // clang-format on
 
     public:
-        nonvirtual URI& operator= (const URI&) = default;
+        nonvirtual URI& operator= (const URI&)     = default;
         nonvirtual URI& operator= (URI&&) noexcept = default;
 
     public:
@@ -359,7 +359,7 @@ namespace Stroika::Foundation::IO::Network {
 
     private:
 #if __cpp_impl_three_way_comparison < 201907
-        friend bool operator< (const URI& lhs, const URI& rhs);
+        friend bool operator<(const URI& lhs, const URI& rhs);
         friend bool operator<= (const URI& lhs, const URI& rhs);
         friend bool operator== (const URI& lhs, const URI& rhs);
         friend bool operator!= (const URI& lhs, const URI& rhs);
@@ -391,7 +391,7 @@ namespace Stroika::Foundation::IO::Network {
     optional<String> URI::GetAbsPath () const;
 
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const URI& lhs, const URI& rhs);
+    bool operator<(const URI& lhs, const URI& rhs);
     bool operator<= (const URI& lhs, const URI& rhs);
     bool operator== (const URI& lhs, const URI& rhs);
     bool operator!= (const URI& lhs, const URI& rhs);

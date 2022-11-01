@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual SortedMapping& operator= (SortedMapping&& rhs) noexcept = default;
-        nonvirtual SortedMapping& operator= (const SortedMapping& rhs) = default;
+        nonvirtual SortedMapping& operator= (const SortedMapping& rhs)     = default;
 
     public:
         /**

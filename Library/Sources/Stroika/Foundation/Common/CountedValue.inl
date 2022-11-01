@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    inline bool operator< (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
+    inline bool operator<(typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
     {
         Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.fValue, rhs.fValue);
         if (cmp != Common::kEqual) {
@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Common {
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     inline bool operator<= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
     {
-        return operator< (lhs, rhs) or operator== (lhs, rhs);
+        return operator<(lhs, rhs) or operator== (lhs, rhs);
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE, enable_if_t<Configuration::has_eq_v<VALUE_TYPE>>*>
     inline bool operator== (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)

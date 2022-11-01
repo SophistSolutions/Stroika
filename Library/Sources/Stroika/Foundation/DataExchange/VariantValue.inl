@@ -211,7 +211,7 @@ namespace Stroika::Foundation::DataExchange {
      ************************* VariantValue operators *******************************
      ********************************************************************************
      */
-    inline bool operator< (const VariantValue& lhs, const VariantValue& rhs)
+    inline bool operator<(const VariantValue& lhs, const VariantValue& rhs)
     {
         return VariantValue::ThreeWayComparer{}(lhs, rhs) < 0;
     }

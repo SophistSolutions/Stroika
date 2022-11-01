@@ -362,7 +362,7 @@ namespace Stroika::Foundation::Characters {
         String (_SharedPtrIRep&& rep) noexcept;
 
     public:
-        nonvirtual String& operator= (String&& rhs) noexcept = default;
+        nonvirtual String& operator= (String&& rhs) noexcept      = default;
         nonvirtual String& operator= (const String& rhs) noexcept = default;
 
     public:
@@ -1582,9 +1582,9 @@ namespace Stroika::Foundation::Characters {
     String operator"" _k (const wchar_t* s, size_t len);
 
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const String& lhs, const String& rhs);
-    bool operator< (const String& lhs, const wchar_t* rhs);
-    bool operator< (const wchar_t* lhs, const String& rhs);
+    bool operator<(const String& lhs, const String& rhs);
+    bool operator<(const String& lhs, const wchar_t* rhs);
+    bool operator<(const wchar_t* lhs, const String& rhs);
     bool operator<= (const String& lhs, const String& rhs);
     bool operator<= (const String& lhs, const wchar_t* rhs);
     bool operator<= (const wchar_t* lhs, const String& rhs);

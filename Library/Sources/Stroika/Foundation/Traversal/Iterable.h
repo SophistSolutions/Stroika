@@ -298,7 +298,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          */
-        nonvirtual Iterable& operator= (Iterable&& rhs) noexcept = default;
+        nonvirtual Iterable& operator= (Iterable&& rhs) noexcept      = default;
         nonvirtual Iterable& operator= (const Iterable& rhs) noexcept = default;
 
     public:
@@ -1163,10 +1163,9 @@ namespace Stroika::Foundation::Traversal {
             }
         };
 #else
-        using Rep_Cloner_ = decltype (
-            [] (const _IRep& t) -> PtrImplementationTemplate<_IRep> {
-                return Iterable<T>::Clone_ (t);
-            });
+        using Rep_Cloner_ = decltype ([] (const _IRep& t) -> PtrImplementationTemplate<_IRep> {
+            return Iterable<T>::Clone_ (t);
+        });
 #endif
 
     private:

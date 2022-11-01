@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Execution {
 #endif
     }
 #else
-    inline bool Thread::Ptr::operator< (const Ptr& rhs) const
+    inline bool Thread::Ptr::operator<(const Ptr& rhs) const
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
         return fRep_ < rhs.fRep_;

@@ -270,7 +270,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         StyledTextIOWriter_HTML& fWriter;
 
     public:
-        nonvirtual SrcStream& GetSrcStream () const;
+        nonvirtual SrcStream&  GetSrcStream () const;
         nonvirtual SinkStream& GetSinkStream () const;
 
     private:
@@ -288,7 +288,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         bool                                        fInTableCell;
 
     public:
-        nonvirtual size_t GetCurSrcOffset () const;
+        nonvirtual size_t                           GetCurSrcOffset () const;
         nonvirtual SimpleEmbeddedObjectStyleMarker* GetCurSimpleEmbeddedObjectStyleMarker () const;
     };
 

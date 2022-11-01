@@ -157,12 +157,12 @@ namespace Stroika::Foundation::Traversal {
         return *fCurrentValue_;
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline auto Iterator<T, ITERATOR_TRAITS>::operator-> () const -> const value_type*
+    inline auto Iterator<T, ITERATOR_TRAITS>::operator->() const -> const value_type*
     {
         Require (not Done ());
         RequireNotNull (fRep_);
         this->Invariant ();
-        return fCurrentValue_.operator-> ();
+        return fCurrentValue_.operator->();
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline auto Iterator<T, ITERATOR_TRAITS>::operator++ () -> Iterator&

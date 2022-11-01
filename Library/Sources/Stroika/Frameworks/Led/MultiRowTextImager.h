@@ -40,7 +40,7 @@ namespace Stroika::Frameworks::Led {
         virtual ~MultiRowTextImager ();
 
     private:
-        MultiRowTextImager (const MultiRowTextImager&) = delete;
+        MultiRowTextImager (const MultiRowTextImager&)        = delete;
         nonvirtual void operator= (const MultiRowTextImager&) = delete;
 
     private:
@@ -325,7 +325,7 @@ namespace Stroika::Frameworks::Led {
             RowHeight_*  fRowHeightArray;
 
         private:
-            Rep (const Rep&) = delete;
+            Rep (const Rep&)            = delete;
             void operator= (const Rep&) = delete;
         };
 

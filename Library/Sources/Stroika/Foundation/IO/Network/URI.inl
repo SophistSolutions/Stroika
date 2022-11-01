@@ -186,7 +186,7 @@ namespace Stroika::Foundation::IO::Network {
      ******************************** URI operators *********************************
      ********************************************************************************
      */
-    inline bool operator< (const URI& lhs, const URI& rhs)
+    inline bool operator<(const URI& lhs, const URI& rhs)
     {
         return URI::TWC_ (lhs, rhs) < 0;
     }

@@ -53,7 +53,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     class DirectoryChangeWatcher {
     private:
         DirectoryChangeWatcher (const DirectoryChangeWatcher&) = delete;
-        void operator= (const DirectoryChangeWatcher&) = delete;
+        void operator= (const DirectoryChangeWatcher&)         = delete;
 
     public:
         DirectoryChangeWatcher (const filesystem::path& directoryName, bool watchSubTree = false, DWORD notifyFilter = FILE_NOTIFY_CHANGE_LAST_WRITE);

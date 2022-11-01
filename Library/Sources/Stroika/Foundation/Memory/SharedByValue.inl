@@ -134,12 +134,12 @@ namespace Stroika::Foundation::Memory {
         return nullptr;
     }
     template <typename T, typename TRAITS>
-    inline const typename SharedByValue<T, TRAITS>::element_type* SharedByValue<T, TRAITS>::operator-> () const
+    inline const typename SharedByValue<T, TRAITS>::element_type* SharedByValue<T, TRAITS>::operator->() const
     {
         return fSharedImpl_.get ();
     }
     template <typename T, typename TRAITS>
-    inline typename SharedByValue<T, TRAITS>::element_type* SharedByValue<T, TRAITS>::operator-> ()
+    inline typename SharedByValue<T, TRAITS>::element_type* SharedByValue<T, TRAITS>::operator->()
     {
         return rwget ();
     }

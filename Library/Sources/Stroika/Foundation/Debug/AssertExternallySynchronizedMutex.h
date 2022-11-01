@@ -130,8 +130,8 @@ namespace Stroika::Foundation::Debug {
          */
         struct SharedContext final {
         public:
-            SharedContext () noexcept            = default;
-            SharedContext (const SharedContext&) = delete;
+            SharedContext () noexcept                       = default;
+            SharedContext (const SharedContext&)            = delete;
             SharedContext& operator= (const SharedContext&) = delete;
             ~SharedContext ()
             {

@@ -556,7 +556,7 @@ namespace {
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
                  kInitList_
 #else
-                 initializer_list<DurationSecondsType> { 3, 995, 3.4, 3004.5, 1055646.4, 60 * 60 * 24 * 300 }
+                 initializer_list<DurationSecondsType>{3, 995, 3.4, 3004.5, 1055646.4, 60 * 60 * 24 * 300}
 #endif
             ) {
                 ds += now;

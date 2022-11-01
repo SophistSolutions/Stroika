@@ -297,7 +297,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         nonvirtual bool Done () const noexcept;
 
-        nonvirtual T Current () const;
+        nonvirtual T                Current () const;
         nonvirtual ForwardIterator& operator++ () noexcept;
 
     public:

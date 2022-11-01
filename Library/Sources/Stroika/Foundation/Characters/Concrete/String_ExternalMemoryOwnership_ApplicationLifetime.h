@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Characters::Concrete {
 
     public:
         nonvirtual String_ExternalMemoryOwnership_ApplicationLifetime& operator= (String_ExternalMemoryOwnership_ApplicationLifetime&& s) noexcept = default;
-        nonvirtual String_ExternalMemoryOwnership_ApplicationLifetime& operator= (const String_ExternalMemoryOwnership_ApplicationLifetime& s) = default;
+        nonvirtual String_ExternalMemoryOwnership_ApplicationLifetime& operator= (const String_ExternalMemoryOwnership_ApplicationLifetime& s)     = default;
 
     private:
         class MyRep_;

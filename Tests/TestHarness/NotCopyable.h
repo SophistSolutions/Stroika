@@ -16,7 +16,7 @@ namespace Stroika::TestHarness {
         NotCopyable (NotCopyable&&)      = default;
 
         nonvirtual NotCopyable& operator= (const NotCopyable&) = delete;
-        nonvirtual NotCopyable& operator= (NotCopyable&&) = default;
+        nonvirtual NotCopyable& operator= (NotCopyable&&)      = default;
 
         void method (){};
         void const_method () const {};

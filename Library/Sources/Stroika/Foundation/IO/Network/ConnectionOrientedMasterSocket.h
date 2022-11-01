@@ -53,7 +53,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  For copyability, use ConnectionOrientedMasterSocket::Ptr for assigned-to type.
          */
-        nonvirtual ConnectionOrientedMasterSocket& operator= (ConnectionOrientedMasterSocket&& s) = delete;
+        nonvirtual ConnectionOrientedMasterSocket& operator= (ConnectionOrientedMasterSocket&& s)      = delete;
         nonvirtual ConnectionOrientedMasterSocket& operator= (const ConnectionOrientedMasterSocket& s) = delete;
 
     public:
@@ -104,7 +104,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          */
         nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-        nonvirtual Ptr& operator= (Ptr&& rhs) = default;
+        nonvirtual Ptr& operator= (Ptr&& rhs)      = default;
 
     public:
         /**

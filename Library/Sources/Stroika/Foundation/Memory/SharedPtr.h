@@ -190,7 +190,7 @@ namespace Stroika::Foundation::Memory {
         /**
          *  \em Note - this CAN NOT return nullptr (because -> semantics are typically invalid for a logically null pointer)
          */
-        nonvirtual T* operator-> () const noexcept;
+        nonvirtual T* operator->() const noexcept;
 
     public:
         /**
@@ -290,7 +290,7 @@ namespace Stroika::Foundation::Memory {
 
 #if __cpp_impl_three_way_comparison < 201907
     public:
-        nonvirtual bool operator< (const SharedPtr& rhs) const noexcept;
+        nonvirtual bool operator<(const SharedPtr& rhs) const noexcept;
         nonvirtual bool operator<= (const SharedPtr& rhs) const noexcept;
         nonvirtual bool operator> (const SharedPtr& rhs) const noexcept;
         nonvirtual bool operator>= (const SharedPtr& rhs) const noexcept;

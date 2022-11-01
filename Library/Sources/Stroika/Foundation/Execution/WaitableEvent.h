@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         nonvirtual WaitableEvent& operator= (const WaitableEvent&&) = delete;
-        nonvirtual WaitableEvent& operator= (const WaitableEvent&) = delete;
+        nonvirtual WaitableEvent& operator= (const WaitableEvent&)  = delete;
 
     public:
         /**

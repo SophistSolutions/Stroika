@@ -280,7 +280,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual KeyedCollection& operator= (KeyedCollection&& rhs) = default;
+        nonvirtual KeyedCollection& operator= (KeyedCollection&& rhs)      = default;
         nonvirtual KeyedCollection& operator= (const KeyedCollection& rhs) = default;
 
     public:

@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Common {
         /**
          */
         nonvirtual KeyValuePair& operator= (const KeyValuePair& rhs) = default;
-        nonvirtual KeyValuePair& operator= (KeyValuePair&& rhs) = default;
+        nonvirtual KeyValuePair& operator= (KeyValuePair&& rhs)      = default;
         template <typename KEY_TYPE2, typename VALUE_TYPE2>
         nonvirtual KeyValuePair& operator= (const pair<KEY_TYPE2, VALUE_TYPE2>& rhs);
         template <typename KEY_TYPE2, typename VALUE_TYPE2>
@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Common {
      *  Basic operator overloads with the obvious meaning, and simply indirect to @KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer (const Version& rhs), and EqualsComparer
      */
     template <typename KEY_TYPE, typename VALUE_TYPE>
-    bool operator< (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
+    bool operator<(const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
     template <typename KEY_TYPE, typename VALUE_TYPE>
     bool operator<= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs);
     template <typename KEY_TYPE, typename VALUE_TYPE, enable_if_t<Configuration::has_eq_v<KEY_TYPE> and Configuration::has_eq_v<VALUE_TYPE>>* = nullptr>

@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         nonvirtual StringBuilder& operator= (const StringBuilder& rhs) = default;
-        nonvirtual StringBuilder& operator                             = (const String& rhs);
+        nonvirtual StringBuilder& operator= (const String& rhs);
 
     public:
         /**

@@ -16,30 +16,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     template <typename KEY, typename VALUE, typename TRAITS>
     SkipList<KEY, VALUE, TRAITS>::SkipList ()
-        : fLength
-    {
-        0
-    }
+        : fLength{
+              0}
 #if qKeepADTStatistics
-    , fCompares{0}, fRotations
-    {
-        0
-    }
+        , fCompares{0}
+        , fRotations{0}
 #endif
     {
         GrowHeadLinksIfNeeded (1, nullptr);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     SkipList<KEY, VALUE, TRAITS>::SkipList (const SkipList& s)
-        : fLength
-    {
-        0
-    }
+        : fLength{
+              0}
 #if qKeepADTStatistics
-    , fCompares{0}, fRotations
-    {
-        0
-    }
+        , fCompares{0}
+        , fRotations{0}
 #endif
     {
         operator= (s);

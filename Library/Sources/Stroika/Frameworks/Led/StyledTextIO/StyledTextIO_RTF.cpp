@@ -3738,7 +3738,7 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (TWIPS_Point shownSiz
                 paletteData->palNumEntries = static_cast<WORD> (nPalEntries);
                 Verify (::GetEnhMetaFilePaletteEntries (hMF, nPalEntries, paletteData->palPalEntry) == nPalEntries);
                 usePalette = ::CreatePalette (paletteData);
-                delete[](char*) paletteData;
+                delete[] (char*)paletteData;
             }
         }
         HPALETTE oldPalette = nullptr;

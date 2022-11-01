@@ -150,7 +150,7 @@ namespace Stroika::Frameworks::Led::Platform {
 
     public:
         nonvirtual COleDocument& GetDocument () const;
-        nonvirtual Led_MFC& GetActiveView () const;
+        nonvirtual Led_MFC&      GetActiveView () const;
 
     public:
         virtual void OnChange (OLE_NOTIFICATION wNotification, DWORD dwParam) override;

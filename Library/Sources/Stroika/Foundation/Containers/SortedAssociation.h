@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual SortedAssociation& operator= (SortedAssociation&& rhs) noexcept = default;
-        nonvirtual SortedAssociation& operator= (const SortedAssociation& rhs) = default;
+        nonvirtual SortedAssociation& operator= (const SortedAssociation& rhs)     = default;
 
     public:
         /**

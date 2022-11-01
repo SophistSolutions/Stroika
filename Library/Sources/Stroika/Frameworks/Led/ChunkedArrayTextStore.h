@@ -136,14 +136,14 @@ namespace Stroika::Frameworks::Led {
     private:
         nonvirtual void AddMarker1 (Marker* marker, Marker* insideMarker, bool canAddHackMarkers);
         // NB: PossiblyAddHackMarkers () cannot throw - if no memory for add, then just don't add hackmarkers
-        nonvirtual void PossiblyAddHackMarkers (Marker* insideMarker);
-        nonvirtual void RemoveMarker1 (Marker* marker);
+        nonvirtual void    PossiblyAddHackMarkers (Marker* insideMarker);
+        nonvirtual void    RemoveMarker1 (Marker* marker);
         nonvirtual Marker* AddHackMarkerHelper_ (Marker* insideMarker, size_t start, size_t length);
         nonvirtual void    LoseIfUselessHackMarker (Marker* potentiallyUselessHackMarker);
 
     private:
-        nonvirtual void InsertAfter_ (const Led_tChar* what, size_t howMany, size_t after);
-        nonvirtual void DeleteAfter_ (size_t howMany, size_t after);
+        nonvirtual void       InsertAfter_ (const Led_tChar* what, size_t howMany, size_t after);
+        nonvirtual void       DeleteAfter_ (size_t howMany, size_t after);
         nonvirtual TextChunk* AtomicAddChunk (size_t atArrayPos); // does 2 mem allocs, so make sure if second fails, first cleaned up!
 
     private:

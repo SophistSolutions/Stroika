@@ -370,7 +370,7 @@ namespace Stroika::Foundation::Traversal {
          *  Note - the lifetime of this pointer is short - only until the next operation on the wrapper
          *  class instance Iterator<T>.
          */
-        nonvirtual const value_type* operator-> () const;
+        nonvirtual const value_type* operator->() const;
 
     public:
         /**

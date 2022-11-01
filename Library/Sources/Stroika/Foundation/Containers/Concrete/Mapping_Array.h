@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         nonvirtual Mapping_Array& operator= (Mapping_Array&& rhs) noexcept = default;
-        nonvirtual Mapping_Array& operator= (const Mapping_Array& rhs) = default;
+        nonvirtual Mapping_Array& operator= (const Mapping_Array& rhs)     = default;
 
     public:
         /*

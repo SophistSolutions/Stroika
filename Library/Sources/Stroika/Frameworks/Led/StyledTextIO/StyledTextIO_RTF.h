@@ -250,12 +250,12 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     public:
 #if qFriendDeclarationsDontWorkWithNestedClassesBug
-        friend bool operator< (const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs)
+        friend bool operator<(const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs)
         {
             return lhs.first < rhs.first;
         }
 #else
-        friend bool operator< (const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs);
+        friend bool operator<(const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs);
 #endif
     private:
         struct StringNControlWordAtom_Comparator;
@@ -325,11 +325,11 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             FontTable (const vector<FontTableEntry>& fontTable);
 
         public:
-            nonvirtual IncrementalFontSpecification GetFontSpec (int fontNumber);            // throws if not present
-            nonvirtual const FontTableEntry* LookupEntryByNumber (int fontNumber);           // return nullptr if not present
-            nonvirtual const FontTableEntry* LookupEntryByName (const Led_SDK_String& name); // return nullptr if not present
-            nonvirtual FontTableEntry        Add (const FontTableEntry& newEntry);           // ignores the fFNum, and supplies its own! - returns same entry but with revised fFNum
-            nonvirtual int                   FindSmallestUnusedFontNumber () const;
+            nonvirtual IncrementalFontSpecification GetFontSpec (int fontNumber);                   // throws if not present
+            nonvirtual const FontTableEntry*        LookupEntryByNumber (int fontNumber);           // return nullptr if not present
+            nonvirtual const FontTableEntry*        LookupEntryByName (const Led_SDK_String& name); // return nullptr if not present
+            nonvirtual FontTableEntry               Add (const FontTableEntry& newEntry);           // ignores the fFNum, and supplies its own! - returns same entry but with revised fFNum
+            nonvirtual int                          FindSmallestUnusedFontNumber () const;
 
         public:
             vector<FontTableEntry> fEntries;
@@ -934,7 +934,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         ~GroupContext ();
 
     private:
-        GroupContext (const GroupContext&) = delete;
+        GroupContext (const GroupContext&)            = delete;
         GroupContext& operator= (const GroupContext&) = delete;
 
     private:
@@ -1067,7 +1067,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         StyledTextIOWriter_RTF& fWriter;
 
     public:
-        nonvirtual SrcStream& GetSrcStream () const;
+        nonvirtual SrcStream&  GetSrcStream () const;
         nonvirtual SinkStream& GetSinkStream () const;
 
     public:
@@ -1106,7 +1106,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
 //  class   RTFIO::StringNControlWordAtom
 #if !qFriendDeclarationsDontWorkWithNestedClassesBug && !qUseMapForControlWordMap
-    inline bool operator< (const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs)
+    inline bool operator<(const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs)
     {
         return lhs.first < rhs.first;
     }

@@ -967,7 +967,7 @@ vector<TextLayoutBlock_Copy::ScriptRunElt> TextLayoutBlock_Copy::GetScriptRuns (
 void TextLayoutBlock_Copy::BlockRep::operator delete (void* p)
 {
     // Because we allocate using new byte[] in TextLayoutBlock_Copy::CTOR (see SPR#1596)
-    delete[](reinterpret_cast<char*> (p));
+    delete[] (reinterpret_cast<char*> (p));
 }
 
 /*

@@ -3094,16 +3094,16 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             }
             switch (bytesToWrite) { /* note: everything falls through. */
                 case 4:
-                    *--target = (UTF8_) ((ch | byteMark) & byteMask);
+                    *--target = (UTF8_)((ch | byteMark) & byteMask);
                     ch >>= 6;
                 case 3:
-                    *--target = (UTF8_) ((ch | byteMark) & byteMask);
+                    *--target = (UTF8_)((ch | byteMark) & byteMask);
                     ch >>= 6;
                 case 2:
-                    *--target = (UTF8_) ((ch | byteMark) & byteMask);
+                    *--target = (UTF8_)((ch | byteMark) & byteMask);
                     ch >>= 6;
                 case 1:
-                    *--target = (UTF8_) (ch | firstByteMark[bytesToWrite]);
+                    *--target = (UTF8_)(ch | firstByteMark[bytesToWrite]);
             }
             target += bytesToWrite;
         }
@@ -3271,16 +3271,16 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             }
             switch (bytesToWrite) { /* note: everything falls through. */
                 case 4:
-                    *--target = (UTF8_) ((ch | byteMark) & byteMask);
+                    *--target = (UTF8_)((ch | byteMark) & byteMask);
                     ch >>= 6;
                 case 3:
-                    *--target = (UTF8_) ((ch | byteMark) & byteMask);
+                    *--target = (UTF8_)((ch | byteMark) & byteMask);
                     ch >>= 6;
                 case 2:
-                    *--target = (UTF8_) ((ch | byteMark) & byteMask);
+                    *--target = (UTF8_)((ch | byteMark) & byteMask);
                     ch >>= 6;
                 case 1:
-                    *--target = (UTF8_) (ch | firstByteMark[bytesToWrite]);
+                    *--target = (UTF8_)(ch | firstByteMark[bytesToWrite]);
             }
             target += bytesToWrite;
         }

@@ -306,8 +306,8 @@ public:
 class LedItDocManager : public CDocManager {
 public:
     LedItDocManager ();
-    virtual void       OnFileNew () override;
-    virtual CDocument* OpenDocumentFile (LPCTSTR lpszFileName) override;
+    virtual void          OnFileNew () override;
+    virtual CDocument*    OpenDocumentFile (LPCTSTR lpszFileName) override;
     nonvirtual CDocument* OpenDocumentFile (LPCTSTR lpszFileName, FileFormat format);
 
 public:
@@ -586,7 +586,7 @@ protected:
         // what a long ugly line of code
         GtkWidget* activeItem = gtk_menu_get_active (GTK_MENU (gtk_option_menu_get_menu (fFileTypeChoice)));
         AssertNotNull (activeItem);
-        fFileFormat = (FileFormat) (reinterpret_cast<int> (gtk_object_get_user_data (GTK_OBJECT (activeItem))));
+        fFileFormat = (FileFormat)(reinterpret_cast<int> (gtk_object_get_user_data (GTK_OBJECT (activeItem))));
     }
 
 public:

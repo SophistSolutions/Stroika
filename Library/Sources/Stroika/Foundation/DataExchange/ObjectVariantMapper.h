@@ -282,7 +282,7 @@ namespace Stroika::Foundation::DataExchange {
             TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
 
             nonvirtual TypeMappingDetails& operator= (TypeMappingDetails&& rhs) noexcept = default;
-            nonvirtual TypeMappingDetails& operator= (const TypeMappingDetails& rhs) = default;
+            nonvirtual TypeMappingDetails& operator= (const TypeMappingDetails& rhs)     = default;
 
 #if __cpp_impl_three_way_comparison >= 201907
             /**
@@ -290,7 +290,7 @@ namespace Stroika::Foundation::DataExchange {
             nonvirtual strong_ordering operator<=> (const TypeMappingDetails& rhs) const;
 
 #else
-            nonvirtual bool operator< (const TypeMappingDetails& rhs) const;
+            nonvirtual bool operator<(const TypeMappingDetails& rhs) const;
 #endif
             /**
              */

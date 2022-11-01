@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         nonvirtual Collection_stdforward_list& operator= (Collection_stdforward_list&& rhs) noexcept = default;
-        nonvirtual Collection_stdforward_list& operator= (const Collection_stdforward_list& rhs) = default;
+        nonvirtual Collection_stdforward_list& operator= (const Collection_stdforward_list& rhs)     = default;
 
     protected:
         using _IterableRepSharedPtr   = typename inherited::_IterableRepSharedPtr;

@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         nonvirtual SortedAssociation_stdmultimap& operator= (SortedAssociation_stdmultimap&& rhs) noexcept = default;
-        nonvirtual SortedAssociation_stdmultimap& operator= (const SortedAssociation_stdmultimap& rhs) = default;
+        nonvirtual SortedAssociation_stdmultimap& operator= (const SortedAssociation_stdmultimap& rhs)     = default;
 
     protected:
         using _IterableRepSharedPtr    = typename inherited::_IterableRepSharedPtr;

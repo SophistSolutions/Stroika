@@ -70,7 +70,7 @@ public:
     virtual void DeleteContents () override;
 
 public:
-    nonvirtual TextStore& GetTextStore ();
+    nonvirtual TextStore&      GetTextStore ();
     nonvirtual CommandHandler& GetCommandHandler ();
 
 protected:

@@ -79,7 +79,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         nonvirtual String WriteAsString (const VariantValue& v);
 
     protected:
-        nonvirtual _IRep& _GetRep ();
+        nonvirtual _IRep&       _GetRep ();
         nonvirtual const _IRep& _GetRep () const;
 
     protected:

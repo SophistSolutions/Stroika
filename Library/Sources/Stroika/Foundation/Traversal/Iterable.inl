@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Traversal {
     inline auto Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::operator= (const _SafeReadRepAccessor& rhs) noexcept -> _SafeReadRepAccessor&
     {
         shared_lock<const Debug::AssertExternallySynchronizedMutex>::operator= (rhs);
-        fConstRef_                                                           = rhs.fConstRef_;
+        fConstRef_ = rhs.fConstRef_;
 #if qDebug
         fIterableEnvelope_ = rhs.fIterableEnvelope_;
 #endif

@@ -266,7 +266,7 @@ namespace Stroika::Foundation::Time {
      ************************* Time::Date operators *********************************
      ********************************************************************************
      */
-    constexpr inline bool operator< (const Date& lhs, const Date& rhs)
+    constexpr inline bool operator<(const Date& lhs, const Date& rhs)
     {
         return Common::ThreeWayCompare (lhs.GetJulianRep (), rhs.GetJulianRep ()) < 0;
     }

@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename FUNCTION_SIGNATURE>
-    inline bool operator< (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
+    inline bool operator<(const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
     {
         return Common::ThreeWayCompare (lhs.fOrdering_, rhs.fOrdering_) < 0;
     }

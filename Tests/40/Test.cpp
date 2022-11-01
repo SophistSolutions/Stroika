@@ -1249,7 +1249,7 @@ namespace {
                                     DbgTrace ("***assert false");
                                 }
 #else
-                                Assert (writeLock.load ());
+                                    Assert (writeLock.load ());
 #endif
                                 writeLock.store (false);
                             }

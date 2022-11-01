@@ -245,7 +245,7 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     constexpr inline bool has_eq_v = is_detected_v<Private_::has_eq_t, T>;
     template <typename T, typename U>
-    constexpr inline bool has_eq_v<std::pair<T, U>> = has_eq_v<T>and has_eq_v<U>;
+    constexpr inline bool has_eq_v<std::pair<T, U>> = has_eq_v<T> and has_eq_v<U>;
     template <typename... Ts>
     constexpr inline bool has_eq_v<std::tuple<Ts...>> = (has_eq_v<Ts> and ...);
 
@@ -266,7 +266,7 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     constexpr inline bool has_neq_v = is_detected_v<Private_::has_neq_t, T>;
     template <typename T, typename U>
-    constexpr inline bool has_neq_v<std::pair<T, U>> = has_neq_v<T>and has_neq_v<U>;
+    constexpr inline bool has_neq_v<std::pair<T, U>> = has_neq_v<T> and has_neq_v<U>;
     template <typename... Ts>
     constexpr inline bool has_neq_v<std::tuple<Ts...>> = (has_neq_v<Ts> and ...);
 
@@ -287,7 +287,7 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     constexpr inline bool has_lt_v = is_detected_v<Private_::has_lt_t, T>;
     template <typename T, typename U>
-    constexpr inline bool has_lt_v<std::pair<T, U>> = has_lt_v<T>and has_lt_v<U>;
+    constexpr inline bool has_lt_v<std::pair<T, U>> = has_lt_v<T> and has_lt_v<U>;
     template <typename... Ts>
     constexpr inline bool has_lt_v<std::tuple<Ts...>> = (has_lt_v<Ts> and ...);
 
@@ -308,7 +308,7 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     constexpr inline bool has_minus_v = is_detected_v<Private_::has_minus_t, T>;
     template <typename T, typename U>
-    constexpr inline bool has_minus_v<std::pair<T, U>> = has_minus_v<T>and has_minus_v<U>;
+    constexpr inline bool has_minus_v<std::pair<T, U>> = has_minus_v<T> and has_minus_v<U>;
     template <typename... Ts>
     constexpr inline bool has_minus_v<std::tuple<Ts...>> = (has_minus_v<Ts> and ...);
 
@@ -329,7 +329,7 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     constexpr inline bool has_plus_v = is_detected_v<Private_::has_plus_t, T>;
     template <typename T, typename U>
-    constexpr inline bool has_plus_v<std::pair<T, U>> = has_plus_v<T>and has_plus_v<U>;
+    constexpr inline bool has_plus_v<std::pair<T, U>> = has_plus_v<T> and has_plus_v<U>;
     template <typename... Ts>
     constexpr inline bool has_plus_v<std::tuple<Ts...>> = (has_plus_v<Ts> and ...);
 
@@ -351,7 +351,7 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     constexpr inline bool has_spaceship_v = is_detected_v<Private_::has_spaceship_t, T>;
     template <typename T, typename U>
-    constexpr inline bool has_spaceship_v<std::pair<T, U>> = has_spaceship_v<T>and has_spaceship_v<U>;
+    constexpr inline bool has_spaceship_v<std::pair<T, U>> = has_spaceship_v<T> and has_spaceship_v<U>;
     template <typename... Ts>
     constexpr inline bool has_spaceship_v<std::tuple<Ts...>> = (has_spaceship_v<Ts> and ...);
 #endif

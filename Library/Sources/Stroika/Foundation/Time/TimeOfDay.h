@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Time {
         /**
          */
         nonvirtual TimeOfDay& operator= (TimeOfDay&&) noexcept = default;
-        nonvirtual TimeOfDay& operator= (const TimeOfDay&) = default;
+        nonvirtual TimeOfDay& operator= (const TimeOfDay&)     = default;
 
     public:
         /**
@@ -297,7 +297,7 @@ namespace Stroika::Foundation::Time {
 #endif
 
 #if __cpp_impl_three_way_comparison < 201907
-    constexpr bool operator< (TimeOfDay lhs, TimeOfDay rhs);
+    constexpr bool operator<(TimeOfDay lhs, TimeOfDay rhs);
     constexpr bool operator<= (TimeOfDay lhs, TimeOfDay rhs);
     constexpr bool operator== (TimeOfDay lhs, TimeOfDay rhs);
     constexpr bool operator!= (TimeOfDay lhs, TimeOfDay rhs);

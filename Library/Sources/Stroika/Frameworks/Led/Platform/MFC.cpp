@@ -58,7 +58,7 @@ STDAPI CreateStdAccessibleObject (HWND hwnd, LONG idObject, REFIID riid, void** 
         (HWND, LONG, REFIID, void**) =
             (HRESULT (WINAPI*) (HWND, LONG, REFIID, void**)) (::GetProcAddress (oleACCDLL, "CreateStdAccessibleObject"));
         if (pCreateStdAccessibleObject != NULL) {
-            hr = (pCreateStdAccessibleObject) (hwnd, idObject, riid, ppvObject);
+            hr = (pCreateStdAccessibleObject)(hwnd, idObject, riid, ppvObject);
         }
         Verify (::FreeLibrary (oleACCDLL));
     }
@@ -74,7 +74,7 @@ STDAPI AccessibleObjectFromWindow (HWND hwnd, DWORD dwId, REFIID riid, void** pp
         (HWND, DWORD, REFIID, void**) =
             (HRESULT (WINAPI*) (HWND, DWORD, REFIID, void**)) (::GetProcAddress (oleACCDLL, "AccessibleObjectFromWindow"));
         if (pAccessibleObjectFromWindow != NULL) {
-            hr = (pAccessibleObjectFromWindow) (hwnd, dwId, riid, ppvObject);
+            hr = (pAccessibleObjectFromWindow)(hwnd, dwId, riid, ppvObject);
         }
         Verify (::FreeLibrary (oleACCDLL));
     }
@@ -91,7 +91,7 @@ LresultFromObject (REFIID riid, WPARAM wParam, LPUNKNOWN punk)
         (REFIID, WPARAM, LPUNKNOWN) =
             (LRESULT (WINAPI*) (REFIID, WPARAM, LPUNKNOWN)) (::GetProcAddress (oleACCDLL, "LresultFromObject"));
         if (pLresultFromObject != NULL) {
-            hr = (pLresultFromObject) (riid, wParam, punk);
+            hr = (pLresultFromObject)(riid, wParam, punk);
         }
         Verify (::FreeLibrary (oleACCDLL));
     }

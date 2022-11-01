@@ -239,7 +239,7 @@ namespace Stroika::Frameworks::Led {
         virtual Table* InsertTable (size_t at);
 
         nonvirtual vector<Table*> GetTablesInRange (size_t from, size_t to = static_cast<size_t> (-1)) const;
-        nonvirtual Table* GetTableAt (size_t from) const;
+        nonvirtual Table*         GetTableAt (size_t from) const;
 
     public:
         nonvirtual Table* GetActiveTable () const;
@@ -487,7 +487,7 @@ namespace Stroika::Frameworks::Led {
         virtual void OnShowHideGlyphCommand (CommandNumber cmdNum);
 
     protected:
-        virtual Led_SDK_String GetPrettyTypeName (SimpleEmbeddedObjectStyleMarker* m);
+        virtual Led_SDK_String                      GetPrettyTypeName (SimpleEmbeddedObjectStyleMarker* m);
         nonvirtual SimpleEmbeddedObjectStyleMarker* GetSoleSelectedEmbedding () const;
 
     public:
@@ -1340,7 +1340,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void  SetCellColor (size_t row, size_t column, const Color& c);
 
     public:
-        nonvirtual Cell& GetCell (size_t row, size_t column);
+        nonvirtual Cell&       GetCell (size_t row, size_t column);
         nonvirtual const Cell& GetCell (size_t row, size_t column) const;
         nonvirtual void        GetRealCell (size_t* row, size_t* column) const;
         nonvirtual const Cell& GetRealCell (size_t row, size_t column) const;
@@ -1627,7 +1627,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual WordProcessor& GetOwningWordProcessor () const;
-        nonvirtual Table& GetOwningTable () const;
+        nonvirtual Table&         GetOwningTable () const;
 
     private:
         WordProcessor& fOwningWordProcessor;
@@ -1810,9 +1810,9 @@ namespace Stroika::Frameworks::Led {
         TemporarilyAllocateCellWP (Table& forTable, WordProcessor& forWordProcessor, size_t forRow, size_t forColumn, const Led_Rect& cellWindowRect, bool captureChangesForUndo = true);
         ~TemporarilyAllocateCellWP ();
 
-        nonvirtual operator EmbeddedTableWordProcessor* ();
+        nonvirtual                             operator EmbeddedTableWordProcessor* ();
         nonvirtual EmbeddedTableWordProcessor& operator& ();
-        nonvirtual EmbeddedTableWordProcessor* operator-> ();
+        nonvirtual EmbeddedTableWordProcessor* operator->();
 
     private:
         Table&                      fOwningTable;
@@ -1834,9 +1834,9 @@ namespace Stroika::Frameworks::Led {
         using TemporarilyUseTablet = EmbeddedTableWordProcessor::TemporarilyUseTablet;
 
     public:
-        nonvirtual operator EmbeddedTableWordProcessor* ();
+        nonvirtual                             operator EmbeddedTableWordProcessor* ();
         nonvirtual EmbeddedTableWordProcessor& operator& ();
-        nonvirtual EmbeddedTableWordProcessor* operator-> ();
+        nonvirtual EmbeddedTableWordProcessor* operator->();
 
     private:
         TemporarilyAllocateCellWP fWP;

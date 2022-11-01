@@ -144,7 +144,7 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          */
-        nonvirtual Atom& operator= (Atom&& rhs) = default;
+        nonvirtual Atom& operator= (Atom&& rhs)      = default;
         nonvirtual Atom& operator= (const Atom& rhs) = default;
 
     public:
@@ -222,7 +222,7 @@ namespace Stroika::Foundation::DataExchange {
      *  Basic operator overloads with the obvious meaning, and simply indirect to @Version::ThreeWayComparer (const Version& rhs)
      */
     template <typename ATOM_MANAGER>
-    bool operator< (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
+    bool operator<(Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
     template <typename ATOM_MANAGER>
     bool operator<= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
     template <typename ATOM_MANAGER>

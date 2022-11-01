@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Database::SQL::ODBC {
     public:
         /**
          */
-        nonvirtual IRep* operator-> () const noexcept;
+        nonvirtual IRep* operator->() const noexcept;
     };
 
     /**

@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Time {
      ********************************************************************************
      */
 #if __cpp_impl_three_way_comparison < 201907
-    inline bool operator< (const DateTime& lhs, const DateTime& rhs)
+    inline bool operator<(const DateTime& lhs, const DateTime& rhs)
     {
         return DateTime::ThreeWayComparer{}(lhs, rhs) < 0;
     }

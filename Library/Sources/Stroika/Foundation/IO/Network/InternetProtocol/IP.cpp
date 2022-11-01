@@ -38,5 +38,5 @@ uint16_t InternetProtocol::IP::ip_checksum (const void* packetStart, const void*
     cksum += (cksum >> 16);
 
     // Return the bitwise complement of the resulting mishmash
-    return (uint16_t) (~cksum);
+    return (uint16_t)(~cksum);
 }

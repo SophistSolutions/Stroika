@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Common {
      ************************* Common::GUID operators *******************************
      ********************************************************************************
      */
-    inline bool operator< (const GUID& lhs, const GUID& rhs)
+    inline bool operator<(const GUID& lhs, const GUID& rhs)
     {
         return memcmp (&lhs, &rhs, sizeof (GUID)) < 0;
     }

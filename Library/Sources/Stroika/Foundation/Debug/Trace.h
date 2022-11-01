@@ -266,7 +266,7 @@ namespace Stroika::Foundation::Debug {
         /**
          */
         TraceContextSuppressor () noexcept;
-        TraceContextSuppressor (const TraceContextSuppressor&) = delete;
+        TraceContextSuppressor (const TraceContextSuppressor&)            = delete;
         TraceContextSuppressor& operator= (const TraceContextSuppressor&) = delete;
 
     public:

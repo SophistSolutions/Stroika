@@ -206,7 +206,7 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual Association& operator= (Association&& rhs) noexcept = default;
-        nonvirtual Association& operator= (const Association& rhs) = default;
+        nonvirtual Association& operator= (const Association& rhs)     = default;
 
     public:
         /**

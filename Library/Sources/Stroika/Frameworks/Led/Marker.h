@@ -114,7 +114,7 @@ namespace Stroika::Frameworks::Led {
         // Methods private and not actually implemented. Just declared to prevent users from accidentally copying instances of this class. Not intended to be
         // used that way.
     private:
-        MarkerOwner (const MarkerOwner&) = delete;
+        MarkerOwner (const MarkerOwner&)                  = delete;
         const MarkerOwner& operator= (const MarkerOwner&) = delete;
 
     public:
@@ -212,14 +212,14 @@ namespace Stroika::Frameworks::Led {
         // Methods private and not actually implemented. Just declared to prevent users from accidentally copying instances of this class. Not intended to be
         // used that way.
     private:
-        Marker (const Marker&) = delete;
+        Marker (const Marker&)            = delete;
         Marker& operator= (const Marker&) = delete;
 
         // These methods are only legal to call when the marker has been added to a marker owner...
     public:
-        nonvirtual size_t GetStart () const;
-        nonvirtual size_t GetEnd () const;
-        nonvirtual size_t GetLength () const;
+        nonvirtual size_t       GetStart () const;
+        nonvirtual size_t       GetEnd () const;
+        nonvirtual size_t       GetLength () const;
         nonvirtual MarkerOwner* GetOwner () const;
         nonvirtual void         GetRange (size_t* start, size_t* end) const;
 

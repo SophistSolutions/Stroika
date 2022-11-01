@@ -43,7 +43,7 @@ namespace Stroika::Frameworks::Led {
         return (lhs.v != rhs.v or lhs.h != rhs.h);
     }
     template <typename COORD_TYPE>
-    inline bool operator< (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs)
+    inline bool operator<(const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs)
     {
         return ((lhs.v <= rhs.v) and (lhs.h <= rhs.h) and (lhs != rhs));
     }
@@ -414,15 +414,11 @@ namespace Stroika::Frameworks::Led {
     inline Region::Region ()
 #if qPlatform_MacOS
         : fRgn{::NewRgn ()}
-        , fOwned
-    {
-        true
-    }
+        , fOwned{
+              true}
 #elif qPlatform_Windows
-        : fRgn
-    {
-        ::CreateRectRgn (0, 0, 0, 0)
-    }
+        : fRgn{
+              ::CreateRectRgn (0, 0, 0, 0)}
 #endif
     {
 #if qPlatform_MacOS || qPlatform_Windows
@@ -2447,7 +2443,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         isValid = isValid and fStyleValid_Outline and fStyleValid_Shadow and fStyleValid_Condensed and fStyleValid_Extended;
 #elif qPlatform_Windows
-            isValid = isValid and fStyleValid_Strikeout;
+            isValid               = isValid and fStyleValid_Strikeout;
 #endif
         return isValid;
     }
@@ -2667,14 +2663,14 @@ namespace Stroika::Frameworks::Led {
         {
             fStyleValid_Strikeout = false;
 #if qPlatform_Windows
-            fDidSetOSRepCallFlag = false;
+            fDidSetOSRepCallFlag  = false;
 #endif
         }
         inline void IncrementalFontSpecification::SetStyle_Strikeout (bool isStrikeout)
         {
             fStyleValid_Strikeout = true;
 #if qPlatform_Windows
-            fDidSetOSRepCallFlag = false;
+            fDidSetOSRepCallFlag  = false;
 #endif
             inherited::SetStyle_Strikeout (isStrikeout);
         }

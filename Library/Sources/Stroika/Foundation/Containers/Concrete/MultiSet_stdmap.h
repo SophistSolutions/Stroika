@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         nonvirtual MultiSet_stdmap& operator= (MultiSet_stdmap&& rhs) noexcept = default;
-        nonvirtual MultiSet_stdmap& operator= (const MultiSet_stdmap& rhs) = default;
+        nonvirtual MultiSet_stdmap& operator= (const MultiSet_stdmap& rhs)     = default;
 
     protected:
         using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;

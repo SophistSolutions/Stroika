@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Time {
         /**
          */
         nonvirtual DateTime& operator= (DateTime&& rhs) noexcept = default;
-        nonvirtual DateTime& operator= (const DateTime& rhs) = default;
+        nonvirtual DateTime& operator= (const DateTime& rhs)     = default;
 
     public:
         /**
@@ -524,7 +524,7 @@ namespace Stroika::Foundation::Time {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        friend bool operator< (const DateTime& lhs, const DateTime& rhs);
+        friend bool operator<(const DateTime& lhs, const DateTime& rhs);
         friend bool operator<= (const DateTime& lhs, const DateTime& rhs);
         friend bool operator== (const DateTime& lhs, const DateTime& rhs);
         friend bool operator!= (const DateTime& lhs, const DateTime& rhs);
@@ -587,7 +587,7 @@ namespace Stroika::Foundation::Time {
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator< (const DateTime& lhs, const DateTime& rhs);
+    bool operator<(const DateTime& lhs, const DateTime& rhs);
     bool operator<= (const DateTime& lhs, const DateTime& rhs);
     bool operator== (const DateTime& lhs, const DateTime& rhs);
     bool operator!= (const DateTime& lhs, const DateTime& rhs);

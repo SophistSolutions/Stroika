@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Common {
     /**
      *  Basic operator overloads with the obvious meaning, and simply indirect to @GUID::ThreeWayComparer ()
      */
-    bool operator< (const GUID& lhs, const GUID& rhs);
+    bool operator<(const GUID& lhs, const GUID& rhs);
     bool operator<= (const GUID& lhs, const GUID& rhs);
     bool operator== (const GUID& lhs, const GUID& rhs);
     bool operator!= (const GUID& lhs, const GUID& rhs);

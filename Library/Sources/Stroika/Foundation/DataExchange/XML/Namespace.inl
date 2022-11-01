@@ -18,7 +18,7 @@ namespace Stroika::Foundation::DataExchange::XML {
     {
     }
 #if __cpp_impl_three_way_comparison < 201907
-    inline bool operator< (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs)
+    inline bool operator<(const NamespaceDefinition& lhs, const NamespaceDefinition& rhs)
     {
         if (lhs.fURI == rhs.fURI) {
             return lhs.fPrefix < rhs.fPrefix;

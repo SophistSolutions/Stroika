@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Cache {
 
     public:
         nonvirtual BloomFilter& operator= (BloomFilter&& src) noexcept = default;
-        nonvirtual BloomFilter& operator= (const BloomFilter& src) = default;
+        nonvirtual BloomFilter& operator= (const BloomFilter& src)     = default;
 
     public:
         static unsigned int OptimizeBitSize (size_t nElements, double desiredFalsePositiveProbability = kDefaultDesiredFalsePositivityRate);

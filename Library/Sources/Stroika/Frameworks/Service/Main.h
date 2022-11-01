@@ -352,9 +352,9 @@ namespace Stroika::Frameworks::Service {
 
     private:
         nonvirtual const IServiceIntegrationRep& GetServiceRep_ () const;
-        nonvirtual IServiceIntegrationRep& GetServiceRep_ ();
-        nonvirtual const IApplicationRep& GetAppRep_ () const;
-        nonvirtual IApplicationRep& GetAppRep_ ();
+        nonvirtual IServiceIntegrationRep&       GetServiceRep_ ();
+        nonvirtual const IApplicationRep&        GetAppRep_ () const;
+        nonvirtual IApplicationRep&              GetAppRep_ ();
 
     private:
         shared_ptr<IServiceIntegrationRep> fServiceRep_; // no need to synchronize because all access to shared_ptr R/O after initialization

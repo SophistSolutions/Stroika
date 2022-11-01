@@ -311,7 +311,7 @@ namespace Stroika::Foundation::Memory {
 #endif
 
     private:
-        nonvirtual T*    BufferAsT_ () noexcept;
+        nonvirtual T*       BufferAsT_ () noexcept;
         nonvirtual const T* BufferAsT_ () const noexcept;
 
     private:

@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Containers {
         {
         }
         TemporaryElementReference_& operator= (const TemporaryElementReference_&) = delete;
-        TemporaryElementReference_& operator                                      = (ArgByValueType<X> v)
+        TemporaryElementReference_& operator= (ArgByValueType<X> v)
         {
             RequireNotNull (fV);
             fV->SetAt (fIndex, v);
@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Containers {
         {
         }
         TemporaryElementReference_& operator= (const TemporaryElementReference_&) = delete;
-        TemporaryElementReference_& operator                                      = (ArgByValueType<X> v)
+        TemporaryElementReference_& operator= (ArgByValueType<X> v)
         {
             RequireNotNull (fV);
             *((X*)this) = v;
@@ -468,7 +468,7 @@ namespace Stroika::Foundation::Containers {
      ********************************************************************************
      */
     template <typename T>
-    inline bool operator< (const Sequence<T>& lhs, const Sequence<T>& rhs)
+    inline bool operator<(const Sequence<T>& lhs, const Sequence<T>& rhs)
     {
         return typename Sequence<T>::template ThreeWayComparer<>{}(lhs, rhs) < 0;
     }

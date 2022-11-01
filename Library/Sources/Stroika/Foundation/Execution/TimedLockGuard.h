@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Execution {
          */
         template <typename FAILURE_EXCEPTION = TimeOutException>
         TimedLockGuard (MUTEX& m, const Time::Duration& waitUpTo, const FAILURE_EXCEPTION& timeoutException = FAILURE_EXCEPTION{});
-        TimedLockGuard (const TimedLockGuard&) = delete;
+        TimedLockGuard (const TimedLockGuard&)            = delete;
         TimedLockGuard& operator= (const TimedLockGuard&) = delete;
         ~TimedLockGuard ();
 

@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual SortedSet& operator= (SortedSet&& rhs) noexcept = default;
-        nonvirtual SortedSet& operator= (const SortedSet& rhs) = default;
+        nonvirtual SortedSet& operator= (const SortedSet& rhs)     = default;
 
     public:
         /**

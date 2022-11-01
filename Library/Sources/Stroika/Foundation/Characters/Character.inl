@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Characters {
      ************************* Character operators **********************************
      ********************************************************************************
      */
-    inline bool operator< (Character lhs, Character rhs)
+    inline bool operator<(Character lhs, Character rhs)
     {
         return Character::ThreeWayComparer{}(lhs, rhs) < 0;
     }

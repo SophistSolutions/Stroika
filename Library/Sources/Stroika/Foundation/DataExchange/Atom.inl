@@ -112,7 +112,7 @@ namespace Stroika::Foundation::DataExchange {
      ********************************************************************************
      */
     template <typename ATOM_MANAGER>
-    inline bool operator< (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
+    inline bool operator<(Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
     {
         return lhs.fValue_ < rhs.fValue_;
     }

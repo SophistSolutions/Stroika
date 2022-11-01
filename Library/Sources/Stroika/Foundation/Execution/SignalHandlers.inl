@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Execution {
     {
         return fType_ != rhs.fType_ or fCall_ != rhs.fCall_;
     }
-    inline bool SignalHandler::operator< (const SignalHandler& rhs) const
+    inline bool SignalHandler::operator<(const SignalHandler& rhs) const
     {
         if (fType_ == rhs.fType_) {
             // technically not quite real... - compute address of ptr...

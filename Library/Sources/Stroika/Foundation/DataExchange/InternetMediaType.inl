@@ -109,7 +109,7 @@ namespace Stroika::Foundation::DataExchange {
      *********************** InternetMediaType operators ****************************
      ********************************************************************************
      */
-    inline bool operator< (const InternetMediaType& lhs, const InternetMediaType& rhs)
+    inline bool operator<(const InternetMediaType& lhs, const InternetMediaType& rhs)
     {
         return lhs.THREEWAYCOMPARE_ (rhs) < 0;
     }

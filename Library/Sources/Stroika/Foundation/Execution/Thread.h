@@ -727,7 +727,7 @@ namespace Stroika::Foundation::Execution {
             nonvirtual strong_ordering operator<=> (nullptr_t) const;
 #else
         public:
-            nonvirtual bool operator< (const Ptr& rhs) const;
+            nonvirtual bool operator<(const Ptr& rhs) const;
 
         public:
             nonvirtual bool operator== (const Ptr& rhs) const;
@@ -901,7 +901,7 @@ namespace Stroika::Foundation::Execution {
         class SuppressInterruptionInContext {
         public:
             SuppressInterruptionInContext ();
-            SuppressInterruptionInContext (const SuppressInterruptionInContext&) = delete;
+            SuppressInterruptionInContext (const SuppressInterruptionInContext&)            = delete;
             SuppressInterruptionInContext& operator= (const SuppressInterruptionInContext&) = delete;
             ~SuppressInterruptionInContext ();
         };

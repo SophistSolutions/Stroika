@@ -55,7 +55,7 @@ namespace {
                 Headers (const Headers& src);
                 Headers (Headers&& src) noexcept;
                 nonvirtual Headers& operator= (const Headers& rhs) = default; // properties are assignable, so this is OK
-                nonvirtual Headers& operator                       = (Headers&& rhs) noexcept;
+                nonvirtual Headers& operator= (Headers&& rhs) noexcept;
 
                 Property<unsigned int>           contentLength1; // both refer to the private fContentLength_ field
                 Property<unsigned int>           contentLength2;

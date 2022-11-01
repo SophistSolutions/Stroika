@@ -31,12 +31,12 @@ namespace Stroika::Foundation::Time {
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     constexpr Timezone Timezone::kUTC{TZ_::eUTC};
 #else
-    inline constexpr Timezone Timezone::kUTC{TZ_::eUTC};
+    inline constexpr Timezone           Timezone::kUTC{TZ_::eUTC};
 #endif
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     constexpr Timezone Timezone::kLocalTime{TZ_::eLocalTime};
 #else
-    inline constexpr Timezone Timezone::kLocalTime{TZ_::eLocalTime};
+    inline constexpr Timezone           Timezone::kLocalTime{TZ_::eLocalTime};
 #endif
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     constexpr optional<Timezone> Timezone::kUnknown{nullopt};
@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Time {
     {
         return fTZ_ != rhs.fTZ_ or fBiasInMinutesFromUTC_ != rhs.fBiasInMinutesFromUTC_;
     }
-    inline constexpr bool Timezone::operator< (const Timezone& rhs) const
+    inline constexpr bool Timezone::operator<(const Timezone& rhs) const
     {
         if (fTZ_ != rhs.fTZ_) {
             return fTZ_ < rhs.fTZ_;

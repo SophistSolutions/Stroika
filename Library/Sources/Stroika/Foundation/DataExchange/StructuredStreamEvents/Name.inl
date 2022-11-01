@@ -78,7 +78,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
      ************** StructuredStreamEvents::Name comparison operators ***************
      ********************************************************************************
      */
-    inline bool operator< (const Name& lhs, const Name& rhs)
+    inline bool operator<(const Name& lhs, const Name& rhs)
     {
         return Name::TWC_ (lhs, rhs) < 0;
     }

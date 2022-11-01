@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         nonvirtual Sequence_stdvector& operator= (Sequence_stdvector&& rhs) noexcept = default;
-        nonvirtual Sequence_stdvector& operator= (const Sequence_stdvector& rhs) = default;
+        nonvirtual Sequence_stdvector& operator= (const Sequence_stdvector& rhs)     = default;
 
     public:
         /*

@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             }
             return current->value;
         }
-        T* operator-> () const
+        T* operator->() const
         {
             if (current == kTerminalSentinal_) {
                 throw std::logic_error{"invalid iterator"};

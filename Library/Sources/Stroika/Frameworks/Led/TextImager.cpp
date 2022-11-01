@@ -203,15 +203,11 @@ TextImager::TextImager ()
     , fCachedFontInfo{}
     ,
 #if qPlatform_Windows
-    fCachedFont
-{
-    nullptr
-}
+    fCachedFont{
+        nullptr}
 #else
-    fCachedFontValid
-{
-    false
-}
+    fCachedFontValid{
+        false}
 #endif
 {
     for (Color** i = &fDefaultColorIndex[0]; i < &fDefaultColorIndex[eMaxDefaultColorIndex]; ++i) {

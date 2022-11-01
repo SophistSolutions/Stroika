@@ -352,7 +352,7 @@ namespace Stroika::Foundation::Memory {
         return *fEnvelope_.GetPtr ();
     }
     template <typename T>
-    inline T* SharedPtr<T>::operator-> () const noexcept
+    inline T* SharedPtr<T>::operator->() const noexcept
     {
         return &GetRep ();
     }
@@ -453,7 +453,7 @@ namespace Stroika::Foundation::Memory {
 #endif
 #if __cpp_impl_three_way_comparison < 201907
     template <typename T>
-    inline bool SharedPtr<T>::operator< (const SharedPtr& rhs) const noexcept
+    inline bool SharedPtr<T>::operator<(const SharedPtr& rhs) const noexcept
     {
         // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
         // this does the same thing...

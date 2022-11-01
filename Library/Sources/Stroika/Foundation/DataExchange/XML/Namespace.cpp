@@ -30,7 +30,7 @@ void NamespaceDefinitionsList::Add (const wstring& uri, const wstring& prefix)
 }
 
 #if __cpp_impl_three_way_comparison < 201907
-bool XML::operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs)
+bool XML::operator<(const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs)
 {
     vector<NamespaceDefinition>::const_iterator li = lhs.fNamespaces.begin ();
     vector<NamespaceDefinition>::const_iterator le = lhs.fNamespaces.end ();

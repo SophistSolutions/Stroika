@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Math {
     /**
      *  Basic operator overloads with the obvious meaning, and simply indirect to @Common::ThreeWayCompare ()
      */
-    constexpr bool operator< (const Angle& lhs, const Angle& rhs);
+    constexpr bool operator<(const Angle& lhs, const Angle& rhs);
     constexpr bool operator<= (const Angle& lhs, const Angle& rhs);
     constexpr bool operator== (const Angle& lhs, const Angle& rhs);
     constexpr bool operator!= (const Angle& lhs, const Angle& rhs);

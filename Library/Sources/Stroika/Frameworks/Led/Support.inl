@@ -250,7 +250,7 @@ namespace Stroika::Frameworks::Led {
     inline uint16_t BufToUInt16 (const uint16_t* realBuf)
     {
         const unsigned char* buf = (const unsigned char*)realBuf;
-        return (uint16_t) ((((uint16_t)buf[0]) << 8) + (uint16_t)buf[1]);
+        return (uint16_t)((((uint16_t)buf[0]) << 8) + (uint16_t)buf[1]);
     }
     inline void UInt32ToBuf (uint32_t ul, uint32_t* realBuf)
     {

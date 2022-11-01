@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Streams {
         {
             Write (start, end);
         }
-        Rep_ (const Rep_&)       = delete;
+        Rep_ (const Rep_&)                       = delete;
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
         virtual bool IsSeekable () const override

@@ -119,7 +119,7 @@ public:
     nonvirtual StandardStyledTextImager::StyleDatabasePtr& GetStyleDatabase ();
     nonvirtual WordProcessor::ParagraphDatabasePtr& GetParagraphDatabase ();
     nonvirtual WordProcessor::HidableTextDatabasePtr& GetHidableTextDatabase ();
-    nonvirtual CommandHandler& GetCommandHandler ();
+    nonvirtual CommandHandler&                        GetCommandHandler ();
 
 protected:
 public:
