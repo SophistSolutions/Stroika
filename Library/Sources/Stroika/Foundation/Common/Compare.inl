@@ -19,6 +19,7 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename LT, typename RT>
+    [[deprecated ("Since Stroika 3.0d1 - use compare_three_way{} or <=>")]]
     constexpr strong_ordering ThreeWayCompare (LT&& lhs, RT&& rhs)
     {
         return compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));

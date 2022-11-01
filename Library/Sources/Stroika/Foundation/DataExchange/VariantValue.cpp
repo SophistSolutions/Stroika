@@ -843,18 +843,18 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
     if (fExactTypeMatchOnly) {
         // No obvious way to compare elements of different type, so just use the ordering of the types (new in Stroika v2.1d5, and ONLY if new (not default) fExactTypeMatchOnly flag set
         if (lt != rt) {
-            return Common::ThreeWayCompare (lt, rt);
+            return compare_three_way{}(lt, rt);
         }
     }
     switch (lt) {
         case VariantValue::eNull:
             return rt == VariantValue::eNull ? strong_ordering::equal : strong_ordering::greater;
         case VariantValue::eBoolean:
-            return Common::ThreeWayCompare (lhs.As<bool> (), rhs.As<bool> ());
+            return lhs.As<bool> () <=> rhs.As<bool> ();
         case VariantValue::eInteger:
-            return Common::ThreeWayCompare (lhs.As<IntegerType_> (), rhs.As<IntegerType_> ());
+            return compare_three_way{}(lhs.As<IntegerType_> (), rhs.As<IntegerType_> ());
         case VariantValue::eUnsignedInteger:
-            return Common::ThreeWayCompare (lhs.As<UnsignedIntegerType_> (), rhs.As<UnsignedIntegerType_> ());
+            return compare_three_way{}(lhs.As<UnsignedIntegerType_> (), rhs.As<UnsignedIntegerType_> ());
         case VariantValue::eFloat: {
             // explicit test so we can do NearlyEquals()
             FloatType_ l = lhs.As<FloatType_> ();
@@ -870,18 +870,18 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
             }
         }
         case VariantValue::eDate:
-            return Common::ThreeWayCompare (lhs.As<Date> (), rhs.As<Date> ());
+            return compare_three_way{}(lhs.As<Date> (), rhs.As<Date> ());
         case VariantValue::eDateTime:
-            return Common::ThreeWayCompare (lhs.As<DateTime> (), rhs.As<DateTime> ());
+            return compare_three_way{}(lhs.As<DateTime> (), rhs.As<DateTime> ());
         case VariantValue::eString:
-            return Common::ThreeWayCompare (lhs.As<String> (), rhs.As<String> ());
+            return compare_three_way{}(lhs.As<String> (), rhs.As<String> ());
         case VariantValue::eArray:
-            return Common::ThreeWayCompare (lhs.As<Sequence<VariantValue>> (), rhs.As<Sequence<VariantValue>> ());
+            return compare_three_way{}(lhs.As<Sequence<VariantValue>> (), rhs.As<Sequence<VariantValue>> ());
         case VariantValue::eMap: {
 // Cannot do cuz Keys() NYI
 // @todo - fix!!!
 #if 0
-                return Common::ThreeWayCompare (As<Mapping<String, VariantValue>> ().Keys (), rhs.As<Mapping<String, VariantValue>>.Keys () ());
+                return compare_three_way{} (As<Mapping<String, VariantValue>> ().Keys (), rhs.As<Mapping<String, VariantValue>>.Keys () ());
 #endif
             // same iff all elts same
             Mapping<String, VariantValue> lhsM{lhs.As<Mapping<String, VariantValue>> ()};
@@ -894,7 +894,7 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
                 }
                 if (*li != *ri) {
                     //return false; CHANGE IN BEHAVIOR (I THINK FIX) 2020-05-04
-                    return Common::ThreeWayCompare (*li, *ri);
+                    return compare_three_way{}(*li, *ri);
                 }
             }
             Ensure (li == lhsM.end ());

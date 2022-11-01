@@ -31,7 +31,7 @@ namespace {
         else {
             for (size_t i = 0; i < length; ++i) {
                 if (lhsStart[i].GetCharacterCode () != rhsStart[i].GetCharacterCode ()) {
-                    return Common::ThreeWayCompare (lhsStart[i].GetCharacterCode (), rhsStart[i].GetCharacterCode ());
+                    return lhsStart[i].GetCharacterCode () <=> rhsStart[i].GetCharacterCode ();
                 }
             }
         }
@@ -50,7 +50,7 @@ namespace {
             Character lc = lhsStart[i].ToLowerCase ();
             Character rc = rhsStart[i].ToLowerCase ();
             if (lc.GetCharacterCode () != rc.GetCharacterCode ()) {
-                return Common::ThreeWayCompare (lc.GetCharacterCode (), rc.GetCharacterCode ());
+                return lc.GetCharacterCode () <=> rc.GetCharacterCode ();
             }
         }
         return Common::CompareResultNormalizer (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));

@@ -101,7 +101,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline strong_ordering Host::TWC_ (const Host& lhs, const Host& rhs)
     {
-        if (strong_ordering cmp = Common::ThreeWayCompare (lhs.AsInternetAddress (), rhs.AsInternetAddress ()); cmp != strong_ordering::equal) {
+        if (strong_ordering cmp = compare_three_way{}(lhs.AsInternetAddress (), rhs.AsInternetAddress ()); cmp != strong_ordering::equal) {
             return cmp;
         }
         return Common::OptionalThreeWayComparer<String, String::ThreeWayComparer>{String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
@@ -150,7 +150,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline strong_ordering UserInfo::TWC_ (const UserInfo& lhs, const UserInfo& rhs)
     {
-        return Common::ThreeWayCompare (lhs.AsDecoded (), rhs.AsDecoded ());
+        return compare_three_way{}(lhs.AsDecoded (), rhs.AsDecoded ());
     }
 
     /*
@@ -198,13 +198,13 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline strong_ordering Authority::TWC_ (const Authority& lhs, const Authority& rhs)
     {
-        if (auto cmp = Common::ThreeWayCompare (lhs.GetHost (), rhs.GetHost ()); cmp != strong_ordering::equal) {
+        if (auto cmp = compare_three_way{}(lhs.GetHost (), rhs.GetHost ()); cmp != strong_ordering::equal) {
             return cmp;
         }
-        if (auto cmp = Common::ThreeWayCompare (lhs.GetUserInfo (), rhs.GetUserInfo ()); cmp != strong_ordering::equal) {
+        if (auto cmp = compare_three_way{}(lhs.GetUserInfo (), rhs.GetUserInfo ()); cmp != strong_ordering::equal) {
             return cmp;
         }
-        return Common::ThreeWayCompare (lhs.GetPort (), rhs.GetPort ());
+        return compare_three_way{}(lhs.GetPort (), rhs.GetPort ());
     }
 
     /*

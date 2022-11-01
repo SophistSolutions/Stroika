@@ -255,7 +255,7 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline strong_ordering InternetAddress::TWC_ (const InternetAddress& lhs, const InternetAddress& rhs)
     {
-        if (auto cmp = Common::ThreeWayCompare (lhs.fAddressFamily_, rhs.fAddressFamily_); cmp != strong_ordering::equal) {
+        if (auto cmp = compare_three_way{}(lhs.fAddressFamily_, rhs.fAddressFamily_); cmp != strong_ordering::equal) {
             return cmp;
         }
         switch (lhs.fAddressFamily_) {
@@ -263,10 +263,10 @@ namespace Stroika::Foundation::IO::Network {
                 return strong_ordering::equal;
             } break;
             case AddressFamily::V4: {
-                return Common::ThreeWayCompare (Memory::MemCmp (Traversal::Iterator2Pointer (lhs.fArray_4_uint_.begin ()), Traversal::Iterator2Pointer (rhs.fArray_4_uint_.begin ()), 4), 0);
+                return compare_three_way{}(Memory::MemCmp (Traversal::Iterator2Pointer (lhs.fArray_4_uint_.begin ()), Traversal::Iterator2Pointer (rhs.fArray_4_uint_.begin ()), 4), 0);
             } break;
             case AddressFamily::V6: {
-                return Common::ThreeWayCompare (Memory::MemCmp (Traversal::Iterator2Pointer (lhs.fArray_16_uint_.begin ()), Traversal::Iterator2Pointer (rhs.fArray_16_uint_.begin ()), 16), 0);
+                return compare_three_way{}(Memory::MemCmp (Traversal::Iterator2Pointer (lhs.fArray_16_uint_.begin ()), Traversal::Iterator2Pointer (rhs.fArray_16_uint_.begin ()), 16), 0);
             } break;
         }
         //AssertNotReached ();  @todo - this really should be an assertion failure, but tricky cuz constexpr function could fix with template)
