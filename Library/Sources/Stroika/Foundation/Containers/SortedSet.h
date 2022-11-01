@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Containers {
      *        o Set (base class) are already intrinsically equals-comparable.
      *
      *        o Since SortedSet implies an ordering on the elements of the Set, we can use this to define a
-     *          three_way_compare ordering for SortedSet<>
+     *          compare_three_way ordering for SortedSet<>
      *
      *        o Since this was never supported before (not a regression) - and close to end of C++17 specific development,
      *          only implementing three way compare for C++20 or later.

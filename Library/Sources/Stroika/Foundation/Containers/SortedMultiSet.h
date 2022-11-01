@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Containers {
      *        o MultiSet (base class) are already intrinsically equals-comparable.
      *
      *        o Since SortedMultiSet implies an ordering on the elements of the MultiSet, we can use this to define a
-     *          three_way_compare ordering for SortedMultiSet<>
+     *          compare_three_way ordering for SortedMultiSet<>
      *
      *        o Since this was never supported before (not a regression) - and close to end of C++17 specific development,
      *          only implementing three way compare for C++20 or later.

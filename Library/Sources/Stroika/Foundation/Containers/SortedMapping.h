@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Containers {
      *      o   Mappings (base class) are already intrinsically equals-comparable.
      *
      *      o   Since SortedMapping implies an ordering on the elements of the mapping, we can use this to define a
-     *          three_way_compare ordering for SortedMapping<>
+     *          compare_three_way ordering for SortedMapping<>
      *
      *      o   Since this was never supported before (not a regression) - and close to end of C++17 specific development,
      *          only implementing three way compare for C++20 or later.
