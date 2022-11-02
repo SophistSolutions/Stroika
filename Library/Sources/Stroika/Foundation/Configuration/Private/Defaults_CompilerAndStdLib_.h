@@ -206,7 +206,9 @@ foo.cpp:
 // this version of g++11 lib from ubuntu 22.04
 //#define GLIBCXX_11x_ 20220324
 // this version of clang++14 lib from ubuntu 22.04
-#define GLIBCXX_11x_ 20220513
+// DONT define GLIBCXX_11x_ cuz WAY too much of a moving target...
+// #define GLIBCXX_11x_ 20220513
+// 20220421 now for g++-11 GLIBCXX_11x_ on ubuntu 22.04 - very confusing
 
 /*
  *
@@ -1292,7 +1294,7 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 0
 #elif defined(__GLIBCXX__)
 // Crazy, but seems broken on older libg++, and fixed in 20220319, and then broken again in 20220324 - at least on Ubuntu 22.04
-#define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy ((__GLIBCXX__ < 20220319) || (__GLIBCXX__ == 20220324))
+#define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy ((__GLIBCXX__ < 20220319) || (20220324 <= __GLIBCXX__ && __GLIBCXX__ <= 20220421))
 #else
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 0
 #endif
@@ -1314,7 +1316,7 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
          which is almost 20 years old, so dont hold breath on fix ;-) --LGP 2021-05-12
  */
 #ifndef qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
-#if defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_11x_
+#if defined(__GLIBCXX__) && __GLIBCXX__ <= 20220513
 #define qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy 1
 #else
 #define qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy 0
@@ -1977,7 +1979,7 @@ int main ()
 #define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 14000))
 #elif defined(__GLIBCXX__)
 // according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11 (library so affects clang too if built with glibc)
-#define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GLIBCXX__ <= GLIBCXX_11x_)
+#define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GLIBCXX__ <= 20220513)
 #else
 #define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy 0
 #endif
