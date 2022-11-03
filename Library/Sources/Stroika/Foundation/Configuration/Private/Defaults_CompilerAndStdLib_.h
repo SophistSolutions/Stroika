@@ -1314,9 +1314,15 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
          https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99556
          They responded this IS dup of https://gcc.gnu.org/bugzilla/show_bug.cgi?id=9635
          which is almost 20 years old, so dont hold breath on fix ;-) --LGP 2021-05-12
+
+    NOTE:
+        Since it appears the libg++ people have no intention of fixing this (anytime soon), instead of defaulting
+        to wrong answer (with if defined(__GLIBCXX__) && __GLIBCXX__ <= 20220527) I'm just changing to 
+        if defined(__GLIBCXX__)
+        There is a check in the regtests (test_locale_time_get_date_order_no_order_Buggy) for when this is fixed, and it will warn if it ever is.
  */
 #ifndef qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
-#if defined(__GLIBCXX__) && __GLIBCXX__ <= 20220513
+#if defined(__GLIBCXX__)
 #define qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy 1
 #else
 #define qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy 0
