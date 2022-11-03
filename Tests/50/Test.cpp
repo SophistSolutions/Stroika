@@ -419,6 +419,7 @@ namespace {
         catch (...) {
             // See qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy if this is triggered
             DbgTrace ("qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy");
+            VerifyTestResult(false);
             Execution::ReThrow ();
         }
         {
