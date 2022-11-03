@@ -593,7 +593,7 @@ namespace Stroika::Foundation::DataExchange {
         FromObjectMapperType<optional<T>> fromObjectMapper = [options] (const ObjectVariantMapper& mapper, const optional<T>* fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
             if (fromObjOfTypeT->has_value ()) {
-                return options.fTMapper->FromObjectMapper<T> (mapper, &**fromObjOfTypeT);
+                return options.fTMapper->FromObjectMapper<T> () (mapper, &**fromObjOfTypeT);
             }
             else {
                 return VariantValue{};
@@ -608,7 +608,7 @@ namespace Stroika::Foundation::DataExchange {
                 // SEE https://stroika.atlassian.net/browse/STK-910
                 // fix here - I KNOW I have something there, but how to construct
                 T tmp{};
-                options.fTMapper->ToObjectMapper<T> (mapper, d, &tmp);
+                options.fTMapper->ToObjectMapper<T> () (mapper, d, &tmp);
                 *intoObjOfTypeT = tmp;
             }
         };
