@@ -282,6 +282,7 @@ namespace Stroika::Foundation::Time {
          *  \brief classic (american) month-day-year format, but unlike %D, this uses %Y, so the 4-digit form of year
          * 
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
+         *  \note This format is LOCALE INDEPENDENT (according to https://en.cppreference.com/w/cpp/locale/time_get/get)
          *  \see kISO8601Format
          */
         static constexpr wstring_view kMonthDayYearFormat = L"%m/%d/%Y"sv;
