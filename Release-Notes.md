@@ -15,6 +15,8 @@ especially those they need to be aware of when upgrading.
 - OpenSSL 3.0.7
 - XCode 14 support
 - Fix problems building under standalone MSYS terminal
+- Changed how I compute / detect bug defines for libstdc++ - use _GLIBCXX_RELEASE instead of __GLIBCXX__
+- fixed fatal bug with ObjectVariantMapper::MakeCommonSerializer (const optional<T>*, const OptionalSerializerOptions& options)
 - Other small build system and assertion fixes
 
 #### Change Details
@@ -28,10 +30,19 @@ especially those they need to be aware of when upgrading.
   - using new clang-format 15 - make format-code
   - for ScriptsLib/RunRemoteRegressionTests - set /usr/local/bin first in path (needed to find right realpath in macos)
 - Compiler and System Compatability
+  - qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy - cleanup regtests, and fixup definition so more aggressive - defaulting to always broken in using libstdc++ - with comments and tests for if it ever gets fixed
+  - lose #define GLIBCXX_11x etc since numbers all over the place; instead switch bug defines from using __GLIBCXX__ to _GLIBCXX_RELEASE; no direct obvious mapping, so must retest everything (esp clang/macos etc)
+  - https://stroika.atlassian.net/browse/STK-948 (new critical fix for openssl crashes VS2k19/22 compilers with delayed codegen) bug workaround 
 - Library
   - Foundation
     - Cache
       - https://stroika.atlassian.net/browse/STK-944 -- use lock_guard not shared_lock in Cache/SynchronizedTimedCache (probably reverse in Stroika v3)
+    - Debug
+      - tweaked DbgTrace in AssertExternallySynchronizedMutex::lock_ () reporting about bad lock
+    - DataExchange
+      - fixed fatal bug with (somewhat new but obviously not well tested) MakeCommonSerializer_ (const optional<T>*, const OptionalSerializerOptions& options)
+    - Time
+      - improved error checking in Date::LocaleFreeParseQuietly_kMonthDayYearFormat_ (and renamed private function)
 - ThirdPartyCompoents
   - libcurl 7.86.0
   - OpenSSL 3.0.7 (significant security fix)
@@ -73,6 +84,7 @@ especially those they need to be aware of when upgrading.
 
 
 
+
 ---
 
 ### 2.1.7 {2022-10-24}
@@ -88,7 +100,7 @@ especially those they need to be aware of when upgrading.
 
 - Build Scripts
   - new Scripts/VersionCompare
-  - Configure bug broken on MTTY shell
+  - Configure bug broken on MSYS TTY shell
     - fix for bug https://stroika.atlassian.net/browse/STK-941. must run cmd shell with /E:ON to avoid failure (unclear why)
   - Project File Support
     - never checkin Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
