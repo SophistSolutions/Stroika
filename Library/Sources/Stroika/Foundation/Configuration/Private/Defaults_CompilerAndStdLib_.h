@@ -190,25 +190,17 @@ foo.cpp:
     {
     using namespace std;
     cerr << "__GLIBCXX__=" << __GLIBCXX__ << "\n";
+    cerr << "_GLIBCXX_RELEASE=" << _GLIBCXX_RELEASE << "\n";
     return 0;
     }
 
  prints __GLIBCXX__=20180728
  */
-#define GLIBCXX_7x_ 20180720
-#define GLIBCXX_8x_ 20180728
-#define GLIBCXX_9x_ 20191008
-#define GLIBCXX_93x_ 20200408
+//#define GLIBCXX_8x_ 20180728
 //#define GLIBCXX_10x_ 20200930
-#define GLIBCXX_10x_ 20210408
 //#define GLIBCXX_11x_ 20210427
 //#define GLIBCXX_11x_ 20210923
-// this version of g++11 lib from ubuntu 22.04
-//#define GLIBCXX_11x_ 20220324
-// this version of clang++14 lib from ubuntu 22.04
 // DONT define GLIBCXX_11x_ cuz WAY too much of a moving target...
-// #define GLIBCXX_11x_ 20220513
-// 20220421 now for g++-11 GLIBCXX_11x_ on ubuntu 22.04 - very confusing
 
 /*
  *
@@ -1267,7 +1259,7 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #else
 #define qCompilerAndStdLib_error_code_compare_condition_Buggy 0
 #endif
-#elif defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_8x_
+#elif defined(_GLIBCXX_RELEASE) && _GLIBCXX_RELEASE <= 8
 #define qCompilerAndStdLib_error_code_compare_condition_Buggy 1
 #else
 #define qCompilerAndStdLib_error_code_compare_condition_Buggy 0
@@ -1292,9 +1284,8 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #ifndef qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
 #if defined(__clang_major__) && __clang_major__ >= 14
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 0
-#elif defined(__GLIBCXX__)
-// Crazy, but seems broken on older libg++, and fixed in 20220319, and then broken again in 20220324 - at least on Ubuntu 22.04
-#define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy ((__GLIBCXX__ < 20220319) || (20220324 <= __GLIBCXX__ && __GLIBCXX__ <= 20220421))
+#elif defined(_GLIBCXX_RELEASE)
+#define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy (_GLIBCXX_RELEASE <= 11)
 #else
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 0
 #endif
@@ -1322,7 +1313,7 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
         There is a check in the regtests (test_locale_time_get_date_order_no_order_Buggy) for when this is fixed, and it will warn if it ever is.
  */
 #ifndef qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
-#if defined(__GLIBCXX__)
+#if defined(_GLIBCXX_RELEASE)
 #define qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy 1
 #else
 #define qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy 0
@@ -1983,9 +1974,10 @@ int main ()
 #if defined(_LIBCPP_VERSION)
 // Appears still buggy in 14.0 clang libc++ on ubuntu 22.04 (doesnt compile)
 #define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 14000))
-#elif defined(__GLIBCXX__)
+#elif defined(_GLIBCXX_RELEASE)
 // according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11 (library so affects clang too if built with glibc)
-#define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GLIBCXX__ <= 20220513)
+// AT LEAST with clang++14, this is broken in _GLIBCXX_RELEASE==12 (Ubuntu 22.04)
+#define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 12)
 #else
 #define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy 0
 #endif
