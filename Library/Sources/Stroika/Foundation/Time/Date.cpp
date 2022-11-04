@@ -76,8 +76,9 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
     Execution::Throw (FormatException::kThe);
 }
 
-optional<Date> Date::LocaleFreeParseMonthDayYear_ (const wstring& rep, size_t* consumedCharsInStringUpTo)
+optional<Date> Date::LocaleFreeParseQuietly_kMonthDayYearFormat_ (const wstring& rep, size_t* consumedCharsInStringUpTo)
 {
+    // parse locale independent "%m/%d/%Y" - from - https://en.cppreference.com/w/cpp/locale/time_get/get - including validation
     int year  = 0;
     int month = 0;
     int day   = 0;
@@ -90,7 +91,9 @@ optional<Date> Date::LocaleFreeParseMonthDayYear_ (const wstring& rep, size_t* c
             Assert (pos + 2 < rep.length ());
             *consumedCharsInStringUpTo = pos + 2;
         }
-        return Date{Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year))};
+        if ((1 <= month and month <= 12) and (1 <= day and day <= 31) and (year > 0)) {
+            return Date{Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year))};
+        }
     }
     return nullopt;
 }
@@ -99,8 +102,8 @@ optional<Date> Date::ParseQuietly_ (const wstring& rep, const time_get<wchar_t>&
 {
     Require (not rep.empty ());
     if constexpr (qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy) {
-        if (formatPattern == kMonthDayYearFormat) { // this is locale-independent (I believe)
-            return LocaleFreeParseMonthDayYear_ (rep, consumedCharsInStringUpTo);
+        if (formatPattern == kMonthDayYearFormat) {
+            return LocaleFreeParseQuietly_kMonthDayYearFormat_ (rep, consumedCharsInStringUpTo);
         }
     }
     auto computeIdx = [] (const istreambuf_iterator<wchar_t>& s, const istreambuf_iterator<wchar_t>& c) -> size_t {

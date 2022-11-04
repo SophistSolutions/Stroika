@@ -412,9 +412,15 @@ namespace {
             VerifyTestResult (d.Format (Date::kISO8601Format) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
-        {
+        try {
             VerifyTestResult ((Date::Parse (L"11/3/2001", Date::kMonthDayYearFormat) == Date{Year (2001), Time::MonthOfYear::eNovember, DayOfMonth (3)}));
             VerifyTestResult (Date::Parse (L"11/3/2001", Date::kMonthDayYearFormat).Format (Date::kMonthDayYearFormat) == L"11/03/2001");
+        }
+        catch (...) {
+            // See qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy if this is triggered
+            DbgTrace ("qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy");
+            VerifyTestResult (false);
+            Execution::ReThrow ();
         }
         {
             VerifyTestResult (Date::kMin < Date::kMax);

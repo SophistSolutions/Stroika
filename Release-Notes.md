@@ -7,6 +7,81 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1.8 {2022-11-04}
+
+#### TLDR
+
+- Use OpenSSL 3.0.7
+- XCode 14 support (macos)
+- Fix problems building under standalone MSYS terminal
+- Changed how I compute / detect bug defines for libstdc++ - use _GLIBCXX_RELEASE instead of __GLIBCXX__ (fixes break on newest ubuntu 22.04)
+- fixed fatal bug with ObjectVariantMapper::MakeCommonSerializer (const optional<T>*, const OptionalSerializerOptions& options)
+- Other small build system and assertion fixes
+
+#### Change Details
+
+- Build Scripts
+  - Skel
+    - in skel makefile, delegate a few more top level phony makefile targets
+  - Building under MSYS
+    - one more workaround for  https://stroika.atlassian.net/browse/STK-941 /E:ON
+  - Support MacOS XCode 14 (docs, compiler flags, etc)
+  - using new clang-format 15 - make format-code
+  - for ScriptsLib/RunRemoteRegressionTests - set /usr/local/bin first in path (needed to find right realpath in macos)
+- Compiler and System Compatability
+  - qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy - cleanup regtests, and fixup definition so more aggressive - defaulting to always broken in using libstdc++ - with comments and tests for if it ever gets fixed
+  - lose #define GLIBCXX_11x etc since numbers all over the place; instead switch bug defines from using __GLIBCXX__ to _GLIBCXX_RELEASE; no direct obvious mapping, so must retest everything (esp clang/macos etc)
+  - https://stroika.atlassian.net/browse/STK-948 (new critical fix for openssl crashes VS2k19/22 compilers with delayed codegen) bug workaround 
+- Library
+  - Foundation
+    - Cache
+      - https://stroika.atlassian.net/browse/STK-944 -- use lock_guard not shared_lock in Cache/SynchronizedTimedCache (probably reverse in Stroika v3)
+    - Debug
+      - tweaked DbgTrace in AssertExternallySynchronizedMutex::lock_ () reporting about bad lock
+    - DataExchange
+      - fixed fatal bug with (somewhat new but obviously not well tested) MakeCommonSerializer_ (const optional<T>*, const OptionalSerializerOptions& options)
+    - Time
+      - improved error checking in Date::LocaleFreeParseQuietly_kMonthDayYearFormat_ (and renamed private function)
+- ThirdPartyCompoents
+  - libcurl 7.86.0
+  - OpenSSL 3.0.7 (significant security fix)
+
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13, 14 }
+  - MSVC: { 15.9.50, 16.11.20, 17.3.6 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 21H2
+    - Windows 11 version 21H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 13.0 (Ventura) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+
+---
+
 ### 2.1.7 {2022-10-24}
 
 #### TLDR
@@ -20,7 +95,7 @@ especially those they need to be aware of when upgrading.
 
 - Build Scripts
   - new Scripts/VersionCompare
-  - Configure bug broken on MTTY shell
+  - Configure bug broken on MSYS TTY shell
     - fix for bug https://stroika.atlassian.net/browse/STK-941. must run cmd shell with /E:ON to avoid failure (unclear why)
   - Project File Support
     - never checkin Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
@@ -32,7 +107,6 @@ especially those they need to be aware of when upgrading.
     - workaround https://stroika.atlassian.net/browse/STK-940 - issue with skel produced makefile not autoamtically calling make project-files and having project files not work properly due to import of non-existent .props file
     - workaround https://stroika.atlassian.net/browse/STK-943 (restore / checkout from git messes up profile stuff too)
   - fix recent Skel change so no default APP_ROOT
-- Compiler and System Compatability
 - Library
   - Foundation
     - DataExchange
@@ -45,8 +119,8 @@ especially those they need to be aware of when upgrading.
   - Xerces
     - Xerces-C 3.2.4 (except on systems with older cmake - those still use Xerces 3.2.3)
       - use new  VersionCompare to check installed cmake version
-- zlib 1.2.13
-- SQLITE 3.39.4
+  - zlib 1.2.13
+  - SQLITE 3.39.4
 
 #### Release-Validation
 - Compilers Tested/Supported

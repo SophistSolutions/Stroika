@@ -3,6 +3,7 @@
  */
 #include "../StroikaPreComp.h"
 
+#include "../Characters/ToString.h"
 #include "../Execution/Thread.h"
 
 #include "Sanitizer.h"
@@ -38,7 +39,7 @@ void AssertExternallySynchronizedMutex::lock_ () const noexcept
                 // Duplicate the  Require() below, but with more debug information, because this is a COMMON and IMPORANT case;
                 // If this happens, this means one thread has (the object containing this) is using this object (fake locked)
                 // while we are trying to use it (again doing fake write lock) - so we want to PRINT INFO about that thread!!!
-                DbgTrace (L"ATTEMPT TO modify (lock for write) an object which is already in use (debuglocked) in another thread");
+                DbgTrace (L"ATTEMPT TO modify (lock for write) an object which is already in use (debuglocked) in another thread (thisthread=%s)", Characters::ToString (this_thread::get_id ()).c_str ());
                 DbgTrace ("Original thread holding lock: threadID=%s, and DbgTraceThreadName=%s", Execution::Thread::FormatThreadID_A (sharedContext->fCurLockThread_).c_str (), Debug::GetDbgTraceThreadName_A (sharedContext->fCurLockThread_).c_str ());
             }
             Require (sharedContext->fCurLockThread_ == this_thread::get_id ());

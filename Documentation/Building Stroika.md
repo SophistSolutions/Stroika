@@ -664,6 +664,19 @@ But - even with just plain make, you need some sort of configure script to estab
     export LIBRARY_PATH=/opt/homebrew/lib
     ```
 
+  - realpath issues
+    ~~~sh
+      realpath: illegal option -- -
+      usage: realpath [-q] [path ...]
+    ~~~
+
+    missing, or insufficient realpath on macos.
+    ~~~sh
+    make install-realpath
+    ~~~
+
+
+
 - Under Docker
 
   ```text

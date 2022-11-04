@@ -114,6 +114,15 @@ Note - we've only tested building (from MSYS) using Visual Studio. We've not yet
 
 ---
 
+## Other useful tools
+
+- clang-format
+  ~~~sh
+  npm install -g clang-format
+  ~~~
+
+---
+
 ## Return to Building Stroika instructions
 
 - [Building Stroika.md#Quick-Start](Building%20Stroika.md#Quick-Start)

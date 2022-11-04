@@ -172,21 +172,22 @@ foo.cpp:
     {
     using namespace std;
     cerr << "__GLIBCXX__=" << __GLIBCXX__ << "\n";
+    cerr << "_GLIBCXX_RELEASE=" << _GLIBCXX_RELEASE << "\n";
     return 0;
     }
 
  prints __GLIBCXX__=20180728
  */
+<<<<<<< HEAD
 #define GLIBCXX_9x_ 20191008
 #define GLIBCXX_93x_ 20200408
+=======
+//#define GLIBCXX_8x_ 20180728
+>>>>>>> v2.1-Dev
 //#define GLIBCXX_10x_ 20200930
-#define GLIBCXX_10x_ 20210408
 //#define GLIBCXX_11x_ 20210427
 //#define GLIBCXX_11x_ 20210923
-// this version of g++11 lib from ubuntu 22.04
-//#define GLIBCXX_11x_ 20220324
-// this version of clang++14 lib from ubuntu 22.04
-#define GLIBCXX_11x_ 20220513
+// DONT define GLIBCXX_11x_ cuz WAY too much of a moving target...
 
 /*
  *
@@ -856,6 +857,46 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 
 #endif
 
+<<<<<<< HEAD
+=======
+/**
+ * According to https://en.cppreference.com/w/cpp/error/error_category/error_category ctor is constexpr since c++14
+ */
+#ifndef qCompilerAndStdLib_constexpr_error_category_ctor_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// VERIFIED BROKEN IN GCC8
+// VERIFIED FIXED in GCC9
+#define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy (__GNUC__ <= 8)
+#elif defined(_MSC_VER)
+// verified still BROKEN in _MSC_VER_2k19_16Pt0_ (preview2)
+// SEEMS to work or maybe I dont have well recorded the problem. But no obvious problems with: _MS_VS_2k19_16Pt0Pt0pre43_
+#define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre4_)
+#else
+#define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy 0
+#endif
+
+#endif
+
+// Run regtest 35 (Foundation::Execution::Exceptions) to see if fails
+#ifndef qCompilerAndStdLib_error_code_compare_condition_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// https://stackoverflow.com/questions/44405394/how-to-portably-compare-stdsystem-error-exceptions-to-stderrc-values
+#if __GNUC__ <= 8
+#define qCompilerAndStdLib_error_code_compare_condition_Buggy (__GNUC_MINOR__ <= 3)
+// VERIFIED FIXED in GCC9
+#else
+#define qCompilerAndStdLib_error_code_compare_condition_Buggy 0
+#endif
+#elif defined(_GLIBCXX_RELEASE) && _GLIBCXX_RELEASE <= 8
+#define qCompilerAndStdLib_error_code_compare_condition_Buggy 1
+#else
+#define qCompilerAndStdLib_error_code_compare_condition_Buggy 0
+#endif
+#endif
+
+>>>>>>> v2.1-Dev
 /*
  *      ACCORDING To https://en.cppreference.com/w/cpp/locale/time_get/get
  * 
@@ -874,9 +915,8 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #ifndef qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
 #if defined(__clang_major__) && __clang_major__ >= 14
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 0
-#elif defined(__GLIBCXX__)
-// Crazy, but seems broken on older libg++, and fixed in 20220319, and then broken again in 20220324 - at least on Ubuntu 22.04
-#define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy ((__GLIBCXX__ < 20220319) || (__GLIBCXX__ == 20220324))
+#elif defined(_GLIBCXX_RELEASE)
+#define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy (_GLIBCXX_RELEASE <= 11)
 #else
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 0
 #endif
@@ -896,9 +936,15 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
          https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99556
          They responded this IS dup of https://gcc.gnu.org/bugzilla/show_bug.cgi?id=9635
          which is almost 20 years old, so dont hold breath on fix ;-) --LGP 2021-05-12
+
+    NOTE:
+        Since it appears the libg++ people have no intention of fixing this (anytime soon), instead of defaulting
+        to wrong answer (with if defined(__GLIBCXX__) && __GLIBCXX__ <= 20220527) I'm just changing to 
+        if defined(__GLIBCXX__)
+        There is a check in the regtests (test_locale_time_get_date_order_no_order_Buggy) for when this is fixed, and it will warn if it ever is.
  */
 #ifndef qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
-#if defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_11x_
+#if defined(_GLIBCXX_RELEASE)
 #define qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy 1
 #else
 #define qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy 0
@@ -1322,9 +1368,10 @@ int main ()
 #if defined(_LIBCPP_VERSION)
 // Appears still buggy in 14.0 clang libc++ on ubuntu 22.04 (doesnt compile)
 #define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 14000))
-#elif defined(__GLIBCXX__)
+#elif defined(_GLIBCXX_RELEASE)
 // according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11 (library so affects clang too if built with glibc)
-#define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GLIBCXX__ <= GLIBCXX_11x_)
+// AT LEAST with clang++14, this is broken in _GLIBCXX_RELEASE==12 (Ubuntu 22.04)
+#define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 12)
 #else
 #define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy 0
 #endif

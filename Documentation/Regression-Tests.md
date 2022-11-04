@@ -149,12 +149,14 @@ checkin from one spot.
 
 - Docker windows tests
 
+
+Must be done on Windows machine (currently doesnt work on - even windows - vm)
+
   ```bash
   for var in "Cygwin-VS2k19" "Cygwin-VS2k22" "MSYS-VS2k19" "MSYS-VS2k22" ; do LCV=`echo "${var}" | tr '[:upper:]' '[:lower:]'` CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${LCV} USE_TEST_BASENAME=Windows_${var}-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests ; done
   ```
 
-
-- Must be done on Windows machine (currently doesnt work on - even windows - vm)
+  OR alternatively
 
   ```sh
    CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 USE_TEST_BASENAME=Windows_Cygwin_VS2k19-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests

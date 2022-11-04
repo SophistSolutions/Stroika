@@ -273,7 +273,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         if (this->fHead_ != victim) {
             AssertNotNull (this->fHead_); // cuz there must be something to remove current
             for (prevLink = this->fHead_; prevLink->fNext != victim; prevLink = prevLink->fNext) {
-                AssertNotNull (prevLink); // cuz that would mean victim not in DoublyLinkedList!!!
+                AssertNotNull (prevLink); // cuz that would mean victim not in LinkedList!!!
             }
         }
         if (prevLink == nullptr) {
