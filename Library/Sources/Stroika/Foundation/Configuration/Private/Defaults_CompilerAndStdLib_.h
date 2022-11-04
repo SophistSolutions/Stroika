@@ -178,12 +178,7 @@ foo.cpp:
 
  prints __GLIBCXX__=20180728
  */
-<<<<<<< HEAD
-#define GLIBCXX_9x_ 20191008
-#define GLIBCXX_93x_ 20200408
-=======
 //#define GLIBCXX_8x_ 20180728
->>>>>>> v2.1-Dev
 //#define GLIBCXX_10x_ 20200930
 //#define GLIBCXX_11x_ 20210427
 //#define GLIBCXX_11x_ 20210923
@@ -857,46 +852,6 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 
 #endif
 
-<<<<<<< HEAD
-=======
-/**
- * According to https://en.cppreference.com/w/cpp/error/error_category/error_category ctor is constexpr since c++14
- */
-#ifndef qCompilerAndStdLib_constexpr_error_category_ctor_Buggy
-
-#if defined(__GNUC__) && !defined(__clang__)
-// VERIFIED BROKEN IN GCC8
-// VERIFIED FIXED in GCC9
-#define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy (__GNUC__ <= 8)
-#elif defined(_MSC_VER)
-// verified still BROKEN in _MSC_VER_2k19_16Pt0_ (preview2)
-// SEEMS to work or maybe I dont have well recorded the problem. But no obvious problems with: _MS_VS_2k19_16Pt0Pt0pre43_
-#define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre4_)
-#else
-#define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy 0
-#endif
-
-#endif
-
-// Run regtest 35 (Foundation::Execution::Exceptions) to see if fails
-#ifndef qCompilerAndStdLib_error_code_compare_condition_Buggy
-
-#if defined(__GNUC__) && !defined(__clang__)
-// https://stackoverflow.com/questions/44405394/how-to-portably-compare-stdsystem-error-exceptions-to-stderrc-values
-#if __GNUC__ <= 8
-#define qCompilerAndStdLib_error_code_compare_condition_Buggy (__GNUC_MINOR__ <= 3)
-// VERIFIED FIXED in GCC9
-#else
-#define qCompilerAndStdLib_error_code_compare_condition_Buggy 0
-#endif
-#elif defined(_GLIBCXX_RELEASE) && _GLIBCXX_RELEASE <= 8
-#define qCompilerAndStdLib_error_code_compare_condition_Buggy 1
-#else
-#define qCompilerAndStdLib_error_code_compare_condition_Buggy 0
-#endif
-#endif
-
->>>>>>> v2.1-Dev
 /*
  *      ACCORDING To https://en.cppreference.com/w/cpp/locale/time_get/get
  * 
