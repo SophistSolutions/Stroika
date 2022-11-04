@@ -7,15 +7,14 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-
-### 2.1.8 {2022-11-??}
+### 2.1.8 {2022-11-04}
 
 #### TLDR
 
-- OpenSSL 3.0.7
-- XCode 14 support
+- Use OpenSSL 3.0.7
+- XCode 14 support (macos)
 - Fix problems building under standalone MSYS terminal
-- Changed how I compute / detect bug defines for libstdc++ - use _GLIBCXX_RELEASE instead of __GLIBCXX__
+- Changed how I compute / detect bug defines for libstdc++ - use _GLIBCXX_RELEASE instead of __GLIBCXX__ (fixes break on newest ubuntu 22.04)
 - fixed fatal bug with ObjectVariantMapper::MakeCommonSerializer (const optional<T>*, const OptionalSerializerOptions& options)
 - Other small build system and assertion fixes
 
@@ -80,10 +79,6 @@ especially those they need to be aware of when upgrading.
     - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
   - VS2k22
     - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
-
-
-
-
 
 ---
 
