@@ -43,7 +43,7 @@ namespace std {
 namespace std {
     struct compare_three_way {
         // NOTE - this workaround is GENERALLY INADEQUATE, but is adequate for my current use in Stroika -- LGP 2022-11-01
-        template <class LT, class RT>
+        template <typename LT, typename RT>
         constexpr auto operator() (LT&& lhs, RT&& rhs) const
         {
             using CT = common_type_t<LT, RT>;
@@ -393,7 +393,7 @@ namespace Stroika::Foundation::Common {
     // @TODO PROBABLY DEPRECATE THIS CLASS - and use compare_three_way directly
 #if __cpp_lib_three_way_comparison < 201907L
     struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer {
-        template <class LT, class RT>
+        template <typename LT, typename RT>
         constexpr auto operator() (LT&& lhs, RT&& rhs) const
         {
             using CT = common_type_t<LT, RT>;
@@ -407,7 +407,7 @@ namespace Stroika::Foundation::Common {
     };
 #else
     struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer {
-        template <class LT, class RT>
+        template <typename LT, typename RT>
         constexpr auto operator() (LT&& lhs, RT&& rhs) const
         {
             return compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));

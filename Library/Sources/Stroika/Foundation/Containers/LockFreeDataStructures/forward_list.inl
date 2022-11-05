@@ -517,7 +517,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 }
 
 namespace std {
-    template <class T>
+    template <typename T>
     inline void swap (Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& lhs,
                       Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& rhs) noexcept
     {

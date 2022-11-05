@@ -1381,7 +1381,7 @@ namespace {
             }
             return r;
         }
-        template <class _Rep, class _Period>
+        template <typename _Rep, typename _Period>
         bool try_lock_for (const chrono::duration<_Rep, _Period>& __rtime)
         {
             if (kDoLoggingToStdErr_) {
@@ -1393,7 +1393,7 @@ namespace {
             }
             return r;
         }
-        template <class _Clock, class _Duration>
+        template <typename _Clock, typename _Duration>
         bool
         try_lock_until (const chrono::time_point<_Clock, _Duration>& __atime)
         {

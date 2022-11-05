@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Memory {
 
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
     namespace Private {
-        template <class _InIt, class _OutIt>
+        template <typename _InIt, typename _OutIt>
         inline void VC_BWA_std_copy (_InIt _First, _InIt _Last, _OutIt _Dest)
         {
             auto o = _Dest;

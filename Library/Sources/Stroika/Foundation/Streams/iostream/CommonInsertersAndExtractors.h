@@ -20,9 +20,9 @@ namespace Stroika::Foundation::Streams::iostream {
 
     using Characters::String;
 
-    template <class charT, typename Traits>
+    template <typename charT, typename Traits>
     basic_istream<charT, Traits>& operator>> (basic_istream<charT, Traits>& is, String& to);
-    template <class charT, typename Traits>
+    template <typename charT, typename Traits>
     basic_ostream<charT, Traits>& operator<< (basic_ostream<charT, Traits>& os, const String& from);
 
 }

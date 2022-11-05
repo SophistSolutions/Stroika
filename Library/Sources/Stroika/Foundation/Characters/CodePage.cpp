@@ -2312,7 +2312,7 @@ namespace {
 #endif
 
 #if qBuildMemoizedISXXXBuilderProc
-    template <class FUNCTION>
+    template <typename FUNCTION>
     void WriteMemoizedIsXXXProc (FUNCTION function, const string& origFunctionName, const string& functionName)
     {
         ofstream outStream ("IsXXXProc.txt");

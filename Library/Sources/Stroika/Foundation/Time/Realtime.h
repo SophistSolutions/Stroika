@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Time {
      *
      *  \todo - never implement assure done asap or at startup time - when not = chrono::steady_clock. Basline is from first call. Should add static init call as well.
      */
-    template <class Clock = chrono::steady_clock, class Duration = typename Clock::duration>
+    template <typename Clock = chrono::steady_clock, class Duration = typename Clock::duration>
     DurationSecondsType time_point2DurationSeconds (const time_point<Clock, Duration>& tp);
 
     /**
@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Time {
      *
      *  This may need to be revisisted... @see @See https://stroika.atlassian.net/browse/STK-619
      */
-    template <class Clock = chrono::steady_clock, class Duration = typename Clock::duration>
+    template <typename Clock = chrono::steady_clock, class Duration = typename Clock::duration>
     time_point<Clock, Duration> DurationSeconds2time_point (DurationSecondsType t);
 
     /**

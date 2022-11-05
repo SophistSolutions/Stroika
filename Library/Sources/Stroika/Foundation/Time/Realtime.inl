@@ -16,7 +16,7 @@
 namespace Stroika::Foundation::Time {
 
     namespace Private_ {
-        template <class Clock>
+        template <typename Clock>
         DurationSecondsType GetClockTickountOffset_ ();
 
         template <>
@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Time {
      ***************************** time_point2DurationSeconds ***********************
      ********************************************************************************
      */
-    template <class Clock, class Duration>
+    template <typename Clock, typename Duration>
     inline DurationSecondsType time_point2DurationSeconds (const time_point<Clock, Duration>& tp)
     {
         //
@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Time {
      ***************************** DurationSeconds2time_point ***********************
      ********************************************************************************
      */
-    template <class Clock, class Duration>
+    template <typename Clock, typename Duration>
     time_point<Clock, Duration> DurationSeconds2time_point (DurationSecondsType t)
     {
         Require (t >= 0);

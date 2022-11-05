@@ -12,7 +12,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Time;
 
 namespace {
-    template <class Clock, class Duration>
+    template <typename Clock, class Duration>
     inline DurationSecondsType cvt_ (const time_point<Clock, Duration>& tp)
     {
         return chrono::duration<DurationSecondsType>{tp.time_since_epoch ()}.count ();

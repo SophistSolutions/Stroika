@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Memory {
         /**
          */
         constexpr BlockAllocator () = default;
-        template <class U>
+        template <typename U>
         constexpr BlockAllocator (const BlockAllocator<U>&) noexcept;
 
     public:

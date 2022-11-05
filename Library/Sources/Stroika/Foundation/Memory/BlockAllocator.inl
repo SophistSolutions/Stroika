@@ -391,7 +391,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T>
-    template <class U>
+    template <typename U>
     constexpr BlockAllocator<T>::BlockAllocator (const BlockAllocator<U>&) noexcept
     {
     }

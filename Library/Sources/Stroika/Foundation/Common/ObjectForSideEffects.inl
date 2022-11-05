@@ -14,7 +14,7 @@ namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
-     ******************** Common::EmptyObjectForSideEffects ***************
+     ************************* Common::EmptyObjectForSideEffects ********************
      ********************************************************************************
      */
     template <typename CONSTRUCTOR_CALL>
@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
-     ******************** Common::ObjectForSideEffects ********************
+     ************************** Common::ObjectForSideEffects ************************
      ********************************************************************************
      */
     template <typename CONSTRUCTOR_CALL, typename DESTRUCTOR_CALL>

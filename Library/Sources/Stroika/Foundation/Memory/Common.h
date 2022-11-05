@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Memory {
          *  inferior to the default - at least isn't much inferior, and doesn't give those
          *  annoying warnings.
          */
-        template <class _InIt, class _OutIt>
+        template <typename _InIt, typename _OutIt>
         inline void VC_BWA_std_copy (_InIt _First, _InIt _Last, _OutIt _Dest);
     }
 #endif

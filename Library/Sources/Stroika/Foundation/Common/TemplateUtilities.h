@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Common {
      *
      *  Based on template <class _Ty> _Ty& _Immortalize() from VS2k19 runtime library....
      */
-    template <class T>
+    template <typename T>
     T& Immortalize ();
 
     /**

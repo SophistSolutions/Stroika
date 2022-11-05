@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Common {
      ****************************** Common::Immortalize *****************************
      ********************************************************************************
      */
-    template <class T>
+    template <typename T>
     inline T& Immortalize ()
     {
         struct StorageImpl_ {
