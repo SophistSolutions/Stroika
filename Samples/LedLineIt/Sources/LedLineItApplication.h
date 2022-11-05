@@ -13,6 +13,7 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 #if qPlatform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/COM.h"
 #endif
+#include "Stroika/Foundation/Execution/Logger.h"
 
 #include "Stroika/Frameworks/Led/Support.h"
 #include "Stroika/Frameworks/Led/TextStore.h"
@@ -92,6 +93,8 @@ private:
 private:
     Execution::Platform::Windows::COMInitializer fCOMInitializer_{COINIT_APARTMENTTHREADED};
 #endif
+private:
+    Execution::Logger::Activator fLogMgrActivator_;
 
 private:
     DECLARE_MESSAGE_MAP ()

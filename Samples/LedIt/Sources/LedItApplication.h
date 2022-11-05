@@ -25,6 +25,8 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 #include <gtk/gtk.h>
 #endif
 
+#include "Stroika/Foundation/Execution/Logger.h"
+
 #include "Stroika/Frameworks/Led/GDI.h"
 #include "Stroika/Frameworks/Led/Support.h"
 #include "Stroika/Frameworks/Led/TextStore.h"
@@ -259,6 +261,8 @@ private:
 private:
     Execution::Platform::Windows::COMInitializer fCOMInitializer_{COINIT_APARTMENTTHREADED};
 #endif
+private:
+    Execution::Logger::Activator fLogMgrActivator_;
 #if qPlatform_Windows || qStroika_FeatureSupported_XWindows
 public:
     InstalledFonts fInstalledFonts; // Keep a static copy for speed, and so font#s are static throughout the life of the applet
