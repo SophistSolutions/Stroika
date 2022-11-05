@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Time {
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      *
-     *          Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily 
+     *          Also note - if the datetimes differ in their GetTimeZone() value, they arparse not necessarily 
      *          considered different. If either one is unknown, they will both be treated as the same timezone. 
      *          Otherwise, they will BOTH be converted to GMT, and compared as GMT.
      *
@@ -249,7 +249,8 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          *  \brief like Parse(), but returns nullopt on parse error, not throwing exception.
-         * if locale is missing, and formatPattern is not locale independent, the current locale (locale{}) is used.
+         *
+         *  if locale is missing, and formatPattern is not locale independent, the current locale (locale{}) is used.
          *  if rep is empty, this will return nullopt
          */
         static optional<DateTime> ParseQuietly (const String& rep, LocaleIndependentFormat format);

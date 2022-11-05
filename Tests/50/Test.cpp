@@ -644,10 +644,10 @@ namespace {
             }
         }
         if (false) {    // TODO DEBUGGING
-            // To capture issues Sterling showed me 2022-11-04
+            // https://stroika.atlassian.net/browse/STK-950
             try {
                 DateTime dt = DateTime::Parse (L"1906-05-12 12:00:00+00", DateTime::kISO8601Format);
-                // @todo fix - this should throw - I THINK -- VerifyTestResult (false);
+                VerifyTestResult (false);
             }
             catch (const DateTime::FormatException&) {
                 // good
