@@ -41,13 +41,13 @@ namespace Stroika::Foundation::Execution {
     [[noreturn]] inline void Throw (const T& e2Throw)
     {
         static_assert (is_convertible_v<T*, exception*>);
-#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
+        if constexpr (qStroika_Foundation_Exection_Throw_TraceThrowpoint) {
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
-        DbgTrace ("Throwing exception: %s from %s", Private_::Except2String_ (e2Throw).c_str (), Private_::GetBT_s ().c_str ());
+            DbgTrace ("Throwing exception: %s from %s", Private_::Except2String_ (e2Throw).c_str (), Private_::GetBT_s ().c_str ());
 #else
-        DbgTrace ("Throwing exception: %s", Private_::Except2String_ (e2Throw).c_str ());
+            DbgTrace ("Throwing exception: %s", Private_::Except2String_ (e2Throw).c_str ());
 #endif
-#endif
+        }
         throw e2Throw;
     }
     template <typename T>
@@ -72,35 +72,35 @@ namespace Stroika::Foundation::Execution {
      */
     [[noreturn]] inline void ReThrow ()
     {
-#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
+        if constexpr (qStroika_Foundation_Exection_Throw_TraceThrowpoint) {
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
-        DbgTrace ("ReThrow from %s", Private_::GetBT_s ().c_str ());
+            DbgTrace ("ReThrow from %s", Private_::GetBT_s ().c_str ());
 #else
-        DbgTrace ("ReThrow");
+            DbgTrace ("ReThrow");
 #endif
-#endif
+        }
         throw;
     }
     [[noreturn]] inline void ReThrow (const exception_ptr& e)
     {
-#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
+        if constexpr (qStroika_Foundation_Exection_Throw_TraceThrowpoint) {
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
-        DbgTrace ("ReThrow from %s", Private_::GetBT_s ().c_str ());
+            DbgTrace ("ReThrow from %s", Private_::GetBT_s ().c_str ());
 #else
-        DbgTrace ("ReThrow");
+            DbgTrace ("ReThrow");
 #endif
-#endif
+        }
         rethrow_exception (e);
     }
     [[noreturn]] inline void ReThrow ([[maybe_unused]] const char* traceMsg)
     {
-#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
+        if constexpr (qStroika_Foundation_Exection_Throw_TraceThrowpoint) {
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
-        DbgTrace ("ReThrow %s from %s", traceMsg, Private_::GetBT_s ().c_str ());
+            DbgTrace ("ReThrow %s from %s", traceMsg, Private_::GetBT_s ().c_str ());
 #else
-        DbgTrace ("ReThrow: %s", traceMsg);
+            DbgTrace ("ReThrow: %s", traceMsg);
 #endif
-#endif
+        }
         throw;
     }
     [[noreturn]] inline void ReThrow (const exception_ptr& e, [[maybe_unused]] const char* traceMsg)
@@ -114,24 +114,24 @@ namespace Stroika::Foundation::Execution {
     }
     [[noreturn]] inline void ReThrow ([[maybe_unused]] const wchar_t* traceMsg)
     {
-#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
+        if constexpr (qStroika_Foundation_Exection_Throw_TraceThrowpoint) {
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
-        DbgTrace (L"ReThrow: %s from %s", traceMsg, Private_::GetBT_ws ().c_str ());
+            DbgTrace (L"ReThrow: %s from %s", traceMsg, Private_::GetBT_ws ().c_str ());
 #else
-        DbgTrace (L"ReThrow: %s", traceMsg);
+            DbgTrace (L"ReThrow: %s", traceMsg);
 #endif
-#endif
+        }
         throw;
     }
     [[noreturn]] inline void ReThrow (const exception_ptr& e, [[maybe_unused]] const wchar_t* traceMsg)
     {
-#if qStroika_Foundation_Exection_Throw_TraceThrowpoint
+        if constexpr (qStroika_Foundation_Exection_Throw_TraceThrowpoint) {
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
-        DbgTrace (L"ReThrow: %s from %s", traceMsg, Private_::GetBT_ws ().c_str ());
+            DbgTrace (L"ReThrow: %s from %s", traceMsg, Private_::GetBT_ws ().c_str ());
 #else
-        DbgTrace (L"ReThrow: %s", traceMsg);
+            DbgTrace (L"ReThrow: %s", traceMsg);
 #endif
-#endif
+        }
         rethrow_exception (e);
     }
 
