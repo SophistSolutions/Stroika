@@ -58,6 +58,7 @@ namespace Stroika::Foundation::DataExchange {
      *             bool                 fEnabled = false;
      *             optional<DateTime>   fLastSynchronizedAt;
      *         };
+     *         // Execution::Logger::Activator logMgrActivator;    // be sure a line like this in Main before the 'of' object usage
      *         OptionsFile of {
      *             L"MyModule",
      *             [] () -> ObjectVariantMapper {
@@ -90,6 +91,8 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         *  \note - Since this uses Execution::Logger::sThe, if therefore requires use of
+         *      Execution::Logger::Activator logMgrActivator
          */
         static const LoggerType kDefaultLogger;
 
