@@ -977,7 +977,7 @@ Led_StdDialogHelper::Led_StdDialogHelper (int resID)
 }
 #elif qPlatform_Windows
 Led_StdDialogHelper::Led_StdDialogHelper (HINSTANCE hInstance, const Led_SDK_Char* resID, HWND parentWnd)
-    : fSetFocusItemCalled (false)
+    : fSetFocusItemCalled{false}
 {
     fHWnd = NULL;
     fHINSTANCE = hInstance;
@@ -987,11 +987,11 @@ Led_StdDialogHelper::Led_StdDialogHelper (HINSTANCE hInstance, const Led_SDK_Cha
 }
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
 Led_StdDialogHelper::Led_StdDialogHelper (GtkWindow* parentWindow)
-    : fWindow (NULL)
-    , fParentWindow (parentWindow)
-    , fOKButton (NULL)
-    , fCancelButton (NULL)
-    , fWasOK (false)
+    : fWindow{NULL}
+    , fParentWindow{parentWindow}
+    , fOKButton{NULL}
+    , fCancelButton{NULL}
+    , fWasOK{false}
 {
 }
 #endif
@@ -1070,17 +1070,9 @@ bool Led_StdDialogHelper::DoModal ()
 
 void Led_StdDialogHelper::ReplaceAllTokens (Led_SDK_String* m, const Led_SDK_String& token, const Led_SDK_String& with)
 {
-    /*
-     *  Replace all occurances, but don't risk looping infinitely - don't replace anything we've already replaced.
-     */
-    size_t startAt = 0;
-Again:
-    size_t n = m->find (token, startAt);
-    if (n != Led_SDK_String::npos) {
-        m->replace (n, token.length (), with);
-        startAt = n + with.length () - token.length ();
-        goto Again;
-    }
+    using Characters::String;
+    RequireNotNull (m);
+    *m = String::FromSDKString (*m).ReplaceAll (String::FromSDKString (token), String::FromSDKString (with)).AsSDKString ();
 }
 
 void Led_StdDialogHelper::PreDoModalHook ()
