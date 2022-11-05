@@ -106,22 +106,22 @@ namespace {
  ********************************************************************************
  */
 StdColorPopupHelper::StdColorPopupHelper (bool allowNone)
-    : fAllowNone (allowNone)
-    , fIsSelectedColor (allowNone)
-    , fSelectedColor (Color::kBlack)
+    : fAllowNone{allowNone}
+    , fIsSelectedColor{allowNone}
+    , fSelectedColor{Color::kBlack}
 #if qPlatform_MacOS
-    , fControl (NULL)
+    , fControl{NULL}
 #endif
 #if qPlatform_Windows
-    , fHWnd (NULL)
+    , fHWnd{NULL}
 #endif
 {
-#if qDebug
-    size_t offset = fAllowNone ? 1 : 0;
-    for (size_t i = 0; i < 16; ++i) {
-        Assert (MapColorIdx (MapColorIdx (i + offset)) == i + offset);
+    if constexpr (qDebug) {
+        size_t offset = fAllowNone ? 1 : 0;
+        for (size_t i = 0; i < 16; ++i) {
+            Assert (MapColorIdx (MapColorIdx (i + offset)) == i + offset);
+        }
     }
-#endif
 }
 StdColorPopupHelper::~StdColorPopupHelper ()
 {

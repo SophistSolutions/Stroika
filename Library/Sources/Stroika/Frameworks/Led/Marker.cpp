@@ -64,9 +64,9 @@ void MarkerOwner::CopyOut (size_t from, size_t count, Led_tChar* buffer) const
 #if qMultiByteCharacters
 void MarkerOwner::Assert_CharPosDoesNotSplitCharacter (size_t charPos) const
 {
-#if qDebug
-    GetTextStore ().Assert_CharPosDoesNotSplitCharacter (charPos);
-#endif
+    if constexpr (qDebug) {
+        GetTextStore ().Assert_CharPosDoesNotSplitCharacter (charPos);
+    }
 }
 #endif
 

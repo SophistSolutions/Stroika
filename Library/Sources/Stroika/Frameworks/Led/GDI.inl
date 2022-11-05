@@ -481,13 +481,11 @@ namespace Stroika::Frameworks::Led {
         RECT r;
         int  tmp = ::GetRgnBox (fRgn, &r);
         Verify (tmp != 0);
-#if qDebug
-        {
+        if constexpr (qDebug) {
             if (tmp == 0) {
                 Assert (AsLedRect (r) == Led_Rect (0, 0, 0, 0));
             }
         }
-#endif
         return AsLedRect (r);
 #else
         Assert (false);
@@ -3248,9 +3246,7 @@ namespace Stroika::Frameworks::Led {
             fRestorePen (Pen (Led_GetCurrentGDIPort ()->pnMode, &Led_GetCurrentGDIPort ()->pnPat, Color (GDI_GetForeColor ())))
 #endif
         {
-#if qDebug
             Assert (Led_GetCurrentGDIPort () == *tablet);
-#endif
             GDI_RGBForeColor (pen.fPenColor.GetOSRep ());
             ::PenMode (pen.fPenStyle);
             ::PenPat (&pen.fPenPat);

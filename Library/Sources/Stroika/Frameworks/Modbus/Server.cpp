@@ -155,11 +155,11 @@ namespace {
             DbgTrace ("Finishing modbus connection %d", thisModbusConnectionNumber);
         });
 #endif
-#if qDebug
-        if (auto p = connectionSocket.GetPeerAddress ()) {
-            DbgTrace (L"Starting connection from peer: %s", Characters::ToString (*p).c_str ());
+        if constexpr (qDebug) {
+            if (auto p = connectionSocket.GetPeerAddress ()) {
+                DbgTrace (L"Starting connection from peer: %s", Characters::ToString (*p).c_str ());
+            }
         }
-#endif
 
         SocketStream::Ptr       socketStream = SocketStream::New (connectionSocket);
         InputStream<byte>::Ptr  in           = BufferedInputStream<byte>::New (socketStream);  // not important, but a good idea, to avoid excessive kernel calls

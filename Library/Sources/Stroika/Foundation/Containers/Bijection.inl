@@ -422,9 +422,9 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::_AssertRepValidType () const
     {
-#if qDebug
-        _SafeReadRepAccessor<_IRep>{this};
-#endif
+        if constexpr (qDebug) {
+            _SafeReadRepAccessor<_IRep>{this};
+        }
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::operator== (const Bijection& rhs) const

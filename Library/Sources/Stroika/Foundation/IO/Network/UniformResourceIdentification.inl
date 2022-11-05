@@ -198,13 +198,13 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline strong_ordering Authority::TWC_ (const Authority& lhs, const Authority& rhs)
     {
-        if (auto cmp = compare_three_way{}(lhs.GetHost (), rhs.GetHost ()); cmp != strong_ordering::equal) {            // Use BWA from Common/Compare.h
+        if (auto cmp = compare_three_way{}(lhs.GetHost (), rhs.GetHost ()); cmp != strong_ordering::equal) { // Use BWA from Common/Compare.h
             return cmp;
         }
-        if (auto cmp = compare_three_way{}(lhs.GetUserInfo (), rhs.GetUserInfo ()); cmp != strong_ordering::equal) {    // Use BWA from Common/Compare.h
+        if (auto cmp = compare_three_way{}(lhs.GetUserInfo (), rhs.GetUserInfo ()); cmp != strong_ordering::equal) { // Use BWA from Common/Compare.h
             return cmp;
         }
-        return compare_three_way{}(lhs.GetPort (), rhs.GetPort ());                                                     // Use BWA from Common/Compare.h
+        return compare_three_way{}(lhs.GetPort (), rhs.GetPort ()); // Use BWA from Common/Compare.h
     }
 
     /*

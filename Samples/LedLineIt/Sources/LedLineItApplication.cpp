@@ -364,9 +364,9 @@ BOOL LedLineItApplication::InitInstance ()
     COleObjectFactory::UpdateRegistryAll ();
 
 #if qIncludeBasicSpellcheckEngine && qDebug
-#if qDebug
-    SpellCheckEngine_Basic::RegressionTest ();
-#endif
+    if constexpr (qDebug) {
+        SpellCheckEngine_Basic::RegressionTest ();
+    }
     fSpellCheckEngine = make_shared<SpellCheckEngine_Basic_Simple> ();
 #if qPlatform_Windows
     {

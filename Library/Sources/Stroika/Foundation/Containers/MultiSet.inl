@@ -522,9 +522,9 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     inline void MultiSet<T, TRAITS>::_AssertRepValidType () const
     {
-#if qDebug
-        _SafeReadRepAccessor<_IRep>{this};
-#endif
+        if constexpr (qDebug) {
+            _SafeReadRepAccessor<_IRep>{this};
+        }
     }
     template <typename T, typename TRAITS>
     inline bool MultiSet<T, TRAITS>::operator== (const MultiSet& rhs) const

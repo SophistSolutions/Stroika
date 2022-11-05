@@ -476,11 +476,11 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::put_ButtonImage (IDispatch* v
 {
     try {
         fButtonImage = val;
-#if qDebug
-        if (fButtonImage.p == NULL and val != NULL) {
-            DumpSupportedInterfaces (val, "SUP INTERFACES FOR JSCRIPT IMAGE");
+        if constexpr (qDebug) {
+            if (fButtonImage.p == NULL and val != NULL) {
+                DumpSupportedInterfaces (val, "SUP INTERFACES FOR JSCRIPT IMAGE");
+            }
         }
-#endif
         UpdateButtonObj ();
         return S_OK;
     }

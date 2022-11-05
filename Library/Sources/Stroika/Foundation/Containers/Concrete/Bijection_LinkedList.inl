@@ -174,13 +174,12 @@ namespace Stroika::Foundation::Containers::Concrete {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             switch (fInjectivityViolationPolicy_) {
                 case Bijection_Base::InjectivityViolationPolicy::eAssertionError: {
-#if qDebug
-                    optional<DOMAIN_TYPE> back;
-                    if (InverseLookup (newElt, &back)) {
-                        Require (fDomainEqualsComparer_ (key, *back));
+                    if constexpr (qDebug) {
+                        optional<DOMAIN_TYPE> back;
+                        if (InverseLookup (newElt, &back)) {
+                            Require (fDomainEqualsComparer_ (key, *back));
+                        }
                     }
-
-#endif
                 } break;
                 case Bijection_Base::InjectivityViolationPolicy::eThrowException: {
                     optional<DOMAIN_TYPE> back;
@@ -328,9 +327,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline void Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::AssertRepValidType_ () const
     {
-#if qDebug
-        typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
-#endif
+        if constexpr (qDebug) {
+            typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
+        }
     }
 
 }

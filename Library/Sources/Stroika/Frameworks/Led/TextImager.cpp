@@ -1242,8 +1242,7 @@ vector<Led_Rect> TextImager::GetRowHilightRects (const TextLayoutBlock& text, si
         }
     }
 
-#if qDebug
-    {
+    if constexpr (qDebug) {
         // Make sure rectangles don't overlap with one another (can share an edge) -- SPR#1226
         for (auto orit = result.begin (); orit != result.end (); ++orit) {
             Ensure ((*orit).GetWidth () > 0);
@@ -1256,7 +1255,7 @@ vector<Led_Rect> TextImager::GetRowHilightRects (const TextLayoutBlock& text, si
             }
         }
     }
-#endif
+
     return result;
 }
 
@@ -1362,8 +1361,7 @@ vector<Led_Rect> TextImager::GetSelectionWindowRects (size_t from, size_t to) co
         ++curRow;
     }
 
-#if qDebug
-    {
+    if constexpr (qDebug) {
         // Make sure rectangles don't overlap with one another (can share an edge) -- SPR#1226
         for (auto orit = result.begin (); orit != result.end (); ++orit) {
             Ensure ((*orit).GetWidth () > 0);
@@ -1376,7 +1374,6 @@ vector<Led_Rect> TextImager::GetSelectionWindowRects (size_t from, size_t to) co
             }
         }
     }
-#endif
     return result;
 }
 
@@ -1551,8 +1548,7 @@ void TextImager::DrawRowHilight (Tablet* tablet, [[maybe_unused]] const Led_Rect
         vector<Led_Rect> hilightRects = GetRowHilightRects (text, rowStart, rowEnd, GetSelectionStart (), GetSelectionEnd ());
         for (auto i = hilightRects.begin (); i != hilightRects.end (); ++i) {
             Led_Rect hilightRect = *i;
-#if qDebug
-            {
+            if constexpr (qDebug) {
                 // Funky test - see SPR# 0470 for details...
                 if (Intersect (hilightRect, currentRowRect) or hilightRect.IsEmpty ()) {
                     Led_Rect x = hilightRect;
@@ -1562,7 +1558,6 @@ void TextImager::DrawRowHilight (Tablet* tablet, [[maybe_unused]] const Led_Rect
                     Assert (Intersect (x, y) or x.IsEmpty ());
                 }
             }
-#endif
             HilightArea (tablet, hilightRect);
         }
     }

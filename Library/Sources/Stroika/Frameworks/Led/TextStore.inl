@@ -280,28 +280,28 @@ namespace Stroika::Frameworks::Led {
     }
     inline void TextStore::Invariant () const
     {
-#if qDebug && qHeavyDebugging
+#if qDebug and qHeavyDebugging
         Invariant_ ();
 #endif
     }
 #if qMultiByteCharacters
     inline void TextStore::Assert_CharPosDoesNotSplitCharacter (size_t charPos) const
     {
-#if qDebug
-        /*
-            *  We know that line (not row) breaks are a good syncronization point to look back and scan to make
-            *  sure all the double-byte characters are correct - because an NL is NOT a valid second byte.
-            */
-        Assert (not Led_IsValidSecondByte ('\n'));
-        size_t startOfFromLine = GetStartOfLineContainingPosition (charPos);
-        Assert (startOfFromLine <= charPos);
-        size_t                         len = charPos - startOfFromLine;
-        Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
-        CopyOut (startOfFromLine, len, buf);
-        Assert (Led_IsValidMultiByteString (buf, len)); // This check that the whole line from the beginning to the charPos point
-                                                        // is valid makes sure that the from position doesn't split a double-byte
-                                                        // character.
-#endif
+        if constexpr (qDebug) {
+            /*
+             *  We know that line (not row) breaks are a good syncronization point to look back and scan to make
+             *  sure all the double-byte characters are correct - because an NL is NOT a valid second byte.
+             */
+            Assert (not Led_IsValidSecondByte ('\n'));
+            size_t startOfFromLine = GetStartOfLineContainingPosition (charPos);
+            Assert (startOfFromLine <= charPos);
+            size_t                         len = charPos - startOfFromLine;
+            Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
+            CopyOut (startOfFromLine, len, buf);
+            Assert (Led_IsValidMultiByteString (buf, len)); // This check that the whole line from the beginning to the charPos point
+                                                            // is valid makes sure that the from position doesn't split a double-byte
+                                                            // character.
+        }
     }
 #endif
     inline bool TextStore::Overlap (size_t mStart, size_t mEnd, size_t from, size_t to)

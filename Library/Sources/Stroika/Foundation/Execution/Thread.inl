@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Execution {
         shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
         shared_lock<const AssertExternallySynchronizedMutex> critSec2{rhs};
 #if __cpp_lib_three_way_comparison < 201907
-        return compare_three_way{}(fRep_, rhs.fRep_);   // Use BWA from Common/Compare.h
+        return compare_three_way{}(fRep_, rhs.fRep_); // Use BWA from Common/Compare.h
 #else
         return fRep_ <=> rhs.fRep_;
 #endif
@@ -204,7 +204,7 @@ namespace Stroika::Foundation::Execution {
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
 #if __cpp_lib_three_way_comparison < 201907
-        return compare_three_way{}(fRep_, nullptr);     // Use BWA from Common/Compare.h
+        return compare_three_way{}(fRep_, nullptr); // Use BWA from Common/Compare.h
 #else
         return fRep_ <=> nullptr;
 #endif

@@ -168,15 +168,15 @@ namespace Stroika::Frameworks::Led {
     {
         RequireNotNull (m);
         Require (IndexOf (fMarkersToBeDeleted, m) == kBadIndex);
-#if qDebug
-        if (fMarkersToBeDeleted.size () != 0) {
-            RequireNotNull (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ());
-            RequireNotNull (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ()->PeekAtTextStore ());
-            RequireNotNull (static_cast<Marker*> (m)->GetOwner ());
-            RequireNotNull (static_cast<Marker*> (m)->GetOwner ()->PeekAtTextStore ());
-            Require (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ()->PeekAtTextStore () == static_cast<Marker*> (m)->GetOwner ()->PeekAtTextStore ());
+        if constexpr (qDebug) {
+            if (fMarkersToBeDeleted.size () != 0) {
+                RequireNotNull (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ());
+                RequireNotNull (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ()->PeekAtTextStore ());
+                RequireNotNull (static_cast<Marker*> (m)->GetOwner ());
+                RequireNotNull (static_cast<Marker*> (m)->GetOwner ()->PeekAtTextStore ());
+                Require (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ()->PeekAtTextStore () == static_cast<Marker*> (m)->GetOwner ()->PeekAtTextStore ());
+            }
         }
-#endif
 
         // Added for SPR#0822 - see for details
         static_cast<Marker*> (m)->GetOwner ()->GetTextStore ().PreRemoveMarker (m);

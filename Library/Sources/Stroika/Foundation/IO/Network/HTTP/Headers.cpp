@@ -518,20 +518,20 @@ void Headers::AddAll (const Headers& headers)
 bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const optional<String>& value, size_t* nRemoveals)
 {
     lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-#if qDebug
-    if (value == nullopt) {
-        Require (flag == AddOrSet::eRemove or flag == AddOrSet::eSet);
+    if constexpr (qDebug) {
+        if (value == nullopt) {
+            Require (flag == AddOrSet::eRemove or flag == AddOrSet::eSet);
+        }
+        if (flag == AddOrSet::eRemove) {
+            // GENERALLY value will be none, but for some cases (like Set-Cookie) with multiple values, it can be the value you want removed
+        }
+        if (flag == AddOrSet::eAdd) {
+            Require (value.has_value ());
+        }
+        if (flag == AddOrSet::eSet) {
+            // nullopt means remove, and value is what we replace with
+        }
     }
-    if (flag == AddOrSet::eRemove) {
-        // GENERALLY value will be none, but for some cases (like Set-Cookie) with multiple values, it can be the value you want removed
-    }
-    if (flag == AddOrSet::eAdd) {
-        Require (value.has_value ());
-    }
-    if (flag == AddOrSet::eSet) {
-        // nullopt means remove, and value is what we replace with
-    }
-#endif
     if (kHeaderNameEqualsComparer (headerName, HeaderName::kCacheControl)) {
         if (nRemoveals != nullptr) {
             *nRemoveals = (value == nullopt and fCacheControl_ != nullopt) ? 1 : 0;

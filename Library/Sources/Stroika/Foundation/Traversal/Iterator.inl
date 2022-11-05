@@ -118,11 +118,11 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS>
     inline void Iterator<T, ITERATOR_TRAITS>::Invariant () const noexcept
     {
-#if qDebug
-        if (fRep_) {
-            fRep_->Invariant ();
+        if constexpr (qDebug) {
+            if (fRep_) {
+                fRep_->Invariant ();
+            }
         }
-#endif
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline const T& Iterator<T, ITERATOR_TRAITS>::Current () const

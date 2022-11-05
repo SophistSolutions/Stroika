@@ -125,9 +125,9 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void SortedKeyedCollection<T, KEY_TYPE, TRAITS>::_AssertRepValidType () const
     {
-#if qDebug
-        _SafeReadRepAccessor<_IRep>{this};
-#endif
+        if constexpr (qDebug) {
+            _SafeReadRepAccessor<_IRep>{this};
+        }
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline auto SortedKeyedCollection<T, KEY_TYPE, TRAITS>::GetInOrderKeyComparer () const -> KeyInOrderKeyComparerType

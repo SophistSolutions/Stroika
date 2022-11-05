@@ -150,28 +150,28 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     , fUnderlyingOutStream_{outStream}
     , fUseOutStream_{Streams::BufferedOutputStream<byte>::New (outStream)}
 {
-#if qDebug
-    this->status.rwPropertyChangedHandlers ().push_front (
-        [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-            Require (not this->responseStatusSent ());
-            return PropertyChangedEventResultType::eContinueProcessing;
-        });
-    this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front (
-        [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-            Require (not this->responseStatusSent ());
-            return PropertyChangedEventResultType::eContinueProcessing;
-        });
-    this->rwHeaders.rwPropertyReadHandlers ().push_front (
-        [this] (HTTP::Headers* h) {
-            Require (this->headersCanBeSet ());
-            return h;
-        });
-    this->rwHeaders.rwPropertyChangedHandlers ().push_front (
-        [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-            Require (this->headersCanBeSet ());
-            return PropertyChangedEventResultType::eContinueProcessing;
-        });
-#endif
+    if constexpr (qDebug) {
+        this->status.rwPropertyChangedHandlers ().push_front (
+            [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+                Require (not this->responseStatusSent ());
+                return PropertyChangedEventResultType::eContinueProcessing;
+            });
+        this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front (
+            [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+                Require (not this->responseStatusSent ());
+                return PropertyChangedEventResultType::eContinueProcessing;
+            });
+        this->rwHeaders.rwPropertyReadHandlers ().push_front (
+            [this] (HTTP::Headers* h) {
+                Require (this->headersCanBeSet ());
+                return h;
+            });
+        this->rwHeaders.rwPropertyChangedHandlers ().push_front (
+            [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+                Require (this->headersCanBeSet ());
+                return PropertyChangedEventResultType::eContinueProcessing;
+            });
+    }
     this->contentType.rwPropertyChangedHandlers ().push_front (
         [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
             Require (this->headersCanBeSet ());

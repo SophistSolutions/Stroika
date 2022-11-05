@@ -292,7 +292,7 @@ namespace {
 #if qHasFeature_Xerces
 namespace {
 #if qDebug
-    atomic<uint32_t> sStdIStream_InputStream_COUNT_ (0);
+    atomic<uint32_t> sStdIStream_InputStream_COUNT_{0};
 #endif
 
     /*

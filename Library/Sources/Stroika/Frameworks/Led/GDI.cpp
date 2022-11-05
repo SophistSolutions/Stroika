@@ -1614,8 +1614,7 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics,
     }
 #endif
 
-#if qDebug
-    {
+    if constexpr (qDebug) {
         // Assure charLocations are in non-decreasing order (OK to have some zero width - but never negative).
         DistanceType d = 0;
         for (size_t i = 0; i < nTChars; ++i) {
@@ -1623,7 +1622,6 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics,
             d = charLocations[i];
         }
     }
-#endif
 }
 
 /*

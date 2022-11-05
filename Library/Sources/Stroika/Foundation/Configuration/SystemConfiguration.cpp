@@ -495,13 +495,11 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         return String::FromASCII (CPUBrandString);
     }();
 
-#if qDebug
-    {
+    if constexpr (qDebug) {
         ::SYSTEM_INFO sysInfo{}; // GetNativeSystemInfo cannot fail so no need to initialize data
         ::GetNativeSystemInfo (&sysInfo);
         Assert (sysInfo.dwNumberOfProcessors == logicalProcessorCount);
     }
-#endif
     for (unsigned int socketNum = 0; socketNum < processorPackageCount; ++socketNum) {
         unsigned int logProcessorsPerSocket = logicalProcessorCount / processorPackageCount;
         for (DWORD i = 0; i < logProcessorsPerSocket; ++i) {

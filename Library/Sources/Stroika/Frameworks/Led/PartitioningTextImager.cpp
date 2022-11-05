@@ -20,20 +20,18 @@ using PartitionMarker = Partition::PartitionMarker;
 Partition::Partition (TextStore& textStore)
     :
 #if qDebug
-    fFinalConstructCalled (false)
+    fFinalConstructCalled{false}
     ,
 #endif
-    fTextStore (textStore)
-    , fFindContainingPMCache (nullptr)
-    , fPartitionWatchers ()
-    , fMarkersToBeDeleted ()
-    ,
+    fTextStore{textStore}
+    , fFindContainingPMCache{nullptr}
+    , fPartitionWatchers{}
+    , fMarkersToBeDeleted{}
 #if qDebug
-    fPartitionMarkerCount (0)
-    ,
+    , fPartitionMarkerCount{0}
 #endif
-    fPartitionMarkerFirst (nullptr)
-    , fPartitionMarkerLast (nullptr)
+    , fPartitionMarkerFirst{nullptr}
+    , fPartitionMarkerLast{nullptr}
 {
     fTextStore.AddMarkerOwner (this);
 }
@@ -107,19 +105,19 @@ TextStore* Partition::PeekAtTextStore () const
 }
 
 /*
-@METHOD:        Partition::GetPartitionMarkerContainingPosition
-@DESCRIPTION:   <p>Finds the @'PartitioningTextImager::PartitionMarker' which contains the given character#.
-    Note, the use of 'charPosition' rather than markerpos is to disambiguiate the case where we are at the boundary
-    between two partition elements.</p>
-*/
+        @METHOD:        Partition::GetPartitionMarkerContainingPosition
+        @DESCRIPTION:   <p>Finds the @'PartitioningTextImager::PartitionMarker' which contains the given character#.
+            Note, the use of 'charPosition' rather than markerpos is to disambiguiate the case where we are at the boundary
+            between two partition elements.</p>
+        */
 PartitionMarker* Partition::GetPartitionMarkerContainingPosition (size_t charPosition) const
 {
     Require (fFinalConstructCalled);
     Require (charPosition <= GetEnd () + 1); // cuz last PM contains bogus char past end of buffer
 
     /*
-     *  Based on cached value, either search forwards from there or back.
-     */
+             *  Based on cached value, either search forwards from there or back.
+             */
     PartitionMarker* pm = fFindContainingPMCache;
     if (pm == nullptr) {
         pm = fPartitionMarkerFirst; // could be first time, or could have deleted cached value
@@ -148,25 +146,25 @@ PartitionMarker* Partition::GetPartitionMarkerContainingPosition (size_t charPos
 }
 
 /*
-@METHOD:        Partition::MakeNewPartitionMarker
-@DESCRIPTION:   <p>Method which is called to construct new partition elements. Override this if you subclass
-    @'PartitioningTextImager', and want to provide your own subtype of @'PartitioningTextImager::PartitionMarker'.</p>
-*/
+        @METHOD:        Partition::MakeNewPartitionMarker
+        @DESCRIPTION:   <p>Method which is called to construct new partition elements. Override this if you subclass
+            @'PartitioningTextImager', and want to provide your own subtype of @'PartitioningTextImager::PartitionMarker'.</p>
+        */
 PartitionMarker* Partition::MakeNewPartitionMarker (PartitionMarker* insertAfterMe)
 {
     Require (fFinalConstructCalled);
-    return (new PartitionMarker (*this, insertAfterMe));
+    return new PartitionMarker (*this, insertAfterMe);
 }
 
 /*
-@METHOD:        Partition::Split
-@DESCRIPTION:   <p>Split the given PartitionMarker at position 'at' - which must fall within the partition element.
-    This method always produces a new partition element, and inserts it appropriately into the partition, adjusting
-    the sizes of surrounding elements appropriately.</p>
-        <p>Ensure that the split happens so that PM continues to point to the beginning of the range and the new PMs created
-    are at the end of the range</p>
-        <p>This method is typically called by Partition subclasses OVERRIDE of @'Partition::UpdatePartitions'.</p>
-*/
+        @METHOD:        Partition::Split
+        @DESCRIPTION:   <p>Split the given PartitionMarker at position 'at' - which must fall within the partition element.
+            This method always produces a new partition element, and inserts it appropriately into the partition, adjusting
+            the sizes of surrounding elements appropriately.</p>
+                <p>Ensure that the split happens so that PM continues to point to the beginning of the range and the new PMs created
+            are at the end of the range</p>
+                <p>This method is typically called by Partition subclasses OVERRIDE of @'Partition::UpdatePartitions'.</p>
+        */
 void Partition::Split (PartitionMarker* pm, size_t at)
 {
     Require (fFinalConstructCalled);

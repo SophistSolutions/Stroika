@@ -75,9 +75,9 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Deque<T>::_AssertRepValidType () const
     {
-#if qDebug
-        _SafeReadRepAccessor<_IRep>{this};
-#endif
+        if constexpr (qDebug) {
+            _SafeReadRepAccessor<_IRep>{this};
+        }
     }
 
 }

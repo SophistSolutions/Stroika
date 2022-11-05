@@ -605,13 +605,11 @@ bool LedLineItDocument::DoPromptOpenFileName (CString* fileName, CodePage* codeP
 bool LedLineItDocument::DoPromptFileName (CString* fileName, UINT nIDSTitle, bool isOpenDialogCall, long fileDLogFlags, CodePage* codePage)
 {
     vector<CodePage> codePages = CodePagesInstalled ().GetAll ();
-#if qDebug
-    {
+    if constexpr (qDebug) {
         // We use these magic numbers internally here - just assure they don't conflict...
         Assert (std::find (codePages.begin (), codePages.end (), kAutomaticallyGuessCodePage) == codePages.end ());
         Assert (std::find (codePages.begin (), codePages.end (), kIGNORECodePage) == codePages.end ());
     }
-#endif
 
 #if 0
     if (not isOpenDialogCall) {

@@ -486,9 +486,9 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Set<T>::_AssertRepValidType () const
     {
-#if qDebug
-        [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
-#endif
+        if constexpr (qDebug) {
+            [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
+        }
     }
     template <typename T>
     inline bool Set<T>::operator== (const Set& rhs) const

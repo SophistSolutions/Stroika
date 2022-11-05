@@ -313,9 +313,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename TRAITS>
     inline void MultiSet_stdmap<T, TRAITS>::AssertRepValidType_ () const
     {
-#if qDebug
-        typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
-#endif
+        if constexpr (qDebug) {
+            typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
+        }
     }
 
 }

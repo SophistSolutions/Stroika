@@ -106,7 +106,7 @@ strong_ordering InternetMediaType::THREEWAYCOMPARE_ (const InternetMediaType& rh
         return cmp;
     }
 #if __cpp_lib_three_way_comparison < 201907L
-    cmp = compare_three_way{}(fSuffix_, rhs.fSuffix_);      // Use BWA from Common/Compare.h
+    cmp = compare_three_way{}(fSuffix_, rhs.fSuffix_); // Use BWA from Common/Compare.h
 #else
     cmp = fSuffix_ <=> rhs.fSuffix_;
 #endif

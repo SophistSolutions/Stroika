@@ -337,15 +337,13 @@ size_t TextStore::GetEndOfLineContainingPosition (size_t afterPos) const
         }
         Assert (curPos - lastReadAtPos < kBufSize);
         Led_tChar& thisChar = charBuf[curPos - lastReadAtPos];
-#if qDebug
-        {
+        if constexpr (qDebug) {
             Led_tChar xxx;
             CopyOut (curPos, 1, &xxx);
             Assert (xxx == thisChar);
         }
-#endif
         if (thisChar == '\n') {
-            return (curPos);
+            return curPos;
         }
     }
     return (GetEnd ());

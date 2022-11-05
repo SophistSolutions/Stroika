@@ -279,9 +279,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::AssertRepValidType_ () const
     {
-#if qDebug
-        typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
-#endif
+        if constexpr (qDebug) {
+            typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
+        }
     }
 
 }

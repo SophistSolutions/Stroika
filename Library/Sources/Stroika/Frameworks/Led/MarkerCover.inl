@@ -122,13 +122,11 @@ namespace Stroika::Frameworks::Led {
         MarkerOfATypeMarkerSink<MARKER> result;
         fTextStore.CollectAllMarkersInRangeInto (charAfterPos, charAfterPos + 1, this, result);
         AssertNotNull (result.fResult);
-#if qDebug
-        {
+        if constexpr (qDebug) {
             MarkerVector markers = CollectAllInRange (charAfterPos, charAfterPos + 1);
             Assert (markers.size () == 1);
             Assert (result.fResult == markers[0]);
         }
-#endif
         return result.fResult->GetInfo ();
     }
     template <typename MARKER, typename MARKERINFO, typename INCREMENTALMARKERINFO>
@@ -361,13 +359,11 @@ namespace Stroika::Frameworks::Led {
         typename MarkerVector::const_iterator miStart = markers.begin ();
         typename MarkerVector::const_iterator miEnd   = markers.end ();
         if (from > 0) {
-#if qDebug
-            {
+            if constexpr (qDebug) {
                 MarkerVector tmp = CollectAllNonEmptyInRange (from - 1, from);
                 Assert (tmp.size () == 1);
                 Assert (tmp[0] == markers[0]);
             }
-#endif
             prevNonEmptyMarker = markers[0];
             if (prevNonEmptyMarker->GetEnd () > from) { // else it would be the FIRST in our marker list!
                 Assert (markers[0] == prevNonEmptyMarker);

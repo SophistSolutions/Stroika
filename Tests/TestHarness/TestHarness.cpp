@@ -111,6 +111,6 @@ void TestHarness::WarnTestIssue (const wchar_t* issue)
 {
     using namespace Characters;
     string r;
-    WideStringToNarrow (issue, issue + wcslen (issue), GetDefaultSDKCodePage (), &r);
+    WideStringToNarrow (issue, issue + ::wcslen (issue), GetDefaultSDKCodePage (), &r);
     WarnTestIssue (r.c_str ());
 }

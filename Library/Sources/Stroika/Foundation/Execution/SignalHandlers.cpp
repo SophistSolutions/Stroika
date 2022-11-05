@@ -305,11 +305,11 @@ SignalHandlerRegistry& SignalHandlerRegistry::Get ()
 
 SignalHandlerRegistry::SignalHandlerRegistry ()
 {
-#if qDebug
-    static int nConstructed = 0;
-    ++nConstructed;
-    Assert (nConstructed == 1);
-#endif
+    if constexpr (qDebug) {
+        static int nConstructed = 0;
+        ++nConstructed;
+        Assert (nConstructed == 1);
+    }
     Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR"};
 
     Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fDirectSignalHandlersCache_Lock_);

@@ -487,16 +487,14 @@ void TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tCha
 #endif
 
 #if qDebugHack_UpperCaseCharsTratedAsRTL
-    {
-        for (size_t i = 0; i < textLength; ++i) {
-            if ('A' <= fRealText[i] and fRealText[i] <= 'Z') {
-                fRealText[i] = 0xfe7d; // random arabic character
-            }
+    for (size_t i = 0; i < textLength; ++i) {
+        if ('A' <= fRealText[i] and fRealText[i] <= 'Z') {
+            fRealText[i] = 0xfe7d; // random arabic character
         }
     }
 #endif
 
-/*
+    /*
      * Try a number of different ways to generate the virtual text/maps etc.
      */
 #if qTestUNISCRIBEResultsEqualFriBidi
@@ -538,8 +536,7 @@ void TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tCha
     }
 #endif
 
-#if qDebugHack_ReverseDirections
-    {
+    if constexpr (qDebugHack_ReverseDirections) {
         for (auto i = fScriptRuns.begin (); i != fScriptRuns.end (); ++i) {
             ScriptRunElt& se     = *i;
             TextDirection newDir = (se.fDirection == eLeftToRight) ? eRightToLeft : eLeftToRight;
@@ -553,7 +550,6 @@ void TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tCha
             copy (static_cast<Led_tChar*> (reverseBuf), static_cast<Led_tChar*> (reverseBuf) + runLen, static_cast<Led_tChar*> (fVirtualText) + se.fVirtualStart);
         }
     }
-#endif
 
     Invariant ();
 }

@@ -18,27 +18,27 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     inline StyledTextImager::StyleMarker::StyleMarker ()
-        : Marker ()
+        : Marker{}
     {
     }
     inline void StyledTextImager::Invariant () const
     {
-#if qDebug && qHeavyDebugging
+#if qDebug and qHeavyDebugging
         Invariant_ ();
 #endif
     }
 
     // class StyledTextImager::RunElement
     inline StyledTextImager::RunElement::RunElement (StyledTextImager::StyleMarker* marker, size_t length)
-        : fMarker (marker)
-        , fLength (length)
+        : fMarker{marker}
+        , fLength{length}
     {
     }
 
     // class SimpleStyleMarkerByFontSpec<BASECLASS>
     template <class BASECLASS>
     inline SimpleStyleMarkerByFontSpec<BASECLASS>::SimpleStyleMarkerByFontSpec ()
-        : inherited ()
+        : inherited{}
     {
     }
     template <class BASECLASS>

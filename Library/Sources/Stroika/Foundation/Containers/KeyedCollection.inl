@@ -389,9 +389,9 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline void KeyedCollection<T, KEY_TYPE, TRAITS>::_AssertRepValidType () const
     {
-#if qDebug
-        [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
-#endif
+        if constexpr (qDebug) {
+            [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
+        }
     }
 
     /*

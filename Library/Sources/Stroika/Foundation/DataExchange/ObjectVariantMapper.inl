@@ -88,14 +88,14 @@ namespace Stroika::Foundation::DataExchange {
     inline strong_ordering ObjectVariantMapper::TypeMappingDetails::operator<=> (const TypeMappingDetails& rhs) const
     {
 #if __cpp_lib_three_way_comparison < 201907
-        return std::compare_three_way{}(fForType, rhs.fForType);    // for BWA I have in Common/Compare.h
+        return std::compare_three_way{}(fForType, rhs.fForType); // for BWA I have in Common/Compare.h
 #else
-        return fForType <=> rhs.fForType;   // just compare types, not functions
+        return fForType <=> rhs.fForType; // just compare types, not functions
 #endif
     }
     inline bool ObjectVariantMapper::TypeMappingDetails::operator== (const TypeMappingDetails& rhs) const
     {
-        return fForType == rhs.fForType;    // just compare types, not functions
+        return fForType == rhs.fForType; // just compare types, not functions
     }
     template <typename T>
     inline ObjectVariantMapper::FromObjectMapperType<T> ObjectVariantMapper::TypeMappingDetails::FromObjectMapper (const FromGenericObjectMapperType& fromObjectMapper)

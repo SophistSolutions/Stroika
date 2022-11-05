@@ -34,11 +34,11 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
  */
 void PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi)
 {
-#if qDebug
-    for (const auto& a : advertisements) {
-        Require (not a.fTarget.empty ());
+    if constexpr (qDebug) {
+        for (const auto& a : advertisements) {
+            Require (not a.fTarget.empty ());
+        }
     }
-#endif
     static const String kThreadName_{L"SSDP Periodic Notifier"sv};
     fListenThread_ = Execution::Thread::New (
         [advertisements, fi] () {

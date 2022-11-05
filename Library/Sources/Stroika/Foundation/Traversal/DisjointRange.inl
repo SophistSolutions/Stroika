@@ -34,13 +34,13 @@ namespace Stroika::Foundation::Traversal {
         for (auto i = start; i != end; ++i) {
             MergeIn_ (*i);
         }
-#if qDebug
-        for (auto i = fSubRanges_.begin (); i != fSubRanges_.end (); ++i) {
-            if (i + 1 != fSubRanges_.end ()) {
-                Ensure (i->GetUpperBound () <= (i + 1)->GetLowerBound ());
+        if constexpr (qDebug) {
+            for (auto i = fSubRanges_.begin (); i != fSubRanges_.end (); ++i) {
+                if (i + 1 != fSubRanges_.end ()) {
+                    Ensure (i->GetUpperBound () <= (i + 1)->GetLowerBound ());
+                }
             }
         }
-#endif
     }
     template <typename T, typename RANGE_TYPE>
     inline auto DisjointRange<T, RANGE_TYPE>::SubRanges () const -> Containers::Sequence<RangeType>
@@ -343,20 +343,20 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename RANGE_TYPE>
     inline void DisjointRange<T, RANGE_TYPE>::AssertInternalRepValid_ ()
     {
-#if qDebug
-        optional<RangeType> lastRangeSeenSoFar;
-        for (const RangeType& r : fSubRanges_) {
-            Assert (not r.empty ());
-            if (lastRangeSeenSoFar) {
-                Assert (lastRangeSeenSoFar->GetUpperBound () <= r.GetLowerBound ()); // equal maybe bad but check that case with itersects which pays attention to openness
-                Assert (not lastRangeSeenSoFar->Intersects (r));
-                // and make sure we merge together adjacent points
-                value_type nextVal = RangeType::TraitsType::GetNext (lastRangeSeenSoFar->GetUpperBound ());
-                Assert (nextVal < r.GetLowerBound ()); // if nextval of previous item == lowerBound of successive one, we could have merged them into a contiguous run
+        if constexpr (qDebug) {
+            optional<RangeType> lastRangeSeenSoFar;
+            for (const RangeType& r : fSubRanges_) {
+                Assert (not r.empty ());
+                if (lastRangeSeenSoFar) {
+                    Assert (lastRangeSeenSoFar->GetUpperBound () <= r.GetLowerBound ()); // equal maybe bad but check that case with itersects which pays attention to openness
+                    Assert (not lastRangeSeenSoFar->Intersects (r));
+                    // and make sure we merge together adjacent points
+                    value_type nextVal = RangeType::TraitsType::GetNext (lastRangeSeenSoFar->GetUpperBound ());
+                    Assert (nextVal < r.GetLowerBound ()); // if nextval of previous item == lowerBound of successive one, we could have merged them into a contiguous run
+                }
+                lastRangeSeenSoFar = r;
             }
-            lastRangeSeenSoFar = r;
         }
-#endif
     }
     template <typename T, typename RANGE_TYPE>
     constexpr bool DisjointRange<T, RANGE_TYPE>::operator== (const DisjointRange& rhs) const

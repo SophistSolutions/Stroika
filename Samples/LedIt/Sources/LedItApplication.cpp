@@ -1305,10 +1305,7 @@ BOOL LedItApplication::InitInstance ()
         // Place the dictionary in a reasonable - but hardwired place. Later - allow for editing that location,
         // and other spellchecking options (see SPR#1591)
         TCHAR defaultPath[MAX_PATH + 1];
-#ifndef CSIDL_FLAG_CREATE
-#define CSIDL_FLAG_CREATE 0x8000 // new for Win2K, or this in to force creation of folder
-#endif
-        Verify (::SHGetSpecialFolderPath (NULL, defaultPath, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, true));
+        Verify (::SHGetSpecialFolderPath (nullptr, defaultPath, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, true));
         fSpellCheckEngine->SetUserDictionary (Led_SDK_String{defaultPath} + Led_SDK_TCHAROF ("\\My LedIt Dictionary.txt"));
     }
 #endif

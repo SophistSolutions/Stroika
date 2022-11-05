@@ -146,11 +146,11 @@ static int MyXErrorHandler (Display* display, XErrorEvent* error)
 int main ([[maybe_unused]]int argc, [maybe_unused]]char** argv)
 {
 #if qPlatform_MacOS
-#if qDebug
-    // Set Debugging options
-    SetDebugThrow_ (debugAction_Alert);
-    SetDebugSignal_ (debugAction_Alert);
-#endif
+    if constexpr (qDebug) {
+        // Set Debugging options
+        SetDebugThrow_ (debugAction_Alert);
+        SetDebugSignal_ (debugAction_Alert);
+    }
 
 #if !TARGET_CARBON
     const long kMinStack = 32l * 1024l; // reserve  32K for stack

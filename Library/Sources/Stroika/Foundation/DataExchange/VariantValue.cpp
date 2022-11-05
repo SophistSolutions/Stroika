@@ -878,10 +878,10 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
         case VariantValue::eArray:
             return lhs.As<Sequence<VariantValue>> () <=> rhs.As<Sequence<VariantValue>> ();
         case VariantValue::eMap: {
-                // @todo FIX - THIS IS LOGICALLY WRONG... CUZ MAPPINGS COULD BE IN DIFFERENT ORDER!
-                // MUST FORCE TO SAME ORDER AND THEN ITERABLE NEEDS METHOD TO CREATE ITERABLE COMPARE - SequentialThreeWayComparer
-                //  NOT RIGHT unless you order things properly first
-                //  return lhs.As<Mapping<String, VariantValue>> () <=> rhs.As<Mapping<String, VariantValue>> ();
+            // @todo FIX - THIS IS LOGICALLY WRONG... CUZ MAPPINGS COULD BE IN DIFFERENT ORDER!
+            // MUST FORCE TO SAME ORDER AND THEN ITERABLE NEEDS METHOD TO CREATE ITERABLE COMPARE - SequentialThreeWayComparer
+            //  NOT RIGHT unless you order things properly first
+            //  return lhs.As<Mapping<String, VariantValue>> () <=> rhs.As<Mapping<String, VariantValue>> ();
 
 #if 0
     &&& @todo PUT THIS SOMEHOW INTO MAPPING - THREEWAY COMPARE WITH OPTION OF FIRST SORTING BY KEY

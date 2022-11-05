@@ -69,10 +69,10 @@ size_t CommandHandler::GetUndoRedoWhatMessageText (char* buf, size_t bufSize)
  ********************************************************************************
  */
 SingleUndoCommandHandler::SingleUndoCommandHandler ()
-    : CommandHandler ()
-    , fLastCmd (nullptr)
+    : CommandHandler{}
+    , fLastCmd{nullptr}
 #if qDebug
-    , fDoingCommands (false)
+    , fDoingCommands{false}
 #endif
 {
 }
@@ -198,15 +198,15 @@ const Led_SDK_Char* SingleUndoCommandHandler::GetRedoCmdName ()
  ********************************************************************************
  */
 MultiLevelUndoCommandHandler::MultiLevelUndoCommandHandler (size_t maxUndoLevels, size_t maxCmdsPerLevel)
-    : CommandHandler ()
-    , fMaxUndoLevels (maxUndoLevels)
-    , fMaxCmdsPerLevel (maxCmdsPerLevel)
-    , fUndoCursor (0)
-    , fCommands ()
-    , fCommandGroupCount (0)
-    , fUndoneGroupCount (0)
+    : CommandHandler{}
+    , fMaxUndoLevels{maxUndoLevels}
+    , fMaxCmdsPerLevel{maxCmdsPerLevel}
+    , fUndoCursor{0}
+    , fCommands{}
+    , fCommandGroupCount{0}
+    , fUndoneGroupCount{0}
 #if qDebug
-    , fDoingCommands (false)
+    , fDoingCommands{false}
 #endif
 {
 }

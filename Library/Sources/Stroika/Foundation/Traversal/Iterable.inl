@@ -143,9 +143,9 @@ namespace Stroika::Foundation::Traversal {
     {
         shared_lock<const Debug::AssertExternallySynchronizedMutex>::operator= (rhs);
         fConstRef_ = rhs.fConstRef_;
-#if qDebug
-        fIterableEnvelope_ = rhs.fIterableEnvelope_;
-#endif
+        if constexpr (qDebug) {
+            this->fIterableEnvelope_ = rhs.fIterableEnvelope_;
+        }
         return *this;
     }
     template <typename T>

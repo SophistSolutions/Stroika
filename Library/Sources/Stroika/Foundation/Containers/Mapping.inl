@@ -449,9 +449,9 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_AssertRepValidType () const
     {
-#if qDebug
-        [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
-#endif
+        if constexpr (qDebug) {
+            [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
+        }
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator== (const Mapping& rhs) const

@@ -381,20 +381,20 @@ namespace Stroika::Foundation::Characters {
     }
     inline wstring ASCIIStringToWide (const string& s)
     {
-#if qDebug
-        for (string::const_iterator i = s.begin (); i != s.end (); ++i) {
-            Assert (isascii (*i));
+        if constexpr (qDebug) {
+            for (string::const_iterator i = s.begin (); i != s.end (); ++i) {
+                Assert (isascii (*i));
+            }
         }
-#endif
         return wstring (s.begin (), s.end ());
     }
     inline string WideStringToASCII (const wstring& s)
     {
-#if qDebug
-        for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
-            Assert (isascii (*i));
+        if constexpr (qDebug) {
+            for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
+                Assert (isascii (*i));
+            }
         }
-#endif
         DISABLE_COMPILER_MSC_WARNING_START (4244) // 'argument': conversion from 'const wchar_t' to 'const _Elem', possible loss of data
         return string{s.begin (), s.end ()};
         DISABLE_COMPILER_MSC_WARNING_END (4244)

@@ -3818,11 +3818,11 @@ DistanceType WordProcessor::MeasureSegmentHeight (size_t from, size_t to) const
     if (pmEnd - pmStart == 1) {
         vector<Table*> tables = GetTablesInRange (pmStart, pmEnd);
         if (tables.size () == 1) {
-#if qDebug
-            Table* t = tables[0];
-            Assert (t->GetStart () == pmStart);
-            Assert (t->GetEnd () == pmEnd);
-#endif
+            if constexpr (qDebug) {
+                Table* t = tables[0];
+                Assert (t->GetStart () == pmStart);
+                Assert (t->GetEnd () == pmEnd);
+            }
             return d;
         }
     }
@@ -3969,11 +3969,11 @@ DistanceType WordProcessor::MeasureSegmentBaseLine (size_t from, size_t to) cons
     if (pmEnd - pmStart == 1) {
         vector<Table*> tables = GetTablesInRange (pmStart, pmEnd);
         if (tables.size () == 1) {
-#if qDebug
-            Table* t = tables[0];
-            Assert (t->GetStart () == pmStart);
-            Assert (t->GetEnd () == pmEnd);
-#endif
+            if constexpr (qDebug) {
+                Table* t = tables[0];
+                Assert (t->GetStart () == pmStart);
+                Assert (t->GetEnd () == pmEnd);
+            }
             return d;
         }
     }
@@ -4398,68 +4398,68 @@ WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (TextStore*        
                                                               const WordProcessor::ParagraphDatabasePtr&        paragraphDatabase,
                                                               const WordProcessor::HidableTextDatabasePtr&      hidableTextDatabase,
                                                               size_t                                            insertionStart)
-    : inherited (textStore, textStyleDatabase, insertionStart)
-    , fOverwriteTableMode (false)
+    : inherited{textStore, textStyleDatabase, insertionStart}
+    , fOverwriteTableMode{false}
     ,
 #if !qNestedTablesSupported
-    fNoTablesAllowed (false)
+    fNoTablesAllowed{false}
     ,
 #endif
-    fSavedContexts ()
-    , fParagraphDatabase (paragraphDatabase)
-    , fHidableTextDatabase (hidableTextDatabase)
-    , fSavedParaInfo ()
-    , fNewParagraphInfo ()
-    , fTextHidden (false)
-    , fHidableTextRuns ()
-    , fEndOfBuffer (false)
-    , fIgnoreLastParaAttributes (false)
-    , fCurrentTable (nullptr)
-    , fCurrentTableCellWidths ()
-    , fCurrentTableCellColor (Color::kWhite)
-    , fCurrentTableColSpanArray ()
-    , fTableStack ()
-    , fNextTableRow (0)
-    , fNextTableCell (0)
-    , fCurrentTableCell (size_t (-1))
+    fSavedContexts{}
+    , fParagraphDatabase{paragraphDatabase}
+    , fHidableTextDatabase{hidableTextDatabase}
+    , fSavedParaInfo{}
+    , fNewParagraphInfo{}
+    , fTextHidden{false}
+    , fHidableTextRuns{}
+    , fEndOfBuffer{false}
+    , fIgnoreLastParaAttributes{false}
+    , fCurrentTable{nullptr}
+    , fCurrentTableCellWidths{}
+    , fCurrentTableCellColor{Color::kWhite}
+    , fCurrentTableColSpanArray{}
+    , fTableStack{}
+    , fNextTableRow{0}
+    , fNextTableCell{0}
+    , fCurrentTableCell{size_t (-1)}
 #if qDebug
-    , fTableOpenLevel (0)
-    , fTableRowOpen (false)
-    , fTableCellOpen (false)
+    , fTableOpenLevel{0}
+    , fTableRowOpen{false}
+    , fTableCellOpen{false}
 #endif
 {
     CTOR_COMMON ();
 }
 
 WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (WordProcessor* wp, size_t insertionStart)
-    : inherited (&wp->GetTextStore (), wp->GetStyleDatabase (), insertionStart)
-    , fOverwriteTableMode (false)
+    : inherited{&wp->GetTextStore (), wp->GetStyleDatabase (), insertionStart}
+    , fOverwriteTableMode{false}
     ,
 #if !qNestedTablesSupported
-    fNoTablesAllowed (false)
+    fNoTablesAllowed{false}
     ,
 #endif
-    fSavedContexts ()
-    , fParagraphDatabase (wp->GetParagraphDatabase ())
-    , fHidableTextDatabase (wp->GetHidableTextDatabase ())
-    , fSavedParaInfo ()
-    , fNewParagraphInfo ()
-    , fTextHidden (false)
-    , fHidableTextRuns ()
-    , fEndOfBuffer (false)
-    , fIgnoreLastParaAttributes (false)
-    , fCurrentTable (nullptr)
-    , fCurrentTableCellWidths ()
-    , fCurrentTableCellColor (Color::kWhite)
-    , fCurrentTableColSpanArray ()
-    , fTableStack ()
-    , fNextTableRow (0)
-    , fNextTableCell (0)
-    , fCurrentTableCell (size_t (-1))
+    fSavedContexts{}
+    , fParagraphDatabase{wp->GetParagraphDatabase ()}
+    , fHidableTextDatabase{wp->GetHidableTextDatabase ()}
+    , fSavedParaInfo{}
+    , fNewParagraphInfo{}
+    , fTextHidden{false}
+    , fHidableTextRuns{}
+    , fEndOfBuffer{false}
+    , fIgnoreLastParaAttributes{false}
+    , fCurrentTable{nullptr}
+    , fCurrentTableCellWidths{}
+    , fCurrentTableCellColor{Color::kWhite}
+    , fCurrentTableColSpanArray{}
+    , fTableStack{}
+    , fNextTableRow{0}
+    , fNextTableCell{0}
+    , fCurrentTableCell{size_t (-1)}
 #if qDebug
-    , fTableOpenLevel (0)
-    , fTableRowOpen (false)
-    , fTableCellOpen (false)
+    , fTableOpenLevel{0}
+    , fTableRowOpen{false}
+    , fTableCellOpen{false}
 #endif
 {
     CTOR_COMMON ();
@@ -4772,6 +4772,7 @@ void WordProcessorTextIOSinkStream::EndTableRow ()
 void WordProcessorTextIOSinkStream::StartTableCell (size_t colSpan)
 {
 #if qDebug
+
     Require (fTableOpenLevel >= 1);
     Require (fTableRowOpen);
     Require (not fTableCellOpen);
@@ -4952,15 +4953,13 @@ void WordProcessorTextIOSinkStream::Flush ()
 
     // Flush the cached paragraph info
     {
-#if qDebug
-        {
+        if constexpr (qDebug) {
             size_t curInsert = whereToInsert;
             for (auto i = fSavedParaInfo.begin (); i != fSavedParaInfo.end (); ++i) {
                 curInsert += (*i).second;
             }
             Assert (curInsert == GetInsertionStart ());
         }
-#endif
         if (stripParaCharCount != 0) {
             Assert (fSavedParaInfo.size () > 0);
             vector<ParaInfoNSize>::iterator i = fSavedParaInfo.end () - 1;
@@ -5018,10 +5017,10 @@ WordProcessorTextIOSrcStream::WordProcessorTextIOSrcStream (TextStore*          
                                                             const WordProcessor::ParagraphDatabasePtr&        paragraphDatabase,
                                                             const WordProcessor::HidableTextDatabasePtr&      hidableTextDatabase,
                                                             size_t selectionStart, size_t selectionEnd)
-    : inherited (textStore, textStyleDatabase, selectionStart, selectionEnd)
-    , fUseTableSelection (false)
-    , fParagraphDatabase (paragraphDatabase)
-    , fHidableTextRuns ()
+    : inherited{textStore, textStyleDatabase, selectionStart, selectionEnd}
+    , fUseTableSelection{false}
+    , fParagraphDatabase{paragraphDatabase}
+    , fHidableTextRuns{}
 {
 
     if (hidableTextDatabase.get () != nullptr) {
@@ -5230,11 +5229,11 @@ void WordProcessorTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_Strin
 WordProcessorTextIOSrcStream::TableIOMapper::TableIOMapper (WordProcessor::Table& realTable,
                                                             size_t startRow, size_t endRow,
                                                             size_t startCol, size_t endCol)
-    : fRealTable (realTable)
-    , fStartRow (startRow)
-    , fEndRow (endRow)
-    , fStartCol (startCol)
-    , fEndCol (endCol)
+    : fRealTable{realTable}
+    , fStartRow{startRow}
+    , fEndRow{endRow}
+    , fStartCol{startCol}
+    , fEndCol{endCol}
 {
     if (fEndRow == static_cast<size_t> (-1)) {
         fEndRow = fRealTable.GetRowCount ();
@@ -5375,8 +5374,8 @@ WordProcessor::StandardStyledTextIOSinkStream* WordProcessorFlavorPackageInterna
  ********************************************************************************
  */
 WordProcessor::WPPartition::WPPartition (TextStore& textStore, MarkerOwner& tableMarkerOwner)
-    : inherited (textStore, eSpecialHackToDisableInit)
-    , fTableMarkerOwner (tableMarkerOwner)
+    : inherited{textStore, eSpecialHackToDisableInit}
+    , fTableMarkerOwner{tableMarkerOwner}
 {
     FinalConstruct ();
     Invariant ();
@@ -5904,8 +5903,7 @@ vector<Led_Rect> Table::GetRowHilightRects () const
         }
     }
 
-#if qDebug
-    {
+    if constexpr (qDebug) {
         // Make sure rectangles don't overlap with one another (can share an edge) -- SPR#1226
         for (auto orit = result.begin (); orit != result.end (); ++orit) {
             Ensure ((*orit).GetWidth () > 0);
@@ -5918,7 +5916,6 @@ vector<Led_Rect> Table::GetRowHilightRects () const
             }
         }
     }
-#endif
 
     return result;
 }
@@ -7419,11 +7416,11 @@ void Table::SetDimensions (size_t rows, size_t columns)
         InsertColumn (oldColumns);
         ++oldColumns;
     }
-#if qDebug
-    GetDimensions (&oldRows, &oldColumns);
-    Assert (oldRows == rows);
-    Assert (oldColumns == columns);
-#endif
+    if constexpr (qDebug) {
+        GetDimensions (&oldRows, &oldColumns);
+        Assert (oldRows == rows);
+        Assert (oldColumns == columns);
+    }
 }
 
 /*

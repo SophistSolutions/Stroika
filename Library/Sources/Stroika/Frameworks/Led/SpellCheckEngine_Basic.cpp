@@ -81,10 +81,10 @@ namespace {
 #else
             bool answer = _Right.compare (0, _Right.length (), fBase + _Left.fIndex, _Left.fWordLen) > 0;
 #endif
-#if qDebug
-            Led_tString left = Led_tString{fBase + _Left.fIndex, fBase + _Left.fIndex + _Left.fWordLen};
-            Assert (answer == (left < _Right));
-#endif
+            if constexpr (qDebug) {
+                Led_tString left = Led_tString{fBase + _Left.fIndex, fBase + _Left.fIndex + _Left.fWordLen};
+                Assert (answer == (left < _Right));
+            }
             return (answer);
         }
         const Led_tChar* fBase;
@@ -984,7 +984,7 @@ void SpellCheckEngine_Basic::CompiledDictionary::GetInfoBlocks (const InfoBlock*
  */
 
 TextBreaks_SpellChecker::TextBreaks_SpellChecker ()
-    : inherited ()
+    : inherited{}
 {
 #if qDebug
     // NB: since this is called in this CTOR - it doesn't capture (or pay attention to) subclass overrides of CharToCharacterClass
@@ -1044,10 +1044,10 @@ void TextBreaks_SpellChecker::RegressionTest ()
  ********************************************************************************
  */
 SpellCheckEngine_Basic_Simple::SpellCheckEngine_Basic_Simple ()
-    : inherited ()
-    , fMainDictionary (NULL)
-    , fUDName ()
-    , fUD (NULL)
+    : inherited{}
+    , fMainDictionary{nullptr}
+    , fUDName{}
+    , fUD{nullptr}
 {
 #if qIncludeBakedInDictionaries
     SetMainDictionary (&kDictionary_US_English);

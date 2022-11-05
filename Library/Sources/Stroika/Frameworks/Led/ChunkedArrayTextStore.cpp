@@ -540,9 +540,9 @@ public:
 
     nonvirtual void FreeHackTree1 (Marker* m)
     {
-#if qDebug
-        Assert (OurStuff (m)->fIsHackMarker);
-#endif
+        if constexpr (qDebug) {
+            Assert (OurStuff (m)->fIsHackMarker);
+        }
         for (Marker* mi = OurStuff (m)->fFirstSubMarker; mi != NULL;) {
             Marker* nextMI = OurStuff (mi)->fNextSubMarker;
             FreeHackTree1 (mi);
@@ -556,9 +556,9 @@ public:
             m->fTextStoreHook = NULL; // so not deleted twice by RemoveMarkers()
         }
         else {
-#if qDebug
-            m->fTextStoreHook = (ChunkedArrayMarkerHook*)666; // magic # so we know these are bad... Should never be referenced after this
-#endif
+            if constexpr (qDebug) {
+                m->fTextStoreHook = (ChunkedArrayMarkerHook*)666; // magic # so we know these are bad... Should never be referenced after this
+            }
             delete m;
 #if qKeepChunkedArrayStatistics
             Assert (fTotalHackMarkersPresent > 0);
@@ -685,13 +685,13 @@ void ChunkedArrayTextStore::RemoveMarkerOwner (MarkerOwner* owner)
                                                     // Look just below at 'markersWhichShouldHaveBeenDeleted' to see just what markers are left.
                                                     //
                                                     // See Led's FAQ#27 - http://www.sophists.com/Led/LedClassLib/ClassLibDocs/Recipes.html#27
-#if qDebug
-        if (camoh->fTotalMarkersPresent != 0) {
-            vector<Marker*>  markersWhichShouldHaveBeenDeleted;
-            VectorMarkerSink tmp (&markersWhichShouldHaveBeenDeleted);
-            CollectAllMarkersInRangeInto (0, GetEnd () + 2, owner, tmp);
+        if constexpr (qDebug) {
+            if (camoh->fTotalMarkersPresent != 0) {
+                vector<Marker*>  markersWhichShouldHaveBeenDeleted;
+                VectorMarkerSink tmp (&markersWhichShouldHaveBeenDeleted);
+                CollectAllMarkersInRangeInto (0, GetEnd () + 2, owner, tmp);
+            }
         }
-#endif
     }
 #endif
     delete owner->fTextStoreHook;
@@ -1433,14 +1433,12 @@ void ChunkedArrayTextStore::SetMarkerRange (Marker* marker, size_t start, size_t
         AssertNotNull (parent);
         Assert (QUICK_Contains (*marker, *parent));
         if (Contains (start, end, *parent)) {
-#if qDebug
-            // before we re-adjust anything. - make sure all is well...
-            {
+            if constexpr (qDebug) {
+                // before we re-adjust anything. - make sure all is well...
                 for (Marker* mi = OurStuff (marker)->fFirstSubMarker; mi != NULL; mi = OurStuff (mi)->fNextSubMarker) {
                     Assert (QUICK_Contains (*mi, *marker));
                 }
             }
-#endif
 
             SetMarkerStart_ (marker, start);
             SetMarkerLength_ (marker, len);

@@ -2593,16 +2593,14 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
         } break;
     }
 
-#if qDebug && qPlatform_Windows && 0
-    // Assure my baked tables (and UTF8 converters) perform the same as the builtin Win32 API
-    {
+    if constexpr (qDebug && qPlatform_Windows and false) {
+        // Assure my baked tables (and UTF8 converters) perform the same as the builtin Win32 API
         size_t               tstCharCnt = *outCharCnt;
         StackBuffer<wchar_t> tstBuf{Memory::eUninitialized, *outCharCnt};
         Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, tstBuf, &tstCharCnt);
         Assert (tstCharCnt == *outCharCnt);
         Assert (memcmp (tstBuf, outChars, sizeof (wchar_t) * tstCharCnt) == 0);
     }
-#endif
 }
 
 void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const
@@ -2758,9 +2756,8 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
         }
     }
 
-#if qDebug && qPlatform_Windows
-    // Assure my baked tables perform the same as the builtin Win32 API
-    {
+    if constexpr (qDebug && qPlatform_Windows) {
+        // Assure my baked tables perform the same as the builtin Win32 API
         size_t            win32TstCharCnt = outBufferSize;
         StackBuffer<char> win32TstBuf{Memory::eUninitialized, win32TstCharCnt};
 
@@ -2772,7 +2769,6 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
         Assert ((win32TstCharCnt + countOfBOMCharsAdded) == *outCharCnt or outChars[0] == '?');
         Assert (memcmp (win32TstBuf, outChars + countOfBOMCharsAdded, win32TstCharCnt) == 0 or outChars[0] == '?');
     }
-#endif
 }
 
 void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const

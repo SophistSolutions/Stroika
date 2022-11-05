@@ -122,11 +122,11 @@ namespace {
 
 void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
 {
-#if qDebug
-    for (const auto& a : advertisements) {
-        Require (not a.fTarget.empty ());
+    if constexpr (qDebug) {
+        for (const auto& a : advertisements) {
+            Require (not a.fTarget.empty ());
+        }
     }
-#endif
     static const String kThreadName_{L"SSDP Search Responder"sv};
     fListenThread_ = Execution::Thread::New (
         [advertisements] () {
