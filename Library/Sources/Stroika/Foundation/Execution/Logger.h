@@ -95,16 +95,13 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     public:
+        /**
+         *  \note - Callers who use this must arrange for Logger::Activator to be created first (and destroyed after)
+         *          uses.
+         */
         static Logger sThe;
 
     public:
-        /**
-         *  You CAN have multiple Loggers, but this singleton is what is used by default, and nearly
-         *  always exists.
-         *
-         *  Be sure to shut it down (@see ShutdownSingleton) near the end of Main - so that any threads it runs are shutdown
-         *  before the end of main.
-         */
         [[deprecated ("Since Stroika 2.1.1, use Logger::sThe directly")]] static Logger& Get ();
 
     public:
@@ -114,12 +111,6 @@ namespace Stroika::Foundation::Execution {
         struct Activator;
 
     public:
-        /**
-         *  This operates ONLY on the global singleton Logger. Any other loggers, its the creators
-         *  responsability to destroy/shutdown before the end of main ().
-         *
-         *  @see Shutdown
-         */
         [[deprecated ("Since Stroika 2.1.1, use Logger::Activator object")]] static void ShutdownSingleton ();
 
     public:
@@ -186,13 +177,6 @@ namespace Stroika::Foundation::Execution {
         static constexpr Priority eEmergency     = Priority::eEmergency;
 
     public:
-        /**
-         *  Flush all buffers, and disable any buffering for this logger. This also has the
-         *  side effect of shutting down any threads associated with the logger. It is
-         *  perfectly legal to continue sending log messages after calling Shutdown ();
-         *
-         *      \note   We may reconsider if sending log messages after shutdown is wise.
-         */
         [[deprecated ("Since Stroika 2.1.1, use Logger::Activator object")]] nonvirtual void Shutdown ();
 
     private:
