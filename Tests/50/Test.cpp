@@ -643,7 +643,7 @@ namespace {
                 VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
             }
         }
-        if (false) {    // TODO DEBUGGING
+        {
             // https://stroika.atlassian.net/browse/STK-950
             try {
                 DateTime dt = DateTime::Parse (L"1906-05-12 12:00:00+00", DateTime::kISO8601Format);
@@ -658,7 +658,7 @@ namespace {
             try {
                 DateTime dt = DateTime::Parse (L"1906-05-12T12:00:00+00", DateTime::kISO8601Format);
                 VerifyTestResult ((dt.GetDate () == Date{Year(1906), MonthOfYear::eMay, DayOfMonth::e12}));
-                VerifyTestResult ((dt.GetTimeOfDay () == TimeOfDay {0, 0, 0}));
+                VerifyTestResult ((dt.GetTimeOfDay () == TimeOfDay {12, 0, 0}));
                 VerifyTestResult (dt.GetTimezone ()->GetBiasFromUTC (dt.GetDate (), *dt.GetTimeOfDay ()) == 0);
             }
             catch (...) {

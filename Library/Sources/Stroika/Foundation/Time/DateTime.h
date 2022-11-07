@@ -144,6 +144,8 @@ namespace Stroika::Foundation::Time {
          *      This is the best (IMHO) preferred format for DateTime objects. Its simple, readable, 
          *      sort order works naturally (alphabetical == by time) and its probably the most widely used
          *      portable date format.
+         * 
+         *      See https://datatracker.ietf.org/doc/html/rfc3339
          *
          *  eRFC1123:
          *      eRFC1123  is a very old format (same as RFC822 except 4 digit year intead of 2-digit year), but is still used in the 
@@ -178,6 +180,10 @@ namespace Stroika::Foundation::Time {
          *          https://tools.ietf.org/html/rfc822#section-5
          *      EXAMPLE:  
          *          Tue, 6 Nov 2018 06:25:51 -0800 (PST)
+         * 
+         *          NOTE - in this example, the -0800 redundantly says the same thing as the PST. With this format, its common
+         *          to have junk/comments like that at the end of the date, and so this format - when parsed, will just ignore that stuff
+         *          and will allow for extra whitespace in and around the date.
          */
         static constexpr auto kRFC1123Format = LocaleIndependentFormat::eRFC1123;
 
@@ -239,6 +245,10 @@ namespace Stroika::Foundation::Time {
          *  \note an empty string produces BadFormat exception (whereas before 2.1d11 it produced an empty DateTime object (DateTime {}).
          *
          *  \note   @todo - https://stroika.atlassian.net/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
+         * 
+         *  \note   Handling of extra junk (including whitespace) at the start or end of the date MAY or MAY not be tollerated, depending on the
+         *          format parameters given. But generally this API is struct, and will treat junk at the start or end of the date as a format
+         *          exception. To get looser interpretation, use ParseQuietly().
          */
         static DateTime Parse (const String& rep, LocaleIndependentFormat format);
         static DateTime Parse (const String& rep, const locale& l = locale{});
@@ -252,14 +262,17 @@ namespace Stroika::Foundation::Time {
          *
          *  if locale is missing, and formatPattern is not locale independent, the current locale (locale{}) is used.
          *  if rep is empty, this will return nullopt
+         * 
+         *  if argument consumedCharacters != nullptr, and if ParseQuietly returns has_value (), then *consumedCharacters will contain
+         *  the number of characters consumed from rep.
          */
-        static optional<DateTime> ParseQuietly (const String& rep, LocaleIndependentFormat format);
-        static optional<DateTime> ParseQuietly (const String& rep, const String& formatPattern);
-        static optional<DateTime> ParseQuietly (const String& rep, const locale& l, const String& formatPattern);
+        static optional<DateTime> ParseQuietly (const String& rep, LocaleIndependentFormat format, size_t* consumedCharacters = nullptr);
+        static optional<DateTime> ParseQuietly (const String& rep, const String& formatPattern, size_t* consumedCharacters = nullptr);
+        static optional<DateTime> ParseQuietly (const String& rep, const locale& l, const String& formatPattern, size_t* consumedCharacters = nullptr);
 
     private:
         // this rquires rep!= ""
-        static optional<DateTime> ParseQuietly_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern);
+        static optional<DateTime> ParseQuietly_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern, size_t* consumedCharacters);
 
     public:
         /**
