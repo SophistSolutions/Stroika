@@ -225,8 +225,6 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  the Date/0 CTOR returns an empty date (see @Date::empty ())
-         *
          *  if DataExchange::ValidationStrategy is NOT specified, or == DataExchange::ValidationStrategy::eAssertion, then
          *      \req kMinJulianRep <= julianRep <= kMaxJulianRep
          *  else if eThrow, then throw when arguments out of range.
@@ -295,7 +293,7 @@ namespace Stroika::Foundation::Time {
          *
          *  \note if the locale is not specified, its assumed to be the current locale (locale{}))
          *
-         *  \note an empty string produces BadFormat exception (whereas before 2.1d11 it produced an empty Date object (Date {}).
+         *  \note an empty string produces BadFormat exception.
          *
          *  \see https://en.cppreference.com/w/cpp/locale/time_get/get for allowed formatPatterns
          * 
@@ -405,15 +403,11 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          * Returns a new Date object based on this Date, with 'dayCount' days added.
-         *
-         *  In the special case where Date is 'empty' - the starting reference (for adding dayCount)
-         *  is DateTime::GetToday ();
          */
         nonvirtual Date AddDays (SignedJulianRepType dayCount) const;
 
     public:
         /**
-         * Note - in the special case of 'empty' - this returns Date::kMin.GetJulianRep ()
          */
         nonvirtual constexpr JulianRepType GetJulianRep () const;
 
