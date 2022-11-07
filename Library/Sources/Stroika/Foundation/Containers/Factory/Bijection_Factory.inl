@@ -22,11 +22,11 @@ namespace Stroika::Foundation::Containers::Factory {
      */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
     inline Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Bijection_Factory (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
-        : Bijection_Factory{InjectivityViolationPolicy::eDEFAULT, domainEqualsComparer, rangeEqualsComparer}
+        : Bijection_Factory{DataExchange::ValidationStrategy::eAssertion, domainEqualsComparer, rangeEqualsComparer}
     {
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
-    inline Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Bijection_Factory (InjectivityViolationPolicy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
+    inline Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Bijection_Factory (DataExchange::ValidationStrategy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
         : fInjectivityViolationPolicy_{injectivityCheckPolicy}
         , fDomainEqualsComparer_{domainEqualsComparer}
         , fRangeEqualsComparer_{rangeEqualsComparer}
@@ -50,12 +50,12 @@ namespace Stroika::Foundation::Containers::Factory {
         }
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
-    void Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Register (Bijection<DOMAIN_TYPE, RANGE_TYPE> (*factory) (InjectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&))
+    void Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Register (Bijection<DOMAIN_TYPE, RANGE_TYPE> (*factory) (DataExchange::ValidationStrategy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&))
     {
         sFactory_ = factory;
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
-    inline Bijection<DOMAIN_TYPE, RANGE_TYPE> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Default_ (InjectivityViolationPolicy injectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
+    inline Bijection<DOMAIN_TYPE, RANGE_TYPE> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Default_ (DataExchange::ValidationStrategy injectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
     {
         /*
          *  Note - though this is not an efficient implementation of Bijection<> for large sizes, its probably the most

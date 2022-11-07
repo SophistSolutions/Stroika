@@ -12,6 +12,7 @@
 #include "../Common/KeyValuePair.h"
 #include "../Configuration/Common.h"
 #include "../Configuration/Concepts.h"
+#include "../DataExchange/ValidationStrategy.h"
 #include "../Execution/Exceptions.h"
 #include "../Traversal/Iterable.h"
 #include "Common.h"
@@ -43,18 +44,6 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterator;
 
     class Bijection_Base {
-    public:
-        /**
-         */
-        enum class InjectivityViolationPolicy {
-            eAssertionError,
-            eThrowException,
-
-            eDEFAULT = eAssertionError,
-
-            Stroika_Define_Enum_Bounds (eAssertionError, eThrowException)
-        };
-
     public:
         class InjectivityViolation : public Execution::RuntimeErrorException<> {
         private:
@@ -175,7 +164,7 @@ namespace Stroika::Foundation::Containers {
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>* = nullptr>
         explicit Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer);
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>* = nullptr>
-        explicit Bijection (InjectivityViolationPolicy injectivityCheckPolicy, DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer);
+        explicit Bijection (DataExchange::ValidationStrategy injectivityCheckPolicy, DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer);
         Bijection (Bijection&& src) noexcept      = default;
         Bijection (const Bijection& src) noexcept = default;
         Bijection (const initializer_list<value_type>& src);

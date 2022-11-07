@@ -39,9 +39,6 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
     class Bijection_Factory {
     public:
-        using InjectivityViolationPolicy = Bijection_Base::InjectivityViolationPolicy;
-
-    public:
         static_assert (not is_reference_v<DOMAIN_TYPE>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
         static_assert (not is_reference_v<RANGE_TYPE>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
         static_assert (not is_reference_v<DOMAIN_EQUALS_COMPARER>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
@@ -50,7 +47,7 @@ namespace Stroika::Foundation::Containers::Factory {
         static_assert (Common::IsEqualsComparer<RANGE_EQUALS_COMPARER> (), "Range Equals comparer required with Bijection_Factory");
 
     public:
-        Bijection_Factory (InjectivityViolationPolicy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer);
+        Bijection_Factory (DataExchange::ValidationStrategy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer);
         Bijection_Factory (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer);
 
     public:
@@ -63,18 +60,18 @@ namespace Stroika::Foundation::Containers::Factory {
         /**
          *  Register a replacement creator/factory for the given Bijection<DOMAIN_TYPE, RANGE_TYPE,TRAITS>. Note this is a global change.
          */
-        static void Register (Bijection<DOMAIN_TYPE, RANGE_TYPE> (*factory) (InjectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&) = nullptr);
+        static void Register (Bijection<DOMAIN_TYPE, RANGE_TYPE> (*factory) (DataExchange::ValidationStrategy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&) = nullptr);
 
     private:
-        InjectivityViolationPolicy   fInjectivityViolationPolicy_;
-        const DOMAIN_EQUALS_COMPARER fDomainEqualsComparer_;
-        const RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
+        DataExchange::ValidationStrategy fInjectivityViolationPolicy_;
+        const DOMAIN_EQUALS_COMPARER     fDomainEqualsComparer_;
+        const RANGE_EQUALS_COMPARER      fRangeEqualsComparer_;
 
     private:
-        static Bijection<DOMAIN_TYPE, RANGE_TYPE> Default_ (InjectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&);
+        static Bijection<DOMAIN_TYPE, RANGE_TYPE> Default_ (DataExchange::ValidationStrategy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&);
 
     private:
-        static inline atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE> (*) (InjectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&)> sFactory_{nullptr};
+        static inline atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE> (*) (DataExchange::ValidationStrategy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&)> sFactory_{nullptr};
     };
 }
 

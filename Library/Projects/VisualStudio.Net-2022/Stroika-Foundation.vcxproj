@@ -476,6 +476,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ValidationStrategy.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Writer.h" />
@@ -920,6 +921,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ToDo.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ValidationStrategy.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\INI\Makefile" />

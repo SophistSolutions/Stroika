@@ -62,7 +62,7 @@ namespace {
         minute        = min (minute, static_cast<WORD> (59));
         ::WORD secs   = max (sysTime.wSecond, static_cast<WORD> (0));
         secs          = min (secs, static_cast<WORD> (59));
-        return TimeOfDay{hour, minute, secs, TimeOfDay::eThrowIfArgumentOutOfRange};
+        return TimeOfDay{hour, minute, secs, DataExchange::ValidationStrategy::eThrow};
     }
     Date mkDate_ (const SYSTEMTIME& sysTime)
     {
@@ -182,7 +182,7 @@ DateTime::DateTime (time_t unixEpochTime) noexcept
 DateTime::DateTime (const ::tm& tmTime, const optional<Timezone>& tz) noexcept
     : fTimezone_{tz}
     , fDate_{Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday)}
-    , fTimeOfDay_{TimeOfDay{static_cast<unsigned> (tmTime.tm_hour), static_cast<unsigned> (tmTime.tm_min), static_cast<unsigned> (tmTime.tm_sec), TimeOfDay::eThrowIfArgumentOutOfRange}}
+    , fTimeOfDay_{TimeOfDay{static_cast<unsigned> (tmTime.tm_hour), static_cast<unsigned> (tmTime.tm_min), static_cast<unsigned> (tmTime.tm_sec), DataExchange::ValidationStrategy::eThrow}}
 {
 }
 
@@ -204,7 +204,7 @@ DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noex
     ::tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe
 #endif
     fDate_      = Date{Year (tmTimeData->tm_year + 1900), MonthOfYear (tmTimeData->tm_mon + 1), DayOfMonth (tmTimeData->tm_mday)};
-    fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData->tm_hour), static_cast<unsigned> (tmTimeData->tm_min), static_cast<unsigned> (tmTimeData->tm_sec), TimeOfDay::eThrowIfArgumentOutOfRange};
+    fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData->tm_hour), static_cast<unsigned> (tmTimeData->tm_min), static_cast<unsigned> (tmTimeData->tm_sec), DataExchange::ValidationStrategy::eThrow};
 }
 
 #if qPlatform_POSIX
@@ -216,7 +216,7 @@ DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcep
     tm     tmTimeData{};
     (void)::gmtime_r (&unixTime, &tmTimeData);
     fDate_      = Date{Year (tmTimeData.tm_year + 1900), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday)};
-    fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData.tm_hour), static_cast<unsigned> (tmTimeData.tm_min), static_cast<unsigned> (tmTimeData.tm_sec), TimeOfDay::eThrowIfArgumentOutOfRange};
+    fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData.tm_hour), static_cast<unsigned> (tmTimeData.tm_min), static_cast<unsigned> (tmTimeData.tm_sec), DataExchange::ValidationStrategy::eThrow};
 }
 #endif
 
@@ -329,7 +329,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                 Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
                 optional<TimeOfDay> t;
                 if (nItems >= 5) {
-                    t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second), TimeOfDay::eThrowIfArgumentOutOfRange};
+                    t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second), DataExchange::ValidationStrategy::eThrow};
                 }
                 optional<Timezone> tz;
                 if (tzKnown) {
@@ -386,7 +386,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                         return nullopt;
                     }
                     numCharsConsumed += ncc;
-                    t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second), TimeOfDay::eThrowIfArgumentOutOfRange};
+                    t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second), DataExchange::ValidationStrategy::eThrow};
                 }
             }
             // see about timezone (aka time-offset)
@@ -450,7 +450,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
             if (consumedCharacters != nullptr) {
                 *consumedCharacters = numCharsConsumed;
             }
-            WeakAssert (legacyImpl () == (t.has_value () ? DateTime{*d, t, tz} : *d));  // weak cuz we've improved algorithm - produces better answers now
+            WeakAssert (legacyImpl () == (t.has_value () ? DateTime{*d, t, tz} : *d)); // weak cuz we've improved algorithm - produces better answers now
             return t.has_value () ? DateTime{*d, t, tz} : *d;
         } break;
         case LocaleIndependentFormat::eRFC1123: {
@@ -488,11 +488,11 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
              *                   / ( ("+" / "-") 4DIGIT )        ; Local differential
              *                                                   ;  hours+min. (HHMM)
              */
-            unsigned int    numCharsConsumed{};
-            String tmp = rep;
+            unsigned int numCharsConsumed{};
+            String       tmp = rep;
             if (auto i = tmp.Find (',')) {
                 tmp = tmp.SubString (*i + 1).LTrim (); // we can ignore the day of the week (string) since optional and redundant.
-                numCharsConsumed += static_cast < unsigned int> (rep.length () - tmp.length ());
+                numCharsConsumed += static_cast<unsigned int> (rep.length () - tmp.length ());
             }
             int     year{};
             int     month{};
@@ -512,7 +512,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                 // workaround MSVC BUG
                 if (true) {
                     if (nItems == 7 and tzStr[0] != '\0' and ncc < tmp.size ()) {
-                        ncc = static_cast<int> ( tmp.size ());
+                        ncc = static_cast<int> (tmp.size ());
                     }
                 }
                 numCharsConsumed += ncc;
@@ -531,7 +531,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
             Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
             optional<TimeOfDay> t;
             if (nItems >= 5) {
-                t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second), TimeOfDay::eThrowIfArgumentOutOfRange};
+                t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second), DataExchange::ValidationStrategy::eThrow};
             }
             optional<Timezone>                       tz;
             constexpr pair<const wchar_t*, Timezone> kNamedTimezones_[]{

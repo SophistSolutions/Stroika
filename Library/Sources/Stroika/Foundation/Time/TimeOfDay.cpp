@@ -134,13 +134,31 @@ namespace {
 }
 #endif
 
-TimeOfDay::TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds, ThrowIfOutOfRangeFlag)
-    : TimeOfDay{0}
+TimeOfDay::TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds, DataExchange::ValidationStrategy validationStrategy)
+    : TimeOfDay
 {
+#if qDebug
+    0
+#else
+    hour, minute, seconds
+#endif
+}
+{
+    // Subtle - but we can let the base constructor run on the unvalidated data in NO-DEBUG mode, cuz it will just compute a bogus
+    // value that will be ignored because of the below exception
+    //
+    // But for the qDebug case, we have to initialize with a valid value and only assign if it passes muster
     if (hour >= 24 or minute >= 60 or seconds > 60) {
-        Execution::Throw (FormatException::kThe);
+        if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
+            Execution::Throw (FormatException::kThe);
+        }
+        else {
+            Require (false);
+        }
     }
+#if qDebug
     *this = TimeOfDay{hour, minute, seconds};
+#endif
 }
 
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)

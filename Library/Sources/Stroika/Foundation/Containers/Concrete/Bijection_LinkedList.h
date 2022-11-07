@@ -37,7 +37,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         template <typename POTENTIALLY_ADDABLE_T>
         static constexpr bool IsAddable_v     = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
-        using InjectivityViolationPolicy      = typename inherited::InjectivityViolationPolicy;
         using DomainEqualsCompareFunctionType = typename inherited::DomainEqualsCompareFunctionType;
         using RangeEqualsCompareFunctionType  = typename inherited::RangeEqualsCompareFunctionType;
         using value_type                      = typename inherited::value_type;
@@ -50,7 +49,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>* = nullptr>
         explicit Bijection_LinkedList (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer);
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>* = nullptr>
-        explicit Bijection_LinkedList (InjectivityViolationPolicy injectivityCheckPolicy, DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer);
+        explicit Bijection_LinkedList (DataExchange::ValidationStrategy injectivityCheckPolicy, DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer);
         Bijection_LinkedList (Bijection_LinkedList&& src) noexcept      = default;
         Bijection_LinkedList (const Bijection_LinkedList& src) noexcept = default;
         Bijection_LinkedList (const initializer_list<value_type>& src);

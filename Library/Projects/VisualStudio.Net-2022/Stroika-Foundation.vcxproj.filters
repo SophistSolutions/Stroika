@@ -2124,6 +2124,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Main.h">
       <Filter>Sources\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ValidationStrategy.h">
+      <Filter>Sources\DataExchange</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\StackBuffer.inl">
@@ -3482,6 +3485,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\IntervalTimer.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ValidationStrategy.inl">
+      <Filter>Sources\DataExchange</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

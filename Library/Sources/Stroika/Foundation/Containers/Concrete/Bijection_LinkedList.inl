@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = IImplRepBase_;
 
     public:
-        Rep_ (Bijection_Base::InjectivityViolationPolicy injectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
+        Rep_ (DataExchange::ValidationStrategy injectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
             : fInjectivityViolationPolicy_{injectivityViolationPolicy}
             , fDomainEqualsComparer_{domainEqualsComparer}
             , fRangeEqualsComparer_{rangeEqualsComparer}
@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
     private:
-        const Bijection_Base::InjectivityViolationPolicy   fInjectivityViolationPolicy_;
+        const DataExchange::ValidationStrategy             fInjectivityViolationPolicy_;
         [[no_unique_address]] const DOMAIN_EQUALS_COMPARER fDomainEqualsComparer_;
         [[no_unique_address]] const RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
 
@@ -170,10 +170,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Add (ArgByValueType<DOMAIN_TYPE> key, ArgByValueType<RANGE_TYPE> newElt) override
         {
-            // @todo check fInjectivityViolationPolicy_
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
             switch (fInjectivityViolationPolicy_) {
-                case Bijection_Base::InjectivityViolationPolicy::eAssertionError: {
+                case DataExchange::ValidationStrategy::eAssertion: {
                     if constexpr (qDebug) {
                         optional<DOMAIN_TYPE> back;
                         if (InverseLookup (newElt, &back)) {
@@ -181,7 +180,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                         }
                     }
                 } break;
-                case Bijection_Base::InjectivityViolationPolicy::eThrowException: {
+                case DataExchange::ValidationStrategy::eThrow: {
                     optional<DOMAIN_TYPE> back;
                     if (InverseLookup (newElt, &back)) {
                         if (not fDomainEqualsComparer_ (key, *back)) [[unlikely]] {
@@ -262,13 +261,13 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>*>
     inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer)
-        : Bijection_LinkedList{InjectivityViolationPolicy::eDEFAULT, forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer)}
+        : Bijection_LinkedList{DataExchange::ValidationStrategy::eAssertion, forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer)}
     {
         AssertRepValidType_ ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>*>
-    inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (InjectivityViolationPolicy injectivityCheckPolicy, DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer)
+    inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (DataExchange::ValidationStrategy injectivityCheckPolicy, DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer)
         : inherited{inherited::template MakeSmartPtr<Rep_<DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>> (injectivityCheckPolicy, domainEqualsComparer, rangeEqualsComparer)}
     {
         AssertRepValidType_ ();
