@@ -391,7 +391,8 @@ Date::SignedJulianRepType Time::DayDifference (const Date& lhs, const Date& rhs)
             return static_cast<int> (diff);
         }
     }
-    return static_cast<Date::SignedJulianRepType> (lhs.GetJulianRep ()) - static_cast<Date::SignedJulianRepType> (rhs.GetJulianRep ());
+    AssertNotReached ();
+    return 0;
 }
 
 /*
