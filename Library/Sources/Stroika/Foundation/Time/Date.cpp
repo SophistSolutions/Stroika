@@ -321,19 +321,12 @@ void Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
     RequireNotNull (month);
     RequireNotNull (day);
     RequireNotNull (year);
-    if (fJulianDateRep_ == kEmptyJulianRep) {
-        *month = MonthOfYear::eEmptyMonthOfYear;
-        *day   = DayOfMonth::eEmptyDayOfMonth;
-        *year  = Year::eEmptyYear;
-        return;
-    }
     JulianRepType m;
     JulianRepType d;
     JulianRepType y;
-
     // A reference for this formula (not original I used) - can be found at:
     //      http://aa.usno.navy.mil/faq/docs/JD_Formula.php
-    // at least close, and I could probably swithc to that...
+    // at least close, and I could probably switch to that...
     //
     JulianRepType j = fJulianDateRep_ - 1721119;
     y               = (((j << 2) - 1) / 146097);

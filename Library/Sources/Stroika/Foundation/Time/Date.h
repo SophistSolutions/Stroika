@@ -228,9 +228,6 @@ namespace Stroika::Foundation::Time {
         static constexpr JulianRepType kMaxJulianRep = UINT_MAX - 1;
 
     public:
-        static constexpr JulianRepType kEmptyJulianRep = UINT_MAX;
-
-    public:
         class FormatException;
 
     public:
@@ -238,7 +235,7 @@ namespace Stroika::Foundation::Time {
          *  the Date/0 CTOR returns an empty date (see @Date::empty ())
          *
          *  if DataExchange::ValidationStrategy is NOT specified, or == DataExchange::ValidationStrategy::eAssertion, then
-         *      \req kMinJulianRep <= julianRep <= kMaxJulianRep OR julianRep == kEmptyJulianRep
+         *      \req kMinJulianRep <= julianRep <= kMaxJulianRep
          *  else if eThrow, then throw when arguments out of range.
          */
         constexpr Date (Date&& src) noexcept = default;
@@ -247,7 +244,7 @@ namespace Stroika::Foundation::Time {
         explicit constexpr Date (JulianRepType julianRep, DataExchange::ValidationStrategy validationStrategy);
         constexpr explicit Date (Year year, MonthOfYear month, DayOfMonth day);
         constexpr explicit Date (Year year, MonthOfYear month, DayOfMonth day, DataExchange::ValidationStrategy validationStrategy);
-        
+
     public:
         /**
          */

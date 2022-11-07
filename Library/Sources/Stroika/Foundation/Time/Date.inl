@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Time {
          * (This code originally from NIHCL)
          */
         if (month == MonthOfYear::eEmptyMonthOfYear or day == DayOfMonth::eEmptyDayOfMonth or year == Year::eEmptyYear) {
-            return Date::kEmptyJulianRep;
+            Assert (false); // no longer happens as of Stk 3.0
         }
 
         Require (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (month > MonthOfYear::eSeptember or (month == MonthOfYear::eSeptember and static_cast<int> (day) >= 14))));
@@ -109,29 +109,29 @@ namespace Stroika::Foundation::Time {
     {
         // 'Safe' version just avoids require that date values are legit for julian date range. If date would be invalid - return kEmptyJulianRep.
         if (month == MonthOfYear::eEmptyMonthOfYear or day == DayOfMonth::eEmptyDayOfMonth or year == Year::eEmptyYear) {
-            return Date::kEmptyJulianRep;
+            Assert (false); // no longer happens as of Stk 3.0
         }
         if (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (month > MonthOfYear::eSeptember or (month == MonthOfYear::eSeptember and static_cast<int> (day) >= 14)))) {
             return jday_ (month, day, year);
         }
         else {
-            return Date::kEmptyJulianRep;
+            Assert (false); // no longer happens as of Stk 3.0
         }
     }
     inline constexpr Date::Date (JulianRepType julianRep)
         : fJulianDateRep_{julianRep}
     {
-        Require ((kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep) or julianRep == kEmptyJulianRep);
+        Require ((kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep));
     }
     inline constexpr Date::Date (JulianRepType julianRep, DataExchange::ValidationStrategy validationStrategy)
         : fJulianDateRep_{julianRep}
     {
         if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
-            if (not((kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep) or julianRep == kEmptyJulianRep)) {
+            if (not((kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep))) {
                 Execution::Throw (FormatException::kThe);
             }
         }
-        Require ((kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep) or julianRep == kEmptyJulianRep);
+        Require ((kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep));
     }
     constexpr inline Date::Date (Year year, MonthOfYear month, DayOfMonth day)
         : fJulianDateRep_{jday_ (month, day, year)}
@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Time {
     }
     inline constexpr Date::JulianRepType Date::GetJulianRep () const
     {
-        return fJulianDateRep_ == kEmptyJulianRep ? kMinJulianRep : fJulianDateRep_;
+        return fJulianDateRep_;
     }
     inline Date Date::Parse (const String& rep, const locale& l)
     {
