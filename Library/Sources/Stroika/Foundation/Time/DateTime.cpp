@@ -509,12 +509,22 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                 nItems = ::swscanf (tmp.c_str (), L"%d %3ls %d %d:%d:%d %100ls%n", &day, &monthStr, &year, &hour, &minute, &second, &tzStr, &ncc);
                 DISABLE_COMPILER_MSC_WARNING_END (4996)
 
+                // tzStr captures the first token after the time, but there are often extra (ignored) tokens
+                // (e.g. +400 (PST))
+                // So just pretend we used the entire string
+                if (nItems == 7) {
+                    // ncc += 1 + ::wcslen (tzStr);
+                    ncc = static_cast<int> (tmp.size ());
+                }
+
+#if 0
                 // workaround MSVC BUG
                 if (true) {
                     if (nItems == 7 and tzStr[0] != '\0' and ncc < tmp.size ()) {
                         ncc = static_cast<int> (tmp.size ());
                     }
                 }
+#endif
                 numCharsConsumed += ncc;
             }
 
