@@ -73,15 +73,13 @@ namespace Stroika::Foundation::Time {
          *  For the TimeOfDay, we allow out of range values and pin/accumulate. But you can still never have a time of day >= kMaxSecondsPerDay.
          *  And the first hour (1pm) is hour 0, so TimeOfDay{2, 0, 0} is 3am.
          *
-         *  if DataExchange::ValidationStrategy specified, and == DataExchange::ValidationStrategy::eThrow, then the arguments to
-         *  the constructor are examined and a throw is done if they are out of range.
-         * 
          *  if DataExchange::ValidationStrategy is NOT specified, or == DataExchange::ValidationStrategy::eAssertion, then
          *      \req argument time-of-day (in seconds or hours/minutes/seconds) is in valid range for one day
          *      \req t < kMaxSecondsPerDay
          *      \req hour < 24
          *      \req minute < 60
          *      \req seconds <= 60   (note <= not < due to leap seconds)
+         *  else if validationStrategy == eThrow, then check and throw if out of range.
          */
         constexpr TimeOfDay (TimeOfDay&& src) noexcept = default;
         constexpr TimeOfDay (const TimeOfDay&)         = default;

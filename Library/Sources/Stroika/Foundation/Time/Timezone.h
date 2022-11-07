@@ -119,7 +119,6 @@ namespace Stroika::Foundation::Time {
          *  if ValidationStrategy is eAssert (DEFAULT if not specified)
          *      \req kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC)
          *  else throws if out of range.
-         * 
          */
         Timezone () = delete;
         constexpr explicit Timezone (BiasInMinutesFromUTCType biasInMinutesFromUTC) noexcept;

@@ -13,6 +13,7 @@
 #include "../Characters/String.h"
 #include "../Configuration/Common.h"
 #include "../Configuration/Enumeration.h"
+#include "../DataExchange/ValidationStrategy.h"
 #include "../Execution/Exceptions.h"
 #include "../Traversal/Range.h"
 
@@ -236,13 +237,17 @@ namespace Stroika::Foundation::Time {
         /**
          *  the Date/0 CTOR returns an empty date (see @Date::empty ())
          *
-         *  \req kMinJulianRep <= julianRep <= kMaxJulianRep OR julianRep == kEmptyJulianRep
+         *  if DataExchange::ValidationStrategy is NOT specified, or == DataExchange::ValidationStrategy::eAssertion, then
+         *      \req kMinJulianRep <= julianRep <= kMaxJulianRep OR julianRep == kEmptyJulianRep
+         *  else if eThrow, then throw when arguments out of range.
          */
         constexpr Date (Date&& src) noexcept = default;
         constexpr Date (const Date& src)     = default;
         explicit constexpr Date (JulianRepType julianRep);
+        explicit constexpr Date (JulianRepType julianRep, DataExchange::ValidationStrategy validationStrategy);
         constexpr explicit Date (Year year, MonthOfYear month, DayOfMonth day);
-
+        constexpr explicit Date (Year year, MonthOfYear month, DayOfMonth day, DataExchange::ValidationStrategy validationStrategy);
+        
     public:
         /**
          */

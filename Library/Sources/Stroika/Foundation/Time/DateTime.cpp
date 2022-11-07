@@ -66,7 +66,7 @@ namespace {
     }
     Date mkDate_ (const SYSTEMTIME& sysTime)
     {
-        return Date{Year (sysTime.wYear), MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay)};
+        return Date{Year (sysTime.wYear), MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), DataExchange::ValidationStrategy::eThrow};
     }
 }
 #endif
@@ -175,7 +175,7 @@ DateTime::DateTime (time_t unixEpochTime) noexcept
 #else
     (void)::gmtime_r (&unixEpochTime, &tmTime);
 #endif
-    fDate_      = Date{Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday)};
+    fDate_      = Date{Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday), DataExchange::ValidationStrategy::eThrow};
     fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTime.tm_hour), static_cast<unsigned> (tmTime.tm_min), static_cast<unsigned> (tmTime.tm_sec)};
 }
 
@@ -203,7 +203,7 @@ DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noex
 #else
     ::tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe
 #endif
-    fDate_      = Date{Year (tmTimeData->tm_year + 1900), MonthOfYear (tmTimeData->tm_mon + 1), DayOfMonth (tmTimeData->tm_mday)};
+    fDate_      = Date{Year (tmTimeData->tm_year + 1900), MonthOfYear (tmTimeData->tm_mon + 1), DayOfMonth (tmTimeData->tm_mday), DataExchange::ValidationStrategy::eThrow};
     fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData->tm_hour), static_cast<unsigned> (tmTimeData->tm_min), static_cast<unsigned> (tmTimeData->tm_sec), DataExchange::ValidationStrategy::eThrow};
 }
 
@@ -215,7 +215,7 @@ DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcep
     time_t unixTime = tmTime.tv_sec; // IGNORE tv_usec FOR NOW because we currently don't support fractional seconds in DateTime
     tm     tmTimeData{};
     (void)::gmtime_r (&unixTime, &tmTimeData);
-    fDate_      = Date{Year (tmTimeData.tm_year + 1900), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday)};
+    fDate_      = Date{Year (tmTimeData.tm_year + 1900), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday), DataExchange::ValidationStrategy::eThrow};
     fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData.tm_hour), static_cast<unsigned> (tmTimeData.tm_min), static_cast<unsigned> (tmTimeData.tm_sec), DataExchange::ValidationStrategy::eThrow};
 }
 #endif
@@ -289,60 +289,6 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
     }
     switch (format) {
         case LocaleIndependentFormat::eISO8601: {
-            auto legacyImpl = [=] () -> optional<DateTime> {
-                int year   = 0;
-                int month  = 0;
-                int day    = 0;
-                int hour   = 0;
-                int minute = 0;
-                int second = 0;
-                int tzHr   = 0;
-                int tzMn   = 0;
-                DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
-                int  nItems  = 0;
-                bool tzKnown = false;
-                bool tzUTC   = false;
-                if (rep[rep.length () - 1] == 'Z') {
-                    nItems  = ::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%dZ", &year, &month, &day, &hour, &minute, &second);
-                    tzKnown = true;
-                    tzUTC   = true;
-                }
-                else {
-                    wchar_t plusMinusChar{};
-                    nItems  = ::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%d%c%d:%d", &year, &month, &day, &hour, &minute, &second, &plusMinusChar, &tzHr, &tzMn);
-                    tzKnown = (nItems >= 9) and (plusMinusChar == '+' or plusMinusChar == '-');
-                    if (not tzKnown and nItems >= 6) {
-                        nItems = ::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%d%c%2d%2d", &year, &month, &day, &hour, &minute, &second, &plusMinusChar, &tzHr, &tzMn);
-                    }
-                    tzKnown = (nItems >= 8) and (plusMinusChar == '+' or plusMinusChar == '-');
-                    if (tzKnown) {
-                        if (plusMinusChar == '-') {
-                            tzHr = -tzHr;
-                            tzMn = -tzMn;
-                        }
-                    }
-                }
-                DISABLE_COMPILER_MSC_WARNING_END (4996)
-                if (nItems < 3) {
-                    return nullopt;
-                }
-                Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
-                optional<TimeOfDay> t;
-                if (nItems >= 5) {
-                    t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second), DataExchange::ValidationStrategy::eThrow};
-                }
-                optional<Timezone> tz;
-                if (tzKnown) {
-                    if (tzUTC) {
-                        tz = Timezone::kUTC;
-                    }
-                    else {
-                        tz = Timezone{static_cast<int16_t> (tzHr * 60 + tzMn), DataExchange::ValidationStrategy::eThrow};
-                    }
-                }
-                return t.has_value () ? DateTime{d, *t, tz} : d;
-            };
-
             // SEE BNF in https://datatracker.ietf.org/doc/html/rfc3339#section-5.6
             int numCharsConsumed{};
             // full-date part
@@ -355,7 +301,6 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                 int nItems = ::swscanf (rep.c_str (), L"%d-%d-%d%n", &year, &month, &day, &numCharsConsumed);
                 DISABLE_COMPILER_MSC_WARNING_END (4996)
                 if (nItems < 3 or numCharsConsumed < 8) [[unlikely]] {
-                    Assert (legacyImpl () == nullopt);
                     return nullopt;
                 }
                 d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
@@ -381,7 +326,6 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                         second = static_cast<int> (secsFloat);
                     }
                     else {
-                        Assert (legacyImpl () == nullopt);
                         return nullopt;
                     }
                     numCharsConsumed += ncc;
@@ -447,7 +391,6 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
             if (consumedCharacters != nullptr) {
                 *consumedCharacters = numCharsConsumed;
             }
-            WeakAssert (legacyImpl () == (t.has_value () ? DateTime{*d, t, tz} : *d)); // weak cuz we've improved algorithm - produces better answers now
             return t.has_value () ? DateTime{*d, t, tz} : *d;
         } break;
         case LocaleIndependentFormat::eRFC1123: {
@@ -526,7 +469,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
             if (nItems < 3) {
                 return nullopt;
             }
-            Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
+            Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day), DataExchange::ValidationStrategy::eThrow};
             optional<TimeOfDay> t;
             if (nItems >= 5) {
                 t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second), DataExchange::ValidationStrategy::eThrow};

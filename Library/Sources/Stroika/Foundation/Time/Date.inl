@@ -123,12 +123,38 @@ namespace Stroika::Foundation::Time {
     {
         Require ((kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep) or julianRep == kEmptyJulianRep);
     }
+    inline constexpr Date::Date (JulianRepType julianRep, DataExchange::ValidationStrategy validationStrategy)
+        : fJulianDateRep_{julianRep}
+    {
+        if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
+            if (not((kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep) or julianRep == kEmptyJulianRep)) {
+                Execution::Throw (FormatException::kThe);
+            }
+        }
+        Require ((kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep) or julianRep == kEmptyJulianRep);
+    }
     constexpr inline Date::Date (Year year, MonthOfYear month, DayOfMonth day)
         : fJulianDateRep_{jday_ (month, day, year)}
     {
         // Gregorian calendar started on Sep. 14, 1752
         Require (year >= Year::eFirstYear);
         Require (year > Year{1752} or (month > MonthOfYear::eSeptember) or (month == MonthOfYear::eSeptember and day >= DayOfMonth{14}));
+    }
+    constexpr inline Date::Date (Year year, MonthOfYear month, DayOfMonth day, DataExchange::ValidationStrategy validationStrategy)
+        : fJulianDateRep_{0}
+    {
+        if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
+            if (not(year >= Year::eFirstYear)) {
+                Execution::Throw (FormatException::kThe);
+            }
+            if (not(year > Year{1752} or (month > MonthOfYear::eSeptember) or (month == MonthOfYear::eSeptember and day >= DayOfMonth{14}))) {
+                Execution::Throw (FormatException::kThe);
+            }
+        }
+        // Gregorian calendar started on Sep. 14, 1752
+        Require (year >= Year::eFirstYear);
+        Require (year > Year{1752} or (month > MonthOfYear::eSeptember) or (month == MonthOfYear::eSeptember and day >= DayOfMonth{14}));
+        fJulianDateRep_ = jday_ (month, day, year);
     }
     inline constexpr Date::JulianRepType Date::GetJulianRep () const
     {
