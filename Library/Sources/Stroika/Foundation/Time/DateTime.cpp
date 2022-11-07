@@ -62,7 +62,7 @@ namespace {
         minute        = min (minute, static_cast<WORD> (59));
         ::WORD secs   = max (sysTime.wSecond, static_cast<WORD> (0));
         secs          = min (secs, static_cast<WORD> (59));
-        return TimeOfDay{hour, minute, secs};
+        return TimeOfDay{hour, minute, secs, TimeOfDay::eThrowIfArgumentOutOfRange};
     }
     Date mkDate_ (const SYSTEMTIME& sysTime)
     {
@@ -182,7 +182,7 @@ DateTime::DateTime (time_t unixEpochTime) noexcept
 DateTime::DateTime (const ::tm& tmTime, const optional<Timezone>& tz) noexcept
     : fTimezone_{tz}
     , fDate_{Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday)}
-    , fTimeOfDay_{TimeOfDay{static_cast<unsigned> (tmTime.tm_hour), static_cast<unsigned> (tmTime.tm_min), static_cast<unsigned> (tmTime.tm_sec)}}
+    , fTimeOfDay_{TimeOfDay{static_cast<unsigned> (tmTime.tm_hour), static_cast<unsigned> (tmTime.tm_min), static_cast<unsigned> (tmTime.tm_sec), TimeOfDay::eThrowIfArgumentOutOfRange}}
 {
 }
 
@@ -204,7 +204,7 @@ DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noex
     ::tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe
 #endif
     fDate_      = Date{Year (tmTimeData->tm_year + 1900), MonthOfYear (tmTimeData->tm_mon + 1), DayOfMonth (tmTimeData->tm_mday)};
-    fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData->tm_hour), static_cast<unsigned> (tmTimeData->tm_min), static_cast<unsigned> (tmTimeData->tm_sec)};
+    fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData->tm_hour), static_cast<unsigned> (tmTimeData->tm_min), static_cast<unsigned> (tmTimeData->tm_sec), TimeOfDay::eThrowIfArgumentOutOfRange};
 }
 
 #if qPlatform_POSIX
@@ -216,7 +216,7 @@ DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcep
     tm     tmTimeData{};
     (void)::gmtime_r (&unixTime, &tmTimeData);
     fDate_      = Date{Year (tmTimeData.tm_year + 1900), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday)};
-    fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData.tm_hour), static_cast<unsigned> (tmTimeData.tm_min), static_cast<unsigned> (tmTimeData.tm_sec)};
+    fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData.tm_hour), static_cast<unsigned> (tmTimeData.tm_min), static_cast<unsigned> (tmTimeData.tm_sec), TimeOfDay::eThrowIfArgumentOutOfRange};
 }
 #endif
 
@@ -329,7 +329,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                 Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
                 optional<TimeOfDay> t;
                 if (nItems >= 5) {
-                    t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second)};
+                    t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second), TimeOfDay::eThrowIfArgumentOutOfRange};
                 }
                 optional<Timezone> tz;
                 if (tzKnown) {
@@ -352,7 +352,9 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                 int year{};
                 int month{};
                 int day{};
+                DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
                 int nItems = ::swscanf (rep.c_str (), L"%d-%d-%d%n", &year, &month, &day, &numCharsConsumed);
+                DISABLE_COMPILER_MSC_WARNING_END (4996)
                 if (nItems < 3 or numCharsConsumed < 8) [[unlikely]] {
                     Assert (legacyImpl () == nullopt);
                     return nullopt;
@@ -363,14 +365,18 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
             optional<TimeOfDay> t;
             {
                 const wchar_t* startOfTimePart = rep.c_str () + numCharsConsumed;
-                if (*startOfTimePart == 'T' or *startOfTimePart == 't') [[likely]] { // nb: OK to not check strlen cuz string NUL terminated
+                // nb: OK to not check strlen cuz string NUL terminated
+                // https://www.rfc-editor.org/rfc/rfc822#section-5 says can be upper or lower case T, or even ' ', but 'T' preferred/most common/recommended
+                if (*startOfTimePart == 'T' or *startOfTimePart == 't' or *startOfTimePart == ' ') [[likely]] {
                     ++numCharsConsumed;
                     int   hour{};
                     int   minute{};
                     int   second{};
                     int   ncc{};
                     float secsFloat{};
-                    int   nItems = ::swscanf (startOfTimePart + 1, L"%d:%d:%f%n", &hour, &minute, &secsFloat, &ncc);
+                    DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
+                    int nItems = ::swscanf (startOfTimePart + 1, L"%d:%d:%f%n", &hour, &minute, &secsFloat, &ncc);
+                    DISABLE_COMPILER_MSC_WARNING_END (4996)
                     if (nItems == 3 and ncc >= 8) {
                         // for now we only support integral number of seconds, but allow reading to not fail if fractions given
                         second = static_cast<int> (secsFloat);
@@ -380,12 +386,12 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                         return nullopt;
                     }
                     numCharsConsumed += ncc;
-                    t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second)};
+                    t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second), TimeOfDay::eThrowIfArgumentOutOfRange};
                 }
             }
             // see about timezone (aka time-offset)
             optional<Timezone> tz;
-            if (t) {    // only can be present - so only check - if there is a time
+            if (t) { // only can be present - so only check - if there is a time
                 const wchar_t* startTZArea = rep.c_str () + numCharsConsumed;
                 if (*startTZArea == 'Z' or *startTZArea == 'z') { // nb: OK to not check strlen cuz string NUL terminated
                     tz = Timezone::kUTC;
@@ -396,7 +402,9 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                     int     tzMn{};
                     wchar_t plusMinusChar{};
                     int     ncc{};
-                    int     nItems = ::swscanf (startTZArea, L"%c%d:%d%n", &plusMinusChar, &tzHr, &tzMn, &ncc);
+                    DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
+                    int nItems = ::swscanf (startTZArea, L"%c%d:%d%n", &plusMinusChar, &tzHr, &tzMn, &ncc);
+                    DISABLE_COMPILER_MSC_WARNING_END (4996)
                     if ((nItems == 3) and (plusMinusChar == '+' or plusMinusChar == '-')) {
                         if (plusMinusChar == '-') {
                             tzHr = -tzHr;
@@ -404,6 +412,33 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                         }
                         Assert (numeric_limits<int16_t>::min () <= tzHr * 60 + tzMn and tzHr * 60 + tzMn < numeric_limits<int16_t>::max ());
                         tz = Timezone{static_cast<int16_t> (tzHr * 60 + tzMn)};
+                        numCharsConsumed += ncc;
+                    }
+                    else if ((nItems == 2) and (plusMinusChar == '+' or plusMinusChar == '-')) {
+                        // TZ can be -400 instead of -4:00
+                        DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
+                        nItems = ::swscanf (startTZArea, L"%c%d%n", &plusMinusChar, &tzMn, &ncc);
+                        DISABLE_COMPILER_MSC_WARNING_END (4996)
+                        // According to https://en.wikipedia.org/wiki/UTC_offset#:~:text=The%20UTC%20offset%20is%20the,%2C%20or%20%C2%B1%5Bhh%5D a 4 digit timezone
+                        // offset means HHMM, so adjust
+                        switch (ncc) {
+                            case 3:
+                                tzMn *= 60;
+                                break;
+                            case 4:
+                            case 5: {
+                                int hrs = tzMn / 100;
+                                int min = tzMn % 100;
+                                tzMn    = hrs * 60 + min;
+                            } break;
+                            default:
+                                return nullopt;
+                        }
+                        if (plusMinusChar == '-') {
+                            tzMn = -tzMn;
+                        }
+                        Assert (numeric_limits<int16_t>::min () <= tzHr * 60 + tzMn and tzHr * 60 + tzMn < numeric_limits<int16_t>::max ());
+                        tz = Timezone{static_cast<int16_t> (tzMn)};
                         numCharsConsumed += ncc;
                     }
                     else {
@@ -415,7 +450,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
             if (consumedCharacters != nullptr) {
                 *consumedCharacters = numCharsConsumed;
             }
-            Assert (legacyImpl () == (t.has_value () ? DateTime{*d, t, tz} : *d));
+            WeakAssert (legacyImpl () == (t.has_value () ? DateTime{*d, t, tz} : *d));  // weak cuz we've improved algorithm - produces better answers now
             return t.has_value () ? DateTime{*d, t, tz} : *d;
         } break;
         case LocaleIndependentFormat::eRFC1123: {
@@ -453,11 +488,11 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
              *                   / ( ("+" / "-") 4DIGIT )        ; Local differential
              *                                                   ;  hours+min. (HHMM)
              */
-            int    numCharsConsumed{};
+            unsigned int    numCharsConsumed{};
             String tmp = rep;
             if (auto i = tmp.Find (',')) {
-                tmp = tmp.SubString (*i + 1).LTrim ();      // we can ignore the day of the week (string) since optional and redundant.
-                numCharsConsumed += rep.length () - tmp.length ();
+                tmp = tmp.SubString (*i + 1).LTrim (); // we can ignore the day of the week (string) since optional and redundant.
+                numCharsConsumed += static_cast < unsigned int> (rep.length () - tmp.length ());
             }
             int     year{};
             int     month{};
@@ -467,18 +502,21 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
             int     second{};
             wchar_t monthStr[4]{};
             wchar_t tzStr[101]{};
-            int     ncc{};
-            DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
-            int nItems = ::swscanf (tmp.c_str (), L"%d %3ls %d %d:%d:%d %100ls%n", &day, &monthStr, &year, &hour, &minute, &second, &tzStr, &ncc);
-            DISABLE_COMPILER_MSC_WARNING_END (4996)
+            int     nItems;
+            {
+                int ncc{};
+                DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
+                nItems = ::swscanf (tmp.c_str (), L"%d %3ls %d %d:%d:%d %100ls%n", &day, &monthStr, &year, &hour, &minute, &second, &tzStr, &ncc);
+                DISABLE_COMPILER_MSC_WARNING_END (4996)
 
-            // workaround MSVC BUG
-            if (true) {
-                if (nItems == 7 and tzStr[0] != '\0' and numCharsConsumed < rep.size ()) {
-                    ncc = rep.size ();
+                // workaround MSVC BUG
+                if (true) {
+                    if (nItems == 7 and tzStr[0] != '\0' and ncc < tmp.size ()) {
+                        ncc = static_cast<int> ( tmp.size ());
+                    }
                 }
+                numCharsConsumed += ncc;
             }
-            numCharsConsumed += ncc;
 
             constexpr wchar_t kMonths_[12][4] = {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun", L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
             for (size_t i = 0; i < NEltsOf (kMonths_); ++i) {
@@ -493,7 +531,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
             Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
             optional<TimeOfDay> t;
             if (nItems >= 5) {
-                t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second)};
+                t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second), TimeOfDay::eThrowIfArgumentOutOfRange};
             }
             optional<Timezone>                       tz;
             constexpr pair<const wchar_t*, Timezone> kNamedTimezones_[]{
@@ -541,8 +579,7 @@ optional<DateTime> DateTime::ParseQuietly_ (const wstring& rep, const time_get<w
     {
         wistringstream               iss{rep};
         istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
-        istreambuf_iterator<wchar_t> itend;        // end-of-stream
-        istreambuf_iterator<wchar_t> i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
+        istreambuf_iterator<wchar_t> i = tmget.get (itbegin, istreambuf_iterator<wchar_t>{}, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
         if (errState & ios::eofbit) {
             nCharsConsumed = rep.size ();
         }

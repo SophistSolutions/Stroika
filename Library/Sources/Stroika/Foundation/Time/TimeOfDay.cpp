@@ -107,8 +107,7 @@ namespace {
     {
         using namespace Execution::Platform::Windows;
         if (rep.empty ()) {
-            Execution::Throw (TimeOfDay::FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
-                                                                 //        return TimeOfDay ();
+            Execution::Throw (TimeOfDay::FormatException::kThe);
         }
         ::DATE d{};
         try {
@@ -135,13 +134,22 @@ namespace {
 }
 #endif
 
+TimeOfDay::TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds, ThrowIfOutOfRangeFlag)
+    : TimeOfDay{0}
+{
+    if (hour >= 24 or minute >= 60 or seconds > 60) {
+        Execution::Throw (FormatException::kThe);
+    }
+    *this = TimeOfDay{hour, minute, seconds};
+}
+
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep='%s', l='%s'", rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str ())};
 #endif
     if (rep.empty ()) {
-        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
+        Execution::Throw (FormatException::kThe);
     }
     auto result = Parse (rep, l, kDefaultParseFormats);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -156,7 +164,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal:
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep='%s', l='%s', formatPatterns=%s", rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str (), Characters::ToString (formatPatterns).c_str ())};
 #endif
     if (rep.empty ()) {
-        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
+        Execution::Throw (FormatException::kThe);
     }
     wstring                  wRep  = rep.As<wstring> ();
     const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
@@ -177,7 +185,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const String& formatPattern)
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep=%s", rep.c_str ())};
 #endif
     if (rep.empty ()) {
-        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
+        Execution::Throw (FormatException::kThe);
     }
     if (auto o = ParseQuietly_ (rep.As<wstring> (), formatPattern)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -194,7 +202,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const String& fo
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep='%s', l='%s'", rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str ())};
 #endif
     if (rep.empty ()) {
-        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
+        Execution::Throw (FormatException::kThe);
     }
     if (auto o = ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

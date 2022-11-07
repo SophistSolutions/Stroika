@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Time {
     inline Date Date::Parse (const String& rep, const locale& l, const String& formatPattern)
     {
         if (rep.empty ()) {
-            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
+            Execution::Throw (FormatException::kThe);
         }
         wstring                  wRep  = rep.As<wstring> ();
         const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Time {
     {
         RequireNotNull (consumedCharsInStringUpTo);
         if (rep.empty ()) {
-            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
+            Execution::Throw (FormatException::kThe);
         }
         wstring                  wRep  = rep.As<wstring> ();
         const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
@@ -189,7 +189,7 @@ namespace Stroika::Foundation::Time {
     inline Date Date::Parse (const String& rep, const String& formatPattern)
     {
         if (rep.empty ()) {
-            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
+            Execution::Throw (FormatException::kThe);
         }
         wstring                  wRep  = rep.As<wstring> ();
         const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (locale::classic ());
@@ -202,7 +202,7 @@ namespace Stroika::Foundation::Time {
     {
         RequireNotNull (consumedCharsInStringUpTo);
         if (rep.empty ()) {
-            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
+            Execution::Throw (FormatException::kThe);
         }
         wstring                  wRep  = rep.As<wstring> ();
         const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (locale::classic ());

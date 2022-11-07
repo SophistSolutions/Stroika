@@ -65,6 +65,9 @@ namespace Stroika::Foundation::Time {
         static constexpr uint32_t kMaxSecondsPerDay = 60 * 60 * 24u; // nb: 86400: wont fit in uint16_t
 
     public:
+        enum ThrowIfOutOfRangeFlag { eThrowIfArgumentOutOfRange };
+
+    public:
         /**
          * If value out of range - pinned to kMax.
          * We normalize to be within a given day (seconds since midnight)
@@ -82,6 +85,7 @@ namespace Stroika::Foundation::Time {
         constexpr TimeOfDay (const TimeOfDay&)         = default;
         constexpr explicit TimeOfDay (uint32_t t);
         explicit constexpr TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds);
+        TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds, ThrowIfOutOfRangeFlag);
 
     public:
         /**

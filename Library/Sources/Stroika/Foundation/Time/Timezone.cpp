@@ -78,7 +78,7 @@ optional<Timezone> Timezone::ParseTimezoneOffsetString (const char* tzStr)
 {
     RequireNotNull (tzStr);
     if (*tzStr == '\0') {
-        return {};
+        return nullopt;
     }
     else {
         int         tzHr    = 0;
