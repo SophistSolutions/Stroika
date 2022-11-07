@@ -20,6 +20,11 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
+ *      @todo   See https://en.cppreference.com/w/cpp/chrono/time_zone - and support this. But the C++20 doesn't REPLACE
+ *              the Stroika timezone - just an extra thing a Stroika timezone can reference (may replace stroika tz database).
+ *              But Stroika tz allows representing explicit stuff like +04:00 etc, which cannot be represented by time_zone
+ *              class.  --LGP 2022-11-07
+ *
  *      @todo   https://stroika.atlassian.net/browse/STK-636
  *              Enhance Timezone class to support real timezones (e.g. American/NewYork) and handle all the cases
  *              of mapping offsets (applying all teh rules for different dates)
