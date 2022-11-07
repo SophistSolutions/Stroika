@@ -85,6 +85,7 @@ namespace {
         }
         void DoAll_ ()
         {
+            Debug::TraceContextBumper ctx{L"Test1_7zArchive_"};
             Private_::ReadHardwired7zFile_ ();
         }
     }
@@ -126,6 +127,7 @@ namespace {
         }
         void DoAll_ ()
         {
+            Debug::TraceContextBumper ctx{L"Test2_ZipArchive_"};
             Private_::ReadHardwiredZipFile_ ();
         }
     }
@@ -154,6 +156,7 @@ namespace {
 
         void DoAll_ ()
         {
+            Debug::TraceContextBumper ctx{L"INI_ONLY_::DoAll_"};
             DoBasicReader1_ ();
         }
     }
@@ -169,7 +172,7 @@ namespace {
             void CheckMatchesExpected_WRITER_ (const VariantValue& v, const string& expected)
             {
                 Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
-                DataExchange::Variant::JSON::Writer ().Write (v, out);
+                DataExchange::Variant::JSON::Writer{}.Write (v, out);
                 string x = out.As<string> ();
                 for (string::size_type i = 0; i < min (x.length (), expected.length ()); ++i) {
                     if (x[i] != expected[i]) {
@@ -180,6 +183,7 @@ namespace {
             }
             void DoIt ()
             {
+                Debug::TraceContextBumper ctx{L"JSON_ONLY_::DoAll_"};
                 {
                     VariantValue v1 = L"hello world";
                     CheckMatchesExpected_WRITER_ (v1, "\"hello world\"\n");
@@ -352,6 +356,7 @@ namespace Test_04_CheckStringQuoting_ {
 
     void DoIt ()
     {
+        Debug::TraceContextBumper ctx{L"Test_04_CheckStringQuoting_::DoAll_"};
         CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\t\r\n\f\x3")); // proper read/write control characters
         CheckRoundtrip_encode_decode_unchanged (VariantValue (L"test\?"));
         CheckRoundtrip_encode_decode_unchanged (VariantValue (L"test\\?"));
@@ -382,6 +387,7 @@ namespace Test_04_CheckStringQuoting_ {
 namespace Test_05_ParseRegressionTest_1_ {
     void DoIt ()
     {
+        Debug::TraceContextBumper ctx{L"Test_05_ParseRegressionTest_1_::DoAll_"};
         {
             const char kJSONExample_[] =
                 "{"
@@ -445,7 +451,8 @@ namespace Test_05_ParseRegressionTest_1_ {
 namespace Test_06_ParseRegressionTest_2_ {
     void DoIt ()
     {
-        auto f = [] () {
+        Debug::TraceContextBumper ctx{L"Test_06_ParseRegressionTest_2_::DoAll_"};
+        auto                      f = [] () {
             map<wstring, VariantValue> mv;
             mv[L"MaxFiles"] = VariantValue (405);
             VariantValue v  = VariantValue (mv);
@@ -471,6 +478,7 @@ namespace Test_06_ParseRegressionTest_2_ {
 namespace Test_05_ParseRegressionTest_3_ {
     void DoIt ()
     {
+        Debug::TraceContextBumper ctx{L"Test_05_ParseRegressionTest_3_::DoAll_"};
         {
             const char kJSONExample_[] =
                 "{"
@@ -495,22 +503,23 @@ namespace Test_05_ParseRegressionTest_3_ {
 namespace Test_07_ParserTestReadWriteBasictypes_ {
     void DoIt ()
     {
+        Debug::TraceContextBumper ctx{L"Test_07_ParserTestReadWriteBasictypes_::DoAll_"};
         using namespace Time;
         auto f = [] (VariantValue v) {
             string encoded;
             {
                 stringstream tmpStrm;
-                DataExchange::Variant::JSON::Writer ().Write (v, tmpStrm);
+                DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
                 encoded = tmpStrm.str ();
             }
             stringstream tnmStrStrm (encoded);
-            VariantValue v1 = DataExchange::Variant::JSON::Reader ().Read (tnmStrStrm);
+            VariantValue v1 = DataExchange::Variant::JSON::Reader{}.Read (tnmStrStrm);
             // JSON reader comes back with strings - because date/datetime are not native types
             if (v.GetType () == VariantValue::eDate and v1.GetType () == VariantValue::eString) {
-                v1 = VariantValue (v1.As<Time::Date> ());
+                v1 = VariantValue{v1.As<Time::Date> ()};
             }
             if (v.GetType () == VariantValue::eDateTime and v1.GetType () == VariantValue::eString) {
-                v1 = VariantValue (v1.As<Time::DateTime> ());
+                v1 = VariantValue{v1.As<Time::DateTime> ()};
             }
             if (v.GetType () == VariantValue::eFloat) {
                 VerifyTestResult (Math::NearlyEquals (v1.As<double> (), v.As<double> (), 0.001));
@@ -548,6 +557,7 @@ namespace Test_07_ParserTestReadWriteBasictypes_ {
 namespace Test_08_ReadEmptyStreamShouldFail_ {
     void DoIt ()
     {
+        Debug::TraceContextBumper ctx{L"Test_08_ReadEmptyStreamShouldFail_::DoAll_"};
         try {
             VariantValue vOut = DataExchange::Variant::JSON::Reader ().Read (Streams::MemoryStream<byte>::New (nullptr, nullptr));
             VerifyTestResult (false);
@@ -578,6 +588,7 @@ namespace Test_09_ReadWriteNANShouldNotFail_ {
 
     void DoIt ()
     {
+        Debug::TraceContextBumper ctx{L"Test_09_ReadWriteNANShouldNotFail_::DoAll_"};
         CheckRoundtrip_encode_decode_unchanged (VariantValue (Math::nan<double> ()));
         CheckRoundtrip_encode_decode_unchanged (VariantValue (-numeric_limits<double>::infinity ()));
         CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<double>::infinity ()));
