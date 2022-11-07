@@ -157,9 +157,9 @@ namespace Stroika::Foundation::DataExchange {
      *
      *          // register each of your mappable (even private) types
      *          mapper.AddClass<SharedContactsConfig_> ({
-     *              ObjectVariantMapper::StructFieldInfo { L"Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled} },
-     *              ObjectVariantMapper::StructFieldInfo { L"Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt} },
-     *              ObjectVariantMapper::StructFieldInfo { L"This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID} },
+     *              ObjectVariantMapper::StructFieldInfo{ L"Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled} },
+     *              ObjectVariantMapper::StructFieldInfo{ L"Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt} },
+     *              ObjectVariantMapper::StructFieldInfo{ L"This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID} },
      *          });
      *
      *          // OR Equivalently
@@ -171,7 +171,7 @@ namespace Stroika::Foundation::DataExchange {
      *
      *          SharedContactsConfig_   tmp;
      *          tmp.fEnabled = enabled;
-     *          VariantValue v = mapper.Serialize  (tmp);
+     *          VariantValue v = mapper.FromObject (tmp);
      *
      *          // at this point - we should have VariantValue object with "Enabled" field.
      *          // This can then be serialized using

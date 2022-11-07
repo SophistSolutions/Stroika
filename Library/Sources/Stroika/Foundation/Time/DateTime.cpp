@@ -337,8 +337,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                         tz = Timezone::kUTC;
                     }
                     else {
-                        Assert (numeric_limits<int16_t>::min () <= tzHr * 60 + tzMn and tzHr * 60 + tzMn < numeric_limits<int16_t>::max ());
-                        tz = Timezone{static_cast<int16_t> (tzHr * 60 + tzMn)};
+                        tz = Timezone{static_cast<int16_t> (tzHr * 60 + tzMn), DataExchange::ValidationStrategy::eThrow};
                     }
                 }
                 return t.has_value () ? DateTime{d, *t, tz} : d;
@@ -410,8 +409,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                             tzHr = -tzHr;
                             tzMn = -tzMn;
                         }
-                        Assert (numeric_limits<int16_t>::min () <= tzHr * 60 + tzMn and tzHr * 60 + tzMn < numeric_limits<int16_t>::max ());
-                        tz = Timezone{static_cast<int16_t> (tzHr * 60 + tzMn)};
+                        tz = Timezone{static_cast<int16_t> (tzHr * 60 + tzMn), DataExchange::ValidationStrategy::eThrow};
                         numCharsConsumed += ncc;
                     }
                     else if ((nItems == 2) and (plusMinusChar == '+' or plusMinusChar == '-')) {
@@ -437,8 +435,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                         if (plusMinusChar == '-') {
                             tzMn = -tzMn;
                         }
-                        Assert (numeric_limits<int16_t>::min () <= tzHr * 60 + tzMn and tzHr * 60 + tzMn < numeric_limits<int16_t>::max ());
-                        tz = Timezone{static_cast<int16_t> (tzMn)};
+                        tz = Timezone{static_cast<int16_t> (tzMn), DataExchange::ValidationStrategy::eThrow};
                         numCharsConsumed += ncc;
                     }
                     else {
@@ -516,15 +513,6 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                     // ncc += 1 + ::wcslen (tzStr);
                     ncc = static_cast<int> (tmp.size ());
                 }
-
-#if 0
-                // workaround MSVC BUG
-                if (true) {
-                    if (nItems == 7 and tzStr[0] != '\0' and ncc < tmp.size ()) {
-                        ncc = static_cast<int> (tmp.size ());
-                    }
-                }
-#endif
                 numCharsConsumed += ncc;
             }
 
@@ -556,6 +544,30 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                 {L"MDT", Timezone{-6 * 60}},
                 {L"PST", Timezone{-8 * 60}},
                 {L"PDT", Timezone{-7 * 60}},
+                {L"A", Timezone{-1 * 60}},
+                {L"B", Timezone{-2 * 60}},
+                {L"C", Timezone{-3 * 60}},
+                {L"D", Timezone{-4 * 60}},
+                {L"E", Timezone{-5 * 60}},
+                {L"F", Timezone{-6 * 60}},
+                {L"G", Timezone{-7 * 60}},
+                {L"H", Timezone{-8 * 60}},
+                {L"I", Timezone{-9 * 60}},
+                {L"K", Timezone{-10 * 60}},
+                {L"L", Timezone{-11 * 60}},
+                {L"M", Timezone{-12 * 60}},
+                {L"N", Timezone{1 * 60}},
+                {L"O", Timezone{2 * 60}},
+                {L"P", Timezone{3 * 60}},
+                {L"Q", Timezone{4 * 60}},
+                {L"R", Timezone{5 * 60}},
+                {L"S", Timezone{6 * 60}},
+                {L"T", Timezone{7 * 60}},
+                {L"U", Timezone{8 * 60}},
+                {L"V", Timezone{9 * 60}},
+                {L"W", Timezone{10 * 60}},
+                {L"X", Timezone{11 * 60}},
+                {L"Y", Timezone{12 * 60}},
             };
             for (size_t i = 0; i < NEltsOf (kNamedTimezones_); ++i) {
                 if (::wcscmp (tzStr, kNamedTimezones_[i].first) == 0) {

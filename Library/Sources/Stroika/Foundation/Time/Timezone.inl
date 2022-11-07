@@ -22,10 +22,21 @@ namespace Stroika::Foundation::Time {
         , fBiasInMinutesFromUTC_{0}
     {
     }
-    inline constexpr Timezone::Timezone (BiasInMinutesFromUTCType biasInMinutesFromUTC)
+    inline constexpr Timezone::Timezone (BiasInMinutesFromUTCType biasInMinutesFromUTC) noexcept
         : fTZ_{TZ_::eFixedOffsetBias}
         , fBiasInMinutesFromUTC_{biasInMinutesFromUTC}
     {
+        Require (kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC));
+    }
+    inline constexpr Timezone::Timezone (BiasInMinutesFromUTCType biasInMinutesFromUTC, DataExchange::ValidationStrategy validationStrategy)
+        : fTZ_{TZ_::eFixedOffsetBias}
+        , fBiasInMinutesFromUTC_{biasInMinutesFromUTC}
+    {
+        if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
+            if (not kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC)) {
+                Execution::Throw (Execution::RuntimeErrorException{L"invalid timezone offset"sv});
+            }
+        }
         Require (kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC));
     }
     inline constexpr Timezone           Timezone::kUTC{TZ_::eUTC};

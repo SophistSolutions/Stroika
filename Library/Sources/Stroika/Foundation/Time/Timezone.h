@@ -11,6 +11,7 @@
 #include <optional>
 
 #include "../Characters/String.h"
+#include "../DataExchange/ValidationStrategy.h"
 #include "../Traversal/Range.h"
 
 /**
@@ -115,10 +116,14 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  \req kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC)
+         *  if ValidationStrategy is eAssert (DEFAULT if not specified)
+         *      \req kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC)
+         *  else throws if out of range.
+         * 
          */
         Timezone () = delete;
-        constexpr Timezone (BiasInMinutesFromUTCType biasInMinutesFromUTC);
+        constexpr explicit Timezone (BiasInMinutesFromUTCType biasInMinutesFromUTC) noexcept;
+        constexpr Timezone (BiasInMinutesFromUTCType biasInMinutesFromUTC, DataExchange::ValidationStrategy validationStrategy);
         constexpr Timezone (const Timezone& src)     = default;
         constexpr Timezone (Timezone&& src) noexcept = default;
 
@@ -154,8 +159,10 @@ namespace Stroika::Foundation::Time {
          *  Parse string of the form:
          *      [+-]?HHMM, or [+-]?HH:MM, so for example -0500 is Timezone (-5*60), or -04:00 would be Timezone (-4*60).
          *
-         *  On empty string, return {}, but on ill-formed timezone offset string (including out of range), 
+         *  On empty string, return nullopt, but on ill-formed timezone offset string (including out of range), 
          *  throw (even if the string is EST, or some such - this requires numeric offset).
+         * 
+         *  This parse function ignores any bad data at the end of tzStr (perhaps future version will be optionally more picky).
          */
         static optional<Timezone> ParseTimezoneOffsetString (const char* tzStr);
         static optional<Timezone> ParseTimezoneOffsetString (const wchar_t* tzStr);
