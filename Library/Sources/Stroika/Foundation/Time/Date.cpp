@@ -228,33 +228,19 @@ Date::JulianRepType Date::DaysSince () const
 
 Year Date::GetYear () const
 {
-    MonthOfYear m{};
-    DayOfMonth  d{};
-    Year        y{};
-    mdy (&m, &d, &y);
-    return y;
+    return get<2> (mdy ());
 }
 
 MonthOfYear Date::GetMonth () const
 {
-    MonthOfYear m{};
-    DayOfMonth  d{};
-    Year        y{};
-    mdy (&m, &d, &y);
-    Ensure (1 <= static_cast<int> (m) and static_cast<int> (m) <= 12);
-    Ensure (0 <= static_cast<int> (m) and static_cast<int> (m) <= 12);
-    return m;
+    Ensure (1 <= static_cast<int> (get<0> (mdy ())) and static_cast<int> (get<0> (mdy ())) <= 12);
+    return get<0> (mdy ());
 }
 
 DayOfMonth Date::GetDayOfMonth () const
 {
-    MonthOfYear m{};
-    DayOfMonth  d{};
-    Year        y{};
-    mdy (&m, &d, &y);
-    Ensure (1 <= static_cast<int> (d) and static_cast<int> (d) <= 31);
-    Ensure (0 <= static_cast<int> (d) and static_cast<int> (d) <= 31);
-    return d;
+    Ensure (1 <= static_cast<int> (get<1> (mdy ())) and static_cast<int> (get<1> (mdy ())) <= 31);
+    return get<1> (mdy ());
 }
 
 DayOfWeek Date::GetDayOfWeek () const
@@ -316,11 +302,8 @@ template <>
  *
  * (This code originally from NIHCL)
  */
-void Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
+tuple<MonthOfYear,DayOfMonth,Year> Date::mdy () const
 {
-    RequireNotNull (month);
-    RequireNotNull (day);
-    RequireNotNull (year);
     JulianRepType m;
     JulianRepType d;
     JulianRepType y;
@@ -347,10 +330,8 @@ void Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
         ++y;
     }
     Ensure (1 <= m and m <= 12);
-    *month = static_cast<MonthOfYear> (m);
     Ensure (1 <= d and d <= 31);
-    *day  = static_cast<DayOfMonth> (d);
-    *year = static_cast<Year> (y);
+    return make_tuple (static_cast<MonthOfYear> (m), static_cast<DayOfMonth> (d), static_cast<Year> (y));
 }
 
 #if qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug
@@ -402,18 +383,9 @@ Date::SignedJulianRepType Time::DayDifference (const Date& lhs, const Date& rhs)
  */
 int Time::YearDifference (const Date& lhs, const Date& rhs)
 {
-    MonthOfYear lm{};
-    DayOfMonth  ld{};
-    Year        ly{};
-    lhs.mdy (&lm, &ld, &ly);
-
-    MonthOfYear rm{};
-    DayOfMonth  rd{};
-    Year        ry{};
-    rhs.mdy (&rm, &rd, &ry);
-
+    const auto [lm, ld, ly] = lhs.mdy ();
+    const auto [rm, rd, ry] = rhs.mdy ();
     int diff = static_cast<int> (ly) - static_cast<int> (ry);
-
     if (lm < rm or (lm == rm and ld < rd)) {
         diff--;
     }

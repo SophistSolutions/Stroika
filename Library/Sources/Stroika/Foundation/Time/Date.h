@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <climits>
+#include <chrono>
 #include <compare>
 #include <string>
 
@@ -360,7 +361,18 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          */
-        nonvirtual void mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const;
+        nonvirtual tuple<MonthOfYear,DayOfMonth,Year> mdy () const;
+
+        [[deprecated("Since Stroika v3.0d1, use mdy/0")]] void mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
+        {
+            RequireNotNull (month);
+            RequireNotNull (day);
+            RequireNotNull (year);
+            auto r = mdy ();
+            *month = get<0> (r);
+            *day   = get<1> (r);
+            *year  = get<2> (r);
+        }
 
     public:
         /**
