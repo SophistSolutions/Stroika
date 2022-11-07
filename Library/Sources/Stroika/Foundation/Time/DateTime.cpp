@@ -107,9 +107,9 @@ namespace {
     ::SYSTEMTIME toSYSTEM_ (const Date& date)
     {
         ::SYSTEMTIME st{};
-        MonthOfYear  m = MonthOfYear::eEmptyMonthOfYear;
-        DayOfMonth   d = DayOfMonth::eEmptyDayOfMonth;
-        Year         y = Year::eEmptyYear;
+        MonthOfYear  m{};
+        DayOfMonth   d{};
+        Year         y{};
         date.mdy (&m, &d, &y);
         st.wYear  = static_cast<::WORD> (y);
         st.wMonth = static_cast<::WORD> (m);
@@ -794,7 +794,7 @@ String DateTime::ToString () const
 {
     // @todo - reconsider how we format this cuz unclear if Format() already incldues timezone -- LGP 2018-10-16
     String tmp = Format ();
-    if (auto&& tz = GetTimezone ()) {
+    if (const auto& tz = GetTimezone ()) {
         tmp += L" " + Characters::ToString (*tz);
     }
     return tmp;

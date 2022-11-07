@@ -28,10 +28,6 @@
  *      @todo   Could optimize the Format/Parse calls for case without locale to just hardwire implementaton
  *              using sprintf/scanf (as we had before 2.1b10); only performance optimization and unclear it would help
  *
- *      @todo   Consider losing eEmptyDayOfMonth and eEmptyMonthOfYear and using optional instead
- *
- *              Several comments and names still use the word empty
- *
  *      @todo   https://stroika.atlassian.net/browse/STK-668 - Date class should support the full Julian Date Range -
  *              not just Gregorian calendar
  *
@@ -74,19 +70,18 @@ namespace Stroika::Foundation::Time {
      *  \note   Configuration::DefaultNames<> supported
      */
     enum class MonthOfYear : uint8_t {
-        eEmptyMonthOfYear = 0, // only zero if date empty
-        eJanuary          = 1,
-        eFebruary         = 2,
-        eMarch            = 3,
-        eApril            = 4,
-        eMay              = 5,
-        eJune             = 6,
-        eJuly             = 7,
-        eAugust           = 8,
-        eSeptember        = 9,
-        eOctober          = 10,
-        eNovember         = 11,
-        eDecember         = 12,
+        eJanuary   = 1,
+        eFebruary  = 2,
+        eMarch     = 3,
+        eApril     = 4,
+        eMay       = 5,
+        eJune      = 6,
+        eJuly      = 7,
+        eAugust    = 8,
+        eSeptember = 9,
+        eOctober   = 10,
+        eNovember  = 11,
+        eDecember  = 12,
 
         Stroika_Define_Enum_Bounds (eJanuary, eDecember)
     };
@@ -95,8 +90,7 @@ namespace Stroika::Foundation::Time {
     /**
      */
     enum class DayOfMonth : uint8_t {
-        eEmptyDayOfMonth = 0, // only zero if date empty
-        e1               = 1,
+        e1 = 1,
         e2,
         e3,
         e4,
@@ -144,7 +138,6 @@ namespace Stroika::Foundation::Time {
     /**
      */
     enum class Year : short {
-        eEmptyYear = SHRT_MIN,
         eFirstYear = 1752, // Gregorian calendar started on Sep. 14, 1752.
         eLastfYear = SHRT_MAX - 1,
 
@@ -502,7 +495,7 @@ namespace Stroika::Foundation::Time {
     inline const Traversal::Iterable<String> Date::kDefaultParseFormats{
         kLocaleStandardFormat,          // x (kLocaleStandardFormat) parses the locale's standard date representation
         kLocaleStandardAlternateFormat, // Ex (kLocaleStandardAlternateFormat) parses the locale's alternative date representation, e.g. expecting 平成23年 (year Heisei 23) instead of 2011年 (year 2011) in ja_JP locale
-        kMonthDayYearFormat,            // Before Stroika 2.1b10, this was L"%D" (=="%m/%d/%y) which is hte 2-digit year
+        kMonthDayYearFormat,            // Before Stroika 2.1b10, this was L"%D" (=="%m/%d/%y) which is the 2-digit year
         kISO8601Format,
     };
 

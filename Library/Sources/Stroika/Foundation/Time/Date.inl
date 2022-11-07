@@ -88,10 +88,6 @@ namespace Stroika::Foundation::Time {
          *
          * (This code originally from NIHCL)
          */
-        if (month == MonthOfYear::eEmptyMonthOfYear or day == DayOfMonth::eEmptyDayOfMonth or year == Year::eEmptyYear) {
-            Assert (false); // no longer happens as of Stk 3.0
-        }
-
         Require (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (month > MonthOfYear::eSeptember or (month == MonthOfYear::eSeptember and static_cast<int> (day) >= 14))));
 
         if (static_cast<int> (month) > 2) {
@@ -108,9 +104,6 @@ namespace Stroika::Foundation::Time {
     constexpr inline Date::JulianRepType Date::Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
     {
         // 'Safe' version just avoids require that date values are legit for julian date range. If date would be invalid - return kEmptyJulianRep.
-        if (month == MonthOfYear::eEmptyMonthOfYear or day == DayOfMonth::eEmptyDayOfMonth or year == Year::eEmptyYear) {
-            Assert (false); // no longer happens as of Stk 3.0
-        }
         if (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (month > MonthOfYear::eSeptember or (month == MonthOfYear::eSeptember and static_cast<int> (day) >= 14)))) {
             return jday_ (month, day, year);
         }

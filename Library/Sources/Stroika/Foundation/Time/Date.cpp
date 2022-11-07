@@ -228,18 +228,18 @@ Date::JulianRepType Date::DaysSince () const
 
 Year Date::GetYear () const
 {
-    MonthOfYear m = MonthOfYear::eEmptyMonthOfYear;
-    DayOfMonth  d = DayOfMonth::eEmptyDayOfMonth;
-    Year        y = Year::eEmptyYear;
+    MonthOfYear m{};
+    DayOfMonth  d{};
+    Year        y{};
     mdy (&m, &d, &y);
     return y;
 }
 
 MonthOfYear Date::GetMonth () const
 {
-    MonthOfYear m = MonthOfYear::eEmptyMonthOfYear;
-    DayOfMonth  d = DayOfMonth::eEmptyDayOfMonth;
-    Year        y = Year::eEmptyYear;
+    MonthOfYear m{};
+    DayOfMonth  d{};
+    Year        y{};
     mdy (&m, &d, &y);
     Ensure (1 <= static_cast<int> (m) and static_cast<int> (m) <= 12);
     Ensure (0 <= static_cast<int> (m) and static_cast<int> (m) <= 12);
@@ -248,9 +248,9 @@ MonthOfYear Date::GetMonth () const
 
 DayOfMonth Date::GetDayOfMonth () const
 {
-    MonthOfYear m = MonthOfYear::eEmptyMonthOfYear;
-    DayOfMonth  d = DayOfMonth::eEmptyDayOfMonth;
-    Year        y = Year::eEmptyYear;
+    MonthOfYear m{};
+    DayOfMonth  d{};
+    Year        y{};
     mdy (&m, &d, &y);
     Ensure (1 <= static_cast<int> (d) and static_cast<int> (d) <= 31);
     Ensure (0 <= static_cast<int> (d) and static_cast<int> (d) <= 31);
@@ -402,14 +402,14 @@ Date::SignedJulianRepType Time::DayDifference (const Date& lhs, const Date& rhs)
  */
 int Time::YearDifference (const Date& lhs, const Date& rhs)
 {
-    MonthOfYear lm = MonthOfYear::eEmptyMonthOfYear;
-    DayOfMonth  ld = DayOfMonth::eEmptyDayOfMonth;
-    Year        ly = Year::eEmptyYear;
+    MonthOfYear lm{};
+    DayOfMonth  ld{};
+    Year        ly{};
     lhs.mdy (&lm, &ld, &ly);
 
-    MonthOfYear rm = MonthOfYear::eEmptyMonthOfYear;
-    DayOfMonth  rd = DayOfMonth::eEmptyDayOfMonth;
-    Year        ry = Year::eEmptyYear;
+    MonthOfYear rm{};
+    DayOfMonth  rd{};
+    Year        ry{};
     rhs.mdy (&rm, &rd, &ry);
 
     int diff = static_cast<int> (ly) - static_cast<int> (ry);
