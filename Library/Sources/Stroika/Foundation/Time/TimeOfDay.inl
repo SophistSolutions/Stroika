@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Time {
      ********************************************************************************
      */
     inline constexpr TimeOfDay::TimeOfDay (uint32_t t)
-        : fTime_{t < kMaxSecondsPerDay ? t : (kMaxSecondsPerDay - 1)}
+        : fTime_{t}
     {
         Require (t < kMaxSecondsPerDay);
         Assert (fTime_ < kMaxSecondsPerDay);

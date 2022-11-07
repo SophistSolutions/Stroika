@@ -160,6 +160,21 @@ TimeOfDay::TimeOfDay (unsigned int hour, unsigned int minute, unsigned int secon
     *this = TimeOfDay{hour, minute, seconds};
 #endif
 }
+TimeOfDay::TimeOfDay (uint32_t t, DataExchange::ValidationStrategy validationStrategy)
+    : fTime_{t}
+{
+    switch (validationStrategy) {
+        case DataExchange::ValidationStrategy::eAssertion:
+            Require (t < kMaxSecondsPerDay);
+            break;
+        case DataExchange::ValidationStrategy::eThrow:
+            if (not(t < kMaxSecondsPerDay)) {
+                Execution::Throw (FormatException::kThe);
+            }
+            break;
+    }
+    Assert (fTime_ < kMaxSecondsPerDay);
+}
 
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
 {
