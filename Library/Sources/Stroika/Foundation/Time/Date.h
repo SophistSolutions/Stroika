@@ -6,8 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
-#include <climits>
 #include <chrono>
+#include <climits>
 #include <compare>
 #include <string>
 
@@ -52,6 +52,22 @@ namespace Stroika::Foundation::Time {
 
     using Characters::String;
 
+    //using namespace chrono;
+    using chrono::month;
+
+    using chrono::April;
+    using chrono::August;
+    using chrono::December;
+    using chrono::February;
+    using chrono::January;
+    using chrono::July;
+    using chrono::June;
+    using chrono::March;
+    using chrono::May;
+    using chrono::November;
+    using chrono::October;
+    using chrono::September;
+
     /**
      *  \note   Configuration::DefaultNames<> supported
      */
@@ -68,25 +84,30 @@ namespace Stroika::Foundation::Time {
     };
 
     /**
-     *  \note   Configuration::DefaultNames<> supported
+     *  \brief Simple wrapper on std::chrono::month, with some helpful validation properties. But not ncessary to use - use just 'month' in most places
+     * 
+     *  \note - MonthOfYear was an enum in Stroika v2.1, so this is a significant change from Strika v2.1.
      */
-    enum class MonthOfYear : uint8_t {
-        eJanuary   = 1,
-        eFebruary  = 2,
-        eMarch     = 3,
-        eApril     = 4,
-        eMay       = 5,
-        eJune      = 6,
-        eJuly      = 7,
-        eAugust    = 8,
-        eSeptember = 9,
-        eOctober   = 10,
-        eNovember  = 11,
-        eDecember  = 12,
+    struct MonthOfYear : month {
+        constexpr MonthOfYear (month m, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        constexpr MonthOfYear (int m, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
-        Stroika_Define_Enum_Bounds (eJanuary, eDecember)
+        constexpr explicit operator int () const;
+
+    public:
+        [[deprecated ("Since Stroika v3.0d1, use chrono::January")]] static constexpr chrono::month   eJanuary{January};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::February")]] static constexpr chrono::month  eFebruary{February};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::March")]] static constexpr chrono::month     eMarch{March};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::April")]] static constexpr chrono::month     eApril{April};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::May")]] static constexpr chrono::month       eMay{May};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::June")]] static constexpr chrono::month      eJune{June};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::July")]] static constexpr chrono::month      eJuly{July};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::August")]] static constexpr chrono::month    eAugust{August};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::September")]] static constexpr chrono::month eSeptember{September};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::October")]] static constexpr chrono::month   eOctober{October};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::November")]] static constexpr chrono::month  eNovember{November};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::December")]] static constexpr chrono::month  eDecember{December};
     };
-    int operator- (MonthOfYear m1, MonthOfYear m2);
 
     /**
      */
@@ -360,19 +381,9 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         *  \brief Convert (internal representation) Julian day number to its corresponding Gregorian calendar date
          */
-        nonvirtual tuple<MonthOfYear,DayOfMonth,Year> mdy () const;
-
-        [[deprecated("Since Stroika v3.0d1, use mdy/0")]] void mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
-        {
-            RequireNotNull (month);
-            RequireNotNull (day);
-            RequireNotNull (year);
-            auto r = mdy ();
-            *month = get<0> (r);
-            *day   = get<1> (r);
-            *year  = get<2> (r);
-        }
+        nonvirtual tuple<MonthOfYear, DayOfMonth, Year> mdy () const;
 
     public:
         /**
@@ -468,6 +479,18 @@ namespace Stroika::Foundation::Time {
          */
         template <typename T>
         nonvirtual T As () const;
+
+    public:
+        [[deprecated ("Since Stroika v3.0d1, use mdy/0")]] void mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
+        {
+            RequireNotNull (month);
+            RequireNotNull (day);
+            RequireNotNull (year);
+            auto r = mdy ();
+            *month = get<0> (r);
+            *day   = get<1> (r);
+            *year  = get<2> (r);
+        }
 
     private:
         constexpr static JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year);

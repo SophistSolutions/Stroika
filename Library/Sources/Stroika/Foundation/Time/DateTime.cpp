@@ -107,13 +107,10 @@ namespace {
     ::SYSTEMTIME toSYSTEM_ (const Date& date)
     {
         ::SYSTEMTIME st{};
-        MonthOfYear  m{};
-        DayOfMonth   d{};
-        Year         y{};
-        date.mdy (&m, &d, &y);
-        st.wYear  = static_cast<::WORD> (y);
-        st.wMonth = static_cast<::WORD> (m);
-        st.wDay   = static_cast<::WORD> (d);
+        const auto   mdy = date.mdy ();
+        st.wMonth        = static_cast<::WORD> (static_cast<unsigned int> (std::get<0> (mdy)));
+        st.wDay          = static_cast<::WORD> (std::get<1> (mdy));
+        st.wYear         = static_cast<::WORD> (std::get<2> (mdy));
         return st;
     }
 #endif

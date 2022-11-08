@@ -378,7 +378,7 @@ namespace {
     {
         TraceContextBumper ctx{"Test_3_TestDate_"};
         {
-            Date d{Year{1903}, MonthOfYear::eApril, DayOfMonth{4}};
+            Date d{Year{1903}, April, DayOfMonth{4}};
             TestRoundTripFormatThenParseNoChange_ (d);
             VerifyTestResult (d.Format (Date::kISO8601Format) == L"1903-04-04");
             VERIFY_ROUNDTRIP_XML_ (d);
@@ -413,7 +413,7 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         try {
-            VerifyTestResult ((Date::Parse (L"11/3/2001", Date::kMonthDayYearFormat) == Date{Year (2001), Time::MonthOfYear::eNovember, DayOfMonth (3)}));
+            VerifyTestResult ((Date::Parse (L"11/3/2001", Date::kMonthDayYearFormat) == Date{Year (2001), Time::November, DayOfMonth (3)}));
             VerifyTestResult (Date::Parse (L"11/3/2001", Date::kMonthDayYearFormat).Format (Date::kMonthDayYearFormat) == L"11/03/2001");
         }
         catch (...) {
@@ -433,13 +433,13 @@ namespace {
         {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
-            Date                           d = Date{Year{1903}, MonthOfYear::eApril, DayOfMonth{5}};
+            Date                           d = Date{Year{1903}, April, DayOfMonth{5}};
             TestRoundTripFormatThenParseNoChange_ (d);
             VerifyTestResult (d.Format (locale{}) == L"4/5/1903" or d.Format (locale{}) == L"04/05/1903");
             VerifyTestResult (d.Format (Date::eCurrentLocale_WithZerosStripped) == L"4/5/1903");
         }
         {
-            Date d = Date (Year{1903}, MonthOfYear::eApril, DayOfMonth{5});
+            Date d = Date (Year{1903}, April, DayOfMonth{5});
             VerifyTestResult (d.Format (locale{}) == L"4/5/1903" or d.Format (locale{}) == L"04/05/1903" or d.Format (locale{}) == L"04/05/03");
             VerifyTestResult (d.Format (Date::eCurrentLocale_WithZerosStripped) == L"4/5/1903" or d.Format (Date::eCurrentLocale_WithZerosStripped) == L"4/5/03");
         }
@@ -456,7 +456,7 @@ namespace {
     {
         TraceContextBumper ctx{"Test_4_TestDateTime_"};
         {
-            DateTime d = Date (Year{1903}, MonthOfYear::eApril, DayOfMonth{4});
+            DateTime d = Date (Year{1903}, April, DayOfMonth{4});
             VerifyTestResult (d.Format (DateTime::kISO8601Format) == L"1903-04-04");
             TestRoundTripFormatThenParseNoChange_ (d);
         }
@@ -474,11 +474,11 @@ namespace {
             {
                 DateTime regTest{time_t (1598992961)};
                 VerifyTestResult (regTest.GetTimezone () == Timezone::kUTC);
-                VerifyTestResult ((regTest.GetDate () == Date{Year{2020}, MonthOfYear::eSeptember, DayOfMonth{1}}));
+                VerifyTestResult ((regTest.GetDate () == Date{Year{2020}, September, DayOfMonth{1}}));
                 VerifyTestResult ((regTest.GetTimeOfDay () == TimeOfDay{20, 42, 41}));
                 if (Timezone::kLocalTime.GetBiasFromUTC (regTest.GetDate (), *regTest.GetTimeOfDay ()) == -4 * 60 * 60) {
                     DbgTrace ("Eastern US timezone");
-                    VerifyTestResult ((regTest.AsLocalTime () == DateTime{Date{Year{2020}, MonthOfYear::eSeptember, DayOfMonth{1}}, TimeOfDay{20 - 4, 42, 41}, Timezone::kLocalTime}));
+                    VerifyTestResult ((regTest.AsLocalTime () == DateTime{Date{Year{2020}, September, DayOfMonth{1}}, TimeOfDay{20 - 4, 42, 41}, Timezone::kLocalTime}));
                 }
                 else {
                     DbgTrace ("other timezone: offset=%d", Timezone::kLocalTime.GetBiasFromUTC (regTest.GetDate (), *regTest.GetTimeOfDay ()));
@@ -497,7 +497,7 @@ namespace {
         {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
-            Date                           d = Date{Year{1903}, MonthOfYear::eApril, DayOfMonth{5}};
+            Date                           d = Date{Year{1903}, April, DayOfMonth{5}};
             DateTime                       dt{d, TimeOfDay{101}};
 
             {
@@ -516,7 +516,7 @@ namespace {
             //TOFIX!VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
         }
         {
-            Date d = Date{Year{1903}, MonthOfYear::eApril, DayOfMonth{6}};
+            Date d = Date{Year{1903}, April, DayOfMonth{6}};
             TestRoundTripFormatThenParseNoChange_ (d);
             DateTime dt{d, TimeOfDay{101}};
             TestRoundTripFormatThenParseNoChange_ (dt);
@@ -588,15 +588,15 @@ namespace {
             };
 
             // Parse eRFC1123
-            VerifyTestResult (DateTime::Parse (L"Wed, 09 Jun 2021 10:18:14 GMT", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));
+            VerifyTestResult (DateTime::Parse (L"Wed, 09 Jun 2021 10:18:14 GMT", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));
             // from https://www.feedvalidator.org/docs/error/InvalidRFC2822Date.html
-            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 08:00:00 EST", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
-            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 13:00:00 GMT", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
-            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 15:00:00 +0200", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 08:00:00 EST", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 13:00:00 GMT", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 15:00:00 +0200", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
 
-            VerifyTestResult (DateTime::Parse (L"Tue, 6 Nov 2018 06:25:51 -0800 (PST)", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2018}, MonthOfYear::eNovember, DayOfMonth{6}}, TimeOfDay{6, 25, 51}, Timezone (-8 * 60)}));
+            VerifyTestResult (DateTime::Parse (L"Tue, 6 Nov 2018 06:25:51 -0800 (PST)", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2018}, November, DayOfMonth{6}}, TimeOfDay{6, 25, 51}, Timezone (-8 * 60)}));
 
-            roundTripD (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC});
+            roundTripD (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC});
 
             // Careful with these, because there are multiple valid string representations for a given date
             roundTripS (L"Wed, 02 Oct 2002 13:00:00 GMT");
@@ -657,7 +657,7 @@ namespace {
             }
             try {
                 DateTime dt = DateTime::Parse (L"1906-05-12 12:00:00+00", DateTime::kISO8601Format);    //allowed to use space or 't'
-                VerifyTestResult ((dt.GetDate () == Date{Year(1906), MonthOfYear::eMay, DayOfMonth::e12}));
+                VerifyTestResult ((dt.GetDate () == Date{Year(1906), May, DayOfMonth::e12}));
                 VerifyTestResult ((dt.GetTimeOfDay () == TimeOfDay {12, 0, 0}));
                 VerifyTestResult (dt.GetTimezone ()->GetBiasFromUTC (dt.GetDate (), *dt.GetTimeOfDay ()) == 0);
             }
@@ -666,7 +666,7 @@ namespace {
             }
             try {
                 DateTime dt = DateTime::Parse (L"1906-05-12T12:00:00+00", DateTime::kISO8601Format);
-                VerifyTestResult ((dt.GetDate () == Date{Year(1906), MonthOfYear::eMay, DayOfMonth::e12}));
+                VerifyTestResult ((dt.GetDate () == Date{Year(1906), May, DayOfMonth::e12}));
                 VerifyTestResult ((dt.GetTimeOfDay () == TimeOfDay {12, 0, 0}));
                 VerifyTestResult (dt.GetTimezone ()->GetBiasFromUTC (dt.GetDate (), *dt.GetTimeOfDay ()) == 0);
             }
@@ -684,23 +684,23 @@ namespace {
     {
         TraceContextBumper ctx{"Test_5_DateTimeTimeT_"};
         {
-            DateTime d = Date{Year{2000}, MonthOfYear::eApril, DayOfMonth{20}};
+            DateTime d = Date{Year{2000}, April, DayOfMonth{20}};
             VerifyTestResult (d.As<time_t> () == 956188800); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            DateTime d = DateTime{Date{Year{1995}, MonthOfYear::eJune, DayOfMonth{4}}, TimeOfDay::Parse (L"3pm", locale{})};
+            DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse (L"3pm", locale{})};
             VerifyTestResult (d.As<time_t> () == 802278000); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            DateTime d = DateTime{Date{Year{1995}, MonthOfYear::eJune, DayOfMonth{4}}, TimeOfDay::Parse (L"3pm")};
+            DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse (L"3pm")};
             VerifyTestResult (d.As<time_t> () == 802278000); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            DateTime d = DateTime{Date{Year{1995}, MonthOfYear::eJune, DayOfMonth{4}}, TimeOfDay::Parse (L"3am")};
+            DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse (L"3am")};
             VerifyTestResult (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            DateTime d = DateTime{Date{Year{1995}, MonthOfYear::eJune, DayOfMonth{4}}, TimeOfDay::Parse (L"3:00")};
+            DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse (L"3:00")};
             VerifyTestResult (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
@@ -866,17 +866,17 @@ namespace {
     {
         TraceContextBumper ctx{"Test_8_DateTimeWithDuration_"};
         {
-            DateTime d = DateTime{Date{Year{1995}, MonthOfYear::eJune, DayOfMonth{4}}, TimeOfDay::Parse (L"3:00")};
+            DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse (L"3:00")};
             VerifyTestResult (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
             const Duration k30Days = Duration{L"P30D"};
             DateTime       d2      = d + k30Days;
             VerifyTestResult (d2.GetDate ().GetYear () == Year{1995});
-            VerifyTestResult (d2.GetDate ().GetMonth () == MonthOfYear::eJuly);
+            VerifyTestResult (d2.GetDate ().GetMonth () == July);
             VerifyTestResult (d2.GetDate ().GetDayOfMonth () == DayOfMonth{4});
             VerifyTestResult (d2.GetTimeOfDay () == d.GetTimeOfDay ());
         }
         {
-            DateTime n1 = DateTime{Date{Year{2015}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{19, 18, 42}, Timezone::kLocalTime};
+            DateTime n1 = DateTime{Date{Year{2015}, June, DayOfMonth{9}}, TimeOfDay{19, 18, 42}, Timezone::kLocalTime};
             DateTime n2 = n1 - Duration{L"P100Y"};
             VerifyTestResult (n2.GetDate ().GetYear () == Year ((int)n1.GetDate ().GetYear () - 100));
 #if 0
@@ -903,7 +903,7 @@ namespace {
          *  @see https://stroika.atlassian.net/browse/STK-634
          */
         {
-            DateTime                        n     = DateTime{Date{Year{2011}, MonthOfYear::eDecember, DayOfMonth{30}}, TimeOfDay::Parse (L"1 pm", locale::classic ()), Timezone::kLocalTime};
+            DateTime                        n     = DateTime{Date{Year{2011}, December, DayOfMonth{30}}, TimeOfDay::Parse (L"1 pm", locale::classic ()), Timezone::kLocalTime};
             [[maybe_unused]] optional<bool> isDst = n.IsDaylightSavingsTime ();
             DateTime                        n2    = n.AddDays (180);
             // This verify was wrong. Consider a system on GMT! Besides that - its still not reliable because DST doesnt end 180 days exactly apart.
@@ -969,12 +969,12 @@ namespace {
             VerifyTestResult (d2.GetUpperBound () == Date::kMax);
         }
         {
-            DiscreteRange<Date> dr{Date{Year{1903}, MonthOfYear::eApril, DayOfMonth{5}}, Date{Year{1903}, MonthOfYear::eApril, DayOfMonth{6}}};
+            DiscreteRange<Date> dr{Date{Year{1903}, April, DayOfMonth{5}}, Date{Year{1903}, April, DayOfMonth{6}}};
             unsigned int        i = 0;
             for (Date d : dr) {
                 ++i;
                 VerifyTestResult (d.GetYear () == Year{1903});
-                VerifyTestResult (d.GetMonth () == MonthOfYear::eApril);
+                VerifyTestResult (d.GetMonth () == April);
                 if (i == 1) {
                     VerifyTestResult (d.GetDayOfMonth () == DayOfMonth{5});
                 }
@@ -985,12 +985,12 @@ namespace {
             VerifyTestResult (i == 2);
         }
         {
-            DiscreteRange<Date> dr{Date{Year{1903}, MonthOfYear::eApril, DayOfMonth{5}}, Date{Year{1903}, MonthOfYear::eApril, DayOfMonth{6}}};
+            DiscreteRange<Date> dr{Date{Year{1903}, April, DayOfMonth{5}}, Date{Year{1903}, April, DayOfMonth{6}}};
             unsigned int        i = 0;
             for (Date d : dr.Elements ()) {
                 ++i;
                 VerifyTestResult (d.GetYear () == Year{1903});
-                VerifyTestResult (d.GetMonth () == MonthOfYear::eApril);
+                VerifyTestResult (d.GetMonth () == April);
                 if (i == 1) {
                     VerifyTestResult (d.GetDayOfMonth () == DayOfMonth{5});
                 }
@@ -1030,10 +1030,10 @@ namespace {
             VerifyTestResult (d2.GetUpperBound () == DateTime::kMax);
         }
         {
-            Range<DateTime> d1{DateTime{Date{Year{2000}, MonthOfYear::eApril, DayOfMonth{20}}}, DateTime{Date{Year{2000}, MonthOfYear::eApril, DayOfMonth{22}}}};
+            Range<DateTime> d1{DateTime{Date{Year{2000}, April, DayOfMonth{20}}}, DateTime{Date{Year{2000}, April, DayOfMonth{22}}}};
             VerifyTestResult (d1.GetDistanceSpanned () / 2 == Duration{"PT1D"});
             // SEE https://stroika.atlassian.net/browse/STK-514 for accuracy of compare (sb .1 or less)
-            VerifyTestResult (Math::NearlyEquals (d1.GetMidpoint (), Date{Year{2000}, MonthOfYear::eApril, DayOfMonth{21}}, DurationSecondsType{2}));
+            VerifyTestResult (Math::NearlyEquals (d1.GetMidpoint (), Date{Year{2000}, April, DayOfMonth{21}}, DurationSecondsType{2}));
         }
     }
 }

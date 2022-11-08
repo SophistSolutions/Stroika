@@ -17,14 +17,35 @@ namespace Stroika::Foundation::Time {
      ***************************** MonthOfYear **************************************
      ********************************************************************************
      */
-    inline int operator- (MonthOfYear m1, MonthOfYear m2)
+    constexpr MonthOfYear::MonthOfYear (month m, DataExchange::ValidationStrategy validationStrategy)
+        : month{m}
     {
-        return static_cast<int> (m1) - static_cast<int> (m2);
+        // stdc++ allows this to contain any number 1..255 (queer)
+        if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
+            if (not ok ()) {
+                Execution::Throw (Date::FormatException::kThe);
+            }
+        }
+        Require (ok ());
+    }
+    constexpr MonthOfYear::MonthOfYear (int m, DataExchange::ValidationStrategy validationStrategy)
+        : month{static_cast<unsigned int> (m)}
+    {
+        if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
+            if (m <= 0 or not ok ()) {
+                Execution::Throw (Date::FormatException::kThe);
+            }
+        }
+        Require (ok ());
+    }
+    constexpr MonthOfYear::operator int () const
+    {
+        return (int)this->month::operator unsigned int ();
     }
 
     /*
      ********************************************************************************
-     ***************************** DayOfMonth **************************************
+     ***************************** DayOfMonth ***************************************
      ********************************************************************************
      */
     inline int operator- (DayOfMonth d1, DayOfMonth d2)
@@ -88,7 +109,7 @@ namespace Stroika::Foundation::Time {
          *
          * (This code originally from NIHCL)
          */
-        Require (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (month > MonthOfYear::eSeptember or (month == MonthOfYear::eSeptember and static_cast<int> (day) >= 14))));
+        Require (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (month > September or (month == September and static_cast<int> (day) >= 14))));
 
         if (static_cast<int> (month) > 2) {
             month = static_cast<MonthOfYear> (static_cast<int> (month) - 3);
@@ -104,7 +125,7 @@ namespace Stroika::Foundation::Time {
     constexpr inline Date::JulianRepType Date::Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
     {
         // 'Safe' version just avoids require that date values are legit for julian date range. If date would be invalid - return kEmptyJulianRep.
-        if (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (month > MonthOfYear::eSeptember or (month == MonthOfYear::eSeptember and static_cast<int> (day) >= 14)))) {
+        if (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (month > September or (month == September and static_cast<int> (day) >= 14)))) {
             return jday_ (month, day, year);
         }
         else {
@@ -131,7 +152,7 @@ namespace Stroika::Foundation::Time {
     {
         // Gregorian calendar started on Sep. 14, 1752
         Require (year >= Year::eFirstYear);
-        Require (year > Year{1752} or (month > MonthOfYear::eSeptember) or (month == MonthOfYear::eSeptember and day >= DayOfMonth{14}));
+        Require (year > Year{1752} or (month > September) or (month == September and day >= DayOfMonth{14}));
     }
     constexpr inline Date::Date (Year year, MonthOfYear month, DayOfMonth day, DataExchange::ValidationStrategy validationStrategy)
         : fJulianDateRep_{0}
@@ -140,13 +161,13 @@ namespace Stroika::Foundation::Time {
             if (not(year >= Year::eFirstYear)) {
                 Execution::Throw (FormatException::kThe);
             }
-            if (not(year > Year{1752} or (month > MonthOfYear::eSeptember) or (month == MonthOfYear::eSeptember and day >= DayOfMonth{14}))) {
+            if (not(year > Year{1752} or (month > September) or (month == September and day >= DayOfMonth{14}))) {
                 Execution::Throw (FormatException::kThe);
             }
         }
         // Gregorian calendar started on Sep. 14, 1752
         Require (year >= Year::eFirstYear);
-        Require (year > Year{1752} or (month > MonthOfYear::eSeptember) or (month == MonthOfYear::eSeptember and day >= DayOfMonth{14}));
+        Require (year > Year{1752} or (month > September) or (month == September and day >= DayOfMonth{14}));
         fJulianDateRep_ = jday_ (month, day, year);
     }
     inline constexpr Date::JulianRepType Date::GetJulianRep () const
@@ -292,24 +313,6 @@ namespace Stroika::Foundation::Configuration {
             {Stroika::Foundation::Time::DayOfWeek::eThursday, L"Thursday"},
             {Stroika::Foundation::Time::DayOfWeek::eFriday, L"Friday"},
             {Stroika::Foundation::Time::DayOfWeek::eSaturday, L"Saturday"},
-        }}};
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
-    template <>
-#endif
-    constexpr EnumNames<Stroika::Foundation::Time::MonthOfYear> DefaultNames<Stroika::Foundation::Time::MonthOfYear>::k{
-        EnumNames<Stroika::Foundation::Time::MonthOfYear>::BasicArrayInitializer{{
-            {Stroika::Foundation::Time::MonthOfYear::eJanuary, L"January"},
-            {Stroika::Foundation::Time::MonthOfYear::eFebruary, L"February"},
-            {Stroika::Foundation::Time::MonthOfYear::eMarch, L"March"},
-            {Stroika::Foundation::Time::MonthOfYear::eApril, L"April"},
-            {Stroika::Foundation::Time::MonthOfYear::eMay, L"May"},
-            {Stroika::Foundation::Time::MonthOfYear::eJune, L"June"},
-            {Stroika::Foundation::Time::MonthOfYear::eJuly, L"July"},
-            {Stroika::Foundation::Time::MonthOfYear::eAugust, L"August"},
-            {Stroika::Foundation::Time::MonthOfYear::eSeptember, L"September"},
-            {Stroika::Foundation::Time::MonthOfYear::eOctober, L"October"},
-            {Stroika::Foundation::Time::MonthOfYear::eNovember, L"November"},
-            {Stroika::Foundation::Time::MonthOfYear::eDecember, L"December"},
         }}};
 
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy

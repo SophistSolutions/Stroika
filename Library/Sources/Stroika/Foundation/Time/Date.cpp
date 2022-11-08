@@ -258,7 +258,7 @@ DayOfWeek Date::GetDayOfWeek () const
     unsigned int weekdayOfJan1 = R (1 + 5 * R (y - 1, 4) + 4 * R (y - 1, 100) + 6 * R (y - 1, 400), 7);
     // this assumes Sunday is ZERO and the rest of the days follow it...
 
-    unsigned int month0 = static_cast<unsigned int> (GetMonth () - MonthOfYear::eJanuary);
+    unsigned int month0 = static_cast<unsigned int> (GetMonth ()) - static_cast<unsigned int> (January);
 
     static constexpr unsigned int kDayOfWeekOffsetPerMonth_[12] = {
         3,
@@ -302,7 +302,7 @@ template <>
  *
  * (This code originally from NIHCL)
  */
-tuple<MonthOfYear,DayOfMonth,Year> Date::mdy () const
+tuple<MonthOfYear, DayOfMonth, Year> Date::mdy () const
 {
     JulianRepType m;
     JulianRepType d;
@@ -329,9 +329,8 @@ tuple<MonthOfYear,DayOfMonth,Year> Date::mdy () const
         m -= 9;
         ++y;
     }
-    Ensure (1 <= m and m <= 12);
     Ensure (1 <= d and d <= 31);
-    return make_tuple (static_cast<MonthOfYear> (m), static_cast<DayOfMonth> (d), static_cast<Year> (y));
+    return make_tuple (MonthOfYear{m}, static_cast<DayOfMonth> (d), static_cast<Year> (y));
 }
 
 #if qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug
@@ -385,7 +384,7 @@ int Time::YearDifference (const Date& lhs, const Date& rhs)
 {
     const auto [lm, ld, ly] = lhs.mdy ();
     const auto [rm, rd, ry] = rhs.mdy ();
-    int diff = static_cast<int> (ly) - static_cast<int> (ry);
+    int diff                = static_cast<int> (ly) - static_cast<int> (ry);
     if (lm < rm or (lm == rm and ld < rd)) {
         diff--;
     }
