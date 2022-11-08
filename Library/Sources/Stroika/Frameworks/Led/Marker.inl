@@ -130,12 +130,12 @@ namespace Stroika::Frameworks::Led {
 
     //  class   MarkerOwner::UpdateInfo;
     inline MarkerOwner::UpdateInfo::UpdateInfo (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount, bool textModified, bool realContentUpdate)
-        : fReplaceFrom (from)
-        , fReplaceTo (to)
-        , fTextInserted (withWhat)
-        , fTextLength (withWhatCharCount)
-        , fTextModified (textModified)
-        , fRealContentUpdate (realContentUpdate)
+        : fReplaceFrom{from}
+        , fReplaceTo{to}
+        , fTextInserted {withWhat)
+        , fTextLength {withWhatCharCount}
+        , fTextModified {textModified}
+        , fRealContentUpdate {realContentUpdate}
     {
     }
     inline size_t MarkerOwner::UpdateInfo::GetResultingRHS () const
@@ -203,8 +203,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Call anytime, but preferably after we've finished doing a bunch of marker deletions.
         See @'MarkerMortuary<MARKER>::AccumulateMarkerForDeletion' for more information.</p>
     */
-    void
-    MarkerMortuary<MARKER>::FinalizeMarkerDeletions () noexcept
+    void MarkerMortuary<MARKER>::FinalizeMarkerDeletions () noexcept
     {
         if (fMarkersToBeDeleted.size () != 0) {
             MarkerOwner* owner = static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ();
