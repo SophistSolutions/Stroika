@@ -133,6 +133,9 @@ namespace Stroika::Foundation::Time {
     };
 
     /**
+     *  \brief Simple wrapper on std::chrono::day, with some helpful validation properties (assures constructed 'ok'). But not necessary to use - use just 'day' in most places
+     * 
+     *  \note - DayOfMonth was an enum in Stroika v2.1, so this is a significant change.
      */
     struct DayOfMonth : day {
         /**
@@ -143,15 +146,15 @@ namespace Stroika::Foundation::Time {
         constexpr DayOfMonth (int d, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
-        [[deprecated ("Since Stroika v3.0d1, use day{1}")]] static constexpr day e1{1};
-        [[deprecated ("Since Stroika v3.0d1, use day{2}")]] static constexpr day e2{2};
-        [[deprecated ("Since Stroika v3.0d1, use day{3}")]] static constexpr day e3{3};
-        [[deprecated ("Since Stroika v3.0d1, use day{4}")]] static constexpr day e4{4};
-        [[deprecated ("Since Stroika v3.0d1, use day{5}")]] static constexpr day e5{5};
-        [[deprecated ("Since Stroika v3.0d1, use day{6}")]] static constexpr day e6{6};
-        [[deprecated ("Since Stroika v3.0d1, use day{7}")]] static constexpr day e7{7};
-        [[deprecated ("Since Stroika v3.0d1, use day{8}")]] static constexpr day e8{8};
-        [[deprecated ("Since Stroika v3.0d1, use day{9}")]] static constexpr day e9{9};
+        [[deprecated ("Since Stroika v3.0d1, use day{1}")]] static constexpr day  e1{1};
+        [[deprecated ("Since Stroika v3.0d1, use day{2}")]] static constexpr day  e2{2};
+        [[deprecated ("Since Stroika v3.0d1, use day{3}")]] static constexpr day  e3{3};
+        [[deprecated ("Since Stroika v3.0d1, use day{4}")]] static constexpr day  e4{4};
+        [[deprecated ("Since Stroika v3.0d1, use day{5}")]] static constexpr day  e5{5};
+        [[deprecated ("Since Stroika v3.0d1, use day{6}")]] static constexpr day  e6{6};
+        [[deprecated ("Since Stroika v3.0d1, use day{7}")]] static constexpr day  e7{7};
+        [[deprecated ("Since Stroika v3.0d1, use day{8}")]] static constexpr day  e8{8};
+        [[deprecated ("Since Stroika v3.0d1, use day{9}")]] static constexpr day  e9{9};
         [[deprecated ("Since Stroika v3.0d1, use day{10}")]] static constexpr day e10{10};
         [[deprecated ("Since Stroika v3.0d1, use day{11}")]] static constexpr day e11{11};
         [[deprecated ("Since Stroika v3.0d1, use day{12}")]] static constexpr day e12{12};
@@ -174,15 +177,6 @@ namespace Stroika::Foundation::Time {
         [[deprecated ("Since Stroika v3.0d1, use day{29}")]] static constexpr day e29{29};
         [[deprecated ("Since Stroika v3.0d1, use day{30}")]] static constexpr day e30{30};
         [[deprecated ("Since Stroika v3.0d1, use day{31}")]] static constexpr day e31{31};
-    };
-
-    /**
-     */
-    enum class DayOfYear : uint16_t {
-        eFirstDayOfYear = 1,
-        eLastDayOfYear  = 366,
-
-        Stroika_Define_Enum_Bounds (eFirstDayOfYear, eLastDayOfYear)
     };
 
     /**

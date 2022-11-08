@@ -197,13 +197,6 @@ Date Date::AsDate_ (const ::tm& when)
 
 Date Date::AddDays (SignedJulianRepType dayCount) const
 {
-    /*
-     * empty () calls to AddDays were interpretted as DateTime::GetToday () until Stroika v2.1d6;
-     *  surprising semantics - say what you mean - don't use empty for this
-     *  And it violates documented princple that 'empty' means like negative infinity, a little less than kMin.
-     *      WAS:
-     *          Date result = empty () ? DateTime::GetToday () : *this;
-     */
     Date result = *this;
     result.fJulianDateRep_ += dayCount;
     if (result.fJulianDateRep_ < Date::kMinJulianRep) [[unlikely]] {

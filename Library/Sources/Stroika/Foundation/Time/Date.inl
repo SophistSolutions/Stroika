@@ -12,9 +12,16 @@
 
 namespace Stroika::Foundation::Time {
 
+    enum class [[deprecated ("Since Stroika v3.0d1, unused and use std::chrono")]] DayOfYear : uint16_t {
+        eFirstDayOfYear = 1,
+        eLastDayOfYear  = 366,
+
+        Stroika_Define_Enum_Bounds (eFirstDayOfYear, eLastDayOfYear)
+    };
+
     /*
      ********************************************************************************
-     ******************************* DayOfWeek **************************************
+     ********************************** DayOfWeek ***********************************
      ********************************************************************************
      */
     constexpr DayOfWeek::DayOfWeek (weekday w, DataExchange::ValidationStrategy validationStrategy)
@@ -45,7 +52,7 @@ namespace Stroika::Foundation::Time {
 
     /*
      ********************************************************************************
-     ******************************* MonthOfYear ************************************
+     ********************************** MonthOfYear *********************************
      ********************************************************************************
      */
     constexpr MonthOfYear::MonthOfYear (month m, DataExchange::ValidationStrategy validationStrategy)
@@ -178,7 +185,7 @@ namespace Stroika::Foundation::Time {
     inline constexpr Date::Date (JulianRepType julianRep)
         : fJulianDateRep_{julianRep}
     {
-        Require ((kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep));
+        Require (kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep);
     }
     inline constexpr Date::Date (JulianRepType julianRep, DataExchange::ValidationStrategy validationStrategy)
         : fJulianDateRep_{julianRep}
@@ -188,7 +195,7 @@ namespace Stroika::Foundation::Time {
                 Execution::Throw (FormatException::kThe);
             }
         }
-        Require ((kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep));
+        Require (kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep);
     }
     constexpr inline Date::Date (Year year, month m, day d)
         : fJulianDateRep_{jday_ (m, d, year)}
