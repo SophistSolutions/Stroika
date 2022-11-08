@@ -41,7 +41,7 @@ namespace {
         };
         tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;
         tm.tm_mon                          = static_cast<unsigned int> (d.GetMonth ()) - 1;
-        tm.tm_mday                         = static_cast<int> (d.GetDayOfMonth ());
+        tm.tm_mday                         = static_cast<unsigned int> (d.GetDayOfMonth ());
         unsigned int totalSecondsRemaining = tod.has_value () ? tod->GetAsSecondsCount () : 0;
         tm.tm_hour                         = totalSecondsRemaining / (60 * 60);
         totalSecondsRemaining -= tm.tm_hour * 60 * 60;

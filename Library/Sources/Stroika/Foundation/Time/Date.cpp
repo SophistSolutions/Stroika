@@ -35,7 +35,7 @@ namespace {
         ::tm tm{};
         tm.tm_year = static_cast<int> (d.GetYear ()) - kTM_Year_RelativeToYear_;
         tm.tm_mon  = static_cast<unsigned int> (d.GetMonth ()) - 1;
-        tm.tm_mday = static_cast<int> (d.GetDayOfMonth ());
+        tm.tm_mday = static_cast<unsigned int> (d.GetDayOfMonth ());
         return tm;
     }
 }
@@ -75,20 +75,20 @@ optional<Date> Date::LocaleFreeParseQuietly_kMonthDayYearFormat_ (const wstring&
     // parse locale independent "%m/%d/%Y" - from - https://en.cppreference.com/w/cpp/locale/time_get/get - including validation
     int year = 0;
     int m    = 0;
-    int day  = 0;
+    int d    = 0;
     DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
     unsigned int pos{};                       // doesn't count fixed characters, just % characters
-    int          nItems = ::swscanf (rep.c_str (), L"%d/%d/%d%n", &m, &day, &year, &pos);
+    int          nItems = ::swscanf (rep.c_str (), L"%d/%d/%d%n", &m, &d, &year, &pos);
     DISABLE_COMPILER_MSC_WARNING_END (4996)
     if (nItems == 3) {
         if (consumedCharsInStringUpTo != nullptr) {
             Assert (pos + 2 < rep.length ());
             *consumedCharsInStringUpTo = pos + 2;
         }
-        if ((1 <= m and m <= 12) and (1 <= day and day <= 31) and (year > 0)) {
+        if ((1 <= m and m <= 12) and (1 <= d and d <= 31) and (year > 0)) {
             try {
                 // above check is NEARLY good enuf but not quite, so we need to try/catch here to do this quietly. BUT - should really do more to avoid first exception
-                return Date{Year (year), month{static_cast<unsigned int> (m)}, DayOfMonth (day), DataExchange::ValidationStrategy::eThrow};
+                return Date{Year (year), month{static_cast<unsigned int> (m)}, day{static_cast<unsigned int> (d)}, DataExchange::ValidationStrategy::eThrow};
             }
             catch (...) {
                 return nullopt;
@@ -188,7 +188,11 @@ String Date::Format (const locale& l, const String& formatPattern) const
 
 Date Date::AsDate_ (const ::tm& when)
 {
-    return Date{Year (when.tm_year + kTM_Year_RelativeToYear_), MonthOfYear{when.tm_mon + 1}, DayOfMonth (when.tm_mday), DataExchange::ValidationStrategy::eThrow};
+    return Date{
+        Year (when.tm_year + kTM_Year_RelativeToYear_),
+        MonthOfYear{when.tm_mon + 1, DataExchange::ValidationStrategy::eThrow},
+        DayOfMonth{when.tm_mday, DataExchange::ValidationStrategy::eThrow},
+        DataExchange::ValidationStrategy::eThrow};
 }
 
 Date Date::AddDays (SignedJulianRepType dayCount) const
@@ -226,9 +230,9 @@ month Date::GetMonth () const
     return get<0> (mdy ());
 }
 
-DayOfMonth Date::GetDayOfMonth () const
+day Date::GetDayOfMonth () const
 {
-    Ensure (1 <= static_cast<int> (get<1> (mdy ())) and static_cast<int> (get<1> (mdy ())) <= 31);
+    Ensure (1 <= static_cast<unsigned int> (get<1> (mdy ())) and static_cast<unsigned int> (get<1> (mdy ())) <= 31);
     return get<1> (mdy ());
 }
 
@@ -272,7 +276,7 @@ weekday Date::GetDayOfWeek () const
     }
 
     // add which day of the month (offset from first)
-    targetDayOfWeek += (GetDayOfMonth () - DayOfMonth::e1);
+    targetDayOfWeek += (GetDayOfMonth () - day{1}).count ();
 
     return DayOfWeek{R (targetDayOfWeek, 7) + Sunday.c_encoding ()};
 }
@@ -291,7 +295,7 @@ template <>
  *
  * (This code originally from NIHCL)
  */
-tuple<month, DayOfMonth, Year> Date::mdy () const
+tuple<month, day, Year> Date::mdy () const
 {
     JulianRepType m;
     JulianRepType d;
@@ -319,7 +323,7 @@ tuple<month, DayOfMonth, Year> Date::mdy () const
         ++y;
     }
     Ensure (1 <= d and d <= 31);
-    return make_tuple (MonthOfYear{m}, static_cast<DayOfMonth> (d), static_cast<Year> (y));
+    return make_tuple (MonthOfYear{m}, DayOfMonth{d}, static_cast<Year> (y));
 }
 
 #if qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug

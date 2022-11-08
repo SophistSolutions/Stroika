@@ -102,7 +102,7 @@ namespace {
         ::SYSTEMTIME st{};
         const auto   mdy = date.mdy ();
         st.wMonth        = static_cast<::WORD> (static_cast<unsigned int> (std::get<0> (mdy)));
-        st.wDay          = static_cast<::WORD> (std::get<1> (mdy));
+        st.wDay          = static_cast<::WORD> (static_cast<unsigned int> (std::get<1> (mdy)));
         st.wYear         = static_cast<::WORD> (std::get<2> (mdy));
         return st;
     }
@@ -815,7 +815,7 @@ time_t DateTime::As () const
     ::tm tm{};
     tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;
     tm.tm_mon                          = static_cast<unsigned int> (d.GetMonth ()) - 1;
-    tm.tm_mday                         = static_cast<int> (d.GetDayOfMonth ());
+    tm.tm_mday                         = static_cast<unsigned int> (d.GetDayOfMonth ());
     unsigned int totalSecondsRemaining = GetSecondCount_ (useDT.GetTimeOfDay ());
     tm.tm_hour                         = totalSecondsRemaining / (60 * 60);
     totalSecondsRemaining -= tm.tm_hour * 60 * 60;
@@ -837,7 +837,7 @@ tm DateTime::As () const
     tm tm{};
     tm.tm_year                         = static_cast<int> (fDate_.GetYear ()) - 1900;
     tm.tm_mon                          = static_cast<unsigned int> (fDate_.GetMonth ()) - 1;
-    tm.tm_mday                         = static_cast<int> (fDate_.GetDayOfMonth ());
+    tm.tm_mday                         = static_cast<unsigned int> (fDate_.GetDayOfMonth ());
     tm.tm_wday                         = fDate_.GetDayOfWeek ().c_encoding ();
     unsigned int totalSecondsRemaining = fTimeOfDay_.has_value () ? fTimeOfDay_->GetAsSecondsCount () : 0;
     tm.tm_hour                         = totalSecondsRemaining / (60 * 60);

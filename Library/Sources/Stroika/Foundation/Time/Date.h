@@ -69,6 +69,8 @@ namespace Stroika::Foundation::Time {
     using chrono::October;
     using chrono::September;
 
+    using chrono::weekday;
+
     using chrono::Friday;
     using chrono::Monday;
     using chrono::Saturday;
@@ -76,7 +78,8 @@ namespace Stroika::Foundation::Time {
     using chrono::Thursday;
     using chrono::Tuesday;
     using chrono::Wednesday;
-    using chrono::weekday;
+
+    using chrono::day;
 
     /**
      *  \brief Simple wrapper on std::chrono::weekday, with some helpful validation properties (assures constructed 'ok'). But not necessary to use - use just 'weekday' in most places
@@ -108,7 +111,7 @@ namespace Stroika::Foundation::Time {
      */
     struct MonthOfYear : month {
         /**
-         *  For the purpose of integer constructors, 1==January, 2==February and so on
+         *  For the purpose of integer constructors, 1==January, 2==February and so on (no zero).
          */
         constexpr MonthOfYear (month m, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
         constexpr MonthOfYear (unsigned int m, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
@@ -131,42 +134,32 @@ namespace Stroika::Foundation::Time {
 
     /**
      */
-    enum class DayOfMonth : uint8_t {
-        e1 = 1,
-        e2,
-        e3,
-        e4,
-        e5,
-        e6,
-        e7,
-        e8,
-        e9,
-        e10,
-        e11 = 11,
-        e12,
-        e13,
-        e14,
-        e15,
-        e16,
-        e17,
-        e18,
-        e19,
-        e20,
-        e21 = 21,
-        e22,
-        e23,
-        e24,
-        e25,
-        e26,
-        e27,
-        e28,
-        e29,
-        e30,
-        e31,
+    struct DayOfMonth : day {
+        /**
+         *  For the purpose of integer constructors, 1==1st, 2==2nd, and so on (no zero)
+         */
+        constexpr DayOfMonth (day d, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        constexpr DayOfMonth (unsigned int d, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        constexpr DayOfMonth (int d, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
-        Stroika_Define_Enum_Bounds (e1, e31)
+    public:
+        [[deprecated ("Since Stroika v3.0d1, use chrono::e1")]] static constexpr day e1{1};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::e2")]] static constexpr day e2{2};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::e3")]] static constexpr day e3{3};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::e4")]] static constexpr day e4{4};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::e5")]] static constexpr day e5{5};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::e6")]] static constexpr day e6{6};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::e7")]] static constexpr day e7{7};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::e8")]] static constexpr day e8{8};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::e9")]] static constexpr day e9{9};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::e10")]] static constexpr day e10{10};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::e11")]] static constexpr day e11{11};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::e12")]] static constexpr day e12{12};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::e13")]] static constexpr day e13{13};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::e14")]] static constexpr day e14{14};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::e15")]] static constexpr day e15{15};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::e16")]] static constexpr day e16{16};
     };
-    int operator- (DayOfMonth d1, DayOfMonth d2);
 
     /**
      */
@@ -275,8 +268,8 @@ namespace Stroika::Foundation::Time {
         constexpr Date (const Date& src)     = default;
         explicit constexpr Date (JulianRepType julianRep);
         explicit constexpr Date (JulianRepType julianRep, DataExchange::ValidationStrategy validationStrategy);
-        constexpr explicit Date (Year year, month m, DayOfMonth day);
-        constexpr explicit Date (Year year, month m, DayOfMonth day, DataExchange::ValidationStrategy validationStrategy);
+        constexpr explicit Date (Year year, month m, day d);
+        constexpr explicit Date (Year year, month m, day d, DataExchange::ValidationStrategy validationStrategy);
 
     public:
         /**
@@ -392,7 +385,7 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          */
-        nonvirtual DayOfMonth GetDayOfMonth () const;
+        nonvirtual day GetDayOfMonth () const;
 
     public:
         /**
@@ -403,7 +396,7 @@ namespace Stroika::Foundation::Time {
         /**
          *  \brief Convert (internal representation) Julian day number to its corresponding Gregorian calendar date
          */
-        nonvirtual tuple<month, DayOfMonth, Year> mdy () const;
+        nonvirtual tuple<month, day, Year> mdy () const;
 
     public:
         /**
@@ -501,19 +494,19 @@ namespace Stroika::Foundation::Time {
         nonvirtual T As () const;
 
     public:
-        [[deprecated ("Since Stroika v3.0d1, use mdy/0")]] void mdy (month* month, DayOfMonth* day, Year* year) const
+        [[deprecated ("Since Stroika v3.0d1, use mdy/0")]] void mdy (month* m, day* d, Year* year) const
         {
-            RequireNotNull (month);
-            RequireNotNull (day);
+            RequireNotNull (m);
+            RequireNotNull (d);
             RequireNotNull (year);
             auto r = mdy ();
-            *month = get<0> (r);
-            *day   = get<1> (r);
+            *m     = get<0> (r);
+            *d     = get<1> (r);
             *year  = get<2> (r);
         }
 
     private:
-        constexpr static JulianRepType jday_ (month m, DayOfMonth day, Year year);
+        constexpr static JulianRepType jday_ (month m, day d, Year year);
 
     private:
         static optional<Date> LocaleFreeParseQuietly_kMonthDayYearFormat_ (const wstring& rep, size_t* consumedCharsInStringUpTo);

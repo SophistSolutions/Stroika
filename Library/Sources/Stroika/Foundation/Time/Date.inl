@@ -76,12 +76,33 @@ namespace Stroika::Foundation::Time {
 
     /*
      ********************************************************************************
-     ***************************** DayOfMonth ***************************************
+     ********************************** DayOfMonth **********************************
      ********************************************************************************
      */
-    inline int operator- (DayOfMonth d1, DayOfMonth d2)
+    constexpr DayOfMonth::DayOfMonth (day d, DataExchange::ValidationStrategy validationStrategy)
+        : day{d}
     {
-        return static_cast<int> (d1) - static_cast<int> (d2);
+        // stdc++ allows this to contain any number 1..255 (queer)
+        if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
+            if (not ok ()) {
+                Execution::Throw (Date::FormatException::kThe);
+            }
+        }
+        Require (ok ());
+    }
+    constexpr DayOfMonth::DayOfMonth (int d, DataExchange::ValidationStrategy validationStrategy)
+        : day{static_cast<unsigned int> (d)}
+    {
+        if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
+            if (d <= 0 or not ok ()) {
+                Execution::Throw (Date::FormatException::kThe);
+            }
+        }
+        Require (ok ());
+    }
+    constexpr DayOfMonth::DayOfMonth (unsigned int d, DataExchange::ValidationStrategy validationStrategy)
+        : DayOfMonth{static_cast<int> (d), validationStrategy}
+    {
     }
 
     /*
@@ -130,7 +151,7 @@ namespace Stroika::Foundation::Time {
      *************************************** Date ***********************************
      ********************************************************************************
      */
-    constexpr inline Date::JulianRepType Date::jday_ (month m, DayOfMonth day, Year year)
+    constexpr inline Date::JulianRepType Date::jday_ (month m, day d, Year year)
     {
         /*
          * Convert Gregorian calendar date to the corresponding Julian day number
@@ -141,7 +162,7 @@ namespace Stroika::Foundation::Time {
          * (This code originally from NIHCL)
          */
         Require (m.ok ());
-        Require (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (m > September or (m == September and static_cast<int> (day) >= 14))));
+        Require (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (m > September or (m == September and d >= day{14}))));
 
         if (static_cast<unsigned int> (m) > 2) {
             m = m - months{3};
@@ -152,7 +173,7 @@ namespace Stroika::Foundation::Time {
         }
         Date::JulianRepType c  = static_cast<int> (year) / 100;
         Date::JulianRepType ya = static_cast<int> (year) - 100 * c;
-        return ((146097 * c) >> 2) + ((1461 * ya) >> 2) + (153 * static_cast<unsigned int> (m) + 2) / 5 + static_cast<int> (day) + 1721119;
+        return ((146097 * c) >> 2) + ((1461 * ya) >> 2) + (153 * static_cast<unsigned int> (m) + 2) / 5 + static_cast<unsigned int> (d) + 1721119;
     }
     inline constexpr Date::Date (JulianRepType julianRep)
         : fJulianDateRep_{julianRep}
@@ -169,28 +190,28 @@ namespace Stroika::Foundation::Time {
         }
         Require ((kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep));
     }
-    constexpr inline Date::Date (Year year, month m, DayOfMonth day)
-        : fJulianDateRep_{jday_ (m, day, year)}
+    constexpr inline Date::Date (Year year, month m, day d)
+        : fJulianDateRep_{jday_ (m, d, year)}
     {
         // Gregorian calendar started on Sep. 14, 1752
         Require (year >= Year::eFirstYear);
-        Require (year > Year{1752} or (m > September) or (m == September and day >= DayOfMonth{14}));
+        Require (year > Year{1752} or (m > September) or (m == September and d >= DayOfMonth{14}));
     }
-    constexpr inline Date::Date (Year year, month m, DayOfMonth day, DataExchange::ValidationStrategy validationStrategy)
+    constexpr inline Date::Date (Year year, month m, day d, DataExchange::ValidationStrategy validationStrategy)
         : fJulianDateRep_{0}
     {
         if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
             if (not(year >= Year::eFirstYear)) {
                 Execution::Throw (FormatException::kThe);
             }
-            if (not(year > Year{1752} or (m > September) or (m == September and day >= DayOfMonth{14}))) {
+            if (not(year > Year{1752} or (m > September) or (m == September and d >= DayOfMonth{14}))) {
                 Execution::Throw (FormatException::kThe);
             }
         }
         // Gregorian calendar started on Sep. 14, 1752
         Require (year >= Year::eFirstYear);
-        Require (year > Year{1752} or (m > September) or (m == September and day >= DayOfMonth{14}));
-        fJulianDateRep_ = jday_ (m, day, year);
+        Require (year > Year{1752} or (m > September) or (m == September and d >= DayOfMonth{14}));
+        fJulianDateRep_ = jday_ (m, d, year);
     }
     inline constexpr Date::JulianRepType Date::GetJulianRep () const
     {
