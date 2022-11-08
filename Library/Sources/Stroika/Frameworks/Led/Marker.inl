@@ -197,7 +197,7 @@ namespace Stroika::Frameworks::Led {
             AccumulateMarkerForDeletion (m);
         }
     }
-#if qCompilerAndStdLib_forwardDeclareTypeConfusesCheckerOfTypesInTemplateChecksTooSoon_Buggy
+#if qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
     void TextStore_RemoveMarkers (TextStore& ts, Marker* const markerArray[], size_t markerCount);
 #endif
     template <typename MARKER>
@@ -218,7 +218,7 @@ namespace Stroika::Frameworks::Led {
             MARKER* const* markersToBeDeleted_ = &fMarkersToBeDeleted.front ();
             Marker* const* markersToBeDeleted  = (Marker* const*)markersToBeDeleted_; // need cast - but safe - cuz array of MARKER* and looking for Marker* - safe cuz const array!
 
-#if qCompilerAndStdLib_forwardDeclareTypeConfusesCheckerOfTypesInTemplateChecksTooSoon_Buggy
+#if qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
             TextStore_RemoveMarkers (textStore, markersToBeDeleted, fMarkersToBeDeleted.size ());
 #else
             textStore.RemoveMarkers (markersToBeDeleted, fMarkersToBeDeleted.size ());
