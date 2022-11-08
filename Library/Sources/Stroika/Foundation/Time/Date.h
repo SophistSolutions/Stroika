@@ -81,6 +81,8 @@ namespace Stroika::Foundation::Time {
 
     using chrono::day;
 
+    using chrono::year;
+
     /**
      *  \brief Simple wrapper on std::chrono::weekday, with some helpful validation properties (assures constructed 'ok'). But not necessary to use - use just 'weekday' in most places
      * 
@@ -181,19 +183,17 @@ namespace Stroika::Foundation::Time {
 
     /**
      */
-    enum class Year : short {
-        eFirstYear = 1752, // Gregorian calendar started on Sep. 14, 1752.
-        eLastfYear = SHRT_MAX - 1,
+    struct Year : year {
+        /**
+         */
+        constexpr Year (year y, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        constexpr Year (unsigned int y, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        constexpr Year (int y, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
-        Stroika_Define_Enum_Bounds (eFirstYear, eLastfYear)
+    public:
+        static constexpr year eFirstYear{1752};
+        static constexpr year eLastfYear{SHRT_MAX - 1};
     };
-    int  operator- (Year y1, Year y2);
-    Year operator+ (Year y1, int offset);
-    template <typename T>
-    T operator% (Year y1, T m);
-
-    bool IsLeapYear (Year y);
-    bool IsLeapYear (int y);
 
     /**
      *  \brief this defines undefined but important properties of the %x (read/write date) format string in stdc++ time_get/time_put

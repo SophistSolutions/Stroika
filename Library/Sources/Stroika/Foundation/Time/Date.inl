@@ -116,6 +116,32 @@ namespace Stroika::Foundation::Time {
      ************************************ Year **************************************
      ********************************************************************************
      */
+    constexpr Year::Year (year y, DataExchange::ValidationStrategy validationStrategy)
+        : year{y}
+    {
+        // stdc++ allows this to contain any number 1..255 (queer)
+        if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
+            if (not ok ()) {
+                Execution::Throw (Date::FormatException::kThe);
+            }
+        }
+        Require (ok ());
+    }
+    constexpr Year::Year (int y, DataExchange::ValidationStrategy validationStrategy)
+        : year{static_cast<unsigned int> (y)}
+    {
+        if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
+            if (y <= 0 or not ok ()) {
+                Execution::Throw (Date::FormatException::kThe);
+            }
+        }
+        Require (ok ());
+    }
+    constexpr Year::Year (unsigned int y, DataExchange::ValidationStrategy validationStrategy)
+        : Year{static_cast<int> (y), validationStrategy}
+    {
+    }
+#if 0
     inline int operator- (Year y1, Year y2)
     {
         return static_cast<int> (y1) - static_cast<int> (y2);
@@ -129,14 +155,18 @@ namespace Stroika::Foundation::Time {
     {
         return static_cast<T> (y1) % m;
     }
+#endif
 
     /*
      ********************************************************************************
      ********************************* IsLeapYear ***********************************
      ********************************************************************************
      */
-    inline bool IsLeapYear (Year y)
+    [[deprecated ("Since Stroika v3.0d1, use year{}.is_leap ()")]] inline bool IsLeapYear (Year y)
     {
+#if 1
+        return y.is_leap ();
+#else
         if (y % 4 == 0) [[unlikely]] {
             if (y % 100 == 0) {
                 return y % 400 == 0;
@@ -146,10 +176,11 @@ namespace Stroika::Foundation::Time {
             }
         }
         return false;
+#endif
     }
-    inline bool IsLeapYear (int y)
+    [[deprecated ("Since Stroika v3.0d1, use year{}.is_leap ()")]] inline bool IsLeapYear (int y)
     {
-        return IsLeapYear (static_cast<Year> (y));
+        return Year{y}.is_leap ();
     }
 
     /*

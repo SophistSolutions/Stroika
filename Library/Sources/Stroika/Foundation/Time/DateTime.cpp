@@ -35,6 +35,10 @@ namespace {
 }
 
 namespace {
+    constexpr int kTM_Year_RelativeToYear_{1900}; // see https://man7.org/linux/man-pages/man3/ctime.3.html
+}
+
+namespace {
     constexpr bool kRequireImbueToUseFacet_ = false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
 }
 
@@ -42,7 +46,7 @@ namespace {
  *  Subtle implementation note:
  *    http://www.cplusplus.com/reference/ctime/tm/
  *
- *          tm.year is years  since 1900!
+ *          tm.year is years  since 1900 (kTM_Year_RelativeToYear_)
  */
 
 #if qPlatform_Windows
@@ -103,7 +107,7 @@ namespace {
         const auto   mdy = date.mdy ();
         st.wMonth        = static_cast<::WORD> (static_cast<unsigned int> (std::get<0> (mdy)));
         st.wDay          = static_cast<::WORD> (static_cast<unsigned int> (std::get<1> (mdy)));
-        st.wYear         = static_cast<::WORD> (std::get<2> (mdy));
+        st.wYear         = static_cast<::WORD> (static_cast<int> (std::get<2> (mdy)));
         return st;
     }
 #endif
@@ -118,15 +122,14 @@ namespace {
         constexpr int kDaysOfMonth_[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
         time_t secs = 0;
-        // tm_year is years since 1900
-        int year = ptm->tm_year + 1900;
+        int    year = ptm->tm_year + kTM_Year_RelativeToYear_;
         for (int y = 1970; y < year; ++y) {
-            secs += (IsLeapYear (y) ? 366 : 365) * kSecondsPerDay_;
+            secs += (chrono::year{y}.is_leap () ? 366 : 365) * kSecondsPerDay_;
         }
         // tm_mon is month from 0..11
         for (int m = 0; m < ptm->tm_mon; ++m) {
             secs += kDaysOfMonth_[m] * kSecondsPerDay_;
-            if (m == 1 && IsLeapYear (year))
+            if (m == 1 && chrono::year{year}.is_leap ())
                 secs += kSecondsPerDay_;
         }
         secs += (ptm->tm_mday - 1) * kSecondsPerDay_;
@@ -165,13 +168,13 @@ DateTime::DateTime (time_t unixEpochTime) noexcept
 #else
     (void)::gmtime_r (&unixEpochTime, &tmTime);
 #endif
-    fDate_      = Date{Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday), DataExchange::ValidationStrategy::eThrow};
+    fDate_      = Date{Year (tmTime.tm_year + kTM_Year_RelativeToYear_), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday), DataExchange::ValidationStrategy::eThrow};
     fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTime.tm_hour), static_cast<unsigned> (tmTime.tm_min), static_cast<unsigned> (tmTime.tm_sec)};
 }
 
 DateTime::DateTime (const ::tm& tmTime, const optional<Timezone>& tz) noexcept
     : fTimezone_{tz}
-    , fDate_{Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday)}
+    , fDate_{Year (tmTime.tm_year + kTM_Year_RelativeToYear_), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday)}
     , fTimeOfDay_{TimeOfDay{static_cast<unsigned> (tmTime.tm_hour), static_cast<unsigned> (tmTime.tm_min), static_cast<unsigned> (tmTime.tm_sec), DataExchange::ValidationStrategy::eThrow}}
 {
 }
@@ -193,7 +196,7 @@ DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noex
 #else
     ::tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe
 #endif
-    fDate_      = Date{Year (tmTimeData->tm_year + 1900), MonthOfYear (tmTimeData->tm_mon + 1), DayOfMonth (tmTimeData->tm_mday), DataExchange::ValidationStrategy::eThrow};
+    fDate_      = Date{Year (tmTimeData->tm_year + kTM_Year_RelativeToYear_), MonthOfYear (tmTimeData->tm_mon + 1), DayOfMonth (tmTimeData->tm_mday), DataExchange::ValidationStrategy::eThrow};
     fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData->tm_hour), static_cast<unsigned> (tmTimeData->tm_min), static_cast<unsigned> (tmTimeData->tm_sec), DataExchange::ValidationStrategy::eThrow};
 }
 
@@ -205,7 +208,7 @@ DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcep
     time_t unixTime = tmTime.tv_sec; // IGNORE tv_usec FOR NOW because we currently don't support fractional seconds in DateTime
     tm     tmTimeData{};
     (void)::gmtime_r (&unixTime, &tmTimeData);
-    fDate_      = Date{Year (tmTimeData.tm_year + 1900), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday), DataExchange::ValidationStrategy::eThrow};
+    fDate_      = Date{Year (tmTimeData.tm_year + kTM_Year_RelativeToYear_), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday), DataExchange::ValidationStrategy::eThrow};
     fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData.tm_hour), static_cast<unsigned> (tmTimeData.tm_min), static_cast<unsigned> (tmTimeData.tm_sec), DataExchange::ValidationStrategy::eThrow};
 }
 #endif
@@ -813,7 +816,7 @@ time_t DateTime::As () const
     }
 
     ::tm tm{};
-    tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;
+    tm.tm_year                         = static_cast<int> (d.GetYear ()) - kTM_Year_RelativeToYear_;
     tm.tm_mon                          = static_cast<unsigned int> (d.GetMonth ()) - 1;
     tm.tm_mday                         = static_cast<unsigned int> (d.GetDayOfMonth ());
     unsigned int totalSecondsRemaining = GetSecondCount_ (useDT.GetTimeOfDay ());
@@ -830,12 +833,12 @@ time_t DateTime::As () const
 template <>
 tm DateTime::As () const
 {
-    if (GetDate ().GetYear () < Year{1900}) [[unlikely]] {
+    if (GetDate ().GetYear () < Year{kTM_Year_RelativeToYear_}) [[unlikely]] {
         static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1900"};
         Execution::Throw (kRangeErrror_);
     }
     tm tm{};
-    tm.tm_year                         = static_cast<int> (fDate_.GetYear ()) - 1900;
+    tm.tm_year                         = static_cast<int> (fDate_.GetYear ()) - kTM_Year_RelativeToYear_;
     tm.tm_mon                          = static_cast<unsigned int> (fDate_.GetMonth ()) - 1;
     tm.tm_mday                         = static_cast<unsigned int> (fDate_.GetDayOfMonth ());
     tm.tm_wday                         = fDate_.GetDayOfWeek ().c_encoding ();

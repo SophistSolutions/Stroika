@@ -239,7 +239,7 @@ weekday Date::GetDayOfWeek () const
      *          R(1+5R(A-1,4)+4R(A-1,100)+6R(A-1,400),7)  
      *              - where {\displaystyle R(y,m)} R(y,m) is the remainder after division of y by m,[6] or y modulo m.
      */
-    unsigned int y             = static_cast<unsigned int> (GetYear ());
+    unsigned int y             = static_cast<unsigned int> (static_cast<int> (GetYear ()));
     auto         R             = [] (unsigned int i, unsigned int r) { return i % r; };
     unsigned int weekdayOfJan1 = R (1 + 5 * R (y - 1, 4) + 4 * R (y - 1, 100) + 6 * R (y - 1, 400), 7);
     // this assumes Sunday is ZERO and the rest of the days follow it...
@@ -264,7 +264,7 @@ weekday Date::GetDayOfWeek () const
     for (unsigned int i = 0; i < month0; ++i) {
         targetDayOfWeek += kDayOfWeekOffsetPerMonth_[i];
     }
-    if (month0 > 1 and IsLeapYear (GetYear ())) {
+    if (month0 > 1 and GetYear ().is_leap ()) {
         targetDayOfWeek += 1;
     }
 

@@ -541,7 +541,7 @@ namespace {
                 Time::Year nYear = now.GetDate ().GetYear ();
                 Date       d     = dt.GetDate ();
                 if (d.GetYear () != nYear) {
-                    VerifyTestResult (((nYear - d.GetYear ()) % 100) == 0);
+                    VerifyTestResult (((nYear - d.GetYear ()).count () % 100) == 0);
                     d  = Date{nYear, d.GetMonth (), d.GetDayOfMonth ()};
                     dt = DateTime{dt, d};
                 }
