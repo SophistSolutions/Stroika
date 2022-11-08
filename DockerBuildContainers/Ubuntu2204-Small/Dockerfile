@@ -5,10 +5,10 @@ RUN apt-get update
 
 # cuz you need this alot, like if something else missing; use NOPASSWD in sudoers file so this works, cuz hard
 # to get sudo/enter password working under docker; sb relatively safe cuz only for sudo group members from base os
-RUN apt-get install -y sudo
+RUN apt-get -qq install -y sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-RUN apt-get install -y build-essential
+RUN apt-get -qq install -y build-essential
 
 #
 # p7zip-full:                   Used to unpack sources for lzma SDK
@@ -22,21 +22,21 @@ RUN apt-get install -y build-essential
 #jq:                            needed for ApplyConfiguration to update vs-code configuration files
 #git:                           Not really a Stroika dependency, but its how we download/fetch stroika
 #
-RUN apt-get install -y p7zip-full; \
-    apt-get install -y unzip; \
-    apt-get install -y wget; \
-    apt-get install -y pkg-config; \
-    apt-get install -y cmake; \
-    apt-get install -y automake autoconf libtool-bin; \
-    apt-get install -y doxygen; \
-    apt-get install -y jq; \
-    apt-get install -y git
+RUN apt-get -qq install -y p7zip-full; \
+    apt-get -qq install -y unzip; \
+    apt-get -qq install -y wget; \
+    apt-get -qq install -y pkg-config; \
+    apt-get -qq install -y cmake; \
+    apt-get -qq install -y automake autoconf libtool-bin; \
+    apt-get -qq install -y doxygen; \
+    apt-get -qq install -y jq; \
+    apt-get -qq install -y git
 
 #You need some compiler, - can be clang or g++, but pick g++ as a good default
-RUN apt-get install -y g++
+RUN apt-get -qq install -y g++
 
 #Only needed to use sanitizer builds
-RUN apt-get install -y libasan5 libasan6 libubsan1
+RUN apt-get -qq install -y libasan5 libasan6 libubsan1
 
 COPY Shared-Files/Getting-Started-With-Stroika.md ./
 
