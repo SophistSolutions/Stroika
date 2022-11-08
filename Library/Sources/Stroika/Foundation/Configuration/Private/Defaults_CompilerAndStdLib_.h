@@ -243,9 +243,12 @@ foo.cpp:
 #endif
 
 
-#if __cpp_lib_chrono < 201907
+#if __cpp_lib_chrono < 201611
 #error "Stroika v3 requires c++20 chrono library support"
 #endif
+// #if __cpp_lib_chrono < 201907
+// #error "Stroika v3 requires c++20 chrono library support"
+// #endif
 
 
 
