@@ -733,12 +733,7 @@ sub	SetDefaultForCompilerDriver_
 	no warnings;	#@todo fix - not sure why we get warning on use of $CPPSTD_VERSION_FLAG
 	if ($CPPSTD_VERSION_FLAG eq '') {
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
-			if (GetGCCVersion_ ($COMPILER_DRIVER) < 10) {
-				$CPPSTD_VERSION_FLAG="--std=c++2a"
-			}
-			else {
-				$CPPSTD_VERSION_FLAG="--std=c++20"
-			}
+			$CPPSTD_VERSION_FLAG="--std=c++20"
 		}
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
 			$CPPSTD_VERSION_FLAG="--std=c++20"
@@ -756,10 +751,6 @@ sub	SetDefaultForCompilerDriver_
 		$CWARNING_FLAGS = '';
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
 			$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_GCC;
-			if (GetGCCVersion_ ($COMPILER_DRIVER) >= 5.2 && GetGCCVersion_ ($COMPILER_DRIVER) < 6) {
-				#This is broken in gcc 5.2 - #https://gcc.gnu.org/ml/gcc-bugs/2015-08/msg01811.html
-				$EXTRA_PREFIX_LINKER_ARGS = $EXTRA_PREFIX_LINKER_ARGS . " -Wno-odr"
-			}
 		}
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
 			$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_CLANG;
@@ -966,7 +957,7 @@ sub	SetDefaultForCompilerDriver_
 	
 	if ($lsb_release == "20.10" or $lsb_release == "21.04" or $lsb_release == "21.10" or $lsb_release == "22.04") {
 		# so far only seen on ubuntu 20.10, clang++11, and g++10 - https://stroika.atlassian.net/browse/STK-717
-		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (10.0 <= GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0)) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (11.0 <= GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0)) {
 			$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true;
 		}
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (11.0 <= GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 12.0)) {
@@ -1053,8 +1044,8 @@ sub	SetDefaultForPlatform_
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && $COMPILER_DRIVER eq '') {
 		# Ubuntu 20.04 comes with gcc version 9.x, which this version of Stroika doesnt support so
 		# if < 10, at least force gcc 10 as default; if wrong default - user can specify what they wanted explicitly
-		if (GetGCCVersion_ ("gcc") < '10') {
-			$COMPILER_DRIVER = "gcc-10";
+		if (GetGCCVersion_ ("gcc") < '11') {
+			$COMPILER_DRIVER = "gcc-11";
 		}
 		else {
 			$COMPILER_DRIVER = "gcc";
@@ -2241,9 +2232,6 @@ sub PostProcessOptions_ ()
 			if (!$STATIC_LINK_GCCRUNTIME ) {
 				push @LIB_DEPENDENCIES_ADD, "-lstdc++";
 			}
-			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < '9') {	## directly included as of gcc-9 in stdc++lib
-				push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
-			}
 			if ($STATIC_LINK_GCCRUNTIME == 1) {
 				# https://stroika.atlassian.net/browse/STK-676 (-static causes some apps crash; and there is no option to JUST staticly link libc - eg no -static-libc)
 				# https://stackoverflow.com/questions/26304531/compiling-with-static-libgcc-static-libstdc-still-results-in-dynamic-depende
@@ -2387,7 +2375,7 @@ sub ValidateConfigurationAndEmitNeededWarnings_
 	}
 	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 		if (GetGCCVersion_ ($COMPILER_DRIVER) < 7) {
-			print "CONFIGURATION-WARNING: Stroika 2.1 requires gcc 7 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+			print "CONFIGURATION-WARNING: Stroika 3 requires gcc 11 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 		}
 	}
 }
@@ -2641,6 +2629,10 @@ if ($onlyGenerateIfCompilerExists) {
 		if ($itsVersion < 10.0) {
 			$generate = false;
 			$generateBecause = "GCC (" . $COMPILER_DRIVER_CPlusPlus . ") versions < 10 (v=" . $itsVersion . ") dont adequately support spaceship operator";
+		}
+		elsif ($itsVersion < 11.0) {
+			$generate = false;
+			$generateBecause = "GCC (" . $COMPILER_DRIVER_CPlusPlus . ") versions < 11 (v=" . $itsVersion . ") doesn't support chrono::month, etc";
 		}
 	}
 	if ($generate && IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
