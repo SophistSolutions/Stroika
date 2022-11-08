@@ -23,7 +23,6 @@ build-images:
 ifeq (${DETECTED_HOST_OS},Linux)
 	docker build -f Ubuntu2004-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2004-small .
 	docker build -f Ubuntu2204-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2204-small .
-	docker build -f Ubuntu1804-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests .
 	docker build -f Ubuntu2004-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests .
 	docker build -f Ubuntu2204-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev .
@@ -48,7 +47,6 @@ endif
 stroika-dev-containers:
 ifeq (${DETECTED_HOST_OS},Linux)
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10022:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
-	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-1804 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-1804 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10122:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2004 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2004 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10222:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2204 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2204 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10422:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
 endif
@@ -85,7 +83,6 @@ push-images:
 ifeq (${DETECTED_HOST_OS},Linux)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2204-small:latest
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:latest
 	#no need to push this yet/now
@@ -101,7 +98,6 @@ ifeq ($(STROIKA_VERSION_Final),true)
 ifeq (${DETECTED_HOST_OS},Linux)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2204-small:$(STROIKA_VERSION)
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:$(STROIKA_VERSION)
 	#no need to push this yet/now

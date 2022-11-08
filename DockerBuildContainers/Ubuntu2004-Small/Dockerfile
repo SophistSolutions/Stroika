@@ -30,8 +30,14 @@ RUN apt-get install -y wget
 # components
 RUN apt-get install -y pkg-config
 
-#You need some compiler, - can be clang or g++, but pick g++ as a good default
-RUN apt-get install -y g++
+# Stroika v3 requires new chrono-support, which appears first available in g++-11
+# g++-11 not naturally available in Ubuntu 20.04, so do a little lifting
+RUN sudo apt-get install software-properties-common; \
+    sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; \
+    sudo apt-get update
+
+#You need some compiler, - can be clang or g++, but pick g++-11 as a good default
+RUN apt-get install -y g++-11
 
 #required to build Xerces
 RUN apt-get install -y cmake
