@@ -6,7 +6,6 @@ RUN apt-get update
 # This hack is needed to avoid failure in apt-get install -y pkg-config for Ubuntu 20.04
 #https://serverfault.com/questions/949991/how-to-install-tzdata-on-a-ubuntu-docker-image
 RUN apt-get install -y tzdata
-#RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && dpkg-reconfigure --frontend noninteractive tzdata
 
 # cuz you need this alot, like if something else missing; use NOPASSWD in sudoers file so this works, cuz hard
 # to get sudo/enter password working under docker; sb relatively safe cuz only for sudo group members from base os
