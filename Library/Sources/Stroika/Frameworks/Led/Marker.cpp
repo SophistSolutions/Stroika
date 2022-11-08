@@ -11,6 +11,13 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
+#if qCompilerAndStdLib_forwardDeclareTypeConfusesCheckerOfTypesInTemplateChecksTooSoon_Buggy
+void Stroika::Frameworks::Led::TextStore_RemoveMarkers (TextStore& ts, Marker* const markerArray[], size_t markerCount)
+{
+    ts.RemoveMarkers (markerArray, markerCount);
+}
+#endif
+
 /*
  ********************************************************************************
  ********************************** MarkerOwner *********************************
