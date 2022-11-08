@@ -64,7 +64,7 @@ namespace {
             Function<int (bool)> f2 = [] ([[maybe_unused]] bool b) -> int { return 3; };
 
             VerifyTestResult (f1 != f2);
-            VerifyTestResult (f1 < f2 or f2 < f1);
+            VerifyTestResult (f1 < f2 or f2 < f1);      // SEE qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy
             Function<int (bool)> f3 = f1;
             VerifyTestResult (f3 == f1);
             VerifyTestResult (f3 != f2);

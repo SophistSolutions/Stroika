@@ -248,14 +248,19 @@ foo.cpp:
 /*
 C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Frameworks\Led\Marker.inl(218): error C2027: use of undefined type 'Stroika::Frameworks::Led::TextStore'
 C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Frameworks\Led\Marker.h(96): note: see declaration of 'Stroika::Frameworks::Led::TextStore'
+
+AND I THINK diff manifestation of same bug
+
+\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Execution\Throw.inl(57): warning C4353: nonstandard extension used: constant 0 as function expression.  Use '__noop' function intrinsic instead
+C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Execution\Throw.inl(146): note: see reference to function template instantiation 'void Stroika::Foundation::Execution::Throw<std::bad_alloc>(const T &,const char *)' being compiled
 */
-#ifndef qCompilerAndStdLib_forwardDeclareTypeConfusesCheckerOfTypesInTemplateChecksTooSoon_Buggy
+#ifndef qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
 
 #if defined(_MSC_VER)
 // first broken in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_forwardDeclareTypeConfusesCheckerOfTypesInTemplateChecksTooSoon_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt4_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt4_)
+#define qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt4_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt4_)
 #else
-#define qCompilerAndStdLib_forwardDeclareTypeConfusesCheckerOfTypesInTemplateChecksTooSoon_Buggy 0
+#define qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy 0
 #endif
 
 #endif
@@ -407,6 +412,9 @@ SUMMARY: AddressSanitizer: stack-use-after-scope C:\Program Files\Microsoft Visu
 #endif
 
 /*
+* 
+* ONLY in Release-x86 builds broken
+* 
 // Get runtime failure in Test_12_DateRange_ in 
 FAILED : RegressionTestFailure;
 dr.Contains (dr.GetMidpoint ());
@@ -423,8 +431,8 @@ C :\Sandbox\Stroika\DevRoot\Tests\50\Test.cpp : 750
 // APPEARS FIXED in _MSC_VER_2k22_17Pt0_
 // And then RE-BROKEN in _MSC_VER_2k22_17Pt2_
 // APPEARS still BROKEN in _MSC_VER_2k22_17Pt3_
-// TEST WITH _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER_2k19_16Pt6_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt10_) || (_MSC_VER_2k22_17Pt2_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt3_)) && !qDebug && defined (_M_IX86))
+// APPEARS still BROKEN in _MSC_VER_2k22_17Pt4_
+#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER_2k19_16Pt6_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt10_) || (_MSC_VER_2k22_17Pt2_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt4_)) && !qDebug && defined (_M_IX86))
 #else
 #define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy 0
 #endif
@@ -471,7 +479,7 @@ READ of size 6 at 0x0110ed9d thread T0
 
 #if defined(_MSC_VER)
 // first/only found broken in _MSC_VER_2k22_17Pt3_
-// TEST WITH _MSC_VER_2k22_17Pt4_
+// Appears FIXED in _MSC_VER_2k22_17Pt4_
 #define qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER == _MSC_VER_2k22_17Pt3_)) && qDebug && defined (_M_IX86))
 #else
 #define qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy 0
@@ -487,7 +495,7 @@ READ of size 6 at 0x0110ed9d thread T0
 
 #if defined(_MSC_VER)
 // first/only found broken in _MSC_VER_2k22_17Pt3_
-// TEST WITH _MSC_VER_2k22_17Pt4_
+// Appears FIXED in _MSC_VER_2k22_17Pt4_
 #define qCompilerAndStdLib_Debug32_asan_Poison_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER == _MSC_VER_2k22_17Pt3_)) && qDebug && defined (_M_IX86))
 #else
 #define qCompilerAndStdLib_Debug32_asan_Poison_Buggy 0
@@ -2052,8 +2060,8 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 // still broken in _MSC_VER_2k22_17Pt1_
 // still broken in _MSC_VER_2k22_17Pt2_
 // still broken in _MSC_VER_2k22_17Pt3_
-// TEST WITH _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt0_ <= _MSC_VER and _MSC_VER <= _MSC_VER_2k22_17Pt3_)
+// still broken in _MSC_VER_2k22_17Pt4_
+#define qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt0_ <= _MSC_VER and _MSC_VER <= _MSC_VER_2k22_17Pt4_)
 #else
 #define qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy 0
 #endif
@@ -2435,7 +2443,11 @@ stHarness/SimpleClass.cpp ...
  */
 #if !defined(_NoOp_)
 #if defined(_MSC_VER)
+#if qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
+#define _NoOp_
+#else
 #define _NoOp_ __noop
+#endif
 #else
 #define _NoOp_(...)
 #endif
