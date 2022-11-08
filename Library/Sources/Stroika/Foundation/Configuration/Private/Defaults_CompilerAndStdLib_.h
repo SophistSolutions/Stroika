@@ -80,8 +80,8 @@
 
 #elif defined(__GNUC__)
 
-#if __GNUC__ < 10
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v3 does not support versions prior to GCC 10 (v2.1 supports g++7 and later, v2.0 supports g++5 and g++6 and g++-7)"
+#if __GNUC__ < 11
+#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v3 does not support versions prior to GCC 11 (v2.1 supports g++7 and later, v2.0 supports g++5 and g++6 and g++-7)"
 #endif
 #if __GNUC__ > 12 || (__GNUC__ == 12 && (__GNUC_MINOR__ > 1))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
@@ -796,18 +796,6 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #endif
 #endif
 
-#ifndef qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
-
-#if defined(__GNUC__) && !defined(__clang__)
-// First found BROKEN IN GCC 10.0
-// VERIFIED BROKEN IN GCC 10.2
-#define qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 10)
-#else
-#define qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy 0
-#endif
-
-#endif
-
 #ifndef qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy
 
 // Generates internal compiler error
@@ -1269,7 +1257,7 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 #define qCompilerAndStdLib_to_chars_FP_Buggy (_MSC_VER < _MSC_VER_2k19_16Pt0_)
 #elif defined(__GNUC__) && !defined(__clang__)
 // according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11
-#define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 10)
+#define qCompilerAndStdLib_to_chars_FP_Buggy 0
 #elif defined(__clang__) && defined(__APPLE__)
 // according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
 // still broken in XCode 14

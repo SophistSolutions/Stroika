@@ -80,12 +80,10 @@ namespace Stroika::Foundation::Common {
          */
         static GUID GenerateNew ();
 
-#if !qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
     public:
         /**
          */
         nonvirtual strong_ordering operator<=> (const GUID&) const = default;
-#endif
 
     public:
         /**
@@ -104,18 +102,6 @@ namespace Stroika::Foundation::Common {
         nonvirtual Characters::String ToString () const;
     };
     static_assert (sizeof (GUID) == 16);
-
-#if qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
-    /**
-     *  Basic operator overloads with the obvious meaning, and simply indirect to @GUID::ThreeWayComparer ()
-     */
-    bool operator<(const GUID& lhs, const GUID& rhs);
-    bool operator<= (const GUID& lhs, const GUID& rhs);
-    bool operator== (const GUID& lhs, const GUID& rhs);
-    bool operator!= (const GUID& lhs, const GUID& rhs);
-    bool operator>= (const GUID& lhs, const GUID& rhs);
-    bool operator> (const GUID& lhs, const GUID& rhs);
-#endif
 
     template <>
     Characters::String GUID::As () const;

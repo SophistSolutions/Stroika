@@ -90,9 +90,8 @@ cat /Getting-Started-With-Stroika.md
 - Basics
   - Linux
     - Ubuntu
-      -  [Ubuntu1804-Small/DockerFile](Ubuntu1804-Small/DockerFile)
       -  [Ubuntu2004-Small/DockerFile](Ubuntu2004-Small/DockerFile)
-      -  [Ubuntu2110-Small/DockerFile](Ubuntu2110-Small/DockerFile)
+      -  [Ubuntu2204-Small/DockerFile](Ubuntu2204-Small/DockerFile)
     - Windows
       -  [Windows-Cygwin-VS2k19/DockerFile](Windows-Cygwin-VS2k19/DockerFile)
       -  [Windows-Cygwin-VS2k22/DockerFile](Windows-Cygwin-VS2k22/DockerFile)
@@ -101,9 +100,8 @@ cat /Getting-Started-With-Stroika.md
 - Derived
   - Linux
     - Ubuntu
-      -  [Ubuntu1804-RegressionTests/DockerFile](Ubuntu1804-RegressionTests/DockerFile)
       -  [Ubuntu2004-RegressionTests/DockerFile](Ubuntu2004-RegressionTests/DockerFile)
-      -  [Ubuntu2110-RegressionTests/DockerFile](Ubuntu2110-RegressionTests/DockerFile)
+      -  [Ubuntu2204-RegressionTests/DockerFile](Ubuntu2204-RegressionTests/DockerFile)
     - Stroika-Dev
       -  [Stroika-Dev/DockerFile](Stroika-Dev/DockerFile)
 
@@ -112,7 +110,7 @@ cat /Getting-Started-With-Stroika.md
 (used for LGP development - very optional)
 
 - `make stroika-dev-containers`
-- `for i in Stroika-Dev Stroika-Dev-1804 Stroika-Dev-2004 Stroika-Dev-2204; do docker start $i; docker exec -it $i sudo service ssh start; done`
+- `for i in Stroika-Dev Stroika-Dev-2004 Stroika-Dev-2204; do docker start $i; docker exec -it $i sudo service ssh start; done`
 
 ## Troubleshooting
 

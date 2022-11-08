@@ -26,7 +26,7 @@ Note also - much of this (in perhaps more detail) can be gleaned (programaticall
 
 ## For MacOS
 
-- XCode (12 or later, but only tested with 13 and 14)
+- XCode (13 or later, but only tested with 13 and 14)
   - install from appstore
   - Then from command line
     - xcode-select –install
@@ -105,7 +105,7 @@ Note - we've only tested building (from MSYS) using Visual Studio. We've not yet
 ## For UNIX
 
 - Compiler
-  - gcc 8 or later OR
+  - gcc 11 or later OR
     - Stroika v2.1 is currently tested with gcc-8, gcc-9, gcc-10, and gcc-11
   - llvm (clang++) 6 or later
     - Stroika v2.1 is currently tested with clang6, clang-7, clang-8, clang-9, clang-10, clang-11, clang-12

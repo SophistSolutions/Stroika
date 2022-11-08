@@ -49,38 +49,6 @@ namespace Stroika::Foundation::Common {
         return reinterpret_cast<const std::byte*> (this) + 16;
     }
 
-#if qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
-    /*
-     ********************************************************************************
-     ************************* Common::GUID operators *******************************
-     ********************************************************************************
-     */
-    inline bool operator<(const GUID& lhs, const GUID& rhs)
-    {
-        return memcmp (&lhs, &rhs, sizeof (GUID)) < 0;
-    }
-    inline bool operator<= (const GUID& lhs, const GUID& rhs)
-    {
-        return memcmp (&lhs, &rhs, sizeof (GUID)) <= 0;
-    }
-    inline bool operator== (const GUID& lhs, const GUID& rhs)
-    {
-        return memcmp (&lhs, &rhs, sizeof (GUID)) == 0;
-    }
-    inline bool operator!= (const GUID& lhs, const GUID& rhs)
-    {
-        return memcmp (&lhs, &rhs, sizeof (GUID)) != 0;
-    }
-    inline bool operator>= (const GUID& lhs, const GUID& rhs)
-    {
-        return memcmp (&lhs, &rhs, sizeof (GUID)) >= 0;
-    }
-    inline bool operator> (const GUID& lhs, const GUID& rhs)
-    {
-        return memcmp (&lhs, &rhs, sizeof (GUID)) > 0;
-    }
-#endif
-
 }
 
 #endif /*_Stroika_Foundation_Common_GUID_inl_*/
