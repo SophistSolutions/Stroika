@@ -143,22 +143,37 @@ namespace Stroika::Foundation::Time {
         constexpr DayOfMonth (int d, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
-        [[deprecated ("Since Stroika v3.0d1, use chrono::e1")]] static constexpr day e1{1};
-        [[deprecated ("Since Stroika v3.0d1, use chrono::e2")]] static constexpr day e2{2};
-        [[deprecated ("Since Stroika v3.0d1, use chrono::e3")]] static constexpr day e3{3};
-        [[deprecated ("Since Stroika v3.0d1, use chrono::e4")]] static constexpr day e4{4};
-        [[deprecated ("Since Stroika v3.0d1, use chrono::e5")]] static constexpr day e5{5};
-        [[deprecated ("Since Stroika v3.0d1, use chrono::e6")]] static constexpr day e6{6};
-        [[deprecated ("Since Stroika v3.0d1, use chrono::e7")]] static constexpr day e7{7};
-        [[deprecated ("Since Stroika v3.0d1, use chrono::e8")]] static constexpr day e8{8};
-        [[deprecated ("Since Stroika v3.0d1, use chrono::e9")]] static constexpr day e9{9};
-        [[deprecated ("Since Stroika v3.0d1, use chrono::e10")]] static constexpr day e10{10};
-        [[deprecated ("Since Stroika v3.0d1, use chrono::e11")]] static constexpr day e11{11};
-        [[deprecated ("Since Stroika v3.0d1, use chrono::e12")]] static constexpr day e12{12};
-        [[deprecated ("Since Stroika v3.0d1, use chrono::e13")]] static constexpr day e13{13};
-        [[deprecated ("Since Stroika v3.0d1, use chrono::e14")]] static constexpr day e14{14};
-        [[deprecated ("Since Stroika v3.0d1, use chrono::e15")]] static constexpr day e15{15};
-        [[deprecated ("Since Stroika v3.0d1, use chrono::e16")]] static constexpr day e16{16};
+        [[deprecated ("Since Stroika v3.0d1, use day{1}")]] static constexpr day e1{1};
+        [[deprecated ("Since Stroika v3.0d1, use day{2}")]] static constexpr day e2{2};
+        [[deprecated ("Since Stroika v3.0d1, use day{3}")]] static constexpr day e3{3};
+        [[deprecated ("Since Stroika v3.0d1, use day{4}")]] static constexpr day e4{4};
+        [[deprecated ("Since Stroika v3.0d1, use day{5}")]] static constexpr day e5{5};
+        [[deprecated ("Since Stroika v3.0d1, use day{6}")]] static constexpr day e6{6};
+        [[deprecated ("Since Stroika v3.0d1, use day{7}")]] static constexpr day e7{7};
+        [[deprecated ("Since Stroika v3.0d1, use day{8}")]] static constexpr day e8{8};
+        [[deprecated ("Since Stroika v3.0d1, use day{9}")]] static constexpr day e9{9};
+        [[deprecated ("Since Stroika v3.0d1, use day{10}")]] static constexpr day e10{10};
+        [[deprecated ("Since Stroika v3.0d1, use day{11}")]] static constexpr day e11{11};
+        [[deprecated ("Since Stroika v3.0d1, use day{12}")]] static constexpr day e12{12};
+        [[deprecated ("Since Stroika v3.0d1, use day{13}")]] static constexpr day e13{13};
+        [[deprecated ("Since Stroika v3.0d1, use day{14}")]] static constexpr day e14{14};
+        [[deprecated ("Since Stroika v3.0d1, use day{15}")]] static constexpr day e15{15};
+        [[deprecated ("Since Stroika v3.0d1, use day{16}")]] static constexpr day e16{16};
+        [[deprecated ("Since Stroika v3.0d1, use day{17}")]] static constexpr day e17{17};
+        [[deprecated ("Since Stroika v3.0d1, use day{18}")]] static constexpr day e18{18};
+        [[deprecated ("Since Stroika v3.0d1, use day{19}")]] static constexpr day e19{19};
+        [[deprecated ("Since Stroika v3.0d1, use day{20}")]] static constexpr day e20{20};
+        [[deprecated ("Since Stroika v3.0d1, use day{21}")]] static constexpr day e21{21};
+        [[deprecated ("Since Stroika v3.0d1, use day{22}")]] static constexpr day e22{22};
+        [[deprecated ("Since Stroika v3.0d1, use day{23}")]] static constexpr day e23{23};
+        [[deprecated ("Since Stroika v3.0d1, use day{24}")]] static constexpr day e24{24};
+        [[deprecated ("Since Stroika v3.0d1, use day{25}")]] static constexpr day e25{25};
+        [[deprecated ("Since Stroika v3.0d1, use day{26}")]] static constexpr day e26{26};
+        [[deprecated ("Since Stroika v3.0d1, use day{27}")]] static constexpr day e27{27};
+        [[deprecated ("Since Stroika v3.0d1, use day{28}")]] static constexpr day e28{28};
+        [[deprecated ("Since Stroika v3.0d1, use day{29}")]] static constexpr day e29{29};
+        [[deprecated ("Since Stroika v3.0d1, use day{30}")]] static constexpr day e30{30};
+        [[deprecated ("Since Stroika v3.0d1, use day{31}")]] static constexpr day e31{31};
     };
 
     /**

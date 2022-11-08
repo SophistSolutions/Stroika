@@ -251,7 +251,7 @@ namespace {
         void DoIt ()
         {
             //static const     DateTime   kScanStartTime4Reference_   = DateTime::Now ();
-            static const DateTime kScanStartTime4Reference_ = DateTime{Date{Year{2020}, April, DayOfMonth::e1}, TimeOfDay{4, 0, 0}}; // hardwired data to be able to ccompare DBs
+            static const DateTime kScanStartTime4Reference_ = DateTime{Date{Year{2020}, April, day{1}}, TimeOfDay{4, 0, 0}}; // hardwired data to be able to ccompare DBs
             using namespace PRIVATE_;
             TraceContextBumper ctx{"ScanDB::DB::RunTest"};
             auto               test = [] (PRIVATE_::DB& db, unsigned nTimesRanBefore) {
