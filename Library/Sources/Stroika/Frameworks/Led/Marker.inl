@@ -81,7 +81,7 @@ namespace Stroika::Frameworks::Led {
     inline size_t Marker::GetStart () const
     {
         AssertNotNull (fTextStoreHook);
-        return (fTextStoreHook->GetStart ());
+        return fTextStoreHook->GetStart ();
     }
     /*
     @METHOD:        Marker::GetEnd
@@ -92,7 +92,7 @@ namespace Stroika::Frameworks::Led {
     inline size_t Marker::GetEnd () const
     {
         AssertNotNull (fTextStoreHook);
-        return (fTextStoreHook->GetEnd ());
+        return fTextStoreHook->GetEnd ();
     }
     /*
     @METHOD:        Marker::GetLength
@@ -102,7 +102,7 @@ namespace Stroika::Frameworks::Led {
     inline size_t Marker::GetLength () const
     {
         AssertNotNull (fTextStoreHook);
-        return (fTextStoreHook->GetLength ());
+        return fTextStoreHook->GetLength ();
     }
     /*
     @METHOD:        Marker::GetOwner
@@ -132,10 +132,10 @@ namespace Stroika::Frameworks::Led {
     inline MarkerOwner::UpdateInfo::UpdateInfo (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount, bool textModified, bool realContentUpdate)
         : fReplaceFrom{from}
         , fReplaceTo{to}
-        , fTextInserted {withWhat)
-        , fTextLength {withWhatCharCount}
-        , fTextModified {textModified}
-        , fRealContentUpdate {realContentUpdate}
+        , fTextInserted{withWhat}
+        , fTextLength{withWhatCharCount}
+        , fTextModified{textModified}
+        , fRealContentUpdate{realContentUpdate}
     {
     }
     inline size_t MarkerOwner::UpdateInfo::GetResultingRHS () const
@@ -197,6 +197,9 @@ namespace Stroika::Frameworks::Led {
             AccumulateMarkerForDeletion (m);
         }
     }
+#if qCompilerAndStdLib_forwardDeclareTypeConfusesCheckerOfTypesInTemplateChecksTooSoon_Buggy
+    void TextStore_RemoveMarkers (TextStore& ts, Marker* const markerArray[], size_t markerCount);
+#endif
     template <typename MARKER>
     /*
     @METHOD:        MarkerMortuary<MARKER>::FinalizeMarkerDeletions
@@ -214,7 +217,11 @@ namespace Stroika::Frameworks::Led {
             MARKER* const* markersToBeDeleted_ = &fMarkersToBeDeleted.front ();
             Marker* const* markersToBeDeleted  = (Marker* const*)markersToBeDeleted_; // need cast - but safe - cuz array of MARKER* and looking for Marker* - safe cuz const array!
 
+#if qCompilerAndStdLib_forwardDeclareTypeConfusesCheckerOfTypesInTemplateChecksTooSoon_Buggy
+            TextStore_RemoveMarkers (textStore, markersToBeDeleted, fMarkersToBeDeleted.size ());
+#else
             textStore.RemoveMarkers (markersToBeDeleted, fMarkersToBeDeleted.size ());
+#endif
             for (size_t i = 0; i < fMarkersToBeDeleted.size (); ++i) {
                 delete fMarkersToBeDeleted[i];
             }

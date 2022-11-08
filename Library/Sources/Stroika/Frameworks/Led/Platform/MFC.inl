@@ -198,10 +198,10 @@ namespace Stroika::Frameworks::Led::Platform {
         // Delete the edit widget window.
         ::DestroyWindow (hwndEdit);
 
-        return CreateEx (exStyle, NULL, NULL, dwStyle | WS_CHILD,
-                         wp.rcNormalPosition.left, wp.rcNormalPosition.top,
-                         wp.rcNormalPosition.right - wp.rcNormalPosition.left, wp.rcNormalPosition.bottom - wp.rcNormalPosition.top,
-                         parent->GetSafeHwnd (), (HMENU)id, NULL);
+        return MFC_BASE_CLASS::CreateEx (exStyle, NULL, NULL, dwStyle | WS_CHILD,
+                                         wp.rcNormalPosition.left, wp.rcNormalPosition.top,
+                                         wp.rcNormalPosition.right - wp.rcNormalPosition.left, wp.rcNormalPosition.bottom - wp.rcNormalPosition.top,
+                                         parent->GetSafeHwnd (), (HMENU)id, NULL);
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     /*
@@ -717,8 +717,7 @@ namespace Stroika::Frameworks::Led::Platform {
                 without having to change Led itself.
             <p>See also @'Led_MFC_DragAndDropWindow<BASECLASS>::CommandNames'.
     */
-    inline typename const Led_MFC_DragAndDropWindow<BASECLASS>::CommandNames&
-    Led_MFC_DragAndDropWindow<BASECLASS>::GetCommandNames ()
+    inline const Led_MFC_DragAndDropWindow<BASECLASS>::CommandNames& Led_MFC_DragAndDropWindow<BASECLASS>::GetCommandNames ()
     {
         return sCommandNames;
     }
