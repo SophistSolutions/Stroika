@@ -12,12 +12,11 @@
 
 namespace Stroika::Foundation::Time {
 
-    enum class [[deprecated ("Since Stroika v3.0d1, unused and use std::chrono")]] DayOfYear : uint16_t {
+    enum class [[deprecated ("Since Stroika v3.0d1, unused and use std::chrono")]] DayOfYear : uint16_t{
         eFirstDayOfYear = 1,
         eLastDayOfYear  = 366,
 
-        Stroika_Define_Enum_Bounds (eFirstDayOfYear, eLastDayOfYear)
-    };
+        Stroika_Define_Enum_Bounds (eFirstDayOfYear, eLastDayOfYear)};
 
     /*
      ********************************************************************************
