@@ -9,14 +9,8 @@
 
 #include "../Characters/Format.h"
 #include "../Characters/String_Constant.h"
-#if qPlatform_Windows
-#include "../Characters/Platform/Windows/SmartBSTR.h"
-#endif
 #include "../Debug/Assertions.h"
 #include "../Execution/Throw.h"
-#if qPlatform_Windows
-#include "../Execution/Platform/Windows/HRESULTErrorException.h"
-#endif
 #include "../Linguistics/MessageUtilities.h"
 #include "DateTime.h"
 
@@ -94,7 +88,7 @@ optional<Date> Date::LocaleFreeParseQuietly_kMonthDayYearFormat_ (const wstring&
         if ((1 <= m and m <= 12) and (1 <= day and day <= 31) and (year > 0)) {
             try {
                 // above check is NEARLY good enuf but not quite, so we need to try/catch here to do this quietly. BUT - should really do more to avoid first exception
-                return Date{Year (year), MonthOfYear{m}, DayOfMonth (day), DataExchange::ValidationStrategy::eThrow};
+                return Date{Year (year), month{static_cast<unsigned int> (m)}, DayOfMonth (day), DataExchange::ValidationStrategy::eThrow};
             }
             catch (...) {
                 return nullopt;
@@ -112,12 +106,6 @@ optional<Date> Date::ParseQuietly_ (const wstring& rep, const time_get<wchar_t>&
             return LocaleFreeParseQuietly_kMonthDayYearFormat_ (rep, consumedCharsInStringUpTo);
         }
     }
-    auto computeIdx = [] (const istreambuf_iterator<wchar_t>& s, const istreambuf_iterator<wchar_t>& c) -> size_t {
-        size_t result = 0;
-        for (auto i = s; i != c; ++i, ++result)
-            ;
-        return result;
-    };
     ios::iostate                 errState = ios::goodbit;
     tm                           when{};
     wistringstream               iss{rep};
@@ -129,8 +117,7 @@ optional<Date> Date::ParseQuietly_ (const wstring& rep, const time_get<wchar_t>&
     }
     else {
         if (consumedCharsInStringUpTo != nullptr) {
-            *consumedCharsInStringUpTo = computeIdx (itbegin, i);
-            Assert (*consumedCharsInStringUpTo == static_cast<size_t> (distance (itbegin, i))); // lose computeIdx @todo
+            *consumedCharsInStringUpTo = static_cast<size_t> (distance (itbegin, i));
         }
         return AsDate_ (when);
     }
@@ -225,12 +212,7 @@ Date Date::AddDays (SignedJulianRepType dayCount) const
 Date::JulianRepType Date::DaysSince () const
 {
     SignedJulianRepType r = DayDifference (DateTime::GetToday (), *this);
-    if (r < 0) {
-        return 0;
-    }
-    else {
-        return r;
-    }
+    return r < 0 ? 0 : r;
 }
 
 Year Date::GetYear () const
@@ -354,6 +336,7 @@ String Date::ToString () const
  */
 Date::SignedJulianRepType Time::DayDifference (const Date& lhs, const Date& rhs)
 {
+    // mostly right, but not complete correct edge cases with type/size stuff...
     Date::JulianRepType l = lhs.GetJulianRep ();
     Date::JulianRepType r = rhs.GetJulianRep ();
     if (l == r) {

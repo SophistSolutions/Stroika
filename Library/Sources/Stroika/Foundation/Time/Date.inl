@@ -113,10 +113,10 @@ namespace Stroika::Foundation::Time {
         Require (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (m > September or (m == September and static_cast<int> (day) >= 14))));
 
         if (static_cast<unsigned int> (m) > 2) {
-            m = MonthOfYear{static_cast<unsigned int> (m) - 3};
+            m = m - months{3};
         }
         else {
-            m    = static_cast<MonthOfYear> (static_cast<unsigned int> (m) + 9);
+            m = m + months{9};
             year = static_cast<Year> (static_cast<int> (year) - 1);
         }
         Date::JulianRepType c  = static_cast<int> (year) / 100;
