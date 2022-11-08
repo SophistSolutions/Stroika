@@ -14,7 +14,38 @@ namespace Stroika::Foundation::Time {
 
     /*
      ********************************************************************************
-     ***************************** MonthOfYear **************************************
+     ******************************* DayOfWeek **************************************
+     ********************************************************************************
+     */
+    constexpr DayOfWeek::DayOfWeek (weekday w, DataExchange::ValidationStrategy validationStrategy)
+        : weekday{w}
+    {
+        // stdc++ allows this to contain any number 1..255 (queer)
+        if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
+            if (not ok ()) {
+                Execution::Throw (Date::FormatException::kThe);
+            }
+        }
+        Require (ok ());
+    }
+    constexpr DayOfWeek::DayOfWeek (int w, DataExchange::ValidationStrategy validationStrategy)
+        : weekday{static_cast<unsigned int> (w)}
+    {
+        if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
+            if (w <= 0 or not ok ()) {
+                Execution::Throw (Date::FormatException::kThe);
+            }
+        }
+        Require (ok ());
+    }
+    constexpr DayOfWeek::DayOfWeek (unsigned int w, DataExchange::ValidationStrategy validationStrategy)
+        : DayOfWeek{static_cast<int> (w), validationStrategy}
+    {
+    }
+
+    /*
+     ********************************************************************************
+     ******************************* MonthOfYear ************************************
      ********************************************************************************
      */
     constexpr MonthOfYear::MonthOfYear (month m, DataExchange::ValidationStrategy validationStrategy)
@@ -116,7 +147,7 @@ namespace Stroika::Foundation::Time {
             m = m - months{3};
         }
         else {
-            m = m + months{9};
+            m    = m + months{9};
             year = static_cast<Year> (static_cast<int> (year) - 1);
         }
         Date::JulianRepType c  = static_cast<int> (year) / 100;
@@ -292,20 +323,6 @@ namespace Stroika::Foundation::Time {
 }
 
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
-    template <>
-#endif
-    constexpr EnumNames<Stroika::Foundation::Time::DayOfWeek> DefaultNames<Stroika::Foundation::Time::DayOfWeek>::k{
-        EnumNames<Stroika::Foundation::Time::DayOfWeek>::BasicArrayInitializer{{
-            {Stroika::Foundation::Time::DayOfWeek::eSunday, L"Sunday"},
-            {Stroika::Foundation::Time::DayOfWeek::eMonday, L"Monday"},
-            {Stroika::Foundation::Time::DayOfWeek::eTuesday, L"Tuesday"},
-            {Stroika::Foundation::Time::DayOfWeek::eWednesday, L"Wednesday"},
-            {Stroika::Foundation::Time::DayOfWeek::eThursday, L"Thursday"},
-            {Stroika::Foundation::Time::DayOfWeek::eFriday, L"Friday"},
-            {Stroika::Foundation::Time::DayOfWeek::eSaturday, L"Saturday"},
-        }}};
-
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif

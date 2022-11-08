@@ -9,17 +9,10 @@
 
 #include "../Characters/Format.h"
 #include "../Characters/RegularExpression.h"
-#if qPlatform_Windows
-#include "../Characters/Platform/Windows/SmartBSTR.h"
-#endif
 #include "../Characters/ToString.h"
 #include "../Debug/Assertions.h"
 #include "../Execution/Exceptions.h"
 #include "../Execution/Throw.h"
-#if qPlatform_Windows
-#include "../Execution/Platform/Windows/HRESULTErrorException.h"
-#endif
-#include "../Linguistics/Words.h"
 
 #include "Duration.h"
 
@@ -845,7 +838,7 @@ tm DateTime::As () const
     tm.tm_year                         = static_cast<int> (fDate_.GetYear ()) - 1900;
     tm.tm_mon                          = static_cast<unsigned int> (fDate_.GetMonth ()) - 1;
     tm.tm_mday                         = static_cast<int> (fDate_.GetDayOfMonth ());
-    tm.tm_wday                         = static_cast<int> (fDate_.GetDayOfWeek ());
+    tm.tm_wday                         = fDate_.GetDayOfWeek ().c_encoding ();
     unsigned int totalSecondsRemaining = fTimeOfDay_.has_value () ? fTimeOfDay_->GetAsSecondsCount () : 0;
     tm.tm_hour                         = totalSecondsRemaining / (60 * 60);
     totalSecondsRemaining -= tm.tm_hour * 60 * 60;

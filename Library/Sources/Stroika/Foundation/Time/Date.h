@@ -69,27 +69,47 @@ namespace Stroika::Foundation::Time {
     using chrono::October;
     using chrono::September;
 
-    /**
-     *  \note   Configuration::DefaultNames<> supported
-     */
-    enum class DayOfWeek : uint8_t {
-        eSunday    = 0,
-        eMonday    = 1,
-        eTuesday   = 2,
-        eWednesday = 3,
-        eThursday  = 4,
-        eFriday    = 5,
-        eSaturday  = 6,
+    using chrono::Friday;
+    using chrono::Monday;
+    using chrono::Saturday;
+    using chrono::Sunday;
+    using chrono::Thursday;
+    using chrono::Tuesday;
+    using chrono::Wednesday;
+    using chrono::weekday;
 
-        Stroika_Define_Enum_Bounds (eSunday, eSaturday)
+    /**
+     *  \brief Simple wrapper on std::chrono::weekday, with some helpful validation properties (assures constructed 'ok'). But not necessary to use - use just 'weekday' in most places
+     * 
+     *  \note - DayOfWeek was an enum in Stroika v2.1, so this is a significant change.
+     */
+    struct DayOfWeek : weekday {
+        /**
+         *  For the purpose of integer constructors, 0==Sunday, 1==Monday, and so on
+         */
+        constexpr DayOfWeek (weekday w, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        constexpr DayOfWeek (unsigned int w, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        constexpr DayOfWeek (int w, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+
+    public:
+        [[deprecated ("Since Stroika v3.0d1, use chrono::Sunday")]] static constexpr weekday    eSunday{Sunday};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::Monday")]] static constexpr weekday    eMonday{Monday};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::Tuesday")]] static constexpr weekday   eTuesday{Tuesday};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::Wednesday")]] static constexpr weekday eWednesday{Wednesday};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::Thursday")]] static constexpr weekday  eThursday{Thursday};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::Friday")]] static constexpr weekday    eFriday{Friday};
+        [[deprecated ("Since Stroika v3.0d1, use chrono::Saturday")]] static constexpr weekday  eSaturday{Saturday};
     };
 
     /**
-     *  \brief Simple wrapper on std::chrono::month, with some helpful validation properties. But not ncessary to use - use just 'month' in most places
+     *  \brief Simple wrapper on std::chrono::month, with some helpful validation properties (assures constructed 'ok'). But not necessary to use - use just 'month' in most places
      * 
-     *  \note - MonthOfYear was an enum in Stroika v2.1, so this is a significant change from Strika v2.1.
+     *  \note - MonthOfYear was an enum in Stroika v2.1, so this is a significant change.
      */
     struct MonthOfYear : month {
+        /**
+         *  For the purpose of integer constructors, 1==January, 2==February and so on
+         */
         constexpr MonthOfYear (month m, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
         constexpr MonthOfYear (unsigned int m, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
         constexpr MonthOfYear (int m, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);

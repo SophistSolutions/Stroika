@@ -274,7 +274,7 @@ DayOfWeek Date::GetDayOfWeek () const
     // add which day of the month (offset from first)
     targetDayOfWeek += (GetDayOfMonth () - DayOfMonth::e1);
 
-    return static_cast<DayOfWeek> (R (targetDayOfWeek, 7) + static_cast<unsigned int> (DayOfWeek::eSunday));
+    return DayOfWeek{R (targetDayOfWeek, 7) + Sunday.c_encoding ()};
 }
 
 template <>
