@@ -397,7 +397,7 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          */
-        nonvirtual DayOfWeek GetDayOfWeek () const;
+        nonvirtual weekday GetDayOfWeek () const;
 
     public:
         /**

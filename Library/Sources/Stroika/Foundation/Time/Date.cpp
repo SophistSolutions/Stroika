@@ -232,7 +232,7 @@ DayOfMonth Date::GetDayOfMonth () const
     return get<1> (mdy ());
 }
 
-DayOfWeek Date::GetDayOfWeek () const
+weekday Date::GetDayOfWeek () const
 {
     /*
      * From https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week
