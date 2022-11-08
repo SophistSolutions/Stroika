@@ -18,29 +18,16 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 RUN apt-get install -y locales && locale-gen en_US en_US.UTF-8
 
 # Used to unpack sources for lzma SDK
-RUN apt-get install -y p7zip-full
-
 # A couple ThirdPartyLibs (e.g. sqlite, zlib) deliver library source in this form (.zip) - so get to unpack them
-RUN apt-get install -y unzip
-
 # Used to fetch third party components to build them. Not strictly needed if you don't build any of those...
-RUN apt-get install -y wget
-
-#pkg-config only needed for building third-party components, like libcurl, etc, but also used in Stroika makefiles to find appropriate
-# components
-RUN apt-get install -y pkg-config
-
-# Stroika v3 requires new chrono-support, which appears first available in g++-11
-# g++-11 not naturally available in Ubuntu 20.04, so do a little lifting
-RUN sudo apt-get install software-properties-common; \
-    sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; \
-    sudo apt-get update
-
-#You need some compiler, - can be clang or g++, but pick g++-11 as a good default
-RUN apt-get install -y g++-11
-
-#required to build Xerces
-RUN apt-get install -y cmake
+# pkg-config only needed for building third-party components, like libcurl, etc, but also used in Stroika makefiles to find appropriate
+#   components
+# cmake required to build Xerces
+RUN apt-get install -y p7zip-full; \
+    apt-get install -y unzip; \
+    apt-get install -y wget; \
+    apt-get install -y pkg-config; \
+    apt-get install -y cmake
 
 #required to build libcurl
 RUN apt-get install -y automake autoconf libtool-bin
@@ -56,6 +43,15 @@ RUN apt-get install -y git
 
 #Only needed to use sanitizer builds
 RUN apt-get install -y libasan5 libubsan1
+
+# Stroika v3 requires new chrono-support, which appears first available in g++-11
+# g++-11 not naturally available in Ubuntu 20.04, so do a little lifting
+RUN apt-get install -y software-properties-common; \
+    add-apt-repository -y ppa:ubuntu-toolchain-r/test; \
+    apt-get update
+
+#You need some compiler, - can be clang or g++, but pick g++-11 as a good default
+RUN apt-get install -y g++ g++-11
 
 COPY Shared-Files/Getting-Started-With-Stroika.md ./
 
