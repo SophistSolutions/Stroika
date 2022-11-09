@@ -25,7 +25,6 @@ using namespace Stroika::Foundation::Time;
 
 using namespace Time;
 
-
 /*
  ********************************************************************************
  **************************** Date::FormatException *****************************
@@ -300,7 +299,7 @@ Date::SignedJulianRepType Time::DayDifference (const Date& lhs, const Date& rhs)
  */
 int Time::YearDifference (const Date& lhs, const Date& rhs)
 {
-    int diff                = static_cast<int> (lhs.GetYear ()) - static_cast<int> (rhs.GetYear ());
+    int diff = static_cast<int> (lhs.GetYear ()) - static_cast<int> (rhs.GetYear ());
     if (lhs.GetMonth () < rhs.GetMonth () or (lhs.GetMonth () == rhs.GetMonth () and lhs.GetDayOfMonth () < rhs.GetDayOfMonth ())) {
         diff--;
     }
