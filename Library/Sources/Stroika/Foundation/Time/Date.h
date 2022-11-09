@@ -228,8 +228,9 @@ namespace Stroika::Foundation::Time {
             ;
     };
 
-    /// @todo
-    // PROBABLY may date subclass from year_month_day
+    /// @todo IF we decide Date is immutable, DOCUMENT IT AS SUCH
+
+    // TODO - REPLACE mdy() / tuple crap with As<year_month_day> ()
 
     /**
      * Description:
@@ -268,10 +269,40 @@ namespace Stroika::Foundation::Time {
         using SignedJulianRepType = make_signed_t<JulianRepType>;
 
     public:
-        static constexpr JulianRepType kMinJulianRep = 2361222; // This number corresponds to 1752-09-14
+        /**
+         *  @todo add DataExchange::ValidationStrategy validationStrategy
+         */
+        constexpr static JulianRepType ToJulianRep (month m, day d, year y);
+        constexpr static JulianRepType ToJulianRep (year_month_day ymd);
 
     public:
-        static constexpr JulianRepType kMaxJulianRep = numeric_limits<JulianRepType>::max ();
+        /**
+         *  @todo add DataExchange::ValidationStrategy validationStrategy
+         */
+        constexpr static year_month_day FromJulianRep (JulianRepType j);
+
+    public:
+        /**
+         *  kMinJulianRep = 2361222, aka Date::ToJulianRep (September, day{14}, year{1752}) because that date
+         *  comes from code I lifted long ago (originally from NIHCL). Must research better, to maybe lift/adjust limits.
+         * 
+         * MAYBE CUZ:
+         *         // Gregorian calendar started on Sep. 14, 1752
+         * 
+         *  kMinJulianRep is defined (later) constexpr.
+         */
+        static const JulianRepType kMinJulianRep; // = Date::ToJulianRep (September, day{14}, year{1752})
+
+    public:
+        /**
+         *  Reason for current max-date:
+         *      C:\Program Files (x86)\Windows Kits\10\Source\10.0.22000.0\ucrt\time\wcsftime.cpp
+         *      _VALIDATE_RETURN(timeptr->tm_year >= -1900 && timeptr->tm_year <= 8099, EINVAL, false);
+         *      -- LGP 2022-11-09
+         * 
+         *  kMaxJulianRep is defined (later) constexpr.
+        */
+        static const JulianRepType kMaxJulianRep; // = Date::ToJulianRep (December, day{31}, year{8099})
 
     public:
         class FormatException;
@@ -458,6 +489,11 @@ namespace Stroika::Foundation::Time {
         /**
          * Returns a new Date object based on this Date, with 'dayCount' days added.
          */
+
+        // @todo RENAME Add (days argument)
+        // DEPRECATE THIS VERSION
+
+        // OFFER EXAMPLES of Date{x}.Add (1), .Add(-1) etc working.
         nonvirtual Date AddDays (SignedJulianRepType dayCount) const;
 
     public:
@@ -481,6 +517,11 @@ namespace Stroika::Foundation::Time {
         /**
          *  \brief  Syntactic sure for *this = this->AddDays (1);
          */
+
+        /// <summary>
+        /// // ONLY THING MODIFYING THIS. MAYBE GET RID OF THIS?? So DATE ALWAYS FULLY IMMUTABLE.
+        /// </summary>
+        /// <returns></returns>
         nonvirtual Date& operator++ ();
         nonvirtual Date  operator++ (int);
 
@@ -508,6 +549,8 @@ namespace Stroika::Foundation::Time {
          * Defined for
          *      struct tm
          */
+
+        // @todo ADD CVT TO YEARMONTYDATE ETC>>>
         template <typename T>
         nonvirtual T As () const;
 
@@ -524,17 +567,15 @@ namespace Stroika::Foundation::Time {
         }
 
     private:
-        constexpr static JulianRepType jday_ (month m, day d, year y);
-
-    private:
         static optional<Date> LocaleFreeParseQuietly_kMonthDayYearFormat_ (const wstring& rep, size_t* consumedCharsInStringUpTo);
 
     private:
         static Date AsDate_ (const ::tm& when);
 
     private:
-        JulianRepType fJulianDateRep_;
+        year_month_day fRep_;
     };
+    static_assert (sizeof (Date) == sizeof (year_month_day)); // generally 4 bytes
 
     template <>
     ::tm Date::As () const;

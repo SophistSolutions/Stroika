@@ -197,12 +197,19 @@ Date Date::AsDate_ (const ::tm& when)
 
 Date Date::AddDays (SignedJulianRepType dayCount) const
 {
+    // @todo figure out if/how to handle overflow/underflow - this julian rep stuff is probably no longer a good idea
     Date result = *this;
-    result.fJulianDateRep_ += dayCount;
-    if (result.fJulianDateRep_ < Date::kMinJulianRep) [[unlikely]] {
+    // SEE https://github.com/HowardHinnant/date/issues/178
+    // year_month_day ymd3 = sys_days{jan/31/2017} + days{1};
+
+    result.fRep_ = chrono::sys_days{fRep_} + chrono::days{dayCount};
+    #if 0
+    result.fRep_ += chrono::days{dayCount};
+    if (result.GetJulianRep () < Date::kMinJulianRep) [[unlikely]] {
         static const range_error kRangeErrror_{"Date::AddDays cannot add days to go before the first julian calandar day"};
         Execution::Throw (kRangeErrror_);
     }
+    #endif
     return result;
 }
 
@@ -281,42 +288,11 @@ template <>
 }
 
 /*
- * Convert a Julian day number to its corresponding Gregorian calendar
- * date.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
- * (Aug. 1963), p. 444.  Gregorian calendar started on Sep. 14, 1752.
- * This function not valid before that.
- *
- * (This code originally from NIHCL)
+* // @todo probably obsolete/depreacted but maybe change name / param order?
  */
 tuple<month, day, year> Date::mdy () const
 {
-    JulianRepType m;
-    JulianRepType d;
-    JulianRepType y;
-    // A reference for this formula (not original I used) - can be found at:
-    //      http://aa.usno.navy.mil/faq/docs/JD_Formula.php
-    // at least close, and I could probably switch to that...
-    //
-    JulianRepType j = fJulianDateRep_ - 1721119;
-    y               = (((j << 2) - 1) / 146097);
-    j               = (j << 2) - 1 - 146097 * y;
-    d               = (j >> 2);
-    j               = ((d << 2) + 3) / 1461;
-    d               = ((d << 2) + 3 - 1461 * j);
-    d               = (d + 4) >> 2;
-    m               = (5 * d - 3) / 153;
-    d               = 5 * d - 3 - 153 * m;
-    d               = (d + 5) / 5;
-    y               = (100 * y + j);
-    if (m < 10) {
-        m += 3;
-    }
-    else {
-        m -= 9;
-        ++y;
-    }
-    Ensure (1 <= d and d <= 31);
-    return make_tuple (MonthOfYear{m}, DayOfMonth{d}, Year{y});
+    return make_tuple (fRep_.month (), fRep_.day (), fRep_.year ());
 }
 
 #if qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug
