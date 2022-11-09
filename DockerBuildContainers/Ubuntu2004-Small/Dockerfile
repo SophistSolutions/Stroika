@@ -45,8 +45,8 @@ RUN apt-get -qq install -y libasan5 libubsan1
 
 # Stroika v3 requires new chrono-support, which appears first available in g++-11
 # g++-11 not naturally available in Ubuntu 20.04, so do a little lifting
-RUN apt-get -qq install -y software-properties-common; \
-    add-apt-repository -y ppa:ubuntu-toolchain-r/test; \
+RUN apt-get -qq install -y software-properties-common && \
+    add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
     apt-get update
 
 #You need some compiler, - can be clang or g++, but pick g++-11 as a good default

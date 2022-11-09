@@ -6,8 +6,11 @@ RUN apt-get update
 # Just to echo information in regression test output
 RUN apt-get -qq install -y lsb-release
 
-#install the latest (C++20 compat) g++ compilers
-RUN apt-get -qq install -y g++-11
+#install the latest (C++20 compat g++11 or later)
+RUN apt-get -qq install -y g++-11 g++-12
+
+#install the c++17 ones for compat with stroika 2.1 builds
+RUN apt-get -qq install -y g++-9 g++-10
 
 #install the latest (C++20 compat) clang compilers (and libs)
 # must include clang++-VERSION on different lines due to issue with some python dependency
