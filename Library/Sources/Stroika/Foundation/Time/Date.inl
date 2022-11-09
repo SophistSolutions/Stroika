@@ -34,19 +34,15 @@ namespace Stroika::Foundation::Time {
         }
         Require (ok ());
     }
-    constexpr DayOfWeek::DayOfWeek (int w, DataExchange::ValidationStrategy validationStrategy)
-        : weekday{static_cast<unsigned int> (w)}
+    constexpr DayOfWeek::DayOfWeek (unsigned int w, DataExchange::ValidationStrategy validationStrategy)
+        : weekday{w}
     {
         if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
-            if (w <= 0 or not ok ()) {
+            if (not ok ()) {
                 Execution::Throw (Date::FormatException::kThe);
             }
         }
         Require (ok ());
-    }
-    constexpr DayOfWeek::DayOfWeek (unsigned int w, DataExchange::ValidationStrategy validationStrategy)
-        : DayOfWeek{static_cast<int> (w), validationStrategy}
-    {
     }
 
     /*
@@ -65,19 +61,15 @@ namespace Stroika::Foundation::Time {
         }
         Require (ok ());
     }
-    constexpr MonthOfYear::MonthOfYear (int m, DataExchange::ValidationStrategy validationStrategy)
-        : month{static_cast<unsigned int> (m)}
+    constexpr MonthOfYear::MonthOfYear (unsigned int m, DataExchange::ValidationStrategy validationStrategy)
+        : month{m}
     {
         if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
-            if (m <= 0 or not ok ()) {
+            if (not ok ()) {
                 Execution::Throw (Date::FormatException::kThe);
             }
         }
         Require (ok ());
-    }
-    constexpr MonthOfYear::MonthOfYear (unsigned int m, DataExchange::ValidationStrategy validationStrategy)
-        : MonthOfYear{static_cast<int> (m), validationStrategy}
-    {
     }
 
     /*
@@ -96,19 +88,15 @@ namespace Stroika::Foundation::Time {
         }
         Require (ok ());
     }
-    constexpr DayOfMonth::DayOfMonth (int d, DataExchange::ValidationStrategy validationStrategy)
-        : day{static_cast<unsigned int> (d)}
+    constexpr DayOfMonth::DayOfMonth (unsigned int d, DataExchange::ValidationStrategy validationStrategy)
+        : day{d}
     {
         if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
-            if (d <= 0 or not ok ()) {
+            if (not ok ()) {
                 Execution::Throw (Date::FormatException::kThe);
             }
         }
         Require (ok ());
-    }
-    constexpr DayOfMonth::DayOfMonth (unsigned int d, DataExchange::ValidationStrategy validationStrategy)
-        : DayOfMonth{static_cast<int> (d), validationStrategy}
-    {
     }
 
     /*
@@ -119,7 +107,6 @@ namespace Stroika::Foundation::Time {
     constexpr Year::Year (year y, DataExchange::ValidationStrategy validationStrategy)
         : year{y}
     {
-        // stdc++ allows this to contain any number 1..255 (queer)
         if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
             if (not ok ()) {
                 Execution::Throw (Date::FormatException::kThe);
@@ -131,15 +118,11 @@ namespace Stroika::Foundation::Time {
         : year{y}
     {
         if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
-            if (y <= 0 or not ok ()) {
+            if (not ok ()) {
                 Execution::Throw (Date::FormatException::kThe);
             }
         }
         Require (ok ());
-    }
-    constexpr Year::Year (unsigned int y, DataExchange::ValidationStrategy validationStrategy)
-        : Year{static_cast<int> (y), validationStrategy}
-    {
     }
 
     /*
@@ -235,7 +218,7 @@ namespace Stroika::Foundation::Time {
             m -= 9;
             ++y;
         }
-        return year_month_day{Year{y}, MonthOfYear{m}, DayOfMonth{d}};
+        return year_month_day{Year{static_cast<int> (y)}, MonthOfYear{m}, DayOfMonth{d}};
     }
     inline constexpr Date::JulianRepType Date::kMinJulianRep = Date::ToJulianRep (September, 14d, 1752y);
     inline constexpr Date::JulianRepType Date::kMaxJulianRep = Date::ToJulianRep (December, 31d, 8099y);
@@ -379,7 +362,7 @@ namespace Stroika::Foundation::Time {
         return Format ();
     }
 #endif
-    inline [[nodiscard]] Date Date::Add (int dayCount) const
+    [[nodiscard]] inline Date Date::Add (int dayCount) const
     {
         return Add (days{dayCount});
     }

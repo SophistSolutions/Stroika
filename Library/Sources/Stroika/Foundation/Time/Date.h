@@ -52,8 +52,6 @@ namespace Stroika::Foundation::Time {
 
     using Characters::String;
 
-    //using namespace chrono;
-
     using chrono::month;
     using chrono::months;
 
@@ -97,6 +95,8 @@ namespace Stroika::Foundation::Time {
      *  \brief Simple wrapper on std::chrono::weekday, with some helpful validation properties (assures constructed 'ok'). But not necessary to use - use just 'weekday' in most places
      * 
      *  \note - DayOfWeek was an enum in Stroika v2.1, so this is a significant change.
+     * 
+     *  \note DayOfWeek can be converted from/to unsigned int.
      */
     struct DayOfWeek : weekday {
         /**
@@ -104,7 +104,6 @@ namespace Stroika::Foundation::Time {
          */
         constexpr DayOfWeek (weekday w, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
         constexpr DayOfWeek (unsigned int w, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
-        constexpr DayOfWeek (int w, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
         [[deprecated ("Since Stroika v3.0d1, use chrono::Sunday")]] static constexpr weekday    eSunday{Sunday};
@@ -120,6 +119,8 @@ namespace Stroika::Foundation::Time {
      *  \brief Simple wrapper on std::chrono::month, with some helpful validation properties (assures constructed 'ok'). But not necessary to use - use just 'month' in most places
      * 
      *  \note - MonthOfYear was an enum in Stroika v2.1, so this is a significant change.
+     * 
+     *  \note MonthOfYear can be converted from/to unsigned int.
      */
     struct MonthOfYear : month {
         /**
@@ -127,7 +128,6 @@ namespace Stroika::Foundation::Time {
          */
         constexpr MonthOfYear (month m, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
         constexpr MonthOfYear (unsigned int m, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
-        constexpr MonthOfYear (int m, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
         [[deprecated ("Since Stroika v3.0d1, use chrono::January")]] static constexpr chrono::month   eJanuary{January};
@@ -148,6 +148,8 @@ namespace Stroika::Foundation::Time {
      *  \brief Simple wrapper on std::chrono::day, with some helpful validation properties (assures constructed 'ok'). But not necessary to use - use just 'day' in most places
      * 
      *  \note - DayOfMonth was an enum in Stroika v2.1, so this is a significant change.
+     * 
+     *  \note DayOfMonth can be converted from/to unsigned int.
      */
     struct DayOfMonth : day {
         /**
@@ -155,7 +157,6 @@ namespace Stroika::Foundation::Time {
          */
         constexpr DayOfMonth (day d, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
         constexpr DayOfMonth (unsigned int d, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
-        constexpr DayOfMonth (int d, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
         [[deprecated ("Since Stroika v3.0d1, use day{1}")]] static constexpr day  e1{1};
@@ -195,17 +196,18 @@ namespace Stroika::Foundation::Time {
      *  \brief Simple wrapper on std::chrono::year, with some helpful validation properties (assures constructed 'ok'). But not necessary to use - use just 'year' in most places
      * 
      *  \note - Year was an enum in Stroika v2.1, so this is a significant change.
+     * 
+     *  \note Year can be converted from/to signed int.
      */
     struct Year : year {
         /**
          */
         constexpr Year (year y, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
-        constexpr Year (unsigned int y, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
         constexpr Year (int y, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
         static constexpr year eFirstYear{1752};
-        static constexpr year eLastfYear{SHRT_MAX - 1};
+        static constexpr year eLastYear{SHRT_MAX - 1}; // @todo FIX - get from Date::kMax code - around 8090...
     };
 
     /**

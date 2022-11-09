@@ -175,8 +175,8 @@ Date Date::AsDate_ (const ::tm& when)
 {
     return Date{
         Year{when.tm_year + kTM_Year_RelativeToYear_},
-        MonthOfYear{when.tm_mon + 1, DataExchange::ValidationStrategy::eThrow},
-        DayOfMonth{when.tm_mday, DataExchange::ValidationStrategy::eThrow},
+        MonthOfYear{static_cast<unsigned int> (when.tm_mon + 1), DataExchange::ValidationStrategy::eThrow},
+        DayOfMonth{static_cast<unsigned int> (when.tm_mday), DataExchange::ValidationStrategy::eThrow},
         DataExchange::ValidationStrategy::eThrow};
 }
 
