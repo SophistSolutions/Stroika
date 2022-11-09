@@ -228,16 +228,31 @@ namespace Stroika::Foundation::Time {
             ;
     };
 
-    /// @todo IF we decide Date is immutable, DOCUMENT IT AS SUCH
-
     /**
      * Description:
      *      The Date class is based on SmallTalk-80, The Language & Its Implementation,
-     *      page 108 (apx) - but changed to use gregorian instead of Julian calendar - even though rep date is
+     *      page 108 (apx) - but changed to use gregorian instead of Julian calendar.
      *
-     *  @todo CLEANUP / REWRITE THESE DOCS - ROUGH DRAFT BASED ON OLD STROIKA DOCS
+     *  \note   This class integrates neatly with the C++20 chrono date support. You can easily
+     *          go back and forth (e.g. Date{std::chrono::year_month_day...}} or d.As<year_month_day> ())
+     * 
+     *          The main features of the Stroika Data class (compared to the std c++ date support):
+     * 
+     *              o   Simpler to use/understand (Stroika 'Date' does about the same thing as a bevy of
+     *                  different chrono classes)
+     *              o   Stroika Date immutable (OK - difference not clearly advantage)
+     *              o   Validation (constructor DataExchange::ValidationStrategy)
+     *                  (no non-ok () Date objects in Stroika). Nice clear semantics about exceptions
+     *                  and assertions.
+     *              o   Easier to use formatting
+     *              o   ISO8601 formatting
+     *              o   Wraps needlessly complicated locale/facet API for formatting dates as Strings, or
+     *                  parsing them from strings.
+     *              o   Builtin support for Julian calendar (again - maybe this is a difference not advantage?)
      *
+     *  \note
      *      o   Date represents a specific data since the start of the Gregorian (1752-09-14).
+     *
      *  Class Date knows about some obvious information:
      *      ->  there are seven days in a week, each day having a symbolic name and
      *          an index 1..7
@@ -247,6 +262,8 @@ namespace Stroika::Foundation::Time {
      *      ->  a particular year might be a leap year."
      *
      *          NB: Date implies NO NOTION of timezone.
+     *
+     *  \note   The entire Date API is immutable - meaning that all methods are const (except constructor and assignment operator)
      *
      *  \note   Date constructors REQUIRE valid inputs, and any operations which might overflow throw range_error
      *          instead of creating invalid values.
@@ -268,16 +285,14 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  @todo add DataExchange::ValidationStrategy validationStrategy
          */
-        constexpr static JulianRepType ToJulianRep (month m, day d, year y);
-        constexpr static JulianRepType ToJulianRep (year_month_day ymd);
+        constexpr static JulianRepType ToJulianRep (month m, day d, year y, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        constexpr static JulianRepType ToJulianRep (year_month_day ymd, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
         /**
-         *  @todo add DataExchange::ValidationStrategy validationStrategy
          */
-        constexpr static year_month_day FromJulianRep (JulianRepType j);
+        constexpr static year_month_day FromJulianRep (JulianRepType j, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
         /**
@@ -506,18 +521,6 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  \brief  Syntactic sure for *this = this->AddDays (1);
-         */
-
-        /// <summary>
-        /// // ONLY THING MODIFYING THIS. MAYBE GET RID OF THIS?? So DATE ALWAYS FULLY IMMUTABLE.
-        /// </summary>
-        /// <returns></returns>
-        nonvirtual Date& operator++ ();
-        nonvirtual Date  operator++ (int);
-
-    public:
-        /**
          *  \brief  Syntactic sure for AddDays (n);
          */
         nonvirtual Date operator+ (SignedJulianRepType daysOffset) const;
@@ -540,13 +543,24 @@ namespace Stroika::Foundation::Time {
          * Defined for
          *      struct tm
          *      year_month_day
+         * 
+         *  Generally constexpr where possible.
          */
-
-        // @todo ADD CVT TO YEARMONTYDATE ETC>>>
         template <typename T>
         nonvirtual T As () const;
 
     public:
+        [[deprecated ("Since Stroika v3.0d1 - use.Add () - now Date immutable")]] Date& operator++ ()
+        {
+            *this = this->AddDays (1);
+            return *this;
+        }
+        [[deprecated ("Since Stroika v3.0d1 - use.Add () - now Date immutable")]] Date operator++ (int)
+        {
+            Date tmp = *this;
+            *this    = this->AddDays (1);
+            return tmp;
+        }
         [[deprecated ("Since Stroika v3.0d1, use As<year_month_day> ()")]] void mdy (month* m, day* d, year* y) const
         {
             RequireNotNull (m);

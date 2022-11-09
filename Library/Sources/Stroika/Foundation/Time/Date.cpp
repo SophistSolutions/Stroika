@@ -43,7 +43,7 @@ Date::FormatException::FormatException ()
 Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo)
 {
     if (rep.empty ()) {
-        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
+        Execution::Throw (FormatException::kThe);
     }
     wstring                  wRep  = rep.As<wstring> ();
     const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
