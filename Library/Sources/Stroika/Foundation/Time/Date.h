@@ -523,8 +523,8 @@ namespace Stroika::Foundation::Time {
          *          Assert (d == 1906y/May/13d);
          *      \endcode
          */
-        nonvirtual Date Add (int d) const;
-        nonvirtual Date Add (days d) const;
+        nonvirtual [[nodiscard]] Date Add (int d) const;
+        nonvirtual [[nodiscard]] Date Add (days d) const;
 
     public:
         /**

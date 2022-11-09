@@ -180,7 +180,7 @@ Date Date::AsDate_ (const ::tm& when)
         DataExchange::ValidationStrategy::eThrow};
 }
 
-Date Date::Add (days dayCount) const
+[[nodiscard]] Date Date::Add (days dayCount) const
 {
     // SEE https://github.com/HowardHinnant/date/issues/178
     return Date{chrono::sys_days{fRep_} + dayCount, DataExchange::ValidationStrategy::eThrow};

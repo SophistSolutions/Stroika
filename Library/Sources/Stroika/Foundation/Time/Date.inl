@@ -379,7 +379,7 @@ namespace Stroika::Foundation::Time {
         return Format ();
     }
 #endif
-    inline Date Date::Add (int dayCount) const
+    inline [[nodiscard]] Date Date::Add (int dayCount) const
     {
         return Add (days{dayCount});
     }
