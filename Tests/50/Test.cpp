@@ -657,7 +657,7 @@ namespace {
             }
             try {
                 DateTime dt = DateTime::Parse (L"1906-05-12 12:00:00+00", DateTime::kISO8601Format);    //allowed to use space or 't'
-                VerifyTestResult ((dt.GetDate () == Date{Year(1906), May, day{12}}));
+                VerifyTestResult ((dt.GetDate () == Date{1906y, May, 12d}));
                 VerifyTestResult ((dt.GetTimeOfDay () == TimeOfDay {12, 0, 0}));
                 VerifyTestResult (dt.GetTimezone ()->GetBiasFromUTC (dt.GetDate (), *dt.GetTimeOfDay ()) == 0);
             }
@@ -666,7 +666,8 @@ namespace {
             }
             try {
                 DateTime dt = DateTime::Parse (L"1906-05-12T12:00:00+00", DateTime::kISO8601Format);
-                VerifyTestResult ((dt.GetDate () == Date{Year(1906), May, day{12}}));
+                VerifyTestResult ((dt.GetDate () == Date{1906y, May, 12d}));
+                VerifyTestResult ((1906y/May/12d == Date{1906y, May, 12d}));
                 VerifyTestResult ((dt.GetTimeOfDay () == TimeOfDay {12, 0, 0}));
                 VerifyTestResult (dt.GetTimezone ()->GetBiasFromUTC (dt.GetDate (), *dt.GetTimeOfDay ()) == 0);
             }

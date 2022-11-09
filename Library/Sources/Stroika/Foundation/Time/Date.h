@@ -86,6 +86,10 @@ namespace Stroika::Foundation::Time {
 
     using chrono::year_month_day;
 
+    using std::literals::chrono_literals::operator"" d; // day
+    using std::literals::chrono_literals::operator"" y; // year
+    using std::chrono::                   operator/;    // year/month/day -> year_month_day
+
     /**
      *  \brief Simple wrapper on std::chrono::weekday, with some helpful validation properties (assures constructed 'ok'). But not necessary to use - use just 'weekday' in most places
      * 
@@ -296,7 +300,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  kMinJulianRep = 2361222, aka Date::ToJulianRep (September, day{14}, year{1752}) because that date
+         *  kMinJulianRep = 2361222, aka Date::ToJulianRep (September, 14d, year{1752}) because that date
          *  comes from code I lifted long ago (originally from NIHCL). Must research better, to maybe lift/adjust limits.
          * 
          * MAYBE CUZ:
@@ -304,7 +308,7 @@ namespace Stroika::Foundation::Time {
          * 
          *  kMinJulianRep is defined (later) constexpr.
          */
-        static const JulianRepType kMinJulianRep; // = Date::ToJulianRep (September, day{14}, year{1752})
+        static const JulianRepType kMinJulianRep; // = Date::ToJulianRep (September, 14d, year{1752})
 
     public:
         /**
@@ -315,7 +319,7 @@ namespace Stroika::Foundation::Time {
          * 
          *  kMaxJulianRep is defined (later) constexpr.
         */
-        static const JulianRepType kMaxJulianRep; // = Date::ToJulianRep (December, day{31}, year{8099})
+        static const JulianRepType kMaxJulianRep; // = Date::ToJulianRep (December, 31d, year{8099})
 
     public:
         class FormatException;
@@ -325,12 +329,17 @@ namespace Stroika::Foundation::Time {
          *  if DataExchange::ValidationStrategy is NOT specified, or == DataExchange::ValidationStrategy::eAssertion, then
          *      \req kMinJulianRep <= julianRep <= kMaxJulianRep AND Date::kMin <= d <= Date::kMax
          *  else if eThrow, then throw when arguments out of range.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          Assert (1906y/May/12d == Date{1906y, May, 12d});
+         *      \endcode
          */
         constexpr Date (Date&& src) noexcept      = default;
         constexpr Date (const Date& src) noexcept = default;
         explicit constexpr Date (JulianRepType julianRep, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
         constexpr Date (year y, month m, day d, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
-        constexpr explicit Date (year_month_day ymd, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        constexpr Date (year_month_day ymd, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
         /**

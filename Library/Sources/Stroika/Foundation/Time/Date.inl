@@ -164,12 +164,12 @@ namespace Stroika::Foundation::Time {
     constexpr inline Date::JulianRepType Date::ToJulianRep (month m, day d, year y, DataExchange::ValidationStrategy validationStrategy)
     {
         if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
-            if (not m.ok () or not d.ok () or not y.ok () or y < year{1752} or (y == year{1752} and (m < September or (m == September and d < day{14})))) {
+            if (not m.ok () or not d.ok () or not y.ok () or y < year{1752} or (y == year{1752} and (m < September or (m == September and d < 14d)))) {
                 Execution::Throw (FormatException::kThe);
             }
         }
         Require (y.ok () and m.ok () and d.ok ());
-        Require (static_cast<int> (y) > 1752 or (static_cast<int> (y) == 1752 and (m > September or (m == September and d >= day{14}))));
+        Require (static_cast<int> (y) > 1752 or (static_cast<int> (y) == 1752 and (m > September or (m == September and d >= 14d))));
         /*
          * Convert Gregorian calendar date to the corresponding Julian day number
          * j.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
@@ -237,8 +237,8 @@ namespace Stroika::Foundation::Time {
         }
         return year_month_day{Year{y}, MonthOfYear{m}, DayOfMonth{d}};
     }
-    inline constexpr Date::JulianRepType Date::kMinJulianRep = Date::ToJulianRep (September, day{14}, year{1752});
-    inline constexpr Date::JulianRepType Date::kMaxJulianRep = Date::ToJulianRep (December, day{31}, year{8099});
+    inline constexpr Date::JulianRepType Date::kMinJulianRep = Date::ToJulianRep (September, 14d, year{1752});
+    inline constexpr Date::JulianRepType Date::kMaxJulianRep = Date::ToJulianRep (December, 31d, year{8099});
     static_assert (Date::kMinJulianRep == 2361222); // not important, but if that ever failed, would indicate serious bug or we changed definition
     inline constexpr Date::Date (JulianRepType julianRep, DataExchange::ValidationStrategy validationStrategy)
         : fRep_{FromJulianRep (julianRep, validationStrategy)}
@@ -247,7 +247,7 @@ namespace Stroika::Foundation::Time {
     constexpr inline Date::Date (year_month_day ymd, DataExchange::ValidationStrategy validationStrategy)
         : fRep_{ymd}
     {
-        (void)ToJulianRep (ymd, validationStrategy);    // this is overkill, and we do be slightly more efficient - just for side-effect of checks
+        (void)ToJulianRep (ymd, validationStrategy); // this is overkill, and we do be slightly more efficient - just for side-effect of checks
     }
     constexpr inline Date::Date (year y, month m, day d, DataExchange::ValidationStrategy validationStrategy)
         : Date{year_month_day{y, m, d}, validationStrategy}
@@ -282,7 +282,7 @@ namespace Stroika::Foundation::Time {
     }
     inline constexpr day Date::GetDayOfMonth () const
     {
-        Ensure (day{1} <= fRep_.day () and fRep_.day () <= day{31});
+        Ensure (1d <= fRep_.day () and fRep_.day () <= 31d);
         return fRep_.day ();
     }
     inline Date Date::Parse (const String& rep, const locale& l)
