@@ -180,28 +180,15 @@ Date Date::AsDate_ (const ::tm& when)
         DataExchange::ValidationStrategy::eThrow};
 }
 
-Date Date::AddDays (SignedJulianRepType dayCount) const
+Date Date::Add (days dayCount) const
 {
-    // @todo figure out if/how to handle overflow/underflow - this julian rep stuff is probably no longer a good idea
-    Date result = *this;
     // SEE https://github.com/HowardHinnant/date/issues/178
-    // year_month_day ymd3 = sys_days{jan/31/2017} + days{1};
-
-    result.fRep_ = chrono::sys_days{fRep_} + chrono::days{dayCount};
-#if 0
-    result.fRep_ += chrono::days{dayCount};
-    if (result.GetJulianRep () < Date::kMinJulianRep) [[unlikely]] {
-        static const range_error kRangeErrror_{"Date::AddDays cannot add days to go before the first julian calandar day"};
-        Execution::Throw (kRangeErrror_);
-    }
-#endif
-    return result;
+    return Date{chrono::sys_days{fRep_} + dayCount, DataExchange::ValidationStrategy::eThrow};
 }
 
-Date::JulianRepType Date::DaysSince () const
+days Date::Since () const
 {
-    SignedJulianRepType r = DayDifference (DateTime::GetToday (), *this);
-    return r < 0 ? 0 : r;
+    return Since (DateTime::GetToday (), this->As<year_month_day> ());
 }
 
 weekday Date::GetDayOfWeek () const

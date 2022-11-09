@@ -81,13 +81,16 @@ namespace Stroika::Foundation::Time {
     using chrono::Wednesday;
 
     using chrono::day;
+    using chrono::days;
 
     using chrono::year;
 
     using chrono::year_month_day;
 
+    DISABLE_COMPILER_MSC_WARNING_START (4455)
     using std::literals::chrono_literals::operator"" d; // day
     using std::literals::chrono_literals::operator"" y; // year
+    DISABLE_COMPILER_MSC_WARNING_END (4455)
     using std::chrono::                   operator/;    // year/month/day -> year_month_day
 
     /**
@@ -282,7 +285,7 @@ namespace Stroika::Foundation::Time {
      */
     class Date {
     public:
-        using JulianRepType = unsigned int;
+        using JulianRepType = uint32_t;
 
     public:
         using SignedJulianRepType = make_signed_t<JulianRepType>;
@@ -303,8 +306,12 @@ namespace Stroika::Foundation::Time {
          *  kMinJulianRep = 2361222, aka Date::ToJulianRep (September, 14d, year{1752}) because that date
          *  comes from code I lifted long ago (originally from NIHCL). Must research better, to maybe lift/adjust limits.
          * 
-         * MAYBE CUZ:
-         *         // Gregorian calendar started on Sep. 14, 1752
+         *  According to https://en.wikipedia.org/wiki/Gregorian_calendar
+         *      Britain and the British Empire (including the eastern part of what is
+         *      now the United States) adopted the Gregorian calendar in 1752
+         * 
+         *  For whatever reason, the code I have assumes
+         *      Gregorian calendar started on Sep. 14, 1752
          * 
          *  kMinJulianRep is defined (later) constexpr.
          */
@@ -464,6 +471,11 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         */
+        nonvirtual constexpr JulianRepType GetJulianRep () const;
+
+    public:
+        /**
          *  \brief  DisplayFormat is a representation which a date can be transformed in and out of
          *
          *  eCurrentLocale_WithZerosStripped
@@ -503,44 +515,55 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          * Returns a new Date object based on this Date, with 'dayCount' days added.
+         *
+         *  \par Example Usage
+         *      \code
+         *          Date d = 1906y/May/12d;
+         *          d = d.Add (1);      // OR d = d + 1;
+         *          Assert (d == 1906y/May/13d);
+         *      \endcode
          */
-
-        // @todo RENAME Add (days argument)
-        // DEPRECATE THIS VERSION
-
-        // OFFER EXAMPLES of Date{x}.Add (1), .Add(-1) etc working.
-        nonvirtual Date AddDays (SignedJulianRepType dayCount) const;
+        nonvirtual Date Add (int d) const;
+        nonvirtual Date Add (days d) const;
 
     public:
         /**
+         *  returns number of days between a start day and end day: Never less than zero.
+         *  No argument version computes days between *this and 'now'.
          */
-        nonvirtual constexpr JulianRepType GetJulianRep () const;
+        static days     Since (Date dStart, Date dEnd);
+        nonvirtual days Since () const;
 
     public:
         /**
-         * returns number of days since this point - relative to NOW. Never less than zero
+         *  \brief Returns the difference (*this - rhs) between the two Date records;
+         *
+         *  \note Before Stroika v3.0d1, this returend  SignedJulianRepType.
          */
-        nonvirtual JulianRepType DaysSince () const;
+        nonvirtual days Difference (const Date& rhs) const;
 
     public:
         /**
-         * Returns the difference (*this - rhs) between the two Date records as a SignedJulianRepType.
+         *  \brief  Syntactic sure for Add (n);
+         *
+         *  \par Example Usage
+         *      \code
+         *          Date d = 1906y/May/12d;
+         *          d = d + 1;
+         *          Assert (d == 1906y/May/13d);
+         *      \endcode
          */
-        nonvirtual SignedJulianRepType Difference (const Date& rhs) const;
+        nonvirtual Date operator+ (int daysOffset) const;
+        nonvirtual Date operator+ (days daysOffset) const;
 
     public:
         /**
-         *  \brief  Syntactic sure for AddDays (n);
+         *  days operator- (const Date& rhs): Syntactic sugar on Difference()
+         *  Date                operator- (days or int daysOffset)  Syntactic sugar on Add(-arg)
          */
-        nonvirtual Date operator+ (SignedJulianRepType daysOffset) const;
-
-    public:
-        /**
-         *  SignedJulianRepType operator- (const Date& rhs): Syntactic sugar on Difference()
-         *  Date                operator- (SignedJulianRepType daysOffset)  Syntactic sugar on AddDays(-arg)
-         */
-        nonvirtual SignedJulianRepType operator- (const Date& rhs) const;
-        nonvirtual Date                operator- (SignedJulianRepType daysOffset) const;
+        nonvirtual days operator- (const Date& rhs) const;
+        nonvirtual Date operator- (int daysOffset) const;
+        nonvirtual Date operator- (days daysOffset) const;
 
     public:
         /**
@@ -561,14 +584,12 @@ namespace Stroika::Foundation::Time {
     public:
         [[deprecated ("Since Stroika v3.0d1 - use.Add () - now Date immutable")]] Date& operator++ ()
         {
-            *this = this->AddDays (1);
+            *this = Add (1);
             return *this;
         }
         [[deprecated ("Since Stroika v3.0d1 - use.Add () - now Date immutable")]] Date operator++ (int)
         {
-            Date tmp = *this;
-            *this    = this->AddDays (1);
-            return tmp;
+            return *this + 1;
         }
         [[deprecated ("Since Stroika v3.0d1, use As<year_month_day> ()")]] void mdy (month* m, day* d, year* y) const
         {
@@ -578,6 +599,14 @@ namespace Stroika::Foundation::Time {
             *m = fRep_.month ();
             *d = fRep_.day ();
             *y = fRep_.year ();
+        }
+        [[deprecated ("Since Stroika v3.0d1 - use Add(days)")]] Date AddDays (SignedJulianRepType dayCount) const
+        {
+            return Add (chrono::days{dayCount});
+        }
+        [[deprecated ("Since Stroika 3.0d1 - use Since")]] JulianRepType DaysSince () const
+        {
+            return static_cast<JulianRepType> (Since ().count ());
         }
 
     private:

@@ -447,6 +447,11 @@ namespace {
             Date d = Date{Date::JulianRepType{2455213}};
             VerifyTestResult (d.Format () == L"1/16/10");
         }
+        {
+            Date d = 1906y / May / 12d;
+            d      = d + 1;
+            VerifyTestResult (d == (1906y / May / 13d));
+        }
     }
 }
 

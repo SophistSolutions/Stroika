@@ -164,7 +164,7 @@ namespace Stroika::Foundation::Time {
     constexpr inline Date::JulianRepType Date::ToJulianRep (month m, day d, year y, DataExchange::ValidationStrategy validationStrategy)
     {
         if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
-            if (not m.ok () or not d.ok () or not y.ok () or y < year{1752} or (y == year{1752} and (m < September or (m == September and d < 14d)))) {
+            if (not m.ok () or not d.ok () or not y.ok () or y < 1752y or (y == 1752y and (m < September or (m == September and d < 14d)))) {
                 Execution::Throw (FormatException::kThe);
             }
         }
@@ -237,8 +237,8 @@ namespace Stroika::Foundation::Time {
         }
         return year_month_day{Year{y}, MonthOfYear{m}, DayOfMonth{d}};
     }
-    inline constexpr Date::JulianRepType Date::kMinJulianRep = Date::ToJulianRep (September, 14d, year{1752});
-    inline constexpr Date::JulianRepType Date::kMaxJulianRep = Date::ToJulianRep (December, 31d, year{8099});
+    inline constexpr Date::JulianRepType Date::kMinJulianRep = Date::ToJulianRep (September, 14d, 1752y);
+    inline constexpr Date::JulianRepType Date::kMaxJulianRep = Date::ToJulianRep (December, 31d, 8099y);
     static_assert (Date::kMinJulianRep == 2361222); // not important, but if that ever failed, would indicate serious bug or we changed definition
     inline constexpr Date::Date (JulianRepType julianRep, DataExchange::ValidationStrategy validationStrategy)
         : fRep_{FromJulianRep (julianRep, validationStrategy)}
@@ -379,21 +379,40 @@ namespace Stroika::Foundation::Time {
         return Format ();
     }
 #endif
-    inline Date Date::operator+ (SignedJulianRepType daysOffset) const
+    inline Date Date::Add (int dayCount) const
     {
-        return this->AddDays (daysOffset);
+        return Add (days{dayCount});
     }
-    inline auto Date::Difference (const Date& rhs) const -> SignedJulianRepType
+    inline Date Date::operator+ (int daysOffset) const
     {
-        return GetJulianRep () - rhs.GetJulianRep ();
+        return this->Add (daysOffset);
     }
-    inline auto Date::operator- (const Date& rhs) const -> SignedJulianRepType
+    inline Date Date::operator+ (days daysOffset) const
+    {
+        return this->Add (daysOffset);
+    }
+    inline days Date::Since (Date dStart, Date dEnd)
+    {
+        if (dStart < dEnd) {
+            return dEnd - dStart;
+        }
+        return days{0};
+    }
+    inline auto Date::Difference (const Date& rhs) const -> days
+    {
+        return chrono::sys_days{fRep_} - chrono::sys_days{rhs.fRep_};
+    }
+    inline auto Date::operator- (const Date& rhs) const -> days
     {
         return Difference (rhs);
     }
-    inline Date Date::operator- (SignedJulianRepType daysOffset) const
+    inline Date Date::operator- (days daysOffset) const
     {
-        return this->AddDays (-daysOffset);
+        return Add (-daysOffset);
+    }
+    inline Date Date::operator- (int daysOffset) const
+    {
+        return Add (-daysOffset);
     }
     inline constexpr Date Date::kMin{Date::kMinJulianRep};
     inline constexpr Date Date::kMax{Date::kMaxJulianRep};
@@ -419,11 +438,11 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
     /// need getNext/GetPrev here excelt if causes constexpr issues
     inline Time::Date Default<Time::Date>::GetNext (Time::Date n)
     {
-        return n.AddDays (1);
+        return n + 1;
     }
     inline Time::Date Default<Time::Date>::GetPrevious (Time::Date n)
     {
-        return n.AddDays (-1);
+        return n - 1;
     }
 
 };

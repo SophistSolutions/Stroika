@@ -896,9 +896,7 @@ DateTime DateTime::Add (const Duration& d) const
 
 DateTime DateTime::AddDays (int days) const
 {
-    Date d = GetDate ();
-    d      = d.AddDays (days);
-    return DateTime{d, GetTimeOfDay (), GetTimezone ()};
+    return DateTime{GetDate ().Add (days), GetTimeOfDay (), GetTimezone ()};
 }
 
 DateTime DateTime::AddSeconds (int64_t seconds) const
@@ -925,10 +923,10 @@ DateTime DateTime::AddSeconds (int64_t seconds) const
     Ensure (0 <= n and n < static_cast<int64_t> (TimeOfDay::kMaxSecondsPerDay));
     Assert (numeric_limits<int>::lowest () <= dayDiff and dayDiff <= numeric_limits<int>::max ());
     if (n == 0) {
-        return DateTime{GetDate ().AddDays (static_cast<int> (dayDiff)), GetTimeOfDay (), GetTimezone ()};
+        return DateTime{GetDate ().Add (days{dayDiff}), GetTimeOfDay (), GetTimezone ()};
     }
     else {
-        return DateTime{GetDate ().AddDays (static_cast<int> (dayDiff)), TimeOfDay{static_cast<uint32_t> (n)}, GetTimezone ()};
+        return DateTime{GetDate ().Add (days{dayDiff}), TimeOfDay{static_cast<uint32_t> (n)}, GetTimezone ()};
     }
 }
 
