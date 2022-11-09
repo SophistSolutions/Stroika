@@ -25,20 +25,6 @@ using namespace Stroika::Foundation::Time;
 
 using namespace Time;
 
-namespace {
-    constexpr int kTM_Year_RelativeToYear_{1900}; // see https://man7.org/linux/man-pages/man3/ctime.3.html
-}
-
-namespace {
-    inline ::tm Date2TM_ (const Date& d)
-    {
-        ::tm tm{};
-        tm.tm_year = static_cast<int> (d.GetYear ()) - kTM_Year_RelativeToYear_;
-        tm.tm_mon  = static_cast<unsigned int> (d.GetMonth ()) - 1;
-        tm.tm_mday = static_cast<unsigned int> (d.GetDayOfMonth ());
-        return tm;
-    }
-}
 
 /*
  ********************************************************************************
@@ -88,7 +74,7 @@ optional<Date> Date::LocaleFreeParseQuietly_kMonthDayYearFormat_ (const wstring&
         if ((1 <= m and m <= 12) and (1 <= d and d <= 31) and (year > 0)) {
             try {
                 // above check is NEARLY good enuf but not quite, so we need to try/catch here to do this quietly. BUT - should really do more to avoid first exception
-                return Date{Year (year), month{static_cast<unsigned int> (m)}, day{static_cast<unsigned int> (d)}, DataExchange::ValidationStrategy::eThrow};
+                return Date{Year{year}, month{static_cast<unsigned int> (m)}, day{static_cast<unsigned int> (d)}, DataExchange::ValidationStrategy::eThrow};
             }
             catch (...) {
                 return nullopt;
@@ -179,7 +165,7 @@ String Date::Format (const String& formatPattern) const
 String Date::Format (const locale& l, const String& formatPattern) const
 {
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
-    ::tm                     when  = Date2TM_ (*this);
+    ::tm                     when  = As<::tm> ();
     const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
     wostringstream           oss;
     tmput.put (oss, oss, ' ', &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
@@ -189,7 +175,7 @@ String Date::Format (const locale& l, const String& formatPattern) const
 Date Date::AsDate_ (const ::tm& when)
 {
     return Date{
-        Year (when.tm_year + kTM_Year_RelativeToYear_),
+        Year{when.tm_year + kTM_Year_RelativeToYear_},
         MonthOfYear{when.tm_mon + 1, DataExchange::ValidationStrategy::eThrow},
         DayOfMonth{when.tm_mday, DataExchange::ValidationStrategy::eThrow},
         DataExchange::ValidationStrategy::eThrow};
@@ -217,23 +203,6 @@ Date::JulianRepType Date::DaysSince () const
 {
     SignedJulianRepType r = DayDifference (DateTime::GetToday (), *this);
     return r < 0 ? 0 : r;
-}
-
-year Date::GetYear () const
-{
-    return get<2> (mdy ());
-}
-
-month Date::GetMonth () const
-{
-    Ensure (1 <= static_cast<unsigned int> (get<0> (mdy ())) and static_cast<unsigned int> (get<0> (mdy ())) <= 12);
-    return get<0> (mdy ());
-}
-
-day Date::GetDayOfMonth () const
-{
-    Ensure (1 <= static_cast<unsigned int> (get<1> (mdy ())) and static_cast<unsigned int> (get<1> (mdy ())) <= 31);
-    return get<1> (mdy ());
 }
 
 weekday Date::GetDayOfWeek () const
@@ -279,20 +248,6 @@ weekday Date::GetDayOfWeek () const
     targetDayOfWeek += (GetDayOfMonth () - day{1}).count ();
 
     return DayOfWeek{R (targetDayOfWeek, 7) + Sunday.c_encoding ()};
-}
-
-template <>
-::tm Date::As () const
-{
-    return Date2TM_ (*this);
-}
-
-/*
-* // @todo probably obsolete/depreacted but maybe change name / param order?
- */
-tuple<month, day, year> Date::mdy () const
-{
-    return make_tuple (fRep_.month (), fRep_.day (), fRep_.year ());
 }
 
 #if qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug
@@ -345,10 +300,8 @@ Date::SignedJulianRepType Time::DayDifference (const Date& lhs, const Date& rhs)
  */
 int Time::YearDifference (const Date& lhs, const Date& rhs)
 {
-    const auto [lm, ld, ly] = lhs.mdy ();
-    const auto [rm, rd, ry] = rhs.mdy ();
-    int diff                = static_cast<int> (ly) - static_cast<int> (ry);
-    if (lm < rm or (lm == rm and ld < rd)) {
+    int diff                = static_cast<int> (lhs.GetYear ()) - static_cast<int> (rhs.GetYear ());
+    if (lhs.GetMonth () < rhs.GetMonth () or (lhs.GetMonth () == rhs.GetMonth () and lhs.GetDayOfMonth () < rhs.GetDayOfMonth ())) {
         diff--;
     }
     return diff;

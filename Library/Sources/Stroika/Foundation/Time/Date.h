@@ -230,8 +230,6 @@ namespace Stroika::Foundation::Time {
 
     /// @todo IF we decide Date is immutable, DOCUMENT IT AS SUCH
 
-    // TODO - REPLACE mdy() / tuple crap with As<year_month_day> ()
-
     /**
      * Description:
      *      The Date class is based on SmallTalk-80, The Language & Its Implementation,
@@ -310,15 +308,14 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          *  if DataExchange::ValidationStrategy is NOT specified, or == DataExchange::ValidationStrategy::eAssertion, then
-         *      \req kMinJulianRep <= julianRep <= kMaxJulianRep
+         *      \req kMinJulianRep <= julianRep <= kMaxJulianRep AND Date::kMin <= d <= Date::kMax
          *  else if eThrow, then throw when arguments out of range.
          */
-        constexpr Date (Date&& src) noexcept = default;
-        constexpr Date (const Date& src)     = default;
-        explicit constexpr Date (JulianRepType julianRep);
-        explicit constexpr Date (JulianRepType julianRep, DataExchange::ValidationStrategy validationStrategy);
-        constexpr explicit Date (year y, month m, day d);
-        constexpr explicit Date (year y, month m, day d, DataExchange::ValidationStrategy validationStrategy);
+        constexpr Date (Date&& src) noexcept      = default;
+        constexpr Date (const Date& src) noexcept = default;
+        explicit constexpr Date (JulianRepType julianRep, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        constexpr Date (year y, month m, day d, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        constexpr explicit Date (year_month_day ymd, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
         /**
@@ -424,28 +421,22 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          */
-        nonvirtual year GetYear () const;
+        nonvirtual constexpr year GetYear () const;
 
     public:
         /**
          */
-        nonvirtual month GetMonth () const;
+        nonvirtual constexpr month GetMonth () const;
 
     public:
         /**
          */
-        nonvirtual day GetDayOfMonth () const;
+        nonvirtual constexpr day GetDayOfMonth () const;
 
     public:
         /**
          */
         nonvirtual weekday GetDayOfWeek () const;
-
-    public:
-        /**
-         *  \brief Convert (internal representation) Julian day number to its corresponding Gregorian calendar date
-         */
-        nonvirtual tuple<month, day, year> mdy () const;
 
     public:
         /**
@@ -548,6 +539,7 @@ namespace Stroika::Foundation::Time {
         /**
          * Defined for
          *      struct tm
+         *      year_month_day
          */
 
         // @todo ADD CVT TO YEARMONTYDATE ETC>>>
@@ -555,19 +547,21 @@ namespace Stroika::Foundation::Time {
         nonvirtual T As () const;
 
     public:
-        [[deprecated ("Since Stroika v3.0d1, use mdy/0")]] void mdy (month* m, day* d, year* y) const
+        [[deprecated ("Since Stroika v3.0d1, use As<year_month_day> ()")]] void mdy (month* m, day* d, year* y) const
         {
             RequireNotNull (m);
             RequireNotNull (d);
             RequireNotNull (y);
-            auto r = mdy ();
-            *m     = get<0> (r);
-            *d     = get<1> (r);
-            *y     = get<2> (r);
+            *m = fRep_.month ();
+            *d = fRep_.day ();
+            *y = fRep_.year ();
         }
 
     private:
         static optional<Date> LocaleFreeParseQuietly_kMonthDayYearFormat_ (const wstring& rep, size_t* consumedCharsInStringUpTo);
+
+    private:
+        static constexpr int kTM_Year_RelativeToYear_{1900}; // see https://man7.org/linux/man-pages/man3/ctime.3.html
 
     private:
         static Date AsDate_ (const ::tm& when);
@@ -578,7 +572,9 @@ namespace Stroika::Foundation::Time {
     static_assert (sizeof (Date) == sizeof (year_month_day)); // generally 4 bytes
 
     template <>
-    ::tm Date::As () const;
+    constexpr ::tm Date::As () const;
+    template <>
+    constexpr year_month_day Date::As () const;
 
     class Date::FormatException : public Execution::RuntimeErrorException<> {
     public:

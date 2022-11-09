@@ -230,11 +230,6 @@ namespace Stroika::Foundation::Time {
     inline constexpr Date::JulianRepType Date::kMinJulianRep = Date::ToJulianRep (September, day{14}, year{1752});
     inline constexpr Date::JulianRepType Date::kMaxJulianRep = Date::ToJulianRep (December, day{31}, year{8099});
     static_assert (Date::kMinJulianRep == 2361222); // not important, but if that ever failed, would indicate serious bug or we changed definition
-    inline constexpr Date::Date (JulianRepType julianRep)
-        : fRep_{FromJulianRep (julianRep)}
-    {
-        Require (kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep);
-    }
     inline constexpr Date::Date (JulianRepType julianRep, DataExchange::ValidationStrategy validationStrategy)
         : fRep_{FromJulianRep (julianRep)}
     {
@@ -245,30 +240,52 @@ namespace Stroika::Foundation::Time {
         }
         Require (kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep);
     }
-    constexpr inline Date::Date (year y, month m, day d)
-        : fRep_{y, m, d}
-    {
-        Require (y >= Year::eFirstYear);
-        Require (y > Year{1752} or (m > September) or (m == September and d >= DayOfMonth{14}));
-    }
-    constexpr inline Date::Date (year y, month m, day d, DataExchange::ValidationStrategy validationStrategy)
-        : fRep_{y, m, d}
+    constexpr inline Date::Date (year_month_day ymd, DataExchange::ValidationStrategy validationStrategy)
+        : fRep_{ymd}
     {
         if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
-            if (not(y >= Year::eFirstYear)) {
-                Execution::Throw (FormatException::kThe);
-            }
-            if (not(y > Year{1752} or (m > September) or (m == September and d >= DayOfMonth{14}))) {
+            if (not(kMinJulianRep < ToJulianRep (ymd) and ToJulianRep (ymd) < kMaxJulianRep)) {
                 Execution::Throw (FormatException::kThe);
             }
         }
-        Require (y >= Year::eFirstYear);
-        Require (y > Year{1752} or (m > September) or (m == September and d >= DayOfMonth{14}));
-        fRep_ = year_month_day{y, m, d};
+        Require (ymd.year () >= Year::eFirstYear);
+        Require (ymd.year () > year{1752} or (ymd.month () > September) or (ymd.month () == September and ymd.day () >= DayOfMonth{14}));
+    }
+    constexpr inline Date::Date (year y, month m, day d, DataExchange::ValidationStrategy validationStrategy)
+        : Date{year_month_day{y, m, d}, validationStrategy}
+    {
+    }
+    template <>
+    constexpr year_month_day Date::As () const
+    {
+        return fRep_;
+    }
+    template <>
+    constexpr ::tm Date::As () const
+    {
+        ::tm tm{};
+        tm.tm_year = static_cast<int> (GetYear ()) - kTM_Year_RelativeToYear_;
+        tm.tm_mon  = static_cast<unsigned int> (GetMonth ()) - 1;
+        tm.tm_mday = static_cast<unsigned int> (GetDayOfMonth ());
+        return tm;
     }
     inline constexpr Date::JulianRepType Date::GetJulianRep () const
     {
         return ToJulianRep (fRep_);
+    }
+    inline constexpr year Date::GetYear () const
+    {
+        return fRep_.year ();
+    }
+    inline constexpr month Date::GetMonth () const
+    {
+        Ensure (January <= fRep_.month () and fRep_.month () <= December);
+        return fRep_.month ();
+    }
+    inline constexpr day Date::GetDayOfMonth () const
+    {
+        Ensure (day{1} <= fRep_.day () and fRep_.day () <= day{31});
+        return fRep_.day ();
     }
     inline Date Date::Parse (const String& rep, const locale& l)
     {
