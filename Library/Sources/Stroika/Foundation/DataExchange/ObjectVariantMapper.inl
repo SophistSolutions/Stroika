@@ -967,7 +967,7 @@ namespace Stroika::Foundation::DataExchange {
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, [[maybe_unused]] size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void (VariantValue*)>& preflightBeforeToObject) const
     {
         if constexpr (qDebug) {
-            for ([[maybe_unused]]const auto& i : fields) {
+            for ([[maybe_unused]] const auto& i : fields) {
                 Require (i.fFieldMetaInfo.fOffset < n);
             }
             {
@@ -977,7 +977,7 @@ namespace Stroika::Foundation::DataExchange {
                     t.Add (i.fFieldMetaInfo.fOffset);
                 }
                 for (const auto& i : t) {
-                    [[maybe_unused]]bool alreadyInListOfFields = not(i.fCount == 1);
+                    [[maybe_unused]] bool alreadyInListOfFields = not(i.fCount == 1);
                     WeakAssert (not alreadyInListOfFields); //  not necessarily something we want to prohibit, but overwhelmingly likely a bug/typo
                 }
             }
@@ -1038,7 +1038,7 @@ namespace Stroika::Foundation::DataExchange {
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, [[maybe_unused]] size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void (VariantValue*)>& preflightBeforeToObject, const optional<type_index>& baseClassTypeInfo) const
     {
         if constexpr (qDebug) {
-            for ([[maybe_unused]]const auto& i : fields) {
+            for ([[maybe_unused]] const auto& i : fields) {
                 Require (i.fFieldMetaInfo.fOffset < n);
             }
             {
@@ -1048,7 +1048,7 @@ namespace Stroika::Foundation::DataExchange {
                     t.Add (i.fFieldMetaInfo.fOffset);
                 }
                 for (const auto& i : t) {
-                    [[maybe_unused]]bool alreadyInListOfFields = not(i.fCount == 1);
+                    [[maybe_unused]] bool alreadyInListOfFields = not(i.fCount == 1);
                     Require (not alreadyInListOfFields); //  not necessarily something we want to prohibit, but overwhelmingly likely a bug/typo
                 }
             }
