@@ -141,21 +141,6 @@ namespace Stroika::Foundation::Time {
         : Year{static_cast<int> (y), validationStrategy}
     {
     }
-#if 0
-    inline int operator- (Year y1, Year y2)
-    {
-        return static_cast<int> (y1) - static_cast<int> (y2);
-    }
-    inline Year operator+ (Year y1, int offset)
-    {
-        return static_cast<Year> (static_cast<int> (y1) + offset);
-    }
-    template <typename T>
-    inline T operator% (Year y1, T m)
-    {
-        return static_cast<T> (y1) % m;
-    }
-#endif
 
     /*
      ********************************************************************************
@@ -164,19 +149,7 @@ namespace Stroika::Foundation::Time {
      */
     [[deprecated ("Since Stroika v3.0d1, use year{}.is_leap ()")]] inline bool IsLeapYear (Year y)
     {
-#if 1
         return y.is_leap ();
-#else
-        if (y % 4 == 0) [[unlikely]] {
-            if (y % 100 == 0) {
-                return y % 400 == 0;
-            }
-            else {
-                return true;
-            }
-        }
-        return false;
-#endif
     }
     [[deprecated ("Since Stroika v3.0d1, use year{}.is_leap ()")]] inline bool IsLeapYear (int y)
     {
@@ -188,7 +161,7 @@ namespace Stroika::Foundation::Time {
      *************************************** Date ***********************************
      ********************************************************************************
      */
-    constexpr inline Date::JulianRepType Date::jday_ (month m, day d, Year year)
+    constexpr inline Date::JulianRepType Date::jday_ (month m, day d, year y)
     {
         /*
          * Convert Gregorian calendar date to the corresponding Julian day number
@@ -199,17 +172,17 @@ namespace Stroika::Foundation::Time {
          * (This code originally from NIHCL)
          */
         Require (m.ok ());
-        Require (static_cast<int> (year) > 1752 or (static_cast<int> (year) == 1752 and (m > September or (m == September and d >= day{14}))));
+        Require (static_cast<int> (y) > 1752 or (static_cast<int> (y) == 1752 and (m > September or (m == September and d >= day{14}))));
 
         if (static_cast<unsigned int> (m) > 2) {
             m = m - months{3};
         }
         else {
             m    = m + months{9};
-            year = static_cast<Year> (static_cast<int> (year) - 1);
+            --y;
         }
-        Date::JulianRepType c  = static_cast<int> (year) / 100;
-        Date::JulianRepType ya = static_cast<int> (year) - 100 * c;
+        Date::JulianRepType c  = static_cast<int> (y) / 100;
+        Date::JulianRepType ya = static_cast<int> (y) - 100 * c;
         return ((146097 * c) >> 2) + ((1461 * ya) >> 2) + (153 * static_cast<unsigned int> (m) + 2) / 5 + static_cast<unsigned int> (d) + 1721119;
     }
     inline constexpr Date::Date (JulianRepType julianRep)
@@ -376,7 +349,7 @@ namespace Stroika::Foundation::Time {
         return this->AddDays (-daysOffset);
     }
     inline constexpr Date Date::kMin{Date::kMinJulianRep};
-    inline constexpr Date Date::kMax{UINT_MAX - 1};
+    inline constexpr Date Date::kMax{Date::kMaxJulianRep};
 
 }
 

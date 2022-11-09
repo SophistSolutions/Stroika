@@ -271,7 +271,7 @@ namespace Stroika::Foundation::Time {
         static constexpr JulianRepType kMinJulianRep = 2361222; // This number corresponds to 1752-09-14
 
     public:
-        static constexpr JulianRepType kMaxJulianRep = UINT_MAX - 1;
+        static constexpr JulianRepType kMaxJulianRep = numeric_limits<JulianRepType>::max ();
 
     public:
         class FormatException;
@@ -524,7 +524,7 @@ namespace Stroika::Foundation::Time {
         }
 
     private:
-        constexpr static JulianRepType jday_ (month m, day d, Year year);
+        constexpr static JulianRepType jday_ (month m, day d, year y);
 
     private:
         static optional<Date> LocaleFreeParseQuietly_kMonthDayYearFormat_ (const wstring& rep, size_t* consumedCharsInStringUpTo);
