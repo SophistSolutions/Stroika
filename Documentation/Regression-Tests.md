@@ -40,15 +40,6 @@ checkin from one spot.
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
-- \$TEST_TARGET=Windows_VS2k17
-
-  (on windows bash shell run; takes about 4 HRs)
-
-  ```bash
-  USE_TEST_BASENAME=Windows_`./ScriptsLib/DetectedHostOS`_VS2k17 PLATFORM=VisualStudio.Net-2017 \
-      ./ScriptsLib/RegressionTests
-  ```
-
 - \$TEST_TARGET=Windows_VS2k19
 
   (on windows bash shell run; takes about 4 HRs)
