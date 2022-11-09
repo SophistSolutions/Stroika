@@ -382,10 +382,10 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (d);
             VerifyTestResult (d.Format (Date::kISO8601Format) == L"1903-04-04");
             VERIFY_ROUNDTRIP_XML_ (d);
-            d = d.AddDays (4);
+            d = d.Add (4);
             VERIFY_ROUNDTRIP_XML_ (d);
             VerifyTestResult (d.Format (Date::kISO8601Format) == L"1903-04-08");
-            d = d.AddDays (-4);
+            d = d.Add (-4);
             VERIFY_ROUNDTRIP_XML_ (d);
             VerifyTestResult (d.Format (Date::kISO8601Format) == L"1903-04-04");
             TestRoundTripFormatThenParseNoChange_ (d);
@@ -617,8 +617,8 @@ namespace {
                 constexpr TimeOfDay kTOD2_{10, 21, 35};
                 VerifyTestResult ((DateTime {kDate_, kTOD_} - DateTime {kDate_, kTOD2_}).As<Time::DurationSecondsType> () == -3);
                 VerifyTestResult ((DateTime {kDate_, kTOD2_} - DateTime {kDate_, kTOD_}).As<Time::DurationSecondsType> () == 3);
-                VerifyTestResult ((DateTime {kDate_.AddDays (1), kTOD_} - DateTime {kDate_, kTOD_}).As<Time::DurationSecondsType> () == 24 * 60 * 60);
-                VerifyTestResult ((DateTime {kDate_, kTOD_} - DateTime {kDate_.AddDays (1), kTOD_}).As<Time::DurationSecondsType> () == -24 * 60 * 60);
+                VerifyTestResult ((DateTime {kDate_.Add (1), kTOD_} - DateTime {kDate_, kTOD_}).As<Time::DurationSecondsType> () == 24 * 60 * 60);
+                VerifyTestResult ((DateTime {kDate_, kTOD_} - DateTime {kDate_.Add (1), kTOD_}).As<Time::DurationSecondsType> () == -24 * 60 * 60);
             }
             {
                 VerifyTestResult ((DateTime::Now () - DateTime::kMin) > "P200Y"_duration);
