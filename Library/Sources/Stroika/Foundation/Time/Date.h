@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Time {
     using std::literals::chrono_literals::operator"" d; // day
     using std::literals::chrono_literals::operator"" y; // year
     DISABLE_COMPILER_MSC_WARNING_END (4455)
-    using std::chrono::                   operator/;    // year/month/day -> year_month_day
+    using std::chrono::operator/; // year/month/day -> year_month_day
 
     /**
      *  \brief Simple wrapper on std::chrono::weekday, with some helpful validation properties (assures constructed 'ok'). But not necessary to use - use just 'weekday' in most places
@@ -660,7 +660,7 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
     struct DefaultOpenness<Time::Date> : ExplicitOpenness<Openness::eClosed, Openness::eClosed> {
     };
     template <>
-    struct DefaultDifferenceTypes<Time::Date> : ExplicitDifferenceTypes<int, unsigned int> {
+    struct DefaultDifferenceTypes<Time::Date> : ExplicitDifferenceTypes<chrono::days> {
     };
     template <>
     struct Default<Time::Date> : ExplicitOpennessAndDifferenceType<Time::Date> {
