@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Time {
         Require (ok ());
     }
     constexpr Year::Year (int y, DataExchange::ValidationStrategy validationStrategy)
-        : year{static_cast<unsigned int> (y)}
+        : year{y}
     {
         if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
             if (y <= 0 or not ok ()) {
