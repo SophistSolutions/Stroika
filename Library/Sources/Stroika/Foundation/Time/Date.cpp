@@ -203,13 +203,13 @@ Date Date::AddDays (SignedJulianRepType dayCount) const
     // year_month_day ymd3 = sys_days{jan/31/2017} + days{1};
 
     result.fRep_ = chrono::sys_days{fRep_} + chrono::days{dayCount};
-    #if 0
+#if 0
     result.fRep_ += chrono::days{dayCount};
     if (result.GetJulianRep () < Date::kMinJulianRep) [[unlikely]] {
         static const range_error kRangeErrror_{"Date::AddDays cannot add days to go before the first julian calandar day"};
         Execution::Throw (kRangeErrror_);
     }
-    #endif
+#endif
     return result;
 }
 
