@@ -224,7 +224,6 @@ foo.cpp:
  *******************************************************************
  */
 
-
 /*
  *https://developercommunity.visualstudio.com/t/__sanitizer_annotate_contiguous_containe/10119696?entry=problem&ref=native&refTime=1660499588239&refUserId=b9c6175e-9d87-6b50-bc33-61424496814f
 >C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\sanitizer\common_interface_defs.h(154): error C2382: 'std::__sanitizer_annotate_contiguous_container': redefinition; different exception specifications
@@ -264,7 +263,6 @@ C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Execution\Throw.in
 #endif
 
 #endif
-
 
 ///C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(246): error C2760: syntax error: unexpected token ';', expected ')'
 // You can use [[maybe_unused]] after the identifier, but not before the auto
@@ -438,8 +436,6 @@ C :\Sandbox\Stroika\DevRoot\Tests\50\Test.cpp : 750
 #endif
 
 #endif
-
-
 
 /*
 *  on Windows DEBUG x86 builds only...

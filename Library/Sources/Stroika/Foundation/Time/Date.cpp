@@ -212,7 +212,7 @@ Date::JulianRepType Date::DaysSince () const
     return r < 0 ? 0 : r;
 }
 
-Year Date::GetYear () const
+year Date::GetYear () const
 {
     return get<2> (mdy ());
 }
@@ -288,7 +288,7 @@ template <>
  *
  * (This code originally from NIHCL)
  */
-tuple<month, day, Year> Date::mdy () const
+tuple<month, day, year> Date::mdy () const
 {
     JulianRepType m;
     JulianRepType d;
@@ -316,7 +316,7 @@ tuple<month, day, Year> Date::mdy () const
         ++y;
     }
     Ensure (1 <= d and d <= 31);
-    return make_tuple (MonthOfYear{m}, DayOfMonth{d}, static_cast<Year> (y));
+    return make_tuple (MonthOfYear{m}, DayOfMonth{d}, Year{y});
 }
 
 #if qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug

@@ -227,28 +227,28 @@ namespace Stroika::Foundation::Time {
         }
         Require (kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep);
     }
-    constexpr inline Date::Date (Year year, month m, day d)
-        : fJulianDateRep_{jday_ (m, d, year)}
+    constexpr inline Date::Date (year y, month m, day d)
+        : fJulianDateRep_{jday_ (m, d, y)}
     {
         // Gregorian calendar started on Sep. 14, 1752
-        Require (year >= Year::eFirstYear);
-        Require (year > Year{1752} or (m > September) or (m == September and d >= DayOfMonth{14}));
+        Require (y >= Year::eFirstYear);
+        Require (y > Year{1752} or (m > September) or (m == September and d >= DayOfMonth{14}));
     }
-    constexpr inline Date::Date (Year year, month m, day d, DataExchange::ValidationStrategy validationStrategy)
+    constexpr inline Date::Date (year y, month m, day d, DataExchange::ValidationStrategy validationStrategy)
         : fJulianDateRep_{0}
     {
         if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
-            if (not(year >= Year::eFirstYear)) {
+            if (not(y >= Year::eFirstYear)) {
                 Execution::Throw (FormatException::kThe);
             }
-            if (not(year > Year{1752} or (m > September) or (m == September and d >= DayOfMonth{14}))) {
+            if (not(y > Year{1752} or (m > September) or (m == September and d >= DayOfMonth{14}))) {
                 Execution::Throw (FormatException::kThe);
             }
         }
         // Gregorian calendar started on Sep. 14, 1752
-        Require (year >= Year::eFirstYear);
-        Require (year > Year{1752} or (m > September) or (m == September and d >= DayOfMonth{14}));
-        fJulianDateRep_ = jday_ (m, d, year);
+        Require (y >= Year::eFirstYear);
+        Require (y > Year{1752} or (m > September) or (m == September and d >= DayOfMonth{14}));
+        fJulianDateRep_ = jday_ (m, d, y);
     }
     inline constexpr Date::JulianRepType Date::GetJulianRep () const
     {

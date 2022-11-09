@@ -53,6 +53,7 @@ namespace Stroika::Foundation::Time {
     using Characters::String;
 
     //using namespace chrono;
+
     using chrono::month;
     using chrono::months;
 
@@ -82,6 +83,8 @@ namespace Stroika::Foundation::Time {
     using chrono::day;
 
     using chrono::year;
+
+    using chrono::year_month_day;
 
     /**
      *  \brief Simple wrapper on std::chrono::weekday, with some helpful validation properties (assures constructed 'ok'). But not necessary to use - use just 'weekday' in most places
@@ -182,6 +185,9 @@ namespace Stroika::Foundation::Time {
     };
 
     /**
+     *  \brief Simple wrapper on std::chrono::year, with some helpful validation properties (assures constructed 'ok'). But not necessary to use - use just 'year' in most places
+     * 
+     *  \note - Year was an enum in Stroika v2.1, so this is a significant change.
      */
     struct Year : year {
         /**
@@ -221,6 +227,9 @@ namespace Stroika::Foundation::Time {
 #endif
             ;
     };
+
+    /// @todo
+    // PROBABLY may date subclass from year_month_day
 
     /**
      * Description:
@@ -277,8 +286,8 @@ namespace Stroika::Foundation::Time {
         constexpr Date (const Date& src)     = default;
         explicit constexpr Date (JulianRepType julianRep);
         explicit constexpr Date (JulianRepType julianRep, DataExchange::ValidationStrategy validationStrategy);
-        constexpr explicit Date (Year year, month m, day d);
-        constexpr explicit Date (Year year, month m, day d, DataExchange::ValidationStrategy validationStrategy);
+        constexpr explicit Date (year y, month m, day d);
+        constexpr explicit Date (year y, month m, day d, DataExchange::ValidationStrategy validationStrategy);
 
     public:
         /**
@@ -384,7 +393,7 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          */
-        nonvirtual Year GetYear () const;
+        nonvirtual year GetYear () const;
 
     public:
         /**
@@ -405,7 +414,7 @@ namespace Stroika::Foundation::Time {
         /**
          *  \brief Convert (internal representation) Julian day number to its corresponding Gregorian calendar date
          */
-        nonvirtual tuple<month, day, Year> mdy () const;
+        nonvirtual tuple<month, day, year> mdy () const;
 
     public:
         /**
@@ -503,15 +512,15 @@ namespace Stroika::Foundation::Time {
         nonvirtual T As () const;
 
     public:
-        [[deprecated ("Since Stroika v3.0d1, use mdy/0")]] void mdy (month* m, day* d, Year* year) const
+        [[deprecated ("Since Stroika v3.0d1, use mdy/0")]] void mdy (month* m, day* d, year* y) const
         {
             RequireNotNull (m);
             RequireNotNull (d);
-            RequireNotNull (year);
+            RequireNotNull (y);
             auto r = mdy ();
             *m     = get<0> (r);
             *d     = get<1> (r);
-            *year  = get<2> (r);
+            *y     = get<2> (r);
         }
 
     private:
