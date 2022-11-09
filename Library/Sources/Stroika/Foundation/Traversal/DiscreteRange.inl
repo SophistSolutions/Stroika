@@ -105,10 +105,10 @@ namespace Stroika::Foundation::Traversal {
             {
                 using SignedDifferenceType = typename TRAITS::SignedDifferenceType;
                 if (fForcedEnd) {
-                    return static_cast<SignedDifferenceType> (0);
+                    return TRAITS::DifferenceToSizeT (SignedDifferenceType{0});
                 }
                 else {
-                    return 1 + DiscreteRange{fStart, fEnd}.GetDistanceSpanned ();
+                    return TRAITS::DifferenceToSizeT (SignedDifferenceType{1} + DiscreteRange{fStart, fEnd}.GetDistanceSpanned ());
                 }
             }
             virtual bool empty () const override

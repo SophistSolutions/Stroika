@@ -669,6 +669,8 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
 
         static Time::Date GetNext (Time::Date n);
         static Time::Date GetPrevious (Time::Date n);
+
+        static size_t DifferenceToSizeT (chrono::days s) { return size_t (s.count ()); }
     };
 
 }

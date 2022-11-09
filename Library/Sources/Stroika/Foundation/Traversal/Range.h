@@ -147,6 +147,17 @@ namespace Stroika::Foundation::Traversal {
             static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE* = nullptr);
             template <typename TYPE2CHECK = value_type, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<not(is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>)>>
             static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...);
+
+            // Must be able to convert the underlying 'T' difference type to size_t sometimes
+            static size_t DifferenceToSizeT (UnsignedDifferenceType s)
+            {
+                return size_t (s);
+            }
+            template <typename T1C = UnsignedDifferenceType, typename T2C = SignedDifferenceType, typename SFINAE_CAN_ARE_DIFF_CHECK = enable_if_t<not is_same_v<T1C, T2C>>>
+            static size_t DifferenceToSizeT (SignedDifferenceType s)
+            {
+                return size_t (s);
+            }
         };
 
         /**
