@@ -68,19 +68,6 @@ checkin from one spot.
       ./ScriptsLib/RegressionTests
   ```
 
-- \$TEST_TARGET=Ubuntu1804_x86_64
-
-  (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
-
-  ```bash
-  RUN_IN_DOCKER=1 \
-      USE_TEST_BASENAME=Ubuntu1804_x86_64 \
-      BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
-      CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests \
-      MACHINE=Hercules \
-      ./ScriptsLib/RunRemoteRegressionTests
-  ```
-
 - \$TEST_TARGET=Ubuntu2004_x86_64
 
   (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
@@ -103,19 +90,6 @@ checkin from one spot.
       USE_TEST_BASENAME=Ubuntu2204_x86_64 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
-      MACHINE=Hercules \
-      ./ScriptsLib/RunRemoteRegressionTests
-  ```
-
-- \$TEST_TARGET=Ubuntu1804-Cross-Compile2RaspberryPi
-
-  (remote execute on machine hercules (and then that will test on raspberrypi) - using docker and copy back results; takes about 3 HRs)
-
-  ```bash
-  RUN_IN_DOCKER=1 \
-      USE_TEST_BASENAME=Ubuntu1804-Cross-Compile2RaspberryPi \
-      BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
-      CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests \
       MACHINE=Hercules \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
