@@ -675,7 +675,7 @@ namespace Stroika::Foundation::DataExchange {
     {
         // render as array of two elements
         using CountedValue = typename Common::CountedValue<T>;
-        using CounterType = CountedValue::CounterType;
+        using CounterType  = CountedValue::CounterType;
         return TypeMappingDetails{
             typeid (CountedValue),
             FromObjectMapperType<CountedValue>{[] (const ObjectVariantMapper& mapper, const CountedValue* fromObj) -> VariantValue {
