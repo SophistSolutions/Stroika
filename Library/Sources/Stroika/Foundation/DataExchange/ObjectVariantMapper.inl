@@ -432,6 +432,13 @@ namespace Stroika::Foundation::DataExchange {
         (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
 #endif
     }
+    template <typename T>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Common::CountedValue<T>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+#endif
+    }
     template <typename T1, typename T2>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Common::KeyValuePair<T1, T2>*)
     {
@@ -661,6 +668,25 @@ namespace Stroika::Foundation::DataExchange {
                     Execution::Throw (BadFormatException{L"Array size out of range for pair"sv});
                 };
                 *intoObj = make_pair (mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1]));
+            }}};
+    }
+    template <typename T>
+    ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Common::CountedValue<T>*)
+    {
+        // render as array of two elements
+        using CountedValue = typename Common::CountedValue<T>;
+        using CounterType = CountedValue::CounterType;
+        return TypeMappingDetails{
+            typeid (CountedValue),
+            FromObjectMapperType<CountedValue>{[] (const ObjectVariantMapper& mapper, const CountedValue* fromObj) -> VariantValue {
+                return VariantValue{Sequence<VariantValue>{mapper.FromObject<T> (fromObj->fValue), mapper.FromObject<CounterType> (fromObj->fCount)}};
+            }},
+            ToObjectMapperType<CountedValue>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, CountedValue* intoObj) -> void {
+                Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
+                if (s.size () < 2) {
+                    Execution::Throw (BadFormatException{L"Array size out of range for CountedValue"sv});
+                };
+                *intoObj = CountedValue{mapper.ToObject<T> (s[0]), mapper.ToObject<CounterType> (s[1])};
             }}};
     }
     template <typename T1, typename T2>

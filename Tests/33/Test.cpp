@@ -870,16 +870,30 @@ namespace {
     namespace Test15_JIRA_951_ObjectMapper_SortedMultiset_ {
         void DoIt ()
         {
+            using Common::CountedValue;
+            using Containers::MultiSet;
             {
                 // Allow CountedValue to be default constructed (when its T type is default constructible)
-                Common::CountedValue<int> x1;
+                CountedValue<int> x1;
             }
             {
                 // Allow Adder<> to work with Containers::MultiSet
                 using T                     = int;
-                using ACTUAL_CONTAINER_TYPE = Containers::MultiSet<T>;
-                ACTUAL_CONTAINER_TYPE x2;
-                Containers::Adapters::Adder<ACTUAL_CONTAINER_TYPE>::Add (&x2, Common::CountedValue<T>{3, 4});
+                MultiSet<T> x2;
+                Containers::Adapters::Adder<MultiSet<T>>::Add (&x2, Common::CountedValue<T>{3, 4});
+            }
+            {
+                ObjectVariantMapper       mapper;
+                MultiSet<int> s1;
+                mapper.AddCommonType<Common::CountedValue<int>> ();
+                mapper.Add (ObjectVariantMapper::MakeCommonSerializer_WithAdder<MultiSet<int>> ());
+                Containers::Adapters::Adder<MultiSet<int>>::Add (&s1, Common::CountedValue<int>{3, 4});
+                s1.Add (2);
+                s1.Add (2);
+                s1.Add (3);
+                VariantValue sAsVariant = mapper.FromObject (s1);
+                MultiSet<int> mappedBackToObject = mapper.ToObject<MultiSet<int>> (sAsVariant);
+                VerifyTestResult (s1 == mappedBackToObject);
             }
         }
     }
