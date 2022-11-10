@@ -380,36 +380,6 @@ namespace Stroika::Foundation::DataExchange {
         (void)Lookup_ (typeid (T)); // just for side-effect of assert check
 #endif
     }
-    template <typename T>
-    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedCollection<T>*)
-    {
-#if qDebug
-        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
-#endif
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (Containers::SortedKeyedCollection<T, KEY_TYPE, TRAITS>*)
-    {
-#if qDebug
-        (void)Lookup_ (typeid (T));        // just for side-effect of assert check
-        (void)Lookup_ (typeid (KEY_TYPE)); // just for side-effect of assert check
-#endif
-    }
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE>*)
-    {
-#if qDebug
-        (void)Lookup_ (typeid (KEY_TYPE));   // just for side-effect of assert check
-        (void)Lookup_ (typeid (VALUE_TYPE)); // just for side-effect of assert check
-#endif
-    }
-    template <typename T>
-    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedSet<T>*)
-    {
-#if qDebug
-        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
-#endif
-    }
     template <typename T, typename TRAITS>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Execution::Synchronized<T, TRAITS>*)
     {
@@ -779,6 +749,11 @@ namespace Stroika::Foundation::DataExchange {
         // MakeCommonSerializer_MappingAsArrayOfKeyValuePairs is more general. If KEY_TYPE is not convertible to a string, or you wish to strucutre
         // the VariantValue (typically think JSON representation) as an array of Key/Value pairs, then use MakeCommonSerializer_MappingAsArrayOfKeyValuePairs
         return MakeCommonSerializer_MappingWithStringishKey<Containers::SortedMapping<KEY_TYPE, VALUE_TYPE>> ();
+    }
+    template <typename T>
+    inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedMultiSet<T>*)
+    {
+        return MakeCommonSerializer_WithAdder<Containers::SortedMultiSet<T>> ();
     }
     template <typename T>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedSet<T>*)
