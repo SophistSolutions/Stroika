@@ -56,21 +56,25 @@ ifeq (${DETECTED_HOST_OS},Linux)
 endif
 
 
+export DOCKER_TAG_LINE_=\
+	docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:$(STROIKA_VERSION); \
+	docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:v2.1; \
+
 tag-images:
 ifeq (${DETECTED_HOST_OS},Linux)
-	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu1804-small sophistsolutionsinc/stroika-buildvm-ubuntu1804-small:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests  sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2004-small sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2204-small sophistsolutionsinc/stroika-buildvm-ubuntu2204-small:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:$(STROIKA_VERSION)
-	#docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu1804-small; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu1804-regression-tests; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-stroika-buildvm-ubuntu2004-small; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2004-regression-tests; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-small; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-regression-tests; ${DOCKER_TAG_LINE_}
+	# #docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	docker tag sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:$(STROIKA_VERSION)
+	@export DO_TO_IMAGE_=stroika-buildvm-windows-cygwin-vs2k19; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-windows-cygwin-vs2k22; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-windows-msys-vs2k19; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-windows-msys-vs2k22; ${DOCKER_TAG_LINE_}
 endif
 
 
