@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Common {
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     template <typename VTEST, enable_if_t<is_default_constructible_v<VTEST>>*>
     constexpr CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue ()
-        : CountedValue{}
+        : CountedValue{VALUE_TYPE{}}
     {
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
