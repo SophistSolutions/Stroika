@@ -44,7 +44,7 @@ jobs:
           #   os: windows
           #   compiler: g++-8
           #   runs_on: windows-2022
-          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:v2.1
           #   cpp_version: c++17
           #   config_name: Debug
           #   extra_config_args: --apply-default-debug-flags --trace2file enable
@@ -54,7 +54,7 @@ jobs:
             os: unix
             compiler: g++-8
             runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:v2.1
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
@@ -64,7 +64,7 @@ jobs:
             os: unix
             compiler: g++-8
             runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:v2.1
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-release-flags --trace2file enable --compiler-driver arm-linux-gnueabihf-g++-8 --cross-compiling true
@@ -75,7 +75,7 @@ jobs:
             os: unix
             compiler: g++-9
             runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:v2.1
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
@@ -85,7 +85,7 @@ jobs:
             os: unix
             compiler: g++-10
             runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:v2.1
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
@@ -95,7 +95,7 @@ jobs:
             os: unix
             compiler: g++-10
             runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:v2.1
             cpp_version: c++17
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
@@ -105,7 +105,7 @@ jobs:
             os: unix
             compiler: g++-10
             runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:v2.1
             cpp_version: c++2a
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
@@ -115,7 +115,7 @@ jobs:
             os: unix
             compiler: clang++-10
             runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:v2.1
             cpp_version: c++17
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
@@ -126,7 +126,7 @@ jobs:
             os: unix
             compiler: g++-11
             runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v2.1
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
@@ -136,7 +136,7 @@ jobs:
             os: unix
             compiler: g++-12
             runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v2.1
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
@@ -146,7 +146,7 @@ jobs:
             os: unix
             compiler: g++-12
             runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v2.1
             cpp_version: c++17
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
@@ -156,7 +156,7 @@ jobs:
             os: unix
             compiler: g++-12
             runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v2.1
             cpp_version: c++2a
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
@@ -166,7 +166,7 @@ jobs:
             os: unix
             compiler: clang++-14
             runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v2.1
             cpp_version: c++17
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
@@ -336,49 +336,49 @@ jobs:
           - displayTargetName: windows-vs2k19-cygwin-x86-Debug
             os: windows
             runs_on: windows-2022
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:v2.1
             config_name: Debug
             extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
             includeInDevBranchBuilds: true
           - displayTargetName: windows-vs2k22-cygwin-x86-Debug
             os: windows
             runs_on: windows-2022
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:v2.1
             config_name: Debug
             extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
             includeInDevBranchBuilds: true
           - displayTargetName: windows-vs2k22-cygwin-x86-Release
             os: windows
             runs_on: windows-2022
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:v2.1
             config_name: Release
             extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: false
           - displayTargetName: windows-vs2k22-cygwin-x86_64-Release
             os: windows
             runs_on: windows-2022
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:v2.1
             config_name: Release
             extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: false
           - displayTargetName: windows-vs2k22-msys-x86-Debug
             os: windows
             runs_on: windows-2022
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v2.1
             config_name: Debug
             extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
             includeInDevBranchBuilds: true
           - displayTargetName: windows-vs2k22-msys-x86-Release
             os: windows
             runs_on: windows-2022
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v2.1
             config_name: Release
             extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: false
           - displayTargetName: windows-vs2k22-msys-x86_64-Release
             os: windows
             runs_on: windows-2022
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v2.1
             config_name: Release
             extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: false
