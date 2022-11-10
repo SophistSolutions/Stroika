@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        template <typename VTEST = VALUE_TYPE, 
+        template <typename VTEST                                  = VALUE_TYPE,
                   enable_if_t<is_default_constructible_v<VTEST>>* = nullptr>
         constexpr CountedValue ();
         constexpr CountedValue (typename Configuration::ArgByValueType<ValueType> value, CounterType count = 1);
