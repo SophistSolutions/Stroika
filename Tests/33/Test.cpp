@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/Configuration/Locale.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
+#include "Stroika/Foundation/Containers/SortedMultiset.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
@@ -864,6 +865,19 @@ namespace {
         }
     }
 }
+#if 1
+namespace {
+    namespace Test15_JIRA_951_ObjectMapper_SortedMultiset_ {
+        void DoIt ()
+        {
+            {
+                Containers::CountedValue<int> x;
+                ObjectVariantMapper           mapper;
+            }
+        }
+    }
+}
+#endif
 
 namespace {
     void DoRegressionTests_ ()
@@ -882,6 +896,7 @@ namespace {
         DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_ ();
         Test13_ObjVarMapperAndGUID_::DoIt ();
         Test14_ObjVarMapperAsStringVsToString_STK_909_::DoIt ();
+        Test15_JIRA_951_ObjectMapper_SortedMultiset_::DoIt ();
     }
 }
 

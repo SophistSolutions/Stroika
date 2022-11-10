@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        constexpr CountedValue (typename Configuration::ArgByValueType<ValueType> value, CounterType count = 1);
+        constexpr CountedValue (typename Configuration::ArgByValueType<ValueType> value = {}, CounterType count = 1);
         template <
             typename VALUE2_TYPE,
             typename COUNTER2_TYPE,
