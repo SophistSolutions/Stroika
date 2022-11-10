@@ -871,8 +871,15 @@ namespace {
         void DoIt ()
         {
             {
-                Containers::CountedValue<int> x;
-                ObjectVariantMapper           mapper;
+                // Allow CountedValue to be default constructed (when its T type is default constructible)
+                Common::CountedValue<int> x1;
+            }
+            {
+                // Allow Adder<> to work with Containers::MultiSet
+                using T                     = int;
+                using ACTUAL_CONTAINER_TYPE = Containers::MultiSet<T>;
+                ACTUAL_CONTAINER_TYPE x2;
+                Containers::Adapters::Adder<ACTUAL_CONTAINER_TYPE>::Add (&x2, Common::CountedValue<T>{3, 4});
             }
         }
     }

@@ -13,6 +13,7 @@
 #include "../Collection.h"
 #include "../KeyedCollection.h"
 #include "../Mapping.h"
+#include "../MultiSet.h"
 #include "../Sequence.h"
 #include "../Set.h"
 
@@ -55,6 +56,8 @@ namespace Stroika::Foundation::Containers::Adapters {
         static void Add_ (set<value_type>* container, Configuration::ArgByValueType<value_type> value);
         static void Add_ (Sequence<value_type>* container, Configuration::ArgByValueType<value_type> value);
         static void Add_ (Set<value_type>* container, Configuration::ArgByValueType<value_type> value);
+        template <typename T>
+        static void Add_ (MultiSet<T>* container, Configuration::ArgByValueType<value_type> value);
         static void Add_ (vector<value_type>* container, Configuration::ArgByValueType<value_type> value);
     };
 

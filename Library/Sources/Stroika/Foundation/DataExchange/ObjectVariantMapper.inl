@@ -560,6 +560,11 @@ namespace Stroika::Foundation::DataExchange {
         return MakeCommonSerializer_MappingWithStringishKey<Containers::Mapping<KEY_TYPE, VALUE_TYPE>> ();
     }
     template <typename T>
+    inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::MultiSet<T>*)
+    {
+        return MakeCommonSerializer_WithAdder<Containers::MultiSet<T>> ();
+    }
+    template <typename T>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const optional<T>*)
     {
         FromObjectMapperType<optional<T>> fromObjectMapper = [] (const ObjectVariantMapper& mapper, const optional<T>* fromObjOfTypeT) -> VariantValue {

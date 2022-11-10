@@ -28,6 +28,7 @@
 #include "../Containers/SortedCollection.h"
 #include "../Containers/SortedKeyedCollection.h"
 #include "../Containers/SortedMapping.h"
+#include "../Containers/SortedMultiSet.h"
 #include "../Containers/SortedSet.h"
 #include "../Debug/Sanitizer.h"
 #include "../Execution/Synchronized.h"
@@ -771,6 +772,8 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>*);
         template <typename KEY_TYPE, typename VALUE_TYPE>
         static TypeMappingDetails MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE>*);
+        template <typename T>
+        static TypeMappingDetails MakeCommonSerializer_ (const Containers::MultiSet<T>*);
         template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const optional<T>*);
         template <typename T>
