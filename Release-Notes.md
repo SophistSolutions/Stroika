@@ -7,6 +7,264 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+
+#if 0
+commit 808e227512165af0cc4dea15c5c7df590408059d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 25 14:44:33 2022 -0400
+
+    start 2.1.8x
+
+commit b3d8d1c72ea3457b4a74c59ac637770a2cfd5231
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 25 14:49:02 2022 -0400
+
+    in skel makefile, delegate a few more top level phony makefile targets
+
+commit c1a4445417c51eac5539a31f84d7974d40735d2c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 26 16:41:59 2022 -0400
+
+    https://stroika.atlassian.net/browse/STK-944 -- use lock_guard not shared_lock in Cache/SynchronizedTimedCache (probably reverse in Stroika v3)
+
+commit f41b770ea45c386dab15509189bd4a947a99571f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 31 10:08:28 2022 -0400
+
+    one more workaround for  https://stroika.atlassian.net/browse/STK-941 /E:ON
+
+commit 296307987f246044f9430ba88a4273962b0b52aa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 31 10:20:36 2022 -0400
+
+    fixed typo in Foundation/Cache/SynchronizedTimedCache
+
+commit a0237fd717f5e40d28b830c4f677123f1eb477cf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 31 10:45:37 2022 -0400
+
+    libcurl 7.86.0
+
+commit b0cbd25f1193077c49f55e4d1596192d1883e6be
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 31 16:26:57 2022 -0400
+
+    Bug defines to support MacOS XCode 14, and changed docs to say on M1 we only test XCode 14
+
+commit c6bd34822a6ca14dba18472a1708b1ca77ba9a28
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 31 20:55:33 2022 -0400
+
+    using new clang-format 15 - make format-code
+
+commit cbf0e27cbf2de7a2ccf0e072a2b957e7acdc8c5c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 1 12:53:32 2022 -0400
+
+    OpenSSL 3.0.7
+
+commit 9c372766b6739fbbe78c10a19f52683cffb20d34
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 1 13:11:54 2022 -0400
+
+    for ScriptsLib/RunRemoteRegressionTests - set /usr/local/bin first in path (needed to find right realpath in macos)
+
+commit be253684f4a83694e0da6e19573db7a4b034a6ba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 1 13:27:46 2022 -0400
+
+    start release 2.1.8
+
+commit ef41e5a7c5ebee955c5145a2ac4f3b039e2f51be
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 1 13:39:49 2022 -0400
+
+    docs/faq
+
+commit 8d9f478cb954200674e30792f4b468faa6158982
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 1 21:19:44 2022 -0400
+
+    docs on installing clang-format
+
+commit 13b99dcff56a00f5709dbad3b52f1a17f24257ec
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 1 21:33:32 2022 -0400
+
+    release notes
+
+commit 05ce1624ab75287089107987c8b46dc9614c9e4b
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Nov 2 11:12:27 2022 -0400
+
+    improved error checking in regtests for qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
+
+commit 64dbed66135ea563f545e3b2461054ca3a715b0c
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Nov 2 11:13:17 2022 -0400
+
+    lose #define GLIBCXX_11x since numbers all over the place; instead use hardwired strings like 2022513 and ranges, and used that to adjust qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
+
+commit d13582ad7d649de9b9a1281f6918214241623601
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 2 13:16:58 2022 -0400
+
+    https://stroika.atlassian.net/browse/STK-948 bug workaround
+
+commit 1a067a7314a1c0a4f4fa75fd5421ec17b4e588db
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 2 20:56:41 2022 -0400
+
+    cosmetic
+
+commit 2d8b658db8c3cc1cd8cbf4106bc6d5f83debee99
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 3 09:31:11 2022 -0400
+
+    Build docs
+
+commit 4be5bcc6cf9b5699c907fe6511d1e35375da851c
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Nov 3 10:12:50 2022 -0400
+
+    tweak regtests for qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy issue
+
+commit ebae25fb6daf6a42c33f2e045679e57ba3b25a17
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Nov 3 10:14:12 2022 -0400
+
+    docs about kMonthDayYearFormat and prep to workaround libg++ not supporting this properly issue
+
+commit 68ce9e92a33077266e2832306ae0105e1f6b1a6a
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Nov 3 10:33:37 2022 -0400
+
+    improved error checking in Date::LocaleFreeParseQuietly_kMonthDayYearFormat_ (and renamed private function)
+
+commit 739dd194c5502ff5a4e17006cedadd744772f849
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Nov 3 10:38:19 2022 -0400
+
+    qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy define now more aggressive - defaulting to always broken in using __GLIBCXX__ - with comments and tests for if it ever gets fixed
+
+commit 8d0fa30894d344a85bc6ea32e6883e663bc599eb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 3 12:01:32 2022 -0400
+
+    tweaked DbgTrace in AssertExternallySynchronizedMutex::lock_ () reporting about bad lock
+
+commit eda285744013932de19229c8b773fef9af815635
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Nov 3 12:07:56 2022 -0400
+
+    Switch in bug defines from using __GLIBCXX__ to _GLIBCXX_RELEASE; no direct obvious mapping, so must retest everything (esp clang/macos etc)
+
+commit 80360d1d4a65ca392167cec2a044be6880fb0d49
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 3 14:46:55 2022 -0400
+
+    fixed fatal bug with (somewhat new but obviously not well tested) MakeCommonSerializer_ (const optional<T>*, const OptionalSerializerOptions& options)
+
+commit 5c8876ecaf879e3c7d70e88c593c273195ace164
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 3 15:03:52 2022 -0400
+
+    cosmetic
+
+commit cfc3670a21ad254088be5c1fcf546495ee5005a4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 3 16:45:16 2022 -0400
+
+    release notes
+
+commit d2f91a2b7e8366c1c3f81362cecaeb980bfc9107
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 4 09:15:43 2022 -0400
+
+    regresion test output
+
+commit 0e133ddfd3d778337a041f9d797b25b44f97c94e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 4 09:19:03 2022 -0400
+
+    release notes
+
+commit 69c7b04050473a2022abbf5f834ed1ea8a70f4a9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 4 22:52:15 2022 -0400
+
+    regression test output
+
+commit 06cfcbc1a54cecb5476361761fac032060969dff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 8 15:13:39 2022 -0500
+
+    start dev 2.1.9x
+
+commit 4f780e06f4d165d80e7cb61eec9b5faf6ff4d098
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 8 18:00:27 2022 -0500
+
+    bug defines and workarounds for _MSC_VER_2k22_17Pt4_ (and a few cosmetic cleanups)
+
+commit ec1774d97045fbfd4b224264d19485fe0c7d1280
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 8 18:00:41 2022 -0500
+
+    bug defines and workarounds for _MSC_VER_2k22_17Pt4_ (and a few cosmetic cleanups)
+
+commit 61a489c427364685216b4177cf2914d0b521fc9d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 9 17:57:21 2022 -0500
+
+    cosmetic
+
+commit ed281ac0127305957c31e88f083b5db63a7f7260
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 9 20:56:44 2022 -0500
+
+    https://stroika.atlassian.net/browse/STK-951 - allow CountedValue to be default constructed (if T its counted value of) is default constructible
+
+commit dc05f02ff7f016e999fac634ec72c37f12dbac4e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 9 21:04:45 2022 -0500
+
+    https://stroika.atlassian.net/browse/STK-951 - support MultiSet in Containers::Adapters::Adder<> (and added regtest for this)
+
+commit ae9f11fe03b62b7175bcc3c37bf790ea52fe0b46
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 9 21:26:19 2022 -0500
+
+    progress on https://stroika.atlassian.net/browse/STK-951 - supproted CountedValue in ObjectVariantMapper and regtests for same
+
+commit 20054342b5feee101aaf980c7dd807f63043053a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 9 21:36:01 2022 -0500
+
+    Cosmetic
+
+commit 24545a112f1369395b9050148c3fd0bee6a625a0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 9 22:00:50 2022 -0500
+
+    finsihed (inclduing regtest) objectvariantmapper support for SortedMultiSet<> - https://stroika.atlassian.net/browse/STK-951
+
+commit 1da5db86a5958217cc9bc2c79106251c355f9605
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 9 22:04:33 2022 -0500
+
+    start release 2.1.9
+
+commit f19665e9833fdfd28618c954fb30909eb7008d7f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 9 22:09:38 2022 -0500
+
+    update docker containers for windows VS_17_4_0 and VS_16_11_21
+#endif
+
+
+
 ### 2.1.8 {2022-11-04}
 
 #### TLDR
