@@ -874,7 +874,7 @@ namespace {
             using Containers::MultiSet;
             {
                 // Allow CountedValue to be default constructed (when its T type is default constructible)
-                CountedValue<int> x1;
+                [[maybe_unused]] CountedValue<int> x1;
             }
             {
                 // Allow Adder<> to work with Containers::MultiSet
