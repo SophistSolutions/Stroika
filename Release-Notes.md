@@ -7,21 +7,64 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-#if 0
-- bug defines and workarounds for _MSC_VER_2k22_17Pt4_ (and a few cosmetic cleanups)
-- update docker containers for windows VS_17_4_0 and VS_16_11_21
-- add v2.1 to the list of docker images TAGGED on release pushes
-- use the v2.1 tag in .github actions, so always builds with latest v2.1 containers (not latest overall since that could be v3).
+### 2.1.9 {2022-11-11??????????????}
 
-- DataExchange
-  - ObjectVariantMapper
-    - https://stroika.atlassian.net/browse/STK-951 - allow CountedValue 
-      to be default   constructed (if T its counted value of) is default constructible
-    - https://stroika.atlassian.net/browse/STK-951 - support
-      MultiSet in Containers::Adapters::Adder<> (and added regtest for this)
-    - progress on https://stroika.atlassian.net/browse/STK-951 - supproted 
-      CountedValue in ObjectVariantMapper and regtests for same
-#endif
+#### TLDR
+
+- Support Visual Studio.Net 2022 17.4
+- ObjectVariantMapper supports AddCommonType<MultiSet<...>> - https://stroika.atlassian.net/browse/STK-951
+- tag docker containers with v2.1, and github actions use that tag
+
+#### Change Details
+
+- Build Scripts
+  - add v2.1 to the list of docker images TAGGED on release pushes
+  - use the v2.1 tag in .github actions, so always builds with latest v2.1 containers (not latest overall since that could be v3).
+- Compiler and System Compatability
+  - bug defines and workarounds for _MSC_VER_2k22_17Pt4_, updated build docs, and docker containers
+  - update docker containers for windows VS_17_4_0 and VS_16_11_21
+- Library
+  - Foundation
+    - DataExchange
+      - ObjectVariantMapper
+        - https://stroika.atlassian.net/browse/STK-951 
+          - allow CountedValue to be default   constructed (if T its counted value of) is default constructible
+          - support MultiSet in Containers::Adapters::Adder<> (and added regtest for this)
+          - Then added it to 'CommonSerializers' and regression tests
+
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13, 14 }
+  - MSVC: { 15.9.50, 16.11.21, 17.4.0 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 22H2
+    - Windows 11 version 22H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 13.0 (Ventura) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
 
 
 

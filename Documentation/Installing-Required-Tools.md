@@ -106,9 +106,9 @@ Note - we've only tested building (from MSYS) using Visual Studio. We've not yet
 
 - Compiler
   - gcc 8 or later OR
-    - Stroika v2.1 is currently tested with gcc-8, gcc-9, gcc-10, and gcc-11
+    - Stroika v2.1 is currently tested with gcc-8, gcc-9, gcc-10, gcc-11 and gcc-12
   - llvm (clang++) 6 or later
-    - Stroika v2.1 is currently tested with clang6, clang-7, clang-8, clang-9, clang-10, clang-11, clang-12
+    - Stroika v2.1 is currently tested with clang6, clang-7, clang-8, clang-9, clang-10, clang-11, clang-12, clang-13, clang-14
 - automake (if building curl)
 - libtool (gnu version) – (if building curl)
 
