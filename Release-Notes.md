@@ -10,6 +10,8 @@ especially those they need to be aware of when upgrading.
 #if 0
 - bug defines and workarounds for _MSC_VER_2k22_17Pt4_ (and a few cosmetic cleanups)
 - update docker containers for windows VS_17_4_0 and VS_16_11_21
+- add v2.1 to the list of docker images TAGGED on release pushes
+- use the v2.1 tag in .github actions, so always builds with latest v2.1 containers (not latest overall since that could be v3).
 
 - DataExchange
   - ObjectVariantMapper
