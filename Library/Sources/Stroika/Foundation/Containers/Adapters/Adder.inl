@@ -22,10 +22,18 @@ namespace Stroika::Foundation::Containers::Adapters {
     inline void Adder<CONTAINER_TYPE>::Add (CONTAINER_TYPE* container, Configuration::ArgByValueType<value_type> value)
     {
         RequireNotNull (container);
-        Add_ (container, value);
+        Add_ (container, value); // if this fails to compile, it probably means your CONTAINER_TYPE doesn't
+                                 // work with Adder (need to add a case or partialy specialize)
     }
     template <typename CONTAINER_TYPE>
     inline void Adder<CONTAINER_TYPE>::Add_ (Set<value_type>* container, Configuration::ArgByValueType<value_type> value)
+    {
+        RequireNotNull (container);
+        container->Add (value);
+    }
+    template <typename CONTAINER_TYPE>
+    template <typename T>
+    inline void Adder<CONTAINER_TYPE>::Add_ (MultiSet<T>* container, Configuration::ArgByValueType<value_type> value)
     {
         RequireNotNull (container);
         container->Add (value);

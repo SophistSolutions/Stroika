@@ -363,36 +363,6 @@ namespace Stroika::Foundation::DataExchange {
             (void)Lookup_ (typeid (T)); // just for side-effect of assert check
         }
     }
-    template <typename T>
-    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedCollection<T>*)
-    {
-        if constexpr (qDebug) {
-            (void)Lookup_ (typeid (T)); // just for side-effect of assert check
-        }
-    }
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (Containers::SortedKeyedCollection<T, KEY_TYPE, TRAITS>*)
-    {
-        if constexpr (qDebug) {
-            (void)Lookup_ (typeid (T));        // just for side-effect of assert check
-            (void)Lookup_ (typeid (KEY_TYPE)); // just for side-effect of assert check
-        }
-    }
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE>*)
-    {
-        if constexpr (qDebug) {
-            (void)Lookup_ (typeid (KEY_TYPE));   // just for side-effect of assert check
-            (void)Lookup_ (typeid (VALUE_TYPE)); // just for side-effect of assert check
-        }
-    }
-    template <typename T>
-    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedSet<T>*)
-    {
-        if constexpr (qDebug) {
-            (void)Lookup_ (typeid (T)); // just for side-effect of assert check
-        }
-    }
     template <typename T, typename TRAITS>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Execution::Synchronized<T, TRAITS>*)
     {
@@ -414,6 +384,13 @@ namespace Stroika::Foundation::DataExchange {
             (void)Lookup_ (typeid (T1)); // just for side-effect of assert check
             (void)Lookup_ (typeid (T2)); // just for side-effect of assert check
         }
+    }
+    template <typename T>
+    inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Common::CountedValue<T>*)
+    {
+#if qDebug
+        (void)Lookup_ (typeid (T)); // just for side-effect of assert check
+#endif
     }
     template <typename T1, typename T2>
     inline void ObjectVariantMapper::AssertDependentTypesAlreadyInRegistry_ (const Common::KeyValuePair<T1, T2>*)
@@ -543,6 +520,11 @@ namespace Stroika::Foundation::DataExchange {
         return MakeCommonSerializer_MappingWithStringishKey<Containers::Mapping<KEY_TYPE, VALUE_TYPE>> ();
     }
     template <typename T>
+    inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::MultiSet<T>*)
+    {
+        return MakeCommonSerializer_WithAdder<Containers::MultiSet<T>> ();
+    }
+    template <typename T>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const optional<T>*)
     {
         FromObjectMapperType<optional<T>> fromObjectMapper = [] (const ObjectVariantMapper& mapper, const optional<T>* fromObjOfTypeT) -> VariantValue {
@@ -641,6 +623,25 @@ namespace Stroika::Foundation::DataExchange {
                 *intoObj = make_pair (mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1]));
             }}};
     }
+    template <typename T>
+    ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Common::CountedValue<T>*)
+    {
+        // render as array of two elements
+        using CountedValue = typename Common::CountedValue<T>;
+        using CounterType  = typename CountedValue::CounterType;
+        return TypeMappingDetails{
+            typeid (CountedValue),
+            FromObjectMapperType<CountedValue>{[] (const ObjectVariantMapper& mapper, const CountedValue* fromObj) -> VariantValue {
+                return VariantValue{Sequence<VariantValue>{mapper.FromObject<T> (fromObj->fValue), mapper.FromObject<CounterType> (fromObj->fCount)}};
+            }},
+            ToObjectMapperType<CountedValue>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, CountedValue* intoObj) -> void {
+                Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
+                if (s.size () < 2) {
+                    Execution::Throw (BadFormatException{L"Array size out of range for CountedValue"sv});
+                };
+                *intoObj = CountedValue{mapper.ToObject<T> (s[0]), mapper.ToObject<CounterType> (s[1])};
+            }}};
+    }
     template <typename T1, typename T2>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Common::KeyValuePair<T1, T2>*)
     {
@@ -731,6 +732,11 @@ namespace Stroika::Foundation::DataExchange {
         // MakeCommonSerializer_MappingAsArrayOfKeyValuePairs is more general. If KEY_TYPE is not convertible to a string, or you wish to strucutre
         // the VariantValue (typically think JSON representation) as an array of Key/Value pairs, then use MakeCommonSerializer_MappingAsArrayOfKeyValuePairs
         return MakeCommonSerializer_MappingWithStringishKey<Containers::SortedMapping<KEY_TYPE, VALUE_TYPE>> ();
+    }
+    template <typename T>
+    inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedMultiSet<T>*)
+    {
+        return MakeCommonSerializer_WithAdder<Containers::SortedMultiSet<T>> ();
     }
     template <typename T>
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedSet<T>*)

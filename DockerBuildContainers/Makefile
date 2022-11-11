@@ -52,19 +52,25 @@ ifeq (${DETECTED_HOST_OS},Linux)
 endif
 
 
+export DOCKER_TAG_LINE_=\
+	echo docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:$(STROIKA_VERSION); \
+	docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:$(STROIKA_VERSION); \
+	echo docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:v3; \
+	docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:v3; \
+
 tag-images:
 ifeq (${DETECTED_HOST_OS},Linux)
-	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2004-small sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2204-small sophistsolutionsinc/stroika-buildvm-ubuntu2204-small:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:$(STROIKA_VERSION)
-	#docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2004-small; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2004-regression-tests; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-small; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-regression-tests; ${DOCKER_TAG_LINE_}
+	# #docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	docker tag sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:$(STROIKA_VERSION)
+	@export DO_TO_IMAGE_=stroika-buildvm-windows-cygwin-vs2k19; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-windows-cygwin-vs2k22; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-windows-msys-vs2k19; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-windows-msys-vs2k22; ${DOCKER_TAG_LINE_}
 endif
 
 
@@ -78,35 +84,30 @@ ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 endif
 
 
+export DOCKER_PUSH_LINE_=\
+	echo docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:latest; \
+	docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:latest;
+
+ifeq ($(STROIKA_VERSION_Final),true)
+DOCKER_PUSH_LINE_+=\
+	echo docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:$(STROIKA_VERSION); \
+	docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:$(STROIKA_VERSION); \
+	echo docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:v3; \
+	docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:v3;
+endif
+
 push-images:
 	#if you get errors doing this (permission denied) make sure you ran docker login (as sophists - else no permission to push these)
 ifeq (${DETECTED_HOST_OS},Linux)
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:latest
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2204-small:latest
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:latest
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:latest
-	#no need to push this yet/now
-	#docker push sophistsolutionsinc/stroika-dev:latest
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2004-small; ${DOCKER_PUSH_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2004-regression-tests; ${DOCKER_PUSH_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-small; ${DOCKER_PUSH_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-regression-tests; ${DOCKER_PUSH_LINE_}
+	# #docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:latest
-	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:latest
-	docker push sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19:latest
-	docker push sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:latest
-endif
-ifeq ($(STROIKA_VERSION_Final),true)
-ifeq (${DETECTED_HOST_OS},Linux)
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:$(STROIKA_VERSION)
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2204-small:$(STROIKA_VERSION)
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:$(STROIKA_VERSION)
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:$(STROIKA_VERSION)
-	#no need to push this yet/now
-	#docker push sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
-endif
-ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:$(STROIKA_VERSION)
-	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:$(STROIKA_VERSION)
-	docker push sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19:$(STROIKA_VERSION)
-	docker push sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:$(STROIKA_VERSION)
-endif
+	@export DO_TO_IMAGE_=stroika-buildvm-windows-cygwin-vs2k19; ${DOCKER_PUSH_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-windows-cygwin-vs2k22; ${DOCKER_PUSH_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-windows-msys-vs2k19; ${DOCKER_PUSH_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-windows-msys-vs2k22; ${DOCKER_PUSH_LINE_}
 endif

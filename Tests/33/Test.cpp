@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/Configuration/Locale.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
+#include "Stroika/Foundation/Containers/SortedMultiSet.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
@@ -858,6 +859,63 @@ namespace {
 }
 
 namespace {
+    namespace Test15_JIRA_951_ObjectMapper_SortedMultiset_ {
+        void DoIt ()
+        {
+            using Common::CountedValue;
+            using Containers::MultiSet;
+            {
+                // Allow CountedValue to be default constructed (when its T type is default constructible)
+                [[maybe_unused]] CountedValue<int> x1;
+            }
+            {
+                // Allow Adder<> to work with Containers::MultiSet
+                using T = int;
+                MultiSet<T> x2;
+                Containers::Adapters::Adder<MultiSet<T>>::Add (&x2, CountedValue<T>{3, 4});
+            }
+            {
+                ObjectVariantMapper mapper;
+                MultiSet<int>       s1;
+                mapper.AddCommonType<CountedValue<int>> ();
+                mapper.Add (ObjectVariantMapper::MakeCommonSerializer_WithAdder<MultiSet<int>> ());
+                s1.Add (2);
+                s1.Add (2);
+                s1.Add (3);
+                VariantValue  sAsVariant         = mapper.FromObject (s1);
+                MultiSet<int> mappedBackToObject = mapper.ToObject<MultiSet<int>> (sAsVariant);
+                VerifyTestResult (s1 == mappedBackToObject);
+            }
+            {
+                ObjectVariantMapper mapper;
+                MultiSet<int>       s1;
+                mapper.AddCommonType<CountedValue<int>> ();
+                mapper.AddCommonType<MultiSet<int>> ();
+                s1.Add (2);
+                s1.Add (2);
+                s1.Add (3);
+                VariantValue  sAsVariant         = mapper.FromObject (s1);
+                MultiSet<int> mappedBackToObject = mapper.ToObject<MultiSet<int>> (sAsVariant);
+                VerifyTestResult (s1 == mappedBackToObject);
+            }
+            {
+                ObjectVariantMapper mapper;
+                SortedMultiSet<int> s1;
+                mapper.AddCommonType<CountedValue<int>> ();
+                mapper.AddCommonType<SortedMultiSet<int>> ();
+                s1.Add (2);
+                s1.Add (2);
+                s1.Add (3);
+                VariantValue        sAsVariant         = mapper.FromObject (s1);
+                SortedMultiSet<int> mappedBackToObject = mapper.ToObject<SortedMultiSet<int>> (sAsVariant);
+                VerifyTestResult (s1 == mappedBackToObject);
+            }
+        }
+    }
+}
+
+
+namespace {
     void DoRegressionTests_ ()
     {
         DoRegressionTests_BasicDataRoundtrips_1_::DoAll ();
@@ -874,6 +932,7 @@ namespace {
         DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_ ();
         Test13_ObjVarMapperAndGUID_::DoIt ();
         Test14_ObjVarMapperAsStringVsToString_STK_909_::DoIt ();
+        Test15_JIRA_951_ObjectMapper_SortedMultiset_::DoIt ();
     }
 }
 

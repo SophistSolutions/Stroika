@@ -26,6 +26,7 @@
 #include "../Containers/SortedCollection.h"
 #include "../Containers/SortedKeyedCollection.h"
 #include "../Containers/SortedMapping.h"
+#include "../Containers/SortedMultiSet.h"
 #include "../Containers/SortedSet.h"
 #include "../Debug/Sanitizer.h"
 #include "../Execution/Synchronized.h"
@@ -583,6 +584,7 @@ namespace Stroika::Foundation::DataExchange {
          *      o   Traversal::DiscreteRange<T, TRAITS>
          *      o   KeyedCollection<T, KEY_TYPE, TRAITS>
          *      o   Mapping<Key,Value>
+         *      o   MultiSet<T>
          *      o   optional<T>
          *      o   Optional<T>
          *      o   Range<T,TRAITS>
@@ -591,6 +593,7 @@ namespace Stroika::Foundation::DataExchange {
          *      o   SortedCollection<T>
          *      o   SortedKeyedCollection<T, KEY_TYPE, TRAITS>
          *      o   SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>
+         *      o   SortedMultiSet<T>
          *      o   SortedSet<T>
          *      o   Synchronized<T>
          *      o   vector<T>
@@ -731,20 +734,14 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Sequence<T>*);
         template <typename T>
         nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Set<T>*);
-        template <typename T>
-        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedCollection<T>*);
-        template <typename T, typename KEY_TYPE, typename TRAITS>
-        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (Containers::SortedKeyedCollection<T, KEY_TYPE, TRAITS>*);
-        template <typename KEY_TYPE, typename VALUE_TYPE>
-        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE>*);
-        template <typename T>
-        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Containers::SortedSet<T>*);
         template <typename T, typename TRAITS>
         nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Execution::Synchronized<T, TRAITS>*);
         template <typename T>
         nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const vector<T>*);
         template <typename T1, typename T2>
         nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const pair<T1, T2>*);
+        template <typename T>
+        nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Common::CountedValue<T>*);
         template <typename T1, typename T2>
         nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const Common::KeyValuePair<T1, T2>*);
         template <typename T1>
@@ -766,6 +763,8 @@ namespace Stroika::Foundation::DataExchange {
         template <typename KEY_TYPE, typename VALUE_TYPE>
         static TypeMappingDetails MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE>*);
         template <typename T>
+        static TypeMappingDetails MakeCommonSerializer_ (const Containers::MultiSet<T>*);
+        template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const optional<T>*);
         template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const optional<T>*, const OptionalSerializerOptions& options);
@@ -784,6 +783,8 @@ namespace Stroika::Foundation::DataExchange {
         template <typename KEY_TYPE, typename VALUE_TYPE>
         static TypeMappingDetails MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE>*);
         template <typename T>
+        static TypeMappingDetails MakeCommonSerializer_ (const Containers::SortedMultiSet<T>*);
+        template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const Containers::SortedSet<T>*);
         template <typename T, typename TRAITS>
         static TypeMappingDetails MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>*);
@@ -797,6 +798,8 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const vector<T>*);
         template <typename T1, typename T2>
         static TypeMappingDetails MakeCommonSerializer_ (const pair<T1, T2>*);
+        template <typename T>
+        static TypeMappingDetails MakeCommonSerializer_ (const Common::CountedValue<T>*);
         template <typename T1, typename T2>
         static TypeMappingDetails MakeCommonSerializer_ (const Common::KeyValuePair<T1, T2>*);
         template <typename T1>
