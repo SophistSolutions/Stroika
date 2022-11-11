@@ -376,12 +376,27 @@ namespace Stroika::Foundation::Memory {
             newLinks = (void**)new char[kChunks * SIZE];
         }
         AssertNotNull (newLinks);
-        void** curLink = newLinks;
-        for (size_t i = 1; i < kChunks; ++i) {
-            *curLink = &(((char*)newLinks)[i * SIZE]);
-            curLink  = (void**)*curLink;
+        /*
+         *  Create a 'linked list' of blocks - all of size SIZE. The first element of each block is a pointer to the next
+         *  block. The last block must be NULL-terminated.
+         * 
+         *      @todo MAYBE make this a member of the class, and use it elsewhere for the linked-list logic
+         */
+        {
+            using std::byte;
+            struct linkedListElt {
+                linkedListElt* fNext;
+            };
+            auto nextLinkAlias = reinterpret_cast<linkedListElt*> (newLinks);
+            // the first kChunk-1 links point to the next guy
+            for (size_t i = 1; i < kChunks; ++i) {
+                auto nextNextLink    = reinterpret_cast<linkedListElt*> (reinterpret_cast<byte*> (nextLinkAlias) + SIZE);
+                nextLinkAlias->fNext = nextNextLink;
+                nextLinkAlias        = nextNextLink;
+            }
+            // The FINAL link must be NULL-terminated
+            nextLinkAlias->fNext = nullptr;
         }
-        *curLink = nullptr; // nullptr-terminate the link list
         return newLinks;
     }
 
