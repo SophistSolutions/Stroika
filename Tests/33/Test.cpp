@@ -865,7 +865,7 @@ namespace {
         }
     }
 }
-#if 1
+
 namespace {
     namespace Test15_JIRA_951_ObjectMapper_SortedMultiset_ {
         void DoIt ()
@@ -921,7 +921,7 @@ namespace {
         }
     }
 }
-#endif
+
 
 namespace {
     void DoRegressionTests_ ()
