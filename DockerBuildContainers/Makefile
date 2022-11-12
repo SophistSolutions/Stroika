@@ -86,14 +86,14 @@ endif
 
 export DOCKER_PUSH_LINE_=\
 	echo docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:latest; \
-	docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:latest;
+	docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:latest; \
+	echo docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:v3; \
+	docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:v3;
 
 ifeq ($(STROIKA_VERSION_Final),true)
 DOCKER_PUSH_LINE_+=\
 	echo docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:$(STROIKA_VERSION); \
-	docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:$(STROIKA_VERSION); \
-	echo docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:v3; \
-	docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:v3;
+	docker push sophistsolutionsinc/$${DO_TO_IMAGE_}:$(STROIKA_VERSION);
 endif
 
 push-images:
