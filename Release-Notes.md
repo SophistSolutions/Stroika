@@ -66,6 +66,8 @@ especially those they need to be aware of when upgrading.
   - VS2k22
     - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
 
+---
+
 ### 2.1.8 {2022-11-04}
 
 #### TLDR
