@@ -10,7 +10,7 @@ RUN apt-get -qq install -y locales && locale-gen en_US en_US.UTF-8
 RUN apt-get -qq install -y lsb-release
 
 #install the latest (C++20 compat) g++ compilers (and c++17 ones for compat with stroika 2.1 builds)
-RUN apt-get -qq install -y g++-9 g++-10 g++-11 g++-12
+RUN apt-get -qq install -y g++-11 g++-12
 
 # For reasons which elude me, installing libc++-N removes all the other
 # https://askubuntu.com/questions/1227092/how-can-i-install-multiple-versions-of-llvm-libc-on-the-same-computer-at-the-s
@@ -30,4 +30,4 @@ RUN apt-get -qq install -y libz.a
 RUN apt-get -qq install -y valgrind
 
 # Cross-compile tests for ARM (iputils-ping is how we detect if machine exists to run regtests on)
-RUN apt-get -qq install -y g++-9-arm-linux-gnueabihf g++-10-arm-linux-gnueabihf g++-11-arm-linux-gnueabihf g++-12-arm-linux-gnueabihf iputils-ping
+RUN apt-get -qq install -y g++-11-arm-linux-gnueabihf g++-12-arm-linux-gnueabihf iputils-ping

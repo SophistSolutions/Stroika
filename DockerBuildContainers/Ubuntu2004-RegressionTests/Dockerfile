@@ -9,9 +9,6 @@ RUN apt-get -qq install -y lsb-release
 #install the latest (C++20 compat g++11 or later)
 RUN apt-get -qq install -y g++-11 g++-12
 
-#install the c++17 ones for compat with stroika 2.1 builds
-RUN apt-get -qq install -y g++-9 g++-10
-
 #install the latest (C++20 compat) clang compilers (and libs)
 # must include clang++-VERSION on different lines due to issue with some python dependency
 # UNCLEAR why some interdependency - cannot install different versions of libc++-10-dev at the same time??
@@ -26,6 +23,5 @@ RUN apt-get -qq install -y zlib1g-dev
 RUN apt-get -qq install -y valgrind
 
 # Cross-compile tests for ARM (iputils-ping is how we detect if machine exists to run regtests on)
-# (note 9/10 for use in building Stroika v2.1, not v3)
 # (g++-11-arm-linux-gnueabihf doesnt appear to exist in Ubuntu 20.04, at least not with repositories I've tried so far --LGP 2022-11-08)
-RUN apt-get -qq install -y g++-9-arm-linux-gnueabihf g++-10-arm-linux-gnueabihf iputils-ping
+RUN apt-get -qq install -y g++-10-arm-linux-gnueabihf iputils-ping
