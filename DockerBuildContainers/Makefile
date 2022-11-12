@@ -53,10 +53,14 @@ endif
 
 
 export DOCKER_TAG_LINE_=\
-	echo docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:$(STROIKA_VERSION); \
-	docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:$(STROIKA_VERSION); \
 	echo docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:v3; \
-	docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:v3; \
+	docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:v3;
+
+ifeq ($(STROIKA_VERSION_Final),true)
+DOCKER_TAG_LINE_+=
+	echo docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:$(STROIKA_VERSION); \
+	docker tag sophistsolutionsinc/$${DO_TO_IMAGE_} sophistsolutionsinc/$${DO_TO_IMAGE_}:$(STROIKA_VERSION);
+endif
 
 tag-images:
 ifeq (${DETECTED_HOST_OS},Linux)
