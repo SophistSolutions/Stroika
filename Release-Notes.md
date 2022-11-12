@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1.9 {2022-11-11??????????????}
+### 2.1.9 {2022-11-12}
 
 #### TLDR
 
@@ -65,8 +65,6 @@ especially those they need to be aware of when upgrading.
     - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
   - VS2k22
     - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
-
-
 
 ### 2.1.8 {2022-11-04}
 
