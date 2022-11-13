@@ -542,7 +542,7 @@ optional<DateTime> DateTime::ParseQuietly_ (const wstring& rep, const time_get<w
         }
         else {
             //tmphack workaround msft bug
-            nCharsConsumed = distance (itbegin, i);
+            nCharsConsumed = static_cast<size_t> (distance (itbegin, i));
         }
     }
 
