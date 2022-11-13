@@ -35,7 +35,7 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
 void PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi)
 {
     if constexpr (qDebug) {
-        for (const auto& a : advertisements) {
+        for ([[maybe_unused]]const auto& a : advertisements) {
             Require (not a.fTarget.empty ());
         }
     }
