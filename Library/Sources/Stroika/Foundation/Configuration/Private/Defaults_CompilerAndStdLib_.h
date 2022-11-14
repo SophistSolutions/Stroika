@@ -10,6 +10,13 @@
  * to help implement the set of Stroika public configuration defines.
  */
 
+/**
+ *  Often helpful in printout out warning etc messages
+ */
+#ifndef _Stroika_Foundation_STRINGIFY_
+#define _Stroika_Foundation_STRINGIFY_(x) #x
+#endif
+
 #if defined(__cplusplus)
 
 /**
@@ -2483,13 +2490,6 @@ stHarness/SimpleClass.cpp ...
 #else
 #define _NoOp_(...)
 #endif
-#endif
-
-/**
- *  Often helpful in printout out warning etc messages
- */
-#ifndef _Stroika_Foundation_STRINGIFY_
-#define _Stroika_Foundation_STRINGIFY_(x) #x
 #endif
 
 #ifndef _Stroika_Foundation_Configuration_Private_DO_PRAGMA_
