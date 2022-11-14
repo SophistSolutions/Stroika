@@ -954,7 +954,7 @@ strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& lhs, con
             return cmp;
         }
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
-        return Common::compare_three_way_BWA{} (lhs.GetTimeOfDay (), rhs.GetTimeOfDay ());
+        return Common::compare_three_way_BWA{}(lhs.GetTimeOfDay (), rhs.GetTimeOfDay ());
 #else
         return lhs.GetTimeOfDay () <=> rhs.GetTimeOfDay ();
 #endif
@@ -971,10 +971,10 @@ strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& lhs, con
             return cmp;
         }
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
-        if (auto cmp = Common::compare_three_way_BWA{} (lhs.GetTimeOfDay (), rhs.GetTimeOfDay ()); cmp != strong_ordering::equal) {
+        if (auto cmp = Common::compare_three_way_BWA{}(lhs.GetTimeOfDay (), rhs.GetTimeOfDay ()); cmp != strong_ordering::equal) {
             return cmp;
         }
-        return Common::compare_three_way_BWA{} (lhs.GetTimezone (), rhs.GetTimezone ());
+        return Common::compare_three_way_BWA{}(lhs.GetTimezone (), rhs.GetTimezone ());
 #else
         if (auto cmp = lhs.GetTimeOfDay () <=> rhs.GetTimeOfDay (); cmp != strong_ordering::equal) {
             return cmp;

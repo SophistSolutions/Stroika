@@ -123,7 +123,7 @@ namespace {
 void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
 {
     if constexpr (qDebug) {
-        for ([[maybe_unused]]const auto& a : advertisements) {
+        for ([[maybe_unused]] const auto& a : advertisements) {
             Require (not a.fTarget.empty ());
         }
     }
