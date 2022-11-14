@@ -58,6 +58,7 @@
  *******************************************************************
  *******************************************************************
  */
+#include <iostream>
 
 /*
  *  @eee StroikaConfig.cpp
@@ -72,6 +73,7 @@
  *     -- LGP 2017-08-24
  */
 #if defined(__clang__)
+
 
 #if defined(__APPLE__)
 // Must check CLANG first, since CLANG also defines GCC
@@ -177,6 +179,18 @@
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does recognize the compiler being used. It may work, but you may need to update some of the other defines for what features are supported by your compiler."
 
 #endif
+
+
+/*
+ *  If using libc++, require version 11 or later, since 
+ *  version 10 missing new chrono code (and more?)
+ */
+#if defined (_LIBCPP_VERSION)
+#if _LIBCPP_VERSION < 11000
+#error "Stroika v3 requires a more c++-20 compliant version of std-c++ library than libc++11 (missing new chrono code for example); try newer libc++, older version of Stroika (e.g. 2.1), or libstdc++"
+#endif
+#endif
+
 
 /* 
  * to find glibc version
@@ -1143,7 +1157,7 @@ STILL:
 #else
 // for clang++-14 stdlib=libc+++, on ununtu 22.04, we have __cpp_lib_three_way_comparison undefined and yet the class DOES exist - just in
 // a buggy form - so cannot test __cpp_lib_three_way_comparison to decide if we define it
-#define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 0
+#define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy (_LIBCPP_VERSION < 12000)
 #endif
 #else
 #define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy (__cpp_lib_three_way_comparison < 201907L)
@@ -1156,11 +1170,7 @@ STILL:
 #ifndef qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
 #if defined(_LIBCPP_VERSION)
 #if _LIBCPP_VERSION <= 14000
-#if defined(__APPLE__)
-#define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 0
-#else
-#define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 1
-#endif
+#define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy !qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
 #else
 #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 0
 #endif
