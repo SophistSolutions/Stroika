@@ -220,6 +220,8 @@ foo.cpp:
 // #pragma message "The value of __GLIBCXX__: " _Stroika_Foundation_STRINGIFY2_(__GLIBCXX__)
 // #pragma message "The value of _GLIBCXX_RELEASE: " _Stroika_Foundation_STRINGIFY2_(_GLIBCXX_RELEASE)
 // #pragma message "The value of _LIBCPP_VERSION: " _Stroika_Foundation_STRINGIFY2_(_LIBCPP_VERSION)
+// #pragma message "The value of __cpp_lib_three_way_comparison: " _Stroika_Foundation_STRINGIFY2_(__cpp_lib_three_way_comparison)
+// #pragma message "The value of __cpp_impl_three_way_comparison: " _Stroika_Foundation_STRINGIFY2_(__cpp_impl_three_way_comparison)
 
 /*
  *
