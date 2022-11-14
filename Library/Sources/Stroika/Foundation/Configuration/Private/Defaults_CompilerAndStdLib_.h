@@ -1317,8 +1317,8 @@ In file included from Namespace.cpp:10:
 // broken in clang++-11
 // broken in clang++-12
 // broken in clang++-13
-// appears fixed in clang++-14
-#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
+// broken in clang++-14
+#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
 #define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy 0
 #endif
