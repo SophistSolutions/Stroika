@@ -26,7 +26,7 @@
 #define _Stroika_Foundation_STRINGIFY_(x) #x
 #endif
 #ifndef _Stroika_Foundation_STRINGIFY2_
-#define _Stroika_Foundation_STRINGIFY2_(x) _Stroika_Foundation_STRINGIFY_(x)
+#define _Stroika_Foundation_STRINGIFY2_(x) _Stroika_Foundation_STRINGIFY_ (x)
 #endif
 
 #if defined(__cplusplus)
@@ -1148,50 +1148,46 @@ STILL:
 
 #endif
 
-
-
-
-// libstd c++ clang versions have badly fucked this up. 
+// libstd c++ clang versions have badly fucked this up.
 // they leave __cpp_lib_three_way_comparison undefined, but still provide (in some versions - like V14) a partly broken
 // version available to introduce compiler ambiguiity errors when used
 #ifndef qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
-    #if defined(_LIBCPP_VERSION)
-        #if _LIBCPP_VERSION <= 14000
-            #if defined(__APPLE__)
-                #define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 1
-            #else
-                // for clang++-14 stdlib=libc+++, on ununtu 22.04, we have __cpp_lib_three_way_comparison undefined and yet the class DOES exist - just in
-                // a buggy form - so cannot test __cpp_lib_three_way_comparison to decide if we define it
-                #define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 0
-            #endif
-        #else
-            #define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy (__cpp_lib_three_way_comparison < 201907L)
-        #endif
-    #else
-        #define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 0
-    #endif
+#if defined(_LIBCPP_VERSION)
+#if _LIBCPP_VERSION <= 14000
+#if defined(__APPLE__)
+#define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 1
+#else
+// for clang++-14 stdlib=libc+++, on ununtu 22.04, we have __cpp_lib_three_way_comparison undefined and yet the class DOES exist - just in
+// a buggy form - so cannot test __cpp_lib_three_way_comparison to decide if we define it
+#define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 0
+#endif
+#else
+#define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy (__cpp_lib_three_way_comparison < 201907L)
+#endif
+#else
+#define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 0
+#endif
 #endif
 
 #ifndef qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
-    #if defined(_LIBCPP_VERSION)
-        #if _LIBCPP_VERSION <= 14000
-            #if defined(__APPLE__)
-                #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 0
-            #else
-                #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 1
-            #endif
-        #else
-            #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 0
-        #endif
-    #else
-        #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 0
-    #endif
+#if defined(_LIBCPP_VERSION)
+#if _LIBCPP_VERSION <= 14000
+#if defined(__APPLE__)
+#define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 0
+#else
+#define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 1
+#endif
+#else
+#define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 0
+#endif
+#else
+#define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 0
+#endif
 #endif
 
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy and qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
 #error "These cannot be both defined"
 #endif
-
 
 /*
  MUST RUN TEST    Foundation::Execution::Other

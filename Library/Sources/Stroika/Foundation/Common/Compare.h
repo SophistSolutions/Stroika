@@ -35,7 +35,6 @@ namespace std {
 }
 #endif
 
-
 // Quirky workaround for clang++-14 on XCode 14 (and probably others).
 // No bug define for now - specific to clang++, because not sure what it depends on besides this, and this is bad enuf...
 // this value being too low...
@@ -65,7 +64,7 @@ namespace Stroika::Foundation::Common {
     constexpr std::strong_ordering kGreater [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::greater;
 
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
- struct compare_three_way_BWA {
+    struct compare_three_way_BWA {
         // NOTE - this workaround is GENERALLY INADEQUATE, but is adequate for my current use in Stroika -- LGP 2022-11-01
         template <typename LT, typename RT>
         constexpr auto operator() (LT&& lhs, RT&& rhs) const
@@ -228,12 +227,10 @@ namespace Stroika::Foundation::Common {
     struct ExtractComparisonTraits<greater_equal<T>> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eInOrderOrEquals;
     };
-#if __cpp_lib_three_way_comparison >= 201907
     template <>
     struct ExtractComparisonTraits<compare_three_way> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
     };
-#endif
 
     /**
      *  \brief Checks (via ExtractComparisonTraits) if argument is an Equals comparer - one that takes two arguments of type T, and returns a bool, and compares

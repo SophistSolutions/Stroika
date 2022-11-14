@@ -102,11 +102,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     inline strong_ordering Host::TWC_ (const Host& lhs, const Host& rhs)
     {
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
-        if (strong_ordering cmp = Common::compare_three_way_BWA{}(lhs.AsInternetAddress (), rhs.AsInternetAddress ()); cmp != strong_ordering::equal) { // Use BWA from Common/Compare.h
+        if (strong_ordering cmp = Common::compare_three_way_BWA{}(lhs.AsInternetAddress (), rhs.AsInternetAddress ()); cmp != strong_ordering::equal) {
             return cmp;
         }
 #else
-        if (strong_ordering cmp = compare_three_way{}(lhs.AsInternetAddress (), rhs.AsInternetAddress ()); cmp != strong_ordering::equal) { // Use BWA from Common/Compare.h
+        if (strong_ordering cmp = (lhs.AsInternetAddress () <=> rhs.AsInternetAddress ()); cmp != strong_ordering::equal) {
             return cmp;
         }
 #endif
