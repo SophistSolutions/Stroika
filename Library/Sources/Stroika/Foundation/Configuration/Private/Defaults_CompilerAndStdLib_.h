@@ -12,9 +12,21 @@
 
 /**
  *  Often helpful in printout out warning etc messages
+ *
+ *      \par Example Usage:
+ *           \code
+ *              #define THREE 3
+ *              #pragma message "The name of THREE: " _Stroika_Foundation_STRINGIFY_(THREE)
+ *              #pragma message "The value of THREE: " _Stroika_Foundation_STRINGIFY2_(THREE)
+ *          \endcode
+ *          The name of THREE: THREE
+ *          The value of THREE: 3
  */
 #ifndef _Stroika_Foundation_STRINGIFY_
 #define _Stroika_Foundation_STRINGIFY_(x) #x
+#endif
+#ifndef _Stroika_Foundation_STRINGIFY2_
+#define _Stroika_Foundation_STRINGIFY2_(x) _Stroika_Foundation_STRINGIFY_(x)
 #endif
 
 #if defined(__cplusplus)
@@ -189,6 +201,11 @@ foo.cpp:
 //#define GLIBCXX_11x_ 20210427
 //#define GLIBCXX_11x_ 20210923
 // DONT define GLIBCXX_11x_ cuz WAY too much of a moving target...
+
+// NOTE SURE WHY THIS ISN'T (always) WORKING??? WORKS FOR 'THREE' case above - maybe these aren't really defined
+// #pragma message "The value of __GLIBCXX__: " _Stroika_Foundation_STRINGIFY2_(__GLIBCXX__)
+// #pragma message "The value of _GLIBCXX_RELEASE: " _Stroika_Foundation_STRINGIFY2_(_GLIBCXX_RELEASE)
+// #pragma message "The value of _LIBCPP_VERSION: " _Stroika_Foundation_STRINGIFY2_(_LIBCPP_VERSION)
 
 /*
  *
