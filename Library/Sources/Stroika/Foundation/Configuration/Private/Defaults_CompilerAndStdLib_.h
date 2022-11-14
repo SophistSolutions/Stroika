@@ -2485,9 +2485,12 @@ stHarness/SimpleClass.cpp ...
 #endif
 #endif
 
-//#ifndef STRINGIFY
-//#define STRINGIFY(a) #a
-//#endif
+/**
+ *  Often helpful in printout out warning etc messages
+ */
+#ifndef _Stroika_Foundation_STRINGIFY_
+#define _Stroika_Foundation_STRINGIFY_(x) #x
+#endif
 
 #ifndef _Stroika_Foundation_Configuration_Private_DO_PRAGMA_
 #define _Stroika_Foundation_Configuration_Private_DO_PRAGMA_(x) _Pragma (#x)
