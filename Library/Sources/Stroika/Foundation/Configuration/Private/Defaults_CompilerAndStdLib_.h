@@ -74,7 +74,6 @@
  */
 #if defined(__clang__)
 
-
 #if defined(__APPLE__)
 // Must check CLANG first, since CLANG also defines GCC
 // see
@@ -180,17 +179,15 @@
 
 #endif
 
-
 /*
  *  If using libc++, require version 11 or later, since 
  *  version 10 missing new chrono code (and more?)
  */
-#if defined (_LIBCPP_VERSION)
+#if defined(_LIBCPP_VERSION)
 #if _LIBCPP_VERSION < 11000
 #error "Stroika v3 requires a more c++-20 compliant version of std-c++ library than libc++11 (missing new chrono code for example); try newer libc++, older version of Stroika (e.g. 2.1), or libstdc++"
 #endif
 #endif
-
 
 /* 
  * to find glibc version
