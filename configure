@@ -2648,10 +2648,8 @@ if ($onlyGenerateIfCompilerExists) {
 	# if flag to use libc++ - check if right version is available (but not on XCode)
 	if ($generate && IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && ($STDCXXLIB eq 'libc++') && index ($TARGET_PLATFORMS, "MacOS") == -1) {
 		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '11.0') {
-			if (! -e ('/usr/lib/llvm-10/include/c++/v1/cstddef')) {
-				$generate = false;
-				$generateBecause = "/usr/lib/llvm-10/include/c++/v1/cstddef not present";
-			}
+			$generate = false;
+			$generateBecause = "libc++ doesn't support enough of new chrono support (try libstdc++ or older Stroika).";
 		}
 		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '12.0') {
 			if (! -e ('/usr/lib/llvm-11/include/c++/v1/cstddef')) {
