@@ -1771,7 +1771,7 @@ sub     CHECK_FEATURE_OPTION
 {
 	my $x = shift(@_);
 	if (!($x eq $LIBFEATUREFLAG_BuildOnly) && !($x eq $LIBFEATUREFLAG_UseStaticTPP) && !($x eq $LIBFEATUREFLAG_UseSystem) && !($x eq $LIBFEATUREFLAG_No)) {
-			die ("Cannot identify feature argument");
+			die ("Cannot identify feature argument (expected build-only, use-static, use-system, or no and got $x)");
 	}
 }
 
