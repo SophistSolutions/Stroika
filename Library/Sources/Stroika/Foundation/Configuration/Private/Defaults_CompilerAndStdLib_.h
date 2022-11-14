@@ -1132,23 +1132,7 @@ STILL:
 
 #endif
 
-#ifndef qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy
-
-#if defined(_MSC_VER)
-
-// first found broken in _MSC_VER_2k19_16Pt8_
-// appears fixed in _MSC_VER_2k19_16Pt10_
-#define qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
-#elif defined(_LIBCPP_VERSION)
-// only seen on _LIBCPP_VERSION=11, but thats cuz requires c++20
-#define qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 11000)
-#else
-#define qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy 0
-#endif
-
-#endif
-
-// libstd c++ clang versions have badly fucked this up.
+// libstd c++ clang versions (around 14) have badly fucked this up.
 // they leave __cpp_lib_three_way_comparison undefined, but still provide (in some versions - like V14) a partly broken
 // version available to introduce compiler ambiguiity errors when used
 #ifndef qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
