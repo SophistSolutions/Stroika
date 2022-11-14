@@ -1310,7 +1310,7 @@ In file included from Namespace.cpp:10:
 
 #if defined(__clang__) && defined(__APPLE__)
 // also broken in clang++-13
-// also broken in clang++-14
+// also broken in clang++-14 (MAYBE issue not with clang but LIBCPP, but not important distinction given what this issue is)
 #define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // First noted in C++20 mode on clang++-10
