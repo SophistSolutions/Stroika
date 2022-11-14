@@ -1157,12 +1157,25 @@ STILL:
 #ifndef qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
     #if defined(_LIBCPP_VERSION)
         #if _LIBCPP_VERSION <= 14000
-            #define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 1
+            #define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 0
         #else
             #define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy (__cpp_lib_three_way_comparison < 201907L)
         #endif
     #else
         #define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 0
+    #endif
+#endif
+
+
+#ifndef qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
+    #if defined(_LIBCPP_VERSION)
+        #if _LIBCPP_VERSION <= 14000
+            #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 1
+        #else
+            #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 0
+        #endif
+    #else
+        #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 0
     #endif
 #endif
 

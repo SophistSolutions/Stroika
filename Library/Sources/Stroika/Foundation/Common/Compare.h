@@ -35,11 +35,12 @@ namespace std {
 }
 #endif
 
+
 // Quirky workaround for clang++-14 on XCode 14 (and probably others).
 // No bug define for now - specific to clang++, because not sure what it depends on besides this, and this is bad enuf...
 // this value being too low...
 // This is PROBABLY an issue with the LIBC++ STD LIBRARY, and not CLANG COMPILER, BUT VERIFY THIS....
-#if __cpp_lib_three_way_comparison < 201907L
+#if qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
 namespace std {
     struct compare_three_way {
         // NOTE - this workaround is GENERALLY INADEQUATE, but is adequate for my current use in Stroika -- LGP 2022-11-01
@@ -62,6 +63,22 @@ namespace Stroika::Foundation::Common {
     constexpr std::strong_ordering kLess [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]    = std::strong_ordering::less;
     constexpr std::strong_ordering kEqual [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]   = std::strong_ordering::equal;
     constexpr std::strong_ordering kGreater [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::greater;
+
+#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
+ struct compare_three_way_BWA {
+        // NOTE - this workaround is GENERALLY INADEQUATE, but is adequate for my current use in Stroika -- LGP 2022-11-01
+        template <typename LT, typename RT>
+        constexpr auto operator() (LT&& lhs, RT&& rhs) const
+        {
+            using CT = common_type_t<LT, RT>;
+            if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
+                return strong_ordering::equal;
+            }
+            return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
+        }
+        using is_transparent = void;
+    };
+#endif
 
     /**
      *  \brief ThreeWayComparer for optional types, like builtin one, except this lets you pass in explciit 'T' comparer for the T in optional<T>
