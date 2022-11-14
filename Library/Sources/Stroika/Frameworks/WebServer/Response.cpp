@@ -151,6 +151,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     , fUseOutStream_{Streams::BufferedOutputStream<byte>::New (outStream)}
 {
     if constexpr (qDebug) {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-lambda-capture\"");  // sadly no way to [[maybe_unused]] on captures
         this->status.rwPropertyChangedHandlers ().push_front (
             [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
                 Require (not this->responseStatusSent ());
@@ -171,6 +172,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
                 Require (this->headersCanBeSet ());
                 return PropertyChangedEventResultType::eContinueProcessing;
             });
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
     }
     this->contentType.rwPropertyChangedHandlers ().push_front (
         [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
