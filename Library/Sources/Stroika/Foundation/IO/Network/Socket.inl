@@ -112,7 +112,11 @@ namespace Stroika::Foundation::IO::Network {
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
         shared_lock<const AssertExternallySynchronizedMutex> critSec2{rhs};
-        return compare_three_way{}(_GetSharedRep (), rhs._GetSharedRep ()); // Use BWA from Common/Compare.h
+#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
+        return Common::compare_three_way_BWA{}(_GetSharedRep (), rhs._GetSharedRep ());
+#else
+        return _GetSharedRep () <=> rhs._GetSharedRep ();
+#endif
     }
 
 #if qPlatform_Windows

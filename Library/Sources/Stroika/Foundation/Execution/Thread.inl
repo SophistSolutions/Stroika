@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Execution {
         shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
         shared_lock<const AssertExternallySynchronizedMutex> critSec2{rhs};
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
-        return Common::compare_three_way_BWA{}(fRep_, rhs.fRep_); // Use BWA from Common/Compare.h
+        return Common::compare_three_way_BWA{}(fRep_, rhs.fRep_);
 #else
         return fRep_ <=> rhs.fRep_;
 #endif
@@ -204,7 +204,7 @@ namespace Stroika::Foundation::Execution {
     {
         shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
-        return Common::compare_three_way_BWA{}(fRep_, nullptr); // Use BWA from Common/Compare.h
+        return Common::compare_three_way_BWA{}(fRep_, nullptr);
 #else
         return fRep_ <=> nullptr;
 #endif
