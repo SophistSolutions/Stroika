@@ -1149,14 +1149,14 @@ STILL:
 #endif
 
 
-
 // libstd c++ clang versions have badly fucked this up. 
 // they leave __cpp_lib_three_way_comparison undefined, but still provide (in some versions - like V14) a partly broken
 // version available to introduce compiler ambiguiity errors when used
-
 #ifndef qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
     #if defined(_LIBCPP_VERSION)
         #if _LIBCPP_VERSION <= 14000
+            // for clang++-14 stdlib=libc+++, on ununtu 22.04, we have __cpp_lib_three_way_comparison undefined and yet the class DOES exist - just in
+            // a buggy form - so cannot test __cpp_lib_three_way_comparison to decide if we define it
             #define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 0
         #else
             #define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy (__cpp_lib_three_way_comparison < 201907L)
