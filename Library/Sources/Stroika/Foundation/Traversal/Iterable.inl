@@ -570,6 +570,23 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
+    template <typename RESULT_CONTAINER, typename RESULT>
+    RESULT_CONTAINER Iterable<T>::Select (const function<RESULT (const T&)>& extract) const
+    {
+        // @todo if RESULT_CONTAINER supports Addable, then use that to avoid CreateGenerator - just directly iterate and fill
+        auto baseIterable = Select (extract);
+        return RESULT_CONTAINER{baseIterable.begin (), baseIterable.end ()};
+    }
+    template <typename T>
+    template <typename RESULT_CONTAINER, typename RESULT>
+    RESULT_CONTAINER Iterable<T>::Select (const function<optional<RESULT> (const T&)>& extract) const
+    {
+        // @todo if RESULT_CONTAINER supports Addable, then use that to avoid CreateGenerator - just directly iterate and fill
+        auto baseIterable = Select (extract);
+        return RESULT_CONTAINER{baseIterable.begin (), baseIterable.end ()};
+    }
+
+    template <typename T>
     template <typename RESULT>
     nonvirtual RESULT Iterable<T>::Join (const function<RESULT (const T&)>& convertToT, const function<RESULT (const RESULT&, const RESULT&)>& combine) const
     {
