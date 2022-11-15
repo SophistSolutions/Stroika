@@ -383,6 +383,7 @@ namespace Stroika::Foundation::Traversal {
          *                Then we would iterate over M (O(M)), and each time check log(N)). So time would be sum of
          *                N*log (N) + M*(log(N)) or (N + M)*log(N).
          *                That's a little better (but at the cost of more RAM usage).
+         *                NOTE ALSO - that 'trick' assumes T has a valid less<T>, which it may not!
          *
          */
         template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
@@ -629,6 +630,9 @@ namespace Stroika::Foundation::Traversal {
          *      \endcode
          *
          *  \note   Could have been called EachWith, EachWhere, EachThat (), AllThat, AllWhere, Filter, or SubsetWhere.
+         * 
+         *  \note   This is NEARLY IDENTICAL to the Map<RESULT,RESULT_CONTAINER> function - where it uses its optional returning filter function.
+         *          But for this use case, its perhaps a bit terser, so maybe still useful --LGP 2022-11-15
          */
         nonvirtual Iterable<T> Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
         template <typename RESULT_CONTAINER>
@@ -733,7 +737,7 @@ namespace Stroika::Foundation::Traversal {
          * \brief ape the javascript/python 'join' function - take the parts of 'this' iterable and combine them into a new object (typically a string)
          *
          *  This Join () API - if you use the template, is fairly generic and lets the caller iterate over subelements of this iterable, and
-         *  combine them into a new thing (@see Accumulate - similar).
+         *  combine them into a new thing (@see Reduce - it is similar but more general).
          * 
          *  For the very common case of accumulating objects into a String, there are additional (stringish) overloads that more closely mimic
          *  what you can do in javascript/python.
@@ -946,33 +950,51 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  BASED ON Microsoft .net Linq.
-         *
-         *  Walk the entire list of items, and use the argument 'op' to combine items to a resulting single item.
+         *  \brief Walk the entire list of items, and use the argument 'op' to combine (reduce) items to a resulting single item.
+         * 
+         *  \see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
+         *  \see https://learn.microsoft.com/en-us/dotnet/api/system.linq.enumerable.aggregate?redirectedfrom=MSDN&view=net-7.0#overloads
+         * 
+         *  \note   Alias - Accumulate
+         * 
+         *  \note   This was called Accumulate in Stroika up until 2.1.10
          *
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 9 };
-         *          VerifyTestResult (c.Accumulate ([] (T lhs, T rhs) { return lhs + rhs; }) == 24);
+         *          VerifyTestResult (c.Reduce ([] (T lhs, T rhs) { return lhs + rhs; }) == 24);
+         *      \endcode
+         * 
+         *  \par Implementation As if:
+         *      \code
+         *          optional<RESULT_TYPE> result;
+         *          for (const auto& i : *this) {
+         *              if (result) {
+         *                  result = op (i, *result);
+         *              }
+         *              else {
+         *                  result = i;
+         *              }
+         *          }
          *      \endcode
          *
          *  \note   returns nullopt if empty list
          *
          *  See:
-         *      @see AccumulateValue
+         *      @see ReduceValue
          *      @see Join
          *      @see Sum
          *      @see SumValue
          */
         template <typename RESULT_TYPE = T>
-        nonvirtual optional<RESULT_TYPE> Accumulate (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const;
+        nonvirtual optional<RESULT_TYPE> Reduce (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const;
 
     public:
         /**
-         *  @see @Accumulate, but if value is missing, returns defaultValue arg or {}
+         *  @see @Reduce, but if value is missing, returns defaultValue arg or {}
          */
         template <typename RESULT_TYPE = T>
-        nonvirtual RESULT_TYPE AccumulateValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
+        nonvirtual RESULT_TYPE ReduceValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
 
     public:
         /**
@@ -986,7 +1008,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note   returns nullopt if empty list
          *
-         *  \note   Equivalent to Accumulate ([] (T lhs, T rhs) { return min (lhs, rhs); })
+         *  \note   Equivalent to Reduce ([] (T lhs, T rhs) { return min (lhs, rhs); })
          *
          *  See:
          *      https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
@@ -1013,7 +1035,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note   returns nullopt if empty list
          *
-         *  \note   Equivalent to Accumulate ([] (T lhs, T rhs) { return max (lhs, rhs); })
+         *  \note   Equivalent to Reduce ([] (T lhs, T rhs) { return max (lhs, rhs); })
          *
          *  See:
          *      https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
@@ -1065,7 +1087,7 @@ namespace Stroika::Foundation::Traversal {
          *          VerifyTestResult (c.Sum () == 24);
          *      \endcode
          *
-         *  \note   Equivalent to Accumulate ([] (T lhs, T rhs) { return lhs + rhs; })
+         *  \note   Equivalent to Reduce ([] (T lhs, T rhs) { return lhs + rhs; })
          *
          *  \note   returns nullopt if empty list
          *
@@ -1165,6 +1187,16 @@ namespace Stroika::Foundation::Traversal {
         [[deprecated ("Since Stroika v2.1.10 - use Map instead of Select")]] Iterable<RESULT> Select (const function<optional<RESULT> (const T&)>& extract) const
         {
             return Map<RESULT> (extract);
+        }
+        template <typename RESULT_TYPE = T>
+        [[deprecated ("Since Stroika 2.1.10, use Reduce instead of Accumulate")]] optional<RESULT_TYPE> Accumulate (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const
+        {
+            return Reduce<RESULT_TYPE> (op);
+        }
+        template <typename RESULT_TYPE = T>
+        [[deprecated ("Since Stroika 2.1.10, use ReduceValue instead of AccumulateValue")]] RESULT_TYPE AccumulateValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue = {}) const
+        {
+            return ReduceValue<RESULT_TYPE> (op, defaultValue);
         }
 
     protected:
