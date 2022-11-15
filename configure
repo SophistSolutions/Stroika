@@ -797,7 +797,12 @@ sub	SetDefaultForCompilerDriver_
 			$STDCXXLIB = "libstdc++";
 		}
 		if (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-			$STDCXXLIB = "libc++";
+			if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 11.0) {
+				$STDCXXLIB = "libstdc++";	# libc++ doesn't work with lib version# 10
+			}
+			else {
+				$STDCXXLIB = "libc++";
+			}
 		}
 	}
 	if (! defined $SharedSymbolVisibility) {
