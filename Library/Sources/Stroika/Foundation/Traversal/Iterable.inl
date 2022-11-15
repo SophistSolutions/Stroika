@@ -591,7 +591,6 @@ namespace Stroika::Foundation::Traversal {
         auto baseIterable = Select (extract);
         return RESULT_CONTAINER{baseIterable.begin (), baseIterable.end ()};
     }
-
     template <typename T>
     template <typename RESULT>
     nonvirtual RESULT Iterable<T>::Join (const function<RESULT (const T&)>& convertToT, const function<RESULT (const RESULT&, const RESULT&)>& combine) const
