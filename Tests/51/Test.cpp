@@ -786,6 +786,11 @@ namespace {
             VerifyTestResult (c.Select<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequentialEquals (Iterable<String>{L"3", L"4", L"7"}));
         }
         {
+            using Characters::String;
+            Iterable<int> c{3, 4, 7};
+            VerifyTestResult ((c.Select<vector<String>, String> ([] (int i) { return Characters::Format (L"%d", i); }) == vector<String>{L"3", L"4", L"7"}));
+        }
+        {
             Iterable<int> c = {1, 2, 3, 4, 5, 6};
             VerifyTestResult (c.Any ([] (int i) { return i % 2 == 0; }));
             VerifyTestResult (not c.Any ([] (int i) { return i > 7; }));

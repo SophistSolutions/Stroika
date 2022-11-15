@@ -666,8 +666,11 @@ namespace Stroika::Foundation::Traversal {
          *          into a (possibly smaller) container of something else by iterating over all the members, applying a function, and
          *          (optionally) appending the result of that function to the new container.
          * 
-         *  \note - this does NOT IMMEDIATELY traverse its argument, but uses @see CreateGenerator - to create a new iterable that dymanically pulls
+         *  \note - The overloads returning Iterable<RESULT> does NOT IMMEDIATELY traverse its argument, but uses @see CreateGenerator - to create a new iterable that dymanically pulls
          *          from 'this' Iterable<>'.
+         * 
+         *          The overloads returning RESULT_CONTAINER DO however immediately construct RESULT_CONTAINER, and fill it in the the result
+         *          of traversal before Select() returns.
          * 
          *  If the argument function returns optional<THE RETURN TYPE> - then only accomulate those that are returned with has_value () (so also can be used to rollup).
          *
@@ -682,6 +685,13 @@ namespace Stroika::Foundation::Traversal {
          *      \code
          *          Iterable<int> c { 3, 4, 7 };
          *          VerifyTestResult (c.Select<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequentialEquals (Iterable<String> { L"3", L"4", L"7" }));
+         *      \endcode
+         *
+         *  \par Example Usage
+         *      or transform into another container type
+         *      \code
+         *          Iterable<int> c { 3, 4, 7 };
+         *          VerifyTestResult ((c.Select<vector<String>, String> ([] (int i) { return Characters::Format (L"%d", i); }) == vector<String>{L"3", L"4", L"7"}));
          *      \endcode
          *
          *  \par Example Usage
@@ -714,6 +724,10 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual Iterable<RESULT> Select (const function<RESULT (const T&)>& extract) const;
         template <typename RESULT>
         nonvirtual Iterable<RESULT> Select (const function<optional<RESULT> (const T&)>& extract) const;
+        template <typename RESULT_CONTAINER, typename RESULT>
+        nonvirtual RESULT_CONTAINER Select (const function<RESULT (const T&)>& extract) const;
+        template <typename RESULT_CONTAINER, typename RESULT>
+        nonvirtual RESULT_CONTAINER Select (const function<optional<RESULT> (const T&)>& extract) const;
 
     public:
         /**
