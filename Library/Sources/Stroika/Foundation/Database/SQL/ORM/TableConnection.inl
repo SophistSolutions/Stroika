@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
                 fGetAll_Statement_.Reset ();
             }
         });
-        return Sequence<T>{rows.template Select<T> ([this] (const Statement::Row& r) {
+        return Sequence<T>{rows.template Map<T> ([this] (const Statement::Row& r) {
             return fObjectVariantMapper_.ToObject<T> (VariantValue{fTableSchema_.MapFromDB (r)});
         })};
     }

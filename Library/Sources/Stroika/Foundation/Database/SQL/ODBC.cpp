@@ -259,7 +259,7 @@ struct Statement::MyRep_ : IRep {
                 return;
             }
         }
-        DbgTrace (L"Statement::Bind: Parameter '%s' not found in list %s", parameterName.c_str (), Characters::ToString (fParameters_.Select<String> ([] (const auto& i) { return i.fName; })).c_str ());
+        DbgTrace (L"Statement::Bind: Parameter '%s' not found in list %s", parameterName.c_str (), Characters::ToString (fParameters_.Map<String> ([] (const auto& i) { return i.fName; })).c_str ());
         RequireNotReached (); // invalid paramter name provided
     }
     virtual void Reset () override

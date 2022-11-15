@@ -529,7 +529,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename RESULT>
-    Iterable<RESULT> Iterable<T>::Select (const function<RESULT (const T&)>& extract) const
+    Iterable<RESULT> Iterable<T>::Map (const function<RESULT (const T&)>& extract) const
     {
         RequireNotNull (extract);
         // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
@@ -548,7 +548,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename RESULT>
-    Iterable<RESULT> Iterable<T>::Select (const function<optional<RESULT> (const T&)>& extract) const
+    Iterable<RESULT> Iterable<T>::Map (const function<optional<RESULT> (const T&)>& extract) const
     {
         RequireNotNull (extract);
         // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
@@ -570,19 +570,19 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
-    template <typename RESULT_CONTAINER, typename RESULT>
-    RESULT_CONTAINER Iterable<T>::Select (const function<RESULT (const T&)>& extract) const
+    template <typename RESULT, typename RESULT_CONTAINER>
+    RESULT_CONTAINER Iterable<T>::Map (const function<RESULT (const T&)>& extract) const
     {
         // @todo if RESULT_CONTAINER supports Addable, then use that to avoid CreateGenerator - just directly iterate and fill
-        auto baseIterable = Select (extract);
+        auto baseIterable = Map (extract);
         return RESULT_CONTAINER{baseIterable.begin (), baseIterable.end ()};
     }
     template <typename T>
-    template <typename RESULT_CONTAINER, typename RESULT>
-    RESULT_CONTAINER Iterable<T>::Select (const function<optional<RESULT> (const T&)>& extract) const
+    template <typename RESULT, typename RESULT_CONTAINER>
+    RESULT_CONTAINER Iterable<T>::Map (const function<optional<RESULT> (const T&)>& extract) const
     {
         // @todo if RESULT_CONTAINER supports Addable, then use that to avoid CreateGenerator - just directly iterate and fill
-        auto baseIterable = Select (extract);
+        auto baseIterable = Map (extract);
         return RESULT_CONTAINER{baseIterable.begin (), baseIterable.end ()};
     }
     template <typename T>
@@ -830,7 +830,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename RESULT_TYPE>
-    optional<RESULT_TYPE> Iterable<T>::Accumulate (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const
+    optional<RESULT_TYPE> Iterable<T>::Reduce (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const
     {
         optional<RESULT_TYPE> result;
         for (const auto& i : *this) {
@@ -845,14 +845,14 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename RESULT_TYPE>
-    inline RESULT_TYPE Iterable<T>::AccumulateValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue) const
+    inline RESULT_TYPE Iterable<T>::ReduceValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue) const
     {
-        return Accumulate<RESULT_TYPE> (op).value_or (defaultValue);
+        return Reduce<RESULT_TYPE> (op).value_or (defaultValue);
     }
     template <typename T>
-    optional<T> Iterable<T>::Min () const
+    inline optional<T> Iterable<T>::Min () const
     {
-        return Accumulate<T> ([] (T lhs, T rhs) { return min (lhs, rhs); });
+        return Reduce<T> ([] (T lhs, T rhs) -> T { return min (lhs, rhs); });
     }
     template <typename T>
     template <typename RESULT_TYPE>
@@ -861,9 +861,9 @@ namespace Stroika::Foundation::Traversal {
         return Min ().value_or (defaultValue);
     }
     template <typename T>
-    optional<T> Iterable<T>::Max () const
+    inline optional<T> Iterable<T>::Max () const
     {
-        return Accumulate<T> ([] (T lhs, T rhs) -> T { return max (lhs, rhs); });
+        return Reduce<T> ([] (T lhs, T rhs) -> T { return max (lhs, rhs); });
     }
     template <typename T>
     template <typename RESULT_TYPE>
@@ -873,7 +873,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename RESULT_TYPE>
-    optional<RESULT_TYPE> Iterable<T>::Mean () const
+    inline optional<RESULT_TYPE> Iterable<T>::Mean () const
     {
         Iterator<T> i = begin ();
         if (i == end ()) {
@@ -889,9 +889,9 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename RESULT_TYPE>
-    optional<RESULT_TYPE> Iterable<T>::Sum () const
+    inline optional<RESULT_TYPE> Iterable<T>::Sum () const
     {
-        return Accumulate<RESULT_TYPE> ([] (T lhs, T rhs) { return lhs + rhs; });
+        return Reduce<RESULT_TYPE> ([] (T lhs, T rhs) { return lhs + rhs; });
     }
     template <typename T>
     template <typename RESULT_TYPE>
@@ -901,7 +901,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename RESULT_TYPE, typename INORDER_COMPARE_FUNCTION>
-    optional<RESULT_TYPE> Iterable<T>::Median (const INORDER_COMPARE_FUNCTION& compare) const
+    inline optional<RESULT_TYPE> Iterable<T>::Median (const INORDER_COMPARE_FUNCTION& compare) const
     {
         Iterator<T> i = begin ();
         if (i == end ()) {

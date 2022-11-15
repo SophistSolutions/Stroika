@@ -265,7 +265,7 @@ Mapping<String, String> Transfer::Cache::Element::GetCombinedHeaders () const
     }
     if (fCacheControl) {
         function<String (const String& lhs, const String& rhs)> a = [] (const String& lhs, const String& rhs) -> String { return lhs.empty () ? rhs : (lhs + L"," + rhs); };
-        result.Add (HTTP::HeaderName::kCacheControl, fCacheControl->Accumulate (a).value_or (String{}));
+        result.Add (HTTP::HeaderName::kCacheControl, fCacheControl->Reduce (a).value_or (String{}));
     }
     if (fContentType) {
         result.Add (HTTP::HeaderName::kContentType, fContentType->As<String> ());
