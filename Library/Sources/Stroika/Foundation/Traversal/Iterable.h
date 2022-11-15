@@ -659,13 +659,8 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-<<<<<<< HEAD
-         *  \brief  Compute a projection (or transformation) of the given type T to some argument set of values, and apply that projection
-         *          to the entire iterable, creating a new iterable (or new container).
-=======
          *  \brief  Take transformation (e.g. projection) of the given type T to some derived value, and apply that element transformation
          *          to the entire iterable, producing a new iterable (or a new container).
->>>>>>> v2.1-Dev
          * 
          *  \note - @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
          *          as it does essentially the same thing. It can be used to completely transform a container of one thing
