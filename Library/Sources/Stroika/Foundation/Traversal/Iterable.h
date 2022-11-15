@@ -655,8 +655,8 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief  Compute a projection (or transformation) of the given type T to some argument set of subtypes, and apply that projection
-         *          to the entire iterable, creating a new iterable.
+         *  \brief  Compute a projection (or transformation) of the given type T to some argument set of values, and apply that projection
+         *          to the entire iterable, creating a new iterable (or new container).
          * 
          *  \note - this could have been called map() (@see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
          *          as it does essentially the same thing. It can be used to completely transform a container of one thing
