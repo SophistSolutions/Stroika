@@ -788,7 +788,7 @@ namespace {
         {
             using Characters::String;
             Iterable<int> c{3, 4, 7};
-            VerifyTestResult ((c.Select<vector<String>, String> ([] (int i) { return Characters::Format (L"%d", i); }) == vector<String>{L"3", L"4", L"7"}));
+            VerifyTestResult ((c.Map<String, vector<String>> ([] (int i) { return Characters::Format (L"%d", i); }) == vector<String>{L"3", L"4", L"7"}));
         }
         {
             Iterable<int> c = {1, 2, 3, 4, 5, 6};

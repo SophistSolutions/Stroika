@@ -306,7 +306,7 @@ void ConnectionManager::FixupInterceptorChain_ ()
 
 Collection<shared_ptr<Connection>> ConnectionManager::GetInactiveConnections_ () const
 {
-    return fInactiveSockSetPoller_.GetDescriptors ().Select<shared_ptr<Connection>> ([] (auto i) { return i.first; });
+    return fInactiveSockSetPoller_.GetDescriptors ().Map<shared_ptr<Connection>> ([] (const auto& i) { return i.first; });
 }
 
 void ConnectionManager::ReplaceInEarlyInterceptor_ (const optional<Interceptor>& oldValue, const optional<Interceptor>& newValue)

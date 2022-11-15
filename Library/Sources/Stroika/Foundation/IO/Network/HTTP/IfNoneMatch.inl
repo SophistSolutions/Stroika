@@ -79,7 +79,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         if (IsAsterisk ()) {
             return L"*"sv;
         }
-        return String::Join (fETags.Select<String> ([] (const ETag& e) { return e.As<String> (); }));
+        return String::Join (fETags.Map<String> ([] (const ETag& e) { return e.As<String> (); }));
     }
     inline Characters::String IfNoneMatch::ToString () const
     {

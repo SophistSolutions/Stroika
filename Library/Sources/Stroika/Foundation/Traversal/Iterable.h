@@ -658,40 +658,44 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief  Compute a projection (or transformation) of the given type T to some argument set of subtypes, and apply that projection
-         *          to the entire iterable, creating a new iterable.
+         *  \brief  Take transformation (e.g. projection) of the given type T to some derived value, and apply that element transformation
+         *          to the entire iterable, producing a new iterable (or a new container).
          * 
-         *  \note - this could have been called map() (@see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
+         *  \note - @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
          *          as it does essentially the same thing. It can be used to completely transform a container of one thing
          *          into a (possibly smaller) container of something else by iterating over all the members, applying a function, and
          *          (optionally) appending the result of that function to the new container.
          * 
-         *  \note - The overloads returning Iterable<RESULT> does NOT IMMEDIATELY traverse its argument, but uses @see CreateGenerator - to create a new iterable that dymanically pulls
+         *  \note   Prior to Stroika v2.1.10, this was called Select()
+         * 
+         *  \note - The overloads returning Iterable<RESULT> do NOT IMMEDIATELY traverse its argument, but uses @see CreateGenerator - to create a new iterable that dymanically pulls
          *          from 'this' Iterable<>'.
          * 
          *          The overloads returning RESULT_CONTAINER DO however immediately construct RESULT_CONTAINER, and fill it in the the result
          *          of traversal before Select() returns.
          * 
-         *  If the argument function returns optional<THE RETURN TYPE> - then only accomulate those that are returned with has_value () (so also can be used to rollup).
+         *  \note   Alias Filter ()
+         *          If the argument function returns optional<THE RETURN TYPE> - then only accomulate those that are returned 
+         *          with has_value () (so also can be used to filter).
          *
          *  \par Example Usage
          *      \code
          *          Iterable<pair<int,char>> c { {1, 'a'}, {2, 'b'}, {3, 'c'} };
-         *          VerifyTestResult (c.Select<int> ([] (pair<int,char> p) { return p.first; }).SequentialEquals (Iterable<int> { 1, 2, 3 }));
+         *          VerifyTestResult (c.Map<int> ([] (pair<int,char> p) { return p.first; }).SequentialEquals (Iterable<int> { 1, 2, 3 }));
          *      \endcode
          *
          *  This can also easily be used to TRANSFORM an iterable.
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 4, 7 };
-         *          VerifyTestResult (c.Select<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequentialEquals (Iterable<String> { L"3", L"4", L"7" }));
+         *          VerifyTestResult (c.Map<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequentialEquals (Iterable<String> { L"3", L"4", L"7" }));
          *      \endcode
          *
          *  \par Example Usage
          *      or transform into another container type
          *      \code
          *          Iterable<int> c { 3, 4, 7 };
-         *          VerifyTestResult ((c.Select<vector<String>, String> ([] (int i) { return Characters::Format (L"%d", i); }) == vector<String>{L"3", L"4", L"7"}));
+         *          VerifyTestResult ((c.Map<String,vector<String>> ([] (int i) { return Characters::Format (L"%d", i); }) == vector<String>{L"3", L"4", L"7"}));
          *      \endcode
          *
          *  \par Example Usage
@@ -699,7 +703,7 @@ namespace Stroika::Foundation::Traversal {
          *          void ExpectedMethod (const Request* request, const Set<String>& methods, const optional<String>& fromInMessage)
          *          {
          *              String method{request->GetHTTPMethod ()};
-         *              Set<String> lcMethods = methods.Select<String> ([](const String& s) { return s.ToLowerCase ();  });
+         *              Set<String> lcMethods = methods.Map<String> ([](const String& s) { return s.ToLowerCase ();  });
          *              if (not methods.Contains (method.ToLowerCase ())) {
          *                  ...
          *      \endcode
@@ -707,27 +711,22 @@ namespace Stroika::Foundation::Traversal {
          *  Overload which returns optional<RESULT> and nullopt interpretted as skipping that element
          *
          *  \par Example Usage
+         *      Filtering a list example:
          *      \code
          *          // GetAssociatedContentType -> optional<String> - skip items that are 'missing'
-         *          possibleFileSuffixes.Select<InternetMediaType> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ())
+         *          possibleFileSuffixes.Map<InternetMediaType> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ())
+         *          // OR
+         *          possibleFileSuffixes.Map<InternetMediaType,Set<InternetMediaType>> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); })
          *      \endcode
-         * 
-         *  \note   @todo after we lose the multiple-template-arg overloads of Select<> - MAYBE - add an optional template
-         *          arg CONTAINER=Iterable<RESULT> to these Select<> templates. Then they can be used to - in one step - transform not
-         *          only the type contained, but what we do with As<> template - and create a differnt result type (like Set<T> etc) as needed.
-         *          MAY need a third arg to go with this for "Adder".
-         * 
-         *          NOTE - in some ways - this new Select() 'overload' will be differnt in that the current one creates a generator, and then
-         *          new one would (presumably) not - and directly construc tthe new type (though I suppose it too could use the generator apporahc).
          */
         template <typename RESULT>
-        nonvirtual Iterable<RESULT> Select (const function<RESULT (const T&)>& extract) const;
+        nonvirtual Iterable<RESULT> Map (const function<RESULT (const T&)>& extract) const;
         template <typename RESULT>
-        nonvirtual Iterable<RESULT> Select (const function<optional<RESULT> (const T&)>& extract) const;
-        template <typename RESULT_CONTAINER, typename RESULT>
-        nonvirtual RESULT_CONTAINER Select (const function<RESULT (const T&)>& extract) const;
-        template <typename RESULT_CONTAINER, typename RESULT>
-        nonvirtual RESULT_CONTAINER Select (const function<optional<RESULT> (const T&)>& extract) const;
+        nonvirtual Iterable<RESULT> Map (const function<optional<RESULT> (const T&)>& extract) const;
+        template <typename RESULT, typename RESULT_CONTAINER>
+        nonvirtual RESULT_CONTAINER Map (const function<RESULT (const T&)>& extract) const;
+        template <typename RESULT, typename RESULT_CONTAINER>
+        nonvirtual RESULT_CONTAINER Map (const function<optional<RESULT> (const T&)>& extract) const;
 
     public:
         /**
@@ -1155,6 +1154,18 @@ namespace Stroika::Foundation::Traversal {
          * \brief STL-ish alias for size() - really in STL only used in string, I think, but still makes sense as an alias.
          */
         nonvirtual size_t length () const;
+
+    public:
+        template <typename RESULT>
+        [[deprecated ("Since Stroika v2.1.10 - use Map instead of Select")]] Iterable<RESULT> Select (const function<RESULT (const T&)>& extract) const
+        {
+            return Map<RESULT> (extract);
+        }
+        template <typename RESULT>
+        [[deprecated ("Since Stroika v2.1.10 - use Map instead of Select")]] Iterable<RESULT> Select (const function<optional<RESULT> (const T&)>& extract) const
+        {
+            return Map<RESULT> (extract);
+        }
 
     protected:
         /**

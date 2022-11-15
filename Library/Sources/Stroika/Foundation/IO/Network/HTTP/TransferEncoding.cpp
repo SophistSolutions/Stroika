@@ -24,10 +24,10 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
 template <>
 String TransferEncodings::As<String> () const
 {
-    return String::Join (Select<String> ([] (auto i) { return Configuration::DefaultNames<TransferEncoding>{}.GetName (i); }));
+    return String::Join (Map<String> ([] (auto i) { return Configuration::DefaultNames<TransferEncoding>{}.GetName (i); }));
 }
 
 TransferEncodings TransferEncodings::Parse (const String& headerValue)
 {
-    return TransferEncodings{headerValue.Tokenize ({','}).Select<TransferEncoding> ([] (const String& i) { return Configuration::DefaultNames<TransferEncoding>{}.PeekValue (i.c_str ()); })};
+    return TransferEncodings{headerValue.Tokenize ({','}).Map<TransferEncoding> ([] (const String& i) { return Configuration::DefaultNames<TransferEncoding>{}.PeekValue (i.c_str ()); })};
 }

@@ -535,7 +535,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename RESULT>
-    Iterable<RESULT> Iterable<T>::Select (const function<RESULT (const T&)>& extract) const
+    Iterable<RESULT> Iterable<T>::Map (const function<RESULT (const T&)>& extract) const
     {
         RequireNotNull (extract);
         // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
@@ -554,7 +554,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename RESULT>
-    Iterable<RESULT> Iterable<T>::Select (const function<optional<RESULT> (const T&)>& extract) const
+    Iterable<RESULT> Iterable<T>::Map (const function<optional<RESULT> (const T&)>& extract) const
     {
         RequireNotNull (extract);
         // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
@@ -576,19 +576,19 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
-    template <typename RESULT_CONTAINER, typename RESULT>
-    RESULT_CONTAINER Iterable<T>::Select (const function<RESULT (const T&)>& extract) const
+    template <typename RESULT, typename RESULT_CONTAINER>
+    RESULT_CONTAINER Iterable<T>::Map (const function<RESULT (const T&)>& extract) const
     {
         // @todo if RESULT_CONTAINER supports Addable, then use that to avoid CreateGenerator - just directly iterate and fill
-        auto baseIterable = Select (extract);
+        auto baseIterable = Map (extract);
         return RESULT_CONTAINER{baseIterable.begin (), baseIterable.end ()};
     }
     template <typename T>
-    template <typename RESULT_CONTAINER, typename RESULT>
-    RESULT_CONTAINER Iterable<T>::Select (const function<optional<RESULT> (const T&)>& extract) const
+    template <typename RESULT, typename RESULT_CONTAINER>
+    RESULT_CONTAINER Iterable<T>::Map (const function<optional<RESULT> (const T&)>& extract) const
     {
         // @todo if RESULT_CONTAINER supports Addable, then use that to avoid CreateGenerator - just directly iterate and fill
-        auto baseIterable = Select (extract);
+        auto baseIterable = Map (extract);
         return RESULT_CONTAINER{baseIterable.begin (), baseIterable.end ()};
     }
     template <typename T>
