@@ -379,7 +379,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                     }
                 }
             }
-            Assert (0 <= numCharsConsumed and numCharsConsumed <= rep.length ());
+            Assert (0 <= numCharsConsumed and numCharsConsumed <= static_cast<int> (rep.length ()));
             if (consumedCharacters != nullptr) {
                 *consumedCharacters = numCharsConsumed;
             }
