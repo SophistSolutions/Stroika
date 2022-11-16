@@ -68,9 +68,7 @@ namespace Stroika::Foundation::Containers {
      *      Collections are typically designed to optimize item addition and iteration.
      *      They are fairly slow at item access (as they have no keys). Removing items
      *      is usually slow, except in the context of an Iterator<T>, where it is usually
-     *      very fast. Collection comparison (operator==) is often very slow in the worst
-     *      case (n^2) and this worst case is the relatively common case of identical
-     *      bags.
+     *      very fast.
      *
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
@@ -86,13 +84,13 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   EQUALS_COMPARER (operator==, operator!=)
      *          We do not provide a notion of 'Equals' or operator==, operator!=, because
-     *          its not clear how to compare collections.
+     *          its not clear how to compare collections (no ordering defined, sometimes sorted, no equals defined for ELTS etc)
      *
      *          The caller may use the inherited (from Iterable<>) SetEquals, MultiSetEquals, or SequenceEquals()
      *          as appropriate. Methods that require and equals comparer, take one as argument with appropriate defaulting.
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   No comparisons are provided, because there is no intrinsic way to compare collections for equality, less etc.
+     *      o   No comparisons are provided, because there is no intrinsic way to compare collections for equality, less etc. (order not defined)
      *          See inherited Iterable<>::SequentialEquals, Iterable<>::MultiSetEquals, , Iterable<>::SetEquals.
      */
     template <typename T>
