@@ -192,6 +192,16 @@ CFLAGS:=$(filter-out -flto, $(CFLAGS))
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 endif
 
+### todo just for clang++-14 and this verison of boost
+## /usr/bin/../lib/gcc/x86_64-linux-gnu/11/../../../../include/c++/11/type_traits:1131:7: error: static_assert failed due to requirement 'std::__is_complete_or_unbounded(std::__type_identity<boost::spirit::info>{})' "template argument must be a complete class or an unbounded array"
+ifeq ($(VERSION),1_80_0)
+ifeq (--std=c++2b,$(findstring --std=c++2b,$(CXXFLAGS)))
+ifeq (clang,$(findstring clang,$(CC)))
+CXXFLAGS:=$(filter-out --std=c++2b, $(CXXFLAGS)) --std=c++20
+endif
+endif
+endif
+
 
 ### Run b2.exe --help
 
@@ -255,7 +265,6 @@ else ifeq ($(ARCH),x86_64)
 B2_CONFIGURATION_ARGS +=	address-model=64
 endif
 endif
-
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 B2_CONFIGURATION_ARGS +=	-sBOOST_BUILD_USER_CONFIG=${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/user-config.jam
