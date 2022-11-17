@@ -853,7 +853,7 @@ namespace {
             VerifyTestResult (c.All ([] (int i) { return i % 2 == 1; }));
         }
         {
-            Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+            Iterable<int> c{1, 2, 3, 4, 5, 6};
             VerifyTestResult (c.NthValue (1) == 2);
             VerifyTestResult ((c.NthValue (99) == int{}));
         }
