@@ -1078,7 +1078,7 @@ namespace Stroika::Foundation::DataExchange {
                 Require (i.fOverrideTypeMapper or i.fFieldMetaInfo);
                 FromGenericObjectMapperType toGenericVariantMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fFromObjectMapper : mapper.Lookup_ (i.fFieldMetaInfo->fTypeInfo).fFromObjectMapper;
                 // if no field info, then use object ptr itself
-                VariantValue vv = toGenericVariantMapper (mapper, reinterpret_cast<const std::byte*> (fromObjOfTypeT) + (i.fFieldMetaInfo ? i.fFieldMetaInfo->fOffset : 0));
+                VariantValue vv = toGenericVariantMapper == nullptr ? VariantValue{} : toGenericVariantMapper (mapper, reinterpret_cast<const std::byte*> (fromObjOfTypeT) + (i.fFieldMetaInfo ? i.fFieldMetaInfo->fOffset : 0));
                 if (i.fNullFields == ObjectVariantMapper::StructFieldInfo::eIncludeNullFields or vv.GetType () != VariantValue::eNull) {
                     m.Add (i.fSerializedFieldName, vv);
                 }
@@ -1107,8 +1107,10 @@ namespace Stroika::Foundation::DataExchange {
 #endif
                 if (o) {
                     Require (i.fOverrideTypeMapper or i.fFieldMetaInfo);
-                    ToGenericObjectMapperType fromGenericVariantMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fToObjectMapper : mapper.Lookup_ (i.fFieldMetaInfo->fTypeInfo).fToObjectMapper;
-                    fromGenericVariantMapper (mapper, *o, reinterpret_cast<std::byte*> (intoObjOfTypeT) + (i.fFieldMetaInfo ? i.fFieldMetaInfo->fOffset : 0));
+                    ToGenericObjectMapperType toObjectMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fToObjectMapper : mapper.Lookup_ (i.fFieldMetaInfo->fTypeInfo).fToObjectMapper;
+                    if (toObjectMapper != nullptr) {
+                        toObjectMapper (mapper, *o, reinterpret_cast<std::byte*> (intoObjOfTypeT) + (i.fFieldMetaInfo ? i.fFieldMetaInfo->fOffset : 0));
+                    }
                 }
             }
         };
