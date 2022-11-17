@@ -395,6 +395,11 @@ namespace Stroika::Foundation::Containers {
         Add (key, f (LookupValue (key, initialValue), newValue));
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::insert (ArgByValueType<value_type> kvp)
+    {
+        Add (kvp.fKey, kvp.fValue);
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::erase (ArgByValueType<key_type> key)
     {
         Remove (key);
