@@ -73,21 +73,9 @@ namespace Stroika::Foundation::DataExchange {
         RequireNotNull (fromObjectMapper);
         RequireNotNull (toObjectMapper);
     }
-    template <typename T, enable_if_t<not is_same_v<T, void> and Debug::kBuiltWithUndefinedBehaviorSanitizer>*>
+    template <typename T, enable_if_t<not is_same_v<T, void>>*>
     inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper)
-        : TypeMappingDetails{forTypeInfo,
-                             [fromObjectMapper] (const ObjectVariantMapper& mapper, const void* objOfType) -> VariantValue {
-                                 return fromObjectMapper (mapper, reinterpret_cast<const T*> (objOfType));
-                             },
-                             [toObjectMapper] (const ObjectVariantMapper& mapper, const VariantValue& d, void* into) -> void {
-                                 toObjectMapper (mapper, d, reinterpret_cast<T*> (into));
-                             }}
-    {
-        Require (type_index{typeid (T)} == forTypeInfo);
-    }
-    template <typename T, enable_if_t<not is_same_v<T, void> and not Debug::kBuiltWithUndefinedBehaviorSanitizer>*>
-    inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper)
-        : TypeMappingDetails{forTypeInfo, *reinterpret_cast<const FromGenericObjectMapperType*> (&fromObjectMapper), *reinterpret_cast<const ToGenericObjectMapperType*> (&toObjectMapper)}
+        : TypeMappingDetails{forTypeInfo, mkGenericFromMapper_ (fromObjectMapper), mkGenericToMapper_ (toObjectMapper)}
     {
         Require (type_index{typeid (T)} == forTypeInfo);
     }
@@ -157,6 +145,30 @@ namespace Stroika::Foundation::DataExchange {
     {
         Require (type_index{typeid (T)} == fForType);
         return ToObjectMapper<T> (fToObjectMapper);
+    }
+    template <typename T>
+    inline ObjectVariantMapper::FromGenericObjectMapperType ObjectVariantMapper::TypeMappingDetails::mkGenericFromMapper_ (const ObjectVariantMapper::FromObjectMapperType<T>& fromObjectMapper)
+    {
+        if constexpr (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
+            return [fromObjectMapper] (const ObjectVariantMapper& mapper, const void* objOfType) -> VariantValue {
+                return fromObjectMapper (mapper, reinterpret_cast<const T*> (objOfType));
+            };
+        }
+        else {
+            return *reinterpret_cast<const FromGenericObjectMapperType*> (&fromObjectMapper);
+        }
+    }
+    template <typename T>
+    inline ObjectVariantMapper::ToGenericObjectMapperType ObjectVariantMapper::TypeMappingDetails::mkGenericToMapper_ (const ObjectVariantMapper::ToObjectMapperType<T>& toObjectMapper)
+    {
+        if constexpr (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
+            return [toObjectMapper] (const ObjectVariantMapper& mapper, const VariantValue& d, void* into) -> void {
+                toObjectMapper (mapper, d, reinterpret_cast<T*> (into));
+            };
+        }
+        else {
+            return *reinterpret_cast<const ToGenericObjectMapperType*> (&toObjectMapper);
+        }
     }
 
     /*

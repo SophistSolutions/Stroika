@@ -276,10 +276,8 @@ namespace Stroika::Foundation::DataExchange {
             TypeMappingDetails ()                              = delete;
             TypeMappingDetails (const TypeMappingDetails&)     = default;
             TypeMappingDetails (TypeMappingDetails&&) noexcept = default;
-            explicit TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper, const ToGenericObjectMapperType& toObjectMapper);
-            template <typename T, enable_if_t<not is_same_v<T, void> and Debug::kBuiltWithUndefinedBehaviorSanitizer>* = nullptr>
-            TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
-            template <typename T, enable_if_t<not is_same_v<T, void> and not Debug::kBuiltWithUndefinedBehaviorSanitizer>* = nullptr>
+            TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper, const ToGenericObjectMapperType& toObjectMapper);
+            template <typename T, enable_if_t<not is_same_v<T, void>>* = nullptr>
             TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
 
             nonvirtual TypeMappingDetails& operator= (TypeMappingDetails&& rhs) noexcept = default;
@@ -317,6 +315,12 @@ namespace Stroika::Foundation::DataExchange {
              *  @see Characters::ToString ();
              */
             nonvirtual String ToString () const;
+
+        private:
+            template <typename T>
+            static FromGenericObjectMapperType mkGenericFromMapper_ (const ObjectVariantMapper::FromObjectMapperType<T>& fromObjectMapper);
+            template <typename T>
+            static ToGenericObjectMapperType mkGenericToMapper_ (const ObjectVariantMapper::ToObjectMapperType<T>& toObjectMapper);
         };
 
     public:
