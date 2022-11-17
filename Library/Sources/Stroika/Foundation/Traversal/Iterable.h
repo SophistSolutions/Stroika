@@ -605,6 +605,7 @@ namespace Stroika::Foundation::Traversal {
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
          *          VerifyTestResult (c.NthValue (1) == 2);
+         *          VerifyTestResult (c.NthValue (99) == int{});
          *      \endcode
          *
          */
