@@ -37,10 +37,7 @@ namespace {
             bool fEnabled{false};
 
             // Not needed to use ObjectVariantMapper - just needed to 'test' if the data round-tripped properly
-            bool operator== (const MyType2Serialize1_& rhs) const
-            {
-                return fEnabled == rhs.fEnabled;
-            }
+            bool operator== (const MyType2Serialize1_& rhs) const = default;
         };
 
         // Define an ObjectVariantMapper which knows how to map your types to/from VariantValue objects
@@ -87,12 +84,7 @@ namespace {
             Mapping<String, String> fThisPHRsIDToSharedContactID;
 
             // Not needed to use ObjectVariantMapper - just needed to 'test' if the data round-tripped properly
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return fEnabled == rhs.fEnabled and
-                       fLastSynchronizedAt == rhs.fLastSynchronizedAt and
-                       fThisPHRsIDToSharedContactID == rhs.fThisPHRsIDToSharedContactID;
-            }
+            bool operator== (const SharedContactsConfig_& rhs) const = default;
 
             // Not needed to use ObjectVariantMapper - just to be able to print to debugger/trace-log this type
             Characters::String ToString () const
