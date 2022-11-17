@@ -70,14 +70,17 @@ namespace Stroika::Foundation::DataExchange {
         , fFromObjectMapper{fromObjectMapper}
         , fToObjectMapper{toObjectMapper}
     {
-        RequireNotNull (fromObjectMapper);
-        RequireNotNull (toObjectMapper);
     }
     template <typename T, enable_if_t<not is_same_v<T, void>>*>
     inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper)
         : TypeMappingDetails{forTypeInfo, mkGenericFromMapper_ (fromObjectMapper), mkGenericToMapper_ (toObjectMapper)}
     {
         Require (type_index{typeid (T)} == forTypeInfo);
+    }
+    template <typename T, enable_if_t<not is_same_v<T, void>>*>
+    inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper)
+        : TypeMappingDetails{type_index{typeid (T)}, mkGenericFromMapper_ (fromObjectMapper), mkGenericToMapper_ (toObjectMapper)}
+    {
     }
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering ObjectVariantMapper::TypeMappingDetails::operator<=> (const TypeMappingDetails& rhs) const
@@ -283,16 +286,17 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline auto ObjectVariantMapper::FromObjectMapper () const -> FromObjectMapperType<T>
     {
-        Require (Lookup_ (typeid (T)).fFromObjectMapper);
         return Lookup_ (typeid (T)).FromObjectMapper<T> ();
     }
     template <typename T>
     inline void ObjectVariantMapper::ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v, T* into) const
     {
         RequireNotNull (into);
-        RequireNotNull (toObjectMapper);
+        // if toObjectMapper, this does nothing to into
         // LOGICALLY require but cannot compare == on std::function! Require (toObjectMapper  == ToObjectMapper<T> ());  // pass it in as optimization, but not change of semantics
-        toObjectMapper (*this, v, into);
+        if (toObjectMapper != nullptr) {
+            toObjectMapper (*this, v, into);
+        }
     }
     template <typename T>
     inline void ObjectVariantMapper::ToObject (const VariantValue& v, T* into) const
@@ -321,6 +325,10 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline VariantValue ObjectVariantMapper::FromObject (const FromObjectMapperType<T>& fromObjectMapper, const T& from) const
     {
+        // define null fromObjectMapper as just retuning a null variant value
+        if (fromObjectMapper == nullptr) {
+            return VariantValue{};
+        }
         // LOGICALLY require but cannot compare == on std::function! Require (fromObjectMapper  == FromObjectMapper<T> ());  // pass it in as optimization, but not change of semantics
         return fromObjectMapper (*this, &from);
     }

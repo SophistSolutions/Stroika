@@ -200,20 +200,17 @@ namespace {
         tmp.fEnabled = true;
         trySerializing (mapper, tmp);
 
-        auto extraFieldGen = ObjectVariantMapper::TypeMappingDetails{
-            typeid (MyType2Serialize1_),
-            [] (const ObjectVariantMapper& mapper, const void* objOfType) -> VariantValue {
-                //return fromObjectMapper (mapper, reinterpret_cast<const T*> (objOfType));
-                return VariantValue{2};
-            },
-            [] (const ObjectVariantMapper& mapper, const VariantValue& d, void* into) -> void {
-                AssertNotReached ();
-            }};
+        // @todo should simplify this - see https://stroika.atlassian.net/browse/STK-955
+        auto myReadOnlyPropertyTypeMapper = ObjectVariantMapper::TypeMappingDetails{
+            ObjectVariantMapper::FromObjectMapperType<MyType2Serialize1_> ([] (const ObjectVariantMapper& mapper, const MyType2Serialize1_* objOfType) -> VariantValue {
+                return VariantValue{objOfType->fEnabled ? 2 : 99};
+            }),
+            ObjectVariantMapper::ToObjectMapperType<MyType2Serialize1_> (nullptr)};
 
         // Now a fancier mapper
         mapper.AddClass<MyType2Serialize1_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
             {L"Enabled", StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
-            {L"RandomValue", extraFieldGen},
+            {L"RandomValue", myReadOnlyPropertyTypeMapper},
         });
         trySerializing (mapper, tmp);
     }

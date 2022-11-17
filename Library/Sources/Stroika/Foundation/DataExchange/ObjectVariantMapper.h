@@ -265,6 +265,9 @@ namespace Stroika::Foundation::DataExchange {
          *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
          *
          *        o C++20 only (for c++17 only supported == and operator<)
+         * 
+         *  \note fFromObjectMapper is nullptr, then this field is added as nullptr.
+         *  \note toObjectMapper is nullptr, then it is simply not called (as if did nothing or empty function)
          */
         struct TypeMappingDetails {
             type_index                  fForType;
@@ -276,9 +279,11 @@ namespace Stroika::Foundation::DataExchange {
             TypeMappingDetails ()                              = delete;
             TypeMappingDetails (const TypeMappingDetails&)     = default;
             TypeMappingDetails (TypeMappingDetails&&) noexcept = default;
-            TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper, const ToGenericObjectMapperType& toObjectMapper);
+            explicit TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper, const ToGenericObjectMapperType& toObjectMapper);
             template <typename T, enable_if_t<not is_same_v<T, void>>* = nullptr>
             TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
+            template <typename T, enable_if_t<not is_same_v<T, void>>* = nullptr>
+            TypeMappingDetails (const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
 
             nonvirtual TypeMappingDetails& operator= (TypeMappingDetails&& rhs) noexcept = default;
             nonvirtual TypeMappingDetails& operator= (const TypeMappingDetails& rhs)     = default;
