@@ -1028,7 +1028,8 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
  */
 #ifndef qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
 #if defined(__clang_major__) && __clang_major__ >= 14
-#define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 0
+// config clang++-14-release-libstdc++2b on WSL failed, so try this --LGP 2022-11-17
+#define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 1
 #elif defined(_GLIBCXX_RELEASE)
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy (_GLIBCXX_RELEASE <= 11)
 #else
