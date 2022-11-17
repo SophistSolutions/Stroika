@@ -275,6 +275,19 @@ namespace Stroika::Foundation::DataExchange {
             ToGenericObjectMapperType   fToObjectMapper;
 
             /**
+             *  \par Example Usage
+             *      \code
+             *          return TypeMappingDetails{typeid (ACTUAL_CONTAINER_TYPE), fromObjectMapper, toObjectMapper};
+             *      \endcode
+             *
+             *  \par Example Usage
+             *      \code
+             *          auto myReadOnlyPropertyTypeMapper = ObjectVariantMapper::TypeMappingDetails{
+             *              ObjectVariantMapper::FromObjectMapperType<MyType2Serialize1_> ([] (const ObjectVariantMapper& mapper, const MyType2Serialize1_* objOfType) -> VariantValue {
+             *                  return VariantValue{objOfType->fEnabled ? 2 : 99};
+             *              }),
+             *              ObjectVariantMapper::ToObjectMapperType<MyType2Serialize1_> (nullptr)};
+             *      \endcode
              */
             TypeMappingDetails ()                              = delete;
             TypeMappingDetails (const TypeMappingDetails&)     = default;
