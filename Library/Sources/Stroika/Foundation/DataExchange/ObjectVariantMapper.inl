@@ -1061,7 +1061,7 @@ namespace Stroika::Foundation::DataExchange {
             }
         }
 #endif
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"Wunused-lambda-capture\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
         FromObjectMapperType<CLASS> fromObjectMapper = [fields, baseClassTypeInfo] (const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) -> VariantValue {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjectMapper"};
@@ -1115,7 +1115,7 @@ namespace Stroika::Foundation::DataExchange {
                 }
             }
         };
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"Wunused-lambda-capture\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
         return TypeMappingDetails{forTypeInfo, fromObjectMapper, toObjectMapper};
     }
 }
