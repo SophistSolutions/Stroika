@@ -33,12 +33,33 @@ namespace Stroika::Foundation::IO::Network {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering CIDR::operator<=> (const CIDR& rhs) const
     {
+        /*
+         *  NOTE, while it may not make alot of sense for fSignificantBits_ to be the primary part of the default sort key
+         *  the reason for this choice is that the part where we compare the base address doesn't make much sense
+         *  except when the significant bits on both sides agree.
+         * 
+         *  Well, suppose not true. COULD just use 'less' or 'greater' of the two sigbits, and compare the other first. Would only
+         *  end up with equal after comparing both, so maybe that would still make sense.
+         */
         strong_ordering r = fSignificantBits_ <=> rhs.fSignificantBits_;
         if (r == 0) {
             return fBaseAddress_.KeepSignifcantBits (fSignificantBits_) <=> rhs.fBaseAddress_.KeepSignifcantBits (fSignificantBits_);
         }
         else {
             return r;
+        }
+    }
+#else
+    inline bool CIDR::operator<(const CIDR& rhs) const
+    {
+        using Common::strong_ordering;
+        using Common::ThreeWayCompare;
+        strong_ordering r = ThreeWayCompare (fSignificantBits_, rhs.fSignificantBits_);
+        if (r == Common::kEqual) {
+            return ThreeWayCompare (fBaseAddress_.KeepSignifcantBits (fSignificantBits_), rhs.fBaseAddress_.KeepSignifcantBits (fSignificantBits_)) == Common::kLess;
+        }
+        else {
+            return r == Common::kLess;
         }
     }
 #endif

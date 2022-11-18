@@ -105,6 +105,11 @@ namespace Stroika::Foundation::IO::Network {
         /**
          */
         nonvirtual strong_ordering operator<=> (const CIDR& rhs) const;
+#else
+    public:
+        /**
+         */
+        nonvirtual bool operator<(const CIDR& rhs) const;
 #endif
 
     public:
