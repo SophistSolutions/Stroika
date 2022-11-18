@@ -202,7 +202,7 @@ namespace {
 
         // @todo should simplify this - see https://stroika.atlassian.net/browse/STK-955
         auto myReadOnlyPropertyTypeMapper = ObjectVariantMapper::TypeMappingDetails{
-            ObjectVariantMapper::FromObjectMapperType<MyType2Serialize1_> ([] ([[const ObjectVariantMapper&, const MyType2Serialize1_* objOfType) -> VariantValue {
+            ObjectVariantMapper::FromObjectMapperType<MyType2Serialize1_> ([] (const ObjectVariantMapper&, const MyType2Serialize1_* objOfType) -> VariantValue {
                 return VariantValue{objOfType->fEnabled ? 2 : 99};
             }),
             ObjectVariantMapper::ToObjectMapperType<MyType2Serialize1_> (nullptr)};
