@@ -267,7 +267,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename CLASS, typename BASE_CLASS>
     inline void ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
     {
-        AddClass<CLASS> (fieldDescriptions, Lookup_ (typeid (CLASS)));
+        AddClass<CLASS> (fieldDescriptions, Lookup_ (typeid (BASE_CLASS)));
     }
     template <typename T>
     inline auto ObjectVariantMapper::ToObjectMapper () const -> ToObjectMapperType<T>
