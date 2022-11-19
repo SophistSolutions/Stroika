@@ -531,10 +531,10 @@ namespace Stroika::Foundation::DataExchange {
          *          tmp = mapper.ToObject<MyConfig_> (DataExchange::JSON::Reader{tmpStream});
          *      \endcode
          * 
-         *  @todo either document preflightBeforeToObject and provide rationale, or deprecate/remove the feature. I can no longer remember where/why used -- LGP 2022-11-17
+         *  \note As of Stroika 2.1.10 - no longer support preflightBeforeToObject, use extra instead
          */
         template <typename CLASS>
-        nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void (VariantValue*)> preflightBeforeToObject = nullptr);
+        nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const optional<TypeMappingDetails>& extends = nullopt);
 
     public:
         /**
@@ -556,9 +556,11 @@ namespace Stroika::Foundation::DataExchange {
          *              {L"fVV2", StructFieldMetaInfo{&Derived_::fVV2}},
          *          });
          *      \endcode
+         * 
+         *  \note As of Stroika 2.1.10 - no longer support preflightBeforeToObject (see AddClass and extends parameter instead)
          */
         template <typename CLASS, typename BASE_CLASS>
-        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void (VariantValue*)> preflightBeforeToObject = nullptr);
+        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
 
     public:
         /**
@@ -674,6 +676,13 @@ namespace Stroika::Foundation::DataExchange {
          */
         template <typename T, typename... ARGS>
         static TypeMappingDetails MakeCommonSerializer (ARGS&&... args);
+
+    public:
+        /**
+         *  @todo migrate this to be part of MakeCommonSerializer probably, but for now like AddClass, but less checking and doesnt add - just creates/returns
+         */
+        template <typename T>
+        static TypeMappingDetails MakeClassSerializer (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const optional<TypeMappingDetails>& extends = nullopt);
 
     public:
         /**
@@ -852,8 +861,10 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_Range_ (const RangeSerializerOptions& options = {});
 
     private:
-        template <typename CLASS, typename BASE_CLASS = void>
-        nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void (VariantValue*)>& preflightBeforeToObject, const optional<type_index>& baseClassTypeInfo = nullopt) const;
+        template <typename CLASS>
+        static TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const optional<TypeMappingDetails>& extends);
+        template <typename CLASS>
+        nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_and_check_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const optional<TypeMappingDetails>& extends) const;
 
     private:
         nonvirtual TypeMappingDetails Lookup_ (const type_index& forTypeInfo) const;
