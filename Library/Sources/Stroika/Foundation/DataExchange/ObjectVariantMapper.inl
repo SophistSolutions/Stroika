@@ -262,7 +262,7 @@ namespace Stroika::Foundation::DataExchange {
             }
         }
 #endif
-        Add (MakeCommonSerializer_ForClassObject_<CLASS> (typeid (CLASS), sizeof (CLASS), fieldDescriptions, extends));
+        Add (MakeCommonSerializer_ForClassObject_and_check_<CLASS> (typeid (CLASS), sizeof (CLASS), fieldDescriptions, extends));
     }
     template <typename CLASS, typename BASE_CLASS>
     inline void ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
