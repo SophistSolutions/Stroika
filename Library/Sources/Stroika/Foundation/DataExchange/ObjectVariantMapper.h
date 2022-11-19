@@ -532,6 +532,9 @@ namespace Stroika::Foundation::DataExchange {
          *      \endcode
          * 
          *  \note As of Stroika 2.1.10 - no longer support preflightBeforeToObject, use extra instead
+         * 
+         *  \note extends operations to type performed BEFORE the argument ones here, so that they can change values
+         *        (either map to or from object) done in the base 'class' or set of properties being extended.
          */
         template <typename CLASS>
         nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const optional<TypeMappingDetails>& extends = nullopt);
