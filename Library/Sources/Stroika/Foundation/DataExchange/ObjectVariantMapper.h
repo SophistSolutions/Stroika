@@ -558,6 +558,9 @@ namespace Stroika::Foundation::DataExchange {
          *      \endcode
          * 
          *  \note As of Stroika 2.1.10 - no longer support preflightBeforeToObject (see AddClass and extends parameter instead)
+         * 
+         *  \note AddSubClass captures the existing mapping for BASE_CLASS at the time of this call, so this
+         *        can be used to subclass in place, adding a few extra properties.
          */
         template <typename CLASS, typename BASE_CLASS>
         nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
