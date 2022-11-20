@@ -56,6 +56,8 @@ void AssertExternallySynchronizedMutex::unlock_ () const noexcept
     Require (sharedContext->fCurLockThread_ == this_thread::get_id ());
     Require (sharedContext->fLocks_ > 0); // else unbalanced
     --sharedContext->fLocks_;
+    // Note at this point - it would make some sense to CLEAR fCurLockThread_, but that could be a race, cuz someone
+    // else could lock just as we are unlocking...
 }
 
 void AssertExternallySynchronizedMutex::lock_shared_ () const noexcept
