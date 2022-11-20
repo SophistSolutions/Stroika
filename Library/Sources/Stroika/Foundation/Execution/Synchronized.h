@@ -222,7 +222,7 @@ namespace Stroika::Foundation::Execution {
      *          So ONLY support operator-> const overload (brevity and more common than for write). To write - use rwget().
      * 
      *  \note Upgrading a shared_lock to a full lock
-     *        We experimented with using boost upgrade_lock code to allow for a full upgrade capability, but this intrindically
+     *        We experimented with using boost upgrade_lock code to allow for a full upgrade capability, but this intrinsically
      *        can (easily) yield deadlocks (e.g. thread A holds read lock and tries to upgrade, while thread B holds shared_lock
      *        and waits on something from thread A), and so I decided to abandon this approach.
      * 
@@ -481,9 +481,17 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief Upgrade a shared_lock to a (writable) full lock and pass the full lock to the argument doWithWriteLock function (and restore the shared_lock on exit); return true if succeeds, and false if fails (timeout trying to full-lock) or doWithWriteLock () returns false
+         *  \brief Upgrade a shared_lock (ReadableReference) to a (WritableReference) full lock temporarily in the context of argument function; return true if succeeds, and false if fails (timeout trying to full-lock) or argument doWithWriteLock () returns false
          * 
-         *  @see UpgradeLockNonAtomically - which just calls UpgradeLockNonAtomicallyQuietly () and throws timeout on timeout inteveningWriteLock or doWithWriteLock returns false
+         *  @see UpgradeLockNonAtomically - to just calls UpgradeLockNonAtomicallyQuietly () and throws timeout on timeout inteveningWriteLock or doWithWriteLock returns false
+         *
+         *  A DEFEFCT with (this) UpgradeLockNonAtomically API, is that you cannot count on values computed with the read lock to remain
+         *  valid in the upgrade lock (since we unlock and then re-lock). We resolve this by having two versions of UpgradeLockNonAtomically,
+         *  one where the callback gets notified there was an interening writelock, and one where the entire call fails and you have to
+         *  re-run.
+         *
+         *  \note optional 'bool interveningWriteLock' parameter - if present, intevening locks are flagged with this paraemter, and if 
+         *        the parameter is NOT present, intevening locks are treated as timeouts (even if infinite timeout specified)
          *
          *  \note - also returns false on intevening lock IFF doWithWriteLock/1 passed in has no inteveningWriteLock parameter.
          *
@@ -491,6 +499,11 @@ namespace Stroika::Foundation::Execution {
          *        the parameter is NOT present, intevening locks are treated as timeouts (even if infinite timeout specified)
          *
          *  \note - This does NOT require the mutex be recursive  - just supporting both lock_shared and lock ()
+         * 
+         *  \note - This function takes as argument an existing ReadableReference, which MUST come from a cget on this Syncrhonized object
+         *          (and therefore must be locked) and DURING the context of this function call that becomes invalid, but when this call returns
+         *          it will still be locked READONLY. This does NOT change the lock to writable (after the call) - but ONLY during the call
+         *          of the argument function.
          * 
          *  \par Example Usage
          *      \code
@@ -500,7 +513,7 @@ namespace Stroika::Foundation::Execution {
          *          auto lockedStatus = fStatus_.cget ();
          *          // do a bunch of code that only needs read access
          *          if (some rare event) {
-         *              if (not fStatus_.UpgradeLockNonAtomicallyQuietly ([=](auto&& writeLock) {
+         *              if (not fStatus_.UpgradeLockNonAtomicallyQuietly (&lockedStatus, [=](auto&& writeLock) {
          *                      writeLock.rwref ().fCompletedScans.Add (scan);
          *                  }
          *              )) {
@@ -517,16 +530,8 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief Upgrade a shared_lock to a (writable) full lock and pass the full lock to the argument doWithWriteLock function (and restore the shared_lock on exit). Throw if timeout acquiring full lock.
+         *  \brief Same as UpgradeLockNonAtomicallyQuietly, but throws on failure (either timeout or if argument function returns false)
          * 
-         *  A DEFEFCT with UpgradeLockNonAtomically, is that you cannot count on values computed with the read lock to remain
-         *  valid in the upgrade lock (since we unlock and then re-lock). We resolve this by having two versions of UpgradeLockNonAtomically,
-         *  one where the callback gets notified there was an interening writelock, and one where the entire call fails and you have to
-         *  re-run.
-         *
-         *  \note optional 'bool interveningWriteLock' parameter - if present, intevening locks are flagged with this paraemter, and if 
-         *        the parameter is NOT present, intevening locks are treated as timeouts (even if infinite timeout specified)
-         *
          *  \note - the 'ReadableReference' must be shared_locked coming in, and will be identically shared_locked on return.
          *
          *  \note - throws on timeout OR if interveningWriteLock and doWithWriteLock/1 passed, or if doWithWriteLock returns false
