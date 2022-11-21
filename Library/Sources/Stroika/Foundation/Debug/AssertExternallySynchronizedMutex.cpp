@@ -42,7 +42,7 @@ void AssertExternallySynchronizedMutex::lock_ () const noexcept
                 DbgTrace (L"ATTEMPT TO modify (lock for write) an object which is already in use (debuglocked) in another thread (thisthread=%s)", Characters::ToString (this_thread::get_id ()).c_str ());
                 DbgTrace ("Original thread holding lock: threadID=%s, and DbgTraceThreadName=%s", Execution::Thread::FormatThreadID_A (sharedContext->fCurLockThread_).c_str (), Debug::GetDbgTraceThreadName_A (sharedContext->fCurLockThread_).c_str ());
             }
-            Require (sharedContext->fCurLockThread_ == this_thread::get_id ());
+            Require (sharedContext->fCurLockThread_ == this_thread::get_id ()); // if this is triggered, and sharedContext->fLocks_==1, see https://stroika.atlassian.net/browse/STK-956
         }
     }
     catch (...) {
