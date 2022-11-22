@@ -210,6 +210,7 @@ namespace Stroika::Foundation::Database::SQL {
 
     public:
         /**
+         *  \brief Each row returned by a statement consists of a mapping of column name to its actual value.
          */
         using Row = Mapping<ColumnName, VariantValue>;
 
@@ -226,6 +227,8 @@ namespace Stroika::Foundation::Database::SQL {
         /**
          *  \brief - Call GetNextRow () repeatedly, and accumulate Rows into a Sequence (@see GetAllRows ())
          * 
+         *  The overload returning 'Row's is the default, and probably most intuitive.
+         * 
          *  The overloads that take a sequence of column numbers return each row as a tuple of columns (VariantValue)
          *  for just the specified column numbers.
          * 
@@ -241,6 +244,8 @@ namespace Stroika::Foundation::Database::SQL {
     public:
         /**
          *  \brief - call Reset (), and then GetAllRemainingRows () - which always starts current statement with current bindings from the beginning.
+         * 
+         *  The overload returning 'Row's is the default, and probably most intuitive.
          * 
          *  The overloads that take a sequence of column numbers return each row as a tuple of columns (VariantValue)
          *  for just the specified column numbers.
