@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Configuration/Common.h"
+#include "../Containers/Collection.h"
 #include "../Execution/Function.h"
 #include "../Time/Duration.h"
 #include "../Time/Realtime.h"
@@ -54,6 +55,9 @@ namespace Stroika::Foundation::Execution {
 
     public:
         class Adder;
+
+    public:
+        struct RegisteredTask;
     };
 
     /**
@@ -101,6 +105,9 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept;
 
     public:
+        nonvirtual Containers::Collection<RegisteredTask> GetAllRegisteredTasks () const;
+
+    public:
         /**
          *  At most one such object may exist. When it does, the IntervalTimer::Manager::sThe is active and usable. 
          *  Its illegal to call otherwise.
@@ -144,6 +151,9 @@ namespace Stroika::Foundation::Execution {
 
     public:
         virtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept = 0;
+
+    public:
+        virtual Containers::Collection<RegisteredTask> GetAllRegisteredTasks () const = 0;
     };
 
     /**
@@ -162,10 +172,28 @@ namespace Stroika::Foundation::Execution {
     public:
         virtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept override;
 
+    public:
+        virtual Containers::Collection<RegisteredTask> GetAllRegisteredTasks () const override;
+
     private:
         // hidden implementation so details not in header files
         struct Rep_;
         shared_ptr<Rep_> fHiddenRep_;
+    };
+
+    /**
+     *  Just used for reporting from the ItervalTimer::Manager (e.g. for debugging, to dump the status).
+     */
+    struct IntervalTimer::RegisteredTask {
+        Execution::Function<void (void)> fCallback;
+        Time::DurationSecondsType        fCallNextAt;
+        optional<Time::Duration>         fFrequency; // if missing, this is a one-shot event
+
+    public:
+        /**
+         *  @see Characters::ToString ()
+         */
+        nonvirtual Characters::String ToString () const;
     };
 
     /**

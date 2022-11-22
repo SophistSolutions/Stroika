@@ -3,6 +3,8 @@
  */
 #include "../StroikaPreComp.h"
 
+#include "../Characters/StringBuilder.h"
+#include "../Characters/ToString.h"
 #include "../Containers/Collection.h"
 #include "../Debug/Main.h"
 #include "../Debug/Trace.h"
@@ -14,9 +16,26 @@
 #include "IntervalTimer.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Time;
+
+/*
+ ********************************************************************************
+ *********************** IntervalTimer::RegisteredTask **************************
+ ********************************************************************************
+ */
+Characters::String IntervalTimer::RegisteredTask::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"fCallback: " + Characters::ToString (fCallback) + L", ";
+    sb += L"fCallNextAt: " + Characters::ToString (fCallNextAt) + L", ";
+    sb += L"fFrequency: " + Characters::ToString (fFrequency) + L", ";
+    sb += L"}";
+    return sb.str ();
+}
 
 /*
  ********************************************************************************
@@ -28,31 +47,34 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     virtual ~Rep_ () = default;
     void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when)
     {
-        Debug::TraceContextBumper ctx{L"IntervalTimer: default implementation: AddOneShot"};
+        Debug::TraceContextBumper ctx{L"IntervalTimer::Manager: default implementation: AddOneShot"};
         auto                      lk = fData_.rwget ();
         lk->Add (Elt_{intervalTimer, Time::GetTickCount () + when.As<DurationSecondsType> ()});
         DataChanged_ ();
     }
     void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
     {
-        Debug::TraceContextBumper ctx{L"IntervalTimer: default implementation: AddRepeating"};
+        Debug::TraceContextBumper ctx{L"IntervalTimer::Manager: default implementation: AddRepeating"};
         auto                      lk = fData_.rwget ();
         lk->Add (Elt_{intervalTimer, Time::GetTickCount () + repeatInterval.As<DurationSecondsType> (), repeatInterval, hysteresis});
         DataChanged_ ();
     }
     void RemoveRepeating (const TimerCallback& intervalTimer) noexcept
     {
-        Debug::TraceContextBumper ctx{L"IntervalTimer: default implementation: RemoveRepeating"};
+        Debug::TraceContextBumper ctx{L"IntervalTimer::Manager: default implementation: RemoveRepeating"};
         auto                      lk = fData_.rwget ();
         Verify (lk->RemoveIf ([&] (const Elt_& i) { return i.fCallback == intervalTimer; }));
         DataChanged_ ();
     }
+    Containers::Collection<RegisteredTask> GetAllRegisteredTasks () const
+    {
+        Debug::TraceContextBumper ctx{L"IntervalTimer::Manager: default implementation: GetAllRegisteredTasks"};
+        auto                      lk = fData_.cget ();
+        return lk.cref ().Map<RegisteredTask, Containers::Collection<RegisteredTask>> ([] (auto i) { return i; }); // slice
+    }
 
-    struct Elt_ {
-        Function<void (void)> fCallback;
-        DurationSecondsType   fCallNextAt;
-        optional<Duration>    fFrequency;
-        optional<Duration>    fHisteresis;
+    struct Elt_ : RegisteredTask {
+        optional<Duration> fHisteresis;
     };
     // @todo - re-implement using priority q, with next time at top of q
     Synchronized<Collection<Elt_>>               fData_;
@@ -144,6 +166,12 @@ void IntervalTimer::Manager::DefaultRep::RemoveRepeating (const TimerCallback& i
 {
     AssertNotNull (fHiddenRep_);
     fHiddenRep_->RemoveRepeating (intervalTimer);
+}
+
+auto IntervalTimer::Manager::DefaultRep::GetAllRegisteredTasks () const -> Containers::Collection<IntervalTimer::RegisteredTask>
+{
+    AssertNotNull (fHiddenRep_);
+    return fHiddenRep_->GetAllRegisteredTasks ();
 }
 
 /*

@@ -36,6 +36,11 @@ namespace Stroika::Foundation::Execution {
         AssertNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Active object.
         fRep_->RemoveRepeating (intervalTimer);
     }
+    inline auto IntervalTimer::Manager::GetAllRegisteredTasks () const -> Containers::Collection<RegisteredTask>
+    {
+        AssertNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Active object.
+       return fRep_->GetAllRegisteredTasks ();
+    }
     inline IntervalTimer::Manager IntervalTimer::Manager::sThe{nullptr};
 
     /*
