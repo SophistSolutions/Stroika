@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Characters {
      *      o   String -- printed as 'the-string' (possibly length limited)
      *
      *  \note *Implementation Note*
-     *      This implementation defaults to calling T().ToString ().
+     *      This implementation defaults to calling T{}.ToString ().
      * 
      *  \note @see has_ToString_v to check if Characters::ToString () well defined.
      */
