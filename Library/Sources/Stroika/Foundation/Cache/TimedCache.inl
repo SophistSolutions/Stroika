@@ -92,10 +92,10 @@ namespace Stroika::Foundation::Cache {
         ClearIfNeeded_ ();
         typename MyMapType_::iterator i = fMap_.find (key);
         if (i == fMap_.end ()) {
-            fMap_.insert (typename MyMapType_::value_type (key, MyResult_ (result)));
+            fMap_.insert (typename MyMapType_::value_type{key, MyResult_{result}});
         }
         else {
-            i->second = MyResult_ (result); // overwrite if its already there
+            i->second = MyResult_{result}; // overwrite if its already there
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>

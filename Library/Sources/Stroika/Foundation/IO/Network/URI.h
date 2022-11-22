@@ -110,6 +110,8 @@ namespace Stroika::Foundation::IO::Network {
          * 
          *  Copy and Move constructors/assignment operators are noexcept because the underlying objects are, but 
          *  the default constructor is NOT noexcept because the instance always allocates at least a string (could be remedied, but not as of now).
+         * 
+         *  \note URL/0 is treated as of empty path and nullopt for authority, query, scheme, fragment.
          *
          *  \todo https://stroika.atlassian.net/browse/STK-750
          *        noexcept - unclear why I cannot declare copy constructor and copy assignment operators as noexect
