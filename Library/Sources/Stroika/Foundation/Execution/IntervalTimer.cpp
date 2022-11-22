@@ -169,7 +169,7 @@ IntervalTimer::Manager::Activator::~Activator ()
 
 /*
  ********************************************************************************
- ********************************* IntervalTimer::Adder *************************
+ ***************************** IntervalTimer::Adder *****************************
  ********************************************************************************
  */
 IntervalTimer::Adder::Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis)
