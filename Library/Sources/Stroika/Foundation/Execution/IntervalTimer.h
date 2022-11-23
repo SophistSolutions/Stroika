@@ -21,19 +21,14 @@
 namespace Stroika::Foundation::Execution {
 
     /**
+     *  \brief Manage interval timers - like the javascript setIntervalTimer API.
      * 
-     *  Manage interval timers - like the javascript setIntervalTimer API.
-     * 
-     *  Add and remove timers.
-     * 
-     *  Support one-shot timers.
-     * 
-     *  Timers run on arbitrary thread.
-     * 
-     *  Can shut down manager at any time.
-     * 
-     *  Can support multiple 'managers' - but then you have to add explicitly. Or use Adder object to add
-     *  to default/global IdleTimer manager.
+     *  o   Add and remove timers.
+     *  o   Support one-shot timers.
+     *  o   Timers run on arbitrary thread.
+     *  o   Can shut down manager at any time.
+     *  o   Can support multiple 'managers' - but then you have to add explicitly. Or use Adder object to add
+     *      to default/global IdleTimer manager.
      * 
      *  \note https://stackoverflow.com/questions/33234403/using-setinterval-in-c
      * 
@@ -88,8 +83,8 @@ namespace Stroika::Foundation::Execution {
         ~Manager () = default;
 
     public:
-        Manager& operator= (const Manager&) = delete;
-        Manager& operator= (Manager&&)      = default;
+        nonvirtual Manager& operator= (const Manager&) = delete;
+        nonvirtual Manager&  operator= (Manager&&)      = default;
 
     public:
         /**
