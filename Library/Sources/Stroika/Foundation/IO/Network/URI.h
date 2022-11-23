@@ -218,7 +218,7 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  Return the (PCT etc encoded if a string) data AFTER the authority, but not including the fragment
+         *  \brief Return the (PCT etc encoded if a string) data AFTER the authority, but not including the fragment
          *
          *  \note Alias - this used to be called GetHostRelativePathPlusQuery
          *
@@ -234,7 +234,7 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  Return the path component, excluding any text after the final /.
+         *  \brief Return the path component, excluding any text after the final /.
          *
          *  \note Alias - this used to be called GetHostRelPathDir
          *
@@ -244,7 +244,7 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  Return the GetPath () value, but assuring its an absolute path.
+         *  \brief Return the GetPath () value, but assuring its an absolute path.
          *
          *  Return type maybe:
          *      String
@@ -289,7 +289,7 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  Produce a normalized represnetation of the URI.
+         *  \brief Produce a normalized representation of the URI.
          *
          *  Since constructing the URI object already does alot of this, some parts are not needed (like 
          *  Percent-Encoding Normalization, and character set conversion. But other parts are still useful/impactful (like tolower).
@@ -315,6 +315,8 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
+         *  \brief Combine **overridingURI** possibly relative url with this base url, to produce a new URI
+         * 
          *  Combine a full URI with a (possibly) relative URI, to produce a new URI. Note - its completely legal for the argument uri
          *  to be a full url, in which case this returns its argument (taking no properties from 'this')
          *
