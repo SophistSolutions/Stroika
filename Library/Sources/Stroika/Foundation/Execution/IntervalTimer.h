@@ -235,8 +235,11 @@ namespace Stroika::Foundation::Execution {
         static constexpr RunImmediatelyFlag eRunImmediately     = RunImmediatelyFlag::eRunImmediately;
 
     public:
+        /**
+         *  \req (but unenforced) - lifetime of manager must be > that of created Adder
+         */
         Adder () = delete;
-        Adder (Adder&& src);
+        Adder (Adder&& src) noexcept;
         Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
         Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis = nullopt);
         Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
@@ -247,7 +250,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         nonvirtual Adder& operator= (const Adder&) = delete;
-        nonvirtual Adder& operator= (Adder&& rhs);
+        nonvirtual Adder& operator= (Adder&& rhs) noexcept;
 
     public:
         /**
@@ -255,7 +258,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual Function<void (void)> GetCallback () const;
 
     private:
-        const Time::Duration&    fRepeatInterval_;
+        Time::Duration           fRepeatInterval_;
         optional<Time::Duration> fHysteresis_;
         IntervalTimer::Manager*  fManager_;
         Function<void (void)>    fFunction_;

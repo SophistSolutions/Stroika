@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Execution {
         : Adder{Manager::sThe, f, repeatInterval, RunImmediatelyFlag::eDontRunImmediately, hysteresis}
     {
     }
-    inline IntervalTimer::Adder::Adder (Adder&& src)
+    inline IntervalTimer::Adder::Adder (Adder&& src) noexcept
         : fRepeatInterval_{move (src.fRepeatInterval_)}
         , fHysteresis_{move (src.fHysteresis_)}
         , fManager_{src.fManager_}
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Execution {
             fManager_->RemoveRepeating (fFunction_);
         }
     }
-    inline IntervalTimer::Adder& IntervalTimer::Adder::operator= (Adder&& rhs)
+    inline IntervalTimer::Adder& IntervalTimer::Adder::operator= (Adder&& rhs) noexcept
     {
         if (this != &rhs) {
             if (fManager_ != nullptr) { // null check cuz Adder can be moved
