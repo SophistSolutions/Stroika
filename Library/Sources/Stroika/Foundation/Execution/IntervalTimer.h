@@ -92,14 +92,28 @@ namespace Stroika::Foundation::Execution {
         Manager& operator= (Manager&&)      = default;
 
     public:
+        /**
+         *  \brief Add a timer to be called once after duration when
+         * 
+         *  \req intervalTimer valid funciton ptr (not null)
+         *  \req when >= 0
+         */
         nonvirtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when);
 
     public:
+        /**
+         *  \brief Add a timer to be called repeatedly after duration repeatInterval
+         * 
+         *  \req intervalTimer valid funciton ptr (not null)
+         *  \req repeatInterval >= 0
+         *  \req hysteresis == nullopt or hysteresis >= 0
+         */
         nonvirtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
 
     public:
         /**
          *  Can remove a repeating task, but cannot remove a oneShot, since it might not be there by the time you go to remove it.
+         * 
          *  \req argument internvalTimer is registered.
          */
         nonvirtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept;
