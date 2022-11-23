@@ -237,6 +237,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  \req (but unenforced) - lifetime of manager must be > that of created Adder
+         *  \note if no manager specified, IntervalTimer::Manager::sThe is used.
          */
         Adder () = delete;
         Adder (Adder&& src) noexcept;
