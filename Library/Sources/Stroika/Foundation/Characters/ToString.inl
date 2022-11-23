@@ -250,7 +250,7 @@ namespace Stroika::Foundation::Characters {
         template <typename FUNCTION_SIGNATURE>
         inline String ToString_ (const function<FUNCTION_SIGNATURE>& f)
         {
-            return Format (L"%p", f.target<FUNCTION_SIGNATURE> ());
+            return Format (L"%p", f.template target<FUNCTION_SIGNATURE> ());
         }
         template <typename FUNCTION_SIGNATURE>
         inline String ToString_ (const Execution::Function<FUNCTION_SIGNATURE>& f)
