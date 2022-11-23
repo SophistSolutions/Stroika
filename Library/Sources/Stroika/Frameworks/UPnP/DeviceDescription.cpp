@@ -70,7 +70,9 @@ String DeviceDescription::ToString () const
 {
     Characters::StringBuilder sb;
     sb += L"{";
-    sb += L"Presentation-URL: " + Characters::ToString (fPresentationURL) + L", ";
+    if (fPresentationURL) {
+        sb += L"Presentation-URL: " + Characters::ToString (fPresentationURL) + L", ";
+    }
     sb += L"Device-Type: " + Characters::ToString (fDeviceType) + L", ";
     sb += L"Manufacture-Name: " + Characters::ToString (fManufactureName) + L", ";
     sb += L"Friendly-Name: " + Characters::ToString (fFriendlyName) + L", ";
@@ -94,8 +96,12 @@ String DeviceDescription::ToString () const
     if (fUPC) {
         sb += L"UPC: " + Characters::ToString (fUPC) + L", ";
     }
-    sb += L"Icons: " + Characters::ToString (fIcons) + L", ";
-    sb += L"Services: " + Characters::ToString (fServices) + L", ";
+    if (fIcons) {
+        sb += L"Icons: " + Characters::ToString (fIcons) + L", ";
+    }
+    if (fServices) {
+        sb += L"Services: " + Characters::ToString (fServices) + L", ";
+    }
     sb += L"}";
     return sb.str ();
 }

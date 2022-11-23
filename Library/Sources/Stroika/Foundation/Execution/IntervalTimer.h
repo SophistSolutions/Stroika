@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         nonvirtual Manager& operator= (const Manager&) = delete;
-        nonvirtual Manager&  operator= (Manager&&)      = default;
+        nonvirtual Manager& operator= (Manager&&)      = default;
 
     public:
         /**
