@@ -102,7 +102,7 @@ struct Router::Rep_ : Interceptor::_IRep {
     virtual void HandleMessage (Message* m) const override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"Router::Rep_::HandleMessage", L"(...method=%s,url=%s)", m->GetRequestHTTPMethod ().c_str (), Characters::ToString (m->GetRequestURL ()).c_str ()};
+        Debug::TraceContextBumper ctx{L"Router::Rep_::HandleMessage", L"(...method=%s,url=%s)", m->request ().httpMethod ().c_str (), Characters::ToString (m->request ().url ()).c_str ()};
 #endif
         Sequence<String>         matches;
         optional<RequestHandler> handler = Lookup_ (m->request (), &matches);
