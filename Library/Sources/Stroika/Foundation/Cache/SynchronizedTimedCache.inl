@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Cache {
          *  The main reason for this class, is this logic: unlocking the shared lock and then fetching the new value (with a write lock).
          */
         //auto&& lock = shared_lock{fMutex_}; // try shared_lock for case where present, and then lose it if we need to update object
-        auto&& lock = lock_guard{fMutex_}; // must use lock_guard (but fixed in v3) since LookupValue is a non-const method here! - cannot do 2 at once since non-const!
+        auto&& lock = unique_lock{fMutex_}; // must use unique_lock (but fixed in v3) since LookupValue is a non-const method here! - cannot do 2 at once since non-const!
         if (optional<VALUE> o = inherited::Lookup (key)) {
             return *o;
         }
