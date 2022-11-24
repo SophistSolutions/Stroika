@@ -74,6 +74,11 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     }
 
     struct Elt_ : RegisteredTask {
+        Elt_ (const Execution::Function<void (void)>& callback, Time::DurationSecondsType callNextAt, const optional<Time::Duration>& frequency = nullopt, const optional<Duration>& histeresis = nullopt)
+            : RegisteredTask{callback, callNextAt, frequency}
+            , fHisteresis{histeresis}
+        {
+        }
         optional<Duration> fHisteresis;
     };
     // @todo - re-implement using priority q, with next time at top of q
