@@ -128,14 +128,14 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             for (const Elt_& i : elts2Run) {
                 if (i.fFrequency.has_value ()) {
                     Elt_ newE        = i;
-                    newE.fCallNextAt = now + newE.fFrequency->As<DurationSecondsType> ();
-                    if (newE.fHisteresis) {
-                        uniform_real_distribution<> dis{-newE.fHisteresis->As<DurationSecondsType> (), newE.fHisteresis->As<DurationSecondsType> ()};
-                        newE.fCallNextAt += dis (gen);
+                    newE.fCallNextAt = now + i.fFrequency->As<DurationSecondsType> ();
+                    if (i.fHisteresis) {
+                        uniform_real_distribution<> dis{-i.fHisteresis->As<DurationSecondsType> (), i.fHisteresis->As<DurationSecondsType> ()};
+                        newE.fCallNextAt += dis (gen);  // can use fCallNextAt to be called immediately again... or even be < now
                     }
                     auto updateI = rwDataLock->Find ([&] (const Elt_& ii) { return ii.fCallback == i.fCallback; });
-                    WeakAssert (updateI != elts2Run.end ()); // allow for case where removed externally just as run, between locks, possible
-                    if (updateI != elts2Run.end ()) {
+                    WeakAssert (updateI != rwDataLock.cref ().end ()); // allow for case where removed externally just as run, between locks, possible
+                    if (updateI != rwDataLock.cref ().end ()) {
                         rwDataLock->Update (updateI, newE);
                     }
                 }
