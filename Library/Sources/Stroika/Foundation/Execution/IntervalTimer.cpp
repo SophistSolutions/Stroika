@@ -140,7 +140,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
                     }
                 }
                 else {
-                    WeakVerify (rwDataLock->RemoveIf ([&] (const Elt_& ii) { return ii.fCallback == i.fCallback; }));   
+                    WeakVerify (rwDataLock->RemoveIf ([&] (const Elt_& ii) { return ii.fCallback == i.fCallback; }));
                 }
             }
         }
