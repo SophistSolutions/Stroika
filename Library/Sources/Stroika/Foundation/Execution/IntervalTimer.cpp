@@ -112,7 +112,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
         while (true) {
             Require (Debug::AppearsDuringMainLifetime ());
             DurationSecondsType wakeupAt = GetNextWakeupTime_ ();
-            WeakAssert (wakeupAt > Time::GetTickCount ());  // could be violated if unlucky, but noteworthy, and most likely a bug/issue
+            WeakAssert (wakeupAt > Time::GetTickCount ()); // could be violated if unlucky, but noteworthy, and most likely a bug/issue
             fDataChanged_.WaitUntilQuietly (wakeupAt);
             // now process any timer events that are ready (could easily be more than one).
             // if we had a priority q, we would do them in order, but for now, just do all that are ready
@@ -134,10 +134,13 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
                         newE.fCallNextAt += dis (gen);
                     }
                     auto updateI = rwDataLock->Find ([&] (const Elt_& ii) { return ii.fCallback == i.fCallback; });
-                    rwDataLock->Update (updateI, newE);
+                    WeakAssert (updateI != elts2Run.end ()); // allow for case where removed externally just as run, between locks, possible
+                    if (updateI != elts2Run.end ()) {
+                        rwDataLock->Update (updateI, newE);
+                    }
                 }
                 else {
-                    Verify (rwDataLock->RemoveIf ([&] (const Elt_& ii) { return ii.fCallback == i.fCallback; }));
+                    WeakVerify (rwDataLock->RemoveIf ([&] (const Elt_& ii) { return ii.fCallback == i.fCallback; }));   
                 }
             }
         }
