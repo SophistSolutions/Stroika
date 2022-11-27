@@ -37,6 +37,10 @@
 #define qFoundation_Execution_Function_OperatorForwardNeedsRefBug 1
 #endif
 
+namespace Stroika::Foundation::Characters {
+    class String;
+}
+
 namespace Stroika::Foundation::Execution {
 
     /**
@@ -115,9 +119,15 @@ namespace Stroika::Foundation::Execution {
         nonvirtual bool operator== (const Function& rhs) const;
 #endif
 
+    public:
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual Characters::String ToString () const;
+
     private:
         STDFUNCTION fFun_;
-        void*       fOrdering_{}; // captured early when we have the right type info, so we can safely compare (since Stroika v2.1d8)
+        void*       fOrdering_{}; // captured early when we have the right type info, so we can safely compare, and print
 
 #if __cpp_impl_three_way_comparison < 201907
     private:

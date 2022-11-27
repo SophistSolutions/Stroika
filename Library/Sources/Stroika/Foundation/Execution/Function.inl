@@ -13,6 +13,9 @@
 #include "../Common/Compare.h"
 
 namespace Stroika::Foundation::Execution {
+    namespace Private_ {
+        Characters::String ToString_ (const void* p);
+    }
 
     /*
      ********************************************************************************
@@ -67,6 +70,12 @@ namespace Stroika::Foundation::Execution {
         return fOrdering_ == rhs.fOrdering_;
     }
 #endif
+    template <typename FUNCTION_SIGNATURE>
+    inline Characters::String Function<FUNCTION_SIGNATURE>::ToString () const
+    {
+        return Private_::ToString_ (fOrdering_);
+    }
+
 
 #if __cpp_impl_three_way_comparison < 201907
     /*

@@ -837,6 +837,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Main.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Function.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">

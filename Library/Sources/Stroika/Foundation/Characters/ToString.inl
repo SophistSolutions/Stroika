@@ -18,7 +18,6 @@
 
 #include "../Configuration/Concepts.h"
 #include "../Configuration/Enumeration.h"
-#include "../Execution/Function.h"
 #include "FloatConversion.h"
 #include "Format.h"
 #include "StringBuilder.h"
@@ -251,11 +250,6 @@ namespace Stroika::Foundation::Characters {
         inline String ToString_ (const function<FUNCTION_SIGNATURE>& f)
         {
             return Format (L"%p", f.template target<FUNCTION_SIGNATURE> ());
-        }
-        template <typename FUNCTION_SIGNATURE>
-        inline String ToString_ (const Execution::Function<FUNCTION_SIGNATURE>& f)
-        {
-            return ToString_ (std::function<FUNCTION_SIGNATURE> (f));
         }
 
     }
