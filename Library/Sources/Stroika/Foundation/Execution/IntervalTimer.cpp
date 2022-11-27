@@ -3,6 +3,8 @@
  */
 #include "../StroikaPreComp.h"
 
+#include <random>
+
 #include "../Characters/StringBuilder.h"
 #include "../Characters/ToString.h"
 #include "../Containers/Collection.h"
@@ -89,6 +91,8 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     // this is where a priorityq would be better
     DurationSecondsType GetNextWakeupTime_ ()
     {
+        DurationSecondsType funResult = fData_.cget ()->Map<DurationSecondsType> ([] (const Elt_& i) { return i.fCallNextAt; }).MinValue (kInfinite);
+#if qDebug
         auto dataLock = fData_.cget ();
         // note: usually (not dataLock->empty ()), but it can be empty temporarily as we are shutting down this process
         // from one thread, while checking this simultaneously from another
@@ -96,14 +100,19 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
         for (const Elt_& i : dataLock.cref ()) {
             r = min (r, i.fCallNextAt);
         }
-        return r;
+        Assert (r == funResult);
+#endif
+        return funResult;
     }
     void RunnerLoop_ ()
     {
         // keep checking for timer events to run
+        random_device rd;
+        mt19937       gen{rd ()};
         while (true) {
             Require (Debug::AppearsDuringMainLifetime ());
             DurationSecondsType wakeupAt = GetNextWakeupTime_ ();
+            WeakAssert (wakeupAt > Time::GetTickCount ());  // could be violated if unlucky, but noteworthy, and most likely a bug/issue
             fDataChanged_.WaitUntilQuietly (wakeupAt);
             // now process any timer events that are ready (could easily be more than one).
             // if we had a priority q, we would do them in order, but for now, just do all that are ready
@@ -118,10 +127,13 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             now             = Time::GetTickCount ();
             for (const Elt_& i : elts2Run) {
                 if (i.fFrequency.has_value ()) {
-                    Elt_ newE = i;
-                    // @todo add hysteresis
+                    Elt_ newE        = i;
                     newE.fCallNextAt = now + newE.fFrequency->As<DurationSecondsType> ();
-                    auto updateI     = rwDataLock->Find ([&] (const Elt_& ii) { return ii.fCallback == i.fCallback; });
+                    if (newE.fHisteresis) {
+                        uniform_real_distribution<> dis{-newE.fHisteresis->As<DurationSecondsType> (), newE.fHisteresis->As<DurationSecondsType> ()};
+                        newE.fCallNextAt += dis (gen);
+                    }
+                    auto updateI = rwDataLock->Find ([&] (const Elt_& ii) { return ii.fCallback == i.fCallback; });
                     rwDataLock->Update (updateI, newE);
                 }
                 else {
