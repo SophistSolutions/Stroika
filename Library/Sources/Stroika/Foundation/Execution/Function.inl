@@ -10,8 +10,8 @@
  ********************************************************************************
  */
 
-#include "../Common/Compare.h"
 #include "../Characters/String.h"
+#include "../Common/Compare.h"
 
 namespace Stroika::Foundation::Execution {
     namespace Private_ {

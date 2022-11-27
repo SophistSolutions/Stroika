@@ -119,6 +119,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             // NOTE - to avoid holding a lock (in case these guys remove themselves or whatever) - lock/run through list twice
             DurationSecondsType now      = Time::GetTickCount ();
             Collection<Elt_>    elts2Run = fData_.cget ()->Where ([=] (const Elt_& i) { return i.fCallNextAt <= now; });
+            // note - this could EASILY be empty, for example, if fDataChanged_ wakes too early due to a change/Signal/Set
             for (const Elt_& i : elts2Run) {
                 IgnoreExceptionsExceptThreadAbortForCall (i.fCallback ());
             }
@@ -131,7 +132,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
                     newE.fCallNextAt = now + i.fFrequency->As<DurationSecondsType> ();
                     if (i.fHisteresis) {
                         uniform_real_distribution<> dis{-i.fHisteresis->As<DurationSecondsType> (), i.fHisteresis->As<DurationSecondsType> ()};
-                        newE.fCallNextAt += dis (gen);  // can use fCallNextAt to be called immediately again... or even be < now
+                        newE.fCallNextAt += dis (gen); // can use fCallNextAt to be called immediately again... or even be < now
                     }
                     auto updateI = rwDataLock->Find ([&] (const Elt_& ii) { return ii.fCallback == i.fCallback; });
                     WeakAssert (updateI != rwDataLock.cref ().end ()); // allow for case where removed externally just as run, between locks, possible
@@ -160,6 +161,9 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
                                                                RunnerLoop_ ();
                                                            },
                                                                         Thread::eAutoStart, L"Default-Interval-Timer"sv)));
+            }
+            else {
+                fDataChanged_.Set (); // if there was and still is a thread, it maybe sleeping too long, so wake it up
             }
         }
     }
