@@ -76,7 +76,6 @@ namespace Stroika::Foundation::Execution {
         return Private_::ToString_ (fOrdering_);
     }
 
-
 #if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************

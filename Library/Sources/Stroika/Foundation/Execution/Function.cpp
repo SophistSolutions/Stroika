@@ -10,7 +10,12 @@
 using namespace Stroika::Foundation;
 
 
-Characters::String Characters::Private_::ToString_ (const void* p)
+/*
+ ********************************************************************************
+ ************************ Execution::Private_ ***********************************
+ ********************************************************************************
+ */
+Characters::String Execution::Private_::ToString_ (const void* p)
 {
     return Characters::Format (L"%p", p);
 }
