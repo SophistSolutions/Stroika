@@ -11,6 +11,7 @@
  */
 
 #include "../Common/Compare.h"
+#include "../Characters/String.h"
 
 namespace Stroika::Foundation::Execution {
     namespace Private_ {
@@ -79,7 +80,7 @@ namespace Stroika::Foundation::Execution {
 #if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
-     ************** Function<FUNCTION_SIGNATURE> operators **************************
+     ***************** Function<FUNCTION_SIGNATURE> operators ***********************
      ********************************************************************************
      */
     template <typename FUNCTION_SIGNATURE>
