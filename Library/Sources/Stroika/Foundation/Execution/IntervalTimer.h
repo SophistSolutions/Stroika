@@ -7,7 +7,6 @@
 #include "../StroikaPreComp.h"
 
 #include "../Configuration/Common.h"
-#include "../Containers/Collection.h"
 #include "../Containers/KeyedCollection.h"
 #include "../Execution/Function.h"
 #include "../Time/Duration.h"
