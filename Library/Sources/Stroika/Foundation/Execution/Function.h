@@ -43,6 +43,10 @@ namespace Stroika::Foundation::Characters {
 
 namespace Stroika::Foundation::Execution {
 
+    namespace Private_ {
+        using FunctionObjectOrderingType = conditional_t<false, const void*, uint32_t>;
+    }
+
     /**
      *  IDEA is be SAME AS std::function<> but allow for operator<, a usable operator== etc...,
      *  which is an unfortunate omission from the c++ standard.
@@ -127,7 +131,12 @@ namespace Stroika::Foundation::Execution {
 
     private:
         STDFUNCTION fFun_;
-        void*       fOrdering_{}; // captured early when we have the right type info, so we can safely compare, and print
+
+    private:
+        // g++-10 produces very confusing results if we use f.template target<Configuration::remove_cvref_t<CTOR_FUNC_SIG>> ()
+        // EXPERIEMNT A BIT MORE WITH THIS...
+        using OrderingType_ = Private_::FunctionObjectOrderingType;
+        OrderingType_ fOrdering_{}; // captured early when we have the right type info, so we can safely compare, and print
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
