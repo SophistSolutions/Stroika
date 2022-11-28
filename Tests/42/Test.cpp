@@ -71,7 +71,7 @@ namespace {
         }
         {
             // https://stroika.atlassian.net/browse/STK-960
-            Function<int (int)>  f1 = [] (int i) { return i + 1; };
+            Function<int (int)> f1 = [] (int i) { return i + 1; };
             Function<int (int)> f2 = [] (int i) { return i - 1; };
             VerifyTestResult (f1 != f2);
         }
