@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION_SIGNATURE>
     inline bool operator== (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t)
     {
-        return Common::ThreeWayCompare (lhs.fOrdering_, nullptr) == 0;
+        return Common::ThreeWayCompare (lhs.fOrdering_, 0) == 0;
     }
     template <typename FUNCTION_SIGNATURE>
     inline bool operator!= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION_SIGNATURE>
     inline bool operator!= (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t)
     {
-        return Common::ThreeWayCompare (lhs.fOrdering_, nullptr) != 0;
+        return Common::ThreeWayCompare (lhs.fOrdering_, 0) != 0;
     }
     template <typename FUNCTION_SIGNATURE>
     inline bool operator> (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
