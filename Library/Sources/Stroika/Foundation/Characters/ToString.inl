@@ -249,7 +249,7 @@ namespace Stroika::Foundation::Characters {
         template <typename FUNCTION_SIGNATURE>
         inline String ToString_ (const function<FUNCTION_SIGNATURE>& f)
         {
-            return Format (L"%p", f.template target<FUNCTION_SIGNATURE> ());
+            return Format (L"%p", f.template target<Configuration::remove_cvref_t<FUNCTION_SIGNATURE>> ());
         }
 
     }
