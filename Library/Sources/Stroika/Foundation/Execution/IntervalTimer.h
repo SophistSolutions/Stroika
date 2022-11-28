@@ -8,6 +8,7 @@
 
 #include "../Configuration/Common.h"
 #include "../Containers/Collection.h"
+#include "../Containers/KeyedCollection.h"
 #include "../Execution/Function.h"
 #include "../Time/Duration.h"
 #include "../Time/Realtime.h"
@@ -15,7 +16,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::Execution {
@@ -52,7 +53,32 @@ namespace Stroika::Foundation::Execution {
         class Adder;
 
     public:
-        struct RegisteredTask;
+        using CallbackType = Execution::Function<void (void)>;
+
+    public:
+        /**
+         *  Used for reporting from the ItervalTimer::Manager (e.g. for debugging, to dump the status).
+         */
+        struct RegisteredTask {
+            CallbackType                     fCallback;
+            Time::DurationSecondsType        fCallNextAt;
+            optional<Time::Duration>         fFrequency; // if missing, this is a one-shot event
+            optional<Time::Duration>         fHysteresis;
+
+        public:
+            /**
+             *  @see Characters::ToString ()
+             */
+            nonvirtual Characters::String ToString () const;
+        };
+
+    private:
+        struct Key_Extractor_ {
+            CallbackType operator() (const RegisteredTask& r) const { return r.fCallback; };
+        };
+
+    public:
+        using RegisteredTaskCollection = Containers::KeyedCollection<RegisteredTask, CallbackType, Containers::KeyedCollection_DefaultTraits<RegisteredTask,Execution::Function<void (void)>,Key_Extractor_>>;
     };
 
     /**
@@ -60,6 +86,10 @@ namespace Stroika::Foundation::Execution {
      *  and allow adders to optionally target different managers.
      * 
      *  \note Timers can only be added after the start of main (), and must be removed before the end of main.
+     * 
+     *  \note each TimerCallback must compare UNIQUE. You cannot use the same one twice in a given Manager, even with
+     *        different times. This is because we need SOME unique key for each entry, and the Function object
+     *        provides us with a convenient one.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
@@ -90,7 +120,8 @@ namespace Stroika::Foundation::Execution {
         /**
          *  \brief Add a timer to be called once after duration when
          * 
-         *  \req intervalTimer valid funciton ptr (not null)
+         *  \req intervalTimer valid function ptr (not null)
+         *  \req intervalTimer not already registered
          *  \req when >= 0
          */
         nonvirtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when);
@@ -99,7 +130,8 @@ namespace Stroika::Foundation::Execution {
         /**
          *  \brief Add a timer to be called repeatedly after duration repeatInterval
          * 
-         *  \req intervalTimer valid funciton ptr (not null)
+         *  \req intervalTimer valid function ptr (not null)
+         *  \req intervalTimer not already registered
          *  \req repeatInterval >= 0
          *  \req hysteresis == nullopt or hysteresis >= 0
          */
@@ -114,7 +146,9 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept;
 
     public:
-        nonvirtual Containers::Collection<RegisteredTask> GetAllRegisteredTasks () const;
+        /**
+         */
+        nonvirtual RegisteredTaskCollection GetAllRegisteredTasks () const;
 
     public:
         /**
@@ -162,7 +196,7 @@ namespace Stroika::Foundation::Execution {
         virtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept = 0;
 
     public:
-        virtual Containers::Collection<RegisteredTask> GetAllRegisteredTasks () const = 0;
+        virtual RegisteredTaskCollection GetAllRegisteredTasks () const = 0;
     };
 
     /**
@@ -182,7 +216,7 @@ namespace Stroika::Foundation::Execution {
         virtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept override;
 
     public:
-        virtual Containers::Collection<RegisteredTask> GetAllRegisteredTasks () const override;
+        virtual RegisteredTaskCollection GetAllRegisteredTasks () const override;
 
     private:
         // hidden implementation so details not in header files
@@ -190,20 +224,6 @@ namespace Stroika::Foundation::Execution {
         shared_ptr<Rep_> fHiddenRep_;
     };
 
-    /**
-     *  Just used for reporting from the ItervalTimer::Manager (e.g. for debugging, to dump the status).
-     */
-    struct IntervalTimer::RegisteredTask {
-        Execution::Function<void (void)> fCallback;
-        Time::DurationSecondsType        fCallNextAt;
-        optional<Time::Duration>         fFrequency; // if missing, this is a one-shot event
-
-    public:
-        /**
-         *  @see Characters::ToString ()
-         */
-        nonvirtual Characters::String ToString () const;
-    };
 
     /**
      *  \brief Adder adds the given function object to the (for now default; later optionally explicit) IntervalTimer manager, and

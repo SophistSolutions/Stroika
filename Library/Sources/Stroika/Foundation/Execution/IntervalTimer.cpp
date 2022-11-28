@@ -35,6 +35,7 @@ Characters::String IntervalTimer::RegisteredTask::ToString () const
     sb += L"Callback: " + Characters::ToString (fCallback) + L", ";
     sb += L"CallNextAt: " + Characters::ToString (fCallNextAt) + L", ";
     sb += L"Frequency: " + Characters::ToString (fFrequency) + L", ";
+    sb += L"Hysteresis: " + Characters::ToString (fHysteresis) + L", ";
     sb += L"}";
     return sb.str ();
 }
@@ -51,53 +52,45 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     {
         Debug::TraceContextBumper ctx{L"IntervalTimer::Manager: default implementation: AddOneShot"};
         auto                      lk = fData_.rwget ();
-        lk->Add (Elt_{intervalTimer, Time::GetTickCount () + when.As<DurationSecondsType> ()});
+        lk->Add (RegisteredTask{intervalTimer, Time::GetTickCount () + when.As<DurationSecondsType> ()});
         DataChanged_ ();
     }
     void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
     {
         Debug::TraceContextBumper ctx{L"IntervalTimer::Manager: default implementation: AddRepeating"};
         auto                      lk = fData_.rwget ();
-        lk->Add (Elt_{intervalTimer, Time::GetTickCount () + repeatInterval.As<DurationSecondsType> (), repeatInterval, hysteresis});
+        lk->Add ({intervalTimer, Time::GetTickCount () + repeatInterval.As<DurationSecondsType> (), repeatInterval, hysteresis});
         DataChanged_ ();
     }
     void RemoveRepeating (const TimerCallback& intervalTimer) noexcept
     {
         Debug::TraceContextBumper ctx{L"IntervalTimer::Manager: default implementation: RemoveRepeating"};
         auto                      lk = fData_.rwget ();
-        Verify (lk->RemoveIf ([&] (const Elt_& i) { return i.fCallback == intervalTimer; }));
+        RegisteredTaskCollection  x  = lk.cref ();
+        lk->Remove (intervalTimer);
         DataChanged_ ();
     }
-    Containers::Collection<RegisteredTask> GetAllRegisteredTasks () const
+    RegisteredTaskCollection GetAllRegisteredTasks () const
     {
         Debug::TraceContextBumper ctx{L"IntervalTimer::Manager: default implementation: GetAllRegisteredTasks"};
-        auto                      lk = fData_.cget ();
-        return lk.cref ().Map<RegisteredTask, Containers::Collection<RegisteredTask>> ([] (auto i) { return i; }); // slice
+        return fData_.load ();
     }
 
-    struct Elt_ : RegisteredTask {
-        Elt_ (const Execution::Function<void (void)>& callback, Time::DurationSecondsType callNextAt, const optional<Time::Duration>& frequency = nullopt, const optional<Duration>& histeresis = nullopt)
-            : RegisteredTask{callback, callNextAt, frequency}
-            , fHisteresis{histeresis}
-        {
-        }
-        optional<Duration> fHisteresis;
-    };
     // @todo - re-implement using priority q, with next time at top of q
-    Synchronized<Collection<Elt_>>               fData_;
+    Synchronized<RegisteredTaskCollection>       fData_;
     Synchronized<shared_ptr<Thread::CleanupPtr>> fThread_{};
     WaitableEvent                                fDataChanged_{WaitableEvent::ResetType::eAutoReset};
 
     // this is where a priorityq would be better
     DurationSecondsType GetNextWakeupTime_ ()
     {
-        DurationSecondsType funResult = fData_.cget ()->Map<DurationSecondsType> ([] (const Elt_& i) { return i.fCallNextAt; }).MinValue (kInfinite);
+        DurationSecondsType funResult = fData_.cget ()->Map<DurationSecondsType> ([] (const RegisteredTask& i) { return i.fCallNextAt; }).MinValue (kInfinite);
 #if qDebug
         auto dataLock = fData_.cget ();
         // note: usually (not dataLock->empty ()), but it can be empty temporarily as we are shutting down this process
         // from one thread, while checking this simultaneously from another
         DurationSecondsType r = kInfinite;
-        for (const Elt_& i : dataLock.cref ()) {
+        for (const RegisteredTask& i : dataLock.cref ()) {
             r = min (r, i.fCallNextAt);
         }
         Assert (r == funResult);
@@ -118,30 +111,26 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             // if we had a priority q, we would do them in order, but for now, just do all that are ready
             // NOTE - to avoid holding a lock (in case these guys remove themselves or whatever) - lock/run through list twice
             DurationSecondsType now      = Time::GetTickCount ();
-            Collection<Elt_>    elts2Run = fData_.cget ()->Where ([=] (const Elt_& i) { return i.fCallNextAt <= now; });
+            Collection<RegisteredTask> elts2Run = fData_.cget ()->Where ([=] (const RegisteredTask& i) { return i.fCallNextAt <= now; });
             // note - this could EASILY be empty, for example, if fDataChanged_ wakes too early due to a change/Signal/Set
-            for (const Elt_& i : elts2Run) {
+            for (const RegisteredTask& i : elts2Run) {
                 IgnoreExceptionsExceptThreadAbortForCall (i.fCallback ());
             }
             // now reset the 'next' time for each run element
             auto rwDataLock = fData_.rwget ();
             now             = Time::GetTickCount ();
-            for (const Elt_& i : elts2Run) {
+            for (const RegisteredTask& i : elts2Run) {
                 if (i.fFrequency.has_value ()) {
-                    Elt_ newE        = i;
+                    RegisteredTask newE = i;
                     newE.fCallNextAt = now + i.fFrequency->As<DurationSecondsType> ();
-                    if (i.fHisteresis) {
-                        uniform_real_distribution<> dis{-i.fHisteresis->As<DurationSecondsType> (), i.fHisteresis->As<DurationSecondsType> ()};
+                    if (i.fHysteresis) {
+                        uniform_real_distribution<> dis{-i.fHysteresis->As<DurationSecondsType> (), i.fHysteresis->As<DurationSecondsType> ()};
                         newE.fCallNextAt += dis (gen); // can use fCallNextAt to be called immediately again... or even be < now
                     }
-                    auto updateI = rwDataLock->Find ([&] (const Elt_& ii) { return ii.fCallback == i.fCallback; });
-                    WeakAssert (updateI != rwDataLock.cref ().end ()); // allow for case where removed externally just as run, between locks, possible
-                    if (updateI != rwDataLock.cref ().end ()) {
-                        rwDataLock->Update (updateI, newE);
-                    }
+                    rwDataLock->Add (newE); // just replaces
                 }
                 else {
-                    WeakVerify (rwDataLock->RemoveIf ([&] (const Elt_& ii) { return ii.fCallback == i.fCallback; }));
+                    rwDataLock->Remove (i);
                 }
             }
         }
@@ -192,7 +181,7 @@ void IntervalTimer::Manager::DefaultRep::RemoveRepeating (const TimerCallback& i
     fHiddenRep_->RemoveRepeating (intervalTimer);
 }
 
-auto IntervalTimer::Manager::DefaultRep::GetAllRegisteredTasks () const -> Containers::Collection<IntervalTimer::RegisteredTask>
+auto IntervalTimer::Manager::DefaultRep::GetAllRegisteredTasks () const -> RegisteredTaskCollection
 {
     AssertNotNull (fHiddenRep_);
     return fHiddenRep_->GetAllRegisteredTasks ();
