@@ -59,10 +59,10 @@ namespace Stroika::Foundation::Execution {
          *  Used for reporting from the ItervalTimer::Manager (e.g. for debugging, to dump the status).
          */
         struct RegisteredTask {
-            CallbackType                     fCallback;
-            Time::DurationSecondsType        fCallNextAt;
-            optional<Time::Duration>         fFrequency; // if missing, this is a one-shot event
-            optional<Time::Duration>         fHysteresis;
+            CallbackType              fCallback;
+            Time::DurationSecondsType fCallNextAt;
+            optional<Time::Duration>  fFrequency; // if missing, this is a one-shot event
+            optional<Time::Duration>  fHysteresis;
 
         public:
             /**
@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Execution {
         };
 
     public:
-        using RegisteredTaskCollection = Containers::KeyedCollection<RegisteredTask, CallbackType, Containers::KeyedCollection_DefaultTraits<RegisteredTask,Execution::Function<void (void)>,Key_Extractor_>>;
+        using RegisteredTaskCollection = Containers::KeyedCollection<RegisteredTask, CallbackType, Containers::KeyedCollection_DefaultTraits<RegisteredTask, Execution::Function<void (void)>, Key_Extractor_>>;
     };
 
     /**
@@ -222,7 +222,6 @@ namespace Stroika::Foundation::Execution {
         struct Rep_;
         shared_ptr<Rep_> fHiddenRep_;
     };
-
 
     /**
      *  \brief Adder adds the given function object to the (for now default; later optionally explicit) IntervalTimer manager, and
