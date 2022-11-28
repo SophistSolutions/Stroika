@@ -15,8 +15,8 @@
 
 namespace Stroika::Foundation::Execution {
     namespace Private_ {
-        Characters::String                   ToString_ (Private_::FunctionObjectOrderingType p);
-        Private_::FunctionObjectOrderingType mkFunctionObjectOrderingType (const void* p);
+        Characters::String                    ToString_ (Private_::FunctionObjectOrderingType_ p);
+        Private_::FunctionObjectOrderingType_ mkFunctionObjectOrderingType_ (const void* p);
     }
 
     /*
@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Execution {
     template <typename CTOR_FUNC_SIG, enable_if_t<is_convertible_v<CTOR_FUNC_SIG, function<FUNCTION_SIGNATURE>> and not is_base_of_v<Function<FUNCTION_SIGNATURE>, Configuration::remove_cvref_t<CTOR_FUNC_SIG>>>*>
     inline Function<FUNCTION_SIGNATURE>::Function (CTOR_FUNC_SIG&& f)
         : fFun_{forward<CTOR_FUNC_SIG> (f)}
-        , fOrdering_{Private_::mkFunctionObjectOrderingType (fFun_.template target<Configuration::remove_cvref_t<CTOR_FUNC_SIG>> ())}
+        , fOrdering_{Private_::mkFunctionObjectOrderingType_ (fFun_.template target<Configuration::remove_cvref_t<CTOR_FUNC_SIG>> ())}
     {
         Assert ((fOrdering_ == OrderingType_{}) == (fFun_ == nullptr));
     }

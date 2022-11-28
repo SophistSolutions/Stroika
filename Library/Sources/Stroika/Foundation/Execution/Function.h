@@ -44,7 +44,8 @@ namespace Stroika::Foundation::Characters {
 namespace Stroika::Foundation::Execution {
 
     namespace Private_ {
-        using FunctionObjectOrderingType = conditional_t<false, const void*, uint32_t>;
+        // See https://stroika.atlassian.net/browse/STK-960
+        using FunctionObjectOrderingType_ = conditional_t<true, const void*, uint32_t>;
     }
 
     /**
@@ -135,7 +136,7 @@ namespace Stroika::Foundation::Execution {
     private:
         // g++-10 produces very confusing results if we use f.template target<Configuration::remove_cvref_t<CTOR_FUNC_SIG>> ()
         // EXPERIEMNT A BIT MORE WITH THIS...
-        using OrderingType_ = Private_::FunctionObjectOrderingType;
+        using OrderingType_ = Private_::FunctionObjectOrderingType_;
         OrderingType_ fOrdering_{}; // captured early when we have the right type info, so we can safely compare, and print
 
 #if __cpp_impl_three_way_comparison < 201907
