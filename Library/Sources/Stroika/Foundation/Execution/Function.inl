@@ -10,13 +10,13 @@
  ********************************************************************************
  */
 
-#include "../Characters/String.h"
+#include "../Characters/ToString.h"
 #include "../Common/Compare.h"
 
 namespace Stroika::Foundation::Execution {
+
     namespace Private_ {
-        Characters::String                    ToString_ (Private_::FunctionObjectOrderingType_ p);
-        Private_::FunctionObjectOrderingType_ mkFunctionObjectOrderingType_ (const void* p);
+        inline atomic<uint32_t> sFunctionObjectNextPtrID_{1};
     }
 
     /*
@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Execution {
     template <typename CTOR_FUNC_SIG, enable_if_t<is_convertible_v<CTOR_FUNC_SIG, function<FUNCTION_SIGNATURE>> and not is_base_of_v<Function<FUNCTION_SIGNATURE>, Configuration::remove_cvref_t<CTOR_FUNC_SIG>>>*>
     inline Function<FUNCTION_SIGNATURE>::Function (CTOR_FUNC_SIG&& f)
         : fFun_{forward<CTOR_FUNC_SIG> (f)}
-        , fOrdering_{Private_::mkFunctionObjectOrderingType_ (fFun_.template target<Configuration::remove_cvref_t<CTOR_FUNC_SIG>> ())}
+        , fOrdering_{fFun_ == nullptr ? OrderingType_{} : ++Private_::sFunctionObjectNextPtrID_}
     {
         Assert ((fOrdering_ == OrderingType_{}) == (fFun_ == nullptr));
     }
@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION_SIGNATURE>
     inline Characters::String Function<FUNCTION_SIGNATURE>::ToString () const
     {
-        return Private_::ToString_ (fOrdering_);
+        return Characters::ToString (fOrdering_);
     }
 
 #if __cpp_impl_three_way_comparison < 201907

@@ -110,7 +110,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             // now process any timer events that are ready (could easily be more than one).
             // if we had a priority q, we would do them in order, but for now, just do all that are ready
             // NOTE - to avoid holding a lock (in case these guys remove themselves or whatever) - lock/run through list twice
-            DurationSecondsType now      = Time::GetTickCount ();
+            DurationSecondsType        now      = Time::GetTickCount ();
             Collection<RegisteredTask> elts2Run = fData_.cget ()->Where ([=] (const RegisteredTask& i) { return i.fCallNextAt <= now; });
             // note - this could EASILY be empty, for example, if fDataChanged_ wakes too early due to a change/Signal/Set
             for (const RegisteredTask& i : elts2Run) {
@@ -122,7 +122,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             for (const RegisteredTask& i : elts2Run) {
                 if (i.fFrequency.has_value ()) {
                     RegisteredTask newE = i;
-                    newE.fCallNextAt = now + i.fFrequency->As<DurationSecondsType> ();
+                    newE.fCallNextAt    = now + i.fFrequency->As<DurationSecondsType> ();
                     if (i.fHysteresis) {
                         uniform_real_distribution<> dis{-i.fHysteresis->As<DurationSecondsType> (), i.fHysteresis->As<DurationSecondsType> ()};
                         newE.fCallNextAt += dis (gen); // can use fCallNextAt to be called immediately again... or even be < now
