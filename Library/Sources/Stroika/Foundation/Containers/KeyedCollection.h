@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Containers {
      *  \par Example Usage
      *      \code
      *          struct Device_Key_Extractor_ {
-     *              GUID operator() const (const DiscoveryInfo_& t) const { return t.fGUID; };
+     *              GUID operator() (const DiscoveryInfo_& t) const { return t.fGUID; };
      *          };
      *          using DiscoveryDeviceCollection_ = KeyedCollection<DiscoveryInfo_, GUID, KeyedCollection_DefaultTraits<DiscoveryInfo_, GUID, Device_Key_Extractor_>>;
      *          
@@ -204,7 +204,7 @@ namespace Stroika::Foundation::Containers {
          *              int value;
          *          };
          *          struct T1_Key_Extractor {
-         *              int operator() const (const T1& t) const { return t.key; };
+         *              int operator() (const T1& t) const { return t.key; };
          *          };
          *          using T1_Traits = KeyedCollection_DefaultTraits<T1, int, T1_Key_Extractor>;
          *
