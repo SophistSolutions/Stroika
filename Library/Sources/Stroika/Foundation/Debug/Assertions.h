@@ -382,6 +382,22 @@ namespace Stroika::Foundation::Debug {
 #define Verify(c) ((void)(c))
 #endif
 
+/**
+ *  \def WeakVerify(c)
+ *
+ *  Verify () is an assertion like Assert, except its argument is ALWAYS
+ *  EVALUATED, even if debug is OFF. This is useful for cases where you just want
+ *  todo an assertion about the result of a function, but don't want to keep the
+ *  result in a temporary just to look at it for this one assertion test...
+ *
+ *  @see GetAssertionHandler
+ */
+#if qDebug
+#define WeakVerify(c) WeakAssert (c)
+#else
+#define WeakVerify(c) ((void)(c))
+#endif
+
 }
 
 /*

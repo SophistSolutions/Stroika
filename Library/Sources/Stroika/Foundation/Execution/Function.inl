@@ -10,9 +10,14 @@
  ********************************************************************************
  */
 
+#include "../Characters/ToString.h"
 #include "../Common/Compare.h"
 
 namespace Stroika::Foundation::Execution {
+
+    namespace Private_ {
+        inline atomic<uint32_t> sFunctionObjectNextPtrID_{1};
+    }
 
     /*
      ********************************************************************************
@@ -23,15 +28,15 @@ namespace Stroika::Foundation::Execution {
     template <typename CTOR_FUNC_SIG, enable_if_t<is_convertible_v<CTOR_FUNC_SIG, function<FUNCTION_SIGNATURE>> and not is_base_of_v<Function<FUNCTION_SIGNATURE>, Configuration::remove_cvref_t<CTOR_FUNC_SIG>>>*>
     inline Function<FUNCTION_SIGNATURE>::Function (CTOR_FUNC_SIG&& f)
         : fFun_{forward<CTOR_FUNC_SIG> (f)}
-        , fOrdering_{fFun_.template target<Configuration::remove_cvref_t<CTOR_FUNC_SIG>> ()}
+        , fOrdering_{fFun_ == nullptr ? OrderingType_{} : ++Private_::sFunctionObjectNextPtrID_}
     {
-        Assert ((fOrdering_ == nullptr) == (fFun_ == nullptr));
+        Assert ((fOrdering_ == OrderingType_{}) == (fFun_ == nullptr));
     }
     template <typename FUNCTION_SIGNATURE>
     inline Function<FUNCTION_SIGNATURE>::Function (nullptr_t)
         : fFun_{}
     {
-        Assert (fOrdering_ == nullptr);
+        Assert (fOrdering_ == OrderingType_{});
     }
     template <typename FUNCTION_SIGNATURE>
     inline Function<FUNCTION_SIGNATURE>::operator STDFUNCTION () const
@@ -67,11 +72,16 @@ namespace Stroika::Foundation::Execution {
         return fOrdering_ == rhs.fOrdering_;
     }
 #endif
+    template <typename FUNCTION_SIGNATURE>
+    inline Characters::String Function<FUNCTION_SIGNATURE>::ToString () const
+    {
+        return Characters::ToString (fOrdering_);
+    }
 
 #if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
-     ************** Function<FUNCTION_SIGNATURE> operators **************************
+     ***************** Function<FUNCTION_SIGNATURE> operators ***********************
      ********************************************************************************
      */
     template <typename FUNCTION_SIGNATURE>
@@ -92,7 +102,7 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION_SIGNATURE>
     inline bool operator== (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t)
     {
-        return Common::ThreeWayCompare (lhs.fOrdering_, nullptr) == 0;
+        return Common::ThreeWayCompare (lhs.fOrdering_, 0) == 0;
     }
     template <typename FUNCTION_SIGNATURE>
     inline bool operator!= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
@@ -102,7 +112,7 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION_SIGNATURE>
     inline bool operator!= (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t)
     {
-        return Common::ThreeWayCompare (lhs.fOrdering_, nullptr) != 0;
+        return Common::ThreeWayCompare (lhs.fOrdering_, 0) != 0;
     }
     template <typename FUNCTION_SIGNATURE>
     inline bool operator> (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)

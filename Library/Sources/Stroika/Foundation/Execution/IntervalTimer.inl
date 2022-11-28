@@ -26,6 +26,7 @@ namespace Stroika::Foundation::Execution {
         RequireNotNull (intervalTimer);
         Require (when >= 0s);
         RequireNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Active object.
+        Require (not fRep_->GetAllRegisteredTasks ().Contains (intervalTimer));
         fRep_->AddOneShot (intervalTimer, when);
     }
     inline void IntervalTimer::Manager ::AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
@@ -34,15 +35,17 @@ namespace Stroika::Foundation::Execution {
         Require (repeatInterval >= 0s);
         Require (hysteresis == nullopt or hysteresis >= 0s);
         RequireNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Active object.
+        Require (not fRep_->GetAllRegisteredTasks ().Contains (intervalTimer));
         fRep_->AddRepeating (intervalTimer, repeatInterval, hysteresis);
     }
     inline void IntervalTimer::Manager::RemoveRepeating (const TimerCallback& intervalTimer) noexcept
     {
         RequireNotNull (intervalTimer);
         RequireNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Active object.
+        Require (fRep_->GetAllRegisteredTasks ().Contains (intervalTimer));
         fRep_->RemoveRepeating (intervalTimer);
     }
-    inline auto IntervalTimer::Manager::GetAllRegisteredTasks () const -> Containers::Collection<RegisteredTask>
+    inline auto IntervalTimer::Manager::GetAllRegisteredTasks () const -> RegisteredTaskCollection
     {
         RequireNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Active object.
         return fRep_->GetAllRegisteredTasks ();
