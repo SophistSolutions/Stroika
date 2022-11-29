@@ -65,6 +65,7 @@ namespace Stroika::Foundation::IO::Network {
 
             // if true, assure results always up to date (as if by polling in the background)
             // If false, minimize resource usage, and just fetch data on GetNeighbors call
+            // Defaults to false, and @todo NYI
             optional<bool> fMonitor;
 
             // sometimes entries will remain in arp table after they have expired (just with address deleted).
@@ -77,6 +78,8 @@ namespace Stroika::Foundation::IO::Network {
         };
 
     public:
+        /**
+         */
         NeighborsMonitor (const Options& options = {});
 
     public:
