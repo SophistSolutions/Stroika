@@ -17,7 +17,7 @@ especially those they need to be aware of when upgrading.
 - Several IntervalTimer cleanups / improvements (which turned out irrelevant, was mainly
   the Execution::Function::operator== issue that was causing trouble)
 - fix: https://stroika.atlassian.net/browse/STK-957 - URI parse with [] in authority/hostname
-- fixed fixed https://stroika.atlassian.net/browse/STK-956 - was really issue with Cache/SynchronizedTimedCache - bogus assert warning
+- fixed https://stroika.atlassian.net/browse/STK-956 - was really issue with Cache/SynchronizedTimedCache - bogus assert warning
   (fix was already in the v3 branch for a while)
 
 #### Change Details
@@ -46,9 +46,9 @@ especially those they need to be aware of when upgrading.
         - new IntervalTimer::RegisteredTask with ToString method, and IntervalTimer::Manager::GetAllRegisteredTasks () 
           mainly for the purpose of debugging
         - assertions in IntervalTimer::Manager code
-        - MAYBE significant bugfix (so rebuilding) - IntervalTimer::Adder must not define fRepeatInterval_ as const&
-        - IntervalTimer default impl - added assertions and debugging code, and supported fHisteresis
-        - fixed bug with Execution/IntervalTimer - must fDataChanged_.Set on data changes
+        - MAYBE significant bugfix - IntervalTimer::Adder must not define fRepeatInterval_ as const&
+        - IntervalTimer default impl - added assertions and debugging code, and supported hysteresis
+        - fixed bug with Execution/IntervalTimer - must fDataChanged_.Set () on data changes
         - IntervalTimer: return/use RegisteredTaskCollection (KeyedCollection) and require/assert that tasks added unique, and related cleanups
     - IO::Networking
       - fix: https://stroika.atlassian.net/browse/STK-957 - URI parse with [] in authority/hostname
