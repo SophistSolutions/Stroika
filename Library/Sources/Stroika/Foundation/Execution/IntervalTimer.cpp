@@ -104,9 +104,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
         mt19937       gen{rd ()};
         while (true) {
             Require (Debug::AppearsDuringMainLifetime ());
-            DurationSecondsType wakeupAt = GetNextWakeupTime_ ();
-            WeakAssert (wakeupAt > Time::GetTickCount ()); // could be violated if unlucky, but noteworthy, and most likely a bug/issue
-            fDataChanged_.WaitUntilQuietly (wakeupAt);
+            fDataChanged_.WaitUntilQuietly (GetNextWakeupTime_ ());
             // now process any timer events that are ready (could easily be more than one).
             // if we had a priority q, we would do them in order, but for now, just do all that are ready
             // NOTE - to avoid holding a lock (in case these guys remove themselves or whatever) - lock/run through list twice
@@ -117,8 +115,8 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
                 IgnoreExceptionsExceptThreadAbortForCall (i.fCallback ());
             }
             // now reset the 'next' time for each run element
+            now             = Time::GetTickCount ();    // pick 'now' relative to when we finished running tasks
             auto rwDataLock = fData_.rwget ();
-            now             = Time::GetTickCount ();
             for (const RegisteredTask& i : elts2Run) {
                 if (i.fFrequency.has_value ()) {
                     RegisteredTask newE = i;
