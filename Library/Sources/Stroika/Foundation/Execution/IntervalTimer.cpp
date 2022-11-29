@@ -115,7 +115,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
                 IgnoreExceptionsExceptThreadAbortForCall (i.fCallback ());
             }
             // now reset the 'next' time for each run element
-            now             = Time::GetTickCount ();    // pick 'now' relative to when we finished running tasks
+            now             = Time::GetTickCount (); // pick 'now' relative to when we finished running tasks
             auto rwDataLock = fData_.rwget ();
             for (const RegisteredTask& i : elts2Run) {
                 if (i.fFrequency.has_value ()) {

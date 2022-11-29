@@ -52,14 +52,11 @@ namespace Stroika::Foundation::Execution {
         class Adder;
 
     public:
-        using CallbackType = Execution::Function<void (void)>;
-
-    public:
         /**
          *  Used for reporting from the ItervalTimer::Manager (e.g. for debugging, to dump the status).
          */
         struct RegisteredTask {
-            CallbackType              fCallback;
+            TimerCallback             fCallback;
             Time::DurationSecondsType fCallNextAt;
             optional<Time::Duration>  fFrequency; // if missing, this is a one-shot event
             optional<Time::Duration>  fHysteresis;
@@ -73,11 +70,11 @@ namespace Stroika::Foundation::Execution {
 
     private:
         struct Key_Extractor_ {
-            CallbackType operator() (const RegisteredTask& r) const { return r.fCallback; };
+            TimerCallback operator() (const RegisteredTask& r) const { return r.fCallback; };
         };
 
     public:
-        using RegisteredTaskCollection = Containers::KeyedCollection<RegisteredTask, CallbackType, Containers::KeyedCollection_DefaultTraits<RegisteredTask, Execution::Function<void (void)>, Key_Extractor_>>;
+        using RegisteredTaskCollection = Containers::KeyedCollection<RegisteredTask, TimerCallback, Containers::KeyedCollection_DefaultTraits<RegisteredTask, Execution::Function<void (void)>, Key_Extractor_>>;
     };
 
     /**
@@ -256,6 +253,24 @@ namespace Stroika::Foundation::Execution {
         /**
          *  \req (but unenforced) - lifetime of manager must be > that of created Adder
          *  \note if no manager specified, IntervalTimer::Manager::sThe is used.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          namespace {
+         *              unique_ptr<IntervalTimer::Adder>    sIntervalTimerAdder_;
+         *          }
+         *          Activator::Activator ()
+         *          {
+         *              sIntervalTimerAdder_ = make_unique<IntervalTimer::Adder> (
+         *                  [] () { sKeepCachedMonitorsUpToDate_.DoOnce (); }
+         *                  , 1min
+         *                  , IntervalTimer::Adder::eRunImmediately);
+         *          }
+         *          Activator::~Activator ()
+         *          {
+         *              sIntervalTimerAdder_.release ();
+         *          }
+         *      \endcode
          */
         Adder () = delete;
         Adder (Adder&& src) noexcept;
