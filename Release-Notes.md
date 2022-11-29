@@ -7,6 +7,48 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+
+DRAFT NOTES:
+
+- cosmetic cleanus to Debug::AssertExternallySynchronizedMutex
+- Comments/docs/examples
+
+- Allow handling SSDP Advertisements with corrupt fLocation (since we already supported one with a missing Location)
+  and minor tweaks to UPnP/DeviceDescription ToString() method
+
+- IO::Networking
+  - fix: https://stroika.atlassian.net/browse/STK-957 - URI parse with [] in authority/hostname
+  - deprecate kMustRevalidatePrivate and kMustRevalidatePublic and added comments
+
+- Characters::ToString() support for std::function and Execution::Function
+
+- Debug
+  - new Debug macro WeakVerify ()
+
+- IntervalTimer
+  - new IntervalTimer::RegisteredTask with ToString method, and IntervalTimer::Manager::GetAllRegisteredTasks () 
+    mainly for the purpose of debugging
+  - assertions in IntervalTimer::Manager code
+  - MAYBE significant bugfix (so rebuilding) - IntervalTimer::Adder must not define fRepeatInterval_ as const&
+  - IntervalTimer default impl - added assertions and debugging code, and supported fHisteresis
+  - fixed bug with Execution/IntervalTimer - must fDataChanged_.Set on data changes
+  - IntervalTimer: return/use RegisteredTaskCollection (KeyedCollection) and require/assert that tasks added unique, and related cleanups
+
+- Cache
+  - fixed https://stroika.atlassian.net/browse/STK-956 - was really issue with Cache/SynchronizedTimedCache const
+    stuff (already fixed better in v3 but hopefully OK workaround for now in v2.1)
+
+- RaspberryPi remote scripting host specification
+  - added RASPBERRYPI_REMOTE_MACHINE support to ScriptsLib/RunRemoteRegressionTests
+  - hopefully fixed ScriptsLib/RunRemoteRegressionTests to pass along more remote args
+
+- Execution
+  - Function
+    - https://stroika.atlassian.net/browse/STK-960 Fixed bug (only seen on g++-10 release occasionally) - where two different lambdas produced the SAME target address (probably an optimizer/thunk thing). Anyhow, better documented how Function
+    class works, and make it resistent to that sort of optimization/causing bug
+  
+
 ### 2.1.10 {2022-11-21}
 
 #### TLDR
