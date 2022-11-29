@@ -34,6 +34,10 @@
 #define qFoundation_Execution_Function_OperatorForwardNeedsRefBug 1
 #endif
 
+namespace Stroika::Foundation::Characters {
+    class String;
+}
+
 namespace Stroika::Foundation::Execution {
 
     /**
@@ -72,6 +76,10 @@ namespace Stroika::Foundation::Execution {
          *        default X(const X&) CTOR.
          * 
          *        And also careful not to apply to non-functions.
+         * 
+         *  \note Constructor with nullptr or a null function object - will produce a UNIQUE function value (according to operator==).
+         *        ANY other function object - each time you call the constructor - you will get a differnt (according to operator==) Function
+         *        object. See https://stroika.atlassian.net/browse/STK-960 for some of the reasoning behind this.
          */
         Function () = default;
         Function (nullptr_t);
@@ -110,9 +118,26 @@ namespace Stroika::Foundation::Execution {
          */
         nonvirtual bool operator== (const Function& rhs) const;
 
+    public:
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual Characters::String ToString () const;
+
     private:
         STDFUNCTION fFun_;
-        void*       fOrdering_{}; // captured early when we have the right type info, so we can safely compare (since Stroika v2.1d8)
+
+    private:
+        /*
+         *  Before Stroika 2.1.11, we used f.template target<Configuration::remove_cvref_t<CTOR_FUNC_SIG>> ()
+         *  as OrderingType_. But this caused problems on g++-10 release builds (at least inside WTF). Not sure
+         *  exactly how this happened, but sometimes different lambdas produced the same address. And the docs
+         *  for std::function<> suggest this is possible.
+         * 
+         *  So just avoid altogether. Simply store a separate number ID.
+         */
+        using OrderingType_ = uint32_t;
+        OrderingType_ fOrdering_{}; // captured early when we have the right type info, so we can safely compare, and print
     };
 
 }

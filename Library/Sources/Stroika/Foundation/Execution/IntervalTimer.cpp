@@ -3,6 +3,10 @@
  */
 #include "../StroikaPreComp.h"
 
+#include <random>
+
+#include "../Characters/StringBuilder.h"
+#include "../Characters/ToString.h"
 #include "../Containers/Collection.h"
 #include "../Debug/Main.h"
 #include "../Debug/Trace.h"
@@ -14,9 +18,27 @@
 #include "IntervalTimer.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Time;
+
+/*
+ ********************************************************************************
+ *********************** IntervalTimer::RegisteredTask **************************
+ ********************************************************************************
+ */
+Characters::String IntervalTimer::RegisteredTask::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"Callback: " + Characters::ToString (fCallback) + L", ";
+    sb += L"CallNextAt: " + Characters::ToString (fCallNextAt) + L", ";
+    sb += L"Frequency: " + Characters::ToString (fFrequency) + L", ";
+    sb += L"Hysteresis: " + Characters::ToString (fHysteresis) + L", ";
+    sb += L"}";
+    return sb.str ();
+}
 
 /*
  ********************************************************************************
@@ -28,77 +50,85 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     virtual ~Rep_ () = default;
     void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when)
     {
-        Debug::TraceContextBumper ctx{L"IntervalTimer: default implementation: AddOneShot"};
+        Debug::TraceContextBumper ctx{L"IntervalTimer::Manager: default implementation: AddOneShot"};
         auto                      lk = fData_.rwget ();
-        lk->Add (Elt_{intervalTimer, Time::GetTickCount () + when.As<DurationSecondsType> ()});
+        lk->Add (RegisteredTask{intervalTimer, Time::GetTickCount () + when.As<DurationSecondsType> ()});
         DataChanged_ ();
     }
     void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
     {
-        Debug::TraceContextBumper ctx{L"IntervalTimer: default implementation: AddRepeating"};
+        Debug::TraceContextBumper ctx{L"IntervalTimer::Manager: default implementation: AddRepeating"};
         auto                      lk = fData_.rwget ();
-        lk->Add (Elt_{intervalTimer, Time::GetTickCount () + repeatInterval.As<DurationSecondsType> (), repeatInterval, hysteresis});
+        lk->Add ({intervalTimer, Time::GetTickCount () + repeatInterval.As<DurationSecondsType> (), repeatInterval, hysteresis});
         DataChanged_ ();
     }
     void RemoveRepeating (const TimerCallback& intervalTimer) noexcept
     {
-        Debug::TraceContextBumper ctx{L"IntervalTimer: default implementation: RemoveRepeating"};
+        Debug::TraceContextBumper ctx{L"IntervalTimer::Manager: default implementation: RemoveRepeating"};
         auto                      lk = fData_.rwget ();
-        Verify (lk->RemoveIf ([&] (const Elt_& i) { return i.fCallback == intervalTimer; }));
+        RegisteredTaskCollection  x  = lk.cref ();
+        lk->Remove (intervalTimer);
         DataChanged_ ();
     }
+    RegisteredTaskCollection GetAllRegisteredTasks () const
+    {
+        Debug::TraceContextBumper ctx{L"IntervalTimer::Manager: default implementation: GetAllRegisteredTasks"};
+        return fData_.load ();
+    }
 
-    struct Elt_ {
-        Function<void (void)> fCallback;
-        DurationSecondsType   fCallNextAt;
-        optional<Duration>    fFrequency;
-        optional<Duration>    fHisteresis;
-    };
     // @todo - re-implement using priority q, with next time at top of q
-    Synchronized<Collection<Elt_>>               fData_;
+    Synchronized<RegisteredTaskCollection>       fData_;
     Synchronized<shared_ptr<Thread::CleanupPtr>> fThread_{};
     WaitableEvent                                fDataChanged_{WaitableEvent::ResetType::eAutoReset};
 
     // this is where a priorityq would be better
     DurationSecondsType GetNextWakeupTime_ ()
     {
+        DurationSecondsType funResult = fData_.cget ()->Map<DurationSecondsType> ([] (const RegisteredTask& i) { return i.fCallNextAt; }).MinValue (kInfinite);
+#if qDebug
         auto dataLock = fData_.cget ();
         // note: usually (not dataLock->empty ()), but it can be empty temporarily as we are shutting down this process
         // from one thread, while checking this simultaneously from another
         DurationSecondsType r = kInfinite;
-        for (const Elt_& i : dataLock.cref ()) {
+        for (const RegisteredTask& i : dataLock.cref ()) {
             r = min (r, i.fCallNextAt);
         }
-        return r;
+        Assert (r == funResult);
+#endif
+        return funResult;
     }
     void RunnerLoop_ ()
     {
         // keep checking for timer events to run
+        random_device rd;
+        mt19937       gen{rd ()};
         while (true) {
             Require (Debug::AppearsDuringMainLifetime ());
-            DurationSecondsType wakeupAt = GetNextWakeupTime_ ();
-            fDataChanged_.WaitUntilQuietly (wakeupAt);
+            fDataChanged_.WaitUntilQuietly (GetNextWakeupTime_ ());
             // now process any timer events that are ready (could easily be more than one).
             // if we had a priority q, we would do them in order, but for now, just do all that are ready
             // NOTE - to avoid holding a lock (in case these guys remove themselves or whatever) - lock/run through list twice
-            DurationSecondsType now      = Time::GetTickCount ();
-            Collection<Elt_>    elts2Run = fData_.cget ()->Where ([=] (const Elt_& i) { return i.fCallNextAt <= now; });
-            for (const Elt_& i : elts2Run) {
+            DurationSecondsType        now      = Time::GetTickCount ();
+            Collection<RegisteredTask> elts2Run = fData_.cget ()->Where ([=] (const RegisteredTask& i) { return i.fCallNextAt <= now; });
+            // note - this could EASILY be empty, for example, if fDataChanged_ wakes too early due to a change/Signal/Set
+            for (const RegisteredTask& i : elts2Run) {
                 IgnoreExceptionsExceptThreadAbortForCall (i.fCallback ());
             }
             // now reset the 'next' time for each run element
+            now             = Time::GetTickCount (); // pick 'now' relative to when we finished running tasks
             auto rwDataLock = fData_.rwget ();
-            now             = Time::GetTickCount ();
-            for (const Elt_& i : elts2Run) {
+            for (const RegisteredTask& i : elts2Run) {
                 if (i.fFrequency.has_value ()) {
-                    Elt_ newE = i;
-                    // @todo add hysteresis
-                    newE.fCallNextAt = now + newE.fFrequency->As<DurationSecondsType> ();
-                    auto updateI     = rwDataLock->Find ([&] (const Elt_& ii) { return ii.fCallback == i.fCallback; });
-                    rwDataLock->Update (updateI, newE);
+                    RegisteredTask newE = i;
+                    newE.fCallNextAt    = now + i.fFrequency->As<DurationSecondsType> ();
+                    if (i.fHysteresis) {
+                        uniform_real_distribution<> dis{-i.fHysteresis->As<DurationSecondsType> (), i.fHysteresis->As<DurationSecondsType> ()};
+                        newE.fCallNextAt += dis (gen); // can use fCallNextAt to be called immediately again... or even be < now
+                    }
+                    rwDataLock->Add (newE); // just replaces
                 }
                 else {
-                    Verify (rwDataLock->RemoveIf ([&] (const Elt_& ii) { return ii.fCallback == i.fCallback; }));
+                    rwDataLock->Remove (i);
                 }
             }
         }
@@ -118,6 +148,9 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
                                                                RunnerLoop_ ();
                                                            },
                                                                         Thread::eAutoStart, L"Default-Interval-Timer"sv)));
+            }
+            else {
+                fDataChanged_.Set (); // if there was and still is a thread, it maybe sleeping too long, so wake it up
             }
         }
     }
@@ -146,6 +179,12 @@ void IntervalTimer::Manager::DefaultRep::RemoveRepeating (const TimerCallback& i
     fHiddenRep_->RemoveRepeating (intervalTimer);
 }
 
+auto IntervalTimer::Manager::DefaultRep::GetAllRegisteredTasks () const -> RegisteredTaskCollection
+{
+    AssertNotNull (fHiddenRep_);
+    return fHiddenRep_->GetAllRegisteredTasks ();
+}
+
 /*
  ********************************************************************************
  ********************* IntervalTimer::Manager::Activator ************************
@@ -169,7 +208,7 @@ IntervalTimer::Manager::Activator::~Activator ()
 
 /*
  ********************************************************************************
- ********************************* IntervalTimer::Adder *************************
+ ***************************** IntervalTimer::Adder *****************************
  ********************************************************************************
  */
 IntervalTimer::Adder::Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis)

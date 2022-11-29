@@ -139,7 +139,12 @@ public:
                 }
                 constexpr auto kLabelComparer_ = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
                 if (kLabelComparer_ (label, L"Location") == 0) {
-                    d.fLocation = IO::Network::URI{value};
+                    try {
+                        d.fLocation = IO::Network::URI{value};
+                    }
+                    catch (...) {
+                        DbgTrace (L"A notification without a valid location probably won't be useful, so we could allow the exception to propagate and the notification to be ignored. However, we don't throw when the location is missing altogether. So for now, treat as missing: e=%s", Characters::ToString (current_exception ()).c_str ());
+                    }
                 }
                 else if (kLabelComparer_ (label, L"NT") == 0) {
                     d.fTarget = value;

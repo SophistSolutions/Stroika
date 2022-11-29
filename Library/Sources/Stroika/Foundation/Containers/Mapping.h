@@ -551,6 +551,16 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         * \brief STL-ish alias for Add ().
+         * 
+         *  \see https://en.cppreference.com/w/cpp/container/map/insert
+         * 
+         *  \note - we only provide a very small subset of the possible variations of insert from STL, but this is probably the most common
+         */
+        nonvirtual void insert (ArgByValueType<value_type> kvp);
+
+    public:
+        /**
          * \brief STL-ish alias for Remove ().
          * 
          *  \note - beware of using erase(iterator) - probably should use Stroika 'Remove' so you can pass extra parameter to get iterator patched.

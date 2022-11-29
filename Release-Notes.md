@@ -7,6 +7,164 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1.11 {2022-11-29}
+
+#### TLDR
+
+- Fixed Execution::Function (and std::function) ToString () support, and made Execution::Function
+  resistent to issue with gcc 10 re-use of function target pointers, so operator== now works properly
+  regardless
+- Several IntervalTimer cleanups / improvements (which turned out irrelevant, was mainly
+  the Execution::Function::operator== issue that was causing trouble)
+- fix: https://stroika.atlassian.net/browse/STK-957 - URI parse with [] in authority/hostname
+- fixed https://stroika.atlassian.net/browse/STK-956 - was really issue with Cache/SynchronizedTimedCache - bogus assert warning
+  (fix was already in the v3 branch for a while)
+
+#### Change Details
+
+- Build System
+  - RaspberryPi remote scripting host specification
+    - added RASPBERRYPI_REMOTE_MACHINE support to ScriptsLib/RunRemoteRegressionTests
+    - hopefully fixed ScriptsLib/RunRemoteRegressionTests to pass along more remote args
+- Library
+  - Docs/comments/examples
+  - Foundation
+    - Cache
+      - fixed https://stroika.atlassian.net/browse/STK-956 - was really issue with Cache/SynchronizedTimedCache const
+        stuff (already fixed better in v3 but hopefully OK workaround for now in v2.1)
+    - Characters
+      - Characters::ToString() support for std::function and Execution::Function
+    - Debug
+      - new Debug macro WeakVerify ()
+      - cosmetic cleanus to Debug::AssertExternallySynchronizedMutex
+    - Execution
+      - Function
+        - https://stroika.atlassian.net/browse/STK-960 Fixed bug (only seen on g++-10 release occasionally) - where two different lambdas
+          produced the SAME target address (probably an optimizer/thunk thing).     
+          Better documented how Function class works, and make it resistent to that sort of optimization/causing bug
+      - IntervalTimer
+        - new IntervalTimer::RegisteredTask with ToString method, and IntervalTimer::Manager::GetAllRegisteredTasks () 
+          mainly for the purpose of debugging
+        - assertions in IntervalTimer::Manager code
+        - MAYBE significant bugfix - IntervalTimer::Adder must not define fRepeatInterval_ as const&
+        - IntervalTimer default impl - added assertions and debugging code, and supported hysteresis
+        - fixed bug with Execution/IntervalTimer - must fDataChanged_.Set () on data changes
+        - IntervalTimer: return/use RegisteredTaskCollection (KeyedCollection) and require/assert that tasks added unique, and related cleanups
+    - IO::Networking
+      - fix: https://stroika.atlassian.net/browse/STK-957 - URI parse with [] in authority/hostname
+      - deprecate kMustRevalidatePrivate and kMustRevalidatePublic and added comments
+  - Frameworks
+    - SSDP
+      - Allow handling Advertisements with corrupt fLocation (since we already supported one with a missing Location)
+      - minor tweaks to UPnP/DeviceDescription ToString() method
+
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13, 14 }
+  - MSVC: { 15.9.50, 16.11.21, 17.4.1 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 22H2
+    - Windows 11 version 22H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 13.0 (Ventura) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+
+---
+
+### 2.1.10 {2022-11-21}
+
+#### TLDR
+
+- Deprecated Iterable\<T>::Select, and replaced with improved Iterable\<T>::Map
+- Deprecated Iterable\<T>::Accumulate, and replaced wtih Iterable\<T>::Reduce
+- Significant improvements to ObjectVariantMapper::AddClass (and AddSubClass, and TypeMapping/etc declarations/constructors) code - more flexible/easy to use, but not 100% backward compatible (but with feature likely VERY rarely used).
+- Fixed startup bug/regression in LedIt/LedLineIt sample apps
+
+#### Change Details
+
+- Compiler and System Compatability
+  - docker use VS_17_4_1
+- Library
+  - Docs/comments/notes
+  - Foundation
+    - Containers
+      - Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::insert () added
+    - DataExchange
+      - ObjectVariantMapper
+        - Significant change: use Mapping<> instead of map<> internally, and  allow fFieldMetaInfo in StructFieldInf to be missing, and interpret that is a reference to whole object (to allow for - to be better documentd/cleaned up) - support for 'generic properties'; added (starter) example of such to Serialization sample (Try3)
+        - simplified TypeMappingDetails constructors slightly (sb no semantic diff - just cleaned up declarations a bit)
+        - TypeMappingDetails now allows nullptr mapper objects (to for from, and documented behavior for each); used in sample for readonly property; added one more overloaded CTOR for TypeMappingDetails - just specifying converter methods, and docuemtned jira ticket https://stroika.atlassian.net/browse/STK-955 - to further clean this up in v3
+        - **incompatible change to ObjectVariantMapper::AddClass/AddSubclass** (but improvement) - use const optional<TypeMappingDetails>& extends instead of optional and nowhere I know of used optional preflightBeforeToObject parameter; and added MakeClassSerializer () method
+    - IO::Networking
+      - added CIDR::operator< for older C++
+    - Traversal
+      - Iterable<T>
+        - Added new overloads of Iterable<>::Select, taking container to be mapped to directly (and regtest for same), and renamed
+          Iterable::Select to Iterable::Map, and deprecated Iterable<>::Select name; and new arg to Iterable::Map,
+          so you can directly specify Addable container to add into.
+        - Deprecated name Iterable::Accumulate: use Iterable<>::Reduce instead (more standard/commonly used name)
+- Samples
+  - fixed LedIt/LedLineIt app startup to now have Execution::Logger::Activator
+
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13, 14 }
+  - MSVC: { 15.9.50, 16.11.21, 17.4.1 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 22H2
+    - Windows 11 version 22H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 13.0 (Ventura) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+
+----
+
 ### 2.1.9 {2022-11-12}
 
 #### TLDR

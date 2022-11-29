@@ -394,6 +394,38 @@ namespace {
                     VerifyTestResult (b2 != b3 or b1);
                 }
             }
+            void Test_UPNPBadURIIPv6_ ()
+            {
+                // Test case for fix: https://stroika.atlassian.net/browse/STK-957
+                {
+                    using namespace IO::Network::UniformResourceIdentification;
+                    // Sub-problem where original bug lies
+                    try {
+                        optional<Authority> authority = Authority::Parse (L"[fe80::354f:9016:fed2:8b9b]:2869");
+                        VerifyTestResult (authority->GetPort () == 2869);
+                        VerifyTestResult (authority->GetHost () == InternetAddress{L"fe80::354f:9016:fed2:8b9b"});
+                    }
+                    catch (...) {
+                        VerifyTestResult (false); // not reached - valid parse
+                    }
+                }
+                try {
+                    auto uri = URI::Parse (L"http://[fe80::354f:9016:fed2:8b9b]:2869/upnphost/udhisapi.dll?content=uuid:4becec11-428e-46e0-801b-9b293cf1d2c7");
+                    VerifyTestResult (uri.GetAuthority ()->GetPort () == 2869);
+                    VerifyTestResult (uri.GetAuthority ()->GetHost () == InternetAddress{L"fe80::354f:9016:fed2:8b9b"});
+                    VerifyTestResult (uri.GetAbsPath () == L"/upnphost/udhisapi.dll");
+                }
+                catch (...) {
+                    VerifyTestResult (false); // not reached - valid parse
+                }
+                try {
+                    auto uri = URI::Parse (L"http://[fe80::354f:9016:fed2:8b9b");
+                    VerifyTestResult (false); // not reached - invalid URL
+                }
+                catch (...) {
+                    // GOOD - sb exception
+                }
+            }
         }
         void DoTests_ ()
         {
@@ -405,6 +437,7 @@ namespace {
             Private_::TestSamplesFromPythonURLParseDocs_ ();
             Private_::Test_PatternUsedInHealthFrame_ ();
             Private_::Test_RegressionDueToBugInCompareURIsC20Spaceship_ ();
+            Private_::Test_UPNPBadURIIPv6_ ();
         }
     }
 }

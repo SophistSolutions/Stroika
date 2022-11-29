@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Configuration/Common.h"
+#include "../Containers/KeyedCollection.h"
 #include "../Execution/Function.h"
 #include "../Time/Duration.h"
 #include "../Time/Realtime.h"
@@ -14,25 +15,20 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::Execution {
 
     /**
+     *  \brief Manage interval timers - like the javascript setIntervalTimer API.
      * 
-     *  Manage interval timers - like the javascript setIntervalTimer API.
-     * 
-     *  Add and remove timers.
-     * 
-     *  Support one-shot timers.
-     * 
-     *  Timers run on arbitrary thread.
-     * 
-     *  Can shut down manager at any time.
-     * 
-     *  Can support multiple 'managers' - but then you have to add explicitly. Or use Adder object to add
-     *  to default/global IdleTimer manager.
+     *  o   Add and remove timers.
+     *  o   Support one-shot timers.
+     *  o   Timers run on arbitrary thread.
+     *  o   Can shut down manager at any time.
+     *  o   Can support multiple 'managers' - but then you have to add explicitly. Or use Adder object to add
+     *      to default/global IdleTimer manager.
      * 
      *  \note https://stackoverflow.com/questions/33234403/using-setinterval-in-c
      * 
@@ -54,6 +50,31 @@ namespace Stroika::Foundation::Execution {
 
     public:
         class Adder;
+
+    public:
+        /**
+         *  Used for reporting from the ItervalTimer::Manager (e.g. for debugging, to dump the status).
+         */
+        struct RegisteredTask {
+            TimerCallback             fCallback;
+            Time::DurationSecondsType fCallNextAt;
+            optional<Time::Duration>  fFrequency; // if missing, this is a one-shot event
+            optional<Time::Duration>  fHysteresis;
+
+        public:
+            /**
+             *  @see Characters::ToString ()
+             */
+            nonvirtual Characters::String ToString () const;
+        };
+
+    private:
+        struct Key_Extractor_ {
+            TimerCallback operator() (const RegisteredTask& r) const { return r.fCallback; };
+        };
+
+    public:
+        using RegisteredTaskCollection = Containers::KeyedCollection<RegisteredTask, TimerCallback, Containers::KeyedCollection_DefaultTraits<RegisteredTask, Execution::Function<void (void)>, Key_Extractor_>>;
     };
 
     /**
@@ -61,6 +82,10 @@ namespace Stroika::Foundation::Execution {
      *  and allow adders to optionally target different managers.
      * 
      *  \note Timers can only be added after the start of main (), and must be removed before the end of main.
+     * 
+     *  \note each TimerCallback must compare UNIQUE. You cannot use the same one twice in a given Manager, even with
+     *        different times. This is because we need SOME unique key for each entry, and the Function object
+     *        provides us with a convenient one.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
@@ -84,21 +109,42 @@ namespace Stroika::Foundation::Execution {
         ~Manager () = default;
 
     public:
-        Manager& operator= (const Manager&) = delete;
-        Manager& operator= (Manager&&)      = default;
+        nonvirtual Manager& operator= (const Manager&) = delete;
+        nonvirtual Manager& operator= (Manager&&)      = default;
 
     public:
+        /**
+         *  \brief Add a timer to be called once after duration when
+         * 
+         *  \req intervalTimer valid function ptr (not null)
+         *  \req intervalTimer not already registered
+         *  \req when >= 0
+         */
         nonvirtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when);
 
     public:
+        /**
+         *  \brief Add a timer to be called repeatedly after duration repeatInterval
+         * 
+         *  \req intervalTimer valid function ptr (not null)
+         *  \req intervalTimer not already registered
+         *  \req repeatInterval >= 0
+         *  \req hysteresis == nullopt or hysteresis >= 0
+         */
         nonvirtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
 
     public:
         /**
          *  Can remove a repeating task, but cannot remove a oneShot, since it might not be there by the time you go to remove it.
+         * 
          *  \req argument internvalTimer is registered.
          */
         nonvirtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept;
+
+    public:
+        /**
+         */
+        nonvirtual RegisteredTaskCollection GetAllRegisteredTasks () const;
 
     public:
         /**
@@ -146,6 +192,9 @@ namespace Stroika::Foundation::Execution {
 
     public:
         virtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept = 0;
+
+    public:
+        virtual RegisteredTaskCollection GetAllRegisteredTasks () const = 0;
     };
 
     /**
@@ -163,6 +212,9 @@ namespace Stroika::Foundation::Execution {
 
     public:
         virtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept override;
+
+    public:
+        virtual RegisteredTaskCollection GetAllRegisteredTasks () const override;
 
     private:
         // hidden implementation so details not in header files
@@ -200,8 +252,30 @@ namespace Stroika::Foundation::Execution {
         static constexpr RunImmediatelyFlag eRunImmediately     = RunImmediatelyFlag::eRunImmediately;
 
     public:
+        /**
+         *  \req (but unenforced) - lifetime of manager must be > that of created Adder
+         *  \note if no manager specified, IntervalTimer::Manager::sThe is used.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          namespace {
+         *              unique_ptr<IntervalTimer::Adder>    sIntervalTimerAdder_;
+         *          }
+         *          Activator::Activator ()
+         *          {
+         *              sIntervalTimerAdder_ = make_unique<IntervalTimer::Adder> (
+         *                  [] () { sKeepCachedMonitorsUpToDate_.DoOnce (); }
+         *                  , 1min
+         *                  , IntervalTimer::Adder::eRunImmediately);
+         *          }
+         *          Activator::~Activator ()
+         *          {
+         *              sIntervalTimerAdder_.release ();
+         *          }
+         *      \endcode
+         */
         Adder () = delete;
-        Adder (Adder&& src);
+        Adder (Adder&& src) noexcept;
         Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
         Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis = nullopt);
         Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
@@ -212,7 +286,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         nonvirtual Adder& operator= (const Adder&) = delete;
-        nonvirtual Adder& operator= (Adder&& rhs);
+        nonvirtual Adder& operator= (Adder&& rhs) noexcept;
 
     public:
         /**
@@ -220,7 +294,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual Function<void (void)> GetCallback () const;
 
     private:
-        const Time::Duration&    fRepeatInterval_;
+        Time::Duration           fRepeatInterval_;
         optional<Time::Duration> fHysteresis_;
         IntervalTimer::Manager*  fManager_;
         Function<void (void)>    fFunction_;

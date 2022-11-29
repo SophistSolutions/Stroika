@@ -57,7 +57,7 @@ namespace {
 
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be displayed for debugging purposes using
-        DbgTrace ("v = %s", Characters::ToString (v).c_str ());
+        DbgTrace (L"v = %s", Characters::ToString (v).c_str ());
 
         // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant (we chose JSON here)
         // And dump the results into a temporary memory-based stream
@@ -155,8 +155,62 @@ namespace {
     }
 }
 
+namespace {
+    void GeneratingReadOnlyFieldsTry3_ ()
+    {
+        Debug::TraceContextBumper ctx{L"GeneratingReadOnlyFieldsTry3_"};
+
+        // Define some types that you want serialized
+        struct MyType2Serialize1_ {
+            bool fEnabled{false};
+        };
+
+        // Define an ObjectVariantMapper which knows how to map your types to/from VariantValue objects
+        ObjectVariantMapper mapper;
+
+        // Add the types to the mapper, which it will need
+        mapper.AddClass<MyType2Serialize1_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+            {L"Enabled", StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
+        });
+
+        auto trySerializing = [] (const ObjectVariantMapper& mapper, auto obj) {
+            VariantValue vv = mapper.FromObject (obj);
+
+            // at this point - we should have VariantValue object with "Enabled" field.
+            // This can then be displayed for debugging purposes using
+            DbgTrace (L"vv = %s", Characters::ToString (vv).c_str ());
+
+            // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant (we chose JSON here)
+            // And dump the results into a temporary memory-based stream
+            Streams::MemoryStream<Character>::Ptr tmpStream = Streams::MemoryStream<Character>::New ();
+            Variant::JSON::Writer{}.Write (vv, tmpStream);
+            DbgTrace (L"rendered as JSON: = %s", tmpStream.As<String> ().ReplaceAll (L"\n", L"").c_str ());
+        };
+
+        // Create a test object to serialize
+        MyType2Serialize1_ tmp;
+        tmp.fEnabled = true;
+        trySerializing (mapper, tmp);
+
+        // @todo should simplify this - see https://stroika.atlassian.net/browse/STK-955
+        auto myReadOnlyPropertyTypeMapper = ObjectVariantMapper::TypeMappingDetails{
+            ObjectVariantMapper::FromObjectMapperType<MyType2Serialize1_> ([] (const ObjectVariantMapper&, const MyType2Serialize1_* objOfType) -> VariantValue {
+                return VariantValue{objOfType->fEnabled ? 2 : 99};
+            }),
+            ObjectVariantMapper::ToObjectMapperType<MyType2Serialize1_> (nullptr)};
+
+        // Now a fancier mapper
+        mapper.AddClass<MyType2Serialize1_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+            {L"Enabled", StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
+            {L"RandomValue", myReadOnlyPropertyTypeMapper},
+        });
+        trySerializing (mapper, tmp);
+    }
+}
+
 void Samples::Serialization::ObjectVariantMapper::RunDemo ()
 {
     SimpleGettingStarted_ ();
     UseObjectVariantMapperTry2_ ();
+    GeneratingReadOnlyFieldsTry3_ ();
 }

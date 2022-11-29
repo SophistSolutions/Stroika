@@ -91,10 +91,15 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         static constexpr uint32_t kMaximumAgeValue = numeric_limits<int32_t>::max (); // see https://tools.ietf.org/html/rfc7234#section-1.2.1
 
         /**
+         *  \brief Probably not useful in most cases. Just affects behavior of cached values when expired and disconnected.
+         *
+         *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#requiring_revalidation
          */
         bool fMustRevalidate{false};
 
         /**
+         *  \brief Very useful if/when true.
+         *
          * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#revalidation_and_reloading
          */
         bool fImmutable{false};
@@ -188,13 +193,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *          auto cc = CacheControl{.fCacheability=CacheControl::eNoCache};             // Cache-Control: no-cache
          *      \endcode
          */
-        static const CacheControl kMustRevalidatePublic;
+        [[deprecated ("Since v2.1.11 - deprecated - probably use CacheControl{.fCacheability=CacheControl::ePublic, .fMaxAge=3600}")]] static const CacheControl kMustRevalidatePublic;
 
     public:
         /**
          *  \brief this means you CAN cache the value, but should revalidate each time before use (so etags can be used etc) - but it should not be re-used from user to user
          */
-        static const CacheControl kMustRevalidatePrivate;
+        [[deprecated ("Since v2.1.11 - deprecated - probably use CacheControl{.fCacheability=CacheControl::ePrivate, .fMaxAge=3600}")]] static const CacheControl kMustRevalidatePrivate;
     };
     template <>
     Characters::String CacheControl::As () const;

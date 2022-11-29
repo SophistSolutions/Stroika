@@ -340,7 +340,7 @@ namespace Stroika::Foundation::Execution {
             fMutex_.lock_shared (); // this API requires (regardless of timeout) that we re-lock (shared)
             NoteLockStateChanged_ (L"in Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly finally relocked shared");
         });
-        typename TRAITS::WriteLockType upgradeLock{fMutex_, std::defer_lock};
+        typename TRAITS::WriteLockType upgradeLock{fMutex_, std::defer_lock}; // NOTE ONLY held til the end of this and doWithWriteLock
         if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
             upgradeLock.lock (); // if wait 'infinite' use no-time-arg lock call
         }
@@ -363,7 +363,7 @@ namespace Stroika::Foundation::Execution {
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fMutex_=%p, timeout=%s", &fMutex_, Characters::ToString (timeout).c_str ()};
 #endif
         if (not UpgradeLockNonAtomicallyQuietly (lockBeingUpgraded, doWithWriteLock, timeout)) {
-            Execution::ThrowTimeOutException ();
+            Execution::ThrowTimeOutException (); // @todo a bit of a defect, could be returned false not due to timeout, but do to doWithWriteLock returning false...
         }
     }
     template <typename T, typename TRAITS>
@@ -374,7 +374,7 @@ namespace Stroika::Foundation::Execution {
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fMutex_=%p, timeout=%s", &fMutex_, Characters::ToString (timeout).c_str ()};
 #endif
         if (not UpgradeLockNonAtomicallyQuietly (lockBeingUpgraded, doWithWriteLock, timeout)) {
-            Execution::ThrowTimeOutException ();
+            Execution::ThrowTimeOutException (); // @todo a bit of a defect, could be returned false not due to timeout, but do to doWithWriteLock returning false...
         }
     }
     template <typename T, typename TRAITS>

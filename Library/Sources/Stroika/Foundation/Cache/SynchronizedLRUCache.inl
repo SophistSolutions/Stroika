@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Cache {
         else {
             lock.unlock ();
             if (fHoldWriteLockDuringCacheFill) {
-                // Avoid two threds calling cache filler for same key value at the same time
+                // Avoid two threads calling cache filler for same key value at the same time
                 [[maybe_unused]] auto&& newRWLock = lock_guard{fMutex_};
                 VALUE                   v         = valueFetcher (key);
                 inherited::Add (key, v);
@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Cache {
                 // Avoid needlessly blocking lookups (shared_lock above) until after we've filled the cache (typically slow)
                 // and keep it to minimum logically required (inherited add).
                 VALUE v = valueFetcher (key);
-                Add (key, v);
+                Add (key, v); // this locks internally
                 return v;
             }
         }

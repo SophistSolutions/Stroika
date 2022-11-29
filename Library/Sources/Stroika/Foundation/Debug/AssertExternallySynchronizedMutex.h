@@ -133,15 +133,11 @@ namespace Stroika::Foundation::Debug {
             SharedContext () noexcept                       = default;
             SharedContext (const SharedContext&)            = delete;
             SharedContext& operator= (const SharedContext&) = delete;
-            ~SharedContext ()
-            {
-                Assert (fLocks_ == 0);
-                Assert (fSharedLockThreads_.empty ());
-            }
+            ~SharedContext ();
 
         private:
-            atomic_uint_fast32_t fLocks_{0}; // refers to FULL locks, not shared locks (use a multiset there to track redundant shared locks)
-            thread::id           fCurLockThread_;
+            atomic_uint_fast32_t fFullLocks_{0};
+            thread::id           fThreadWithFullLock_; // or value undefined/last value where it had full lock
 
             // most logically a multiset, but std::multiset is not threadsafe and requires external locking.
             // So does forward_list, but its closer to lock free, so try it for now
@@ -149,38 +145,12 @@ namespace Stroika::Foundation::Debug {
             forward_list<thread::id> fSharedLockThreads_;
 
         private:
-            bool GetSharedLockEmpty_ () const
-            {
-                lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-                return fSharedLockThreads_.empty ();
-            }
-            pair<size_t, size_t> CountSharedLockThreads_ () const
-            {
-                lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-                size_t            thisThreadCnt  = std::count (fSharedLockThreads_.begin (), fSharedLockThreads_.end (), this_thread::get_id ());
-                size_t            otherThreadCnt = std::distance (fSharedLockThreads_.begin (), fSharedLockThreads_.end ()) - thisThreadCnt;
-                return make_pair (thisThreadCnt, otherThreadCnt);
-            }
-            size_t GetSharedLockThreadsCount_ () const
-            {
-                lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-                return std::distance (fSharedLockThreads_.begin (), fSharedLockThreads_.end ());
-            }
-            size_t CountOfIInSharedLockThreads_ (thread::id i) const
-            {
-                lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-                return std::count (fSharedLockThreads_.begin (), fSharedLockThreads_.end (), i);
-            }
-            void AddSharedLock_ (thread::id i)
-            {
-                lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-                fSharedLockThreads_.push_front (i);
-            }
-            void RemoveSharedLock_ (thread::id i)
-            {
-                lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-                fSharedLockThreads_.remove (i);
-            }
+            bool                 GetSharedLockEmpty_ () const;
+            pair<size_t, size_t> CountSharedLockThreads_ () const;
+            size_t               GetSharedLockThreadsCount_ () const;
+            size_t               CountOfIInSharedLockThreads_ (thread::id i) const;
+            void                 AddSharedLock_ (thread::id i);
+            void                 RemoveSharedLock_ (thread::id i);
 
         private:
             friend class AssertExternallySynchronizedMutex;

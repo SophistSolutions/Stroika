@@ -196,6 +196,7 @@ public:
     Rep_ (const Options& o)
         : fOptions_{o}
     {
+        Require (not o.fMonitor.has_value ()); // cuz NYI
     }
     Collection<NeighborsMonitor::Neighbor> GetNeighbors () const
     {

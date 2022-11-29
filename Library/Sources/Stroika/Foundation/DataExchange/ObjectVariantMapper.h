@@ -263,6 +263,9 @@ namespace Stroika::Foundation::DataExchange {
          *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
          *
          *        o C++20 only (for c++17 only supported == and operator<)
+         * 
+         *  \note fFromObjectMapper is nullptr, then this field is added as nullptr.
+         *  \note toObjectMapper is nullptr, then it is simply not called (as if did nothing or empty function)
          */
         struct TypeMappingDetails {
             type_index                  fForType;
@@ -270,15 +273,28 @@ namespace Stroika::Foundation::DataExchange {
             ToGenericObjectMapperType   fToObjectMapper;
 
             /**
+             *  \par Example Usage
+             *      \code
+             *          return TypeMappingDetails{typeid (ACTUAL_CONTAINER_TYPE), fromObjectMapper, toObjectMapper};
+             *      \endcode
+             *
+             *  \par Example Usage
+             *      \code
+             *          auto myReadOnlyPropertyTypeMapper = ObjectVariantMapper::TypeMappingDetails{
+             *              ObjectVariantMapper::FromObjectMapperType<MyType2Serialize1_> ([] (const ObjectVariantMapper& mapper, const MyType2Serialize1_* objOfType) -> VariantValue {
+             *                  return VariantValue{objOfType->fEnabled ? 2 : 99};
+             *              }),
+             *              ObjectVariantMapper::ToObjectMapperType<MyType2Serialize1_> (nullptr)};
+             *      \endcode
              */
             TypeMappingDetails ()                              = delete;
             TypeMappingDetails (const TypeMappingDetails&)     = default;
             TypeMappingDetails (TypeMappingDetails&&) noexcept = default;
             explicit TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper, const ToGenericObjectMapperType& toObjectMapper);
-            template <typename T, enable_if_t<not is_same_v<T, void> and Debug::kBuiltWithUndefinedBehaviorSanitizer>* = nullptr>
+            template <typename T, enable_if_t<not is_same_v<T, void>>* = nullptr>
             TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
-            template <typename T, enable_if_t<not is_same_v<T, void> and not Debug::kBuiltWithUndefinedBehaviorSanitizer>* = nullptr>
-            TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
+            template <typename T, enable_if_t<not is_same_v<T, void>>* = nullptr>
+            TypeMappingDetails (const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
 
             nonvirtual TypeMappingDetails& operator= (TypeMappingDetails&& rhs) noexcept = default;
             nonvirtual TypeMappingDetails& operator= (const TypeMappingDetails& rhs)     = default;
@@ -311,6 +327,12 @@ namespace Stroika::Foundation::DataExchange {
              *  @see Characters::ToString ();
              */
             nonvirtual String ToString () const;
+
+        private:
+            template <typename T>
+            static FromGenericObjectMapperType mkGenericFromMapper_ (const ObjectVariantMapper::FromObjectMapperType<T>& fromObjectMapper);
+            template <typename T>
+            static ToGenericObjectMapperType mkGenericToMapper_ (const ObjectVariantMapper::ToObjectMapperType<T>& toObjectMapper);
         };
 
     public:
@@ -502,9 +524,14 @@ namespace Stroika::Foundation::DataExchange {
          *          // THEN deserialized, and mapped back to C++ object form
          *          tmp = mapper.ToObject<MyConfig_> (DataExchange::JSON::Reader{tmpStream});
          *      \endcode
+         * 
+         *  \note As of Stroika 2.1.10 - no longer support preflightBeforeToObject, use extra instead
+         * 
+         *  \note extends operations to type performed BEFORE the argument ones here, so that they can change values
+         *        (either map to or from object) done in the base 'class' or set of properties being extended.
          */
         template <typename CLASS>
-        nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void (VariantValue*)> preflightBeforeToObject = nullptr);
+        nonvirtual void AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const optional<TypeMappingDetails>& extends = nullopt);
 
     public:
         /**
@@ -526,9 +553,14 @@ namespace Stroika::Foundation::DataExchange {
          *              {L"fVV2", StructFieldMetaInfo{&Derived_::fVV2}},
          *          });
          *      \endcode
+         * 
+         *  \note As of Stroika 2.1.10 - no longer support preflightBeforeToObject (see AddClass and extends parameter instead)
+         * 
+         *  \note AddSubClass captures the existing mapping for BASE_CLASS at the time of this call, so this
+         *        can be used to subclass in place, adding a few extra properties.
          */
         template <typename CLASS, typename BASE_CLASS>
-        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void (VariantValue*)> preflightBeforeToObject = nullptr);
+        nonvirtual void AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
 
     public:
         /**
@@ -644,6 +676,13 @@ namespace Stroika::Foundation::DataExchange {
          */
         template <typename T, typename... ARGS>
         static TypeMappingDetails MakeCommonSerializer (ARGS&&... args);
+
+    public:
+        /**
+         *  @todo migrate this to be part of MakeCommonSerializer probably, but for now like AddClass, but less checking and doesnt add - just creates/returns
+         */
+        template <typename T>
+        static TypeMappingDetails MakeClassSerializer (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const optional<TypeMappingDetails>& extends = nullopt);
 
     public:
         /**
@@ -823,9 +862,9 @@ namespace Stroika::Foundation::DataExchange {
 
     private:
         template <typename CLASS>
-        nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void (VariantValue*)>& preflightBeforeToObject) const;
-        template <typename CLASS, typename BASE_CLASS>
-        nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void (VariantValue*)>& preflightBeforeToObject, const optional<type_index>& baseClassTypeInfo) const;
+        static TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const optional<TypeMappingDetails>& extends);
+        template <typename CLASS>
+        nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_and_check_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const optional<TypeMappingDetails>& extends) const;
 
     private:
         nonvirtual TypeMappingDetails Lookup_ (const type_index& forTypeInfo) const;
@@ -915,21 +954,38 @@ namespace Stroika::Foundation::DataExchange {
         static constexpr NullFieldHandling eOmitNullFields    = NullFieldHandling::eOmit;
         static constexpr NullFieldHandling eIncludeNullFields = NullFieldHandling::eInclude;
 
-        StructFieldMetaInfo          fFieldMetaInfo;
-        String                       fSerializedFieldName;
+        /**
+         *  Required. This is the field generated/read by this StructFieldInfo
+         */
+        String fSerializedFieldName;
+
+        /*
+         * if missing - then pass in parent object, then fOverrideTypeMapper required
+         */
+        optional<StructFieldMetaInfo> fFieldMetaInfo;
+
+        /*
+         *  if fFieldMetaInfo == nullopt, fOverrideTypeMapper is required, and is the mapper used for the entire
+         *  object.
+         */
         optional<TypeMappingDetails> fOverrideTypeMapper;
-        NullFieldHandling            fNullFields;
+
+        /**
+         *  defaults to NullFieldHandling::eInclude
+         */
+        NullFieldHandling fNullFields{NullFieldHandling::eInclude};
 
         /**
          *  \note   - the serializedFieldName parameter to the template (const wchar_t) overload of StructFieldInfo must be an array
          *          with application lifetime (that is static C++ constant). This is to make the common case slightly more efficient.
          */
-        StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper = {}, NullFieldHandling nullFields = NullFieldHandling::eInclude);
+        StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper = nullopt, NullFieldHandling nullFields = NullFieldHandling::eInclude);
         StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields);
         template <int SZ>
         StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields);
         template <int SZ>
-        StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper = {}, NullFieldHandling nullFields = NullFieldHandling::eInclude);
+        StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper = nullopt, NullFieldHandling nullFields = NullFieldHandling::eInclude);
+        StructFieldInfo (const String& serializedFieldName, TypeMappingDetails overrideTypeMapper, NullFieldHandling nullFields = NullFieldHandling::eInclude);
     };
 
     template <>

@@ -202,23 +202,59 @@ optional<Authority> Authority::Parse (const String& rawURLAuthorityText)
     if (rawURLAuthorityText.empty ()) {
         return nullopt;
     }
-    optional<String> encodedUserInfo;
-    // From https://tools.ietf.org/html/rfc3986#appendix-A
-    String remainingString2Parse = rawURLAuthorityText;
-    if (auto oat = remainingString2Parse.Find ('@')) {
-        encodedUserInfo       = remainingString2Parse.SubString (0, *oat);
-        remainingString2Parse = remainingString2Parse.SubString (*oat + 1);
-    }
     optional<UserInfo> userInfo;
-    if (encodedUserInfo) {
-        userInfo = UserInfo::Parse (*encodedUserInfo);
+    // From https://tools.ietf.org/html/rfc3986#appendix-A
+    //      authority     = [ userinfo "@" ] host [ ":" port ]
+    //      host          = IP-literal / IPv4address / reg-name
+    //      IP-literal    = "[" ( IPv6address / IPvFuture  ) "]"
+    //      IPv6address   ...
+    //      IPvFuture     = "v" 1*HEXDIG "." 1*( unreserved / sub-delims / ":" )
+    //      IPv4address   = dec-octet "." dec-octet "." dec-octet "." dec-octet
+    //      reg-name      = *( unreserved / pct-encoded / sub-delims )
+    String remainingString2Parse = rawURLAuthorityText;
+    {
+        if (auto oat = remainingString2Parse.Find ('@')) {
+            optional<String> encodedUserInfo = remainingString2Parse.SubString (0, *oat);
+            if (encodedUserInfo) {
+                userInfo = UserInfo::Parse (*encodedUserInfo);
+            }
+            remainingString2Parse = remainingString2Parse.SubString (*oat + 1);
+        }
+    }
+    optional<Host> host;
+    {
+        String hostString;
+        // here we are looking for characters that are [] (IP-literal) or IPv4address or reg-name characters
+        // There are no 'colons' in reg-name, nor IPv4Address. The only possible : in hostname is inside an IP-Literal
+        // so check for []
+        if (remainingString2Parse.size () >= 2 and remainingString2Parse[0] == '[') {
+            auto closeBracket = remainingString2Parse.Find (']'); // a close bracket cannot be in a legal IP-literal except at the end
+            if (closeBracket) {
+                hostString            = remainingString2Parse.SubString (0, *closeBracket + 1);
+                remainingString2Parse = remainingString2Parse.SubString (*closeBracket + 1);
+            }
+            else {
+                Execution::Throw (Execution::RuntimeErrorException{L"no closing bracket in host part of authority of URI"sv});
+            }
+        }
+        else {
+            // since not IP-literal, any colons would be introducing a port#
+            if (auto oPortColon = remainingString2Parse.Find (':')) {
+                hostString            = remainingString2Parse.SubString (0, *oPortColon);
+                remainingString2Parse = remainingString2Parse.SubString (*oPortColon);
+            }
+            else {
+                hostString            = remainingString2Parse;
+                remainingString2Parse = String{};
+            }
+        }
+        host = hostString.empty () ? optional<Host>{} : Host::Parse (hostString);
     }
     optional<uint16_t> port;
     if (auto oPortColon = remainingString2Parse.Find (':')) {
-        port                  = Characters::String2Int<uint16_t> (remainingString2Parse.SubString (*oPortColon + 1));
-        remainingString2Parse = remainingString2Parse.SubString (0, *oPortColon);
+        port = Characters::String2Int<uint16_t> (remainingString2Parse.SubString (*oPortColon + 1));
     }
-    return Authority{remainingString2Parse.empty () ? optional<Host>{} : Host::Parse (remainingString2Parse), port, userInfo};
+    return Authority{host, port, userInfo};
 }
 
 Authority Authority::Normalize () const

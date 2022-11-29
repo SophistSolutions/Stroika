@@ -70,7 +70,9 @@ String DeviceDescription::ToString () const
 {
     Characters::StringBuilder sb;
     sb += L"{";
-    sb += L"Presentation-URL: " + Characters::ToString (fPresentationURL) + L", ";
+    if (fPresentationURL) {
+        sb += L"Presentation-URL: " + Characters::ToString (fPresentationURL) + L", ";
+    }
     sb += L"Device-Type: " + Characters::ToString (fDeviceType) + L", ";
     sb += L"Manufacture-Name: " + Characters::ToString (fManufactureName) + L", ";
     sb += L"Friendly-Name: " + Characters::ToString (fFriendlyName) + L", ";
@@ -94,8 +96,12 @@ String DeviceDescription::ToString () const
     if (fUPC) {
         sb += L"UPC: " + Characters::ToString (fUPC) + L", ";
     }
-    sb += L"Icons: " + Characters::ToString (fIcons) + L", ";
-    sb += L"Services: " + Characters::ToString (fServices) + L", ";
+    if (fIcons) {
+        sb += L"Icons: " + Characters::ToString (fIcons) + L", ";
+    }
+    if (fServices) {
+        sb += L"Services: " + Characters::ToString (fServices) + L", ";
+    }
     sb += L"}";
     return sb.str ();
 }
@@ -290,12 +296,14 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
     }();
 
     DeviceDescription deviceDescription;
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"xml data: %s", Streams::TextReader::New (b).ReadAll ().c_str ());
+#endif
     {
         ObjectReader::IConsumerDelegateToContext ctx{kTypesRegistry_, make_shared<ObjectReader::ReadDownToReader> (kTypesRegistry_.MakeContextReader (&deviceDescription), Name{L"device"})};
         XML::SAXParse (b, ctx);
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"xml data: %s", Streams::TextReader::New (b).ReadAll ().c_str ());
     DbgTrace (L"deviceDescription: %s", Characters::ToString (deviceDescription).c_str ());
 #endif
     return deviceDescription;

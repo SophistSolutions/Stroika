@@ -11,6 +11,7 @@
  */
 #include <exception>
 #include <filesystem>
+#include <functional>
 #include <typeindex>
 #include <typeinfo>
 #include <wchar.h>
@@ -18,6 +19,7 @@
 #include "../Configuration/Concepts.h"
 #include "../Configuration/Enumeration.h"
 #include "FloatConversion.h"
+#include "Format.h"
 #include "StringBuilder.h"
 
 namespace Stroika::Foundation::Characters {
@@ -244,6 +246,12 @@ namespace Stroika::Foundation::Characters {
         {
             return o.has_value () ? Characters::ToString (*o) : L"[missing]"sv;
         }
+        template <typename FUNCTION_SIGNATURE>
+        inline String ToString_ (const function<FUNCTION_SIGNATURE>& f)
+        {
+            return Format (L"%p", f.template target<Configuration::remove_cvref_t<FUNCTION_SIGNATURE>> ());
+        }
+
     }
 
     template <>
