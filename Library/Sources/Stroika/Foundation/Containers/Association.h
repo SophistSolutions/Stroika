@@ -294,6 +294,14 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \brief Shortcut for Lookup
+         * 
+         *  if key is not in the container, an empty iterable will be returned.
+         */
+        nonvirtual const Iterable<mapped_type> operator[] (ArgByValueType<key_type> key) const;
+
+    public:
+        /**
          *  Synonym for Lookup (key).has_value ()
          * 
          *  \note same as OccurrencesOf (key) != 0

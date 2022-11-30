@@ -141,6 +141,11 @@ namespace Stroika::Foundation::Containers {
         return defaultValue;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline auto Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator[] (ArgByValueType<key_type> key) const -> const Iterable<mapped_type>
+    {
+        return Lookup (key);
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::ContainsKey (ArgByValueType<key_type> key) const
     {
         return not _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key).empty ();
