@@ -8,7 +8,12 @@ RUN apt-get update
 RUN apt-get -qq install -y sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-RUN apt-get -qq install -y build-essential
+#
+# NO IDEA why needed, but as of 2022-11-29 this extra apt-get updated needed before installing 
+#       build-essential
+# --LGP 2022-11-29
+
+RUN apt-get update && apt-get -qq install -y build-essential
 
 #
 # p7zip-full:                   Used to unpack sources for lzma SDK

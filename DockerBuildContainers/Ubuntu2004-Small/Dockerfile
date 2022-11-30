@@ -5,7 +5,7 @@ RUN apt-get update
 
 # This hack is needed to avoid failure in apt-get install -y pkg-config for Ubuntu 20.04
 #https://serverfault.com/questions/949991/how-to-install-tzdata-on-a-ubuntu-docker-image
-RUN apt-get -qq install -y tzdata
+RUN apt-get -qq install -y tzdata < /dev/null
 
 # cuz you need this alot, like if something else missing; use NOPASSWD in sudoers file so this works, cuz hard
 # to get sudo/enter password working under docker; sb relatively safe cuz only for sudo group members from base os
@@ -15,6 +15,12 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 #locale support not strictly required, but some regression tests depend on it
 #and as of Ubuntu 20.04 (prerelease) appears must be included for other apt-get install programs to complete
 RUN apt-get -qq install -y locales && locale-gen en_US en_US.UTF-8
+
+#
+# NO IDEA why needed, but as of 2022-11-29 this extra apt-get updated needed before installing 
+#       cmake
+# --LGP 2022-11-29
+
 
 # Used to unpack sources for lzma SDK
 # A couple ThirdPartyLibs (e.g. sqlite, zlib) deliver library source in this form (.zip) - so get to unpack them
@@ -26,6 +32,7 @@ RUN apt-get -qq install -y p7zip-full; \
     apt-get -qq install -y unzip; \
     apt-get -qq install -y wget; \
     apt-get -qq install -y pkg-config; \
+    apt-get update;\
     apt-get -qq install -y cmake
 
 #required to build libcurl
