@@ -12,7 +12,7 @@
 CONTAINER_IMAGE="${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22}"
 CONTAINER_NAME="${CONTAINER_NAME:-DockerWindowsStroikaRegressionTester1}"
 USE_TEST_BASENAME="${USE_TEST_BASENAME:-Windows_VS2k22-In-Docker}"
-BRANCH="${BRANCH:-v2.1-Dev}"
+BRANCH="${BRANCH:-v3-Dev}"
 VERSION=`./ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 DOCKER="${DOCKER:-docker.exe}"
 
