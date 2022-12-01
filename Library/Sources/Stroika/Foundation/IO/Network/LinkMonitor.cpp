@@ -147,8 +147,13 @@ InternetAddress Network::GetPrimaryInternetAddress ()
         DbgTrace (L"gethostname: err=%d", WSAGetLastError ());
         return InternetAddress{};
     }
-    for (const InternetAddress& i : DNS::kThe.GetHostAddresses (String::FromNarrowSDKString (ac))) {
-        return i;
+    Sequence<InternetAddress> allAddrs = DNS::kThe.GetHostAddresses (String::FromNarrowSDKString (ac));
+    Sequence<InternetAddress> allNotLocal = allAddrs.Where ([] (const InternetAddress& ia) { return not ia.IsLinkLocalAddress (); });
+    if (auto f = allNotLocal.First ()) {
+        return *f;
+    }
+    if (auto f = allAddrs.First ()) {
+        return *f;
     }
     return InternetAddress{};
 #elif qPlatform_POSIX
