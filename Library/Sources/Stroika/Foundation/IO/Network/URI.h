@@ -170,6 +170,11 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
+         *  \par Example Usage
+         *      \code
+         *          URI u;
+         *          u.SetScheme (URI::SchemeType{L"http"});
+         *      \endcode
          */
         nonvirtual void SetScheme (const optional<SchemeType>& scheme);
         nonvirtual void SetScheme (const SchemeType& scheme);

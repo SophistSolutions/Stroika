@@ -426,6 +426,11 @@ namespace {
                     // GOOD - sb exception
                 }
             }
+            void Test_SetScheme_ ()
+            {
+                URI u;
+                u.SetScheme (URI::SchemeType{L"http"});
+            }
         }
         void DoTests_ ()
         {
@@ -438,6 +443,7 @@ namespace {
             Private_::Test_PatternUsedInHealthFrame_ ();
             Private_::Test_RegressionDueToBugInCompareURIsC20Spaceship_ ();
             Private_::Test_UPNPBadURIIPv6_ ();
+            Private_::Test_SetScheme_ ();
         }
     }
 }
