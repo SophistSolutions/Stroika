@@ -273,7 +273,7 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  @see POSIX bind()
          */
-        nonvirtual void Bind (const SocketAddress& sockAddr, BindFlags bindFlags = BindFlags ());
+        nonvirtual void Bind (const SocketAddress& sockAddr, BindFlags bindFlags = BindFlags{});
 
     public:
         /**
