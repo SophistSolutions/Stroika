@@ -25,6 +25,20 @@
 }
 {
    https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+   Helgrind:UnlockForeign
+   ...
+   fun:_ZN12_GLOBAL__N_140RegressionTest23_SycnhonizedWithTimeout_Ev
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+   Helgrind:UnlockForeign
+   ...
+   fun:_ZN12_GLOBAL__N_175RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_Ev
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
    Helgrind:Misc
    ...
    fun:_ZN7Stroika10Foundation9Execution13WaitableEventD1Ev
