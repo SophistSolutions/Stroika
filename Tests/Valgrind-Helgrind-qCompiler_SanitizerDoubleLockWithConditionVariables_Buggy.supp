@@ -25,6 +25,13 @@
 }
 {
    https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+   Helgrind:UnlockUnlocked
+   ...
+   fun:~ReadableReference
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
    Helgrind:UnlockForeign
    ...
    fun:_ZN12_GLOBAL__N_140RegressionTest23_SycnhonizedWithTimeout_Ev
