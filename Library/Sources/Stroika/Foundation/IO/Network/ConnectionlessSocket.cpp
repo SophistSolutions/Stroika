@@ -153,8 +153,8 @@ namespace {
             }
             virtual void SetMulticastTTL (uint8_t ttl) override
             {
-                static constexpr Execution::Activity kSettingMulticastTTL{L"setting multicast TTL"sv};
-                Execution::DeclareActivity activityDeclare{&kSettingMulticastTTL};
+                static constexpr Execution::Activity                kSettingMulticastTTL{L"setting multicast TTL"sv};
+                Execution::DeclareActivity                          activityDeclare{&kSettingMulticastTTL};
                 lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
                 switch (GetAddressFamily ()) {
                     case SocketAddress::INET: {
@@ -201,8 +201,8 @@ namespace {
             }
             virtual void SetMulticastLoopMode (bool loopMode) override
             {
-                static constexpr Execution::Activity kSettingMulticastLoopMode{L"setting multicast loop mode"sv};
-                Execution::DeclareActivity activityDeclare{&kSettingMulticastLoopMode};
+                static constexpr Execution::Activity                kSettingMulticastLoopMode{L"setting multicast loop mode"sv};
+                Execution::DeclareActivity                          activityDeclare{&kSettingMulticastLoopMode};
                 lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
                 switch (GetAddressFamily ()) {
                     case SocketAddress::INET: {

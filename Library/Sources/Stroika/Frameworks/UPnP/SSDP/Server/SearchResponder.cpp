@@ -159,7 +159,7 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
                     }
                 }
                 catch (const system_error& e) {
-                    // SEE https://stroika.atlassian.net/browse/STK-962 - 
+                    // SEE https://stroika.atlassian.net/browse/STK-962 -
                     // If I migrate the retry logic to BasicServer, this stuff can go away, I believe... LOW PRIORITY - since this does work - last time I tried
 
                     if (e.code () == errc::no_such_device) {
