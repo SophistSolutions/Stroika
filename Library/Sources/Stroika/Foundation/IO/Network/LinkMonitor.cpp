@@ -144,6 +144,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
 #endif
     char ac[1024];
     if (::gethostname (ac, sizeof (ac)) == SOCKET_ERROR) {
+        DbgTrace (L"gethostname: err=%d", WSAGetLastError ());
         return InternetAddress{};
     }
     for (const InternetAddress& i : DNS::kThe.GetHostAddresses (String::FromNarrowSDKString (ac))) {
