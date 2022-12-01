@@ -123,9 +123,7 @@ namespace {
 SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements)
 {
     if constexpr (qDebug) {
-        for ([[maybe_unused]] const auto& a : advertisements) {
-            Require (not a.fTarget.empty ());
-        }
+        advertisements.Apply ([] ([[maybe_unused]] const auto& a) { Require (not a.fTarget.empty ()); });
     }
     static const String kThreadName_{L"SSDP Search Responder"sv};
     fListenThread_ = Execution::Thread::New (
