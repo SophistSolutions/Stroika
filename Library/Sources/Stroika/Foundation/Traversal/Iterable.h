@@ -613,6 +613,8 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         *  \brief Alias 'Filter' - produce a subset of this iterable where argument function returns true
+         *
          *  BASED ON Microsoft .net Linq.
          *
          *  This returns an Iterable<T> with a subset of data - including only the items that pass the argument filter funtion.
