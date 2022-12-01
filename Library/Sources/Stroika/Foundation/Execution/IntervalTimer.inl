@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Execution {
     {
         RequireNotNull (intervalTimer);
         Require (when >= 0s);
-        RequireNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Active object.
+        RequireNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Activator object.
         Require (not fRep_->GetAllRegisteredTasks ().Contains (intervalTimer));
         fRep_->AddOneShot (intervalTimer, when);
     }
@@ -34,20 +34,20 @@ namespace Stroika::Foundation::Execution {
         RequireNotNull (intervalTimer);
         Require (repeatInterval >= 0s);
         Require (hysteresis == nullopt or hysteresis >= 0s);
-        RequireNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Active object.
+        RequireNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Activator object.
         Require (not fRep_->GetAllRegisteredTasks ().Contains (intervalTimer));
         fRep_->AddRepeating (intervalTimer, repeatInterval, hysteresis);
     }
     inline void IntervalTimer::Manager::RemoveRepeating (const TimerCallback& intervalTimer) noexcept
     {
         RequireNotNull (intervalTimer);
-        RequireNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Active object.
+        RequireNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Activator object.
         Require (fRep_->GetAllRegisteredTasks ().Contains (intervalTimer));
         fRep_->RemoveRepeating (intervalTimer);
     }
     inline auto IntervalTimer::Manager::GetAllRegisteredTasks () const -> RegisteredTaskCollection
     {
-        RequireNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Active object.
+        RequireNotNull (fRep_); // If this fails, and its accessed through IntervalTimer::Manager::sThe, its probably because of lack of construction of IntervalTimer::Manager::Activator object.
         return fRep_->GetAllRegisteredTasks ();
     }
     inline IntervalTimer::Manager IntervalTimer::Manager::sThe{nullptr};

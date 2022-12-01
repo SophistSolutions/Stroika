@@ -30,6 +30,8 @@ namespace Stroika::Foundation::Execution {
      *  o   Can support multiple 'managers' - but then you have to add explicitly. Or use Adder object to add
      *      to default/global IdleTimer manager.
      * 
+     *  \note Easiest way to use is IntervalTimer::Adder - see constructor example below
+     * 
      *  \note https://stackoverflow.com/questions/33234403/using-setinterval-in-c
      * 
      *  note TODO:
