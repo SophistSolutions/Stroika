@@ -20,8 +20,6 @@
  *
  * TODO:
  *      @todo   Look at http://brisa.garage.maemo.org/doc/html/upnp/ssdp.html for example server API
- *
- *      @todo   This is a rough draft implementation. Quite incomplete (and not sure working, untested)
  */
 
 namespace Stroika::Frameworks::UPnP::SSDP::Server {
@@ -29,19 +27,23 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
     using Traversal::Iterable;
 
     /**
-     *  Instantiating the class does nothing. You must invoke Run() to start the search. And then
-     *  it runs in the background (with its own private thread) until the SearchResponder object is
-     *  destroyed.
+     *  Instantiating the class starts the (background) search automatically, and it continues
+     *  until the SearchResponder object is destroyed.
+     * 
+     *  \note - this behavior differs from Stroika 2.1, where you had to explicitly call Run ()
      */
     class SearchResponder {
     public:
-        SearchResponder ()                                       = default;
-        SearchResponder (const SearchResponder&)                 = delete;
-        const SearchResponder operator= (const SearchResponder&) = delete;
-        ~SearchResponder ()                                      = default;
+        /**
+         */
+        SearchResponder (const Iterable<Advertisement>& advertisements);
+        SearchResponder (const SearchResponder&) = delete;
 
     public:
-        nonvirtual void Run (const Iterable<Advertisement>& advertisements);
+        const SearchResponder operator= (const SearchResponder&) = delete;
+
+    public:
+        ~SearchResponder () = default;
 
 #if 0
         //...

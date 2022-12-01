@@ -32,23 +32,27 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
     /**
      *  A big part of SSDP server functinality is to send periodic notifications of the Device description
      *
-     *  Instantiating the class does nothing. You must invoke Run() to start the notifications. And then
-     *  it runs in the background (with its own private thread) until the PeriodicNotifier object is
-     *  destroyed.
+     *  Instantiating the class starts the (background) notifications automatically, and they
+     *  continue until the PeriodicNotifier object is destroyed.
+     * 
+     *  \note - this behavior differs from Stroika 2.1, where you had to explicitly call Run ()
      */
     class PeriodicNotifier {
-    public:
-        PeriodicNotifier ()                                        = default;
-        PeriodicNotifier (const PeriodicNotifier&)                 = delete;
-        const PeriodicNotifier operator= (const PeriodicNotifier&) = delete;
-        ~PeriodicNotifier ()                                       = default;
-
     public:
         // Very primitive definition - should refine - read details on spec on this...
         struct FrequencyInfo {
             Time::DurationSecondsType fRepeatInterval = 3 * 60.0;
         };
-        nonvirtual void Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi);
+
+    public:
+        PeriodicNotifier (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi);
+        PeriodicNotifier (const PeriodicNotifier&) = delete;
+
+    public:
+        const PeriodicNotifier operator= (const PeriodicNotifier&) = delete;
+
+    public:
+        ~PeriodicNotifier () = default;
 
 #if 0
         //...

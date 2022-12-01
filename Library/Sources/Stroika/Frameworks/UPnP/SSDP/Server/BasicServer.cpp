@@ -44,7 +44,7 @@ public:
     {
         {
             SSDP::Advertisement dan;
-            dan.fLocation = d.fLocation;
+            // dan.fLocation set in GetAdjustedAdvertisements_...
             dan.fServer   = d.fServer;
             {
                 dan.fTarget = kTarget_UPNPRootDevice;
@@ -63,8 +63,8 @@ public:
             }
         }
 
-        StartNotifier_ ();
-        StartResponder_ ();
+        fNotifier_        = make_unique<PeriodicNotifier> (GetAdjustedAdvertisements_ (), PeriodicNotifier::FrequencyInfo{});
+        fSearchResponder_ = make_unique<SearchResponder> (GetAdjustedAdvertisements_ ());
 
         IO::Network::LinkMonitor lm;
         lm.AddCallback ([this] (IO::Network::LinkMonitor::LinkChange lc, String netName, String ipNum) {
@@ -86,52 +86,27 @@ public:
         }
         else {
             Sequence<Advertisement> revisedAdvertisements;
-            URI                     useURL    = fLocation;
-            URI::Authority          authority = useURL.GetAuthority ().value_or (URI::Authority{});
-            authority.SetHost (IO::Network::GetPrimaryInternetAddress ());
-            useURL.SetAuthority (authority);
+            URI                     useBaseURL   = fLocation;
+            URI::Authority          useAuthority = useBaseURL.GetAuthority ().value_or (URI::Authority{});
+            useAuthority.SetHost (IO::Network::GetPrimaryInternetAddress ());
+            useBaseURL.SetAuthority (useAuthority);
             for (auto ai : fAdvertisements) {
-                ai.fLocation = fLocation.Combine (ai.fLocation);
+                ai.fLocation = useBaseURL.Combine (ai.fLocation);
                 revisedAdvertisements.Append (ai);
             }
             return revisedAdvertisements;
         }
     }
-    void StartNotifier_ ()
-    {
-        fNotifierThread_ = Thread::New (
-            [this] () {
-                PeriodicNotifier l;
-                l.Run (GetAdjustedAdvertisements_ (), PeriodicNotifier::FrequencyInfo{});
-            },
-            Thread::eAutoStart, L"SSDP Notifier"sv);
-    }
-    void StartResponder_ ()
-    {
-        fSearchResponderThread_ = Thread::New (
-            [this] () {
-                SearchResponder sr;
-                sr.Run (GetAdjustedAdvertisements_ ());
-            },
-            Thread::eAutoStart, L"SSDP Search Responder"sv);
-    }
     void Restart_ ()
     {
         Debug::TraceContextBumper ctx{"Restarting Basic SSDP server threads"};
-        {
-            Thread::SuppressInterruptionInContext suppressInterruption; // critical to wait til done cuz captures this
-            if (fNotifierThread_ != nullptr) {
-                fNotifierThread_.AbortAndWaitForDone ();
-            }
-            if (fSearchResponderThread_ != nullptr) {
-                fSearchResponderThread_.AbortAndWaitForDone ();
-            }
-        }
-        StartNotifier_ ();
-        StartResponder_ ();
+        fNotifier_.reset ();
+        fSearchResponder_.reset ();
+        fNotifier_        = make_unique<PeriodicNotifier> (GetAdjustedAdvertisements_ (), PeriodicNotifier::FrequencyInfo{});
+        fSearchResponder_ = make_unique<SearchResponder> (GetAdjustedAdvertisements_ ());
     }
-    Execution::Thread::CleanupPtr      fNotifierThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
-    Execution::Thread::CleanupPtr      fSearchResponderThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
+    unique_ptr<PeriodicNotifier>       fNotifier_;
+    unique_ptr<SearchResponder>        fSearchResponder_;
     optional<IO::Network::LinkMonitor> fLinkMonitor_; // optional so we can delete it first on shutdown (so no restart while stopping stuff)
 };
 

@@ -92,6 +92,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
     try {
         Device d;
+        d.fLocation.SetScheme (URI::SchemeType{L"http"sv});
         d.fLocation.SetAuthority (URI::Authority{nullopt, portForOurWS});
         d.fServer   = UPnP::SSDP::MakeServerHeaderValue (L"MyStroikaBasedSampleProduct/1.0"sv);
         d.fDeviceID = UPnP::MungePrimaryMacAddrIntoBaseDeviceID (L"315CAAE0-1335-57BF-A178-24C9EE756627"sv);

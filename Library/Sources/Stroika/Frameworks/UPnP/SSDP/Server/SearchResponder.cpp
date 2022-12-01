@@ -120,7 +120,7 @@ namespace {
     }
 }
 
-void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
+SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements)
 {
     if constexpr (qDebug) {
         for ([[maybe_unused]] const auto& a : advertisements) {
@@ -158,7 +158,7 @@ void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
             }
 
             // only stopped by thread abort
-            while (1) {
+            while (true) {
                 try {
                     byte          buf[4 * 1024]; // not sure of max packet size
                     SocketAddress from;
@@ -178,5 +178,4 @@ void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
             }
         },
         Execution::Thread::eAutoStart, kThreadName_);
-    fListenThread_.Join ();
 }

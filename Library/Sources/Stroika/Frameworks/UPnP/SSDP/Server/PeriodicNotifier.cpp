@@ -32,7 +32,7 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
  ******************************** PeriodicNotifier ******************************
  ********************************************************************************
  */
-void PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi)
+PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi)
 {
     if constexpr (qDebug) {
         for ([[maybe_unused]] const auto& a : advertisements) {
@@ -93,5 +93,4 @@ void PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const
             }
         },
         Execution::Thread::eAutoStart, kThreadName_);
-    fListenThread_.Join ();
 }
