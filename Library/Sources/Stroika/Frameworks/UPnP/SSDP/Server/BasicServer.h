@@ -30,8 +30,14 @@
 namespace Stroika::Frameworks::UPnP::SSDP::Server {
 
     /**
+     *  \brief handle the multicast part of UPnP SSDP - listening for searches and sending periodic notifications
+     *
      *  When this object is instantiated, it fires off threads to notify and respond to
      *  searches. When it is destroyed, it stops doing that.
+     * 
+     *  \note   Caller must separately handle the HTTP requests for device discovery (see SSDP server sample)
+     * 
+     *  \note  (since Stroika v3)requires Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator
      */
     class BasicServer {
     public:

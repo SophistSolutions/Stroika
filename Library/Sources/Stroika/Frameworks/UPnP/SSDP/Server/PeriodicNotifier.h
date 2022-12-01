@@ -8,7 +8,7 @@
 
 #include "../../../../Foundation/Characters/String.h"
 #include "../../../../Foundation/Configuration/Common.h"
-#include "../../../../Foundation/Execution/Thread.h"
+#include "../../../../Foundation/Execution/IntervalTimer.h"
 #include "../../../../Foundation/Traversal/Iterable.h"
 
 #include "../../Device.h"
@@ -21,8 +21,6 @@
  *
  * TODO:
  *      @todo   Look at http://brisa.garage.maemo.org/doc/html/upnp/ssdp.html for example server API
- *
- *      @todo   Did rough draft implementation. Works for some simple cases.
  */
 
 namespace Stroika::Frameworks::UPnP::SSDP::Server {
@@ -35,7 +33,10 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
      *  Instantiating the class starts the (background) notifications automatically, and they
      *  continue until the PeriodicNotifier object is destroyed.
      * 
+     *  \note requires Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator
+     * 
      *  \note - this behavior differs from Stroika 2.1, where you had to explicitly call Run ()
+     *  \note - requirement to instantiate IntervalTimer::Manager::Activator before this new in Stroika v3
      */
     class PeriodicNotifier {
     public:
@@ -45,7 +46,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
         };
 
     public:
-        PeriodicNotifier (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi);
+        PeriodicNotifier (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi = FrequencyInfo{});
         PeriodicNotifier (const PeriodicNotifier&) = delete;
 
     public:
@@ -64,7 +65,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
         // thread as needed, does responses etc.
 #endif
     private:
-        Execution::Thread::CleanupPtr fListenThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
+        unique_ptr<Execution::IntervalTimer::Adder> fIntervalTimerAdder_;
     };
 
 }

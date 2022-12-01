@@ -31,6 +31,9 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
      *  until the SearchResponder object is destroyed.
      * 
      *  \note - this behavior differs from Stroika 2.1, where you had to explicitly call Run ()
+     * 
+     *  \note this uses its own thread, rather than using IntervalTimer, because it waits on input
+     *        from the network, and must always be running/waiting
      */
     class SearchResponder {
     public:

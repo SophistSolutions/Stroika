@@ -90,6 +90,8 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         }
     }
 
+    Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator; // required by UPnP::BasicServer
+
     try {
         Device d;
         d.fLocation.SetScheme (URI::SchemeType{L"http"sv});

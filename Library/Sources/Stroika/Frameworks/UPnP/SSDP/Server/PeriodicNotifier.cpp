@@ -37,58 +37,47 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
     if constexpr (qDebug) {
         advertisements.Apply ([] ([[maybe_unused]] const auto& a) { Require (not a.fTarget.empty ()); });
     }
-    static const String kThreadName_{L"SSDP Periodic Notifier"sv};
-    fListenThread_ = Execution::Thread::New (
-        [advertisements, fi] () {
-            ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
-            s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), Socket::BindFlags{true});
-//s.Bind (SocketAddress (Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()), Socket::BindFlags{true});
+
+    // Construction of notifier will fail if we cannot bind - instead of failing quietly inside the loop
+    ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+    s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), Socket::BindFlags{true});
+    //s.Bind (SocketAddress (Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()), Socket::BindFlags{true});
+
 #if qDefaultTracingOn
-            bool firstTimeThru = true;
+   {
+        Debug::TraceContextBumper ctx{"SSDP PeriodicNotifier - first time notifications"};
+        for (const auto& a : advertisements) {
+            DbgTrace (L"(alive,loc=%s,usn=%s,...)", Characters::ToString (a.fLocation).c_str (), a.fUSN.c_str ());
+        }
+    }
 #endif
-            while (true) {
-#if qDefaultTracingOn
-                if (firstTimeThru) {
-                    Debug::TraceContextBumper ctx{"SSDP PeriodicNotifier - first time notifications"};
-                    for (const auto& a : advertisements) {
-                        DbgTrace (L"(alive,loc=%s,usn=%s,...)", Characters::ToString (a.fLocation).c_str (), a.fUSN.c_str ());
-                    }
-                    firstTimeThru = false;
-                }
-#endif
+    Execution::IntervalTimer::TimerCallback callback = [=] () mutable {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{"SSDP PeriodicNotifier - notifications"};
-                for (const auto& a : advertisements) {
+            Debug::TraceContextBumper ctx{"SSDP PeriodicNotifier - notifications"};
+            for (const auto& a : advertisements) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    String msg;
-                    msg += L"alive," sz;
-                    msg += L"location=" sz + a.fLocation + L", " sz;
-                    msg += L"ST=" sz + a.fST + L", " sz;
-                    msg += L"USN=" sz + a.fUSN;
-                    DbgTrace (L"(%s)", msg.c_str ());
+                String msg;
+                msg += L"alive," sz;
+                msg += L"location=" sz + a.fLocation + L", " sz;
+                msg += L"ST=" sz + a.fST + L", " sz;
+                msg += L"USN=" sz + a.fUSN;
+                DbgTrace (L"(%s)", msg.c_str ());
 #endif
-                }
-#endif
-                try {
-                    for (auto a : advertisements) {
-                        a.fAlive          = true; // periodic notifier must announce alive (we don't support 'going down' yet)
-                        Memory::BLOB data = SSDP::Serialize (L"NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a);
-                        s.SendTo (data.begin (), data.end (), UPnP::SSDP::V4::kSocketAddress);
-                    }
-                }
-                catch ([[maybe_unused]] const system_error& e) {
-                    // Error ENETUNREACH is common when you have network connection issues, for example on boot before
-                    // full connection
-                    DbgTrace (L"Ignoring inability to send SSDP notify packets: %s (try again later)", Characters::ToString (e).c_str ());
-                }
-                catch (const Execution::Thread::AbortException&) {
-                    Execution::ReThrow ();
-                }
-                catch (...) {
-                    DbgTrace (L"Ignoring inability to send SSDP notify packets (try again later)");
-                }
-                Execution::Sleep (fi.fRepeatInterval);
             }
-        },
-        Execution::Thread::eAutoStart, kThreadName_);
+#endif
+        try {
+            for (auto a : advertisements) {
+                a.fAlive          = true; // periodic notifier must announce alive (we don't support 'going down' yet)
+                Memory::BLOB data = SSDP::Serialize (L"NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a);
+                s.SendTo (data.begin (), data.end (), UPnP::SSDP::V4::kSocketAddress);
+            }
+        }
+        catch (const Execution::Thread::AbortException&) {
+            Execution::ReThrow ();
+        }
+        catch (...) {
+            DbgTrace (L"Ignoring inability to send SSDP notify packets: %s (try again later)", Characters::ToString (current_exception ()).c_str ());
+        }
+    };
+    fIntervalTimerAdder_ = make_unique<Execution::IntervalTimer::Adder> (callback, Time::Duration{fi.fRepeatInterval}, Execution::IntervalTimer::Adder::eRunImmediately);
 }
