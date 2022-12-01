@@ -38,7 +38,7 @@ public:
     Sequence<Advertisement> fAdvertisements;
     FrequencyInfo           fFrequencyInfo;
     URI                     fLocation;
-    Rep_ (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi)
+    Rep_ (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
         : fFrequencyInfo{fi}
         , fLocation{d.fLocation}
     {
@@ -63,8 +63,8 @@ public:
             }
         }
 
-        fNotifier_        = make_unique<PeriodicNotifier> (GetAdjustedAdvertisements_ (), PeriodicNotifier::FrequencyInfo{});
-        fSearchResponder_ = make_unique<SearchResponder> (GetAdjustedAdvertisements_ ());
+        fNotifier_        = make_unique<PeriodicNotifier> (GetAdjustedAdvertisements_ (), fi, ipVersion);
+        fSearchResponder_ = make_unique<SearchResponder> (GetAdjustedAdvertisements_ (), ipVersion);
 
         IO::Network::LinkMonitor lm;
         lm.AddCallback ([this] (IO::Network::LinkMonitor::LinkChange lc, String netName, String ipNum) {
@@ -115,7 +115,7 @@ public:
 ********************************** BasicServer *********************************
 ********************************************************************************
 */
-BasicServer::BasicServer (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi)
-    : fRep_{make_shared<Rep_> (d, dd, fi)}
+BasicServer::BasicServer (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
+    : fRep_{make_shared<Rep_> (d, dd, fi, ipVersion)}
 {
 }

@@ -46,7 +46,13 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
         };
 
     public:
-        PeriodicNotifier (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi = FrequencyInfo{});
+        /**
+         *  Note this binds to the sockets on construction, and then keeps notifying through IntervalTimer wakeups, until
+         *  this object is destroyed.
+         * 
+         *  Errors doing sends are just logged with DbgTrace()
+         */
+        PeriodicNotifier (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi = FrequencyInfo{}, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
         PeriodicNotifier (const PeriodicNotifier&) = delete;
 
     public:

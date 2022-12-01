@@ -120,27 +120,43 @@ namespace {
     }
 }
 
-SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements)
+SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements, ::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
 {
     if constexpr (qDebug) {
         advertisements.Apply ([] ([[maybe_unused]] const auto& a) { Require (not a.fTarget.empty ()); });
     }
+
+    // Construction of search responder will fail if we cannot bind - instead of failing quietly inside the loop
+    Collection<pair<ConnectionlessSocket::Ptr, SocketAddress>> sockets;
+    {
+        static constexpr Execution::Activity kActivity_{L"SSDP Binding in SearchResponder"sv};
+        Execution::DeclareActivity           da{&kActivity_};
+        constexpr unsigned int               kMaxHops_ = 4;
+        if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
+            ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+            s.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
+            s.SetMulticastLoopMode (true); // probably should make this configurable
+            s.SetMulticastTTL (kMaxHops_);
+            sockets += make_pair (s, UPnP::SSDP::V4::kSocketAddress);
+        }
+        if (InternetProtocol::IP::SupportIPV6 (ipVersion)) {
+            ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
+            s.Bind (SocketAddress{Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
+            s.SetMulticastLoopMode (true); // probably should make this configurable
+            s.SetMulticastTTL (kMaxHops_);
+            sockets += make_pair (s, UPnP::SSDP::V6::kSocketAddress);
+        }
+    }
     static const String kThreadName_{L"SSDP Search Responder"sv};
     fListenThread_ = Execution::Thread::New (
-        [advertisements] () {
+        [advertisements, sockets] () {
             Debug::TraceContextBumper ctx{"SSDP SearchResponder thread loop"};
-            ConnectionlessSocket::Ptr s         = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
-            Socket::BindFlags         bindFlags = Socket::BindFlags ();
-            bindFlags.fSO_REUSEADDR             = true;
-            s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
-            //s.Bind (SocketAddress (Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()), bindFlags);
-            s.SetMulticastLoopMode (true); // probably should make this configurable
-            constexpr unsigned int kMaxHops_ = 4;
-            s.SetMulticastTTL (kMaxHops_);
             {
             Again:
                 try {
-                    s.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
+                    for (pair<ConnectionlessSocket::Ptr, SocketAddress> s : sockets) {
+                        s.first.JoinMulticastGroup (s.second.GetInternetAddress ());
+                    }
                 }
                 catch (const system_error& e) {
                     if (e.code () == errc::no_such_device) {
@@ -158,12 +174,14 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements)
             // only stopped by thread abort
             while (true) {
                 try {
-                    byte          buf[4 * 1024]; // not sure of max packet size
-                    SocketAddress from;
-                    size_t        nBytesRead = s.ReceiveFrom (begin (buf), end (buf), 0, &from);
-                    Assert (nBytesRead <= Memory::NEltsOf (buf));
-                    using namespace Streams;
-                    ParsePacketAndRespond_ (TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (begin (buf), begin (buf) + nBytesRead)), advertisements, s, from);
+                    byte buf[4 * 1024]; // not sure of max packet size
+                    for (pair<ConnectionlessSocket::Ptr, SocketAddress> s : sockets) {
+                        SocketAddress from;
+                        size_t        nBytesRead = s.first.ReceiveFrom (begin (buf), end (buf), 0, &from);
+                        Assert (nBytesRead <= Memory::NEltsOf (buf));
+                        using namespace Streams;
+                        ParsePacketAndRespond_ (TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (begin (buf), begin (buf) + nBytesRead)), advertisements, s.first, from);
+                    }
                 }
                 catch (const Execution::Thread::AbortException&) {
                     Execution::ReThrow ();

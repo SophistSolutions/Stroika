@@ -32,19 +32,31 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
  ******************************** PeriodicNotifier ******************************
  ********************************************************************************
  */
-PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi)
+PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
 {
     if constexpr (qDebug) {
         advertisements.Apply ([] ([[maybe_unused]] const auto& a) { Require (not a.fTarget.empty ()); });
     }
 
     // Construction of notifier will fail if we cannot bind - instead of failing quietly inside the loop
-    ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
-    s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), Socket::BindFlags{true});
-    //s.Bind (SocketAddress (Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()), Socket::BindFlags{true});
+    Collection<pair<ConnectionlessSocket::Ptr, SocketAddress>> sockets;
+    {
+        static constexpr Execution::Activity kActivity_{L"SSDP Binding in PeriodNotifier"sv};
+        Execution::DeclareActivity           da{&kActivity_};
+        if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
+            ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+            s.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
+            sockets += make_pair (s, UPnP::SSDP::V4::kSocketAddress);
+        }
+        if (InternetProtocol::IP::SupportIPV6 (ipVersion)) {
+            ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
+            s.Bind (SocketAddress{Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
+            sockets += make_pair (s, UPnP::SSDP::V6::kSocketAddress);
+        }
+    }
 
 #if qDefaultTracingOn
-   {
+    {
         Debug::TraceContextBumper ctx{"SSDP PeriodicNotifier - first time notifications"};
         for (const auto& a : advertisements) {
             DbgTrace (L"(alive,loc=%s,usn=%s,...)", Characters::ToString (a.fLocation).c_str (), a.fUSN.c_str ());
@@ -53,23 +65,25 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
 #endif
     Execution::IntervalTimer::TimerCallback callback = [=] () mutable {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{"SSDP PeriodicNotifier - notifications"};
-            for (const auto& a : advertisements) {
+        Debug::TraceContextBumper ctx{"SSDP PeriodicNotifier - notifications"};
+        for (const auto& a : advertisements) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                String msg;
-                msg += L"alive," sz;
-                msg += L"location=" sz + a.fLocation + L", " sz;
-                msg += L"ST=" sz + a.fST + L", " sz;
-                msg += L"USN=" sz + a.fUSN;
-                DbgTrace (L"(%s)", msg.c_str ());
+            String msg;
+            msg += L"alive," sz;
+            msg += L"location=" sz + a.fLocation + L", " sz;
+            msg += L"ST=" sz + a.fST + L", " sz;
+            msg += L"USN=" sz + a.fUSN;
+            DbgTrace (L"(%s)", msg.c_str ());
 #endif
-            }
+        }
 #endif
         try {
             for (auto a : advertisements) {
                 a.fAlive          = true; // periodic notifier must announce alive (we don't support 'going down' yet)
                 Memory::BLOB data = SSDP::Serialize (L"NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a);
-                s.SendTo (data.begin (), data.end (), UPnP::SSDP::V4::kSocketAddress);
+                for (pair<ConnectionlessSocket::Ptr, SocketAddress> s : sockets) {
+                    s.first.SendTo (data.begin (), data.end (), s.second);
+                }
             }
         }
         catch (const Execution::Thread::AbortException&) {
