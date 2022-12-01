@@ -28,14 +28,14 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename TRAITS>
     Time::Duration TimedCache<KEY, VALUE, TRAITS>::GetMinimumAllowedFreshness () const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+        shared_lock critSec{fAssertExternallySyncrhonized_};
         return Time::Duration{fMinimumAllowedFreshness_};
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::SetMinimumAllowedFreshness (Time::Duration minimumAllowedFreshness)
     {
         Require (minimumAllowedFreshness > 0.0s);
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        lock_guard critSec{fAssertExternallySyncrhonized_};
         if (fMinimumAllowedFreshness_ != minimumAllowedFreshness.As<Time::DurationSecondsType> ()) {
             fMinimumAllowedFreshness_ = minimumAllowedFreshness.As<Time::DurationSecondsType> ();
             ClearOld_ (); // ClearOld_ not ClearIfNeeded_ to force auto-update of fNextAutoClearAt_, and cuz moderately likely items interestingly out of date after adjust of min allowed freshness
@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename TRAITS>
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, Time::DurationSecondsType* lastRefreshedAt) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+        shared_lock                                          critSec{fAssertExternallySyncrhonized_};
         typename MyMapType_::const_iterator                  i   = fMap_.find (key);
         Time::DurationSecondsType                            now = Time::GetTickCount ();
         if (i == fMap_.end ()) {
@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename TRAITS>
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        lock_guard critSec{fAssertExternallySyncrhonized_};
         typename MyMapType_::iterator                       i   = fMap_.find (key);
         Time::DurationSecondsType                           now = Time::GetTickCount ();
         if (i == fMap_.end ()) {
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, PurgeSpoiledDataFlagType prgeSpoiledData)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        lock_guard critSec{fAssertExternallySyncrhonized_};
         if (prgeSpoiledData == PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData) {
             ClearIfNeeded_ ();
         }
@@ -146,25 +146,25 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, Time::Duration freshAsOf)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        lock_guard critSec{fAssertExternallySyncrhonized_};
         fMap_.insert (typename MyMapType_::value_type{key, MyResult_{result, freshAsOf}});
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::Remove (typename Configuration::ArgByValueType<KEY> key)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        lock_guard critSec{fAssertExternallySyncrhonized_};
         fMap_.erase (key);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::clear ()
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        lock_guard critSec{fAssertExternallySyncrhonized_};
         fMap_.clear ();
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::PurgeSpoiledData ()
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        lock_guard critSec{fAssertExternallySyncrhonized_};
         ClearOld_ ();
     }
     template <typename KEY, typename VALUE, typename TRAITS>

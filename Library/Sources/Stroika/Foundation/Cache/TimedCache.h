@@ -255,7 +255,7 @@ namespace Stroika::Foundation::Cache {
      *  @see LRUCache
      */
     template <typename KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
-    class TimedCache : private Debug::AssertExternallySynchronizedMutex {
+    class TimedCache {
     public:
         using TraitsType = TRAITS;
 
@@ -386,6 +386,9 @@ namespace Stroika::Foundation::Cache {
         {
             SetMinimumAllowedFreshness (timeout);
         }
+
+    private:
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySyncrhonized_;
 
     private:
         Time::DurationSecondsType fMinimumAllowedFreshness_;

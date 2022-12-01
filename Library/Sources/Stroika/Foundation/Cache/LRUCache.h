@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Cache {
      *  @see SynchronizedLRUCache<> - internally synchronized version
      */
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename KEY_HASH_FUNCTION = nullptr_t, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
-    class LRUCache : private Debug::AssertExternallySynchronizedMutex {
+    class LRUCache {
     public:
         using KeyType = KEY;
 
@@ -242,6 +242,9 @@ namespace Stroika::Foundation::Cache {
     private:
         // invoke selected hash function, and return number 0..fHashtableSize_
         nonvirtual size_t H_ (typename Configuration::ArgByValueType<KEY> k) const;
+
+    private:
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySyncrhonized_;
 
     private:
         [[no_unique_address]] const KeyEqualsCompareFunctionType fKeyEqualsComparer_;
