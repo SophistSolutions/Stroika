@@ -91,7 +91,6 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     }
 
     try {
-
         Device d;
         d.fLocation.SetAuthority (URI::Authority{nullopt, portForOurWS});
         d.fServer   = UPnP::SSDP::MakeServerHeaderValue (L"MyStroikaBasedSampleProduct/1.0"sv);

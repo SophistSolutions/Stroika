@@ -61,7 +61,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
 
     public:
         /**
-         *  Its OK to destroy a listener while running. It will silently stop the running listner thread.
+         *  Its OK to destroy a listener while running. It will silently stop the running listener thread.
          */
         ~Listener ();
 
@@ -87,7 +87,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
     public:
         /**
          *  Stop an already running listener. Not an error to call if not already started
-         *  (just does nothing). This will block until the listner is stopped.
+         *  (just does nothing). This will block until the listener is stopped.
          */
         nonvirtual void Stop ();
 

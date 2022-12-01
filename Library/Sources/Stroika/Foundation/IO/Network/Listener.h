@@ -34,7 +34,7 @@
  *      @todo   Need to handle SSL? Could be having a special SSL-socket? that does the opessl ssl_accpet()?
  *              Or ??? not sure where best.
  *
- *      @todo   One trivial impl is to do one listner thread for each, but thats bad. Instead should
+ *      @todo   One trivial impl is to do one listener thread for each, but thats bad. Instead should
  *              use select (need to add Socket::Select(set<Socket> s) to Socket class - static method.
  *
  *              Note - maybe use pselect, or poll() or epoll() etc... Read carefully what is best.

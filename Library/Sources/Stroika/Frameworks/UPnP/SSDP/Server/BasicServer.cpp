@@ -102,7 +102,7 @@ public:
         fNotifierThread_ = Thread::New (
             [this] () {
                 PeriodicNotifier l;
-                l.Run (GetAdjustedAdvertisements_ (), PeriodicNotifier::FrequencyInfo ());
+                l.Run (GetAdjustedAdvertisements_ (), PeriodicNotifier::FrequencyInfo{});
             },
             Thread::eAutoStart, L"SSDP Notifier"sv);
     }
