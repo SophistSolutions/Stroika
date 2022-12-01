@@ -52,7 +52,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
          * 
          *  Errors doing sends are just logged with DbgTrace()
          */
-        PeriodicNotifier (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi = FrequencyInfo{}, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+        PeriodicNotifier (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
         PeriodicNotifier (const PeriodicNotifier&) = delete;
 
     public:
