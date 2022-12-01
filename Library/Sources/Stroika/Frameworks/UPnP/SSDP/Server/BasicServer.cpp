@@ -45,7 +45,7 @@ public:
         {
             SSDP::Advertisement dan;
             // dan.fLocation set in GetAdjustedAdvertisements_...
-            dan.fServer   = d.fServer;
+            dan.fServer = d.fServer;
             {
                 dan.fTarget = kTarget_UPNPRootDevice;
                 dan.fUSN    = Format (L"uuid:%s::%s", d.fDeviceID.c_str (), kTarget_UPNPRootDevice.c_str ());

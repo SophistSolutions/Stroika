@@ -43,7 +43,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
          *  see IO::Network::GetPrimaryInternetAddress () - when the server broadcasts it
          */
         BasicServer (const BasicServer&) = delete;
-        BasicServer (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi);
+        BasicServer (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi = FrequencyInfo{});
         const BasicServer& operator= (const BasicServer&) = delete;
 
     private:
