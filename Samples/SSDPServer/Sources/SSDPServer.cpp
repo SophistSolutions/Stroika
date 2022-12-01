@@ -50,13 +50,13 @@ namespace {
                                                 RequireNotNull (m);
                                                 Response& response           = m->rwResponse ();
                                                 response.rwHeaders ().server = L"stroika-ssdp-server-demo"sv;
+                                                response.contentType         = DataExchange::InternetMediaTypes::kXML;
                                                 response.write (Stroika::Frameworks::UPnP::Serialize (dd));
-                                                response.contentType = DataExchange::InternetMediaTypes::kXML;
                                             }}}};
                     conn.remainingConnectionLimits = HTTP::KeepAlive{0, 0}; // disable keep-alives
                     conn.ReadAndProcessMessage ();
                 });
-                runConnectionOnAnotherThread.SetThreadName (L"SSDP Servcie Connection Thread"sv);
+                runConnectionOnAnotherThread.SetThreadName (L"SSDP Service Connection Thread"sv);
                 runConnectionOnAnotherThread.Start ();
             };
             fListener = Listener{SocketAddresses (InternetAddresses_Any (), webServerPortNumber), onConnect};
@@ -111,7 +111,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         deviceInfo.fUDN              = L"uuid:" + d.fDeviceID;
 
         WebServerForDeviceDescription_ deviceWS{portForOurWS, deviceInfo};
-        BasicServer                    b{d, deviceInfo, BasicServer::FrequencyInfo ()};
+        BasicServer                    b{d, deviceInfo};
         Execution::WaitableEvent{}.Wait (quitAfter); // wait quitAfter seconds, or til user hits ctrl-c
     }
     catch (const Execution::TimeOutException&) {
