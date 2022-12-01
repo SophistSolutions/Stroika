@@ -63,6 +63,8 @@ public:
             }
         }
 
+        // SEE https://stroika.atlassian.net/browse/STK-962 - make resilient to failures setting up watchers, to retry
+
         fNotifier_        = make_unique<PeriodicNotifier> (GetAdjustedAdvertisements_ (), fi, ipVersion);
         fSearchResponder_ = make_unique<SearchResponder> (GetAdjustedAdvertisements_ (), ipVersion);
 
