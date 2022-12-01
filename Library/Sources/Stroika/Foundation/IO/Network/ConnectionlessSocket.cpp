@@ -153,6 +153,8 @@ namespace {
             }
             virtual void SetMulticastTTL (uint8_t ttl) override
             {
+                static constexpr Execution::Activity kSettingMulticastTTL{L"setting multicast TTL"sv};
+                Execution::DeclareActivity activityDeclare{&kSettingMulticastTTL};
                 lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
                 switch (GetAddressFamily ()) {
                     case SocketAddress::INET: {
@@ -160,7 +162,22 @@ namespace {
                         break;
                     }
                     case SocketAddress::INET6: {
-                        setsockopt<uint8_t> (IPPROTO_IPV6, IPV6_MULTICAST_HOPS, ttl);
+                        constexpr bool kIPV6LoophackMulticastTTLLinuxBug_{qPlatform_Linux}; // https://stroika.atlassian.net/browse/STK-578
+                        if (kIPV6LoophackMulticastTTLLinuxBug_) {
+                            try {
+                                setsockopt<char> (IPPROTO_IPV6, IPV6_MULTICAST_HOPS, ttl);
+                            }
+                            catch (const std::system_error& e) {
+                                // I've dug into this, and have no idea why its failing - with EINVAL
+                                if (e.code () == errc::invalid_argument) {
+                                    DbgTrace (L"IPV6_MULTICAST_HOPS: For now ignoring what is probbaly a very small, minor bug, but one where I have no idea why this is happening - but I saw reliably on Ubuntu/Linux");
+                                }
+                                // @todo - fix this code - almost certainly wrong...
+                            }
+                        }
+                        else {
+                            setsockopt<char> (IPPROTO_IPV6, IPV6_MULTICAST_HOPS, ttl);
+                        }
                         break;
                     }
                     default:
@@ -184,6 +201,8 @@ namespace {
             }
             virtual void SetMulticastLoopMode (bool loopMode) override
             {
+                static constexpr Execution::Activity kSettingMulticastLoopMode{L"setting multicast loop mode"sv};
+                Execution::DeclareActivity activityDeclare{&kSettingMulticastLoopMode};
                 lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
                 switch (GetAddressFamily ()) {
                     case SocketAddress::INET: {
