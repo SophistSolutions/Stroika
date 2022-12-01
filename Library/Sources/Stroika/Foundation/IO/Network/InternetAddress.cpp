@@ -142,6 +142,16 @@ InternetAddress::InternetAddress (const string& s, AddressFamily af)
     }
 }
 
+InternetAddress::InternetAddress (const string_view& s, AddressFamily af)
+    : InternetAddress{string{s}, af}
+{
+}
+
+InternetAddress::InternetAddress (const char* s, AddressFamily af)
+    : InternetAddress{string{s}, af}
+{
+}
+
 InternetAddress::InternetAddress (const String& s, AddressFamily af)
     : InternetAddress{s.AsUTF8 (), af}
 {

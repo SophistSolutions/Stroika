@@ -175,6 +175,8 @@ namespace Stroika::Foundation::IO::Network {
         constexpr InternetAddress (const InternetAddress&) noexcept = default;
         constexpr InternetAddress (InternetAddress&&) noexcept      = default;
         explicit InternetAddress (const string& s, AddressFamily af = AddressFamily::UNKNOWN);
+        explicit InternetAddress (const string_view& s, AddressFamily af = AddressFamily::UNKNOWN);
+        explicit InternetAddress (const char* s, AddressFamily af = AddressFamily::UNKNOWN);
         explicit InternetAddress (const String& s, AddressFamily af = AddressFamily::UNKNOWN);
         constexpr InternetAddress (const in_addr_t& i);
         InternetAddress (const in_addr_t& i, ByteOrder byteOrder);
