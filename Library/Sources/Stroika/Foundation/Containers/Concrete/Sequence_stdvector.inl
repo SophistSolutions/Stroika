@@ -245,7 +245,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Require (slotsAlloced >= this->size ());
         using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
         _SafeReadWriteRepAccessor                           accessor{this};
-        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{accessor._ConstGetRep ().fData_};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{accessor._GetWriteableRep ().fData_};
         if (accessor._ConstGetRep ().fData_.capacity () < slotsAlloced) {
             accessor._GetWriteableRep ().fData_.reserve (slotsAlloced);
             accessor._GetWriteableRep ().fChangeCounts_.PerformedChange ();
