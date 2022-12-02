@@ -37,13 +37,13 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline auto OutputStream<ELEMENT_TYPE>::Ptr::_GetSharedRep () const -> _SharedIRep
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         return dynamic_pointer_cast<_IRep> (inherited::_GetSharedRep ());
     }
     template <typename ELEMENT_TYPE>
     inline auto OutputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef () const -> const _IRep&
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         // reinterpret_cast faster than dynamic_cast - check equivalent
         Assert (dynamic_cast<const _IRep*> (&inherited::_GetRepConstRef ()) == reinterpret_cast<const _IRep*> (&inherited::_GetRepConstRef ()));
         return *reinterpret_cast<const _IRep*> (&inherited::_GetRepConstRef ());
@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline auto OutputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef () const -> _IRep&
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         // reinterpret_cast faster than dynamic_cast - check equivalent
         Assert (dynamic_cast<_IRep*> (&inherited::_GetRepRWRef ()) == reinterpret_cast<_IRep*> (&inherited::_GetRepRWRef ()));
         return *reinterpret_cast<_IRep*> (&inherited::_GetRepRWRef ());
@@ -59,14 +59,14 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Ptr::GetOffset () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         Require (IsOpen ());
         return _GetRepConstRef ().GetWriteOffset ();
     }
     template <typename ELEMENT_TYPE>
     SeekOffsetType OutputStream<ELEMENT_TYPE>::Ptr::GetOffsetToEndOfStream () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         Require (IsOpen ());
         SeekOffsetType savedReadFrom = GetOffset ();
         SeekOffsetType size          = Seek (Whence::eFromEnd, 0);
@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Ptr::Seek (SeekOffsetType offset) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         Require (IsOpen ());
         Require (offset < static_cast<SeekOffsetType> (numeric_limits<SignedSeekOffsetType>::max ()));
         return _GetRepRWRef ().SeekWrite (Whence::eFromStart, static_cast<SignedSeekOffsetType> (offset));
@@ -86,14 +86,14 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Ptr::Seek (Whence whence, SignedSeekOffsetType offset) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         Require (IsOpen ());
         return _GetRepRWRef ().SeekWrite (whence, offset);
     }
     template <typename ELEMENT_TYPE>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const ElementType* start, const ElementType* end) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         Require (IsOpen ());
         Require (start <= end);
         Require (start != nullptr or start == end);
@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Streams {
     template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const Memory::BLOB& blob) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         Require (IsOpen ());
         Write (blob.begin (), blob.end ());
     }
@@ -120,14 +120,14 @@ namespace Stroika::Foundation::Streams {
     template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>*>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const wchar_t* cStr) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         Require (IsOpen ());
         Write (cStr, cStr + ::wcslen (cStr));
     }
     template <typename ELEMENT_TYPE>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const ElementType& e) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         Require (IsOpen ());
         Write (&e, &e + 1);
     }
@@ -147,7 +147,7 @@ namespace Stroika::Foundation::Streams {
     template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteRaw (const POD_TYPE& p) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         Require (IsOpen ());
         WriteRaw (&p, &p + 1);
     }
@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Streams {
     template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         Require (IsOpen ());
         static_assert (is_trivial_v<POD_TYPE> and is_standard_layout_v<POD_TYPE>);
         Write (reinterpret_cast<const byte*> (start), reinterpret_cast<const byte*> (end));
@@ -163,14 +163,14 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::Close () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         Require (IsOpen ());
         _GetRepRWRef ().CloseWrite ();
     }
     template <typename ELEMENT_TYPE>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::Close (bool reset)
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         Require (IsOpen ());
         _GetRepRWRef ().CloseWrite ();
         if (reset) {
@@ -180,20 +180,20 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline bool OutputStream<ELEMENT_TYPE>::Ptr::IsOpen () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         return _GetRepConstRef ().IsOpenWrite ();
     }
     template <typename ELEMENT_TYPE>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::Flush () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         _GetRepRWRef ().Flush ();
     }
     template <>
     template <>
     inline const OutputStream<Characters::Character>::Ptr& OutputStream<Characters::Character>::Ptr::operator<< (const Characters::String& write2TextStream) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         Write (write2TextStream);
         return *this;
     }
@@ -201,7 +201,7 @@ namespace Stroika::Foundation::Streams {
     template <>
     inline const OutputStream<Characters::Character>::Ptr& OutputStream<Characters::Character>::Ptr::operator<< (const wchar_t* write2TextStream) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         Write (write2TextStream);
         return *this;
     }
