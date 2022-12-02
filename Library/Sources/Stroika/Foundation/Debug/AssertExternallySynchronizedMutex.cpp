@@ -50,7 +50,7 @@ void AssertExternallySynchronizedMutex::lock_ () noexcept
     }
 }
 
-void AssertExternallySynchronizedMutex::unlock_ ()  noexcept
+void AssertExternallySynchronizedMutex::unlock_ () noexcept
 {
     SharedContext* sharedContext = fSharedContext_.get ();
     Require (sharedContext->fThreadWithFullLock_ == this_thread::get_id ());

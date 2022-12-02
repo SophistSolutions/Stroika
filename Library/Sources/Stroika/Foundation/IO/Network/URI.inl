@@ -40,17 +40,17 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline bool URI::IsRelativeReference () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         return fScheme_.has_value ();
     }
     inline optional<URI::SchemeType> URI::GetScheme () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         return fScheme_;
     }
     inline void URI::SetScheme (const optional<SchemeType>& scheme)
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
         if (scheme) {
             scheme->Validate ();
         }
@@ -58,25 +58,25 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline void URI::SetScheme (const SchemeType& scheme)
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
         scheme.Validate ();
         fScheme_ = scheme;
     }
     inline optional<URI::Authority> URI::GetAuthority () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         return fAuthority_;
     }
     inline void URI::SetAuthority (const optional<Authority>& authority)
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
         CheckValidPathForAuthority_ (authority, fPath_);
         fAuthority_ = authority;
     }
     inline PortType URI::GetPortValue () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
-        optional<PortType>                          op = fAuthority_ ? fAuthority_->GetPort () : optional<PortType>{};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        optional<PortType>                                 op = fAuthority_ ? fAuthority_->GetPort () : optional<PortType>{};
         if (op) {
             return *op;
         }
@@ -88,12 +88,12 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline String URI::GetPath () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         return fPath_;
     }
     inline void URI::SetPath (const String& path)
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
         CheckValidPathForAuthority_ (fAuthority_, path);
         fPath_ = path;
     }
@@ -104,19 +104,19 @@ namespace Stroika::Foundation::IO::Network {
     template <>
     inline string URI::GetAuthorityRelativeResource () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         return GetAuthorityRelativeResource<String> ().AsASCII ();
     }
     template <>
     inline URI URI::GetAuthorityRelativeResource () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         return URI{nullopt, nullopt, GetPath (), GetQuery<String> ()};
     }
     template <>
     inline optional<String> URI::GetAbsPath () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         if (fPath_.empty ()) {
             return L"/"sv;
         }
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::IO::Network {
     template <>
     inline String URI::GetAbsPath () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         if (auto op = GetAbsPath<optional<String>> ()) {
             return *op;
         }
@@ -137,13 +137,13 @@ namespace Stroika::Foundation::IO::Network {
     template <>
     inline auto URI::GetQuery () const -> optional<String>
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         return fQuery_;
     }
     template <>
     inline auto URI::GetQuery () const -> optional<Query>
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         if (fQuery_) {
             return Query{*fQuery_};
         }
@@ -151,22 +151,22 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline void URI::SetQuery (const optional<String>& query)
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
         fQuery_ = query;
     }
     inline void URI::SetQuery (const optional<Query>& query)
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
         fQuery_ = query ? query->ComputeQueryString () : optional<String>{};
     }
     inline optional<String> URI::GetFragment () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         return fFragment_;
     }
     inline void URI::SetFragment (const optional<String>& fragment)
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
         fFragment_ = fragment;
     }
     inline strong_ordering URI::operator<=> (const URI& rhs) const

@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
      ********************************************************************************
      */
     template <typename T>
-    class Matrix<T>::Rep_ : private Debug::AssertExternallySynchronizedMutex {
+    class Matrix<T>::Rep_ {
     public:
         Rep_ (const DimensionType& dimensions)
             : fDimensions_{dimensions}
@@ -32,14 +32,14 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
 
         T GetAt (size_t row, size_t col) const
         {
-            AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
             Require (row < fDimensions_.fRows);
             Require (col < fDimensions_.fColumns);
             return fData_[row * fDimensions_.fColumns + col];
         }
         void SetAt (size_t row, size_t col, T value)
         {
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             Require (row < fDimensions_.fRows);
             Require (col < fDimensions_.fColumns);
             //fData_.SetAt (row * fDimensions_.fColumns + col, value);
@@ -47,12 +47,13 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         }
         void push_back (Configuration::ArgByValueType<T> fillValue)
         {
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             fData_.push_back (fillValue);
         }
 
         DimensionType GetDimensions () const
         {
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
             return fDimensions_;
         }
 
@@ -61,6 +62,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         // nb: use vector<> because for debug builds - big difference in speed  - and hidden anyhow
         // row*nCols + col is addressing scheme
         vector<T> fData_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
     /*

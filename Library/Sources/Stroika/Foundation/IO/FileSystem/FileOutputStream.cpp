@@ -205,11 +205,11 @@ public:
     }
 
 private:
-    int                        fFD_;
-    FlushFlag                  fFlushFlag;
-    AdoptFDPolicy              fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
-    bool                       fSeekable_{true};
-    optional<filesystem::path> fFileName_;
+    int                                                     fFD_;
+    FlushFlag                                               fFlushFlag;
+    AdoptFDPolicy                                           fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
+    bool                                                    fSeekable_{true};
+    optional<filesystem::path>                              fFileName_;
     [[no_unique_address]] AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };
 

@@ -223,7 +223,7 @@ namespace Stroika::Foundation::Execution {
     inline bool Thread::Ptr::ThrowInterruptExceptionInsideUserAPC (optional<bool> throwInterruptExceptionInsideUserAPC)
     {
         Debug::AssertExternallySynchronizedMutex::WriteLock critSec1{fThisAssertExternallySynchronized_};
-        bool                                         result = fRep_ == nullptr ? false : fRep_->fThrowInterruptExceptionInsideUserAPC_;
+        bool                                                result = fRep_ == nullptr ? false : fRep_->fThrowInterruptExceptionInsideUserAPC_;
         if (throwInterruptExceptionInsideUserAPC) {
             RequireNotNull (fRep_);
             fRep_->fThrowInterruptExceptionInsideUserAPC_ = throwInterruptExceptionInsideUserAPC.value ();

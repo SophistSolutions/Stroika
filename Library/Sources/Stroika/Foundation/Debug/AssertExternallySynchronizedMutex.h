@@ -76,15 +76,15 @@ namespace Stroika::Foundation::Debug {
      *  \par Example Usage
      *      \code
      *          struct foo   {
-     *              [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fData_;
+     *              [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
      *              inline  void    DoReadWriteStuffOnData ()
      *              {
-     *                  AssertExternallySynchronizedMutex::WriteLock writeLock { fData_ };       // lock_guard or scopedLock or unique_lock
+     *                  AssertExternallySynchronizedMutex::WriteLock writeLock { fThisAssertExternallySynchronized_ };
      *                  // now do what you usually do for to modify locked data...
      *              }
      *              inline  void    DoReadOnlyStuffOnData ()
      *              {
-     *                  AssertExternallySynchronizedMutex::ReadLock readLock { fData_ };
+     *                  AssertExternallySynchronizedMutex::ReadLock readLock { fThisAssertExternallySynchronized_ };
      *                  // now do what you usually do for DoReadOnlyStuffOnData - reading data only...
      *              }
      *          };

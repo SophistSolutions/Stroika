@@ -20,6 +20,7 @@ using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 
+using Debug::AssertExternallySynchronizedMutex;
 using Memory::BLOB;
 
 /*
@@ -87,7 +88,7 @@ pair<const byte*, const byte*> BLOB::BasicRep_::GetBounds () const
  */
 pair<const byte*, const byte*> BLOB::ZeroRep_::GetBounds () const
 {
-    return pair<const byte*, const byte*> (nullptr, nullptr);
+    return pair<const byte*, const byte*>{nullptr, nullptr};
 }
 
 /*
@@ -96,8 +97,8 @@ pair<const byte*, const byte*> BLOB::ZeroRep_::GetBounds () const
  ********************************************************************************
  */
 BLOB::AdoptRep_::AdoptRep_ (const byte* start, const byte* end)
-    : fStart (start)
-    , fEnd (end)
+    : fStart{start}
+    , fEnd{end}
 {
     Require (start <= end);
 }
@@ -110,7 +111,7 @@ BLOB::AdoptRep_::~AdoptRep_ ()
 pair<const byte*, const byte*> BLOB::AdoptRep_::GetBounds () const
 {
     Ensure (fStart <= fEnd);
-    return pair<const byte*, const byte*> (fStart, fEnd);
+    return pair<const byte*, const byte*>{fStart, fEnd};
 }
 
 /*
@@ -119,8 +120,8 @@ pair<const byte*, const byte*> BLOB::AdoptRep_::GetBounds () const
  ********************************************************************************
  */
 BLOB::AdoptAppLifetimeRep_::AdoptAppLifetimeRep_ (const byte* start, const byte* end)
-    : fStart (start)
-    , fEnd (end)
+    : fStart{start}
+    , fEnd{end}
 {
     Require (start <= end);
 }
@@ -128,7 +129,7 @@ BLOB::AdoptAppLifetimeRep_::AdoptAppLifetimeRep_ (const byte* start, const byte*
 pair<const byte*, const byte*> BLOB::AdoptAppLifetimeRep_::GetBounds () const
 {
     Ensure (fStart <= fEnd);
-    return pair<const byte*, const byte*> (fStart, fEnd);
+    return pair<const byte*, const byte*>{fStart, fEnd};
 }
 
 /*
@@ -173,15 +174,16 @@ namespace {
     using namespace Streams;
     struct BLOBBINSTREAM_ : InputStream<byte>::Ptr {
         BLOBBINSTREAM_ (const BLOB& b)
-            : InputStream<byte>::Ptr (make_shared<REP> (b))
+            : InputStream<byte>::Ptr {make_shared<REP> (b)}
         {
         }
-        struct REP : InputStream<byte>::_IRep, private Debug::AssertExternallySynchronizedMutex {
+        struct REP : InputStream<byte>::_IRep {
             bool fIsOpenForRead_{true};
+            [[no_unique_address]] AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
             REP (const BLOB& b)
-                : fCur (b.begin ())
-                , fStart (b.begin ())
-                , fEnd (b.end ())
+                : fCur{b.begin ()}
+                , fStart{b.begin ()}
+                , fEnd {b.end ()}
             {
             }
             virtual bool IsSeekable () const override
@@ -202,7 +204,7 @@ namespace {
                 RequireNotNull (intoStart);
                 RequireNotNull (intoEnd);
                 Require (intoStart < intoEnd);
-                AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+                AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
                 size_t                                       bytesToRead = intoEnd - intoStart;
                 size_t                                       bytesLeft   = fEnd - fCur;
                 bytesToRead                                              = min (bytesLeft, bytesToRead);
@@ -216,18 +218,18 @@ namespace {
             virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
             {
                 Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-                AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+                AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
                 return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fEnd - fCur);
             }
             virtual SeekOffsetType GetReadOffset () const override
             {
                 Require (IsOpenRead ());
-                AssertExternallySynchronizedMutex::ReadLock readLock{*this};
+                AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
                 return fCur - fStart;
             }
             virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
-                AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+                AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 switch (whence) {
                     case Whence::eFromStart: {
@@ -274,14 +276,14 @@ namespace {
 template <>
 Streams::InputStream<byte>::Ptr BLOB::As () const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
     return BLOBBINSTREAM_{*this};
 }
 
 Characters::String BLOB::AsHex (size_t maxBytesToShow) const
 {
     // @todo Could be more efficient
-    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
     StringBuilder                               sb;
     size_t                                      cnt{};
     for (byte b : *this) {
@@ -296,7 +298,7 @@ Characters::String BLOB::AsHex (size_t maxBytesToShow) const
 BLOB BLOB::Repeat (unsigned int count) const
 {
     // @todo - re-implement using powers of 2 - so fewer concats (maybe - prealloc / reserve so only one - using vector)
-    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
     BLOB                                        tmp = *this;
     for (unsigned int i = 1; i < count; ++i) {
         tmp = tmp + *this;
@@ -308,13 +310,13 @@ BLOB BLOB::Slice (size_t startAt, size_t endAt) const
 {
     Require (startAt <= endAt);
     Require (endAt < size ());
-    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
     return BLOB (begin () + startAt, begin () + endAt);
 }
 
 String BLOB::ToString (size_t maxBytesToShow) const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
     if (size () > maxBytesToShow) {
         String hexStr    = AsHex (maxBytesToShow + 1); // so we can replace/elispis with LimitLength ()
         size_t maxStrLen = maxBytesToShow < numeric_limits<size_t>::max () / 2 ? maxBytesToShow * 2 : maxBytesToShow;

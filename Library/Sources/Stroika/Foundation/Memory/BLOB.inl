@@ -208,7 +208,7 @@ namespace Stroika::Foundation::Memory {
     template <>
     inline pair<const byte*, const byte*> BLOB::As () const
     {
-        pair<const byte*, const byte*>              result;
+        pair<const byte*, const byte*>                     result;
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         As<pair<const byte*, const byte*>> (&result);
         return result;
@@ -216,7 +216,7 @@ namespace Stroika::Foundation::Memory {
     template <>
     inline pair<const uint8_t*, const uint8_t*> BLOB::As () const
     {
-        pair<const uint8_t*, const uint8_t*>        result;
+        pair<const uint8_t*, const uint8_t*>               result;
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         As<pair<const uint8_t*, const uint8_t*>> (&result);
         return result;
@@ -259,8 +259,8 @@ namespace Stroika::Foundation::Memory {
         RequireNotNull (into);
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         auto                                               t = fRep_->GetBounds ();
-        into->first                                   = reinterpret_cast<const uint8_t*> (t.first);
-        into->second                                  = reinterpret_cast<const uint8_t*> (t.second);
+        into->first                                          = reinterpret_cast<const uint8_t*> (t.first);
+        into->second                                         = reinterpret_cast<const uint8_t*> (t.second);
     }
     template <typename T>
     inline void BLOB::As (T* into) const
@@ -271,7 +271,7 @@ namespace Stroika::Foundation::Memory {
     }
     inline byte BLOB::operator[] (const size_t i) const
     {
-        pair<const byte*, const byte*>              result;
+        pair<const byte*, const byte*>                     result;
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         As<pair<const byte*, const byte*>> (&result);
         Assert (i < static_cast<size_t> (result.second - result.first));
@@ -343,11 +343,11 @@ namespace Stroika::Foundation::Memory {
     {
         Debug::AssertExternallySynchronizedMutex::ReadLock readLockL{lhs.fThisAssertExternallySynchronized_}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
         Debug::AssertExternallySynchronizedMutex::ReadLock readLockR{rhs.fThisAssertExternallySynchronized_};
-        pair<const byte*, const byte*>              l            = lhs.fRep_->GetBounds ();
-        pair<const byte*, const byte*>              r            = rhs.fRep_->GetBounds ();
-        size_t                                      lSize        = l.second - l.first;
-        size_t                                      rSize        = r.second - r.first;
-        size_t                                      nCommonBytes = min (lSize, rSize);
+        pair<const byte*, const byte*>                     l            = lhs.fRep_->GetBounds ();
+        pair<const byte*, const byte*>                     r            = rhs.fRep_->GetBounds ();
+        size_t                                             lSize        = l.second - l.first;
+        size_t                                             rSize        = r.second - r.first;
+        size_t                                             nCommonBytes = min (lSize, rSize);
         if (nCommonBytes != 0) {
             // see http://stackoverflow.com/questions/16362925/can-i-pass-a-null-pointer-to-memcmp -- illegal to pass nullptr to memcmp() even if size 0
             if (int tmp = ::memcmp (l.first, r.first, nCommonBytes)) {

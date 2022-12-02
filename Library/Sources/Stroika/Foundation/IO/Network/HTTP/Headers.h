@@ -125,7 +125,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *          special case while processing header fields.  (See Appendix A.2.3
      *          of [Kri2001] for details.)
      */
-    class Headers : private Debug::AssertExternallySynchronizedMutex {
+    class Headers {
     public:
         /**
          *  ExtendableProperty allow the value of some headers to be overridden by some containing object.
@@ -147,7 +147,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Allow users of the Headers object to have it share a 'assure externally synchronized' context.
          */
-        using Debug::AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext;
+        void SetAssertExternallySynchronizedMutexContext (const shared_ptr<Debug::AssertExternallySynchronizedMutex::SharedContext>& sharedContext);
 #endif
 
     public:
@@ -438,18 +438,19 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         // Could have properties lookup once when loading and store here. Or could have
         // them dynamically lookup in fExtraHeaders_. Just put the ones here in special variables
         // that are very commonly checked for, so their check/update will be a bit quicker.
-        Collection<KeyValuePair<String, String>> fExtraHeaders_;
-        optional<CacheControl>                   fCacheControl_;
-        optional<uint64_t>                       fContentLength_; // must acccess through property to access extended property handlers (except root getter/setter)
-        optional<InternetMediaType>              fContentType_;
-        optional<CookieList>                     fCookieList_; // store optional cuz often missing, and faster init
-        optional<Time::DateTime>                 fDate_;
-        optional<HTTP::ETag>                     fETag_; // must acccess through property to access extended property handlers (except root getter/setter)
-        optional<String>                         fHost_;
-        optional<IfNoneMatch>                    fIfNoneMatch_;
-        optional<CookieList>                     fSetCookieList_;    // store optional cuz often missing, and faster init
-        optional<TransferEncodings>              fTransferEncoding_; // must acccess through property to access extended property handlers (except root getter/setter)
-        optional<Containers::Set<String>>        fVary_;
+        Collection<KeyValuePair<String, String>>                       fExtraHeaders_;
+        optional<CacheControl>                                         fCacheControl_;
+        optional<uint64_t>                                             fContentLength_; // must acccess through property to access extended property handlers (except root getter/setter)
+        optional<InternetMediaType>                                    fContentType_;
+        optional<CookieList>                                           fCookieList_; // store optional cuz often missing, and faster init
+        optional<Time::DateTime>                                       fDate_;
+        optional<HTTP::ETag>                                           fETag_; // must acccess through property to access extended property handlers (except root getter/setter)
+        optional<String>                                               fHost_;
+        optional<IfNoneMatch>                                          fIfNoneMatch_;
+        optional<CookieList>                                           fSetCookieList_;    // store optional cuz often missing, and faster init
+        optional<TransferEncodings>                                    fTransferEncoding_; // must acccess through property to access extended property handlers (except root getter/setter)
+        optional<Containers::Set<String>>                              fVary_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
     template <>
     Association<String, String> Headers::As () const;

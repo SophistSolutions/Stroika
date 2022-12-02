@@ -84,7 +84,7 @@ namespace Stroika::Foundation::IO::Network {
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
-    class URI : private Debug::AssertExternallySynchronizedMutex {
+    class URI {
     public:
         using Authority = UniformResourceIdentification::Authority;
 
@@ -355,11 +355,12 @@ namespace Stroika::Foundation::IO::Network {
         static void CheckValidPathForAuthority_ (const optional<Authority>& authority, const String& path);
 
     private:
-        optional<SchemeType> fScheme_;    // aka protocol
-        optional<Authority>  fAuthority_; // aka host+port+username
-        String               fPath_;      // Can be empty string, but documented as always 'present' even as empty so model that way
-        optional<String>     fQuery_;     // ditto
-        optional<String>     fFragment_;  // ditto
+        optional<SchemeType>                                           fScheme_;    // aka protocol
+        optional<Authority>                                            fAuthority_; // aka host+port+username
+        String                                                         fPath_;      // Can be empty string, but documented as always 'present' even as empty so model that way
+        optional<String>                                               fQuery_;     // ditto
+        optional<String>                                               fFragment_;  // ditto
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
     template <>
