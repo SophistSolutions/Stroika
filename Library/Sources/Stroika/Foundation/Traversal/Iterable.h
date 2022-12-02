@@ -1322,7 +1322,7 @@ namespace Stroika::Foundation::Traversal {
 
     private:
 #if qDebug
-        Iterable<T>*  fIterableEnvelope_; // mostly saved for assertions, but also for _UpdateRep- when we lose that - we can ifdef qDebug this field (as we do for read accessor)
+        Iterable<T>* fIterableEnvelope_; // mostly saved for assertions, but also for _UpdateRep- when we lose that - we can ifdef qDebug this field (as we do for read accessor)
 #endif
         REP_SUB_TYPE* fRepReference_;
     };
