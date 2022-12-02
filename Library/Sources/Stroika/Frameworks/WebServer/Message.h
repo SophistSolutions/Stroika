@@ -57,7 +57,7 @@ namespace Stroika::Frameworks::WebServer {
          *  This is the network address where the message (request) came from and where the message response is
          *  going to be returned to. This can be sometimes omitted/unknown (HOW UNKNOWN - TBD DOCUMENT)
          *
-         *  @see Socket::GetPeerAddress
+         *  @see ConnectionOrientedStreamSocket::Ptr::GetPeerAddress
          */
         Common::ReadOnlyProperty<optional<IO::Network::SocketAddress>> peerAddress;
 
