@@ -209,7 +209,7 @@ namespace Stroika::Foundation::Memory {
     inline pair<const byte*, const byte*> BLOB::As () const
     {
         pair<const byte*, const byte*>              result;
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
         As<pair<const byte*, const byte*>> (&result);
         return result;
     }
@@ -217,7 +217,7 @@ namespace Stroika::Foundation::Memory {
     inline pair<const uint8_t*, const uint8_t*> BLOB::As () const
     {
         pair<const uint8_t*, const uint8_t*>        result;
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
         As<pair<const uint8_t*, const uint8_t*>> (&result);
         return result;
     }
@@ -232,8 +232,8 @@ namespace Stroika::Foundation::Memory {
     inline void BLOB::As (vector<byte>* into) const
     {
         RequireNotNull (into);
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
-        pair<const byte*, const byte*>              tmp = fRep_->GetBounds ();
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
+        pair<const byte*, const byte*>                     tmp = fRep_->GetBounds ();
         Assert (tmp.first <= tmp.second);
         into->assign (tmp.first, tmp.second);
     }
@@ -241,8 +241,8 @@ namespace Stroika::Foundation::Memory {
     inline void BLOB::As (vector<uint8_t>* into) const
     {
         RequireNotNull (into);
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
-        pair<const byte*, const byte*>              tmp = fRep_->GetBounds ();
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
+        pair<const byte*, const byte*>                     tmp = fRep_->GetBounds ();
         Assert (tmp.first <= tmp.second);
         into->assign (reinterpret_cast<const uint8_t*> (tmp.first), reinterpret_cast<const uint8_t*> (tmp.second));
     }
@@ -250,15 +250,15 @@ namespace Stroika::Foundation::Memory {
     inline void BLOB::As (pair<const byte*, const byte*>* into) const
     {
         RequireNotNull (into);
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
         *into = fRep_->GetBounds ();
     }
     template <>
     inline void BLOB::As (pair<const uint8_t*, const uint8_t*>* into) const
     {
         RequireNotNull (into);
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
-        auto                                        t = fRep_->GetBounds ();
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
+        auto                                               t = fRep_->GetBounds ();
         into->first                                   = reinterpret_cast<const uint8_t*> (t.first);
         into->second                                  = reinterpret_cast<const uint8_t*> (t.second);
     }
@@ -272,43 +272,43 @@ namespace Stroika::Foundation::Memory {
     inline byte BLOB::operator[] (const size_t i) const
     {
         pair<const byte*, const byte*>              result;
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
         As<pair<const byte*, const byte*>> (&result);
         Assert (i < static_cast<size_t> (result.second - result.first));
         return result.first[i];
     }
     inline bool BLOB::empty () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
-        pair<const byte*, const byte*>              tmp = fRep_->GetBounds ();
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
+        pair<const byte*, const byte*>                     tmp = fRep_->GetBounds ();
         Assert (tmp.first <= tmp.second);
         return tmp.first == tmp.second;
     }
     inline const byte* BLOB::begin () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
         return fRep_->GetBounds ().first;
     }
     inline const byte* BLOB::end () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
         return fRep_->GetBounds ().second;
     }
     inline size_t BLOB::GetSize () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
-        pair<const byte*, const byte*>              tmp = fRep_->GetBounds ();
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
+        pair<const byte*, const byte*>                     tmp = fRep_->GetBounds ();
         Assert (tmp.first <= tmp.second);
         return tmp.second - tmp.first;
     }
     inline size_t BLOB::length () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
         return GetSize ();
     }
     inline size_t BLOB::size () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
         return GetSize ();
     }
     inline strong_ordering BLOB::operator<=> (const BLOB& rhs) const
@@ -317,8 +317,8 @@ namespace Stroika::Foundation::Memory {
     }
     inline bool BLOB::operator== (const BLOB& rhs) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSecL{*this}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
-        AssertExternallySynchronizedMutex::ReadLock critSecR{rhs};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSecL{fAssertExternallySynchronized_};    // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSecR{rhs.fAssertExternallySynchronized_};
         if (fRep_ == rhs.fRep_) {
             return true; // cheap optimization for not super uncommon case
         }
@@ -336,13 +336,13 @@ namespace Stroika::Foundation::Memory {
     }
     inline BLOB BLOB::operator+ (const BLOB& rhs) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
         return BLOB ({*this, rhs});
     }
     inline strong_ordering BLOB::TWC_ (const BLOB& lhs, const BLOB& rhs)
     {
-        AssertExternallySynchronizedMutex::ReadLock critSecL{lhs}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
-        AssertExternallySynchronizedMutex::ReadLock critSecR{rhs};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSecL{lhs.fAssertExternallySynchronized_}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSecR{rhs.fAssertExternallySynchronized_};
         pair<const byte*, const byte*>              l            = lhs.fRep_->GetBounds ();
         pair<const byte*, const byte*>              r            = rhs.fRep_->GetBounds ();
         size_t                                      lSize        = l.second - l.first;

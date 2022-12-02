@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Memory {
      *          And the use of InlineBuffer<64> means that allocation of BLOBs of size <= 64 should requite no calls to the
      *          global ::operator new/malloc/free/delete
      */
-    class BLOB : private Debug::AssertExternallySynchronizedMutex {
+    class BLOB  {
     protected:
         struct _IRep;
 
@@ -346,6 +346,7 @@ namespace Stroika::Foundation::Memory {
         struct AdoptAppLifetimeRep_;
 
     private:
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
         _SharedIRep fRep_;
     };
 
