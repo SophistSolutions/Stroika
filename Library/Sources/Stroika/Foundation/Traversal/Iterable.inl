@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>* it) noexcept
-        : shared_lock<const Debug::AssertExternallySynchronizedMutex>{*it}
+        : ReadLock{*it}
         , fConstRef_{static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ())}
 #if qDebug
         , fIterableEnvelope_{it}
@@ -112,9 +112,9 @@ namespace Stroika::Foundation::Traversal {
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const _SafeReadRepAccessor& src) noexcept
 #if qDebug
-        : shared_lock<const Debug::AssertExternallySynchronizedMutex>{*src.fIterableEnvelope_}
+        : ReadLock{*src.fIterableEnvelope_}
 #else
-        : shared_lock<const Debug::AssertExternallySynchronizedMutex>{*(const Iterable<T>*)nullptr}
+        : ReadLock{*(const Iterable<T>*)nullptr}
 #endif
         , fConstRef_{src.fConstRef_}
 #if qDebug
@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (_SafeReadRepAccessor&& src) noexcept
-        : shared_lock<const Debug::AssertExternallySynchronizedMutex> (move<const Debug::AssertExternallySynchronizedMutex> (src))
+        : ReadLock (move<const Debug::AssertExternallySynchronizedMutex> (src))
         , fConstRef_{src.fConstRef_}
 #if qDebug
         , fIterableEnvelope_{src.fIterableEnvelope_}
@@ -164,8 +164,10 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope)
-        : lock_guard<const Debug::AssertExternallySynchronizedMutex>{*iterableEnvelope}
+        : WriteLock{*iterableEnvelope}
+#if qDebug
         , fIterableEnvelope_{iterableEnvelope}
+#endif
         , fRepReference_{static_cast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.rwget ())}
     {
         RequireNotNull (iterableEnvelope);
@@ -173,13 +175,17 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (_SafeReadWriteRepAccessor&& from)
-        : lock_guard<const Debug::AssertExternallySynchronizedMutex>{move<const Debug::AssertExternallySynchronizedMutex> (from)}
+        : WriteLock{move<const Debug::AssertExternallySynchronizedMutex> (from)}
+#if qDebug
         , fIterableEnvelope_{from.fIterableEnvelope_}
+#endif
         , fRepReference_{from.fRepReference_}
     {
         RequireNotNull (fRepReference_);
         EnsureMember (fRepReference_, REP_SUB_TYPE);
+#if qDebug
         from.fIterableEnvelope_ = nullptr;
+#endif
         from.fRepReference_     = nullptr;
     }
     template <typename T>

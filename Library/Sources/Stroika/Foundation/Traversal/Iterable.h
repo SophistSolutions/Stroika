@@ -1271,7 +1271,7 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T>
     template <typename REP_SUB_TYPE>
-    class Iterable<T>::_SafeReadRepAccessor : private shared_lock<const Debug::AssertExternallySynchronizedMutex> {
+    class Iterable<T>::_SafeReadRepAccessor : private Debug::AssertExternallySynchronizedMutex::ReadLock {
     public:
         _SafeReadRepAccessor () = delete;
         _SafeReadRepAccessor (const _SafeReadRepAccessor& src) noexcept;
@@ -1292,19 +1292,19 @@ namespace Stroika::Foundation::Traversal {
     };
 
     /**
- *  _SafeReadWriteRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the
- *  'this' object, and captures a writable to the internal 'REP'.
- *
- *  For DEBUGGING (catching races) purposes, it also locks the Debug::AssertExternallySynchronizedMutex,
- *  so that IF this object is accessed illegally by other threads while in use (this use), it will
- *  be caught.
- *
- *  @see _SafeReadRepAccessor
- *
- */
+     *  _SafeReadWriteRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the
+     *  'this' object, and captures a writable to the internal 'REP'.
+     *
+     *  For DEBUGGING (catching races) purposes, it also locks the Debug::AssertExternallySynchronizedMutex,
+     *  so that IF this object is accessed illegally by other threads while in use (this use), it will
+     *  be caught.
+     *
+     *  @see _SafeReadRepAccessor
+     *
+     */
     template <typename T>
     template <typename REP_SUB_TYPE>
-    class Iterable<T>::_SafeReadWriteRepAccessor : private lock_guard<const Debug::AssertExternallySynchronizedMutex> {
+    class Iterable<T>::_SafeReadWriteRepAccessor : private Debug::AssertExternallySynchronizedMutex::WriteLock {
     public:
         _SafeReadWriteRepAccessor ()                                     = delete;
         _SafeReadWriteRepAccessor (const _SafeReadWriteRepAccessor& src) = default;
@@ -1321,7 +1321,9 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual REP_SUB_TYPE& _GetWriteableRep ();
 
     private:
+#if qDebug
         Iterable<T>*  fIterableEnvelope_; // mostly saved for assertions, but also for _UpdateRep- when we lose that - we can ifdef qDebug this field (as we do for read accessor)
+#endif
         REP_SUB_TYPE* fRepReference_;
     };
 

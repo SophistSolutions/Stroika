@@ -178,7 +178,7 @@ WMICollector& WMICollector::operator= (const WMICollector& rhs)
     Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::operator="};
 #endif
     if (this != &rhs) {
-        AssertExternallySynchronizedMutex::ReadLock        critSec1{rhs};
+        AssertExternallySynchronizedMutex::ReadLock  critSec1{rhs};
         AssertExternallySynchronizedMutex::WriteLock critSec2{*this};
         fInstanceData_.clear ();
         fObjectName_ = rhs.fObjectName_;
@@ -317,7 +317,7 @@ bool WMICollector::AddInstancesIf (const Iterable<String>& instances)
     Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddInstancesIf"};
 #endif
     AssertExternallySynchronizedMutex::WriteLock critSec{*this};
-    bool                                                anyAdded = false;
+    bool                                         anyAdded = false;
     instances.Apply ([this, &anyAdded] (String i) {
         if (not fInstanceData_.ContainsKey (i)) {
             AddInstance_ (i);

@@ -34,7 +34,7 @@ Message::Message (Request&& srcRequest, Response&& srcResponse, const optional<I
         return thisObj->fRequest_;
     }}
     , rwRequest{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Request& {
-        Message*                                     thisObj = const_cast < Message*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::rwRequest));
+        Message*                                     thisObj = const_cast<Message*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::rwRequest));
         AssertExternallySynchronizedMutex::WriteLock critSec{*thisObj};
         return thisObj->fRequest_;
     }}
@@ -44,7 +44,7 @@ Message::Message (Request&& srcRequest, Response&& srcResponse, const optional<I
         return thisObj->fResponse_;
     }}
     , rwResponse{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Response& {
-         Message*                               thisObj = const_cast<Message*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::rwResponse));
+        Message*                                     thisObj = const_cast<Message*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::rwResponse));
         AssertExternallySynchronizedMutex::WriteLock critSec{*thisObj};
         return thisObj->fResponse_;
     }}
