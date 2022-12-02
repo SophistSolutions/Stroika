@@ -66,7 +66,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *          (but note that the shared state is internally synchronized); but you still must externally synchronize 
      *          access to all instrument non-const methods.
      */
-    class Instrument : private Debug::AssertExternallySynchronizedMutex {
+    class Instrument {
     public:
         /**
          *  This is a base type for capture contexts. Actual contexts will contain more information
@@ -186,11 +186,12 @@ namespace Stroika::Frameworks::SystemPerformance {
         }
 
     private:
-        InstrumentNameType                   fInstrumentName_;
-        Mapping<type_index, MeasurementType> fType2MeasurementTypes_;
-        Set<MeasurementType>                 fCapturedMeasurementTypes_;
-        DataExchange::ObjectVariantMapper    fObjectVariantMapper_;
-        unique_ptr<IRep>                     fCaptureRep_;
+        InstrumentNameType                                             fInstrumentName_;
+        Mapping<type_index, MeasurementType>                           fType2MeasurementTypes_;
+        Set<MeasurementType>                                           fCapturedMeasurementTypes_;
+        DataExchange::ObjectVariantMapper                              fObjectVariantMapper_;
+        unique_ptr<IRep>                                               fCaptureRep_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
 }

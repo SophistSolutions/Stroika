@@ -16,6 +16,8 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
+using Debug::AssertExternallySynchronizedMutex;
+
 /*
  ********************************************************************************
  ************************* WebServer::Message ***********************************
@@ -25,27 +27,27 @@ Message::Message (Request&& srcRequest, Response&& srcResponse, const optional<I
     : peerAddress{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<IO::Network::SocketAddress> {
               const Message*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::peerAddress);
-              AssertExternallySynchronizedMutex::ReadLock critSec{*thisObj};
+              AssertExternallySynchronizedMutex::ReadLock readLock{thisObj->fThisAssertExternallySynchronized_};
               return thisObj->fPeerAddress_;
           }}
     , request{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Request& {
         const Message*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::request);
-        AssertExternallySynchronizedMutex::ReadLock critSec{*thisObj};
+        AssertExternallySynchronizedMutex::ReadLock readLock{thisObj->fThisAssertExternallySynchronized_};
         return thisObj->fRequest_;
     }}
     , rwRequest{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Request& {
         Message*                                     thisObj = const_cast<Message*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::rwRequest));
-        AssertExternallySynchronizedMutex::WriteLock critSec{*thisObj};
+        AssertExternallySynchronizedMutex::WriteLock writeLock{thisObj->fThisAssertExternallySynchronized_};
         return thisObj->fRequest_;
     }}
     , response{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Response& {
         const Message*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::response);
-        AssertExternallySynchronizedMutex::ReadLock critSec{*thisObj};
+        AssertExternallySynchronizedMutex::ReadLock readLock{thisObj->fThisAssertExternallySynchronized_};
         return thisObj->fResponse_;
     }}
     , rwResponse{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Response& {
         Message*                                     thisObj = const_cast<Message*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::rwResponse));
-        AssertExternallySynchronizedMutex::WriteLock critSec{*thisObj};
+        AssertExternallySynchronizedMutex::WriteLock writeLock{thisObj->fThisAssertExternallySynchronized_};
         return thisObj->fResponse_;
     }}
     , fPeerAddress_{peerAddress}
@@ -53,16 +55,16 @@ Message::Message (Request&& srcRequest, Response&& srcResponse, const optional<I
     , fResponse_{move (srcResponse)}
 {
 #if qDebug
-    fRequest_.SetAssertExternallySynchronizedMutexContext (GetSharedContext ());
-    fResponse_.SetAssertExternallySynchronizedMutexContext (GetSharedContext ());
+    fRequest_.SetAssertExternallySynchronizedMutexContext (fThisAssertExternallySynchronized_.GetSharedContext ());
+    fResponse_.SetAssertExternallySynchronizedMutexContext (fThisAssertExternallySynchronized_.GetSharedContext ());
 #endif
 }
 
 #if qDebug
-void Message::SetAssertExternallySynchronizedMutexContext (const shared_ptr<SharedContext>& sharedContext)
+void Message::SetAssertExternallySynchronizedMutexContext (const shared_ptr<AssertExternallySynchronizedMutex::SharedContext>& sharedContext)
 {
-    AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext (sharedContext);
-    Assert (GetSharedContext () == sharedContext);
+    fThisAssertExternallySynchronized_.SetAssertExternallySynchronizedMutexContext (sharedContext);
+    Assert (fThisAssertExternallySynchronized_.GetSharedContext () == sharedContext);
     fRequest_.SetAssertExternallySynchronizedMutexContext (sharedContext);
     fResponse_.SetAssertExternallySynchronizedMutexContext (sharedContext);
 }
@@ -70,7 +72,7 @@ void Message::SetAssertExternallySynchronizedMutexContext (const shared_ptr<Shar
 
 String Message::ToString () const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
     StringBuilder                               sb;
     sb += L"{";
     sb += L"PeerAddress: " + Characters::ToString (fPeerAddress_) + L", ";

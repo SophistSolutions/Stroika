@@ -27,7 +27,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     }
     inline MeasurementSet Instrument::Capture ()
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
         AssertNotNull (fCaptureRep_);
         return fCaptureRep_->Capture ();
     }
@@ -54,7 +54,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     template <typename T>
     inline T Instrument::MeasurementAs (const Measurement& m) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         Require (fType2MeasurementTypes_.ContainsKey (typeid (decay_t<T>)));
         Require (m.fType == fType2MeasurementTypes_[typeid (decay_t<T>)]);
         return fObjectVariantMapper_.ToObject<T> (m.fValue);
@@ -62,7 +62,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     template <typename T>
     optional<T> Instrument::MeasurementAs (const MeasurementSet& m) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         Require (fType2MeasurementTypes_.ContainsKey (typeid (decay_t<T>)));
         MeasurementType mt = fType2MeasurementTypes_[typeid (decay_t<T>)];
         if (auto i = m.fMeasurements.Find ([=] (const Measurement& m) { return m.fType == mt; })) {
@@ -72,7 +72,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     }
     inline bool Instrument::operator== (const Instrument& rhs) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         return fInstrumentName_ == rhs.fInstrumentName_;
     }
 

@@ -32,7 +32,7 @@ namespace Stroika::Frameworks::WebServer {
      *              But note that HandleMessage() is a const method, so it can safely be called from any number of threads
      *              simultaneously.
      */
-    class Interceptor : private Debug::AssertExternallySynchronizedMutex {
+    class Interceptor {
     protected:
         class _IRep;
 
@@ -85,7 +85,8 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual const T& _GetRep () const;
 
     private:
-        shared_ptr<_IRep> fRep_;
+        shared_ptr<_IRep>                                              fRep_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
     private:
         class MyRep_;

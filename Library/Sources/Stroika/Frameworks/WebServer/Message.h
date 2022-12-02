@@ -31,7 +31,7 @@ namespace Stroika::Frameworks::WebServer {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    class Message : private Debug::AssertExternallySynchronizedMutex {
+    class Message {
     public:
         /**
          */
@@ -49,7 +49,7 @@ namespace Stroika::Frameworks::WebServer {
          *
          *  \see AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext
          */
-        nonvirtual void SetAssertExternallySynchronizedMutexContext (const shared_ptr<SharedContext>& sharedContext);
+        nonvirtual void SetAssertExternallySynchronizedMutexContext (const shared_ptr<Debug::AssertExternallySynchronizedMutex::SharedContext>& sharedContext);
 #endif
 
     public:
@@ -95,9 +95,10 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual String ToString () const;
 
     private:
-        optional<IO::Network::SocketAddress> fPeerAddress_;
-        Request                              fRequest_;
-        Response                             fResponse_;
+        optional<IO::Network::SocketAddress>                           fPeerAddress_;
+        Request                                                        fRequest_;
+        Response                                                       fResponse_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
 }
