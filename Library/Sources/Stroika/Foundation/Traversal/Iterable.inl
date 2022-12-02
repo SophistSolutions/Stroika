@@ -99,9 +99,9 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>* it) noexcept
-        : ReadLock{*it}
-        , fConstRef_{static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ())}
+        : fConstRef_{static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ())}
 #if qDebug
+        , fAssertReadLock_{*it}
         , fIterableEnvelope_{it}
 #endif
     {
@@ -111,13 +111,9 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const _SafeReadRepAccessor& src) noexcept
+        : fConstRef_{src.fConstRef_}
 #if qDebug
-        : ReadLock{*src.fIterableEnvelope_}
-#else
-        : ReadLock{*(const Iterable<T>*)nullptr}
-#endif
-        , fConstRef_{src.fConstRef_}
-#if qDebug
+        , fAssertReadLock_{src.fIterableEnvelope_}
         , fIterableEnvelope_{src.fIterableEnvelope_}
 #endif
     {
@@ -127,9 +123,9 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (_SafeReadRepAccessor&& src) noexcept
-        : ReadLock (move<const Debug::AssertExternallySynchronizedMutex> (src))
-        , fConstRef_{src.fConstRef_}
+        : fConstRef_{src.fConstRef_}
 #if qDebug
+        , fAssertReadLock_{move (src.fAssertReadLock_)}
         , fIterableEnvelope_{src.fIterableEnvelope_}
 #endif
     {
@@ -141,11 +137,11 @@ namespace Stroika::Foundation::Traversal {
     template <typename REP_SUB_TYPE>
     inline auto Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::operator= (const _SafeReadRepAccessor& rhs) noexcept -> _SafeReadRepAccessor&
     {
-        shared_lock<const Debug::AssertExternallySynchronizedMutex>::operator= (rhs);
         fConstRef_ = rhs.fConstRef_;
-        if constexpr (qDebug) {
-            this->fIterableEnvelope_ = rhs.fIterableEnvelope_;
-        }
+#if qDebug
+        this->fAssertReadLock_   = rhs.fAssertReadLock_;
+        this->fIterableEnvelope_ = rhs.fIterableEnvelope_;
+#endif
         return *this;
     }
     template <typename T>
@@ -186,7 +182,7 @@ namespace Stroika::Foundation::Traversal {
 #if qDebug
         from.fIterableEnvelope_ = nullptr;
 #endif
-        from.fRepReference_     = nullptr;
+        from.fRepReference_ = nullptr;
     }
     template <typename T>
     template <typename REP_SUB_TYPE>
@@ -222,7 +218,7 @@ namespace Stroika::Foundation::Traversal {
         : _fRep{(RequireNotNull (rep), move (rep))}
     {
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
-        if constexpr (!kIterableUsesStroikaSharedPtr) {
+        if constexpr (not kIterableUsesStroikaSharedPtr) {
             Require (rep == nullptr); // after move (see https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr "After the construction, ... r is empty and its stored pointer is null"
         }
     }

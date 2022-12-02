@@ -8,7 +8,7 @@
 
 #include <compare>
 #include <functional>
-#include <shared_mutex>
+#include <shared_mutex> // @todo see if still needed - think not
 #include <vector>
 
 #include "../Common/Compare.h"
@@ -31,6 +31,7 @@
  *              consider a TEMPLATED PARAMETER for the resulting Container type, so you can create a "Set" or whatever by doing
  *              Where... But tricky to unformly add to different container types. Maybe only ones you can say add, or the adder is
  *              a template paraM?
+ *              (AND even there for Where - use AddableAdapter!!!)
  *
  *      @todo   SUBCLASSES of Iterable<> need to overload/replace several of these functions taking
  *              into account (by default) their comparers... Eg. Set<> should overload Distinct to do nothing by
@@ -1271,7 +1272,7 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T>
     template <typename REP_SUB_TYPE>
-    class Iterable<T>::_SafeReadRepAccessor : private Debug::AssertExternallySynchronizedMutex::ReadLock {
+    class Iterable<T>::_SafeReadRepAccessor {
     public:
         _SafeReadRepAccessor () = delete;
         _SafeReadRepAccessor (const _SafeReadRepAccessor& src) noexcept;
@@ -1286,8 +1287,10 @@ namespace Stroika::Foundation::Traversal {
 
     private:
         const REP_SUB_TYPE* fConstRef_;
+
 #if qDebug
-        const Iterable<T>* fIterableEnvelope_;
+        Debug::AssertExternallySynchronizedMutex::ReadLock fAssertReadLock_;
+        const Iterable<T>*                                 fIterableEnvelope_;
 #endif
     };
 
