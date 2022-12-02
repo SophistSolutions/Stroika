@@ -71,9 +71,9 @@ protected:
          *
          *  Since number of wchar_ts filled always <= number of bytes read, we can read up to that # of bytes from upstream binary stream.
          */
-        StackBuffer<wchar_t, 8 * 1024>                      outBuf{Memory::eUninitialized, static_cast<size_t> (intoEnd - intoStart)};
-        wchar_t*                                            outCursor = begin (outBuf);
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        StackBuffer<wchar_t, 8 * 1024>               outBuf{Memory::eUninitialized, static_cast<size_t> (intoEnd - intoStart)};
+        wchar_t*                                     outCursor = begin (outBuf);
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         {
             StackBuffer<byte, 8 * 1024> inBuf{Memory::eUninitialized, size_t (intoEnd - intoStart)}; // wag at size
             size_t                      inBytes = _fSource.Read (begin (inBuf), end (inBuf));
@@ -165,14 +165,14 @@ protected:
 
     virtual SeekOffsetType GetReadOffset () const override
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         Require (IsOpenRead ());
         return _fOffset;
     }
 
     virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         Require (IsOpenRead ());
         AssertNotReached (); // not seekable
         return _fOffset;
@@ -216,7 +216,7 @@ protected:
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         Require (IsOpenRead ());
 
         // if already cached, return from cache. Note - even if only one element is in the Cache, thats enough to return
@@ -284,7 +284,7 @@ protected:
     }
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         Require (IsOpenRead ());
         switch (whence) {
             case Whence::eFromStart: {
@@ -374,7 +374,7 @@ protected:
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {
         Require (intoEnd - intoStart >= 1);
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         Require (IsOpenRead ());
         Character* outI = intoStart;
         if (fPutBack_) {
@@ -397,7 +397,7 @@ protected:
     }
     virtual optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         Require (IsOpenRead ());
         if (intoStart == nullptr) {
@@ -417,7 +417,7 @@ protected:
     }
     virtual SeekOffsetType GetReadOffset () const override
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         Require (IsOpenRead ());
         if (fPutBack_) {
             Assert (fOffset_ >= 1);
@@ -428,9 +428,9 @@ protected:
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         Require (IsOpenRead ());
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-        size_t                                              sourceLen = fSource_.size ();
-        SeekOffsetType                                      newOffset{};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        size_t                                       sourceLen = fSource_.size ();
+        SeekOffsetType                               newOffset{};
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0) [[unlikely]] {

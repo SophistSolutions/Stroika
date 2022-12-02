@@ -76,12 +76,12 @@ namespace Stroika::Foundation::Debug {
      *              Debug::AssertExternallySynchronizedMutex fData_;
      *              inline  void    DoReadWriteStuffOnData ()
      *              {
-     *                  lock_guard<AssertExternallySynchronizedMutex> writeLock { fData_ };       // lock_guard or scopedLock or unique_lock
+     *                  AssertExternallySynchronizedMutex::WriteLock writeLock { fData_ };       // lock_guard or scopedLock or unique_lock
      *                  // now do what you usually do for to modify locked data...
      *              }
      *              inline  void    DoReadOnlyStuffOnData ()
      *              {
-     *                  shared_lock<const AssertExternallySynchronizedMutex> readLock { fData_ };
+     *                  AssertExternallySynchronizedMutex::ReadLock readLock { fData_ };
      *                  // now do what you usually do for DoReadOnlyStuffOnData - reading data only...
      *              }
      *          };
@@ -92,12 +92,12 @@ namespace Stroika::Foundation::Debug {
      *          struct foo : private Debug::AssertExternallySynchronizedMutex {
      *              inline  void    DoReadWriteStuffOnData ()
      *              {
-     *                  lock_guard<AssertExternallySynchronizedMutex> writeLock { *this };       // lock_guard or scopedLock or unique_lock
+     *                  AssertExternallySynchronizedMutex::WriteLock writeLock { *this };       // lock_guard or scopedLock or unique_lock
      *                  // now do what you usually do for to modify locked data...
      *              }
      *              inline  void    DoReadOnlyStuffOnData ()
      *              {
-     *                  shared_lock<const AssertExternallySynchronizedMutex> readLock { *this };
+     *                  AssertExternallySynchronizedMutex::ReadLock readLock { *this };
      *                  // now do what you usually do for DoReadOnlyStuffOnData - reading data only...
      *              }
      *          };
@@ -204,12 +204,12 @@ namespace Stroika::Foundation::Debug {
          */
         nonvirtual void lock () const noexcept;
 
+        /// @todo SEE IF WE CAN MAKE LOCk/UNLOCK non-const - think yes
+        // tricky part is Iterable<T>::_SafeReadWriteRepAccessor
+
     public:
         /**
          *  Just decrement lock count
-         *
-         *  \note   method const despite usual lockable rules, since we inherit from this, can use on const
-         *          methods without casts.
          *
          *  \req    still running on the same locking thread and locks not unbalanced
          */
@@ -220,8 +220,7 @@ namespace Stroika::Foundation::Debug {
          *  Saves current thread (multiset), and increments shared count, and
          *      \req    no pre-existing locks on other threads
          *
-         *  \note   method const despite usual lockable rules, since we inherit from this, can use on const
-         *          methods without casts.
+         *  \note   method const despite usual lockable rules, so easier to work with 'const' objects being 'marked' as doing a read operation.
          */
         nonvirtual void lock_shared () const noexcept;
 
@@ -229,12 +228,40 @@ namespace Stroika::Foundation::Debug {
         /**
          *  Just decrement shared lock count (remove this thread from shared lock multiset)
          *
-         *  \note   method const despite usual lockable rules, since we inherit from this, can use on const
-         *          methods without casts.
+         *  \note   see lock_shard for why const.
          *
          *  \req    still running on the same locking thread and locks not unbalanced
          */
         nonvirtual void unlock_shared () const noexcept;
+
+    public:
+        /**
+         *  \brief Instantiate AssertExternallySynchronizedMutex::ReadLock to designate an area of code where protected data will be read
+         * 
+         *  This type alias makes a little more clear in reading code that the 'lock' is really just an assertion about thread safety
+         * 
+         *  Since AssertExternallySynchronizedMutex follows the concpet 'mutex' you can obviously use any
+         *  of the standard lockers in std::c++, but using AssertExternallySynchronizedMutex::ReadLock - makes it a little more clear
+         *  self-documenting in your code, that you are doing this in a context where you are only reading the pseduo-locked data.
+         */
+        using ReadLock = shared_lock<const AssertExternallySynchronizedMutex>;
+
+    public:
+        /**
+         *  \brief Instantiate AssertExternallySynchronizedMutex::WriteLock to designate an area of code where protected data will be written
+         * 
+         *  This type alias makes a little more clear in reading code that the 'lock' is really just an assertion about thread safety
+         * 
+         *  Since AssertExternallySynchronizedMutex follows the concpet 'mutex' you can obviously use any
+         *  of the standard lockers in std::c++, but using AssertExternallySynchronizedMutex::WriteLock - makes it a little more clear
+         *  self-documenting in your code, that you are doing this in a context where you are only writing the pseduo-locked data.
+         * 
+         *  Plus, the fact that it forces a non-const interpetation on the object in question (by using lock_guard of a non-const AssertExternallySynchronizedMutex)
+         *  makes it a little easier to catch cases where you accidentally use WriteLock and meant ReadLock.
+         * 
+         *  \note - considered using  scoped_lock, but it amounts to the same thing, and that gets some ambiguous construction issues (rare but why bother here)
+         */
+        using WriteLock = lock_guard<AssertExternallySynchronizedMutex>;
 
 #if qDebug
     private:

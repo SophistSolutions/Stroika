@@ -134,9 +134,9 @@ public:
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::Read", L"nRequested: %llu", static_cast<unsigned long long> (nRequested)};
 #endif
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-        auto                                                readingFromFileActivity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); });
-        DeclareActivity                                     currentActivity{&readingFromFileActivity};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        auto                                         readingFromFileActivity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); });
+        DeclareActivity                              currentActivity{&readingFromFileActivity};
 #if qPlatform_Windows
         return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
 #else
@@ -186,7 +186,7 @@ public:
     }
     virtual Streams::SeekOffsetType GetReadOffset () const override
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
 #if qPlatform_Windows
         return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
 #elif qPlatform_Linux
@@ -201,7 +201,7 @@ public:
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::SeekRead", L"whence: %d, offset: %lld", whence, static_cast<long long> (offset)};
 #endif
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0) [[unlikely]] {

@@ -43,27 +43,27 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _IterableRepSharedPtr Clone () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (*this);
         }
         virtual Iterator<tuple<T, INDEXES...>> MakeIterator () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual size_t size () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return fData_.size ();
         }
         virtual bool empty () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return fData_.empty ();
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             fData_.Apply (
                 [&] (const pair<tuple<INDEXES...>, T>& item) {
                     doToElement (tuple_cat (tuple<T>{item.second}, item.first));
@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual Iterator<tuple<T, INDEXES...>> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
             auto iLink        = const_cast<DataStructureImplType_&> (fData_).Find (
                 [&] (const pair<tuple<INDEXES...>, T>& item) {
@@ -93,13 +93,13 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _DataHyperRectangleRepSharedPtr CloneEmpty () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (fDefaultValue_); // keep default, but lose data
         }
         virtual T GetAt (INDEXES... indexes) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{fData_};
-            auto                                                        i = fData_.find (tuple<INDEXES...>{indexes...});
+            Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fData_};
+            auto                                               i = fData_.find (tuple<INDEXES...>{indexes...});
             if (i != fData_.end ()) {
                 return i->second;
             }
@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fData_};
             if (v == fDefaultValue_) {
                 auto i = fData_.find (tuple<INDEXES...> (indexes...));
                 if (i != fData_.end ()) {
@@ -176,8 +176,8 @@ namespace Stroika::Foundation::Containers::Concrete {
                 using ActualIterImplType_       = MyIteratorImplHelper_<PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>;
                 const ActualIterImplType_* rrhs = Debug::UncheckedDynamicCast<const ActualIterImplType_*> (rhs);
                 AssertNotNull (rrhs);
-                //          shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec1 (*fIterator.GetPatchableContainerHelper ());
-                //          shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
+                //          Debug::AssertExternallySynchronizedMutex::ReadLock critSec1 (*fIterator.GetPatchableContainerHelper ());
+                //          Debug::AssertExternallySynchronizedMutex::ReadLock critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
                 return fIterator.Equals (rrhs->fIterator);
             }
 

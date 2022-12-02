@@ -282,7 +282,7 @@ struct Connection::Rep_ final : IRep {
     }
     virtual void Exec (const String& sql) override
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         [[maybe_unused]] char*                              db_err{}; // could use but its embedded in the fDB_ error string anyhow, and thats already peeked at by ThrowSQLiteErrorIfNotOK_ and it generates better exceptions (maps some to std c++ exceptions)
         int                                                 e = ::sqlite3_exec (fDB_, sql.AsUTF8 ().c_str (), NULL, 0, &db_err);
         if (e != SQLITE_OK) [[unlikely]] {
@@ -291,14 +291,14 @@ struct Connection::Rep_ final : IRep {
     }
     virtual ::sqlite3* Peek () override
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this}; // not super helpful, but could catch errors - reason not very helpful is we lose lock long before we stop using ptr
+        Debug::AssertExternallySynchronizedMutex::WriteLock critSec{*this}; // not super helpful, but could catch errors - reason not very helpful is we lose lock long before we stop using ptr
         return fDB_;
     }
     virtual Duration GetBusyTimeout () const override
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-        optional<int>                                       d;
-        auto                                                callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        optional<int>                                      d;
+        auto                                               callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
             optional<int>* pd = reinterpret_cast<optional<int>*> (lamdaArg);
             AssertNotNull (pd);
             Assert (argc == 1);
@@ -314,7 +314,7 @@ struct Connection::Rep_ final : IRep {
     }
     virtual void SetBusyTimeout (const Duration& timeout) override
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         ThrowSQLiteErrorIfNotOK_ (::sqlite3_busy_timeout (fDB_, (int)(timeout.As<float> () * 1000)), fDB_);
     }
     virtual JournalModeType GetJournalMode () const override
@@ -356,7 +356,7 @@ struct Connection::Rep_ final : IRep {
     }
     virtual void SetJournalMode (JournalModeType journalMode) override
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         [[maybe_unused]] char*                              db_err{};
         switch (journalMode) {
             case JournalModeType::eDelete:
@@ -453,9 +453,9 @@ struct Statement::MyRep_ : IRep {
 #if qDebug
         SetAssertExternallySynchronizedMutexContext (fConnectionPtr_.GetSharedContext ());
 #endif
-        string                                                     queryUTF8 = query.AsUTF8 ();
-        lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
-        const char*                                                pzTail = nullptr;
+        string                                       queryUTF8 = query.AsUTF8 ();
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        const char*                                  pzTail = nullptr;
         ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db->Peek (), queryUTF8.c_str (), -1, &fStatementObj_, &pzTail), db->Peek ());
         Assert (pzTail != nullptr);
         if (*pzTail != '\0') {
@@ -481,13 +481,13 @@ struct Statement::MyRep_ : IRep {
     }
     ~MyRep_ ()
     {
-        lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         AssertNotNull (fStatementObj_);
         (void)::sqlite3_finalize (fStatementObj_);
     }
     virtual String GetSQL (WhichSQLFlag whichSQL) const override
     {
-        shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         switch (whichSQL) {
             case WhichSQLFlag::eOriginal:
                 return String::FromUTF8 (::sqlite3_sql (fStatementObj_));
@@ -517,22 +517,22 @@ struct Statement::MyRep_ : IRep {
     }
     virtual Sequence<ColumnDescription> GetColumns () const override
     {
-        shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         return Sequence<ColumnDescription>{fColumns_};
     };
     virtual Sequence<ParameterDescription> GetParameters () const override
     {
-        shared_lock<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         return fParameters_;
     };
     virtual void Bind () override
     {
-        lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         ThrowSQLiteErrorIfNotOK_ (::sqlite3_clear_bindings (fStatementObj_));
     }
     virtual void Bind (unsigned int parameterIndex, const VariantValue& v) override
     {
-        lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         fParameters_[parameterIndex].fValue = v;
         switch (v.GetType ()) {
             case VariantValue::eDate:
@@ -563,8 +563,8 @@ struct Statement::MyRep_ : IRep {
     virtual void Bind (const String& parameterName, const VariantValue& v) override
     {
         Require (not parameterName.empty ());
-        lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
-        String                                                     pn = parameterName;
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        String                                       pn = parameterName;
         if (pn[0] != ':') {
             pn = L":" + pn;
         }
@@ -582,7 +582,7 @@ struct Statement::MyRep_ : IRep {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"SQLite::Statement::MyRep_::Statement::Reset"};
 #endif
-        lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         AssertNotNull (fStatementObj_);
         ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fStatementObj_), fConnectionPtr_->Peek ());
     }
@@ -591,7 +591,7 @@ struct Statement::MyRep_ : IRep {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"SQLite::Statement::MyRep_::Statement::GetNextRow"};
 #endif
-        lock_guard<const Debug::AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         // @todo MAYBE redo with https://www.sqlite.org/c3ref/value.html
         AssertNotNull (fStatementObj_);
         int rc = ::sqlite3_step (fStatementObj_);

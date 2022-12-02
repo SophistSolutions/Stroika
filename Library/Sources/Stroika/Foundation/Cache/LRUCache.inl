@@ -220,7 +220,7 @@ namespace Stroika::Foundation::Cache {
     void LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::clear (typename Configuration::ArgByValueType<KEY> key)
     {
         lock_guard               critSec{fAssertExternallySyncrhonized_};
-        optional<KeyValuePair_>*                      v = LookupElement_ (key);
+        optional<KeyValuePair_>* v = LookupElement_ (key);
         if (v != nullptr) {
             v->clear ();
         }
@@ -251,8 +251,8 @@ namespace Stroika::Foundation::Cache {
     void LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> value)
     {
         lock_guard               critSec{fAssertExternallySyncrhonized_};
-        optional<KeyValuePair_>*                      v = AddNew_ (key);
-        *v                                              = KeyValuePair_{key, value};
+        optional<KeyValuePair_>* v = AddNew_ (key);
+        *v                         = KeyValuePair_{key, value};
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     template <typename K1, typename V1, enable_if_t<is_same_v<K1, V1>>*>

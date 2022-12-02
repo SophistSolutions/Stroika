@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Streams::iostream {
             RequireNotNull (intoEnd);
             Require (intoStart < intoEnd);
 
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
             Require (IsOpenRead ());
             if (fOriginalStream_.eof ()) {
                 return 0;
@@ -102,13 +102,13 @@ namespace Stroika::Foundation::Streams::iostream {
         virtual SeekOffsetType GetReadOffset () const override
         {
             // instead of tellg () - avoids issue with EOF where fail bit set???
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::ReadLock critSec{*this};
             Require (IsOpenRead ());
             return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
         }
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
             Require (IsOpenRead ());
             switch (whence) {
                 case Whence::eFromStart:

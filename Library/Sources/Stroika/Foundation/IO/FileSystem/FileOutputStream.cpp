@@ -120,10 +120,10 @@ public:
         Require (end != nullptr or start == end);
 
         if (start != end) {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-            auto                                                activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
-            DeclareActivity                                     currentActivity{&activity};
-            const byte*                                         i = start;
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            auto                                         activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
+            DeclareActivity                              currentActivity{&activity};
+            const byte*                                  i = start;
             while (i < end) {
 #if qPlatform_Windows
                 int n = ThrowPOSIXErrNoIfNegative (_write (fFD_, i, Math::PinToMaxForType<unsigned int> (end - i)));
@@ -139,9 +139,9 @@ public:
     {
         // normally nothing todo - write 'writes thru' (except if fFlushFlag)
         if (fFlushFlag == FlushFlag::eToDisk) {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-            auto                                                activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); });
-            DeclareActivity                                     currentActivity{&activity};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            auto                                         activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); });
+            DeclareActivity                              currentActivity{&activity};
 #if qPlatform_POSIX
             ThrowPOSIXErrNoIfNegative (::fsync (fFD_));
 #elif qPlatform_Windows
@@ -153,7 +153,7 @@ public:
     }
     virtual Streams::SeekOffsetType GetWriteOffset () const override
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
 #if qPlatform_Linux
         return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
 #elif qPlatform_Windows
@@ -166,7 +166,7 @@ public:
     {
         Require (fSeekable_);
         using namespace Streams;
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0) [[unlikely]] {

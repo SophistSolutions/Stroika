@@ -138,21 +138,21 @@ namespace Stroika::Foundation::Execution {
     }
     inline Thread::Ptr& Thread::Ptr::operator= (const Ptr& rhs)
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec1{rhs};
-        lock_guard<const AssertExternallySynchronizedMutex>  critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock  critSec1{rhs};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         fRep_ = rhs.fRep_;
         return *this;
     }
     inline Thread::Ptr& Thread::Ptr::operator= (Ptr&& rhs) noexcept
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec1{rhs};
-        lock_guard<const AssertExternallySynchronizedMutex> critSec2{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec1{rhs};
+        AssertExternallySynchronizedMutex::WriteLock critSec2{*this};
         fRep_ = move (rhs.fRep_);
         return *this;
     }
     inline Thread::IDType Thread::Ptr::GetID () const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         if (fRep_ == nullptr) [[unlikely]] {
             return IDType{};
         }
@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline Thread::NativeHandleType Thread::Ptr::GetNativeHandle () const noexcept
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         if (fRep_ == nullptr) [[unlikely]] {
             return NativeHandleType{};
         }
@@ -168,12 +168,12 @@ namespace Stroika::Foundation::Execution {
     }
     inline void Thread::Ptr::reset () noexcept
     {
-        lock_guard<AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         fRep_.reset ();
     }
     inline function<void ()> Thread::Ptr::GetFunction () const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         if (fRep_ == nullptr) [[unlikely]] {
             return nullptr;
         }
@@ -181,19 +181,19 @@ namespace Stroika::Foundation::Execution {
     }
     inline bool Thread::Ptr::operator== (const Ptr& rhs) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
-        shared_lock<const AssertExternallySynchronizedMutex> critSec2{rhs};
+        AssertExternallySynchronizedMutex::ReadLock critSec1{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec2{rhs};
         return fRep_ == rhs.fRep_;
     }
     inline bool Thread::Ptr::operator== (nullptr_t) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec1{*this};
         return fRep_ == nullptr;
     }
     inline strong_ordering Thread::Ptr::operator<=> (const Ptr& rhs) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
-        shared_lock<const AssertExternallySynchronizedMutex> critSec2{rhs};
+        AssertExternallySynchronizedMutex::ReadLock critSec1{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec2{rhs};
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
         return Common::compare_three_way_BWA{}(fRep_, rhs.fRep_);
 #else
@@ -202,7 +202,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline strong_ordering Thread::Ptr::operator<=> (nullptr_t) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec1{*this};
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
         return Common::compare_three_way_BWA{}(fRep_, nullptr);
 #else
@@ -211,19 +211,19 @@ namespace Stroika::Foundation::Execution {
     }
     inline Thread::Ptr::operator bool () const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec1{*this};
         return fRep_ != nullptr;
     }
 #if qPlatform_Windows
     inline bool Thread::Ptr::ThrowInterruptExceptionInsideUserAPC () const noexcept
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec1{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec1{*this};
         return fRep_ == nullptr ? false : fRep_->fThrowInterruptExceptionInsideUserAPC_;
     }
     inline bool Thread::Ptr::ThrowInterruptExceptionInsideUserAPC (optional<bool> throwInterruptExceptionInsideUserAPC)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec1{*this};
-        bool                                                result = fRep_ == nullptr ? false : fRep_->fThrowInterruptExceptionInsideUserAPC_;
+        AssertExternallySynchronizedMutex::WriteLock critSec1{*this};
+        bool                                         result = fRep_ == nullptr ? false : fRep_->fThrowInterruptExceptionInsideUserAPC_;
         if (throwInterruptExceptionInsideUserAPC) {
             RequireNotNull (fRep_);
             fRep_->fThrowInterruptExceptionInsideUserAPC_ = throwInterruptExceptionInsideUserAPC.value ();
@@ -233,7 +233,7 @@ namespace Stroika::Foundation::Execution {
 #endif
     inline Thread::Status Thread::Ptr::GetStatus () const noexcept
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         if (fRep_ == nullptr) [[unlikely]] {
             return Status::eNull;
         }
@@ -245,18 +245,18 @@ namespace Stroika::Foundation::Execution {
     }
     inline void Thread::Ptr::JoinUntil (Time::DurationSecondsType timeoutAt) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         WaitForDoneUntil (timeoutAt);
         ThrowIfDoneWithException ();
     }
     inline void Thread::Ptr::WaitForDone (Time::DurationSecondsType timeout) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         WaitForDoneUntil (timeout + Time::GetTickCount ());
     }
     inline void Thread::Ptr::AbortAndWaitForDone (Time::DurationSecondsType timeout) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         AbortAndWaitForDoneUntil (timeout + Time::GetTickCount ());
     }
 

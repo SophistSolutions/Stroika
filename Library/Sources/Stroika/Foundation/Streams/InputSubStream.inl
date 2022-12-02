@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Streams {
         virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
             Require (intoEnd - intoStart >= 1); // rule for InputStream<>::_IRep
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
             Require (IsOpenRead ());
             if (fForcedEndInReal_) {
                 // adjust intoEnd to accomodate shortened stream
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Streams {
         }
         virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
             Require (IsOpenRead ());
             if (fForcedEndInReal_) {
                 // adjust intoEnd to accomodate shortened stream

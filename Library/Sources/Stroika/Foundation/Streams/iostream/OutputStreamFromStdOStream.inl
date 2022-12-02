@@ -53,13 +53,13 @@ namespace Stroika::Foundation::Streams::iostream {
         virtual SeekOffsetType GetWriteOffset () const override
         {
             // instead of tellg () - avoids issue with EOF where fail bit set???
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::ReadLock critSec{*this};
             Require (IsOpenWrite ());
             return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::out);
         }
         virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
             Require (IsOpenWrite ());
             switch (whence) {
                 case Whence::eFromStart:
@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Streams::iostream {
             Require (end != nullptr or start == end);
             Require (IsOpenWrite ());
 
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
 
             using StreamElementType = typename OStreamType::char_type;
             fOriginalStream_.write (reinterpret_cast<const StreamElementType*> (start), end - start);
@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Streams::iostream {
         }
         virtual void Flush () override
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
             Require (IsOpenWrite ());
             fOriginalStream_.flush ();
             if (fOriginalStream_.fail ()) [[unlikely]] {

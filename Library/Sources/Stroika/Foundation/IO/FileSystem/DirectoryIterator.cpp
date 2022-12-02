@@ -140,7 +140,7 @@ public:
     }
     virtual void More (optional<filesystem::path>* result, bool advance) override
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         RequireNotNull (result);
         *result = nullopt;
 #if qPlatform_POSIX
@@ -183,7 +183,7 @@ public:
     }
     virtual bool Equals (const Iterator<filesystem::path>::IRep* rhs) const override
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
         RequireNotNull (rhs);
         RequireMember (rhs, Rep_);
         const Rep_& rrhs = *Debug::UncheckedDynamicCast<const Rep_*> (rhs);
@@ -198,7 +198,7 @@ public:
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Entering DirectoryIterator::Rep_::Clone"};
 #endif
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
 #if qPlatform_POSIX
         AssertNotNull (fDirIt_);
         /*

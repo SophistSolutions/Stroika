@@ -57,9 +57,9 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename TRAITS>
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, Time::DurationSecondsType* lastRefreshedAt) const
     {
-        shared_lock                                          critSec{fAssertExternallySyncrhonized_};
-        typename MyMapType_::const_iterator                  i   = fMap_.find (key);
-        Time::DurationSecondsType                            now = Time::GetTickCount ();
+        shared_lock                         critSec{fAssertExternallySyncrhonized_};
+        typename MyMapType_::const_iterator i   = fMap_.find (key);
+        Time::DurationSecondsType           now = Time::GetTickCount ();
         if (i == fMap_.end ()) {
             fStats_.IncrementMisses ();
             return nullopt;
@@ -88,9 +88,9 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename TRAITS>
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag)
     {
-        lock_guard critSec{fAssertExternallySyncrhonized_};
-        typename MyMapType_::iterator                       i   = fMap_.find (key);
-        Time::DurationSecondsType                           now = Time::GetTickCount ();
+        lock_guard                    critSec{fAssertExternallySyncrhonized_};
+        typename MyMapType_::iterator i   = fMap_.find (key);
+        Time::DurationSecondsType     now = Time::GetTickCount ();
         if (i == fMap_.end ()) {
             fStats_.IncrementMisses ();
             return nullopt;

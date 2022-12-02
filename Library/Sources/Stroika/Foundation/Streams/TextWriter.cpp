@@ -74,7 +74,7 @@ protected:
 
         char outBuf[10 * 1024];
         //char    outBuf[10]; // to test
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
     Again:
         char*                         p = std::begin (outBuf);
         codecvt_utf8<wchar_t>::result r = kConverter_.out (fMBState_, sc, ec, pc, std::begin (outBuf), std::end (outBuf), p);
@@ -141,13 +141,13 @@ protected:
     }
     virtual void Write (const Character* start, const Character* end) override
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         Require (IsOpenWrite ());
         _fSource.Write (reinterpret_cast<const byte*> (start), reinterpret_cast<const byte*> (end));
     }
     virtual void Flush () override
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         Require (IsOpenWrite ());
         _fSource.Flush ();
     }

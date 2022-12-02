@@ -50,32 +50,32 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _IterableRepSharedPtr Clone () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
         }
         virtual size_t size () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return fData_.size ();
         }
         virtual bool empty () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return fData_.empty ();
         }
         virtual Iterator<value_type> MakeIterator () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             this->_Apply (doToElement);
         }
         virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return this->_Find (that);
         }
         virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v) const override
@@ -87,33 +87,33 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual ElementEqualityComparerType GetElementEqualsComparer () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return ElementEqualityComparerType{Common::EqualsComparerAdapter (fData_.key_comp ())};
         }
         virtual _MultiSetRepSharedPtr CloneEmpty () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return Iterable<value_type>::template MakeSmartPtr<Rep_> (fData_.key_comp ()); // keep comparer, but lose data
         }
         virtual _MultiSetRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            auto                                                        result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
-            auto&                                                       mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            auto                                               result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
+            auto&                                              mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
         }
         virtual bool Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return this->_Equals_Reference_Implementation (rhs);
         }
         virtual bool Contains (ArgByValueType<T> item) const override
         {
-            value_type                                                  tmp{item};
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            value_type                                         tmp{item};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return fData_.find (item) != fData_.end ();
         }
         virtual void Add (ArgByValueType<T> item, CounterType count) override
@@ -121,8 +121,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (count == 0) {
                 return;
             }
-            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
-            auto                                                  i = fData_.find (item);
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fData_};
+            auto                                                i = fData_.find (item);
             if (i == fData_.end ()) {
                 fData_.insert (typename map<T, CounterType>::value_type (item, count));
             }
@@ -134,8 +134,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual size_t RemoveIf (ArgByValueType<T> item, CounterType count) override
         {
             Require (count != 0);
-            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
-            auto                                                  i = fData_.find (item);
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fData_};
+            auto                                                i = fData_.find (item);
             Require (i != fData_.end ());
             if (i != fData_.end ()) {
                 size_t result; // intentionally uninitialized
@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Require (not i.Done ());
-            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fData_};
 
             if (nextI != nullptr) {
                 *nextI = i;
@@ -173,8 +173,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void UpdateCount (const Iterator<value_type>& i, CounterType newCount, Iterator<value_type>* nextI) override
         {
-            scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
-            auto&                                                 mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fData_};
+            auto&                                               mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             if (newCount == 0) {
                 if (nextI != nullptr) {
                     *nextI = i;
@@ -196,8 +196,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual CounterType OccurrencesOf (ArgByValueType<T> item) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
-            auto                                                        i = fData_.find (item);
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            auto                                               i = fData_.find (item);
             if (i == fData_.end ()) {
                 return 0;
             }
@@ -205,12 +205,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual Iterable<T> Elements (const _MultiSetRepSharedPtr& rep) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return this->_Elements_Reference_Implementation (rep);
         }
         virtual Iterable<T> UniqueElements (const _MultiSetRepSharedPtr& rep) const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return this->_UniqueElements_Reference_Implementation (rep);
         }
 
@@ -218,7 +218,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual ElementInOrderComparerType GetElementInOrderComparer () const override
         {
-            shared_lock<const Debug::AssertExternallySynchronizedMutex> readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
             return ElementInOrderComparerType{fData_.key_comp ()};
         }
 

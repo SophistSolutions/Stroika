@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Streams {
         }
         virtual void Flush () override
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
             Require (IsOpenWrite ());
             fRealOut1_.Flush ();
             fRealOut2_.Flush ();
@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Streams {
         {
             Require (start < end); // for OutputStream<byte> - this function requires non-empty write
             Require (IsOpenWrite ());
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
             fRealOut1_.Write (start, end);
             fRealOut2_.Write (start, end);
         }

@@ -75,14 +75,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline bool DoublyLinkedList<T>::empty () const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         return fHead_ == nullptr;
     }
     template <typename T>
     inline size_t DoublyLinkedList<T>::size () const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
-        size_t                                               n = 0;
+        AssertExternallySynchronizedMutex::ReadLock readLock{*this};
+        size_t                                      n = 0;
         for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
             ++n;
         }
@@ -91,21 +91,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline T DoublyLinkedList<T>::GetFirst () const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         RequireNotNull (fHead_);
         return fHead_->fItem;
     }
     template <typename T>
     inline T DoublyLinkedList<T>::GetLast () const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         RequireNotNull (fTail_); // cannot call Getlast on empty list
         return fTail_->fItem;
     }
     template <typename T>
     inline void DoublyLinkedList<T>::Prepend (ArgByValueType<T> item)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Invariant ();
         fHead_ = new Link_{item, nullptr, fHead_};
         if (fHead_->fNext != nullptr) [[likely]] {
@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void DoublyLinkedList<T>::Append (ArgByValueType<T> item)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Invariant ();
         fTail_ = new Link_{item, fTail_, nullptr};
         if (fTail_->fPrev != nullptr) [[likely]] {
@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void DoublyLinkedList<T>::RemoveFirst ()
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         RequireNotNull (fHead_);
         Invariant ();
         Link_* victim = fHead_;
@@ -172,7 +172,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void DoublyLinkedList<T>::RemoveLast ()
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         RequireNotNull (fHead_);
         Invariant ();
         Link_* victim = fTail_;
@@ -207,7 +207,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     auto DoublyLinkedList<T>::operator= (const DoublyLinkedList& rhs) -> DoublyLinkedList&
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Invariant ();
         RemoveAll ();
         /*
@@ -233,7 +233,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename EQUALS_COMPARER>
     void DoublyLinkedList<T>::Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Invariant ();
         if (equalsComparer (item, fHead_->fItem)) {
             RemoveFirst ();
@@ -255,7 +255,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename EQUALS_COMPARER>
     bool DoublyLinkedList<T>::Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         for (const Link_* current = fHead_; current != nullptr; current = current->fNext) {
             if (equalsComparer (current->fItem, item)) {
                 return true;
@@ -267,7 +267,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename FUNCTION>
     inline void DoublyLinkedList<T>::Apply (FUNCTION doToElement) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
             doToElement (i->fItem);
         }
@@ -276,7 +276,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename FUNCTION>
     inline auto DoublyLinkedList<T>::Find (FUNCTION doToElement) const -> UnderlyingIteratorRep
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         for (Link_* i = fHead_; i != nullptr; i = i->fNext) {
             if ((doToElement)(i->fItem)) {
                 return i;
@@ -287,7 +287,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void DoublyLinkedList<T>::RemoveAll ()
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         for (Link_* i = fHead_; i != nullptr;) {
             Link_* deleteMe = i;
             i               = i->fNext;
@@ -299,7 +299,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     T DoublyLinkedList<T>::GetAt (size_t i) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         Require (i >= 0);
         Require (i < size ());
         const Link_* cur = fHead_;
@@ -312,7 +312,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void DoublyLinkedList<T>::SetAt (size_t i, ArgByValueType<T> item)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Require (i >= 0);
         Require (i < size ());
         Link_* cur = fHead_;
@@ -325,7 +325,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void DoublyLinkedList<T>::MoveIteratorHereAfterClone (ForwardIterator* pi, const DoublyLinkedList<T>* movedFrom) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
         // only way
         //
@@ -351,7 +351,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     auto DoublyLinkedList<T>::RemoveAt (const ForwardIterator& i) -> ForwardIterator
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Require (not i.Done ());
         this->Invariant ();
         ForwardIterator next = i;
@@ -407,7 +407,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void DoublyLinkedList<T>::SetAt (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Require (not i.Done ());
         this->Invariant ();
         const_cast<Link_*> (i.fCurrent_)->fItem = newValue;
@@ -416,7 +416,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void DoublyLinkedList<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         /*
          * NB: This code works fine, even if we are done!!!
          */
@@ -457,7 +457,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void DoublyLinkedList<T>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         this->Invariant ();
         Require (not i.Done ());
         AssertNotNull (i.fCurrent_); // since not done...
@@ -488,7 +488,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void DoublyLinkedList<T>::Invariant_ () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_DoublyLinkedList_IncludeSlowDebugChecks_
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        AssertExternallySynchronizedMutex::ReadLock readLock{*this};
 #endif
         if (fHead_ != nullptr) {
             Assert (fHead_->fPrev == nullptr);
@@ -547,7 +547,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline typename DoublyLinkedList<T>::ForwardIterator& DoublyLinkedList<T>::ForwardIterator::operator= (const ForwardIterator& rhs)
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*rhs.fData_};
+        AssertExternallySynchronizedMutex::ReadLock readLock{*rhs.fData_};
         Invariant ();
         fData_    = rhs.fData_;
         fCurrent_ = rhs.fCurrent_;
@@ -564,7 +564,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline bool DoublyLinkedList<T>::ForwardIterator::Done () const noexcept
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
+        AssertExternallySynchronizedMutex::ReadLock readLock{*fData_};
         Invariant ();
         return fCurrent_ == nullptr;
     }
@@ -581,7 +581,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline T DoublyLinkedList<T>::ForwardIterator::Current () const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
+        AssertExternallySynchronizedMutex::ReadLock readLock{*fData_};
         Require (not Done ());
         Invariant ();
         AssertNotNull (fCurrent_);
@@ -590,7 +590,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     size_t DoublyLinkedList<T>::ForwardIterator::CurrentIndex () const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
+        AssertExternallySynchronizedMutex::ReadLock readLock{*fData_};
         Require (not Done ());
         Invariant ();
         size_t n = 0;
@@ -607,7 +607,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void DoublyLinkedList<T>::ForwardIterator::SetUnderlyingIteratorRep (UnderlyingIteratorRep l)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*fData_};
+        Debug::AssertExternallySynchronizedMutex::WriteLock critSec{*fData_};
         // MUST COME FROM THIS LIST
         // CAN be nullptr
         fCurrent_ = l;
@@ -615,7 +615,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline bool DoublyLinkedList<T>::ForwardIterator::Equals (const ForwardIterator& rhs) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*fData_};
+        AssertExternallySynchronizedMutex::ReadLock readLock{*fData_};
         return fCurrent_ == rhs.fCurrent_;
     }
 #if qDebug

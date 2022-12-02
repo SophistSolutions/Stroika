@@ -32,14 +32,14 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
 
         T GetAt (size_t row, size_t col) const
         {
-            shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::ReadLock critSec{*this};
             Require (row < fDimensions_.fRows);
             Require (col < fDimensions_.fColumns);
             return fData_[row * fDimensions_.fColumns + col];
         }
         void SetAt (size_t row, size_t col, T value)
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
             Require (row < fDimensions_.fRows);
             Require (col < fDimensions_.fColumns);
             //fData_.SetAt (row * fDimensions_.fColumns + col, value);
@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         }
         void push_back (Configuration::ArgByValueType<T> fillValue)
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
             fData_.push_back (fillValue);
         }
 

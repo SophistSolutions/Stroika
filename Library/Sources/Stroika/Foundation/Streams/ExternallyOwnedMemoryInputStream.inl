@@ -57,8 +57,8 @@ namespace Stroika::Foundation::Streams {
             RequireNotNull (intoEnd);
             Require (intoStart < intoEnd);
             Require (IsOpenRead ());
-            size_t                                              nRequested = intoEnd - intoStart;
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            size_t                                       nRequested = intoEnd - intoStart;
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
             Assert ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
             size_t nAvail  = fEnd_ - fCursor_;
             size_t nCopied = min (nAvail, nRequested);
@@ -72,19 +72,19 @@ namespace Stroika::Foundation::Streams {
         }
         virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
             Require (IsOpenRead ());
             return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fEnd_ - fCursor_);
         }
         virtual SeekOffsetType GetReadOffset () const override
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::ReadLock readLock{*this};
             Require (IsOpenRead ());
             return fCursor_ - fStart_;
         }
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
             Require (IsOpenRead ());
             switch (whence) {
                 case Whence::eFromStart: {

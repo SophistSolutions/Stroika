@@ -405,7 +405,7 @@ namespace {
         }
         nonvirtual Info _InternalCapture ()
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"Instruments::Memory::Info _InternalCapture"};
 #endif

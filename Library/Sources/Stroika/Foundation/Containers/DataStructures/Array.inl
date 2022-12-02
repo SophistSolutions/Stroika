@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void Array<T>::InsertAt (size_t index, ArgByValueType<T> item)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Require (index >= 0);
         Require (index <= fLength_);
         Invariant ();
@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void Array<T>::RemoveAt (size_t index)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Require (index >= 0);
         Require (index < fLength_);
         Invariant ();
@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void Array<T>::RemoveAll ()
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Invariant ();
         T* p = &fItems_[0];
         for (size_t i = fLength_; i > 0; --i, ++p) {
@@ -120,7 +120,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename EQUALS_COMPARER>
     bool Array<T>::Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         Invariant ();
         const T* current = &fItems_[0];
         const T* last    = &fItems_[fLength_];
@@ -135,9 +135,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename FUNCTION>
     inline void Array<T>::Apply (FUNCTION doToElement) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
-        const T*                                             i    = &fItems_[0];
-        const T*                                             last = &fItems_[fLength_];
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{*this};
+        const T*                                           i    = &fItems_[0];
+        const T*                                           last = &fItems_[fLength_];
         for (; i < last; ++i) {
             doToElement (*i);
         }
@@ -146,10 +146,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename FUNCTION>
     inline size_t Array<T>::Find (FUNCTION doToElement) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
-        const T*                                             start = &fItems_[0];
-        const T*                                             i     = start;
-        const T*                                             last  = &fItems_[fLength_];
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{*this};
+        const T*                                           start = &fItems_[0];
+        const T*                                           i     = start;
+        const T*                                           last  = &fItems_[fLength_];
         for (; i < last; ++i) {
             if (doToElement (*i)) {
                 return i - start;
@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /*
          *  @todo NOTE - https://stroika.atlassian.net/browse/STK-757 - use realloc sometimes - if constexpr
          */
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Require (size () <= slotsAlloced);
         Invariant ();
         if (fSlotsAllocated_ != slotsAlloced) {
@@ -213,7 +213,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     auto Array<T>::operator= (const Array& list) -> Array&
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Invariant ();
         size_t newLength = list.size ();
 
@@ -263,7 +263,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     void Array<T>::SetLength (size_t newLength, ArgByValueType<T> fillValue)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Invariant ();
 
         /*
@@ -303,7 +303,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void Array<T>::Invariant_ () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{*this};
 #endif
         Assert ((fSlotsAllocated_ == 0) == (fItems_ == nullptr)); // always free iff slots alloced = 0
         Assert (fLength_ <= fSlotsAllocated_);
@@ -318,7 +318,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::MoveIteratorHereAfterClone (IteratorBase* pi, [[maybe_unused]] const Array<T>* movedFrom) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         RequireNotNull (pi);
         RequireNotNull (movedFrom);
         Require (pi->CurrentIndex () <= this->size ());
@@ -328,7 +328,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline T Array<T>::GetAt (size_t i) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         Require (i >= 0);
         Require (i < fLength_);
         return fItems_[i];
@@ -336,7 +336,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline T* Array<T>::PeekAt (size_t i)
     {
-        shared_lock<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Require (i >= 0);
         Require (i < fLength_);
         return &fItems_[i];
@@ -344,7 +344,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::SetAt (size_t i, ArgByValueType<T> item)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Require (i >= 0);
         Require (i < fLength_);
         fItems_[i] = item;
@@ -352,7 +352,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline T& Array<T>::operator[] (size_t i)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Require (i >= 0);
         Require (i < fLength_);
         return fItems_[i];
@@ -360,7 +360,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline T Array<T>::operator[] (size_t i) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         Require (i >= 0);
         Require (i < fLength_);
         return fItems_[i];
@@ -368,74 +368,74 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline size_t Array<T>::size () const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         return fLength_;
     }
     template <typename T>
     inline size_t Array<T>::capacity () const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLock{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         return fSlotsAllocated_;
     }
     template <typename T>
     inline void Array<T>::shrink_to_fit ()
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         reserve (size ());
     }
     template <typename T>
     inline void Array<T>::RemoveAt (const ForwardIterator& i)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Require (not i.Done ());
         this->RemoveAt (i.CurrentIndex ());
     }
     template <typename T>
     inline void Array<T>::RemoveAt (const BackwardIterator& i)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Require (not i.Done ());
         this->RemoveAt (i.CurrentIndex ());
     }
     template <typename T>
     inline void Array<T>::SetAt (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Require (not i.Done ());
         SetAt (i.CurrentIndex (), newValue);
     }
     template <typename T>
     inline void Array<T>::SetAt (const BackwardIterator& i, ArgByValueType<T> newValue)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Require (not i.Done ());
         SetAt (i.CurrentIndex (), newValue);
     }
     template <typename T>
     inline void Array<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         // i CAN BE DONE OR NOT
         InsertAt (i.CurrentIndex (), newValue);
     }
     template <typename T>
     inline void Array<T>::AddBefore (const BackwardIterator& i, ArgByValueType<T> newValue)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         // i CAN BE DONE OR NOT
         InsertAt (i.CurrentIndex (), newValue);
     }
     template <typename T>
     inline void Array<T>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Require (not i.Done ());
         InsertAt (i.CurrentIndex () + 1, newValue);
     }
     template <typename T>
     inline void Array<T>::AddAfter (const BackwardIterator& i, ArgByValueType<T> newValue)
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Require (not i.Done ());
         InsertAt (i.CurrentIndex () + 1, newValue);
     }
@@ -463,13 +463,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline bool Array<T>::IteratorBase::Equals (const IteratorBase& rhs) const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*fData_};
         return fCurrentIdx_ == rhs.fCurrentIdx_;
     }
     template <typename T>
     inline size_t Array<T>::IteratorBase::CurrentIndex () const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*fData_};
         /*
          * NB: This can be called if we are done - if so, it returns size().
          */
@@ -479,7 +479,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline T Array<T>::IteratorBase::Current () const
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*fData_};
         Invariant ();
         Require (0 <= fCurrentIdx_ and fCurrentIdx_ < fData_->fLength_);
         return (*fData_)[fCurrentIdx_];
@@ -487,14 +487,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::IteratorBase::SetIndex (size_t i)
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};
+        Debug::AssertExternallySynchronizedMutex::WriteLock critSec{*fData_};
         Require (i <= fData_->fLength_);
         fCurrentIdx_ = i;
     }
     template <typename T>
     inline auto Array<T>::IteratorBase::GetUnderlyingIteratorRep () const -> UnderlyingIteratorRep
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*fData_};
         /*
          * NB: This can be called if we are done - if so, it returns size().
          */
@@ -504,7 +504,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::IteratorBase::SetUnderlyingIteratorRep (UnderlyingIteratorRep i)
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};
+        Debug::AssertExternallySynchronizedMutex::WriteLock critSec{*fData_};
         Require (i <= fData_->fLength_);
         fCurrentIdx_ = i;
     }
@@ -520,7 +520,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void Array<T>::IteratorBase::Invariant_ () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*fData_};
 #endif
         AssertNotNull (fData_);
         Assert (0 <= fCurrentIdx_ and fCurrentIdx_ <= fData_->fLength_);
@@ -536,7 +536,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline Array<T>::ForwardIterator::ForwardIterator (const Array* data, UnderlyingIteratorRep startAt)
         : inherited{data}
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this->fData_};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this->fData_};
         this->fCurrentIdx_ = startAt;
         this->Invariant ();
     }
@@ -549,7 +549,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline bool Array<T>::ForwardIterator::Done () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*fData_};
 #endif
         this->Invariant ();
         return bool (this->CurrentIndex () == this->fData_->fLength_);
@@ -557,7 +557,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline auto Array<T>::ForwardIterator::operator++ () noexcept -> ForwardIterator&
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this->fData_};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this->fData_};
         Require (not this->Done ());
         this->Invariant ();
         Assert (this->fCurrentIdx_ < this->fData_->fLength_);
@@ -575,7 +575,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline Array<T>::BackwardIterator::BackwardIterator (const Array* data, UnderlyingIteratorRep startAt)
         : inherited{data}
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this->fData_};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this->fData_};
         this->_fCurrent = startAt;
         this->Invariant ();
     }
@@ -588,7 +588,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline bool Array<T>::BackwardIterator::Done () const noexcept
     {
 #if qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*fData_};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*fData_};
 #endif
         this->Invariant ();
         return bool (this->CurrentIndex () == this->fData_->fLength_); // a little queer/confusing, but in C++ only legal extra address is past end, one before start not legal
@@ -596,7 +596,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline auto Array<T>::BackwardIterator::operator++ () noexcept -> BackwardIterator&
     {
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*this->fData_};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{*this->fData_};
         Require (not this->Done ());
         this->Invariant ();
         if (this->_fCurrent == this->_fStart) {

@@ -78,34 +78,34 @@ namespace Stroika::Foundation::Debug {
     inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext, const AssertExternallySynchronizedMutex& src) noexcept
         : AssertExternallySynchronizedMutex{sharedContext}
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLockSrc{src}; // to copy, the src can have shared_locks, but no (write) locks
+        ReadLock readLockSrc{src}; // to copy, the src can have shared_locks, but no (write) locks
     }
     inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex (const AssertExternallySynchronizedMutex& src) noexcept
         : AssertExternallySynchronizedMutex{}
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLockSrc{src}; // to copy, the src can have shared_locks, but no (write) locks
+        ReadLock readLockSrc{src}; // to copy, the src can have shared_locks, but no (write) locks
     }
     inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext, [[maybe_unused]] AssertExternallySynchronizedMutex&& src) noexcept
         : AssertExternallySynchronizedMutex{sharedContext}
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLockSrc{src}; // move we must be able to modify source
+        WriteLock writeLockSrc{src}; // move we must be able to modify source
     }
     inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex ([[maybe_unused]] AssertExternallySynchronizedMutex&& src) noexcept
         : AssertExternallySynchronizedMutex{}
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLockRHS{src}; // move we must be able to modify source
+        WriteLock writeLockRHS{src}; // move we must be able to modify source
     }
 #endif
     inline AssertExternallySynchronizedMutex& AssertExternallySynchronizedMutex::operator= ([[maybe_unused]] const AssertExternallySynchronizedMutex& rhs) noexcept
     {
-        shared_lock<const AssertExternallySynchronizedMutex> readLockRHS{rhs};     // we must be able to read RHS
-        lock_guard<const AssertExternallySynchronizedMutex>  writeLockThis{*this}; // we must be able modify this
+        ReadLock  readLockRHS{rhs};     // we must be able to read RHS
+        WriteLock writeLockThis{*this}; // we must be able modify this
         return *this;
     }
     inline AssertExternallySynchronizedMutex& AssertExternallySynchronizedMutex::operator= ([[maybe_unused]] AssertExternallySynchronizedMutex&& rhs) noexcept
     {
-        lock_guard<const AssertExternallySynchronizedMutex> writeLockRHS{rhs};    // move we must be able to modify rhs to move it
-        lock_guard<const AssertExternallySynchronizedMutex> writeLockThis{*this}; // we must be able modify this
+        WriteLock writeLockRHS{rhs};    // move we must be able to modify rhs to move it
+        WriteLock writeLockThis{*this}; // we must be able modify this
         return *this;
     }
 #if qDebug

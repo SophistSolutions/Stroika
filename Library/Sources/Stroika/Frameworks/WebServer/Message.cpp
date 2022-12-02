@@ -24,29 +24,29 @@ using namespace Stroika::Frameworks::WebServer;
 Message::Message (Request&& srcRequest, Response&& srcResponse, const optional<IO::Network::SocketAddress>& peerAddress)
     : peerAddress{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<IO::Network::SocketAddress> {
-              const Message*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::peerAddress);
-              shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
+              const Message*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::peerAddress);
+              AssertExternallySynchronizedMutex::ReadLock critSec{*thisObj};
               return thisObj->fPeerAddress_;
           }}
     , request{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Request& {
-        const Message*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::request);
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
+        const Message*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::request);
+        AssertExternallySynchronizedMutex::ReadLock critSec{*thisObj};
         return thisObj->fRequest_;
     }}
     , rwRequest{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Request& {
-        const Message*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::rwRequest);
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
-        return const_cast<Request&> (thisObj->fRequest_);
+        Message*                                     thisObj = const_cast < Message*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::rwRequest));
+        AssertExternallySynchronizedMutex::WriteLock critSec{*thisObj};
+        return thisObj->fRequest_;
     }}
     , response{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Response& {
-        const Message*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::response);
-        shared_lock<const AssertExternallySynchronizedMutex> critSec{*thisObj};
+        const Message*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::response);
+        AssertExternallySynchronizedMutex::ReadLock critSec{*thisObj};
         return thisObj->fResponse_;
     }}
     , rwResponse{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Response& {
-        const Message*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::rwResponse);
-        lock_guard<const AssertExternallySynchronizedMutex> critSec{*thisObj};
-        return const_cast<Response&> (thisObj->fResponse_);
+         Message*                               thisObj = const_cast<Message*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::rwResponse));
+        AssertExternallySynchronizedMutex::WriteLock critSec{*thisObj};
+        return thisObj->fResponse_;
     }}
     , fPeerAddress_{peerAddress}
     , fRequest_{move (srcRequest)}
@@ -70,8 +70,8 @@ void Message::SetAssertExternallySynchronizedMutexContext (const shared_ptr<Shar
 
 String Message::ToString () const
 {
-    shared_lock<const AssertExternallySynchronizedMutex> critSec{*this};
-    StringBuilder                                        sb;
+    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    StringBuilder                               sb;
     sb += L"{";
     sb += L"PeerAddress: " + Characters::ToString (fPeerAddress_) + L", ";
     sb += L"Request: " + Characters::ToString (fRequest_) + L", ";

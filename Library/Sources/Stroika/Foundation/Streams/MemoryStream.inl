@@ -72,8 +72,8 @@ namespace Stroika::Foundation::Streams {
             RequireNotNull (intoEnd);
             Require (intoStart < intoEnd);
             Require (IsOpenRead ());
-            size_t                                              nRequested = intoEnd - intoStart;
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            size_t                                       nRequested = intoEnd - intoStart;
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
             Assert ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
             size_t nAvail  = fData_.end () - fReadCursor_;
             size_t nCopied = min (nAvail, nRequested);
@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Streams {
         virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
             Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
             Require (IsOpenRead ());
             return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fData_.end () - fReadCursor_);
         }
@@ -100,9 +100,9 @@ namespace Stroika::Foundation::Streams {
             Require (end != nullptr or start == end);
             Require (IsOpenWrite ());
             if (start != end) {
-                lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
-                size_t                                              roomLeft     = fData_.end () - fWriteCursor_;
-                size_t                                              roomRequired = end - start;
+                AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+                size_t                                       roomLeft     = fData_.end () - fWriteCursor_;
+                size_t                                       roomRequired = end - start;
                 if (roomLeft < roomRequired) {
                     size_t       curReadOffset  = fReadCursor_ - fData_.begin ();
                     size_t       curWriteOffset = fWriteCursor_ - fData_.begin ();
@@ -130,13 +130,13 @@ namespace Stroika::Foundation::Streams {
         }
         virtual SeekOffsetType GetReadOffset () const override
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::ReadLock readLock{*this};
             Require (IsOpenRead ());
             return fReadCursor_ - fData_.begin ();
         }
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
             Require (IsOpenRead ());
             switch (whence) {
                 case Whence::eFromStart: {
@@ -178,13 +178,13 @@ namespace Stroika::Foundation::Streams {
         }
         virtual SeekOffsetType GetWriteOffset () const override
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::ReadLock readLock{*this};
             Require (IsOpenWrite ());
             return fWriteCursor_ - fData_.begin ();
         }
         virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
             Require (IsOpenWrite ());
             switch (whence) {
                 case Whence::eFromStart: {
@@ -223,12 +223,12 @@ namespace Stroika::Foundation::Streams {
         }
         vector<ElementType> AsVector () const
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::ReadLock critSec{*this};
             return fData_;
         }
         string AsString () const
         {
-            lock_guard<const AssertExternallySynchronizedMutex> critSec{*this};
+            AssertExternallySynchronizedMutex::ReadLock critSec{*this};
             return string{reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_))};
         }
 

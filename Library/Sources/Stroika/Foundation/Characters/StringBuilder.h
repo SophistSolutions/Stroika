@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Characters {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    class StringBuilder  {
+    class StringBuilder {
     public:
         /**
          */
@@ -197,7 +197,6 @@ namespace Stroika::Foundation::Characters {
          *  @see capacity
          */
         nonvirtual void reserve (size_t newCapacity);
-
 
     private:
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySyncrhonized_;
