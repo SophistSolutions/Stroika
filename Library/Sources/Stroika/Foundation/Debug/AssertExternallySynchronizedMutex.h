@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Debug {
      *  \par Example Usage
      *      \code
      *          struct foo   {
-     *              Debug::AssertExternallySynchronizedMutex fData_;
+     *              [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fData_;
      *              inline  void    DoReadWriteStuffOnData ()
      *              {
      *                  AssertExternallySynchronizedMutex::WriteLock writeLock { fData_ };       // lock_guard or scopedLock or unique_lock
@@ -202,7 +202,7 @@ namespace Stroika::Foundation::Debug {
          *  \note   method non-const (can always const_cast if needed) because of standard C++ convention of non-const objects
          *          for write-lock
          */
-        nonvirtual void lock ()  noexcept;
+        nonvirtual void lock () noexcept;
 
     public:
         /**
@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Debug {
          *
          *  \req    still running on the same locking thread and locks not unbalanced
          */
-        nonvirtual void unlock ()  noexcept;
+        nonvirtual void unlock () noexcept;
 
     public:
         /**
