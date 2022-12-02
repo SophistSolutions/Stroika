@@ -1307,7 +1307,7 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T>
     template <typename REP_SUB_TYPE>
-    class Iterable<T>::_SafeReadWriteRepAccessor : private Debug::AssertExternallySynchronizedMutex::WriteLock {
+    class Iterable<T>::_SafeReadWriteRepAccessor {
     public:
         _SafeReadWriteRepAccessor ()                                     = delete;
         _SafeReadWriteRepAccessor (const _SafeReadWriteRepAccessor& src) = default;
@@ -1324,10 +1324,11 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual REP_SUB_TYPE& _GetWriteableRep ();
 
     private:
-#if qDebug
-        Iterable<T>* fIterableEnvelope_; // mostly saved for assertions, but also for _UpdateRep- when we lose that - we can ifdef qDebug this field (as we do for read accessor)
-#endif
         REP_SUB_TYPE* fRepReference_;
+#if qDebug
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex::WriteLock fAssertWriteLock_;
+        Iterable<T>*                                                              fIterableEnvelope_; // mostly saved for assertions, but also for _UpdateRep- when we lose that - we can ifdef qDebug this field (as we do for read accessor)
+#endif
     };
 
 #if 0

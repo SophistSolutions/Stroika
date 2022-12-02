@@ -160,22 +160,22 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope)
-        : WriteLock{*iterableEnvelope}
+        : fRepReference_{static_cast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.rwget ())}
 #if qDebug
+        , fAssertWriteLock_{*iterableEnvelope}
         , fIterableEnvelope_{iterableEnvelope}
 #endif
-        , fRepReference_{static_cast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.rwget ())}
     {
         RequireNotNull (iterableEnvelope);
     }
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (_SafeReadWriteRepAccessor&& from)
-        : WriteLock{move<const Debug::AssertExternallySynchronizedMutex> (from)}
+        : fRepReference_{from.fRepReference_}
 #if qDebug
+        , fAssertWriteLock_{move (from.fAssertWriteLock_)}
         , fIterableEnvelope_{from.fIterableEnvelope_}
 #endif
-        , fRepReference_{from.fRepReference_}
     {
         RequireNotNull (fRepReference_);
         EnsureMember (fRepReference_, REP_SUB_TYPE);

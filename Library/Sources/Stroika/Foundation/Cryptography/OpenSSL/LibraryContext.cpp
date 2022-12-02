@@ -87,7 +87,7 @@ LibraryContext::LibraryContext ()
     : pAvailableCipherAlgorithms{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
               const LibraryContext*                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableCipherAlgorithms);
-              AssertExternallySynchronizedMutex::ReadLock critSec{*thisObj};
+              AssertExternallySynchronizedMutex::ReadLock critSec{thisObj->fAssertExternallySynchronized_};
               Set<String>                                 cipherNames;
 #if OPENSSL_VERSION_MAJOR >= 3
               ::EVP_CIPHER_do_all_provided (
@@ -109,7 +109,7 @@ LibraryContext::LibraryContext ()
           }}
     , pStandardCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
         const LibraryContext*                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pStandardCipherAlgorithms);
-        AssertExternallySynchronizedMutex::ReadLock critSec{*thisObj};
+        AssertExternallySynchronizedMutex::ReadLock critSec{thisObj->fAssertExternallySynchronized_};
         Set<CipherAlgorithm>                        results;
 
         results += CipherAlgorithms::kAES_128_CBC;
@@ -151,7 +151,7 @@ LibraryContext::LibraryContext ()
     }}
     , pAvailableDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
         const LibraryContext*                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableDigestAlgorithms);
-        AssertExternallySynchronizedMutex::ReadLock critSec{*thisObj};
+        AssertExternallySynchronizedMutex::ReadLock critSec{thisObj->fAssertExternallySynchronized_};
 
         Set<String> digestNames;
 #if OPENSSL_VERSION_MAJOR >= 3
@@ -175,7 +175,7 @@ LibraryContext::LibraryContext ()
     }}
     , pStandardDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
         const LibraryContext*                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pStandardDigestAlgorithms);
-        AssertExternallySynchronizedMutex::ReadLock critSec{*thisObj};
+        AssertExternallySynchronizedMutex::ReadLock critSec{thisObj->fAssertExternallySynchronized_};
         Set<DigestAlgorithm>                        results;
         results += DigestAlgorithms::kMD5;
         results += DigestAlgorithms::kSHA1;
@@ -195,7 +195,7 @@ LibraryContext::LibraryContext ()
 
 LibraryContext ::~LibraryContext ()
 {
-    Debug::AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+    Debug::AssertExternallySynchronizedMutex::WriteLock critSec{fAssertExternallySynchronized_};
 #if OPENSSL_VERSION_MAJOR >= 3
     // reference counts dont matter here, just unload all the providers we loaded
     for (auto i : fLoadedProviders_.MappedValues ()) {
@@ -207,7 +207,7 @@ LibraryContext ::~LibraryContext ()
 void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
 {
     Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OpenSSL::LibraryContext::LoadProvider", L"%s", providerName.c_str ())};
-    Debug::AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+    Debug::AssertExternallySynchronizedMutex::WriteLock critSec{fAssertExternallySynchronized_};
 #if OPENSSL_VERSION_MAJOR >= 3
     auto p = fLoadedProviders_.LookupOneValue (providerName);
     if (p == nullptr) {
@@ -226,7 +226,7 @@ void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
 void LibraryContext ::UnLoadProvider ([[maybe_unused]] const String& providerName)
 {
     Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OpenSSL::LibraryContext::UnLoadProvider", L"%s", providerName.c_str ())};
-    Debug::AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+    Debug::AssertExternallySynchronizedMutex::WriteLock critSec{fAssertExternallySynchronized_};
 #if OPENSSL_VERSION_MAJOR >= 3
     Require (fLoadedProviders_.ContainsKey (providerName));
     auto providerToMaybeRemove = fLoadedProviders_.LookupOneValue (providerName);

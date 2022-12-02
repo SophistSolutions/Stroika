@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
      *  For now, provide no way to access additional library contexts, as I have no such need right now
      *  and the docs don't make it super clear/simple.
      */
-    class LibraryContext : private Debug::AssertExternallySynchronizedMutex {
+    class LibraryContext {
     private:
         /**
          */
@@ -107,6 +107,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         Common::ReadOnlyProperty<Set<DigestAlgorithm>> pStandardDigestAlgorithms;
 
     private:
+        [[no_unique_address]]Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
 #if OPENSSL_VERSION_MAJOR >= 3
         Containers::Association<String, ::OSSL_PROVIDER*> fLoadedProviders_; // providers maybe listed multiple times here, if loaded multiple times by callers
 #endif
