@@ -119,13 +119,13 @@ namespace Stroika::Foundation::Debug {
         fSharedContext_ = sharedContext;
     }
 #endif
-    inline void AssertExternallySynchronizedMutex::lock () const noexcept
+    inline void AssertExternallySynchronizedMutex::lock ()  noexcept
     {
 #if qDebug
         lock_ ();
 #endif
     }
-    inline void AssertExternallySynchronizedMutex::unlock () const noexcept
+    inline void AssertExternallySynchronizedMutex::unlock ()  noexcept
     {
 #if qDebug
         unlock_ ();

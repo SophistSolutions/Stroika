@@ -199,13 +199,10 @@ namespace Stroika::Foundation::Debug {
          *  Saves current thread, and increments lock count, and
          *      \req    already locked by this thread or no existing locks (either shared or exclusive)
          *
-         *  \note   method const despite usual lockable rules, since we inherit from this, can use on const
-         *          methods without casts.
+         *  \note   method non-const (can always const_cast if needed) because of standard C++ convention of non-const objects
+         *          for write-lock
          */
-        nonvirtual void lock () const noexcept;
-
-        /// @todo SEE IF WE CAN MAKE LOCk/UNLOCK non-const - think yes
-        // tricky part is Iterable<T>::_SafeReadWriteRepAccessor
+        nonvirtual void lock ()  noexcept;
 
     public:
         /**
@@ -213,7 +210,7 @@ namespace Stroika::Foundation::Debug {
          *
          *  \req    still running on the same locking thread and locks not unbalanced
          */
-        nonvirtual void unlock () const noexcept;
+        nonvirtual void unlock ()  noexcept;
 
     public:
         /**
@@ -243,6 +240,9 @@ namespace Stroika::Foundation::Debug {
          *  Since AssertExternallySynchronizedMutex follows the concpet 'mutex' you can obviously use any
          *  of the standard lockers in std::c++, but using AssertExternallySynchronizedMutex::ReadLock - makes it a little more clear
          *  self-documenting in your code, that you are doing this in a context where you are only reading the pseduo-locked data.
+         * 
+         *  \note we get away with 'const' in shared_lock<const AssertExternallySynchronizedMutex> because we chose to make
+         *        lock_shared, and unlock_shared const methods (see their docs above).
          */
         using ReadLock = shared_lock<const AssertExternallySynchronizedMutex>;
 
