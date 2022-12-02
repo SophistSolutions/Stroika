@@ -99,8 +99,8 @@ protected:
     }
 
 protected:
-    mbstate_t               fMBState_{};
-    OutputStream<byte>::Ptr _fSource;
+    mbstate_t                                                      fMBState_{};
+    OutputStream<byte>::Ptr                                        _fSource;
     [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };
 
@@ -158,7 +158,7 @@ protected:
     }
 
 protected:
-    OutputStream<byte>::Ptr _fSource;
+    OutputStream<byte>::Ptr                                        _fSource;
     [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };
 

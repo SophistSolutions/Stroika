@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Streams {
             RequireNotNull (intoEnd);
             Require (intoStart < intoEnd);
             Require (IsOpenRead ());
-            size_t                                       nRequested = intoEnd - intoStart;
+            size_t                                              nRequested = intoEnd - intoStart;
             Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             Assert ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
             size_t nAvail  = fData_.end () - fReadCursor_;
@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Streams {
             if (start != end) {
                 Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
                 size_t                                              roomLeft     = fData_.end () - fWriteCursor_;
-                size_t                                       roomRequired = end - start;
+                size_t                                              roomRequired = end - start;
                 if (roomLeft < roomRequired) {
                     size_t       curReadOffset  = fReadCursor_ - fData_.begin ();
                     size_t       curWriteOffset = fWriteCursor_ - fData_.begin ();
@@ -241,9 +241,9 @@ namespace Stroika::Foundation::Streams {
         // Or Stroika chunked array code
 
     private:
-        vector<ElementType>                    fData_;
-        typename vector<ElementType>::iterator fReadCursor_;
-        typename vector<ElementType>::iterator fWriteCursor_;
+        vector<ElementType>                                            fData_;
+        typename vector<ElementType>::iterator                         fReadCursor_;
+        typename vector<ElementType>::iterator                         fWriteCursor_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 

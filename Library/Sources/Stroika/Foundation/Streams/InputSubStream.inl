@@ -163,9 +163,9 @@ namespace Stroika::Foundation::Streams {
         }
 
     private:
-        typename InputStream<ELEMENT_TYPE>::Ptr fRealIn_;
-        SeekOffsetType                          fOffsetMine2Real_; // subtract from real offset to get our offset
-        optional<SeekOffsetType>                fForcedEndInReal_;
+        typename InputStream<ELEMENT_TYPE>::Ptr                        fRealIn_;
+        SeekOffsetType                                                 fOffsetMine2Real_; // subtract from real offset to get our offset
+        optional<SeekOffsetType>                                       fForcedEndInReal_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 

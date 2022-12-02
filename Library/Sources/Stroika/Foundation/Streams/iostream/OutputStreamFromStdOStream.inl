@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Streams::iostream {
         }
 
     private:
-        OStreamType& fOriginalStream_;
+        OStreamType&                                                   fOriginalStream_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 

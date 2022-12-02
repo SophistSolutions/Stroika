@@ -485,11 +485,11 @@ protected:
     }
 
 private:
-    Traversal::Iterable<Character> fSource_;
-    Traversal::Iterator<Character> fSrcIter_;
-    size_t                         fOffset_{};
-    optional<Character>            fPrevCharCached_{}; // fPrevCharCached_/fPutBack_ speed hack to support IsAtEOF (), and Peek () more efficiently, little cost, big cost avoidance for seek
-    optional<Character>            fPutBack_{};
+    Traversal::Iterable<Character>                                 fSource_;
+    Traversal::Iterator<Character>                                 fSrcIter_;
+    size_t                                                         fOffset_{};
+    optional<Character>                                            fPrevCharCached_{}; // fPrevCharCached_/fPutBack_ speed hack to support IsAtEOF (), and Peek () more efficiently, little cost, big cost avoidance for seek
+    optional<Character>                                            fPutBack_{};
     [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };
 

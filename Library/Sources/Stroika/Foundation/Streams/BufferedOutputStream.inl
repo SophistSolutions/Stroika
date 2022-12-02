@@ -161,9 +161,9 @@ namespace Stroika::Foundation ::Streams {
         }
 
     private:
-        vector<ELEMENT_TYPE>                     fBuffer_{};
-        typename OutputStream<ELEMENT_TYPE>::Ptr fRealOut_{};
-        bool                                     fAborted_{false};
+        vector<ELEMENT_TYPE>                                           fBuffer_{};
+        typename OutputStream<ELEMENT_TYPE>::Ptr                       fRealOut_{};
+        bool                                                           fAborted_{false};
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 

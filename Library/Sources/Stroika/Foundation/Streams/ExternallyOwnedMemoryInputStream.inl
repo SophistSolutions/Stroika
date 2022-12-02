@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Streams {
             RequireNotNull (intoEnd);
             Require (intoStart < intoEnd);
             Require (IsOpenRead ());
-            size_t                                       nRequested = intoEnd - intoStart;
+            size_t                                              nRequested = intoEnd - intoStart;
             Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             Assert ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
             size_t nAvail  = fEnd_ - fCursor_;
@@ -123,9 +123,9 @@ namespace Stroika::Foundation::Streams {
         }
 
     private:
-        const ELEMENT_TYPE* fStart_;
-        const ELEMENT_TYPE* fEnd_;
-        const ELEMENT_TYPE* fCursor_;
+        const ELEMENT_TYPE*                                            fStart_;
+        const ELEMENT_TYPE*                                            fEnd_;
+        const ELEMENT_TYPE*                                            fCursor_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 

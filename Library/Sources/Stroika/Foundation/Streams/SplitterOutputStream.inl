@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Streams {
             Require (IsOpenWrite ());
             Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             SeekOffsetType                                      o1 = fRealOut1_.SeekWrite (whence, offset);
-            [[maybe_unused]] SeekOffsetType o2 = fRealOut2_.SeekWrite (whence, offset);
+            [[maybe_unused]] SeekOffsetType                     o2 = fRealOut2_.SeekWrite (whence, offset);
             Assert (o1 == o2);
             return o1;
         }
@@ -84,8 +84,8 @@ namespace Stroika::Foundation::Streams {
         }
 
     private:
-        typename OutputStream<ELEMENT_TYPE>::Ptr fRealOut1_;
-        typename OutputStream<ELEMENT_TYPE>::Ptr fRealOut2_;
+        typename OutputStream<ELEMENT_TYPE>::Ptr                       fRealOut1_;
+        typename OutputStream<ELEMENT_TYPE>::Ptr                       fRealOut2_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 

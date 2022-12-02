@@ -127,8 +127,8 @@ namespace Stroika::Foundation::Streams::iostream {
         }
 
     private:
-        IStreamType& fOriginalStream_;
-        SeekableFlag fSeekable_;
+        IStreamType&                                                   fOriginalStream_;
+        SeekableFlag                                                   fSeekable_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 

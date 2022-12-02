@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class BufferedInputStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep{
+    class BufferedInputStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
     public:
         Rep_ (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn)
             : InputStream<ELEMENT_TYPE>::_IRep{}
@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Streams {
         }
 
     private:
-        typename InputStream<ELEMENT_TYPE>::Ptr fRealIn_;
+        typename InputStream<ELEMENT_TYPE>::Ptr                        fRealIn_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
