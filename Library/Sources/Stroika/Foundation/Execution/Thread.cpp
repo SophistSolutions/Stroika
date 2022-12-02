@@ -784,6 +784,17 @@ void CALLBACK Thread::Ptr::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParame
     if (rep->fThrowInterruptExceptionInsideUserAPC_) [[unlikely]] {
         CheckForInterruption ();
     }
+#if 0
+    // See https://stroika.atlassian.net/browse/STK-963
+    // in case in a blocking WSA call - like ::recv, or ::connect, etc...
+    // This is SLIGHTLY non-modular, but just makes the WSA socket code behave more like POSIX code - where thread interuption
+    // causes 'EINTR' to be returned.
+    // BUT - sadly this function was removed in WSA 2.0, and we must use that (MSFT no longer supports older one anyhow).
+    // And I can see no obvious way to fix this. So must just avoid the synchonous WSA APIs (if/where I can).
+    if (::WSACancelBlockingCall () == SOCKET_ERROR) {
+        Assert (::WSAGetLastError () == WSAENETDOWN or ::WSAGetLastError () == WSAEINVAL); // either way - OK
+    }
+#endif
 }
 #endif
 
