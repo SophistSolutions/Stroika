@@ -39,7 +39,7 @@ using Execution::ThrowPOSIXErrNo;
 // from https://www.gnu.org/software/libc/manual/html_node/Reading_002fClosing-Directory.html -
 // To distinguish between an end-of-directory condition or an error, you must set errno to zero before calling readdir.
 
-class DirectoryIterator::Rep_ : public Iterator<filesystem::path>::IRep, private Debug::AssertExternallySynchronizedMutex {
+class DirectoryIterator::Rep_ : public Iterator<filesystem::path>::IRep {
 private:
     IteratorReturnType fIteratorReturnType_;
     String             fDirName_;
@@ -51,15 +51,15 @@ private:
     HANDLE          fHandle_{INVALID_HANDLE_VALUE}; // after constructor - fHandle_ == INVALID_HANDLE_VALUE means iterator ATEND
     WIN32_FIND_DATA fFindFileData_{};
 #endif
+    [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
 public:
     Rep_ (const String& dir, IteratorReturnType iteratorReturns)
-        : fIteratorReturnType_ (iteratorReturns)
-        , fDirName_ (dir)
-        , fReportPrefix_ (mkReportPrefix_ (ToPath (dir), iteratorReturns))
+        : fIteratorReturnType_{iteratorReturns}
+        , fDirName_{dir}
+        , fReportPrefix_{mkReportPrefix_ (ToPath (dir), iteratorReturns)}
 #if qPlatform_POSIX
-        , fDirIt_{
-              ::opendir (dir.AsSDKString ().c_str ())}
+        , fDirIt_{ ::opendir (dir.AsSDKString ().c_str ())}
 #endif
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -90,9 +90,9 @@ public:
     }
 #if qPlatform_POSIX
     Rep_ (const String& dirName, const optional<ino_t>& curInode, IteratorReturnType iteratorReturns)
-        : fIteratorReturnType_ (iteratorReturns)
-        , fDirName_ (dirName)
-        , fReportPrefix_ (mkReportPrefix_ (ToPath (dirName), iteratorReturns))
+        : fIteratorReturnType_{iteratorReturns}
+        , fDirName_{dirName}
+        , fReportPrefix_{mkReportPrefix_ (ToPath (dirName), iteratorReturns)}
         , fDirIt_{::opendir (dirName.AsSDKString ().c_str ())}
     {
         if (fDirIt_ == nullptr) {
@@ -110,9 +110,9 @@ public:
 #elif qPlatform_Windows
     // missing name implies Iterator::IsAtEnd ()
     Rep_ (const String& dir, const optional<String>& name, IteratorReturnType iteratorReturns)
-        : fIteratorReturnType_ (iteratorReturns)
-        , fDirName_ (dir)
-        , fReportPrefix_ (mkReportPrefix_ (ToPath (dir), iteratorReturns))
+        : fIteratorReturnType_{iteratorReturns}
+        , fDirName_{dir}
+        , fReportPrefix_ {mkReportPrefix_ (ToPath (dir), iteratorReturns)}
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR", L"'%s',name=%s", dir.c_str (), name.c_str ()};
@@ -140,7 +140,7 @@ public:
     }
     virtual void More (optional<filesystem::path>* result, bool advance) override
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteLock critSec{fThisAssertExternallySynchronized_};
         RequireNotNull (result);
         *result = nullopt;
 #if qPlatform_POSIX
@@ -183,7 +183,7 @@ public:
     }
     virtual bool Equals (const Iterator<filesystem::path>::IRep* rhs) const override
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
         RequireNotNull (rhs);
         RequireMember (rhs, Rep_);
         const Rep_& rrhs = *Debug::UncheckedDynamicCast<const Rep_*> (rhs);
@@ -198,7 +198,7 @@ public:
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Entering DirectoryIterator::Rep_::Clone"};
 #endif
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
 #if qPlatform_POSIX
         AssertNotNull (fDirIt_);
         /*

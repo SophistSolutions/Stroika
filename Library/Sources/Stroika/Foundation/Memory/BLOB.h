@@ -346,7 +346,7 @@ namespace Stroika::Foundation::Memory {
         struct AdoptAppLifetimeRep_;
 
     private:
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         _SharedIRep                                                    fRep_;
     };
 

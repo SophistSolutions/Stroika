@@ -32,6 +32,7 @@ using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
@@ -49,7 +50,7 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
  ************************* FileSystem::FileOutputStream *************************
  ********************************************************************************
  */
-class FileOutputStream::Rep_ : public Streams::OutputStream<byte>::_IRep, private Debug::AssertExternallySynchronizedMutex {
+class FileOutputStream::Rep_ : public Streams::OutputStream<byte>::_IRep {
 public:
     Rep_ ()            = delete;
     Rep_ (const Rep_&) = delete;
@@ -120,7 +121,7 @@ public:
         Require (end != nullptr or start == end);
 
         if (start != end) {
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             auto                                         activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
             DeclareActivity                              currentActivity{&activity};
             const byte*                                  i = start;
@@ -139,7 +140,7 @@ public:
     {
         // normally nothing todo - write 'writes thru' (except if fFlushFlag)
         if (fFlushFlag == FlushFlag::eToDisk) {
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             auto                                         activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); });
             DeclareActivity                              currentActivity{&activity};
 #if qPlatform_POSIX
@@ -153,7 +154,7 @@ public:
     }
     virtual Streams::SeekOffsetType GetWriteOffset () const override
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
 #if qPlatform_Linux
         return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
 #elif qPlatform_Windows
@@ -166,7 +167,7 @@ public:
     {
         Require (fSeekable_);
         using namespace Streams;
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0) [[unlikely]] {
@@ -209,6 +210,7 @@ private:
     AdoptFDPolicy              fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
     bool                       fSeekable_{true};
     optional<filesystem::path> fFileName_;
+    [[no_unique_address]] AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };
 
 auto FileOutputStream::New (const filesystem::path& fileName, FlushFlag flushFlag) -> Ptr

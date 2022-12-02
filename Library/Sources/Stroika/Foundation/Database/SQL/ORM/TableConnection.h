@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
      *          threadsafe (even if accessed across processes).
      */
     template <typename T, typename TRAITS = TableConnectionTraits<T>>
-    class TableConnection : private Debug::AssertExternallySynchronizedMutex {
+    class TableConnection {
     public:
         /**
          * Optionally passed to TableConnection for the purpose of logging
@@ -176,16 +176,17 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         [[deprecated ("Since Stroika 2.1.5, use Delete ()")]] nonvirtual void DeleteByID (const typename TRAITS::IDType& id) { Delete (id); }
 
     private:
-        Connection::Ptr                    fConnection_;
-        shared_ptr<const EngineProperties> fEngineProperties_;
-        Schema::Table                      fTableSchema_;
-        ObjectVariantMapper                fObjectVariantMapper_;
-        OpertionCallbackPtr                fTableOpertionCallback_;
-        Statement                          fGetByID_Statement_;
-        Statement                          fGetAll_Statement_;
-        Statement                          fAddNew_Statement_;
-        Statement                          fUpdate_Statement_;
-        Statement                          fDeleteByID_Statement_;
+        Connection::Ptr                                                fConnection_;
+        shared_ptr<const EngineProperties>                             fEngineProperties_;
+        Schema::Table                                                  fTableSchema_;
+        ObjectVariantMapper                                            fObjectVariantMapper_;
+        OpertionCallbackPtr                                            fTableOpertionCallback_;
+        Statement                                                      fGetByID_Statement_;
+        Statement                                                      fGetAll_Statement_;
+        Statement                                                      fAddNew_Statement_;
+        Statement                                                      fUpdate_Statement_;
+        Statement                                                      fDeleteByID_Statement_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
     private:
         template <typename FUN>

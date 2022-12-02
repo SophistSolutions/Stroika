@@ -21,7 +21,7 @@ using namespace Stroika::Foundation::Debug;
  ****************** Debug::AssertExternallySynchronizedMutex ********************
  ********************************************************************************
  */
-void AssertExternallySynchronizedMutex::lock_ () const noexcept
+void AssertExternallySynchronizedMutex::lock_ () noexcept
 {
     try {
         SharedContext* sharedContext = fSharedContext_.get ();
@@ -50,7 +50,7 @@ void AssertExternallySynchronizedMutex::lock_ () const noexcept
     }
 }
 
-void AssertExternallySynchronizedMutex::unlock_ () const noexcept
+void AssertExternallySynchronizedMutex::unlock_ ()  noexcept
 {
     SharedContext* sharedContext = fSharedContext_.get ();
     Require (sharedContext->fThreadWithFullLock_ == this_thread::get_id ());

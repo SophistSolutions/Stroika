@@ -322,7 +322,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
          */
-        class Ptr : private Debug::AssertExternallySynchronizedMutex {
+        class Ptr {
         private:
             class Rep_;
 
@@ -732,7 +732,8 @@ namespace Stroika::Foundation::Execution {
             nonvirtual explicit operator bool () const;
 
         private:
-            shared_ptr<Rep_> fRep_;
+            shared_ptr<Rep_>                                               fRep_;
+            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
         private:
             friend Ptr New (const function<void ()>& fun2CallOnce, const optional<Characters::String>& name, const optional<Configuration>& configuration);

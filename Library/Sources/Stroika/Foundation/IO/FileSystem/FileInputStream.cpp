@@ -37,6 +37,7 @@ using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
@@ -52,7 +53,7 @@ using Streams::SeekOffsetType;
  **************************** FileSystem::FileInputStream ***********************
  ********************************************************************************
  */
-class FileInputStream::Rep_ : public InputStream<byte>::_IRep, private Debug::AssertExternallySynchronizedMutex {
+class FileInputStream::Rep_ : public InputStream<byte>::_IRep {
 public:
     Rep_ ()            = delete;
     Rep_ (const Rep_&) = delete;
@@ -79,9 +80,9 @@ public:
 #endif
     }
     Rep_ (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable)
-        : fFD_ (fd)
-        , fSeekable_ (seekable)
-        , fAdoptFDPolicy_ (adoptFDPolicy)
+        : fFD_{fd}
+        , fSeekable_{seekable}
+        , fAdoptFDPolicy_{adoptFDPolicy}
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"attached fd: %d", fFD_);
@@ -134,7 +135,7 @@ public:
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::Read", L"nRequested: %llu", static_cast<unsigned long long> (nRequested)};
 #endif
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{fThisAssertExternallySynchronized_};
         auto                                         readingFromFileActivity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); });
         DeclareActivity                              currentActivity{&readingFromFileActivity};
 #if qPlatform_Windows
@@ -186,7 +187,7 @@ public:
     }
     virtual Streams::SeekOffsetType GetReadOffset () const override
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
 #if qPlatform_Windows
         return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
 #elif qPlatform_Linux
@@ -201,7 +202,7 @@ public:
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::SeekRead", L"whence: %d, offset: %lld", whence, static_cast<long long> (offset)};
 #endif
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock critSec{fThisAssertExternallySynchronized_};
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0) [[unlikely]] {
@@ -243,6 +244,7 @@ private:
     SeekableFlag               fSeekable_;
     AdoptFDPolicy              fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
     optional<filesystem::path> fFileName_;
+    [[no_unique_address]] AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };
 
 auto FileInputStream::New (const filesystem::path& fileName, SeekableFlag seekable) -> Ptr

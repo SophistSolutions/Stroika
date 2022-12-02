@@ -274,14 +274,14 @@ namespace {
 template <>
 Streams::InputStream<byte>::Ptr BLOB::As () const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     return BLOBBINSTREAM_{*this};
 }
 
 Characters::String BLOB::AsHex (size_t maxBytesToShow) const
 {
     // @todo Could be more efficient
-    AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     StringBuilder                               sb;
     size_t                                      cnt{};
     for (byte b : *this) {
@@ -296,7 +296,7 @@ Characters::String BLOB::AsHex (size_t maxBytesToShow) const
 BLOB BLOB::Repeat (unsigned int count) const
 {
     // @todo - re-implement using powers of 2 - so fewer concats (maybe - prealloc / reserve so only one - using vector)
-    AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     BLOB                                        tmp = *this;
     for (unsigned int i = 1; i < count; ++i) {
         tmp = tmp + *this;
@@ -308,13 +308,13 @@ BLOB BLOB::Slice (size_t startAt, size_t endAt) const
 {
     Require (startAt <= endAt);
     Require (endAt < size ());
-    AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     return BLOB (begin () + startAt, begin () + endAt);
 }
 
 String BLOB::ToString (size_t maxBytesToShow) const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{fAssertExternallySynchronized_};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     if (size () > maxBytesToShow) {
         String hexStr    = AsHex (maxBytesToShow + 1); // so we can replace/elispis with LimitLength ()
         size_t maxStrLen = maxBytesToShow < numeric_limits<size_t>::max () / 2 ? maxBytesToShow * 2 : maxBytesToShow;

@@ -70,6 +70,9 @@ namespace Stroika::Foundation::Debug {
      *  \note   methods all noexcept (just asserts out on problems) - noexcept so debug semantics same as release semantics
      *          Since the DEBUG version will allocate memory, which may fail, those failures trigger assertion failure and abort.
      *
+     *  \note   typically used as
+     *              [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+     *
      *  \par Example Usage
      *      \code
      *          struct foo   {
@@ -265,8 +268,8 @@ namespace Stroika::Foundation::Debug {
 
 #if qDebug
     private:
-        nonvirtual void lock_ () const noexcept;
-        nonvirtual void unlock_ () const noexcept;
+        nonvirtual void lock_ () noexcept;
+        nonvirtual void unlock_ () noexcept;
         nonvirtual void lock_shared_ () const noexcept;
         nonvirtual void unlock_shared_ () const noexcept;
 

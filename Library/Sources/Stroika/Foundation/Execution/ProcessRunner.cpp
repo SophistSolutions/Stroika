@@ -46,6 +46,7 @@ using std::byte;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 
 using Debug::TraceContextBumper;
@@ -316,13 +317,13 @@ ProcessRunner::BackgroundProcess::BackgroundProcess ()
 
 optional<ProcessRunner::ProcessResultType> ProcessRunner::BackgroundProcess::GetProcessResult () const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     return fRep_->fResult;
 }
 
 void ProcessRunner::BackgroundProcess::PropagateIfException () const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     Thread::Ptr                                 t{fRep_->fProcessRunner};
     t.ThrowIfDoneWithException ();
     if (auto o = GetProcessResult ()) {
@@ -337,14 +338,14 @@ void ProcessRunner::BackgroundProcess::PropagateIfException () const
 
 void ProcessRunner::BackgroundProcess::WaitForDone (Time::DurationSecondsType timeout) const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     Thread::Ptr                                 t{fRep_->fProcessRunner};
     t.WaitForDone (timeout);
 }
 
 void ProcessRunner::BackgroundProcess::Join (Time::DurationSecondsType timeout) const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     Thread::Ptr                                 t{fRep_->fProcessRunner};
     t.Join (timeout);
     // if he asserts in PropagateIfException () are wrong, I may need to call that here!
@@ -352,7 +353,7 @@ void ProcessRunner::BackgroundProcess::Join (Time::DurationSecondsType timeout) 
 
 void ProcessRunner::BackgroundProcess::JoinUntil (Time::DurationSecondsType timeoutAt) const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     Thread::Ptr                                 t{fRep_->fProcessRunner};
     t.JoinUntil (timeoutAt);
     // if he asserts in PropagateIfException () are wrong, I may need to call that here!
@@ -361,7 +362,7 @@ void ProcessRunner::BackgroundProcess::JoinUntil (Time::DurationSecondsType time
 void ProcessRunner::BackgroundProcess::Terminate ()
 {
     TraceContextBumper                          ctx{"ProcessRunner::BackgroundProcess::Terminate"};
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     // @todo? set thread to null when done -
     //
     // @todo - Note - UNTESTED, and probably not 100% right (esp error checking!!!
@@ -410,7 +411,7 @@ ProcessRunner::ProcessRunner (const filesystem::path& executable, const Containe
 
 String ProcessRunner::GetEffectiveCmdLine_ () const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     if (fCommandLine_) {
         return *fCommandLine_;
     }
@@ -427,55 +428,55 @@ String ProcessRunner::GetEffectiveCmdLine_ () const
 
 optional<String> ProcessRunner::GetWorkingDirectory ()
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     return fWorkingDirectory_;
 }
 
 void ProcessRunner::SetWorkingDirectory (const optional<String>& d)
 {
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+    AssertExternallySynchronizedMutex::WriteLock critSec{fThisAssertExternallySynchronized_};
     fWorkingDirectory_ = d;
 }
 
 Streams::InputStream<byte>::Ptr ProcessRunner::GetStdIn () const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     return fStdIn_;
 }
 
 void ProcessRunner::SetStdIn (const Streams::InputStream<byte>::Ptr& in)
 {
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+    AssertExternallySynchronizedMutex::WriteLock critSec{fThisAssertExternallySynchronized_};
     fStdIn_ = in;
 }
 
 void ProcessRunner::SetStdIn (const Memory::BLOB& in)
 {
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+    AssertExternallySynchronizedMutex::WriteLock critSec{fThisAssertExternallySynchronized_};
     fStdIn_ = in.As<Streams::InputStream<byte>::Ptr> ();
 }
 
 Streams::OutputStream<byte>::Ptr ProcessRunner::GetStdOut () const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     return fStdOut_;
 }
 
 void ProcessRunner::SetStdOut (const Streams::OutputStream<byte>::Ptr& out)
 {
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+    AssertExternallySynchronizedMutex::WriteLock critSec{fThisAssertExternallySynchronized_};
     fStdOut_ = out;
 }
 
 Streams::OutputStream<byte>::Ptr ProcessRunner::GetStdErr () const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     return fStdErr_;
 }
 
 void ProcessRunner::SetStdErr (const Streams::OutputStream<byte>::Ptr& err)
 {
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+    AssertExternallySynchronizedMutex::WriteLock critSec{fThisAssertExternallySynchronized_};
     fStdErr_ = err;
 }
 
@@ -509,7 +510,7 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
 
 Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
 {
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+    AssertExternallySynchronizedMutex::WriteLock critSec{fThisAssertExternallySynchronized_};
     Streams::InputStream<byte>::Ptr              oldStdIn  = GetStdIn ();
     Streams::OutputStream<byte>::Ptr             oldStdOut = GetStdOut ();
     try {
@@ -1189,7 +1190,7 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ProcessRunner::CreateRunnable_")};
 #endif
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_};
     String                                      cmdLine          = fCommandLine_.value_or (String{});
     optional<String>                            workingDir       = GetWorkingDirectory ();
     Streams::InputStream<byte>::Ptr             in               = GetStdIn ();

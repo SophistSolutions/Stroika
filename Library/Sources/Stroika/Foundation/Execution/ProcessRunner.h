@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Execution {
         *      \endcode
         *
         */
-    class ProcessRunner : private Debug::AssertExternallySynchronizedMutex {
+    class ProcessRunner {
     public:
         ProcessRunner ()                     = delete;
         ProcessRunner (const ProcessRunner&) = delete;
@@ -259,13 +259,14 @@ namespace Stroika::Foundation::Execution {
         nonvirtual String GetEffectiveCmdLine_ () const;
 
     private:
-        optional<String>                 fCommandLine_;
-        optional<filesystem::path>       fExecutable_;
-        Containers::Sequence<String>     fArgs_; // ignored if fExecutable empty
-        optional<String>                 fWorkingDirectory_;
-        Streams::InputStream<byte>::Ptr  fStdIn_;
-        Streams::OutputStream<byte>::Ptr fStdOut_;
-        Streams::OutputStream<byte>::Ptr fStdErr_;
+        optional<String>                                               fCommandLine_;
+        optional<filesystem::path>                                     fExecutable_;
+        Containers::Sequence<String>                                   fArgs_; // ignored if fExecutable empty
+        optional<String>                                               fWorkingDirectory_;
+        Streams::InputStream<byte>::Ptr                                fStdIn_;
+        Streams::OutputStream<byte>::Ptr                               fStdOut_;
+        Streams::OutputStream<byte>::Ptr                               fStdErr_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
     /**
@@ -303,7 +304,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *      @todo warning: https://stroika.atlassian.net/browse/STK-585 - lots broken here
      */
-    class ProcessRunner::BackgroundProcess : private Debug::AssertExternallySynchronizedMutex {
+    class ProcessRunner::BackgroundProcess {
     private:
         BackgroundProcess ();
 
@@ -366,7 +367,8 @@ namespace Stroika::Foundation::Execution {
             Synchronized<optional<pid_t>>             fPID{};
             Synchronized<optional<ProcessResultType>> fResult{};
         };
-        shared_ptr<Rep_> fRep_;
+        shared_ptr<Rep_>                                               fRep_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
     private:
         friend class ProcessRunner;

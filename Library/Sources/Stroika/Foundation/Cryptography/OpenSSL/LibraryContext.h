@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         Common::ReadOnlyProperty<Set<DigestAlgorithm>> pStandardDigestAlgorithms;
 
     private:
-        [[no_unique_address]]Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 #if OPENSSL_VERSION_MAJOR >= 3
         Containers::Association<String, ::OSSL_PROVIDER*> fLoadedProviders_; // providers maybe listed multiple times here, if loaded multiple times by callers
 #endif
