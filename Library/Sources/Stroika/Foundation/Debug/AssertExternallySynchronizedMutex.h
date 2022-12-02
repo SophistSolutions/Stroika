@@ -92,7 +92,9 @@ namespace Stroika::Foundation::Debug {
      *
      *  \par Example Usage
      *      \code
-     *          struct foo : private Debug::AssertExternallySynchronizedMutex {
+     *          // this style of use - subclassing - is especially useful if the object foo will be subclassed, and checked throughtout the
+     *          // code (or subclasses) with Debug::AssertExternallySynchronizedMutex::ReadLock (or WriteLock)
+     *          struct foo : public Debug::AssertExternallySynchronizedMutex {
      *              inline  void    DoReadWriteStuffOnData ()
      *              {
      *                  AssertExternallySynchronizedMutex::WriteLock writeLock { *this };       // lock_guard or scopedLock or unique_lock
@@ -106,9 +108,9 @@ namespace Stroika::Foundation::Debug {
      *          };
      *      \endcode
      *
-     *  \note   This is SUPER-RECURSIVE lock. It allows lock() when shared_lock held (by only this thread) - so upgradelock.
-     *          And it allows shared_lock when lock held by the same thread. Otherwise it asserts when a thread conflict is found,
-     *          not blocking.
+     *  \note   This is SUPER-RECURSIVE lock. It allows lock() when shared_lock held (by only this thread) - so upgrades the lock.
+     *          And it allows shared_lock when lock held by the same thread. Otherwise it asserts when a thread conflict is found.
+     *          lock() and shared_lock () - here - are NEVER blocking. They just assert there is no conflict.
      */
     class AssertExternallySynchronizedMutex {
 #if qDebug
