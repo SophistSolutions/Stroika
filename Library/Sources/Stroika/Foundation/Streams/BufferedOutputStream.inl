@@ -21,7 +21,7 @@ namespace Stroika::Foundation ::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class BufferedOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedMutex {
+    class BufferedOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep {
         static constexpr size_t kMinBufSize_{1 * 1024};
         static constexpr size_t kDefaultBufSize_{16 * 1024};
 
@@ -42,12 +42,12 @@ namespace Stroika::Foundation ::Streams {
     public:
         nonvirtual size_t GetBufferSize () const
         {
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
             return fBuffer_.capacity ();
         }
         nonvirtual void SetBufferSize (size_t bufSize)
         {
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             bufSize = max (bufSize, kMinBufSize_);
             if (bufSize < fBuffer_.size ()) {
                 Flush_ ();
@@ -59,7 +59,7 @@ namespace Stroika::Foundation ::Streams {
         // Throws away all data about to be written (buffered). Once this is called, its illegal to call Flush or another write
         nonvirtual void Abort ()
         {
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             fAborted_ = true; // for debug sake track this
             fBuffer_.clear ();
         }
@@ -92,7 +92,7 @@ namespace Stroika::Foundation ::Streams {
         }
         virtual void Flush () override
         {
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             Require (IsOpenWrite ());
             Flush_ ();
         }
@@ -103,7 +103,7 @@ namespace Stroika::Foundation ::Streams {
             Require (start < end); // for OutputStream<byte> - this function requires non-empty write
             Require (not fAborted_);
             Require (IsOpenWrite ());
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             /*
              * Minimize the number of writes at the possible cost of extra copying.
              *
@@ -164,6 +164,7 @@ namespace Stroika::Foundation ::Streams {
         vector<ELEMENT_TYPE>                     fBuffer_{};
         typename OutputStream<ELEMENT_TYPE>::Ptr fRealOut_{};
         bool                                     fAborted_{false};
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
     /*

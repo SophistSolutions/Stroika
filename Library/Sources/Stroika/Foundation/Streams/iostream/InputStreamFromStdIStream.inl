@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Streams::iostream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE, typename TRAITS>
-    class InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedMutex {
+    class InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
     private:
         using IStreamType = typename TRAITS::IStreamType;
 
@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Streams::iostream {
             RequireNotNull (intoEnd);
             Require (intoStart < intoEnd);
 
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             if (fOriginalStream_.eof ()) {
                 return 0;
@@ -89,7 +89,8 @@ namespace Stroika::Foundation::Streams::iostream {
         virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
             Require (IsOpenRead ());
-            streamsize sz = fOriginalStream_.rdbuf ()->in_avail ();
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            streamsize                                          sz = fOriginalStream_.rdbuf ()->in_avail ();
             // http://en.cppreference.com/w/cpp/io/basic_streambuf/in_avail
             if (sz == 0) {
                 return {};
@@ -102,13 +103,13 @@ namespace Stroika::Foundation::Streams::iostream {
         virtual SeekOffsetType GetReadOffset () const override
         {
             // instead of tellg () - avoids issue with EOF where fail bit set???
-            AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
         }
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
         {
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             switch (whence) {
                 case Whence::eFromStart:
@@ -128,6 +129,7 @@ namespace Stroika::Foundation::Streams::iostream {
     private:
         IStreamType& fOriginalStream_;
         SeekableFlag fSeekable_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
     /*

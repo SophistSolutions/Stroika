@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Streams::iostream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE, typename TRAITS>
-    class OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedMutex {
+    class OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep {
     private:
         using OStreamType = typename TRAITS::OStreamType;
 
@@ -31,35 +31,38 @@ namespace Stroika::Foundation::Streams::iostream {
 
     public:
         Rep_ (OStreamType& originalStream)
-            : fOriginalStream_ (originalStream)
+            : fOriginalStream_{originalStream}
         {
         }
 
     protected:
         virtual bool IsSeekable () const override
         {
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
             return true;
         }
         virtual void CloseWrite () override
         {
             Require (IsOpenWrite ());
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             fOpen_ = false;
             Ensure (not IsOpenWrite ());
         }
         virtual bool IsOpenWrite () const override
         {
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
             return fOpen_;
         }
         virtual SeekOffsetType GetWriteOffset () const override
         {
             // instead of tellg () - avoids issue with EOF where fail bit set???
-            AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
             Require (IsOpenWrite ());
             return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::out);
         }
         virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
         {
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             Require (IsOpenWrite ());
             switch (whence) {
                 case Whence::eFromStart:
@@ -80,7 +83,7 @@ namespace Stroika::Foundation::Streams::iostream {
             Require (end != nullptr or start == end);
             Require (IsOpenWrite ());
 
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
 
             using StreamElementType = typename OStreamType::char_type;
             fOriginalStream_.write (reinterpret_cast<const StreamElementType*> (start), end - start);
@@ -91,7 +94,7 @@ namespace Stroika::Foundation::Streams::iostream {
         }
         virtual void Flush () override
         {
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             Require (IsOpenWrite ());
             fOriginalStream_.flush ();
             if (fOriginalStream_.fail ()) [[unlikely]] {
@@ -102,6 +105,7 @@ namespace Stroika::Foundation::Streams::iostream {
 
     private:
         OStreamType& fOriginalStream_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
     /*

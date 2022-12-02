@@ -18,6 +18,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
 
 using Characters::String;
+using Debug::AssertExternallySynchronizedMutex;
 using Memory::InlineBuffer;
 using Memory::StackBuffer;
 
@@ -25,12 +26,11 @@ namespace {
     using MyWCharTConverterType_ = codecvt<wchar_t, char, mbstate_t>;
 }
 
-class TextReader::FromBinaryStreamBaseRep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedMutex {
+class TextReader::FromBinaryStreamBaseRep_ : public InputStream<Character>::_IRep {
 public:
     FromBinaryStreamBaseRep_ (const InputStream<byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
         : _fSource{src}
         , _fCharConverter{charConverter}
-        , _fOffset{0}
     {
     }
 
@@ -73,7 +73,7 @@ protected:
          */
         StackBuffer<wchar_t, 8 * 1024>               outBuf{Memory::eUninitialized, static_cast<size_t> (intoEnd - intoStart)};
         wchar_t*                                     outCursor = begin (outBuf);
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
         {
             StackBuffer<byte, 8 * 1024> inBuf{Memory::eUninitialized, size_t (intoEnd - intoStart)}; // wag at size
             size_t                      inBytes = _fSource.Read (begin (inBuf), end (inBuf));
@@ -165,14 +165,14 @@ protected:
 
     virtual SeekOffsetType GetReadOffset () const override
     {
-        AssertExternallySynchronizedMutex::ReadLock readLock{*this};
+        AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         Require (IsOpenRead ());
         return _fOffset;
     }
 
     virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
         Require (IsOpenRead ());
         AssertNotReached (); // not seekable
         return _fOffset;
@@ -184,7 +184,8 @@ protected:
 #if !qMaintainingMBShiftStateNotWorking_
     mbstate_t fMBState_{};
 #endif
-    SeekOffsetType _fOffset;
+    SeekOffsetType                                                 _fOffset{0};
+    [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };
 
 class TextReader::UnseekableBinaryStreamRep_ final : public FromBinaryStreamBaseRep_ {
@@ -216,7 +217,7 @@ protected:
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
         Require (IsOpenRead ());
 
         // if already cached, return from cache. Note - even if only one element is in the Cache, thats enough to return
@@ -284,7 +285,7 @@ protected:
     }
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
         Require (IsOpenRead ());
         switch (whence) {
             case Whence::eFromStart: {
@@ -346,7 +347,7 @@ private:
     InlineBuffer<wchar_t> fCache_; // Cache uses wchar_t instead of Character so can use resize_uninitialized () - requires is_trivially_constructible
 };
 
-class TextReader::IterableAdapterStreamRep_ final : public InputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedMutex {
+class TextReader::IterableAdapterStreamRep_ final : public InputStream<Character>::_IRep {
 public:
     IterableAdapterStreamRep_ (const Traversal::Iterable<Character>& src)
         : fSource_{src}
@@ -374,7 +375,7 @@ protected:
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {
         Require (intoEnd - intoStart >= 1);
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
         Require (IsOpenRead ());
         Character* outI = intoStart;
         if (fPutBack_) {
@@ -397,7 +398,7 @@ protected:
     }
     virtual optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         Require (IsOpenRead ());
         if (intoStart == nullptr) {
@@ -417,7 +418,7 @@ protected:
     }
     virtual SeekOffsetType GetReadOffset () const override
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         Require (IsOpenRead ());
         if (fPutBack_) {
             Assert (fOffset_ >= 1);
@@ -428,7 +429,7 @@ protected:
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         Require (IsOpenRead ());
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
         size_t                                       sourceLen = fSource_.size ();
         SeekOffsetType                               newOffset{};
         switch (whence) {
@@ -489,6 +490,7 @@ private:
     size_t                         fOffset_{};
     optional<Character>            fPrevCharCached_{}; // fPrevCharCached_/fPutBack_ speed hack to support IsAtEOF (), and Peek () more efficiently, little cost, big cost avoidance for seek
     optional<Character>            fPutBack_{};
+    [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };
 
 /*

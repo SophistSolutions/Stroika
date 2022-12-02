@@ -174,16 +174,16 @@ namespace {
     using namespace Streams;
     struct BLOBBINSTREAM_ : InputStream<byte>::Ptr {
         BLOBBINSTREAM_ (const BLOB& b)
-            : InputStream<byte>::Ptr {make_shared<REP> (b)}
+            : InputStream<byte>::Ptr{make_shared<REP> (b)}
         {
         }
         struct REP : InputStream<byte>::_IRep {
-            bool fIsOpenForRead_{true};
+            bool                                                    fIsOpenForRead_{true};
             [[no_unique_address]] AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
             REP (const BLOB& b)
                 : fCur{b.begin ()}
                 , fStart{b.begin ()}
-                , fEnd {b.end ()}
+                , fEnd{b.end ()}
             {
             }
             virtual bool IsSeekable () const override

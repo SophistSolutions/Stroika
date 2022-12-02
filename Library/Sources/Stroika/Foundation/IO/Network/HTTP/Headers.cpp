@@ -18,7 +18,6 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Foundation::Streams;
 
-
 using Debug::AssertExternallySynchronizedMutex;
 
 namespace {

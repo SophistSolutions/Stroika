@@ -21,13 +21,13 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class InputSubStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedMutex {
+    class InputSubStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
     public:
         Rep_ (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const optional<SeekOffsetType>& start, const optional<SeekOffsetType>& end)
-            : InputStream<ELEMENT_TYPE>::_IRep ()
-            , fRealIn_ (realIn)
-            , fOffsetMine2Real_ (start.value_or (realIn.GetOffset ()))
-            , fForcedEndInReal_ (end)
+            : InputStream<ELEMENT_TYPE>::_IRep{}
+            , fRealIn_{realIn}
+            , fOffsetMine2Real_{start.value_or (realIn.GetOffset ())}
+            , fForcedEndInReal_{end}
         {
             if (start) {
                 // seek up to zero point, to begin with, avoiding ambiguity about when this gets done (could be done lazily as well, but I think behavior less clear then)
@@ -54,6 +54,7 @@ namespace Stroika::Foundation::Streams {
         virtual void CloseRead () override
         {
             Require (IsOpenRead ());
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             fRealIn_.Close ();
             Assert (fRealIn_ == nullptr);
         }
@@ -107,7 +108,7 @@ namespace Stroika::Foundation::Streams {
         virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
             Require (intoEnd - intoStart >= 1); // rule for InputStream<>::_IRep
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             if (fForcedEndInReal_) {
                 // adjust intoEnd to accomodate shortened stream
@@ -128,7 +129,7 @@ namespace Stroika::Foundation::Streams {
         }
         virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             if (fForcedEndInReal_) {
                 // adjust intoEnd to accomodate shortened stream
@@ -165,6 +166,7 @@ namespace Stroika::Foundation::Streams {
         typename InputStream<ELEMENT_TYPE>::Ptr fRealIn_;
         SeekOffsetType                          fOffsetMine2Real_; // subtract from real offset to get our offset
         optional<SeekOffsetType>                fForcedEndInReal_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
     /*
