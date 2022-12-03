@@ -6,8 +6,8 @@
 #include "../../../../Foundation/Characters/Format.h"
 
 #include "../../../../Foundation/Execution/Sleep.h"
-#include "../../../../Foundation/Execution/WaitForIOReady.h"
 #include "../../../../Foundation/Execution/Thread.h"
+#include "../../../../Foundation/Execution/WaitForIOReady.h"
 #include "../../../../Foundation/IO/Network/ConnectionlessSocket.h"
 #include "../../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include "../../../../Foundation/Streams/MemoryStream.h"
@@ -183,7 +183,7 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
                 try {
                     for (ConnectionlessSocket::Ptr s : Execution::WaitForIOReady{inUseSockets}.WaitQuietly ()) {
                         SocketAddress from;
-                        byte buf[4 * 1024]; // not sure of max packet size
+                        byte          buf[4 * 1024]; // not sure of max packet size
                         size_t        nBytesRead = s.ReceiveFrom (begin (buf), end (buf), 0, &from);
                         Assert (nBytesRead <= Memory::NEltsOf (buf));
                         using namespace Streams;
