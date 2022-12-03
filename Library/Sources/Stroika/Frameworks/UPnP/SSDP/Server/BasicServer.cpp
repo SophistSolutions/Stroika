@@ -76,7 +76,7 @@ public:
                 this->Restart_ ();
             }
         });
-        fLinkMonitor_ = optional<IO::Network::LinkMonitor> (move (lm));
+        fLinkMonitor_ = optional<LinkMonitor>{move (lm)};
     }
     Sequence<Advertisement> GetAdjustedAdvertisements_ () const
     {
