@@ -5,7 +5,9 @@
 
 #include "../../Characters/ToString.h"
 #include "../../Execution/Activity.h"
+#include "../../Execution/Thread.h"
 #include "../../Execution/TimeOutException.h"
+#include "../../Execution/WaitForIOReady.h"
 
 #include "Socket-Private_.h"
 
@@ -51,6 +53,16 @@ namespace {
             virtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) override
             {
                 AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+
+                if constexpr (qPlatform_Windows) {
+                    // TMPHACK for - https://stroika.atlassian.net/browse/STK-964
+                    auto s = Execution::WaitForIOReady{fSD_}.WaitQuietly (timeout);
+                    Execution::Thread::CheckForInterruption ();
+                    if (s.empty ()) {
+                        Execution::Throw (Execution::TimeOutException::kThe);
+                    }
+                }
+
                 // Note - COULD have implemented timeout with SO_RCVTIMEO, but that would risk statefulness, and confusion setting/resetting the parameter. Could be done, but this seems
                 // cleaner...
                 constexpr Time::DurationSecondsType kMaxPolltime_{numeric_limits<int>::max () / 1000.0};
