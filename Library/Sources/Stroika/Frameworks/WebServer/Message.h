@@ -14,10 +14,7 @@
 #include "Response.h"
 
 /*
- *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
- * TODO:
  */
 
 namespace Stroika::Frameworks::WebServer {
