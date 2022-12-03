@@ -6,6 +6,7 @@
 #include "../../../../Foundation/Characters/Format.h"
 
 #include "../../../../Foundation/Execution/Sleep.h"
+#include "../../../../Foundation/Execution/WaitForIOReady.h"
 #include "../../../../Foundation/Execution/Thread.h"
 #include "../../../../Foundation/IO/Network/ConnectionlessSocket.h"
 #include "../../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
@@ -147,6 +148,8 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
             sockets += make_pair (s, UPnP::SSDP::V6::kSocketAddress);
         }
     }
+
+    // Use a thread to wait on a set of sockets we are listening for requests on
     static const String kThreadName_{L"SSDP Search Responder"sv};
     fListenThread_ = Execution::Thread::New (
         [advertisements, sockets] () {
@@ -175,15 +178,16 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
             }
 
             // only stopped by thread abort
+            auto inUseSockets = sockets.Map<ConnectionlessSocket::Ptr> ([] (auto i) { return i.first; });
             while (true) {
                 try {
-                    byte buf[4 * 1024]; // not sure of max packet size
-                    for (pair<ConnectionlessSocket::Ptr, SocketAddress> s : sockets) {
+                    for (ConnectionlessSocket::Ptr s : Execution::WaitForIOReady{inUseSockets}.WaitQuietly ()) {
                         SocketAddress from;
-                        size_t        nBytesRead = s.first.ReceiveFrom (begin (buf), end (buf), 0, &from);
+                        byte buf[4 * 1024]; // not sure of max packet size
+                        size_t        nBytesRead = s.ReceiveFrom (begin (buf), end (buf), 0, &from);
                         Assert (nBytesRead <= Memory::NEltsOf (buf));
                         using namespace Streams;
-                        ParsePacketAndRespond_ (TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (begin (buf), begin (buf) + nBytesRead)), advertisements, s.first, from);
+                        ParsePacketAndRespond_ (TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (begin (buf), begin (buf) + nBytesRead)), advertisements, s, from);
                     }
                 }
                 catch (const Execution::Thread::AbortException&) {
