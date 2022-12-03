@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     inline strong_ordering SortedMultiSet<T, TRAITS>::operator<=> (const SortedMultiSet& rhs) const
     {
-        return typename Iterable<CountedValue<T>>::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetElementInOrderComparer ())}(*this, rhs);
+        return typename Iterable<CountedValue<T>>::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter{GetElementInOrderComparer ()}}(*this, rhs);
     }
 
 }

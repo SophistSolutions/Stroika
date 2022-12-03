@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Containers {
     inline strong_ordering SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::operator<=> (const SortedAssociation& rhs) const
     {
         // nb: no need to take into account comparison on values, because total ordering on keys sequences these elements
-        return typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetInOrderKeyComparer ())}(*this, rhs);
+        return typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter{GetInOrderKeyComparer ()}}(*this, rhs);
     }
 
 }

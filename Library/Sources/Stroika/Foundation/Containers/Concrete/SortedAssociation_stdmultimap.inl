@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
-            return KeyEqualsCompareFunctionType{Common::EqualsComparerAdapter (fData_.key_comp ())};
+            return KeyEqualsCompareFunctionType{Common::EqualsComparerAdapter{fData_.key_comp ()}};
         }
         virtual _AssociationRepSharedPtr CloneEmpty () const override
         {
