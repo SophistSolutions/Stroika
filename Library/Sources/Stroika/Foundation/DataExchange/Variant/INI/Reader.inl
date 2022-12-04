@@ -13,7 +13,7 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
 
     /*
      ********************************************************************************
-     ************************************ INI::Reader *******************************
+     ********************************** INI::Reader *********************************
      ********************************************************************************
      */
     inline Profile Reader::ReadProfile (const Streams::InputStream<std::byte>::Ptr& in)
@@ -21,6 +21,14 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
         return Convert (Read (in));
     }
     inline Profile Reader::ReadProfile (const Streams::InputStream<Characters::Character>::Ptr& in)
+    {
+        return Convert (Read (in));
+    }
+    inline Profile Reader::ReadProfile (const Traversal::Iterable<Characters::Character>& in)
+    {
+        return Convert (Read (in));
+    }
+    inline Profile Reader::ReadProfile (const Memory::BLOB& in)
     {
         return Convert (Read (in));
     }
