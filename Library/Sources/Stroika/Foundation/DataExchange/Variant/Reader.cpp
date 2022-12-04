@@ -21,22 +21,17 @@ using Streams::iostream::InputStreamFromStdIStream;
  ******************************* Variant::Reader ********************************
  ********************************************************************************
  */
-VariantValue Variant::Reader::Read (const Traversal::Iterable<Characters::Character>& in)
+Streams::InputStream<std::byte>::Ptr Variant::Reader::_ToByteReader (istream& in)
 {
-    return Read (Streams::TextReader::New (in));
+    return InputStreamFromStdIStream<byte>::New (in);
 }
 
-VariantValue Variant::Reader::Read (const Memory::BLOB& in)
+Streams::InputStream<Characters::Character>::Ptr Variant::Reader::_ToCharacterReader (const Traversal::Iterable<Characters::Character>& in)
 {
-    return Read (in.As<Streams::InputStream<byte>::Ptr> ());
+    return Streams::TextReader::New (in);
 }
 
-VariantValue Variant::Reader::Read (istream& in)
+Streams::InputStream<Characters::Character>::Ptr Variant::Reader::_ToCharacterReader (wistream& in)
 {
-    return Read (Streams::TextReader::New (InputStreamFromStdIStream<byte>::New (in), Streams::SeekableFlag::eSeekable));
-}
-
-VariantValue Variant::Reader::Read (wistream& in)
-{
-    return Read (InputStreamFromStdIStream<Characters::Character>::New (in));
+    return InputStreamFromStdIStream<Characters::Character>::New (in);
 }

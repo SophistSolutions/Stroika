@@ -48,6 +48,9 @@ namespace Stroika::Foundation::DataExchange::Variant {
         Reader () = delete; // @todo may want to allow?
 
     protected:
+        /**
+         *  \req rep != nullptr
+         */
         explicit Reader (const shared_ptr<_IRep>& rep);
 
     public:
@@ -58,16 +61,32 @@ namespace Stroika::Foundation::DataExchange::Variant {
     public:
         /**
          */
-        nonvirtual VariantValue Read (const Traversal::Iterable<Characters::Character>& in);
-        nonvirtual VariantValue Read (const Memory::BLOB& in);
         nonvirtual VariantValue Read (const Streams::InputStream<std::byte>::Ptr& in);
         nonvirtual VariantValue Read (const Streams::InputStream<Characters::Character>::Ptr& in);
+        nonvirtual VariantValue Read (const Traversal::Iterable<Characters::Character>& in);
+        nonvirtual VariantValue Read (const Memory::BLOB& in);
         nonvirtual VariantValue Read (istream& in);
         nonvirtual VariantValue Read (wistream& in);
 
     protected:
         nonvirtual _IRep&       _GetRep ();
         nonvirtual const _IRep& _GetRep () const;
+
+    protected:
+        /**
+         * \brief simple helper so subclasses can more easily provide varied Read overloads
+         */
+        static Streams::InputStream<std::byte>::Ptr _ToByteReader (const Streams::InputStream<std::byte>::Ptr& in);
+        static Streams::InputStream<std::byte>::Ptr _ToByteReader (const Memory::BLOB& in);
+        static Streams::InputStream<std::byte>::Ptr _ToByteReader (istream& in);
+
+    protected:
+        /**
+         * \brief simple helper so subclasses can more easily provide varied Read overloads
+         */
+        static Streams::InputStream<Characters::Character>::Ptr _ToCharacterReader (const Streams::InputStream<Characters::Character>::Ptr& in);
+        static Streams::InputStream<Characters::Character>::Ptr _ToCharacterReader (const Traversal::Iterable<Characters::Character>& in);
+        static Streams::InputStream<Characters::Character>::Ptr _ToCharacterReader (wistream& in);
 
     protected:
         using _SharedPtrIRep = shared_ptr<_IRep>;

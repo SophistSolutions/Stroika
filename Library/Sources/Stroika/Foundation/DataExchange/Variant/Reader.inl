@@ -29,21 +29,42 @@ namespace Stroika::Foundation::DataExchange::Variant {
     inline Reader::Reader (const shared_ptr<_IRep>& rep)
         : fRep_{rep}
     {
+        RequireNotNull (rep);
     }
     inline String Reader::GetDefaultFileSuffix () const
     {
+        AssertNotNull (fRep_);
         return fRep_->GetDefaultFileSuffix ();
     }
     inline VariantValue Reader::Read (const Streams::InputStream<std::byte>::Ptr& in)
     {
+        AssertNotNull (fRep_);
         return fRep_->Read (in);
     }
     inline VariantValue Reader::Read (const Streams::InputStream<Characters::Character>::Ptr& in)
     {
+        AssertNotNull (fRep_);
         return fRep_->Read (in);
+    }
+    inline VariantValue Variant::Reader::Read (const Traversal::Iterable<Characters::Character>& in)
+    {
+        return Read (_ToCharacterReader (in));
+    }
+    inline VariantValue Variant::Reader::Read (const Memory::BLOB& in)
+    {
+        return Read (_ToByteReader (in));
+    }
+    inline VariantValue Variant::Reader::Read (istream& in)
+    {
+        return Read (_ToByteReader (in));
+    }
+    inline VariantValue Variant::Reader::Read (wistream& in)
+    {
+        return Read (_ToCharacterReader (in));
     }
     inline Reader::_IRep& Reader::_GetRep ()
     {
+        AssertNotNull (fRep_);
         EnsureNotNull (fRep_.rwget ());
         return *fRep_.rwget ();
     }
@@ -51,6 +72,18 @@ namespace Stroika::Foundation::DataExchange::Variant {
     {
         EnsureNotNull (fRep_.cget ());
         return *fRep_.cget ();
+    }
+    inline Streams::InputStream<std::byte>::Ptr Reader::_ToByteReader (const Streams::InputStream<std::byte>::Ptr& in)
+    {
+        return in;
+    }
+    inline Streams::InputStream<std::byte>::Ptr Reader::_ToByteReader (const Memory::BLOB& in)
+    {
+        return in.As<Streams::InputStream<std::byte>::Ptr> ();
+    }
+    inline Streams::InputStream<Characters::Character>::Ptr Reader::_ToCharacterReader (const Streams::InputStream<Characters::Character>::Ptr& in)
+    {
+        return in;
     }
 
 }
