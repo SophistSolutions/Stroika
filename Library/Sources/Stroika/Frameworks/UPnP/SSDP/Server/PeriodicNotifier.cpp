@@ -57,7 +57,7 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
 
     if constexpr (qDefaultTracingOn) {
         Debug::TraceContextBumper ctx{"SSDP PeriodicNotifier - first time notifications"};
-        for (const auto& a : advertisements) {
+        for ([[maybe_unused]]const auto& a : advertisements) {
             DbgTrace (L"(alive,loc=%s,usn=%s,...)", Characters::ToString (a.fLocation).c_str (), a.fUSN.c_str ());
         }
     }
@@ -65,7 +65,7 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
     Execution::IntervalTimer::TimerCallback callback = [=] () mutable {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"SSDP PeriodicNotifier - notifications"};
-        for (const auto& a : advertisements) {
+        for ([[maybe_unused]] const auto& a : advertisements) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             String msg;
             msg += L"alive," sz;
