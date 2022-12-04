@@ -18,6 +18,8 @@
 #if qHasFeature_LZMA
 #include "Stroika/Foundation/DataExchange/Archive/7z/Reader.h"
 #endif
+#include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Writer.h"
 #include "Stroika/Foundation/DataExchange/Variant/INI/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/INI/Writer.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
@@ -157,6 +159,28 @@ namespace {
         void DoAll_ ()
         {
             Debug::TraceContextBumper ctx{L"INI_ONLY_::DoAll_"};
+            DoBasicReader1_ ();
+        }
+    }
+}
+
+namespace {
+    namespace CharacterDelimitedLines_ONLY_ {
+
+        void DoBasicReader1_ ()
+        {
+            using Traversal::Iterable;
+            stringstream tmp;
+            tmp << "3,4" << endl;
+            tmp << "4,5" << endl;
+            Iterable<Sequence<String>> s = Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp);
+            VerifyTestResult (s.size () == 2);
+            VerifyTestResult (s.Nth (1)[1] == L"5");
+        }
+
+        void DoAll_ ()
+        {
+            Debug::TraceContextBumper ctx{L"CharacterDelimitedLines_ONLY_::DoAll_"};
             DoBasicReader1_ ();
         }
     }
@@ -802,6 +826,7 @@ namespace {
         Test1_7zArchive_::DoAll_ ();
         Test2_ZipArchive_::DoAll_ ();
         INI_ONLY_::DoAll_ ();
+        CharacterDelimitedLines_ONLY_::DoAll_ ();
         JSON_ONLY_::DoAll_ ();
         XML_ONLY_::DoAll_ ();
         GENERIC_SERIALIZE_DESERIALIZE_::DoAll_ ();

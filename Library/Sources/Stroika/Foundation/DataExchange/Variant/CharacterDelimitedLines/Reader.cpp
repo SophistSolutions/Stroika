@@ -49,10 +49,15 @@ public:
     {
         return Read (Streams::TextReader::New (in));
     }
-    virtual VariantValue Read (const Streams::InputStream<Character>::Ptr& /*in*/) override
+    virtual VariantValue Read (const Streams::InputStream<Character>::Ptr& in) override
     {
-        AssertNotImplemented ();
-        return VariantValue ();
+        // @todo consider if this functional style is more clear than a nested for-loop. Was harder for me to
+        // write this way, but that could be my inexpereince... --LGP 2022-12-04
+        return VariantValue{
+            ReadMatrix (in).Map<VariantValue, Sequence<VariantValue>> (
+                [] (const Sequence<String>& line) -> VariantValue {
+                    return VariantValue{line.Map<VariantValue> ([] (const String& i) { return VariantValue{i}; })};
+                })};
     }
     nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<Character>::Ptr& in) const
     {
@@ -64,7 +69,7 @@ public:
             Sequence<String> tokens{line.Tokenize (fDelimiters_)};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"DataExchange::Variant::CharacterDelimitedLines::Reader::ReadMatrix: line=%s, tokenCount=%d", line.c_str (), tokens.size ());
-            for (const auto& i : tokens) {
+            for ([[maybe_unused]] const auto& i : tokens) {
                 DbgTrace (L"token='%s'", i.c_str ());
             }
 #endif
@@ -72,13 +77,6 @@ public:
         }
         return move (result);
     }
-#if 0
-    nonvirtual  Mapping<String, String>  ReadAsMapping (const Streams::InputStream<Character>::Ptr& in) const
-    {
-        //tmphack
-        return Mapping<String, String> ();
-    }
-#endif
 };
 Variant::CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDelimiters)
     : inherited{make_shared<Rep_> (columnDelimiters)}
