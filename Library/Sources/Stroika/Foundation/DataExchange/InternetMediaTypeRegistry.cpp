@@ -379,7 +379,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
          *  because multiple media-types can map to a single filetype and not all mediatypes have a filetype.
          *
          *  We CANNOT use a cache, or dynamically fetch this data from files, because the data for each file suffix
-         *  is not indexed (by file suffix) - its indexed by content type (so those lookups COULD be dynamic). But
+         *  is not indexed (by file suffix) - it is indexed by content type (so those lookups COULD be dynamic). But
          *  we can easily construct both at the same time reading the summary file, so we do.
          */
         Mapping<FileSuffixType, InternetMediaType>                  fSuffix2MediaTypeMap_;
