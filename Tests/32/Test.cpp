@@ -148,7 +148,7 @@ namespace {
             tmp << "HOME_URL=\"http://www.ubuntu.com/\"" << endl;
             tmp << "SUPPORT_URL=\"http://help.ubuntu.com/\"" << endl;
             tmp << "BUG_REPORT_URL=\"http://bugs.launchpad.net/ubuntu/\"" << endl;
-            Variant::INI::Profile p = Variant::INI::Reader ().ReadProfile (tmp);
+            Variant::INI::Profile p = Variant::INI::Reader{}.ReadProfile (tmp);
             VerifyTestResult (p.fNamedSections.empty ());
             VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue (L"NAME") == L"Ubuntu");
             VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue (L"SUPPORT_URL") == L"http://help.ubuntu.com/");
@@ -258,7 +258,7 @@ namespace Test_02_BasicReaderTests_ {
     {
         stringstream tmp;
         tmp << v;
-        VariantValue v1 = DataExchange::Variant::JSON::Reader ().Read (tmp);
+        VariantValue v1 = DataExchange::Variant::JSON::Reader{}.Read (tmp);
         VerifyTestResult (v1 == expected);
     }
 
@@ -303,7 +303,7 @@ namespace Test_02_BasicReaderTests_ {
             const string kExample = "{\"nav_items\":[{\"main_link\":{\"href\":\"/about/index.html\",\"text\":\"Who We Are\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/company-management.html\",\"text\":\"Management\"}},{\"header\":{\"href\":\"/about/mission-statement.html\",\"text\":\"Mission\"}},{\"header\":{\"href\":\"/about/company-history.html\",\"text\":\" History\"}},{\"header\":{\"href\":\"/about/headquarters.html\",\"text\":\"Corporate Headquarters\"}},{\"header\":{\"href\":\"/about/diversity.html\",\"text\":\"Diversity\"}},{\"header\":{\"href\":\"/about/supplier-diversity.html\",\"text\":\"Supplier Diversity\"}}]}]},{\"main_link\":{\"href\":\"http://investor.compuware.com\",\"text\":\"Investor Relations\"}},{\"main_link\":{\"href\":\"/about/newsroom.html\",\"text\":\"News Room\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/analyst-reports\",\"text\":\"Analyst Reports\"}},{\"header\":{\"href\":\"/about/awards-recognition.html\",\"text\":\"Awards and Recognition\"}},{\"header\":{\"href\":\"/about/blogs.html\",\"text\":\"Blog Home\"}},{\"header\":{\"href\":\"/about/press-analyst-contacts.html\",\"text\":\"Contact Us\"}},{\"header\":{\"href\":\"/about/customers.html\",\"text\":\"Customers\"}},{\"header\":{\"href\":\"/about/press-mentions\",\"text\":\"Press Mentions\"}},{\"header\":{\"href\":\"/about/press-releases\",\"text\":\"Press Releases\"}},{\"header\":{\"href\":\"/about/press-resources.html\",\"text\":\"Press Resources\"}}]}]},{\"main_link\":{\"href\":\"#top\",\"text\":\"Sponsorships\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"/about/lemans-sponsorship.html\",\"text\":\"Le Mans\"}},{\"header\":{\"href\":\"/about/nhl-sponsorship.html\",\"text\":\"NHL\"}},{}]}]},{\"main_link\":{\"href\":\"/about/community-involvement.html\",\"text\":\"Community Involvement\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"http://communityclicks.compuware.com\",\"text\":\"Community Clicks Blog\"}},{\"header\":{\"href\":\"javascript:securenav('/forms/grant-eligibility-form.html')\",\"text\":\"Grant Eligibility Form\"}},{}]}]},{\"main_link\":{\"href\":\"/government/\",\"text\":\"Government\"}}]}";
             stringstream tmp;
             tmp << kExample;
-            VariantValue v1 = DataExchange::Variant::JSON::Reader ().Read (tmp);
+            VariantValue v1 = DataExchange::Variant::JSON::Reader{}.Read (tmp);
             VerifyTestResult (v1.GetType () == VariantValue::eMap);
         }
     }
@@ -315,7 +315,7 @@ namespace Test_03_CheckCanReadFromSmallBadSrc_ {
         stringstream tmp;
         tmp << s;
         try {
-            VariantValue v1 = DataExchange::Variant::JSON::Reader ().Read (tmp);
+            VariantValue v1 = DataExchange::Variant::JSON::Reader{}.Read (tmp);
             VerifyTestResult (false); // should get exception
         }
         catch (const DataExchange::BadFormatException&) {
@@ -343,13 +343,13 @@ namespace Test_04_CheckStringQuoting_ {
         string encodedRep;
         {
             Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
-            DataExchange::Variant::JSON::Writer ().Write (v, out);
+            DataExchange::Variant::JSON::Writer{}.Write (v, out);
             encodedRep = out.As<string> ();
         }
         {
             stringstream tmp;
             tmp << encodedRep;
-            VariantValue vOut = DataExchange::Variant::JSON::Reader ().Read (tmp);
+            VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (tmp);
             VerifyTestResult (vOut == v);
         }
     }
@@ -357,30 +357,30 @@ namespace Test_04_CheckStringQuoting_ {
     void DoIt ()
     {
         Debug::TraceContextBumper ctx{L"Test_04_CheckStringQuoting_::DoAll_"};
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\t\r\n\f\x3")); // proper read/write control characters
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"test\?"));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"test\\?"));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"cookie"));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"c:\\"));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"'"));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\""));
-        //this test is OK, but makes no sense, and isn't testing what it appears to--- CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\\u20a9")); //  ₩
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\u20a9")); //  ₩
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\"apple\""));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<int>::min ()));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<int>::max ()));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<long int>::min ()));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<long int>::max ()));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<long long int>::min ()));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<long long int>::max ()));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned int>::min ()));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned int>::max ()));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long int>::min ()));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long int>::max ()));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long long int>::min ()));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long long int>::max ()));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (true));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (Memory::BLOB::Hex ("aa1234abcd01010102030405")));
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"\t\r\n\f\x3"}); // proper read/write control characters
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"test\?"});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"test\\?"});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"cookie"});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"c:\\"});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"'"});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"\""});
+        //this test is OK, but makes no sense, and isn't testing what it appears to--- CheckRoundtrip_encode_decode_unchanged (VariantValue{L"\\u20a9")); //  ₩
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"\u20a9"}); //  ₩
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"\"apple\""});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<int>::min ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<int>::max ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<long int>::min ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<long int>::max ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<long long int>::min ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<long long int>::max ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<unsigned int>::min ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<unsigned int>::max ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<unsigned long int>::min ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<unsigned long int>::max ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<unsigned long long int>::min ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<unsigned long long int>::max ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{true});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{Memory::BLOB::Hex ("aa1234abcd01010102030405")});
     }
 }
 
@@ -415,7 +415,7 @@ namespace Test_05_ParseRegressionTest_1_ {
                 "        }"
                 "    }"
                 "}";
-            VariantValue               v  = DataExchange::Variant::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryInputStream<byte>::New (reinterpret_cast<const byte*> (std::begin (kJSONExample_)), reinterpret_cast<const byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
+            VariantValue               v  = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedMemoryInputStream<byte>::New (reinterpret_cast<const byte*> (std::begin (kJSONExample_)), reinterpret_cast<const byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
             map<wstring, VariantValue> mv = v.As<map<wstring, VariantValue>> ();
             VerifyTestResult (mv[L"Automated Backups"].GetType () == VariantValue::eMap);
             map<wstring, VariantValue> outputMap = v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();
@@ -426,14 +426,14 @@ namespace Test_05_ParseRegressionTest_1_ {
             string jsonExampleWithUpdatedMaxFilesReference;
             {
                 Streams::MemoryStream<byte>::Ptr tmpStrm = Streams::MemoryStream<byte>::New ();
-                DataExchange::Variant::JSON::Writer ().Write (v, tmpStrm);
+                DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
                 jsonExampleWithUpdatedMaxFilesReference = tmpStrm.As<string> ();
             }
             {
                 // Verify change of locale has no effect on results
                 locale                           prevLocale = locale::global (locale ("C"));
                 Streams::MemoryStream<byte>::Ptr tmpStrm    = Streams::MemoryStream<byte>::New ();
-                DataExchange::Variant::JSON::Writer ().Write (v, tmpStrm);
+                DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
                 VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
                 locale::global (prevLocale);
             }
@@ -441,7 +441,7 @@ namespace Test_05_ParseRegressionTest_1_ {
                 // Verify change of locale has no effect on results
                 Configuration::ScopedUseLocale   tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
                 Streams::MemoryStream<byte>::Ptr tmpStrm = Streams::MemoryStream<byte>::New ();
-                DataExchange::Variant::JSON::Writer ().Write (v, tmpStrm);
+                DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
                 VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
             }
         }
@@ -454,17 +454,17 @@ namespace Test_06_ParseRegressionTest_2_ {
         Debug::TraceContextBumper ctx{L"Test_06_ParseRegressionTest_2_::DoAll_"};
         auto                      f = [] () {
             map<wstring, VariantValue> mv;
-            mv[L"MaxFiles"] = VariantValue (405);
-            VariantValue v  = VariantValue (mv);
+            mv[L"MaxFiles"] = VariantValue{405};
+            VariantValue v  = VariantValue{mv};
 
             string encoded;
             {
                 stringstream tmpStrm;
-                DataExchange::Variant::JSON::Writer ().Write (v, tmpStrm);
+                DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
                 encoded = tmpStrm.str ();
             }
-            stringstream tnmStrStrm (encoded);
-            VariantValue v1 = DataExchange::Variant::JSON::Reader ().Read (tnmStrStrm);
+            stringstream tnmStrStrm{encoded};
+            VariantValue v1 = DataExchange::Variant::JSON::Reader{}.Read (tnmStrStrm);
             VerifyTestResult (v1 == v);
         };
         f ();
@@ -490,7 +490,7 @@ namespace Test_05_ParseRegressionTest_3_ {
                 "        }"
                 "    }"
                 "}";
-            VariantValue                  v  = DataExchange::Variant::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryInputStream<byte>::New (reinterpret_cast<const byte*> (std::begin (kJSONExample_)), reinterpret_cast<const byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
+            VariantValue                  v  = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedMemoryInputStream<byte>::New (reinterpret_cast<const byte*> (std::begin (kJSONExample_)), reinterpret_cast<const byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
             Mapping<String, VariantValue> mv = v.As<Mapping<String, VariantValue>> ();
             VerifyTestResult (mv[L"T1"].GetType () == VariantValue::eString);
             VerifyTestResult (mv[L"T1"] == String{});
@@ -532,16 +532,16 @@ namespace Test_07_ParserTestReadWriteBasictypes_ {
             f (VariantValue{405});
             f (VariantValue{4405});
             f (VariantValue{44905});
-            f (VariantValue (405.1));
-            f (VariantValue (4405.2));
-            f (VariantValue (44905.3));
-            f (VariantValue (L"'"));
-            f (VariantValue (Date{Year{1933}, February, day{12}}));
-            f (VariantValue (DateTime{Date{Year{1933}, February, day{12}}, TimeOfDay{432}}));
+            f (VariantValue{405.1});
+            f (VariantValue{4405.2});
+            f (VariantValue{44905.3});
+            f (VariantValue{L"'"});
+            f (VariantValue{Date{Year{1933}, February, day{12}}});
+            f (VariantValue{DateTime{Date{Year{1933}, February, day{12}}, TimeOfDay{432}}});
 
             {
                 stringstream tmpStrm;
-                DataExchange::Variant::JSON::Writer ().Write (VariantValue (44905.3), tmpStrm);
+                DataExchange::Variant::JSON::Writer{}.Write (VariantValue{44905.3}, tmpStrm);
                 string tmp = tmpStrm.str ();
                 VerifyTestResult (tmp.find (",") == string::npos);
             }
@@ -559,7 +559,7 @@ namespace Test_08_ReadEmptyStreamShouldFail_ {
     {
         Debug::TraceContextBumper ctx{L"Test_08_ReadEmptyStreamShouldFail_::DoAll_"};
         try {
-            VariantValue vOut = DataExchange::Variant::JSON::Reader ().Read (Streams::MemoryStream<byte>::New (nullptr, nullptr));
+            VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (Streams::MemoryStream<byte>::New (nullptr, nullptr));
             VerifyTestResult (false);
         }
         catch (const DataExchange::BadFormatException&) {
@@ -575,13 +575,13 @@ namespace Test_09_ReadWriteNANShouldNotFail_ {
         string encodedRep;
         {
             Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
-            DataExchange::Variant::JSON::Writer ().Write (v, out);
+            DataExchange::Variant::JSON::Writer{}.Write (v, out);
             encodedRep = out.As<string> ();
         }
         {
             stringstream tmp;
             tmp << encodedRep;
-            VariantValue vOut = DataExchange::Variant::JSON::Reader ().Read (tmp);
+            VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (tmp);
             VerifyTestResult (vOut == v);
         }
     }
@@ -589,9 +589,9 @@ namespace Test_09_ReadWriteNANShouldNotFail_ {
     void DoIt ()
     {
         Debug::TraceContextBumper ctx{L"Test_09_ReadWriteNANShouldNotFail_::DoAll_"};
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (Math::nan<double> ()));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (-numeric_limits<double>::infinity ()));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<double>::infinity ()));
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{Math::nan<double> ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{-numeric_limits<double>::infinity ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<double>::infinity ()});
     }
 }
 
@@ -622,7 +622,7 @@ namespace {
             {
                 {
                     DataExchange::Variant::XML::Writer w;
-                    VariantValue                       v   = VariantValue (44905.3);
+                    VariantValue                       v   = VariantValue{44905.3};
                     Streams::MemoryStream<byte>::Ptr   out = Streams::MemoryStream<byte>::New ();
                     w.Write (v, out);
                     string x = out.As<string> ();
@@ -630,8 +630,8 @@ namespace {
                 {
                     DataExchange::Variant::XML::Writer w;
                     map<wstring, VariantValue>         mv;
-                    mv[L"MaxFiles"]                      = VariantValue (405);
-                    VariantValue                     v   = VariantValue (mv);
+                    mv[L"MaxFiles"]                      = VariantValue{405};
+                    VariantValue                     v   = VariantValue{mv};
                     Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
                     w.Write (v, out);
                     string x = out.As<string> ();
@@ -713,12 +713,12 @@ namespace {
             using Characters::String;
 
             auto roundTripCheck = [] (const VariantValue& vv) {
-                String       inputAsJSON = Variant::JSON::Writer ().WriteAsString (vv);
-                VariantValue v           = Variant::JSON::Reader ().Read (inputAsJSON);
+                String       inputAsJSON = Variant::JSON::Writer{}.WriteAsString (vv);
+                VariantValue v           = Variant::JSON::Reader{}.Read (inputAsJSON);
                 VerifyTestResult (v == vv);
             };
-            roundTripCheck (VariantValue (3));
-            roundTripCheck (VariantValue (L"x"));
+            roundTripCheck (VariantValue{3});
+            roundTripCheck (VariantValue{L"x"});
             roundTripCheck (VariantValue (Mapping<String, VariantValue>{pair<String, VariantValue>{L"a", 3}, pair<String, VariantValue>{L"n", L"34"}}));
         }
 
@@ -768,7 +768,7 @@ namespace {
             }
             void ReadJSON_ (const Streams::InputStream<byte>::Ptr& in)
             {
-                VerifyTestResult (kTestVariant_ == DataExchange::Variant::JSON::Reader ().Read (in));
+                VerifyTestResult (kTestVariant_ == DataExchange::Variant::JSON::Reader{}.Read (in));
             }
         }
         void DoAll ()
