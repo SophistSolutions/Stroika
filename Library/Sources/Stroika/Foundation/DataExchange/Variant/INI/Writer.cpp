@@ -3,23 +3,32 @@
  */
 #include "../../../StroikaPreComp.h"
 
+#include "../../../Streams/TextWriter.h"
+
 #include "Writer.h"
 
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Streams;
 
 using Characters::Character;
+using Traversal::Iterable;
+using Traversal::Iterator;
+using namespace DataExchange::Variant;
 
 /*
  ********************************************************************************
- ************************** DataExchange::INI::Writer ***************************
+ *********************** DataExchange::Variant::INI::Writer *********************
  ********************************************************************************
  */
-class Variant::INI::Writer::Rep_ : public Variant::Writer::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
+class INI::Writer::Rep_ : public Variant::Writer::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
+    Rep_ ()
+    {
+    }
     virtual _SharedPtrIRep Clone () const override
     {
         return make_shared<Rep_> (); // no instance data
@@ -28,17 +37,64 @@ public:
     {
         return L".ini"sv;
     }
-    virtual void Write (const VariantValue& v, const Streams::OutputStream<byte>::Ptr& out) override
+    virtual void Write (const VariantValue& v, const OutputStream<byte>::Ptr& out) override
     {
-        AssertNotImplemented ();
+        Write (v, TextWriter::New (out, TextWriter::Format::eUTF8WithoutBOM));
     }
-    virtual void Write (const VariantValue& v, const Streams::OutputStream<Character>::Ptr& out) override
+    virtual void Write (const VariantValue& v, const OutputStream<Character>::Ptr& out) override
     {
-        AssertNotImplemented ();
+        Write (Convert (v), out);
+    }
+    nonvirtual void Write (const Profile& profile, const OutputStream<Characters::Character>::Ptr& out) const
+    {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{"DataExchange::Variant::INI::Writer::Rep_::Write"};
+#endif
+        Write (nullopt, profile.fUnnamedSection, out);
+        for (const auto& sectionKVP : profile.fNamedSections) {
+            Write (sectionKVP.fKey, sectionKVP.fValue, out);
+        }
+    }
+    nonvirtual void Write (const optional<String>& sectionName, const Section& profile, const OutputStream<Characters::Character>::Ptr& out) const
+    {
+        StringBuilder sb;
+        if (sectionName) {
+            sb += L"[";
+            sb += *sectionName;
+            sb += L"]";
+            sb += Characters::GetEOL<wchar_t> ();
+        }
+        for (const Common::KeyValuePair<String, String>& kvp : profile.fProperties) {
+            sb += kvp.fKey;
+            sb += L"=";
+            sb += kvp.fValue;
+            sb += Characters::GetEOL<wchar_t> ();
+        }
+        out.WriteLn (sb.str ());
     }
 };
 
-Variant::INI::Writer::Writer ()
+INI::Writer::Writer ()
     : inherited{make_shared<Rep_> ()}
 {
+}
+
+void INI::Writer::Write (const Profile& profile, const OutputStream<std::byte>::Ptr& out)
+{
+    return Write (profile, Streams::TextWriter::New (out));
+}
+
+void INI::Writer::Write (const Profile& profile, const OutputStream<Characters::Character>::Ptr& out)
+{
+    Debug::UncheckedDynamicCast<Rep_&> (_GetRep ()).Write (profile, out);
+}
+
+Memory::BLOB INI::Writer::WriteAsBLOB (const Profile& profile)
+{
+    return _WriteAsBLOBHelper ([&profile, this] (const OutputStream<std::byte>::Ptr& out) { Write (profile, out); });
+}
+
+String INI::Writer::WriteAsString (const Profile& profile)
+{
+    return _WriteAsStringHelper ([&profile, this] (const OutputStream<Characters::Character>::Ptr& out) { Write (profile, out); });
 }

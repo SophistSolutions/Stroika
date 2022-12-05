@@ -15,8 +15,6 @@
 
 /**
  *  \file
- *
- * TODO:
  */
 
 namespace Stroika::Foundation::DataExchange::Variant::INI {
@@ -25,13 +23,14 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
     using Containers::Mapping;
 
     /**
+     *  Each 'section' of an INI file constists of name/value pairs.
      */
     struct Section {
         Mapping<String, String> fProperties;
     };
 
     /**
-     *  @todo maybe have struct with fields - unnamedprofile, and collection of named sections?
+     *  An INI file is a series of sections - one of which maybe unnamed, and the remainered are named.
      */
     struct Profile {
         Section                  fUnnamedSection;

@@ -23,7 +23,7 @@
  *
  *      @todo   VERY PRIMITIVE IMPL (no error checking/validation) - or at least little
  *
- *      @todo   Add these referiences to docs:
+ *      @todo   Add these references to docs:
  *              http://en.wikipedia.org/wiki/INI_file
  *              http://stackoverflow.com/questions/190629/what-is-the-easiest-way-to-parse-an-ini-file-in-java
  *

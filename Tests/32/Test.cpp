@@ -216,7 +216,7 @@ namespace {
         {
             using WriterOptions = Variant::CharacterDelimitedLines::Writer::Options;
             {
-                auto serialized = Variant::CharacterDelimitedLines::Writer{WriterOptions{.fSpaceSeparate =true }}.WriteAsString (kCase1_spaceSep_.data);
+                auto   serialized = Variant::CharacterDelimitedLines::Writer{WriterOptions{.fSpaceSeparate = true}}.WriteAsString (kCase1_spaceSep_.data);
                 String aaa        = String::FromASCII (kCase1_spaceSep_.dataAsFile);
                 VerifyTestResult (serialized.AsASCII () == kCase1_spaceSep_.dataAsFile);
                 stringstream tmp{kCase1_spaceSep_.dataAsFile};

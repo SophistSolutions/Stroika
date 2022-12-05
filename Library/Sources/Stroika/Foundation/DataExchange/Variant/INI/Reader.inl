@@ -40,5 +40,6 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
     {
         return Convert (Read (in));
     }
+
 }
 #endif /*_Stroika_Foundation_DataExchange_Variant_INI_Reader_inl_*/
