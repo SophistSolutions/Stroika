@@ -27,6 +27,8 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
      */
     struct Section {
         Mapping<String, String> fProperties;
+
+        bool operator== (const Section& rhs) const = default;
     };
 
     /**
@@ -35,6 +37,8 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
     struct Profile {
         Section                  fUnnamedSection;
         Mapping<String, Section> fNamedSections;
+
+        bool operator== (const Profile& rhs) const = default;
     };
 
     Profile      Convert (VariantValue v);

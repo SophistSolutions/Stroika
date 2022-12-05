@@ -17,8 +17,6 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::Variant;
 using namespace Stroika::Foundation::DataExchange::Variant::INI;
 
-
-
 /*
  ********************************************************************************
  ************************** DataExchange::INI::Convert **************************

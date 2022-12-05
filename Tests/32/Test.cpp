@@ -157,10 +157,48 @@ namespace {
             VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue (L"SUPPORT_URL") == L"http://help.ubuntu.com/");
         }
 
+
+         struct Case_ {
+            DataExchange::Variant::INI::Profile data;
+            string                     dataAsFile;
+        };
+        const Case_ kCase1_{
+            [] () {
+                DataExchange::Variant::INI::Section section{{
+                    {L"NAME", L"\"Ubuntu\""},
+                }};
+                return DataExchange::Variant::INI::Profile{section};
+            }(),
+            [] () {
+                stringstream tmp;
+                tmp << "NAME=\"Ubuntu\"" << Characters::GetEOL<char> ();
+                tmp << "VERSION=\"13.10, Saucy Salamander\"" << Characters::GetEOL<char> ();
+                tmp << "ID=ubuntu" << Characters::GetEOL<char> ();
+                tmp << "ID_LIKE=debian" << Characters::GetEOL<char> ();
+                tmp << "PRETTY_NAME=\"Ubuntu 13.10\"" << Characters::GetEOL<char> ();
+                tmp << "VERSION_ID=\"13.10\"" << Characters::GetEOL<char> ();
+                tmp << "HOME_URL=\"http://www.ubuntu.com/\"" << Characters::GetEOL<char> ();
+                tmp << "SUPPORT_URL=\"http://help.ubuntu.com/\"" << Characters::GetEOL<char> ();
+                tmp << "BUG_REPORT_URL=\"http://bugs.launchpad.net/ubuntu/\"" << Characters::GetEOL<char> ();
+                return tmp.str ();
+            }()};
+
+        void DoReadWriteTest2_ ()
+        {
+            {
+                auto   serialized = Variant::INI::Writer{}.WriteAsString (kCase1_.data);
+                String aaa        = String::FromASCII (kCase1_.dataAsFile);
+                VerifyTestResult (serialized.AsASCII () == kCase1_.dataAsFile);
+                stringstream tmp{kCase1_.dataAsFile};
+                VerifyTestResult ((kCase1_.data == Variant::INI::Reader{}.ReadProfile (tmp)));
+            }
+        }
+
         void DoAll_ ()
         {
             Debug::TraceContextBumper ctx{L"INI_ONLY_::DoAll_"};
             DoBasicReader1_ ();
+            DoReadWriteTest2_ ();
         }
     }
 }
