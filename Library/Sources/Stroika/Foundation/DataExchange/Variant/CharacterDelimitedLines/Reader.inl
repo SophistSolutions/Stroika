@@ -34,4 +34,4 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
     }
 
 }
-#endif /*_Stroika_Foundation_DataExchange_Variant_INI_Reader_inl_*/
+#endif /*_Stroika_Foundation_DataExchange_Variant_CharacterDelimitedLines_Reader_inl_*/

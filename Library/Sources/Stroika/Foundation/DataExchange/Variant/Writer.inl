@@ -42,6 +42,14 @@ namespace Stroika::Foundation::DataExchange::Variant {
     {
         fRep_->Write (v, out);
     }
+    inline void Variant::Writer::Write (const VariantValue& v, ostream& out)
+    {
+        Write (v, _WrapBinaryOutput (out));
+    }
+    inline void Variant::Writer::Write (const VariantValue& v, wostream& out)
+    {
+        Write (v, _WrapTextOutput (out));
+    }
     inline Writer::_IRep& Writer::_GetRep ()
     {
         EnsureNotNull (fRep_.rwget ());
@@ -52,9 +60,13 @@ namespace Stroika::Foundation::DataExchange::Variant {
         EnsureNotNull (fRep_.cget ());
         return *fRep_.cget ();
     }
-    inline Memory::BLOB Writer::Write (const VariantValue& v)
+    inline Streams::OutputStream<std::byte>::Ptr _WrapBinaryOutput (const Streams::OutputStream<std::byte>::Ptr& out)
     {
-        return WriteAsBLOB (v);
+        return out;
+    }
+    inline Streams::OutputStream<Characters::Character>::Ptr _WrapTextOutput (const Streams::OutputStream<Characters::Character>::Ptr& out)
+    {
+        return out;
     }
 
 }

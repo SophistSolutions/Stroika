@@ -63,7 +63,6 @@ namespace Stroika::Foundation::DataExchange::Variant {
         nonvirtual void Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out);
         nonvirtual void Write (const VariantValue& v, ostream& out);
         nonvirtual void Write (const VariantValue& v, wostream& out);
-        nonvirtual Memory::BLOB Write (const VariantValue& v);
 
     public:
         /**
@@ -85,6 +84,34 @@ namespace Stroika::Foundation::DataExchange::Variant {
     protected:
         using _SharedPtrIRep = shared_ptr<_IRep>;
 
+    protected:
+        /**
+         *  Helper for subclasses to take various kinds of output targets, and convert them to Streams::OutputStream<std::byte>::
+         *  used by the IRep_.
+         */
+        static Streams::OutputStream<std::byte>::Ptr _WrapBinaryOutput (const Streams::OutputStream<std::byte>::Ptr& out);
+        static Streams::OutputStream<std::byte>::Ptr _WrapBinaryOutput (ostream& out);
+
+    protected:
+        /**
+         *  Helper for subclasses to take various kinds of output targets, and convert them to Streams::OutputStream<std::byte>::
+         *  used by the IRep_.
+         */
+        static Streams::OutputStream<Characters::Character>::Ptr _WrapTextOutput (const Streams::OutputStream<Characters::Character>::Ptr& out);
+        static Streams::OutputStream<Characters::Character>::Ptr _WrapTextOutput (wostream& out);
+
+    protected:
+        /**
+         *  Helper for subclasses to take binary-ostream writer and return a BLOB result.
+         */
+        static Memory::BLOB _WriteAsBLOBHelper (const function<void (Streams::OutputStream<std::byte>::Ptr)>& f);
+
+    protected:
+        /**
+         *  Helper for subclasses to take binary-ostream writer and return a String result.
+         */
+        static String _WriteAsStringHelper (const function<void (Streams::OutputStream<Characters::Character>::Ptr)>& f);
+
     private:
         struct _Rep_Cloner {
             inline _SharedPtrIRep operator() (const _IRep& t) const;
@@ -93,6 +120,12 @@ namespace Stroika::Foundation::DataExchange::Variant {
 
     private:
         SharedRepByValuePtr_ fRep_;
+
+    public:
+        [[deprecated ("Since v3.0d1, use WriteAsBLOB or another Write overload)")]] Memory::BLOB Write (const VariantValue& v)
+        {
+            return WriteAsBLOB (v);
+        }
     };
 
     class Writer::_IRep {

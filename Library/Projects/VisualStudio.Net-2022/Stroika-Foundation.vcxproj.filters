@@ -3492,6 +3492,12 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ValidationStrategy.inl">
       <Filter>Sources\DataExchange</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Reader.inl">
+      <Filter>Sources\DataExchange\Variant\CharacterDelimitedLines</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Writer.inl">
+      <Filter>Sources\DataExchange\Variant\CharacterDelimitedLines</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="VisualStudio-Stroika-Foundation-Debugger-Template.natvis" />

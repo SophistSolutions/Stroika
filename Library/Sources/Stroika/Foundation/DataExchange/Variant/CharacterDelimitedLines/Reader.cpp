@@ -15,6 +15,8 @@ using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::DataExchange::Variant;
+using namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines;
 
 using Characters::Character;
 using Characters::String;
@@ -27,10 +29,10 @@ using Traversal::Iterable;
 
 /*
  ********************************************************************************
- *********** DataExchange::::CharacterDelimitedLines::Reader ********************
+ ************** DataExchange::::CharacterDelimitedLines::Reader *****************
  ********************************************************************************
  */
-class Variant::CharacterDelimitedLines::Reader::Rep_ : public Variant::Reader::_IRep {
+class CharacterDelimitedLines::Reader::Rep_ : public Variant::Reader::_IRep {
 public:
     Set<Character> fDelimiters_;
     Rep_ (const Set<Character>& columnDelimiters)
@@ -78,19 +80,17 @@ public:
         return move (result);
     }
 };
-Variant::CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDelimiters)
+CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDelimiters)
     : inherited{make_shared<Rep_> (columnDelimiters)}
 {
 }
 
-Iterable<Sequence<String>> Variant::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<byte>::Ptr& in) const
+Iterable<Sequence<String>> CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<byte>::Ptr& in) const
 {
     return ReadMatrix (Streams::TextReader::New (in));
 }
 
-Iterable<Sequence<String>> Variant::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<Character>::Ptr& in) const
+Iterable<Sequence<String>> CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<Character>::Ptr& in) const
 {
-    const _IRep& baseRep = _GetRep ();
-    AssertMember (&baseRep, Rep_);
-    return reinterpret_cast<const Rep_*> (&baseRep)->ReadMatrix (in);
+    return Debug::UncheckedDynamicCast<const Rep_&> (_GetRep ()).ReadMatrix (in);
 }

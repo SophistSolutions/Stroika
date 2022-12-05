@@ -178,6 +178,20 @@ namespace {
             VerifyTestResult (s.Nth (1)[1] == L"5");
         }
 
+        void DoBasicWriterAndReader1_ ()
+        {
+            using LineType = Sequence<String>;
+            Sequence<LineType> data;
+            data += LineType{L"a", L"b"};
+            data += LineType{L"1", L"2"};
+            data += LineType{L"x", L"7"};
+
+            //   auto serialized = Variant::CharacterDelimitedLines::Writer{}.WriteAsString ();
+
+            //  VerifyTestResult (s.size () == 2);
+            //  VerifyTestResult (s.Nth (1)[1] == L"5");
+        }
+
         void DoAll_ ()
         {
             Debug::TraceContextBumper ctx{L"CharacterDelimitedLines_ONLY_::DoAll_"};

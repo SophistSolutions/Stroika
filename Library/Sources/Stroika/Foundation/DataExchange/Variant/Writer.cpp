@@ -22,24 +22,36 @@ using Streams::iostream::OutputStreamFromStdOStream;
  ******************************* Variant::Writer ********************************
  ********************************************************************************
  */
-void Variant::Writer::Write (const VariantValue& v, ostream& out)
+Memory::BLOB Variant::Writer::_WriteAsBLOBHelper (const function<void (Streams::OutputStream<std::byte>::Ptr)>& f)
 {
-    Write (v, OutputStreamFromStdOStream<byte>::New (out));
+    Streams::MemoryStream<byte>::Ptr buf = Streams::MemoryStream<byte>::New ();
+    f (buf);
+    return buf.As<Memory::BLOB> ();
 }
 
-void Variant::Writer::Write (const VariantValue& v, wostream& out)
+String Variant::Writer::_WriteAsStringHelper (const function<void (Streams::OutputStream<Characters::Character>::Ptr)>& f)
 {
-    Write (v, OutputStreamFromStdOStream<Characters::Character>::New (out));
+    Streams::MemoryStream<Characters::Character>::Ptr buf = Streams::MemoryStream<Characters::Character>::New ();
+    f (buf);
+    return buf.As<String> ();
+}
+
+Streams::OutputStream<std::byte>::Ptr Variant::Writer::_WrapBinaryOutput (ostream& out)
+{
+    return OutputStreamFromStdOStream<byte>::New (out);
+}
+
+Streams::OutputStream<Characters::Character>::Ptr Variant::Writer::_WrapTextOutput (wostream& out)
+{
+    return OutputStreamFromStdOStream<Characters::Character>::New (out);
 }
 
 Memory::BLOB Variant::Writer::WriteAsBLOB (const VariantValue& v)
 {
-    Streams::MemoryStream<byte>::Ptr buf = Streams::MemoryStream<byte>::New ();
-    Write (v, buf);
-    return buf.As<Memory::BLOB> ();
+    return _WriteAsBLOBHelper ([&v, this] (const Streams::OutputStream<std::byte>::Ptr& out) { Write (v, out); });
 }
 
 String Variant::Writer::WriteAsString (const VariantValue& v)
 {
-    return Streams::TextReader::New (WriteAsBLOB (v)).ReadAll ();
+    return _WriteAsStringHelper ([&v, this] (const Streams::OutputStream<Characters::Character>::Ptr& out) { Write (v, out); });
 }

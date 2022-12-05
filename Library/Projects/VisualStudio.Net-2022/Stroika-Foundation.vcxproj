@@ -925,6 +925,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ValidationStrategy.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Reader.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Writer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\INI\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\INI\Profile.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\INI\Reader.inl" />

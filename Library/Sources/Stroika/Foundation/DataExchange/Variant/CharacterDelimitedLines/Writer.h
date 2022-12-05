@@ -18,8 +18,6 @@
  *
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
- * TODO:
- *
  */
 
 namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
@@ -50,11 +48,47 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
         class Rep_;
 
     public:
-        Writer ();
+        /**
+         */
+        struct Options {
+            Characters::Character fSeparator{','};
+            bool                  fSpaceSeparate{false}; // if true, emit space after all separators on a line but the last
+        };
+
+    public:
+        /**
+         */
+        Writer (const Options& options = {});
+
+    public:
+        /**
+        // unclear if call Write or WriteMatrix. Probably Write - despate matrix in Reader name (needed there to specify result type)
+        // overloading tells us on write
+        // do using inherited::Write here to import base class overloads;
+        // WriteMatrix
+         */
+        using inherited::Write;
+        nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, const Streams::OutputStream<std::byte>::Ptr& out);
+        nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, const Streams::OutputStream<Characters::Character>::Ptr& out);
+        nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, ostream& out);
+        nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, wostream& out);
+
+    public:
+        /**
+         */
+        using inherited::WriteAsString;
+        nonvirtual String WriteAsString (const Traversal::Iterable<Sequence<String>>& m);
+
+    public:
+        /**
+         */
+        using inherited::WriteAsBLOB;
+        nonvirtual Memory::BLOB WriteAsBLOB (const Traversal::Iterable<Sequence<String>>& m);
 
     private:
         nonvirtual shared_ptr<Rep_> GetRep_ () const;
     };
+
 }
 
 /*
@@ -62,5 +96,6 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "Writer.inl"
 
 #endif /*_Stroika_Foundation_DataExchange_Variant_CharacterDelimitedLines_Writer_h_*/
