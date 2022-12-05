@@ -62,10 +62,11 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
 
     public:
         /**
-        // unclear if call Write or WriteMatrix. Probably Write - despate matrix in Reader name (needed there to specify result type)
-        // overloading tells us on write
-        // do using inherited::Write here to import base class overloads;
-        // WriteMatrix
+         *  @See Variant::Writer::Write, but overloaded to also take array of array of strings to write.
+         * 
+         *  \note Could have been called WriteMatrix (additional overloads) - but seemed best to emphasize connection
+         *        to other Writers instead of similarity to Reader (where we call it ReadMatrix due to not being
+         *        able to overload on return type).
          */
         using inherited::Write;
         nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, const Streams::OutputStream<std::byte>::Ptr& out);
@@ -75,12 +76,14 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
 
     public:
         /**
+         *  @See Variant::Writer::WriteAsString, but overloaded to also take array of array of strings to write.
          */
         using inherited::WriteAsString;
         nonvirtual String WriteAsString (const Traversal::Iterable<Sequence<String>>& m);
 
     public:
         /**
+         *  @See Variant::Writer::WriteAsBLOB, but overloaded to also take array of array of strings to write.
          */
         using inherited::WriteAsBLOB;
         nonvirtual Memory::BLOB WriteAsBLOB (const Traversal::Iterable<Sequence<String>>& m);

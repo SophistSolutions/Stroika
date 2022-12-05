@@ -7,6 +7,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "Stroika/Foundation/Characters/LineEndings.h"
 #include "Stroika/Foundation/Configuration/Locale.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
@@ -178,24 +179,62 @@ namespace {
             VerifyTestResult (s.Nth (1)[1] == L"5");
         }
 
+        struct Case_ {
+            Sequence<Sequence<String>> data;
+            string                     dataAsFile;
+        };
+        const Case_ kCase1_spaceSep_{
+            [] () {
+                return Sequence<Sequence<String>>{
+                    Sequence<String>{L"3", L"4"},
+                    Sequence<String>{L"4", L"5"},
+                };
+            }(),
+            [] () {
+                stringstream tmp;
+                tmp << "3, 4" << Characters::GetEOL<char> ();
+                tmp << "4, 5" << Characters::GetEOL<char> ();
+                return tmp.str ();
+            }()};
+        const Case_ kCase2_noSpace_{
+            [] () {
+                return Sequence<Sequence<String>>{
+                    Sequence<String>{L"a", L"b"},
+                    Sequence<String>{L"1", L"2", L"3"}, // Can be different lengths
+                    Sequence<String>{L"x", L"7"},
+                };
+            }(),
+            [] () {
+                stringstream tmp;
+                tmp << "a,b" << Characters::GetEOL<char> ();
+                tmp << "1,2,3" << Characters::GetEOL<char> ();
+                tmp << "x,7" << Characters::GetEOL<char> ();
+                return tmp.str ();
+            }()};
+
         void DoBasicWriterAndReader1_ ()
         {
-            using LineType = Sequence<String>;
-            Sequence<LineType> data;
-            data += LineType{L"a", L"b"};
-            data += LineType{L"1", L"2"};
-            data += LineType{L"x", L"7"};
-
-            //   auto serialized = Variant::CharacterDelimitedLines::Writer{}.WriteAsString ();
-
-            //  VerifyTestResult (s.size () == 2);
-            //  VerifyTestResult (s.Nth (1)[1] == L"5");
+            using WriterOptions = Variant::CharacterDelimitedLines::Writer::Options;
+            {
+                auto serialized = Variant::CharacterDelimitedLines::Writer{WriterOptions{.fSpaceSeparate =true }}.WriteAsString (kCase1_spaceSep_.data);
+                String aaa        = String::FromASCII (kCase1_spaceSep_.dataAsFile);
+                VerifyTestResult (serialized.AsASCII () == kCase1_spaceSep_.dataAsFile);
+                stringstream tmp{kCase1_spaceSep_.dataAsFile};
+                VerifyTestResult ((kCase1_spaceSep_.data == Sequence<Sequence<String>>{Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp)}));
+            }
+            {
+                auto serialized = Variant::CharacterDelimitedLines::Writer{WriterOptions{.fSpaceSeparate = false}}.WriteAsString (kCase2_noSpace_.data);
+                VerifyTestResult (serialized.AsASCII () == kCase2_noSpace_.dataAsFile);
+                stringstream tmp{kCase2_noSpace_.dataAsFile};
+                VerifyTestResult ((kCase2_noSpace_.data == Sequence<Sequence<String>>{Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp)}));
+            }
         }
 
         void DoAll_ ()
         {
             Debug::TraceContextBumper ctx{L"CharacterDelimitedLines_ONLY_::DoAll_"};
             DoBasicReader1_ ();
+            DoBasicWriterAndReader1_ ();
         }
     }
 }
