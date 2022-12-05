@@ -58,7 +58,7 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
     public:
         /**
          */
-        Writer (const Options& options = {});
+        Writer (const Options& options = Options{});
 
     public:
         /**
