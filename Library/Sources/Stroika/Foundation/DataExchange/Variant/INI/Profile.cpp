@@ -3,11 +3,7 @@
  */
 #include "../../../StroikaPreComp.h"
 
-#include "../../../Characters/FloatConversion.h"
-#include "../../../Characters/Format.h"
-#include "../../../Characters/String2Int.h"
-#include "../../../Streams/TextReader.h"
-#include "../../BadFormatException.h"
+#include "../../../Characters/ToString.h"
 
 #include "Profile.h"
 
