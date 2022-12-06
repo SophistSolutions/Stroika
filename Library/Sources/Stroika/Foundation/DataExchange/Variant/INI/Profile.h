@@ -8,7 +8,6 @@
 
 #include "../../../Characters/String.h"
 #include "../../../Configuration/Common.h"
-#include "../../../Containers/Collection.h"
 #include "../../../Containers/Mapping.h"
 
 #include "../../VariantValue.h"
@@ -19,7 +18,6 @@
 
 namespace Stroika::Foundation::DataExchange::Variant::INI {
 
-    using Containers::Collection;
     using Containers::Mapping;
 
     /**
@@ -29,6 +27,11 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
         Mapping<String, String> fProperties;
 
         bool operator== (const Section& rhs) const = default;
+
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual String ToString () const;
     };
 
     /**
@@ -39,10 +42,20 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
         Mapping<String, Section> fNamedSections;
 
         bool operator== (const Profile& rhs) const = default;
+
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual String ToString () const;
     };
 
-    Profile      Convert (VariantValue v);
-    VariantValue Convert (Profile p);
+    /**
+     *  Map back and forth between Profile object, and structured VariantValue. If the VariantValue is not
+     *  in the format of a legal Profile, this function (arg VariantValue) will throw.
+     */
+    Profile      Convert (const VariantValue& v);
+    VariantValue Convert (const Profile& p);
+
 }
 
 /*

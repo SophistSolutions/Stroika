@@ -157,15 +157,22 @@ namespace {
             VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue (L"SUPPORT_URL") == L"http://help.ubuntu.com/");
         }
 
-
-         struct Case_ {
+        struct Case_ {
             DataExchange::Variant::INI::Profile data;
-            string                     dataAsFile;
+            string                              dataAsFile;
         };
         const Case_ kCase1_{
             [] () {
                 DataExchange::Variant::INI::Section section{{
-                    {L"NAME", L"\"Ubuntu\""},
+                    {L"NAME", L"Ubuntu"},
+                    {L"VERSION", L"13.10, Saucy Salamander"},
+                    {L"ID", L"ubuntu"},
+                    {L"ID_LIKE", L"debian"},
+                    {L"PRETTY_NAME", L"Ubuntu 13.10"},
+                    {L"VERSION_ID", L"13.10"},
+                    {L"HOME_URL", L"http://www.ubuntu.com/"},
+                    {L"SUPPORT_URL", L"http://help.ubuntu.com/"},
+                    {L"BUG_REPORT_URL", L"http://bugs.launchpad.net/ubuntu/"},
                 }};
                 return DataExchange::Variant::INI::Profile{section};
             }(),
@@ -186,11 +193,12 @@ namespace {
         void DoReadWriteTest2_ ()
         {
             {
-                auto   serialized = Variant::INI::Writer{}.WriteAsString (kCase1_.data);
-                String aaa        = String::FromASCII (kCase1_.dataAsFile);
-                VerifyTestResult (serialized.AsASCII () == kCase1_.dataAsFile);
-                stringstream tmp{kCase1_.dataAsFile};
-                VerifyTestResult ((kCase1_.data == Variant::INI::Reader{}.ReadProfile (tmp)));
+                // Cannot compare that serialized formats equal, but we can assure that when we serialize and then deserialize that
+                // is the same as the original data
+                auto serialized   = Variant::INI::Writer{}.WriteAsString (kCase1_.data);
+                auto deserialized = Variant::INI::Reader{}.ReadProfile (serialized);
+                VerifyTestResult (deserialized == kCase1_.data);
+                VerifyTestResult ((Variant::INI::Reader{}.ReadProfile (kCase1_.dataAsFile) == kCase1_.data));
             }
         }
 

@@ -19,10 +19,39 @@ using namespace Stroika::Foundation::DataExchange::Variant::INI;
 
 /*
  ********************************************************************************
+ ************************** DataExchange::INI::Section **************************
+ ********************************************************************************
+ */
+String Section::ToString () const
+{
+    return L"{ properties: " + Characters::ToString (fProperties) + L"}";
+}
+
+/*
+ ********************************************************************************
+ ************************** DataExchange::INI::Profile **************************
+ ********************************************************************************
+ */
+String Profile::ToString () const
+{
+    Characters::StringBuilder sb;
+    sb += L"{";
+    if (not fUnnamedSection.fProperties.empty ()) {
+        sb += L"fUnnamedSection: " + Characters::ToString (fUnnamedSection) + L",";
+    }
+    if (not fNamedSections.empty ()) {
+        sb += L"fNamedSections: " + Characters::ToString (fNamedSections) + L",";
+    }
+    sb += L"}";
+    return sb.str ();
+}
+
+/*
+ ********************************************************************************
  ************************** DataExchange::INI::Convert **************************
  ********************************************************************************
  */
-Profile INI::Convert (VariantValue v)
+Profile INI::Convert (const VariantValue& v)
 {
     Profile                       profile;
     Mapping<String, VariantValue> mv = v.As<Mapping<String, VariantValue>> (); // throws if format mismatch
@@ -42,7 +71,7 @@ Profile INI::Convert (VariantValue v)
     return profile;
 }
 
-VariantValue INI::Convert (Profile p)
+VariantValue INI::Convert (const Profile& p)
 {
     auto sec2VV = [] (const Section& s) -> VariantValue {
         Mapping<String, VariantValue> m;
