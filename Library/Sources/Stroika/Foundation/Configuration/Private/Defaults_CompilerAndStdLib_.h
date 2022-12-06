@@ -939,6 +939,43 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 #endif
 
 #endif
+/*
+* 
+* https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be
+* 
+* 
+In file included from Writer.cpp:8:
+Writer.h:61:50: error: default member initializer for ‘Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines::Writer::Options::fSeparator’ required before the end of its enclosing class
+   61 |         Writer (const Options& options = Options{});
+      |                                                  ^
+Writer.h:54:45: note: defined here
+   54 |             Characters::Character fSeparator{','};
+      |                                             ^~~~~~
+Writer.h:61:50: error: default member initializer for ‘Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines::Writer::Options::fSpaceSeparate’ required before the end of its enclosing class
+   61 |         Writer (const Options& options = Options{});
+      |                                                  ^
+Writer.h:55:49: note: defined here
+   55 |             bool                  fSpaceSeparate{false}; // if true, emit space after all separators on a line but the last
+      |                                                 ^~~~~~~~
+         Co*/
+#ifndef qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// First noticed in g++-11
+#define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
+#elif defined(__clang__) && defined(__APPLE__)
+// First noticed in clang++-14
+#define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#elif defined(__clang__) && !defined(__APPLE__)
+// First noticed in clang++-14
+#define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#else
+#define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy 0
+#endif
+
+#endif
+
+
 
 /*
 esponse.h: In member function ‘auto Stroika::Frameworks::WebServer::Response::UpdateHeader(FUNCTION&&)’:
