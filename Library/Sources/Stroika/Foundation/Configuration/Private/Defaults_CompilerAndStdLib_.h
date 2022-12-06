@@ -975,8 +975,6 @@ Writer.h:55:49: note: defined here
 
 #endif
 
-
-
 /*
 esponse.h: In member function ‘auto Stroika::Frameworks::WebServer::Response::UpdateHeader(FUNCTION&&)’:
 Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘unsigned char:3’ and ‘Stroika::Frameworks::WebServer::Response::State’)
