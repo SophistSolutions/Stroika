@@ -102,6 +102,16 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 CONFIG_ARGS+=	-no-asm
 endif
 
+ifeq ($(QUICK_BUILD), 1)
+CONFIG_ARGS+=	-no-tests
+endif
+
+ifeq ($(QUICK_BUILD), 1)
+INSTALL_TARGET=install_sw install_ssldirs
+else
+INSTALL_TARGET=install
+endif
+
 
 # autoconfigure sometimes detects multilib and then changes default libdir to lib64... - so override to look where rest of code looks for it
 CONFIG_ARGS+=	--libdir=lib
@@ -378,19 +388,19 @@ endif
 	@
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "openssl ${VERSION} - Installing (see ${OUTPUT_WORKDIR_PRETTYNAME}INSTALL-OUT.txt) ... "
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@$(MAKE) -j1 --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory install > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/INSTALL-OUT.txt 2>&1;
+	@$(MAKE) -j1 --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory $(INSTALL_TARGET) > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/INSTALL-OUT.txt 2>&1;
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@#pdb hack - hardwired in openssl makefile, but not build if we pass in /Z7 (which we do by default)
 	@touch $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ossl_static.pdb 
 	@$(ECHO) 'cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 	 ((env --unset=MFLAGS --unset=MAKEFLAGS \
 	  $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \
-	   nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH)\
+	   nmake $(INSTALL_TARGET) INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH)\
 	  ) 2>&1)' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/INSTALL-OUT.txt
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 	 ((env --unset=MFLAGS --unset=MAKEFLAGS \
 	  $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \
-	   nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH)\
+	   nmake $(INSTALL_TARGET) INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH)\
 	  ) 2>&1) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/INSTALL-OUT.txt
 	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ossl_static.pdb $(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH)/lib/ossl_static.pdb
 endif
