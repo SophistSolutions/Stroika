@@ -676,6 +676,26 @@ sub WriteVSCodeCPPExtensionConfigFile
 	if (!(-e $vsCodeCppExtensionCng)) {
 		`echo "{\\\"configurations\\\":[]}" > $vsCodeCppExtensionCng`;
 	}
+
+	# Add myDefaultIncludePath environment-variable if missing
+	{
+		local $envVars = `jq ".env" < $vsCodeCppExtensionCng`;
+		if ($envVars == null) {
+			local $r = ` jq ".env={}" < $vsCodeCppExtensionCng`;
+			open(FH, '>', $vsCodeCppExtensionCng) or die $!;
+			print FH $r;
+			close(FH);
+			$envVars = `jq ".env" < $vsCodeCppExtensionCng`;
+		}
+		if (!exists $envVars{"myDefaultIncludePath"}) {
+			local $r = `jq ".env.myDefaultIncludePath=[\\"\\\${workspaceFolder}\\"]" < $vsCodeCppExtensionCng`;
+			open(FH, '>', $vsCodeCppExtensionCng) or die $!;
+			print FH $r;
+			close(FH);
+			$envVars = `jq ".env" < $vsCodeCppExtensionCng`;
+		}
+	}
+
 	local $nConfigs = `jq ".configurations | length" < $vsCodeCppExtensionCng`;
 	local $indexOfNewConfig = $nConfigs;
 	## would be nice to find faster way todo this
@@ -715,14 +735,9 @@ sub WriteVSCodeCPPExtensionConfigFile
 	}
 	{
 		$newCfgObj .= " ,includePath: [";
-		local $first = true;
+		$newCfgObj .= "\\\"\\\${myDefaultIncludePath}\\\"";
 		foreach my $element (split /$PATH_SEPERATOR/, $INCLUDES_PATH) {
-			if ($first) {
-				$first = false;
-			}
-			else {
-				$newCfgObj .= " , ";
-			}
+			$newCfgObj .= " , ";
 			$newCfgObj .= "\\\"$element\\\"";
 		}
 		$newCfgObj .= "]";
