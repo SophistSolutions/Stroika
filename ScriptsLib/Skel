@@ -129,7 +129,7 @@ mkMyApp_()
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/launch.json > $APP_ROOT/.vscode/launch.json
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/settings.json > $APP_ROOT/.vscode/settings.json
   sed s/\$\{APP_NAME\}/${APP_NAME}/g < $MY_PATH_/Shared/Skel-Templates/.vscode/tasks.json > $APP_ROOT/.vscode/tasks.json
-  cp $MY_PATH_/Shared/Skel-Templates/.vscode/.gitignore > $APP_ROOT/.vscode/
+  cp $MY_PATH_/Shared/Skel-Templates/.vscode/.gitignore $APP_ROOT/.vscode/
   cp $StroikaRoot.config-default.json $APP_ROOT/.config.json
 }
 
