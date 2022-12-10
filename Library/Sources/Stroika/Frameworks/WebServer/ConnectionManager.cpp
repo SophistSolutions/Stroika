@@ -114,11 +114,16 @@ namespace {
             // mentioning - so I'm guessing - that it came from the cache.
             // Anyhow, peicing things together, it appears that IF you are using CORS, you must set the vary header
             // to vary on origin.
+            // 
+            // Note - we emit it as a default for all responses because https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary says:
+            //      "The same Vary header value should be used on all responses for a given URL, 
+            //      including 304 Not Modified responses and the "default" response."
+            // 
             //      -- LGP 2022-12-09
             HTTP::Headers s = Memory::NullCoalesce (result.fDefaultResponseHeaders);
             Set<String>   v = Memory::NullCoalesce (s.vary ());
             v += HTTP::HeaderName::kOrigin;
-            s.vary = v;
+            s.vary                         = v;
             result.fDefaultResponseHeaders = s;
         }
         return result;
