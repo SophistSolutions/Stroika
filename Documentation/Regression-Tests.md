@@ -114,6 +114,7 @@ checkin from one spot.
   ```bash
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu1804-Cross-Compile2RaspberryPi \
+      RASPBERRYPI_REMOTE_MACHINE=192.168.244.30 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests \
       MACHINE=Hercules \
@@ -127,6 +128,7 @@ checkin from one spot.
   ```bash
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2004-Cross-Compile2RaspberryPi \
+      RASPBERRYPI_REMOTE_MACHINE=192.168.244.30 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests \
       MACHINE=Hercules \
@@ -140,6 +142,7 @@ checkin from one spot.
   ```bash
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2204-Cross-Compile2RaspberryPi \
+      RASPBERRYPI_REMOTE_MACHINE=192.168.244.30 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
       MACHINE=Hercules \
