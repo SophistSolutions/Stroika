@@ -208,7 +208,6 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->origin () == nullopt);      // request only header
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->ifNoneMatch () == nullopt); // request only header
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->setCookie ().cookieDetails ().empty ());
-        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->vary () == nullopt);
     }
 
     DbgTrace (L"Constructing WebServer::ConnectionManager (%p), with threadpoolSize=%d, backlog=%d", this, fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options));
