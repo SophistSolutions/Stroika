@@ -5,7 +5,7 @@ ifneq ($(CONFIGURATION),)
 	-include $(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir				=	$(TOP_ROOT)Backend/Sources/
+SrcDir				=	$(TOP_ROOT)${APP_NAME}/Sources/
 ObjDir				=	$(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/${APP_NAME}/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk

@@ -7,6 +7,71 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1.12 {2022-12-12}
+
+#### TLDR
+
+- Fixed subtle issue with CORS and HTTP Cache setting - https://blog.keul.it/chrome-cors-issue-due-to-cache/ - Vary: Origin
+- Tweaked QUICK_BUILD settings, so rebuild significantly faster on windows (when you rebuild third party components), and slower for full Stroika regressions tests since now sets QUICK_BUILD=0.
+- Fixed small issue with In ApplyConfiguration updating .vscode/c_cpp_properties.json
+
+#### Change Details
+
+- Build System
+  - Tweaked windows support for QUICK_BUILD- build time time make CONFIGURATION=Debug third-party-components dropped from realtime 9m50s to 5m54s
+  - Set QUICK_BUILD=0 on regression tests in RegressionTests script
+  - In ApplyConfiguration - added myDefaultIncludePath to env section and used ${myDefaultIncludePath} in
+    include paths generated, in .vscode/c_cpp_properties.json generated; PURPOSE is to allow apps like
+    IPAM to add extra include paths to config and not have them overwritten by apply-configuration calls.
+  - set RASPBERRYPI_REMOTE_MACHINE in Regression-Tests.md so easier to remember (my current DNS not setup right on my new router)
+  - added ScriptsLib/Shared/Skel-Templates/.vscode/.gitignore
+- Compiler and System Compatability
+  - in docker file windows, use env:VS_17_4_2
+- Library
+  - Frameworks
+    - WebServer
+      - In WebServer/ConnectionManager CORS support, add HTTP response header Vary: Origin to fDefaultResponseHeaders to 
+        address probable issue with CORS (see https://blog.keul.it/chrome-cors-issue-due-to-cache/)
+        - Lose WeakAssert fEffectiveOptions_.fDefaultResponseHeaders->vary () == nullopt cuz we now set it to not null
+- ThirdPartyComponents
+  - sqlite 3.40.00
+
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13, 14 }
+  - MSVC: { 15.9.50, 16.11.21, 17.4.1 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 22H2
+    - Windows 11 version 22H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 13.0 (Ventura) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+
+---
+
 ### 2.1.11 {2022-11-29}
 
 #### TLDR
@@ -261,7 +326,7 @@ especially those they need to be aware of when upgrading.
       - fixed fatal bug with (somewhat new but obviously not well tested) MakeCommonSerializer_ (const optional<T>*, const OptionalSerializerOptions& options)
     - Time
       - improved error checking in Date::LocaleFreeParseQuietly_kMonthDayYearFormat_ (and renamed private function)
-- ThirdPartyCompoents
+- ThirdPartyComponents
   - libcurl 7.86.0
   - OpenSSL 3.0.7 (significant security fix)
 
@@ -334,7 +399,7 @@ especially those they need to be aware of when upgrading.
     - Execution
       - Cosmetic cleanup/docs for LazyEvalActivity
       - lose unneeded using Characters::SDKString from Foundation/Execution/Throw.h
-- ThirdPartyCompoents
+- ThirdPartyComponents
   - Xerces
     - Xerces-C 3.2.4 (except on systems with older cmake - those still use Xerces 3.2.3)
       - use new  VersionCompare to check installed cmake version
@@ -475,7 +540,7 @@ especially those they need to be aware of when upgrading.
   - Frameworks
     - WebServices
       - ExpectedMethod() overload has extra default argument
-- ThirdPartyCompoents
+- ThirdPartyComponents
   - libcurl 7.85.0
   - SQLite 3.39.3
 
@@ -544,7 +609,7 @@ especially those they need to be aware of when upgrading.
       - ObjectVariantMapper support for KeyValuePair
     - Execution
       - Synchronized<T, TRAITS>::operator= (T&& rhs) support
-- ThirdPartyCompoents
+- ThirdPartyComponents
   - sqlite - 3.39.2
   - boost - 1.80.0
 
@@ -795,7 +860,7 @@ especially those they need to be aware of when upgrading.
   - Frameworks
     - WebServer
       - ConnectionManager, renamed connections property to pConnections, and added pActiveConnections property
-- ThirdPartyCompoents
+- ThirdPartyComponents
   - sqlite 3.39.1
   - openssl 3.0.5;
   - libcurl 7.83.1 (7.84.0 doesn't build on Ubuntu 18.04)
@@ -9042,7 +9107,7 @@ especially those they need to be aware of when upgrading.
                 <li>new clang-format</li>
             </ul>
         </li>
-        <li>ThirdPartyCompoents
+        <li>ThirdPartyComponents
             <ul>
                 <li>Tried LZMA SDK version 1700, but had to revert to using LZMA SDK 1604 - 1700 much chnaged, and I can find no docs, and the changes appear pretty illogical - so not sure ever will upgrade - maybe lost this and replace with other lib for lzma support?</li>
                 <li>curl v7.54.0</li>

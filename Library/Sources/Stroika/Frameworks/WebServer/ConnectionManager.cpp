@@ -93,6 +93,29 @@ namespace {
         result.fLinger                            = Memory::NullCoalesce (result.fLinger, Options::kDefault_Linger); // for now this is special and can be null/optional
         // result.fThreadPoolName; can remain nullopt
         result.fTCPBacklog = Memory::NullCoalesce (result.fTCPBacklog, ComputeConnectionBacklog_ (result));
+
+        {
+            // Not super clear. BUT - it appears that if you combine CORS with Caching, then the value returned from
+            // the cache maybe WRONG due to not having a (correct) Origin header. Seems most logical that the CORS
+            // logic would not check the origin if its coming from the cache, but ... who knows...
+            // According to https://blog.keul.it/chrome-cors-issue-due-to-cache/ Chrome does, and this fits with the
+            // sporadic bug I'm seeing (hard to tell cuz what seems to happen is the web server not called, but Chrome debugger reports
+            // CORS error and Chrome debugger not super clear here - not letting me see what it pulled from cache or even
+            // mentioning - so I'm guessing - that it came from the cache.
+            // Anyhow, peicing things together, it appears that IF you are using CORS, you must set the vary header
+            // to vary on origin.
+            //
+            // Note - we emit it as a default for all responses because https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary says:
+            //      "The same Vary header value should be used on all responses for a given URL,
+            //      including 304 Not Modified responses and the "default" response."
+            //
+            //      -- LGP 2022-12-09
+            HTTP::Headers s = Memory::NullCoalesce (result.fDefaultResponseHeaders);
+            Set<String>   v = Memory::NullCoalesce (s.vary ());
+            v += HTTP::HeaderName::kOrigin;
+            s.vary                         = v;
+            result.fDefaultResponseHeaders = s;
+        }
         return result;
     }
 }
@@ -175,7 +198,6 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->origin () == nullopt);      // request only header
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->ifNoneMatch () == nullopt); // request only header
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->setCookie ().cookieDetails ().empty ());
-        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->vary () == nullopt);
     }
 
     DbgTrace (L"Constructing WebServer::ConnectionManager (%p), with threadpoolSize=%d, backlog=%d", this, fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options));
