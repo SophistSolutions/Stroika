@@ -27,6 +27,25 @@ namespace Stroika::Foundation::Database::SQL {
      *        using transactions, sqlite creates mini transactions automatically for each statement.
      *
      *  \note Nested transactions not supported (for sqlite - add featre for detecting if engine supports)
+     * 
+     *  \par Example Usage
+     *      \code
+     *          T DB::AddOrMergeUpdate (ORM::TableConnection<T>* dbConnTable, const T& d)
+     *          {
+     *              SQL::Transaction t{dbConnTable->pConnection ()->mkTransaction ()};
+     *              std::optional<T> result;
+     *              if (auto dbObj = dbConnTable->Get (id)) {
+     *                  result = T::Merge (*dbObj, d);
+     *                  dbConnTable->Update (*result);
+     *              }
+     *              else {
+     *                  result = d;
+     *                  dbConnTable->AddNew (d);
+     *              }
+     *              t.Commit ();
+     *              return Memory::ValueOf (result);
+     *          }
+     *      \endcode
      */
     class Transaction : protected Debug::AssertExternallySynchronizedMutex {
     public:
