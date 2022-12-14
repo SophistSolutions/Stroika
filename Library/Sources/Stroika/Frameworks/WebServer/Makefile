@@ -22,6 +22,7 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)ConnectionManager${OBJ_SUFFIX}\
 	$(ObjDir)Connection${OBJ_SUFFIX}\
+	$(ObjDir)CORS${OBJ_SUFFIX}\
 	$(ObjDir)DefaultFaultInterceptor${OBJ_SUFFIX}\
 	$(ObjDir)FileSystemRequestHandler${OBJ_SUFFIX}\
 	$(ObjDir)Interceptor${OBJ_SUFFIX}\

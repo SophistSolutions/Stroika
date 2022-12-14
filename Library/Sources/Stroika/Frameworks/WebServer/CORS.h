@@ -60,6 +60,11 @@ namespace Stroika::Frameworks::WebServer {
          *  The default - * - kAccessControlWildcard - any - is typically just fine.
          */
         optional<Set<String>> fAllowedHeaders;
+
+        /**
+         *  @see Characters::ToString ();
+         */
+        Characters::String ToString () const;
     };
     inline const CORSOptions kDefault_CORSOptions{CORSOptions::kAllowCredentials_Default, CORSOptions::kAccessControlMaxAge_Default, Set<String>{CORSOptions::kAccessControlWildcard}, Set<String>{CORSOptions::kAccessControlWildcard}};
 

@@ -313,6 +313,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\CORS.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRequestHandler.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.cpp" />
