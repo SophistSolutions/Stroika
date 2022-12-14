@@ -256,9 +256,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *      includes appropriate Cache-Control or Expires header fields
          * 
          *  similarly for PUT/POST/DELETE (from same document) - those appear to not be cacheable.
-         * 
-         *  so DONT fill this in with generic default headers, but have &&& todo add - in server- 
-         *  default-GET-only Response headers.&&& TODO
          */
         Common::Property<optional<CacheControl>> cacheControl;
 
