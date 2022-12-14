@@ -331,7 +331,7 @@ namespace Stroika::Foundation::Containers {
         nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& s);
         nonvirtual void   RemoveAll ();
         template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>* = nullptr>
-        nonvirtual size_t RemoveAll (const PREDICATE& p);
+        nonvirtual size_t RemoveAll (PREDICATE&& p);
 
     public:
         /**
