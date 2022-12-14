@@ -309,7 +309,7 @@ namespace Stroika::Foundation::Containers {
          *  \note Should be of type IsStrictInOrderComparer (), but not required - for convenience of use (so can be used with any lambda functor)
          */
         template <typename INORDER_COMPARER_TYPE = less<T>>
-        nonvirtual Sequence OrderBy (const INORDER_COMPARER_TYPE& inorderComparer = INORDER_COMPARER_TYPE{}) const;
+        nonvirtual Sequence OrderBy (INORDER_COMPARER_TYPE&& inorderComparer = INORDER_COMPARER_TYPE{}) const;
 
     public:
         /**
@@ -428,9 +428,9 @@ namespace Stroika::Foundation::Containers {
          *  For the IndexOf(Iterator<T>) - \req it is found/legal iterator 
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual optional<size_t> IndexOf (ArgByValueType<value_type> i, const EQUALS_COMPARER& equalsComparer = {}) const;
+        nonvirtual optional<size_t> IndexOf (ArgByValueType<value_type> i, EQUALS_COMPARER&& equalsComparer = {}) const;
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual optional<size_t> IndexOf (const Sequence& s, const EQUALS_COMPARER& equalsComparer = {}) const;
+        nonvirtual optional<size_t> IndexOf (const Sequence& s, EQUALS_COMPARER&& equalsComparer = {}) const;
         template <typename IGNORED = void>
         nonvirtual size_t IndexOf (const Iterator<value_type>& i) const;
 

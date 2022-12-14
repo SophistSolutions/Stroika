@@ -189,7 +189,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Typical: O(N), but can be less if systematically finding entries near start of array
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const;
+        nonvirtual bool Contains (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer) const;
 
     public:
         /**
@@ -197,7 +197,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Always: O(N)
          */
         template <typename FUNCTION>
-        nonvirtual void Apply (FUNCTION doToElement) const;
+        nonvirtual void Apply (FUNCTION&& doToElement) const;
 
     public:
         /**
@@ -206,7 +206,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Typical: O(N), but can be less if systematically finding entries near start of array
          */
         template <typename FUNCTION>
-        nonvirtual size_t Find (FUNCTION doToElement) const;
+        nonvirtual size_t Find (FUNCTION&& doToElement) const;
 
     public:
         /*

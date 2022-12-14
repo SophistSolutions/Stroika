@@ -345,7 +345,7 @@ namespace Stroika::Foundation::Containers {
          *  \note Alias LookupOrException
          */
         template <typename THROW_IF_MISSING>
-        nonvirtual value_type LookupChecked (ArgByValueType<KeyType> key, const THROW_IF_MISSING& throwIfMissing) const;
+        nonvirtual value_type LookupChecked (ArgByValueType<KeyType> key, THROW_IF_MISSING&& throwIfMissing) const;
 
     public:
         /**

@@ -231,7 +231,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    void DoublyLinkedList<T>::Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
+    void DoublyLinkedList<T>::Remove (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer)
     {
         Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         Invariant ();
@@ -265,7 +265,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <typename FUNCTION>
-    inline void DoublyLinkedList<T>::Apply (FUNCTION doToElement) const
+    inline void DoublyLinkedList<T>::Apply (FUNCTION&& doToElement) const
     {
         AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
@@ -274,7 +274,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <typename FUNCTION>
-    inline auto DoublyLinkedList<T>::Find (FUNCTION doToElement) const -> UnderlyingIteratorRep
+    inline auto DoublyLinkedList<T>::Find (FUNCTION&& doToElement) const -> UnderlyingIteratorRep
     {
         AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         for (Link_* i = fHead_; i != nullptr; i = i->fNext) {

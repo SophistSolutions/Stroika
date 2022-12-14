@@ -327,7 +327,7 @@ namespace Stroika::Foundation::Containers {
          *  true if contained. Perhpas not very useful but symetric to ContainsKey().
          */
         template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
-        nonvirtual bool ContainsMappedValue (ArgByValueType<mapped_type> v, const VALUE_EQUALS_COMPARER& valueEqualsComparer = {}) const;
+        nonvirtual bool ContainsMappedValue (ArgByValueType<mapped_type> v, VALUE_EQUALS_COMPARER&& valueEqualsComparer = {}) const;
 
     public:
         /**

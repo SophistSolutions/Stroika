@@ -30,33 +30,33 @@ namespace CommonTests {
         }
 
         template <typename USING_ITERABLE_CONTAINER, typename EQUALS_COMPARER>
-        void Test2_Contains_ (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER equalsComparer)
+        void Test2_Contains_ (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER&& equalsComparer)
         {
-            (void)container.template Contains<EQUALS_COMPARER> (3, equalsComparer);
+            (void)container.template Contains<EQUALS_COMPARER> (3, forward<EQUALS_COMPARER> (equalsComparer));
         }
 
         template <typename USING_ITERABLE_CONTAINER, typename EQUALS_COMPARER>
-        void Test3_SetEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER equalsComparer)
-        {
-            auto iterableCopy = container;
-            VerifyTestResult ((iterableCopy.template SetEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, equalsComparer)));
-        }
-
-        template <typename USING_ITERABLE_CONTAINER, typename EQUALS_COMPARER>
-        void Test4_MultiSetEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER equalsComparer)
+        void Test3_SetEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER&& equalsComparer)
         {
             auto iterableCopy = container;
-            VerifyTestResult ((iterableCopy.template MultiSetEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, equalsComparer)));
+            VerifyTestResult ((iterableCopy.template SetEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, forward<EQUALS_COMPARER> (equalsComparer))));
         }
 
         template <typename USING_ITERABLE_CONTAINER, typename EQUALS_COMPARER>
-        void Test5_SequenceEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER equalsComparer)
+        void Test4_MultiSetEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER&& equalsComparer)
+        {
+            auto iterableCopy = container;
+            VerifyTestResult ((iterableCopy.template MultiSetEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, forward<EQUALS_COMPARER> (equalsComparer))));
+        }
+
+        template <typename USING_ITERABLE_CONTAINER, typename EQUALS_COMPARER>
+        void Test5_SequenceEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER&& equalsComparer)
         {
             auto iterableCopy = container;
 #if qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy
-            VerifyTestResult ((iterableCopy.SequentialEquals (container, equalsComparer)));
+            VerifyTestResult ((iterableCopy.SequentialEquals (container, forward < EQUALS_COMPARER> (equalsComparer))));
 #else
-            VerifyTestResult ((iterableCopy.template SequentialEquals (container, equalsComparer)));
+            VerifyTestResult ((iterableCopy.template SequentialEquals (container, forward < EQUALS_COMPARER> (equalsComparer))));
 #endif
         }
 
@@ -67,12 +67,12 @@ namespace CommonTests {
         }
 
         template <typename USING_ITERABLE_CONTAINER, typename EQUALS_COMPARER>
-        void SimpleIterableTest_RequiringEqualsComparer (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER equalsComparer)
+        void SimpleIterableTest_RequiringEqualsComparer (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER&& equalsComparer)
         {
-            Test2_Contains_<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, equalsComparer);
-            Test3_SetEquals_<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, equalsComparer);
-            Test4_MultiSetEquals_<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, equalsComparer);
-            Test5_SequenceEquals_<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, equalsComparer);
+            Test2_Contains_<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, forward < EQUALS_COMPARER>(equalsComparer));
+            Test3_SetEquals_<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, forward<EQUALS_COMPARER> (equalsComparer));
+            Test4_MultiSetEquals_<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, forward < EQUALS_COMPARER> (equalsComparer));
+            Test5_SequenceEquals_<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, forward < EQUALS_COMPARER> (equalsComparer));
         }
     }
 }

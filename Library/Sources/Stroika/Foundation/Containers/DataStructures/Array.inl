@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    bool Array<T>::Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const
+    bool Array<T>::Contains (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         Invariant ();
@@ -133,7 +133,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <typename FUNCTION>
-    inline void Array<T>::Apply (FUNCTION doToElement) const
+    inline void Array<T>::Apply (FUNCTION&& doToElement) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         const T*                                           i    = &fItems_[0];
@@ -144,7 +144,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <typename FUNCTION>
-    inline size_t Array<T>::Find (FUNCTION doToElement) const
+    inline size_t Array<T>::Find (FUNCTION&& doToElement) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         const T*                                           start = &fItems_[0];

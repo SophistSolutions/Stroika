@@ -67,9 +67,9 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    inline bool Collection<T>::Contains (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer) const
+    inline bool Collection<T>::Contains (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer) const
     {
-        return this->Find (item, equalsComparer) != nullptr;
+        return this->Find (item, forward<EQUALS_COMPARER> (equalsComparer)) != nullptr;
     }
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE>
@@ -118,27 +118,27 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    inline void Collection<T>::Remove (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer)
+    inline void Collection<T>::Remove (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer)
     {
-        auto i = this->Find (item, equalsComparer);
+        auto i = this->Find (item, forward<EQUALS_COMPARER> (equalsComparer));
         Require (i != this->end ()); // use remove-if if the item might not exist
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i, nullptr);
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    inline bool Collection<T>::RemoveIf (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer)
+    inline bool Collection<T>::RemoveIf (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer)
     {
-        if (auto i = this->Find (item, equalsComparer)) {
+        if (auto i = this->Find (item, forward<EQUALS_COMPARER> (equalsComparer))) {
             _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i, nullptr);
             return true;
         }
         return false;
     }
     template <typename T>
-    template <typename PREDICATE>
-    bool Collection<T>::RemoveIf (const PREDICATE& p)
+    template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>*>
+    bool Collection<T>::RemoveIf (PREDICATE&& p)
     {
-        if (auto i = this->Find (p)) {
+        if (auto i = this->Find (forward<PREDICATE> (p))) {
             Remove (i);
             return true;
         }
@@ -154,7 +154,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    size_t Collection<T>::RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, const EQUALS_COMPARER& equalsComparer)
+    size_t Collection<T>::RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, EQUALS_COMPARER&& equalsComparer)
     {
         size_t cnt{};
         for (auto i = start; i != end;) {
@@ -166,14 +166,14 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
-    inline size_t Collection<T>::RemoveAll (const ITERABLE_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer)
+    inline size_t Collection<T>::RemoveAll (const ITERABLE_OF_ADDABLE& c, EQUALS_COMPARER&& equalsComparer)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         if (static_cast<const void*> (this) == static_cast<const void*> (addressof (c))) {
-            return RemoveAll (equalsComparer);
+            return RemoveAll (forward<EQUALS_COMPARER> (equalsComparer));
         }
         else {
-            return RemoveAll (std::begin (c), std::end (c), equalsComparer);
+            return RemoveAll (std::begin (c), std::end (c), forward<EQUALS_COMPARER> (equalsComparer));
         }
     }
     template <typename T>
@@ -199,7 +199,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    inline void Collection<T>::erase (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer)
+    inline void Collection<T>::erase (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer)
     {
         Remove (item, forward<EQUALS_COMPARER> (equalsComparer));
     }

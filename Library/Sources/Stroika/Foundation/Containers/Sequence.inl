@@ -153,10 +153,10 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename INORDER_COMPARER_TYPE>
-    auto Sequence<T>::OrderBy (const INORDER_COMPARER_TYPE& inorderComparer) const -> Sequence
+    auto Sequence<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer) const -> Sequence
     {
-        vector<T> tmp (this->begin (), this->end ()); // due to Sequence_stdvector move constructor, a not very expensive implementation
-        stable_sort (tmp.begin (), tmp.end (), inorderComparer);
+        vector<T> tmp{this->begin (), this->end ()}; // due to Sequence_stdvector move constructor, a not very expensive implementation (but @todo must implement random-access-iterators for Sequence to avoid)
+        stable_sort (tmp.begin (), tmp.end (), forward<INORDER_COMPARER_TYPE> (inorderComparer));
         return Concrete::Sequence_stdvector<T>{move (tmp)};
     }
     template <typename T>
@@ -171,6 +171,10 @@ namespace Stroika::Foundation::Containers {
     template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>*>
     size_t Sequence<T>::RemoveAll (PREDICATE&& p)
     {
+        // @todo Consider migrating this method to _IRep? Doing so would allow for different (e.g. vector) implementations
+        // to be more efficient (for example, bubbling last to first); but at a small code-bloat cost, so not likely
+        // worthwhile tradeoff; if this is a performance issue, convert to Sequence_LinkedList{s}.RemoveAll(p) and then convert
+        // back to whatever backend-implementation sequence you wish... --LGP 2022-12-14
         size_t nRemoved{};
         for (Iterator<T> i = this->begin (); i != this->end ();) {
             if (p (*i)) {
@@ -220,15 +224,15 @@ namespace Stroika::Foundation::Containers {
 #endif
     template <typename T>
     template <typename EQUALS_COMPARER>
-    inline optional<size_t> Sequence<T>::IndexOf (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer) const
+    inline optional<size_t> Sequence<T>::IndexOf (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer) const
     {
-        return Private::IndexOf_<T, EQUALS_COMPARER> (*this, item, equalsComparer);
+        return Private::IndexOf_<T, EQUALS_COMPARER> (*this, item, forward<EQUALS_COMPARER> (equalsComparer));
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    inline optional<size_t> Sequence<T>::IndexOf (const Sequence& s, const EQUALS_COMPARER& equalsComparer) const
+    inline optional<size_t> Sequence<T>::IndexOf (const Sequence& s, EQUALS_COMPARER&& equalsComparer) const
     {
-        return Private::IndexOf_<T, EQUALS_COMPARER> (*this, s, equalsComparer);
+        return Private::IndexOf_<T, EQUALS_COMPARER> (*this, s, forward<EQUALS_COMPARER> (equalsComparer));
     }
     template <typename T>
     template <typename IGNORED>

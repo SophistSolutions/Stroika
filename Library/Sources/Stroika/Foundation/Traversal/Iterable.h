@@ -364,7 +364,7 @@ namespace Stroika::Foundation::Traversal {
          *
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool Contains (ArgByValueType<T> element, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
+        nonvirtual bool Contains (ArgByValueType<T> element, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
         /**
@@ -385,9 +385,9 @@ namespace Stroika::Foundation::Traversal {
          *
          */
         template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
-        static bool SetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{});
+        static bool SetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{});
         template <typename RHS_CONTAINER_TYPE = initializer_list<T>, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
-        nonvirtual bool SetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
+        nonvirtual bool SetEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
         /**
@@ -399,9 +399,9 @@ namespace Stroika::Foundation::Traversal {
          *      This algorithm is O(N^^3)
          */
         template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
-        static bool MultiSetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{});
+        static bool MultiSetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{});
         template <typename RHS_CONTAINER_TYPE = initializer_list<T>, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
-        nonvirtual bool MultiSetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
+        nonvirtual bool MultiSetEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
         /**
@@ -419,9 +419,9 @@ namespace Stroika::Foundation::Traversal {
          *        that to the new C++20 style soon anyhow... LGP 2020-05-03
          */
         template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> /*and Common::IsEqualsComparer<EQUALS_COMPARER> ()*/>* = nullptr>
-        static bool SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}, bool useIterableSize = false);
+        static bool SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}, bool useIterableSize = false);
         template <typename RHS_CONTAINER_TYPE = initializer_list<T>, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
-        nonvirtual bool SequentialEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}, bool useIterableSize = false) const;
+        nonvirtual bool SequentialEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}, bool useIterableSize = false) const;
 
     public:
         template <typename T_EQUALS_COMPARER = equal_to<T>>
@@ -639,7 +639,7 @@ namespace Stroika::Foundation::Traversal {
         template <typename RESULT_CONTAINER>
         nonvirtual RESULT_CONTAINER Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
         template <typename RESULT_CONTAINER>
-        nonvirtual RESULT_CONTAINER Where (const function<bool (ArgByValueType<T>)>& includeIfTrue, const RESULT_CONTAINER& emptyResult) const;
+        nonvirtual RESULT_CONTAINER Where (const function<bool (ArgByValueType<T>)>& includeIfTrue, RESULT_CONTAINER&& emptyResult) const;
 
     public:
         /**
@@ -657,9 +657,9 @@ namespace Stroika::Foundation::Traversal {
          *  @todo for now use builtin stl set to accumulate, but need flexability on where compare and maybe also redo with hash?
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual Iterable<T> Distinct (const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
+        nonvirtual Iterable<T> Distinct (EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
         template <typename RESULT, typename EQUALS_COMPARER = equal_to<RESULT>>
-        nonvirtual Iterable<RESULT> Distinct (const function<RESULT (ArgByValueType<T>)>& extractElt, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
+        nonvirtual Iterable<RESULT> Distinct (const function<RESULT (ArgByValueType<T>)>& extractElt, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
         /**
@@ -850,7 +850,7 @@ namespace Stroika::Foundation::Traversal {
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.orderby(v=vs.110).aspx
          */
         template <typename INORDER_COMPARER_TYPE = less<T>>
-        nonvirtual Iterable<T> OrderBy (const INORDER_COMPARER_TYPE& inorderComparer = INORDER_COMPARER_TYPE{}) const;
+        nonvirtual Iterable<T> OrderBy (INORDER_COMPARER_TYPE&& inorderComparer = INORDER_COMPARER_TYPE{}) const;
 
     public:
         /**

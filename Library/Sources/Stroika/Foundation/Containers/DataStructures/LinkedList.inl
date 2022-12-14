@@ -338,7 +338,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <typename FUNCTION>
-    inline void LinkedList<T>::Apply (FUNCTION doToElement) const
+    inline void LinkedList<T>::Apply (FUNCTION&& doToElement) const
     {
         AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
@@ -347,7 +347,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <typename FUNCTION>
-    inline auto LinkedList<T>::Find (FUNCTION doToElement) const -> UnderlyingIteratorRep
+    inline auto LinkedList<T>::Find (FUNCTION&& doToElement) const -> UnderlyingIteratorRep
     {
         AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         for (Link_* i = fHead_; i != nullptr; i = i->fNext) {

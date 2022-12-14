@@ -178,7 +178,7 @@ namespace Stroika::Foundation::Containers {
          * \brief Compares items with TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool Contains (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer = {}) const;
+        nonvirtual bool Contains (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer = {}) const;
 
     public:
         /**
@@ -236,7 +236,7 @@ namespace Stroika::Foundation::Containers {
          *   \note mutates container
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual void Remove (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer = {});
+        nonvirtual void Remove (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer = {});
         nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
 
     public:
@@ -252,9 +252,9 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool RemoveIf (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer = {});
-        template <typename PREDICATE>
-        nonvirtual bool RemoveIf (const PREDICATE& p);
+        nonvirtual bool RemoveIf (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer = {});
+        template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>* = nullptr>
+        nonvirtual bool RemoveIf (PREDICATE&& p);
 
     public:
         /**
@@ -272,9 +272,9 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual void RemoveAll ();
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual size_t RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, const EQUALS_COMPARER& equalsComparer = {});
+        nonvirtual size_t RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, EQUALS_COMPARER&& equalsComparer = {});
         template <typename ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
-        nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer = {});
+        nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& c, EQUALS_COMPARER&& equalsComparer = {});
         template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>* = nullptr>
         nonvirtual size_t RemoveAll (PREDICATE&& p);
 
@@ -301,7 +301,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual void erase (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer = {});
+        nonvirtual void erase (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer = {});
         nonvirtual Iterator<value_type> erase (const Iterator<value_type>& i);
 
     public:

@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename STL_CONTAINER_OF_T>
     template <typename FUNCTION>
-    void STLContainerWrapper<STL_CONTAINER_OF_T>::Apply (FUNCTION doToElement) const
+    void STLContainerWrapper<STL_CONTAINER_OF_T>::Apply (FUNCTION&& doToElement) const
     {
         AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         for (auto i = this->begin (); i != this->end (); ++i) {
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename STL_CONTAINER_OF_T>
     template <typename FUNCTION>
-    auto STLContainerWrapper<STL_CONTAINER_OF_T>::Find (FUNCTION doToElement) const -> const_iterator
+    auto STLContainerWrapper<STL_CONTAINER_OF_T>::Find (FUNCTION&& doToElement) const -> const_iterator
     {
         AssertExternallySynchronizedMutex::ReadLock readLock{*this};
         for (auto i = this->begin (); i != this->end (); ++i) {
@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename STL_CONTAINER_OF_T>
     template <typename FUNCTION>
-    auto STLContainerWrapper<STL_CONTAINER_OF_T>::Find (FUNCTION doToElement) -> iterator
+    auto STLContainerWrapper<STL_CONTAINER_OF_T>::Find (FUNCTION&& doToElement) -> iterator
     {
         Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{*this};
         for (auto i = this->begin (); i != this->end (); ++i) {
@@ -110,10 +110,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename STL_CONTAINER_OF_T>
     template <typename PREDICATE>
-    inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::FindIf (PREDICATE pred) const
+    inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::FindIf (PREDICATE&& pred) const
     {
         AssertExternallySynchronizedMutex::ReadLock readLock{*this};
-        return find_if (this->begin (), this->end (), pred) != this->end ();
+        return find_if (this->begin (), this->end (), forward<PREDICATE> (pred)) != this->end ();
     }
     template <typename STL_CONTAINER_OF_T>
     inline void STLContainerWrapper<STL_CONTAINER_OF_T>::Invariant () const noexcept

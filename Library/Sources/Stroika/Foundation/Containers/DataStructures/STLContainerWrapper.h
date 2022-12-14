@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Always: O(N)
          */
         template <typename FUNCTION>
-        nonvirtual void Apply (FUNCTION doToElement) const;
+        nonvirtual void Apply (FUNCTION&& doToElement) const;
 
     public:
         /**
@@ -100,13 +100,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Typical: O(N), but can be less if systematically finding entries near start of container
          */
         template <typename FUNCTION>
-        nonvirtual iterator Find (FUNCTION doToElement);
+        nonvirtual iterator Find (FUNCTION&& doToElement);
         template <typename FUNCTION>
-        nonvirtual const_iterator Find (FUNCTION doToElement) const;
+        nonvirtual const_iterator Find (FUNCTION&& doToElement) const;
 
     public:
         template <typename PREDICATE>
-        nonvirtual bool FindIf (PREDICATE pred) const;
+        nonvirtual bool FindIf (PREDICATE&& pred) const;
 
     public:
         nonvirtual void Invariant () const noexcept;

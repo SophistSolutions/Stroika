@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Always: O(N)
          */
         template <typename FUNCTION>
-        nonvirtual void Apply (FUNCTION doToElement) const;
+        nonvirtual void Apply (FUNCTION&& doToElement) const;
 
     public:
         /**
@@ -164,7 +164,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Typical: O(N), but can be less if systematically finding entries near start of container
          */
         template <typename FUNCTION>
-        nonvirtual UnderlyingIteratorRep Find (FUNCTION doToElement) const;
+        nonvirtual UnderlyingIteratorRep Find (FUNCTION&& doToElement) const;
 
     public:
         /**
@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Note - does nothing if item not found.
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual void Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
+        nonvirtual void Remove (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer = {});
 
     public:
         /**
