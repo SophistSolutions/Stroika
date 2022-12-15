@@ -1306,9 +1306,12 @@ namespace {
 namespace {
     namespace JSONTests_ {
         /*
+         *  Tests based on https://stroika.atlassian.net/browse/STK-781
+         *  and complaints on reddit when I posted there without any benchmark test results.
+         *
          *  Test lifted/comparable to 
          *      https://www.thousandeyes.com/blog/efficiency-comparison-c-json-libraries#:~:text=Based%20on%20the%20results%20of,for%20both%20parsing%20and%20serializing.
-         *  Got exact code and test cases from:
+         *  Got exact code (test logic) and test cases from:
          *      https://github.com/salessandri/json-bechmarks
          */
 #if __has_include("AltJSONImpls2BenchMark/nlohmann/json.hpp")
@@ -1367,8 +1370,9 @@ namespace {
             unsigned int nTimes = max<unsigned int> (1u, static_cast<unsigned int> (sTimeMultiplier_));
 
             using TEST_FUN_TYPE           = function<void (const string&, unsigned int)>;
-            static const auto kTestCases_ = vector<tuple<TEST_FUN_TYPE, string>>{{make_tuple (DoStroikaJSONParse_, "stroika-json-parser"),
+            static const auto kTestCases_ = vector<tuple<TEST_FUN_TYPE, string>>{{make_tuple (DoStroikaJSONParse_, "stroika-json-parser")
 #if __has_include("AltJSONImpls2BenchMark/nlohmann/json.hpp")
+                                                                                      ,
                                                                                   make_tuple (DoStroikaJSONParse_nlohmann_json, "nlohmann_json-parser")
 #endif
             }};
