@@ -223,6 +223,52 @@ VariantValue::VariantValue (Sequence<VariantValue>&& val)
 {
 }
 
+#if __has_include("boost/json/value.hpp")
+VariantValue::VariantValue (const boost::json::value& val)
+{
+    using namespace boost;
+    switch (val.kind ()) {
+        case json::kind::null:
+            break;
+        case json::kind::bool_:
+            *this = val.as_bool ();
+            break;
+        case json::kind::double_:
+            *this = val.as_double ();
+            break;
+        case json::kind::int64:
+            *this = val.as_int64 ();
+            break;
+        case json::kind::uint64:
+            *this = val.as_uint64 ();
+            break;
+        case json::kind::string: {
+            auto bs = val.as_string ();
+            *this = String::FromUTF8 (bs.begin (), bs.end ()); // I THINk this is defined to be in UTF8?
+        } break;
+        case json::kind::array: {
+            auto                                                   a = val.as_array ();
+            Containers::Concrete::Sequence_stdvector<VariantValue> r;
+            r.reserve (a.size ());
+            for (const boost::json::value& i : a) {
+                r += VariantValue{i};
+            }
+            *this = r;
+        } break;
+        case json::kind::object: {
+            auto                          o = val.as_object ();
+            Mapping<String, VariantValue> r;
+            for (const auto& i : o) {
+                r.Add (String::FromUTF8 (i.key ().begin (), i.key ().end ()), VariantValue{i.value ()});
+            }
+            *this = r;
+        } break;
+        default:
+            AssertNotReached ();
+    }
+}
+#endif
+
 bool VariantValue::empty () const
 {
     if (fVal_ == nullptr) {

@@ -10,6 +10,10 @@
 #include <map>
 #include <vector>
 
+#if __has_include("boost/json/value.hpp")
+#include <boost/json/value.hpp>
+#endif
+
 #include "../Characters/String.h"
 #include "../Configuration/Common.h"
 #include "../Configuration/Enumeration.h"
@@ -229,6 +233,9 @@ namespace Stroika::Foundation::DataExchange {
         VariantValue (VariantValue&& src) noexcept;
         template <typename T>
         VariantValue (const optional<T>& val);
+#if __has_include("boost/json/value.hpp")
+        VariantValue (const boost::json::value& val);
+#endif
 
     private:
         VariantValue (const string& val) = delete;
