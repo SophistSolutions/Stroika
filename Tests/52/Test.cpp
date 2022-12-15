@@ -1297,6 +1297,12 @@ namespace {
 }
 #endif
 
+// NOTE - to include this test case - run the script DownloadAltJSON.sh (in folder with this test case)
+// and it will populate this directory and run this test.
+#if __has_include("AltJSONImpls2BenchMark/nlohmann/json.hpp")
+#include "AltJSONImpls2BenchMark/nlohmann/json.hpp"
+#endif
+
 namespace {
     namespace JSONTests_ {
         /*
@@ -1305,14 +1311,22 @@ namespace {
          *  Got exact code and test cases from:
          *      https://github.com/salessandri/json-bechmarks
          */
-
+#if __has_include("AltJSONImpls2BenchMark/nlohmann/json.hpp")
+        void DoStroikaJSONParse_nlohmann_json (const string& p, unsigned int nTimes)
+        {
+            using json = nlohmann::json;
+            for (unsigned int tryNum = 0; tryNum < nTimes; ++tryNum) {
+                auto ex1 = json::parse (p);
+            }
+        }
+#endif
         void DoStroikaJSONParse_ (const string& p, unsigned int nTimes)
         {
             using namespace DataExchange;
             Variant::JSON::Reader reader;
             // @todo cleanup this code
-            const byte*           s = reinterpret_cast<const byte*> (p.c_str ());
-            const byte*           e = s + p.length ();
+            const byte* s = reinterpret_cast<const byte*> (p.c_str ());
+            const byte* e = s + p.length ();
             for (unsigned int tryNum = 0; tryNum < nTimes; ++tryNum) {
                 VariantValue output{reader.Read (Streams::ExternallyOwnedMemoryInputStream<byte>::New (s, e))};
                 //VariantValue          output{reader.Read (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (p), end(p)))};
@@ -1351,11 +1365,20 @@ namespace {
         {
             using filesystem::path;
             unsigned int nTimes = max<unsigned int> (1u, static_cast<unsigned int> (sTimeMultiplier_));
-            DoJSONParse_ (path{"52"} / "JSONTestData" / "small-dict.json", nTimes, DoStroikaJSONParse_, "stroika-json-parser");
-            if constexpr (not qDebug) {
-                // don't bother testing these except in release builds - too slow
-                DoJSONParse_ (path{"52"} / "JSONTestData" / "medium-dict.json", nTimes, DoStroikaJSONParse_, "stroika-json-parser");
-                DoJSONParse_ (path{"52"} / "JSONTestData" / "large-dict.json", nTimes, DoStroikaJSONParse_, "stroika-json-parser");
+
+            using TEST_FUN_TYPE           = function<void (const string&, unsigned int)>;
+            static const auto kTestCases_ = vector<tuple<TEST_FUN_TYPE, string>>{{make_tuple (DoStroikaJSONParse_, "stroika-json-parser"),
+#if __has_include("AltJSONImpls2BenchMark/nlohmann/json.hpp")
+                                                                                  make_tuple (DoStroikaJSONParse_nlohmann_json, "nlohmann_json-parser")
+#endif
+            }};
+            for (auto testCase : kTestCases_) {
+                DoJSONParse_ (path{"52"} / "JSONTestData" / "small-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
+                if constexpr (not qDebug) {
+                    // don't bother testing these except in release builds - too slow
+                    DoJSONParse_ (path{"52"} / "JSONTestData" / "medium-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
+                    DoJSONParse_ (path{"52"} / "JSONTestData" / "large-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
+                }
             }
         }
 
@@ -1377,7 +1400,6 @@ namespace {
 
         Set<String> failedTests;
 
-        goto Skippy;
         Tester (
             L"Test of simple locking strategies (mutex v shared_ptr copy)",
             Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
@@ -1640,7 +1662,6 @@ namespace {
             Debug::IsRunningUnderValgrind () ? 2 : 64,
             0.1,
             &failedTests);
-    Skippy:
         Tester (
             L"Test_Optional_",
             Test_Optional_::DoRunPerfTest, L"Test_Optional_",
