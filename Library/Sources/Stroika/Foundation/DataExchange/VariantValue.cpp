@@ -630,8 +630,8 @@ boost::json::value VariantValue::As () const
         }
         case Type::eArray: {
             using Containers::Sequence;
-            Sequence<VariantValue> srcArray = As < Sequence<VariantValue>> ();
-            json::array result;
+            Sequence<VariantValue> srcArray = As<Sequence<VariantValue>> ();
+            json::array            result;
             result.reserve (srcArray.size ());
             for (const auto& i : srcArray) {
                 result.push_back (i.As<json::value> ());
@@ -641,9 +641,9 @@ boost::json::value VariantValue::As () const
         case Type::eMap: {
             using Containers::Mapping;
             Mapping<String, VariantValue> srcMap = As<Mapping<String, VariantValue>> ();
-            json::object            result;
+            json::object                  result;
             for (const auto& i : srcMap) {
-                result.insert (json::key_value_pair{i.fKey.As<String> ().AsUTF8 ().c_str (), i.fValue.As < json::value> ()});
+                result.insert (json::key_value_pair{i.fKey.As<String> ().AsUTF8 ().c_str (), i.fValue.As<json::value> ()});
             }
             return result;
         }
