@@ -230,8 +230,7 @@ namespace {
                     lf      = eColon;
                 }
                 else if (lf == eValue) [[likely]] {
-                    Assert (curName.has_value ());
-                    result.Add (*curName, Reader_value_ (in));
+                    result.Add (Memory::ValueOf (curName), Reader_value_ (in));
                     curName = nullopt;
                     lf      = eComma;
                 }

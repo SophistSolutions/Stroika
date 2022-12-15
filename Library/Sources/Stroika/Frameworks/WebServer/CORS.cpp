@@ -6,7 +6,6 @@
 #include "../../Foundation/Characters/StringBuilder.h"
 #include "../../Foundation/Characters/ToString.h"
 
-
 #include "CORS.h"
 
 using namespace Stroika::Foundation;
@@ -14,7 +13,6 @@ using namespace Stroika::Foundation::Characters;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
-
 
 /*
  ********************************************************************************
