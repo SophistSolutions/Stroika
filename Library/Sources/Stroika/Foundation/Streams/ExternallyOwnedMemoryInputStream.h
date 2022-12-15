@@ -28,7 +28,7 @@
 namespace Stroika::Foundation::Streams {
 
     /**
-     *  \brief  ExternallyOwnedMemoryInputStream takes a sequence of ELEMENT_TYPE and exposes it as a InputStream<ELEMENT_TYPE>
+     *  \brief  ExternallyOwnedMemoryInputStream takes a (memory contiguous) sequence of ELEMENT_TYPE objects and exposes it as a InputStream<ELEMENT_TYPE>
      *
      *  ExternallyOwnedMemoryInputStream is a subtype of InputStream<ELEMENT_TYPE> but the
      *  creator must gaurantee, so long as the memory pointed to in the argument has a
@@ -64,8 +64,10 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /**
-         *  \note   The CTOR with ELEMENT_RANDOM_ACCESS_ITERATOR is safe because you can (always take diff between two
+         *  \note   The CTOR with random_access_iterator ELEMENT_ITERATOR is safe because you can (always take diff between two
          *          random access iterators and (for now convert to pointers, but that may not be safe????).
+         * 
+         *  \todo Support RANGES - since thats REALLY what this takes as argument (stl range not Stroika range)
          *
          *  \par Example Usage
          *      \code
@@ -76,18 +78,25 @@ namespace Stroika::Foundation::Streams {
          *      \code
          *          CallExpectingBinaryInputStreamPtr (ExternallyOwnedMemoryInputStream<byte>::New (begin (buf), begin (buf) + nBytesRead))
          *      \endcode
+         * 
+         *  \note Though generally for these constructors, the pointer types of the arguments must match ELEMENT_TYPE, we have a
+         *        few exceptions allowed, for common C++ backward compatability.
+         * 
+         *          if ELEMENT_TYPE==byte:
+         *              allow iterator/pointer of uint8_t
+         *              allow iterator/pointer of char
          */
         static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-        static Ptr New (const uint8_t* start, const uint8_t* end)
-            requires is_same_v<ELEMENT_TYPE, byte>
-        {
-            return New (reinterpret_cast<const byte*> (start), reinterpret_cast<const std::byte*> (end));
-        }
-        template <typename ELEMENT_RANDOM_ACCESS_ITERATOR>
-        static Ptr New (ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end);
+        template <random_access_iterator ELEMENT_ITERATOR>
+        static Ptr New (ELEMENT_ITERATOR start, ELEMENT_ITERATOR end)
+            requires is_same_v<typename ELEMENT_ITERATOR::value_type, ELEMENT_TYPE> or
+                     (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>);
         static Ptr New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-        template <typename ELEMENT_RANDOM_ACCESS_ITERATOR>
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end);
+        template <random_access_iterator ELEMENT_ITERATOR>
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, ELEMENT_ITERATOR start, ELEMENT_ITERATOR end)
+            requires is_same_v<typename ELEMENT_ITERATOR::value_type, ELEMENT_TYPE> or (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>);
+        static Ptr New (const uint8_t* start, const uint8_t* end)
+            requires is_same_v<ELEMENT_TYPE, byte>;
 
     private:
         class Rep_;

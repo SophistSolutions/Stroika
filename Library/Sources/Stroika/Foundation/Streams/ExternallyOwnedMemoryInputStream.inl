@@ -86,13 +86,14 @@ namespace Stroika::Foundation::Streams {
         {
             Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
+            static const auto kRangeException_ = range_error{"seek"};
             switch (whence) {
                 case Whence::eFromStart: {
                     if (offset < 0) [[unlikely]] {
-                        Execution::Throw (range_error{"seek"});
+                        Execution::Throw (kRangeException_);
                     }
                     if (offset > (fEnd_ - fStart_)) [[unlikely]] {
-                        Execution::Throw (range_error{"seek"});
+                        Execution::Throw (kRangeException_);
                     }
                     fCursor_ = fStart_ + offset;
                 } break;
@@ -100,20 +101,20 @@ namespace Stroika::Foundation::Streams {
                     Streams::SeekOffsetType       curOffset = fCursor_ - fStart_;
                     Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                     if (newOffset < 0) [[unlikely]] {
-                        Execution::Throw (range_error{"seek"});
+                        Execution::Throw (kRangeException_);
                     }
                     if (newOffset > (fEnd_ - fStart_)) [[unlikely]] {
-                        Execution::Throw (range_error{"seek"});
+                        Execution::Throw (kRangeException_);
                     }
                     fCursor_ = fStart_ + newOffset;
                 } break;
                 case Whence::eFromEnd: {
                     Streams::SignedSeekOffsetType newOffset = (fEnd_ - fStart_) + offset;
                     if (newOffset < 0) [[unlikely]] {
-                        Execution::Throw (range_error{"seek"});
+                        Execution::Throw (kRangeException_);
                     }
                     if (newOffset > (fEnd_ - fStart_)) [[unlikely]] {
-                        Execution::Throw (range_error{"seek"});
+                        Execution::Throw (kRangeException_);
                     }
                     fCursor_ = fStart_ + newOffset;
                 } break;
@@ -140,10 +141,19 @@ namespace Stroika::Foundation::Streams {
         return inherited::_mkPtr (make_shared<Rep_> (start, end));
     }
     template <typename ELEMENT_TYPE>
-    template <typename ELEMENT_RANDOM_ACCESS_ITERATOR>
-    inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end) -> Ptr
+    template <random_access_iterator ELEMENT_ITERATOR>
+    inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (ELEMENT_ITERATOR start, ELEMENT_ITERATOR end) -> Ptr
+        requires is_same_v<typename ELEMENT_ITERATOR::value_type, ELEMENT_TYPE> or
+                 (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>)
     {
-        return New (static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start)), static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start) + (end - start)));
+        // note, because its not LEGAL to dereference end (and visual studio checks) - even though we dont REALLY dereference and use value -
+        // just compute start and add end-start
+        if constexpr (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>) {
+            return New (reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (start)), reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (start) + (end - start)));
+        }
+        else {
+            return New (static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start)), static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start) + (end - start)));
+        }
     }
     template <typename ELEMENT_TYPE>
     inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
@@ -159,8 +169,10 @@ namespace Stroika::Foundation::Streams {
         }
     }
     template <typename ELEMENT_TYPE>
-    template <typename ELEMENT_RANDOM_ACCESS_ITERATOR>
-    inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end) -> Ptr
+    template <random_access_iterator ELEMENT_ITERATOR>
+    inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, ELEMENT_ITERATOR start, ELEMENT_ITERATOR end) -> Ptr
+        requires is_same_v<typename ELEMENT_ITERATOR::value_type, ELEMENT_TYPE> or
+                 (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>)
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
@@ -171,6 +183,12 @@ namespace Stroika::Foundation::Streams {
                 RequireNotReached ();
                 return nullptr;
         }
+    }
+    template <typename ELEMENT_TYPE>
+    auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (const uint8_t* start, const uint8_t* end) -> Ptr
+        requires is_same_v<ELEMENT_TYPE, byte>
+    {
+        return New (reinterpret_cast<const byte*> (start), reinterpret_cast<const std::byte*> (end));
     }
 
 }

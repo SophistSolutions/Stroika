@@ -1307,7 +1307,7 @@ namespace {
     namespace JSONTests_ {
         /*
          *  Tests based on https://stroika.atlassian.net/browse/STK-781
-         *  and complaints on reddit when I posted there without any benchmark test results.
+         *  and complaints on reddit (2022-12-13) when I posted there without any benchmark test results.
          *
          *  Test lifted/comparable to 
          *      https://www.thousandeyes.com/blog/efficiency-comparison-c-json-libraries#:~:text=Based%20on%20the%20results%20of,for%20both%20parsing%20and%20serializing.
@@ -1327,12 +1327,8 @@ namespace {
         {
             using namespace DataExchange;
             Variant::JSON::Reader reader;
-            // @todo cleanup this code
-            const byte* s = reinterpret_cast<const byte*> (p.c_str ());
-            const byte* e = s + p.length ();
             for (unsigned int tryNum = 0; tryNum < nTimes; ++tryNum) {
-                VariantValue output{reader.Read (Streams::ExternallyOwnedMemoryInputStream<byte>::New (s, e))};
-                //VariantValue          output{reader.Read (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (p), end(p)))};
+                VariantValue          output{reader.Read (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (p), end(p)))};
             }
         }
         void DoJSONParse_ (const filesystem::path& p, unsigned int nTimes, const function<void (const string&, unsigned int)>& function2Test, const string& testName)
