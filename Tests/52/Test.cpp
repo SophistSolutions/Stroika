@@ -46,6 +46,7 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Math/Statistics.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
@@ -1309,6 +1310,7 @@ namespace {
         {
             using namespace DataExchange;
             Variant::JSON::Reader reader;
+            // @todo cleanup this code
             const byte*           s = reinterpret_cast<const byte*> (p.c_str ());
             const byte*           e = s + p.length ();
             for (unsigned int tryNum = 0; tryNum < nTimes; ++tryNum) {
@@ -1321,18 +1323,25 @@ namespace {
             // ape the behavior of https://github.com/salessandri/json-bechmarks/blob/master/jsonspirit-map-serializer-testrunner.cpp
             // but structured so it can be re-used
             GetOutStream_ () << testName << ": " << p << endl;
-            // this crap is in the spirit of the original regressiontest code but not part of the test really, so redo with
-            // Stroika (@todo) - and still use string object, cuz that may help some apis
-            ifstream inputfile;
-            inputfile.exceptions (ifstream::badbit | ifstream::failbit);
-            inputfile.open (p);
-            std::string to_parse;
-            inputfile.seekg (0, std::ios::end);
-            to_parse.reserve (inputfile.tellg ());
-            inputfile.seekg (0, std::ios::beg);
-            to_parse.assign ((std::istreambuf_iterator<char> (inputfile)), std::istreambuf_iterator<char> ());
+            std::string data2ParseAsString = [&p] () {
+                if constexpr (true) {
+                    return IO::FileSystem::FileInputStream::New (p).ReadAll ().As<string> ();
+                }
+                else {
+                    // this crap is in the spirit of the original regressiontest code but not part of the test really, so redo with
+                    string   to_parse;
+                    ifstream inputfile;
+                    inputfile.exceptions (ifstream::badbit | ifstream::failbit);
+                    inputfile.open (p);
+                    inputfile.seekg (0, std::ios::end);
+                    to_parse.reserve (inputfile.tellg ());
+                    inputfile.seekg (0, std::ios::beg);
+                    to_parse.assign ((std::istreambuf_iterator<char> (inputfile)), std::istreambuf_iterator<char> ());
+                    return to_parse;
+                }
+            }();
             Time::DurationSecondsType start = Time::GetTickCount ();
-            function2Test (to_parse, nTimes);
+            function2Test (data2ParseAsString, nTimes);
             Time::DurationSecondsType took = Time::GetTickCount () - start;
             GetOutStream_ () << "\t"
                              << "DETAILS"
