@@ -5,6 +5,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <array>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <mutex>
@@ -1161,7 +1162,7 @@ namespace {
         ScanDetails_ doRead_ (const InputStream<byte>::Ptr in)
         {
             using namespace DataExchange;
-            VariantValue                     o{Variant::JSON::Reader ().Read (in)};
+            VariantValue                     o{Variant::JSON::Reader{}.Read (in)};
             static const ObjectVariantMapper kMapper_ = GetPersistenceDetailsMapper_ ();
             return kMapper_.ToObject<ScanDetails_> (o);
         }
@@ -1296,6 +1297,64 @@ namespace {
 #endif
 
 namespace {
+    namespace JSONTests_ {
+        /*
+         *  Test lifted/comparable to 
+         *      https://www.thousandeyes.com/blog/efficiency-comparison-c-json-libraries#:~:text=Based%20on%20the%20results%20of,for%20both%20parsing%20and%20serializing.
+         *  Got exact code and test cases from:
+         *      https://github.com/salessandri/json-bechmarks
+         */
+
+        void DoStroikaJSONParse_ (const string& p, unsigned int nTimes)
+        {
+            using namespace DataExchange;
+            Variant::JSON::Reader reader;
+            const byte*           s = reinterpret_cast<const byte*> (p.c_str ());
+            const byte*           e = s + p.length ();
+            for (unsigned int tryNum = 0; tryNum < nTimes; ++tryNum) {
+                VariantValue output{reader.Read (Streams::ExternallyOwnedMemoryInputStream<byte>::New (s, e))};
+                //VariantValue          output{reader.Read (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (p), end(p)))};
+            }
+        }
+        void DoJSONParse_ (const filesystem::path& p, unsigned int nTimes, const function<void (const string&, unsigned int)>& function2Test, const string& testName)
+        {
+            // ape the behavior of https://github.com/salessandri/json-bechmarks/blob/master/jsonspirit-map-serializer-testrunner.cpp
+            // but structured so it can be re-used
+            GetOutStream_ () << testName << ": " << p << endl;
+            // this crap is in the spirit of the original regressiontest code but not part of the test really, so redo with
+            // Stroika (@todo) - and still use string object, cuz that may help some apis
+            ifstream inputfile;
+            inputfile.exceptions (ifstream::badbit | ifstream::failbit);
+            inputfile.open (p);
+            std::string to_parse;
+            inputfile.seekg (0, std::ios::end);
+            to_parse.reserve (inputfile.tellg ());
+            inputfile.seekg (0, std::ios::beg);
+            to_parse.assign ((std::istreambuf_iterator<char> (inputfile)), std::istreambuf_iterator<char> ());
+            Time::DurationSecondsType start = Time::GetTickCount ();
+            function2Test (to_parse, nTimes);
+            Time::DurationSecondsType took = Time::GetTickCount () - start;
+            GetOutStream_ () << "\t"
+                             << "DETAILS"
+                             << "\t\t\t" << took << " seconds" << endl;
+            GetOutStream_ () << endl;
+        }
+        void Run ()
+        {
+            using filesystem::path;
+            unsigned int nTimes = max<unsigned int> (1u, static_cast<unsigned int> (sTimeMultiplier_));
+            DoJSONParse_ (path{"52"} / "JSONTestData" / "small-dict.json", nTimes, DoStroikaJSONParse_, "stroika-json-parser");
+            if constexpr (not qDebug) {
+                // don't bother testing these except in release builds - too slow
+                DoJSONParse_ (path{"52"} / "JSONTestData" / "medium-dict.json", nTimes, DoStroikaJSONParse_, "stroika-json-parser");
+                DoJSONParse_ (path{"52"} / "JSONTestData" / "large-dict.json", nTimes, DoStroikaJSONParse_, "stroika-json-parser");
+            }
+        }
+
+    }
+}
+
+namespace {
     void RunPerformanceTests_ ()
     {
         DateTime startedAt = DateTime::Now ();
@@ -1309,6 +1368,8 @@ namespace {
         }
 
         Set<String> failedTests;
+
+        goto Skippy;
         Tester (
             L"Test of simple locking strategies (mutex v shared_ptr copy)",
             Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
@@ -1571,6 +1632,7 @@ namespace {
             Debug::IsRunningUnderValgrind () ? 2 : 64,
             0.1,
             &failedTests);
+    Skippy:
         Tester (
             L"Test_Optional_",
             Test_Optional_::DoRunPerfTest, L"Test_Optional_",
@@ -1596,8 +1658,14 @@ namespace {
             &failedTests);
 #endif
 
+        JSONTests_::Run ();
+
         GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).PrettyPrint ().AsNarrowSDKString () << "]]]" << endl
                          << endl;
+
+        // extra tests
+        {
+        }
 
         if (not failedTests.empty ()) {
             String listAsMsg;
