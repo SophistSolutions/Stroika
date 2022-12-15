@@ -78,8 +78,8 @@ namespace Stroika::Foundation::Streams {
          *      \endcode
          */
         static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-        template <typename T = ELEMENT_TYPE, enable_if_t<is_same_v<T, byte>>* = nullptr>
         static Ptr New (const uint8_t* start, const uint8_t* end)
+            requires is_same_v<ELEMENT_TYPE, byte>
         {
             return New (reinterpret_cast<const byte*> (start), reinterpret_cast<const std::byte*> (end));
         }
