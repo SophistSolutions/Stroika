@@ -1303,6 +1303,9 @@ namespace {
 #include "AltJSONImpls2BenchMark/nlohmann/json.hpp"
 #endif
 
+#if __has_include("boost/json.hpp")
+#include <boost/json.hpp>
+#endif
 namespace {
     namespace JSONTests_ {
         /*
@@ -1320,6 +1323,16 @@ namespace {
             using json = nlohmann::json;
             for (unsigned int tryNum = 0; tryNum < nTimes; ++tryNum) {
                 auto ex1 = json::parse (p);
+            }
+        }
+#endif
+#if __has_include("boost/json.hpp")
+        void DoStroikaJSONParse_boost_json (const string& p, unsigned int nTimes)
+        {
+            using namespace boost::json;
+            for (unsigned int tryNum = 0; tryNum < nTimes; ++tryNum) {
+                std::error_code ec;
+                auto            ex1 = parse (p, ec);
             }
         }
 #endif
@@ -1371,6 +1384,10 @@ namespace {
 #if __has_include("AltJSONImpls2BenchMark/nlohmann/json.hpp")
                                                                                       ,
                                                                                   make_tuple (DoStroikaJSONParse_nlohmann_json, "nlohmann_json-parser")
+#endif
+#if __has_include("boost/json.hpp")
+                                                                                      ,
+                                                                                  make_tuple (DoStroikaJSONParse_boost_json, "boost_json-parser")
 #endif
             }};
             path jsonTestRoot = path{"."} / "52" / "JSONTestData";
