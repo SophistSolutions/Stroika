@@ -308,6 +308,7 @@ namespace Stroika::Foundation::DataExchange {
          *          o   Sequence<VariantValue>
          *          o   map<wstring, VariantValue>
          *          o   vector<VariantValue>
+         *          o   boost::json::value  (iff __has_include("boost/json/value.hpp"))
          *
          *  \note   About As<String> () and As<wstring> ()
          *          Conversion to these types is ALWAYS supported, no matter what the source type.

@@ -244,7 +244,7 @@ VariantValue::VariantValue (const boost::json::value& val)
             break;
         case json::kind::string: {
             auto bs = val.as_string ();
-            *this = String::FromUTF8 (bs.begin (), bs.end ()); // I THINk this is defined to be in UTF8?
+            *this   = String::FromUTF8 (bs.begin (), bs.end ()); // I THINk this is defined to be in UTF8?
         } break;
         case json::kind::array: {
             auto                                                   a = val.as_array ();
@@ -593,6 +593,65 @@ DateTime VariantValue::As () const
         }
     }
 }
+
+#if __has_include("boost/json/value.hpp")
+template <>
+boost::json::value VariantValue::As () const
+{
+    using namespace boost;
+    if (fVal_ == nullptr) {
+        return json::value{nullptr};
+    }
+    switch (fVal_->GetType ()) {
+        case Type::eNull: {
+            return json::value{nullptr};
+        }
+        case Type::eBoolean: {
+            return As<bool> ();
+        }
+        case Type::eString: {
+            // I think boost uses / expects UTF8?
+            return As<String> ().AsUTF8 ().c_str ();
+        }
+        case Type::eInteger: {
+            return As<IntegerType_> ();
+        }
+        case Type::eUnsignedInteger: {
+            return As<UnsignedIntegerType_> ();
+        }
+        case Type::eFloat: {
+            return static_cast<double> (As<FloatType_> ());
+        }
+        case Type::eBLOB:
+        case Type::eDate:
+        case Type::eDateTime: {
+            // not a boost::json type, so convert to string
+            return As<String> ().AsASCII ().c_str ();
+        }
+        case Type::eArray: {
+            using Containers::Sequence;
+            Sequence<VariantValue> srcArray = As < Sequence<VariantValue>> ();
+            json::array result;
+            result.reserve (srcArray.size ());
+            for (const auto& i : srcArray) {
+                result.push_back (i.As<json::value> ());
+            }
+            return result;
+        }
+        case Type::eMap: {
+            using Containers::Mapping;
+            Mapping<String, VariantValue> srcMap = As<Mapping<String, VariantValue>> ();
+            json::object            result;
+            for (const auto& i : srcMap) {
+                result.insert (json::key_value_pair{i.fKey.As<String> ().AsUTF8 ().c_str (), i.fValue.As < json::value> ()});
+            }
+            return result;
+        }
+        default:
+            AssertNotReached ();
+    }
+}
+#endif
 
 String VariantValue::AsString_ () const
 {
