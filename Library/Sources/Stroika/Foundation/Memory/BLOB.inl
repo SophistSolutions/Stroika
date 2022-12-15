@@ -247,6 +247,24 @@ namespace Stroika::Foundation::Memory {
         into->assign (reinterpret_cast<const uint8_t*> (tmp.first), reinterpret_cast<const uint8_t*> (tmp.second));
     }
     template <>
+    inline void BLOB::As (string* into) const
+    {
+        RequireNotNull (into);
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        pair<const byte*, const byte*>                     tmp = fRep_->GetBounds ();
+        Assert (tmp.first <= tmp.second);
+        into->clear ();
+        into->append (reinterpret_cast<const char*> (tmp.first), reinterpret_cast<const char*> (tmp.second));
+        Ensure (into->size () == static_cast<size_t> (tmp.second - tmp.first));
+    }
+    template <>
+    inline string BLOB::As () const
+    {
+        string r;
+        As (&r);
+        return r;
+    }
+    template <>
     inline void BLOB::As (pair<const byte*, const byte*>* into) const
     {
         RequireNotNull (into);

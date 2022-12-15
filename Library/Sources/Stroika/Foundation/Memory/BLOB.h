@@ -240,6 +240,7 @@ namespace Stroika::Foundation::Memory {
          *          o   pair<const byte*, const byte*>
          *          o   pair<const uint8_t*, const uint8_t*>
          *          o   Streams::InputStream<byte>::Ptr
+         *          o   string      (bytes as characters - note this MAY include NUL-bytes - https://stackoverflow.com/questions/2845769/can-a-stdstring-contain-embedded-nulls)
          *          o   any T where is_trivially_copyable
          */
         template <typename T>
