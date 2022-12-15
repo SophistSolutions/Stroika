@@ -1320,15 +1320,14 @@ namespace {
         }
         void DoJSONParse_ (const filesystem::path& p, unsigned int nTimes, const function<void (const string&, unsigned int)>& function2Test, const string& testName)
         {
-            // ape the behavior of https://github.com/salessandri/json-bechmarks/blob/master/jsonspirit-map-serializer-testrunner.cpp
-            // but structured so it can be re-used
             GetOutStream_ () << testName << ": " << p << endl;
             std::string data2ParseAsString = [&p] () {
                 if constexpr (true) {
+                    // write the same thing in a simpler stroika-based style
                     return IO::FileSystem::FileInputStream::New (p).ReadAll ().As<string> ();
                 }
                 else {
-                    // this crap is in the spirit of the original regressiontest code but not part of the test really, so redo with
+                    // ape the behavior of https://github.com/salessandri/json-bechmarks/blob/master/jsonspirit-map-serializer-testrunner.cpp
                     string   to_parse;
                     ifstream inputfile;
                     inputfile.exceptions (ifstream::badbit | ifstream::failbit);
