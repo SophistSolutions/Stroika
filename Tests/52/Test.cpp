@@ -1329,7 +1329,7 @@ namespace {
             using namespace Streams;
             Variant::JSON::Reader reader;
             for (unsigned int tryNum = 0; tryNum < nTimes; ++tryNum) {
-                VariantValue          output{reader.Read (ExternallyOwnedMemoryInputStream<byte>::New (begin (p), end(p)))};
+                VariantValue output{reader.Read (ExternallyOwnedMemoryInputStream<byte>::New (begin (p), end (p)))};
             }
         }
         void DoJSONParse_ (const filesystem::path& p, unsigned int nTimes, const function<void (const string&, unsigned int)>& function2Test, const string& testName)
@@ -1373,12 +1373,18 @@ namespace {
                                                                                   make_tuple (DoStroikaJSONParse_nlohmann_json, "nlohmann_json-parser")
 #endif
             }};
+            path jsonTestRoot = path{"."} / "52" / "JSONTestData";
+            // hack a bit to find jsonTestRoot, since sometimes run from different places; no need to do good/formal job here
+            // since this is for a rarely used test suite
+            if (not filesystem::exists (jsonTestRoot)) {
+                jsonTestRoot = path{"."} / "Tests" / "52" / "JSONTestData";
+            }
             for (auto testCase : kTestCases_) {
-                DoJSONParse_ (path{"52"} / "JSONTestData" / "small-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
+                DoJSONParse_ (jsonTestRoot / "small-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
                 if constexpr (not qDebug) {
                     // don't bother testing these except in release builds - too slow
-                    DoJSONParse_ (path{"52"} / "JSONTestData" / "medium-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
-                    DoJSONParse_ (path{"52"} / "JSONTestData" / "large-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
+                    DoJSONParse_ (jsonTestRoot / "medium-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
+                    DoJSONParse_ (jsonTestRoot / "large-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
                 }
             }
         }
