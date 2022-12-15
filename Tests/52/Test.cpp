@@ -1326,9 +1326,10 @@ namespace {
         void DoStroikaJSONParse_ (const string& p, unsigned int nTimes)
         {
             using namespace DataExchange;
+            using namespace Streams;
             Variant::JSON::Reader reader;
             for (unsigned int tryNum = 0; tryNum < nTimes; ++tryNum) {
-                VariantValue          output{reader.Read (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (p), end(p)))};
+                VariantValue          output{reader.Read (ExternallyOwnedMemoryInputStream<byte>::New (begin (p), end(p)))};
             }
         }
         void DoJSONParse_ (const filesystem::path& p, unsigned int nTimes, const function<void (const string&, unsigned int)>& function2Test, const string& testName)
