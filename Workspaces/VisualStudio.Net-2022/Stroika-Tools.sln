@@ -42,6 +42,7 @@ Global
 		Debug|Unspecified = Debug|Unspecified
 		Debug-x86_64|Unspecified = Debug-x86_64|Unspecified
 		Debug-x86|Unspecified = Debug-x86|Unspecified
+		Profile|Unspecified = Profile|Unspecified
 		Release|Unspecified = Release|Unspecified
 		Release-Logging|Unspecified = Release-Logging|Unspecified
 		Release-x86_64|Unspecified = Release-x86_64|Unspecified
@@ -54,6 +55,8 @@ Global
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug-x86_64|Unspecified.Build.0 = Debug-x86_64|Win32
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug-x86|Unspecified.ActiveCfg = Debug-x86|Win32
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Debug-x86|Unspecified.Build.0 = Debug-x86|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Profile|Unspecified.ActiveCfg = Profile|Win32
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Profile|Unspecified.Build.0 = Profile|Win32
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release|Unspecified.ActiveCfg = Release|Win32
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release|Unspecified.Build.0 = Release|Win32
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}.Release-Logging|Unspecified.ActiveCfg = Release-Logging|Win32
@@ -68,6 +71,8 @@ Global
 		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug-x86_64|Unspecified.Build.0 = Debug-x86_64|Win32
 		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug-x86|Unspecified.ActiveCfg = Debug-x86|Win32
 		{91C825D0-2702-4800-98DD-B83727D51F5E}.Debug-x86|Unspecified.Build.0 = Debug-x86|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Profile|Unspecified.ActiveCfg = Profile|Win32
+		{91C825D0-2702-4800-98DD-B83727D51F5E}.Profile|Unspecified.Build.0 = Profile|Win32
 		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release|Unspecified.ActiveCfg = Release|Win32
 		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release|Unspecified.Build.0 = Release|Win32
 		{91C825D0-2702-4800-98DD-B83727D51F5E}.Release-Logging|Unspecified.ActiveCfg = Release-Logging|Win32
@@ -82,6 +87,8 @@ Global
 		{1F02CD14-34A7-4501-AF72-D39F7E8F76B0}.Debug-x86_64|Unspecified.Build.0 = Debug-x86_64|Win32
 		{1F02CD14-34A7-4501-AF72-D39F7E8F76B0}.Debug-x86|Unspecified.ActiveCfg = Debug-x86|Win32
 		{1F02CD14-34A7-4501-AF72-D39F7E8F76B0}.Debug-x86|Unspecified.Build.0 = Debug-x86|Win32
+		{1F02CD14-34A7-4501-AF72-D39F7E8F76B0}.Profile|Unspecified.ActiveCfg = Profile|Win32
+		{1F02CD14-34A7-4501-AF72-D39F7E8F76B0}.Profile|Unspecified.Build.0 = Profile|Win32
 		{1F02CD14-34A7-4501-AF72-D39F7E8F76B0}.Release|Unspecified.ActiveCfg = Release|Win32
 		{1F02CD14-34A7-4501-AF72-D39F7E8F76B0}.Release|Unspecified.Build.0 = Release|Win32
 		{1F02CD14-34A7-4501-AF72-D39F7E8F76B0}.Release-Logging|Unspecified.ActiveCfg = Release-Logging|Win32
