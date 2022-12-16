@@ -910,7 +910,6 @@ sub	SetDefaultForCompilerDriver_
 			$EXTRA_PREFIX_LINKER_ARGS .= " -OPT:REF";
 			$EXTRA_PREFIX_LINKER_ARGS .= " -OPT:ICF";
 		}
-
 	}
 
 	if (!(defined $AR)) {
@@ -2348,13 +2347,13 @@ sub PostProcessOptions_ ()
 
 	if ($INCLUDE_SYMBOLS_EXE) {
 		if ($isVisualStudio) {
-			$EXTRA_PREFIX_LINKER_ARGS .= " -DEBUG";
+			# PREPEND this option, because it effects the default for other options like -OPT and resets them
+			$EXTRA_PREFIX_LINKER_ARGS = "-DEBUG " . $EXTRA_PREFIX_LINKER_ARGS;
 		}
 		elsif ($PROJECTPLATFORMSUBDIR eq 'Unix') {
 			$EXTRA_PREFIX_LINKER_ARGS .= " -g";
 		}
 	}
-
 
 	if (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and not ($ARCH eq "")) {
 		push @CFLAGS, " -arch $ARCH";
