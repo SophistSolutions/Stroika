@@ -123,10 +123,10 @@ my $ApplyDebugFlags = DEFAULT_BOOL_OPTIONS;
 my $ApplyReleaseFlags = DEFAULT_BOOL_OPTIONS;
 
 
-## /Zi or /Zl (as opposed to using /Z7 for debug info)
+## /Zi or /ZI (as opposed to using /Z7 for debug info)
 ## Z7 may use more disk space but less confusing for library to
 ## not have symbol information written into .pdb file
-my $WinFlag_DebugProgramDatabase = false;	# ignored except for visual studio
+my $WinFlag_DebugProgramDatabase = false;	# ignored except for visual studio (make -jN seems to get errors, despite adding -FS flag)
 
 
 ### @todo finish review of what warnings we still want - disable a few more... --LGP 2019-08-29
