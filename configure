@@ -2348,7 +2348,7 @@ sub PostProcessOptions_ ()
 	if ($INCLUDE_SYMBOLS_EXE) {
 		if ($isVisualStudio) {
 			# PREPEND this option, because it effects the default for other options like -OPT and resets them
-			$EXTRA_PREFIX_LINKER_ARGS = "-DEBUG " . $EXTRA_PREFIX_LINKER_ARGS;
+			$EXTRA_PREFIX_LINKER_ARGS = "-DEBUG=FULL " . $EXTRA_PREFIX_LINKER_ARGS;
 		}
 		elsif ($PROJECTPLATFORMSUBDIR eq 'Unix') {
 			$EXTRA_PREFIX_LINKER_ARGS .= " -g";
