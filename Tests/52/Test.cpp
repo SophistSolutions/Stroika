@@ -1408,6 +1408,15 @@ namespace {
             if (not filesystem::exists (jsonTestRoot)) {
                 jsonTestRoot = path{"."} / "Tests" / "52" / "JSONTestData";
             }
+            if (not filesystem::exists (jsonTestRoot)) {
+                jsonTestRoot = path{".."} / "Tests" / "52" / "JSONTestData";
+            }
+            if (not filesystem::exists (jsonTestRoot)) {
+                jsonTestRoot = path{".."} / ".." / "Tests" / "52" / "JSONTestData";
+            }
+            if (not filesystem::exists (jsonTestRoot)) {
+                jsonTestRoot = path{".."} / ".." / ".." / "52" / "JSONTestData";
+            }
             for (auto testCase : kTestCases_) {
                 DoJSONParse_ (jsonTestRoot / "small-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
                 if constexpr (not qDebug) {
