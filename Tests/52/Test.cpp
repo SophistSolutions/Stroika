@@ -1335,6 +1335,14 @@ namespace {
                 auto            ex1 = parse (p, ec);
             }
         }
+        void DoStroikaJSONParse_boost_json2Stk (const string& p, unsigned int nTimes)
+        {
+            using namespace boost::json;
+            for (unsigned int tryNum = 0; tryNum < nTimes; ++tryNum) {
+                std::error_code ec;
+                auto            ex1 = DataExchange::VariantValue{parse (p, ec)};
+            }
+        }
 #endif
         void DoStroikaJSONParse_ (const string& p, unsigned int nTimes)
         {
@@ -1388,6 +1396,10 @@ namespace {
 #if __has_include("boost/json.hpp")
                                                                                       ,
                                                                                   make_tuple (DoStroikaJSONParse_boost_json, "boost_json-parser")
+#endif
+#if __has_include("boost/json.hpp")
+                                                                                      ,
+                                                                                  make_tuple (DoStroikaJSONParse_boost_json2Stk, "boost_json-vv-parser")
 #endif
             }};
             path jsonTestRoot = path{"."} / "52" / "JSONTestData";
