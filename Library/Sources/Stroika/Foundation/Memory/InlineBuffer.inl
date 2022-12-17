@@ -209,7 +209,8 @@ namespace Stroika::Foundation::Memory {
         }
         else if (nElements < fSize_) {
             // Shrinking
-            DestroyElts_ (this->begin () + nElements, this->end ());
+            static_assert (is_trivially_destructible_v<T>);
+            //DestroyElts_ (this->begin () + nElements, this->end ());
             fSize_ = nElements;
         }
         Assert (fSize_ == nElements);

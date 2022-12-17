@@ -93,6 +93,12 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
+         *  kMinCapacity is the baked in minimum capacity of this buff (inline allocated part).
+         */
+        static constexpr size_t kMinCapacity = BUF_SIZE;
+
+    public:
+        /**
          *  InlineBuffer::InlineBuffer (size_t) specifies the initial size - like InlineBuffer::InlineBuffer {} followed by resize (n); 
          *  InlineBuffer::default-ctor creates a zero-sized stack buffer (so resize with resize, or push_back etc).
          */
