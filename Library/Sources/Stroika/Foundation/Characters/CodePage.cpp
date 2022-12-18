@@ -3044,6 +3044,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
     ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, char** targetStart, char* targetEnd, ConversionFlags flags)
     {
         Require (*sourceStart <= sourceEnd);
+        Require (*targetStart <= targetEnd);
         // After super-primiive testing (not even this code - elswhere) - this probably faster. Really must test.
         //
         //  There is also https://github.com/boostorg/nowide to look at (not yet)
@@ -3054,9 +3055,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
                 return ConversionResult::conversionOK;
             }
             else {
-                Memory::StackBuffer<wchar_t> s{*sourceStart, sourceEnd}; // need todo cuz WideCharToMultiByte expects NUL-terminated, and this API doesn't require that
-                s.push_back ('\0');
-                int                          stringLength = ::WideCharToMultiByte (CP_UTF8, 0, s.begin (), static_cast<int> (s.size ()-1), *targetStart, static_cast<int> (targetEnd - *targetStart), nullptr, nullptr);
+                int stringLength = ::WideCharToMultiByte (CP_UTF8, 0, reinterpret_cast<const WCHAR*> (*sourceStart), static_cast<int> (sourceEnd - sourceEnd), *targetStart, static_cast<int> (targetEnd - *targetStart), nullptr, nullptr);
                 *sourceStart     = sourceEnd; // wag - dont think MultiByteToWideChar tells us this
                 *targetStart     = *targetStart + stringLength;
                 return stringLength == 0 ? ConversionResult::sourceIllegal : ConversionResult::conversionOK;
@@ -3163,6 +3162,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
     ConversionResult ConvertQuietly (const char** sourceStart, const char* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
     {
         Require (*sourceStart <= sourceEnd);
+        Require (*targetStart <= targetEnd);
 #if qPlatform_Windows
         {
             // After super-primiive testing, it appears this windows code is significantly faster
@@ -3175,9 +3175,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
                 return ConversionResult::conversionOK;
             }
             else {
-                Memory::StackBuffer<char> s{*sourceStart, sourceEnd};
-                s.push_back ('\0');
-                int    stringLength = ::MultiByteToWideChar (CP_UTF8, 0, s.begin (), static_cast<int> (s.size ()-1), reinterpret_cast<LPWSTR> (*targetStart), static_cast<int> (targetEnd - *targetStart));
+                int stringLength = ::MultiByteToWideChar (CP_UTF8, 0, *sourceStart, static_cast<int> (sourceEnd - *sourceStart), reinterpret_cast<LPWSTR> (*targetStart), static_cast<int> (targetEnd - *targetStart));
                 *sourceStart     = sourceEnd; // wag - dont think MultiByteToWideChar tells us this
                 *targetStart     = *targetStart + stringLength;
                 return stringLength == 0 ? ConversionResult::sourceIllegal : ConversionResult::conversionOK;
