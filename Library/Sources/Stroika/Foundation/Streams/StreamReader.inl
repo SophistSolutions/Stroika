@@ -210,6 +210,14 @@ namespace Stroika::Foundation::Streams {
         fStrm_.Seek (GetOffset ());
     }
     template <typename ELEMENT_TYPE>
+    inline bool StreamReader<ELEMENT_TYPE>::IsAtEOF ()
+    {
+        if (fOffset_ < fFarthestReadInUnderlyingStream_) {
+            return false; // not logically needed, but optimization
+        }
+        return not Peek ().has_value ();
+    }
+    template <typename ELEMENT_TYPE>
     inline auto StreamReader<ELEMENT_TYPE>::Peek1FromCache_ () -> optional<ElementType>
     {
         // first try last filled - generally will be the right one
