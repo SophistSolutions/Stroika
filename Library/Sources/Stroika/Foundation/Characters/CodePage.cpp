@@ -2606,7 +2606,7 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
         } break;
         default: {
 #if qPlatform_Windows
-            Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, SAFE_WIN_WCHART_CAST_ (outChars), outCharCnt);
+            Characters::Platform::Windows::PlatformCodePageConverter{fCodePage}.MapToUNICODE (inMBChars, inMBCharCnt, SAFE_WIN_WCHART_CAST_ (outChars), outCharCnt);
 #else
             Execution::Throw (CodePageNotSupportedException (fCodePage));
 #endif
@@ -2771,7 +2771,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
         } break;
         default: {
 #if qPlatform_Windows
-            Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt, outChars, outCharCnt);
+            Characters::Platform::Windows::PlatformCodePageConverter{fCodePage}.MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt, outChars, outCharCnt);
 #else
             Execution::Throw (CodePageNotSupportedException (fCodePage));
 #endif
@@ -3048,10 +3048,15 @@ namespace Stroika::Foundation::Characters::UTFConvert {
         //          -LGP 2022-12-17
         if constexpr (qPlatform_Windows) {
             wstring s{*sourceStart, sourceEnd}; // need todo cuz WideCharToMultiByte expects NUL-terminated, and this API doesn't require that
-            int     stringLength = ::WideCharToMultiByte (CP_UTF8, 0, s.c_str (), static_cast<int> (s.length ()), (LPSTR)*targetStart, targetEnd - *targetStart, nullptr, nullptr);
-            *sourceStart         = sourceEnd; // wag - dont think MultiByteToWideChar tells us this
-            *targetStart         = *targetStart + stringLength;
-            return stringLength == 0 ? ConversionResult::sourceIllegal : ConversionResult::conversionOK;
+            if (s.empty ()) {
+                return ConversionResult::conversionOK;
+            }
+            else {
+                int stringLength = ::WideCharToMultiByte (CP_UTF8, 0, s.c_str (), static_cast<int> (s.length ()), (LPSTR)*targetStart, targetEnd - *targetStart, nullptr, nullptr);
+                *sourceStart     = sourceEnd; // wag - dont think MultiByteToWideChar tells us this
+                *targetStart     = *targetStart + stringLength;
+                return stringLength == 0 ? ConversionResult::sourceIllegal : ConversionResult::conversionOK;
+            }
         }
         else {
             //  was ConvertUTF16toUTF8
@@ -3160,10 +3165,15 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             //  There is also https://github.com/boostorg/nowide to look at (not yet)
             //          -LGP 2022-12-17
             string s{*sourceStart, sourceEnd};
-            int    stringLength = ::MultiByteToWideChar (CP_UTF8, 0, s.c_str (), static_cast<int> (s.length ()), (LPWSTR)*targetStart, targetEnd - *targetStart);
-            *sourceStart        = sourceEnd; // wag - dont think MultiByteToWideChar tells us this
-            *targetStart        = *targetStart + stringLength;
-            return stringLength == 0 ? ConversionResult::sourceIllegal : ConversionResult::conversionOK;
+            if (s.empty ()) {
+                return ConversionResult::conversionOK;
+            }
+            else {
+                int stringLength = ::MultiByteToWideChar (CP_UTF8, 0, s.c_str (), static_cast<int> (s.length ()), (LPWSTR)*targetStart, targetEnd - *targetStart);
+                *sourceStart     = sourceEnd; // wag - dont think MultiByteToWideChar tells us this
+                *targetStart     = *targetStart + stringLength;
+                return stringLength == 0 ? ConversionResult::sourceIllegal : ConversionResult::conversionOK;
+            }
         }
         else if constexpr (false) {
             // SIGH - DEPRECATED but ALSO more than twice as slow as my (lifted) implementation (not sure why - looks similar).
