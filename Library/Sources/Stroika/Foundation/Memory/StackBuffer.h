@@ -83,13 +83,13 @@ namespace Stroika::Foundation::Memory {
      *
      */
     template <
-        typename T = std::byte, 
+        typename T = std::byte,
 #if qPlatform_Windows
         size_t BUF_SIZE = (((2 * 1024) / sizeof (T)) == 0 ? 1 : ((2 * 1024) / sizeof (T)))
 #else
         size_t BUF_SIZE = ((4096 / sizeof (T)) == 0 ? 1 : (4096 / sizeof (T)))
 #endif
-    >
+        >
     class StackBuffer {
     public:
         /**
