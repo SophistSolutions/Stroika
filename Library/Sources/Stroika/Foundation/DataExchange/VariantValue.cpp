@@ -245,24 +245,24 @@ VariantValue::VariantValue (const boost::json::value& val)
         case json::kind::string: {
             // boost::json::string documents it represents a string as a series of UTF-8 characters
             const json::string& bs = val.as_string ();
-            *this   = String::FromUTF8 (bs.begin (), bs.end ()); // I THINk this is defined to be in UTF8?
+            *this                  = String::FromUTF8 (bs.begin (), bs.end ());
         } break;
         case json::kind::array: {
-            const auto&                                                   a = val.as_array ();
-            Containers::Concrete::Sequence_stdvector<VariantValue> r;
+            const auto&               a = val.as_array ();
+            std::vector<VariantValue> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika Seqeunce
             r.reserve (a.size ());
             for (const boost::json::value& i : a) {
-                r += VariantValue{i};
+                r.push_back (VariantValue{i});
             }
-            *this = r;
+            *this = Containers::Concrete::Sequence_stdvector<VariantValue>{std::move (r)};
         } break;
         case json::kind::object: {
-            const auto&                          o = val.as_object ();
-            Mapping<String, VariantValue> r;
+            const auto&                                                          o = val.as_object ();
+            Containers::Concrete::Mapping_stdmap<String, VariantValue>::STDMAP<> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika mapping
             for (const auto& i : o) {
-                r.Add (String::FromUTF8 (i.key ().begin (), i.key ().end ()), VariantValue{i.value ()});
+                r.insert ({String::FromUTF8 (i.key ().begin (), i.key ().end ()), VariantValue{i.value ()}});
             }
-            *this = r;
+            *this = Containers::Concrete::Mapping_stdmap<String, VariantValue>{std::move (r)};
         } break;
         default:
             AssertNotReached ();
