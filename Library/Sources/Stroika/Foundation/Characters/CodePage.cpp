@@ -3046,19 +3046,21 @@ namespace Stroika::Foundation::Characters::UTFConvert {
         //
         //  There is also https://github.com/boostorg/nowide to look at (not yet)
         //          -LGP 2022-12-17
-        if constexpr (qPlatform_Windows) {
+#if qPlatform_Windows 
+        {
             wstring s{*sourceStart, sourceEnd}; // need todo cuz WideCharToMultiByte expects NUL-terminated, and this API doesn't require that
             if (s.empty ()) {
                 return ConversionResult::conversionOK;
             }
             else {
-                int stringLength = ::WideCharToMultiByte (CP_UTF8, 0, s.c_str (), static_cast<int> (s.length ()), (LPSTR)*targetStart, targetEnd - *targetStart, nullptr, nullptr);
+                int stringLength = ::WideCharToMultiByte (CP_UTF8, 0, s.c_str (), static_cast<int> (s.length ()), * targetStart, static_cast<int> (targetEnd - *targetStart), nullptr, nullptr);
                 *sourceStart     = sourceEnd; // wag - dont think MultiByteToWideChar tells us this
                 *targetStart     = *targetStart + stringLength;
                 return stringLength == 0 ? ConversionResult::sourceIllegal : ConversionResult::conversionOK;
             }
         }
-        else {
+#endif
+        {
             //  was ConvertUTF16toUTF8
             ConversionResult result = conversionOK;
             const char16_t*  source = *sourceStart;
@@ -3157,10 +3159,11 @@ namespace Stroika::Foundation::Characters::UTFConvert {
     template <>
     ConversionResult ConvertQuietly (const char** sourceStart, const char* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
     {
-        if constexpr (qPlatform_Windows) {
+#if qPlatform_Windows
+        {
             // After super-primiive testing, it appears this windows code is significantly faster
             // then the ConvertUTF8toUTF16 code, which in turn, is significantly faster than
-            // std::codecvt_utf8_utf16<char16_t>
+            // (the deprecated) std::codecvt_utf8_utf16<char16_t> - tested on 64-bit windows
             //
             //  There is also https://github.com/boostorg/nowide to look at (not yet)
             //          -LGP 2022-12-17
@@ -3169,13 +3172,15 @@ namespace Stroika::Foundation::Characters::UTFConvert {
                 return ConversionResult::conversionOK;
             }
             else {
-                int stringLength = ::MultiByteToWideChar (CP_UTF8, 0, s.c_str (), static_cast<int> (s.length ()), (LPWSTR)*targetStart, targetEnd - *targetStart);
+                int stringLength = ::MultiByteToWideChar (CP_UTF8, 0, s.c_str (), static_cast<int> (s.length ()), reinterpret_cast < LPWSTR > (* targetStart), static_cast<int> (targetEnd - *targetStart));
                 *sourceStart     = sourceEnd; // wag - dont think MultiByteToWideChar tells us this
                 *targetStart     = *targetStart + stringLength;
                 return stringLength == 0 ? ConversionResult::sourceIllegal : ConversionResult::conversionOK;
             }
         }
-        else if constexpr (false) {
+#endif
+#if false
+        {
             // SIGH - DEPRECATED but ALSO more than twice as slow as my (lifted) implementation (not sure why - looks similar).
             //      --LGP 2022-12-17
             //  https://en.cppreference.com/w/cpp/locale/codecvt_utf8_utf16
@@ -3188,7 +3193,8 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             *targetStart                                                         = outCursor;
             return cvt_stdcodecvt_results_ (rr);
         }
-        else {
+#else
+         {
             //  was ConvertUTF8toUTF16
             ConversionResult result = conversionOK;
             const UTF8_*     source = reinterpret_cast<const UTF8_*> (*sourceStart);
@@ -3276,6 +3282,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             *targetStart = target;
             return result;
         }
+#endif
     }
 
 #if __cpp_char8_t >= 201811L
