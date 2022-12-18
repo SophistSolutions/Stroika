@@ -680,6 +680,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\LoggingInputOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\SplitterOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Stream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\StreamReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
@@ -1134,6 +1135,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\LoggingInputOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\SplitterOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\Stream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\StreamReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Common.inl" />

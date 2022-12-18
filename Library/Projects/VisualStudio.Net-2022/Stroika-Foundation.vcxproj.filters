@@ -2130,6 +2130,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ValidationStrategy.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\StreamReader.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\StackBuffer.inl">
@@ -3497,6 +3500,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Writer.inl">
       <Filter>Sources\DataExchange\Variant\CharacterDelimitedLines</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\StreamReader.inl">
+      <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
