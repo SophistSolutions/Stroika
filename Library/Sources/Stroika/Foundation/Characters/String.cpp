@@ -199,7 +199,6 @@ namespace {
     {
         StringBuilder r;
         for (const auto& i : src) {
-            Containers::Support::ReserveTweaks::Reserve4Add1 (r); // could be optimized further moving outside loop, but we don't generically quickly know size
             r.push_back (i.As<wchar_t> ());
         }
         return r.str ();
