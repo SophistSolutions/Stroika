@@ -10,6 +10,7 @@
 #include "../Characters/CString/Utilities.h"
 #include "../Characters/Format.h"
 #include "../Characters/String.h"
+#include "../Characters/StringBuilder.h"
 #include "../Configuration/Common.h"
 #include "../Containers/Common.h"
 #include "../Execution/Common.h"
@@ -3042,18 +3043,20 @@ namespace Stroika::Foundation::Characters::UTFConvert {
     template <>
     ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, char** targetStart, char* targetEnd, ConversionFlags flags)
     {
+        Require (*sourceStart <= sourceEnd);
         // After super-primiive testing (not even this code - elswhere) - this probably faster. Really must test.
         //
         //  There is also https://github.com/boostorg/nowide to look at (not yet)
         //          -LGP 2022-12-17
-#if qPlatform_Windows 
+#if qPlatform_Windows
         {
-            wstring s{*sourceStart, sourceEnd}; // need todo cuz WideCharToMultiByte expects NUL-terminated, and this API doesn't require that
-            if (s.empty ()) {
+            if (*sourceStart == sourceEnd) {
                 return ConversionResult::conversionOK;
             }
             else {
-                int stringLength = ::WideCharToMultiByte (CP_UTF8, 0, s.c_str (), static_cast<int> (s.length ()), * targetStart, static_cast<int> (targetEnd - *targetStart), nullptr, nullptr);
+                Memory::StackBuffer<wchar_t> s{*sourceStart, sourceEnd}; // need todo cuz WideCharToMultiByte expects NUL-terminated, and this API doesn't require that
+                s.push_back ('\0');
+                int                          stringLength = ::WideCharToMultiByte (CP_UTF8, 0, s.begin (), static_cast<int> (s.size ()-1), *targetStart, static_cast<int> (targetEnd - *targetStart), nullptr, nullptr);
                 *sourceStart     = sourceEnd; // wag - dont think MultiByteToWideChar tells us this
                 *targetStart     = *targetStart + stringLength;
                 return stringLength == 0 ? ConversionResult::sourceIllegal : ConversionResult::conversionOK;
@@ -3159,6 +3162,7 @@ namespace Stroika::Foundation::Characters::UTFConvert {
     template <>
     ConversionResult ConvertQuietly (const char** sourceStart, const char* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
     {
+        Require (*sourceStart <= sourceEnd);
 #if qPlatform_Windows
         {
             // After super-primiive testing, it appears this windows code is significantly faster
@@ -3167,12 +3171,13 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             //
             //  There is also https://github.com/boostorg/nowide to look at (not yet)
             //          -LGP 2022-12-17
-            string s{*sourceStart, sourceEnd};
-            if (s.empty ()) {
+            if (*sourceStart == sourceEnd) {
                 return ConversionResult::conversionOK;
             }
             else {
-                int stringLength = ::MultiByteToWideChar (CP_UTF8, 0, s.c_str (), static_cast<int> (s.length ()), reinterpret_cast < LPWSTR > (* targetStart), static_cast<int> (targetEnd - *targetStart));
+                Memory::StackBuffer<char> s{*sourceStart, sourceEnd};
+                s.push_back ('\0');
+                int    stringLength = ::MultiByteToWideChar (CP_UTF8, 0, s.begin (), static_cast<int> (s.size ()-1), reinterpret_cast<LPWSTR> (*targetStart), static_cast<int> (targetEnd - *targetStart));
                 *sourceStart     = sourceEnd; // wag - dont think MultiByteToWideChar tells us this
                 *targetStart     = *targetStart + stringLength;
                 return stringLength == 0 ? ConversionResult::sourceIllegal : ConversionResult::conversionOK;
@@ -3194,13 +3199,13 @@ namespace Stroika::Foundation::Characters::UTFConvert {
             return cvt_stdcodecvt_results_ (rr);
         }
 #else
-         {
+        {
             //  was ConvertUTF8toUTF16
             ConversionResult result = conversionOK;
-            const UTF8_*     source = reinterpret_cast<const UTF8_*> (*sourceStart);
-            char16_t*        target = *targetStart;
+            const UTF8_* source = reinterpret_cast<const UTF8_*> (*sourceStart);
+            char16_t* target = *targetStart;
             while (source < reinterpret_cast<const UTF8_*> (sourceEnd)) {
-                char32_t       ch               = 0;
+                char32_t ch = 0;
                 unsigned short extraBytesToRead = trailingBytesForUTF8[*source];
                 if (source + extraBytesToRead >= reinterpret_cast<const UTF8_*> (sourceEnd)) {
                     result = sourceExhausted;
