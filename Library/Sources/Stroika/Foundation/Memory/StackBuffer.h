@@ -211,9 +211,9 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         * \brief same as resize (), except leaves newly created elements uninitialized (requires is_trivially_default_constructible_v<T>) 
+         * \brief same as resize (), except leaves newly created elements uninitialized (requires is_trivial_v<T>) 
          *
-         *  \req is_trivially_default_constructible_v<T>
+         *  \req is_trivial_v<T>
          *  \ensure GetSize () <= capacity ();
          */
         nonvirtual void resize_uninitialized (size_t nElements);
@@ -229,9 +229,9 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         * \brief same as GrowToSize (), except leaves newly created elements uninitialized (requires is_trivially_default_constructible_v<T>)
+         * \brief same as GrowToSize (), except leaves newly created elements uninitialized (requires is_trivial_v<T>)
          *
-         *  \req is_trivially_default_constructible_v<T>
+         *  \req is_trivial_v<T>
          *  \ensure GetSize () <= capacity ();
          */
         nonvirtual void GrowToSize_uninitialized (size_t nElements);

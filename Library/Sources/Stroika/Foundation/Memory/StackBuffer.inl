@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Memory {
     inline StackBuffer<T, BUF_SIZE>::StackBuffer (UninitializedConstructorFlag, size_t nElements)
         : StackBuffer{}
     {
-        static_assert (is_trivially_default_constructible_v<T>);
+        static_assert (is_trivial_v<T>);
         resize_uninitialized (nElements);
         Invariant ();
     }
@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline void StackBuffer<T, BUF_SIZE>::GrowToSize_uninitialized (size_t nElements)
     {
-        static_assert (is_trivially_default_constructible_v<T>);
+        static_assert (is_trivial_v<T>);
         if (nElements > size ()) {
             resize_uninitialized (nElements);
         }
@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline void StackBuffer<T, BUF_SIZE>::resize_uninitialized (size_t nElements)
     {
-        static_assert (is_trivially_default_constructible_v<T>);
+        static_assert (is_trivial_v<T>);
         if (nElements > fSize_) {
             // Growing
             if (nElements > capacity ()) [[unlikely]] {
@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Memory {
             ++this->fSize_;
         }
         else {
-            if constexpr (is_trivially_default_constructible_v<T>) {
+            if constexpr (is_trivial_v<T>) {
                 resize_uninitialized (s + 1);
             }
             else {
