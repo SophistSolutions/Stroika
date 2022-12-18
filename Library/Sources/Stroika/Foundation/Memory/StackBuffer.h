@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Memory {
     /**
      *  \brief Store variable sized array on the stack (\see also InlineBuffer<T,BUF_SIZE>)
      * 
-     *  Typically, StackBuffer<> combines the performance of using a stack buffer to store arrays with
+     *  Typically, StackBuffer<> combines the performance of using a stack buffer (inline array on stack) to store arrays with
      *  the safety and flexability of using the free store (malloc).
      *
      *  Think of it as a hybrid between std::vector<> and std::array - with functionality like
@@ -37,9 +37,8 @@ namespace Stroika::Foundation::Memory {
      *  All allocated objects are default initialized, unless they are allocated through a call to resize_uninitialized(), or
      *  the constructor with the argument eUninitialized
      *
-     *  \note Before Stroika 2.1r4, this class (really SmallStackBuffer) didn't actually require being on the stack, but since Stroika 2.1r4,
-     *        it really DOES require being allocated on the stack. Use InlineBuffer<T,BUF_SIZE> if you want the older
-     *        buffer behavior.
+     *  \note The default INLINE_SIZE (size allocated on the stack) will vary by type T, and platform. Its
+     *        intended to be a tradeoff between avoiding malloc, and avoiding other costs (like Windows _chkstk)
      *
      *  \par Example Usage
      *      @see Samples/SimpleService project
@@ -83,7 +82,14 @@ namespace Stroika::Foundation::Memory {
      *          to BUF_SIZE
      *
      */
-    template <typename T = std::byte, size_t BUF_SIZE = ((4096 / sizeof (T)) == 0 ? 1 : (4096 / sizeof (T)))>
+    template <
+        typename T = std::byte, 
+#if qPlatform_Windows
+        size_t BUF_SIZE = (((2 * 1024) / sizeof (T)) == 0 ? 1 : ((2 * 1024) / sizeof (T)))
+#else
+        size_t BUF_SIZE = ((4096 / sizeof (T)) == 0 ? 1 : (4096 / sizeof (T)))
+#endif
+    >
     class StackBuffer {
     public:
         /**
