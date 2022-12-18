@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Streams {
         /**
          *  \brief Logically the same as InputStream<ELEMENT_TYPE>::Ptr::ReadAll ()
          */
-        size_t ReadAll (ElementType* intoStart, ElementType* intoEnd);
+        nonvirtual size_t ReadAll (ElementType* intoStart, ElementType* intoEnd);
 
     public:
         /**
@@ -89,19 +89,10 @@ namespace Stroika::Foundation::Streams {
 
                 TBD - Snc COULD be send TO underlyingStream state or the other way around! - may want BOTH methods and update docs to make clear
          */
-        void SyncrhonizeWithUnderlyingStream ()
-        {
-            fStrm_.Seek (GetOffset ());
-        }
+        nonvirtual void SyncrhonizeWithUnderlyingStream ();
 
     public:
-        inline bool IsAtEOF ()
-        {
-            if (fOffset_ < fFarthestReadInUnderlyingStream_) {
-                return false; // not logically needed, but optimization
-            }
-            return not Peek ().has_value ();
-        }
+        nonvirtual bool IsAtEOF ();
 
     private:
         // may want to tune these; but I did a little tuning on Windows --LGP 2022-12-17
@@ -131,9 +122,9 @@ namespace Stroika::Foundation::Streams {
         };
 
     private:
-        Streams::InputStream<ElementType>::Ptr fStrm_;
-        Streams::SeekOffsetType                fOffset_{0};
-        Streams::SeekOffsetType                fFarthestReadInUnderlyingStream_{0};
+        typename InputStream<ElementType>::Ptr fStrm_;
+        SeekOffsetType                         fOffset_{0};
+        SeekOffsetType                         fFarthestReadInUnderlyingStream_{0};
         CacheBlock_                            fCacheBlocks_[kCountPingPingBufs_];
         size_t                                 fCacheBlockLastFilled_{0};
 
