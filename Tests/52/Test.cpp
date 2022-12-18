@@ -1433,6 +1433,31 @@ namespace {
 namespace {
     void RunPerformanceTests_ ()
     {
+#if 0
+        {
+            using namespace JSONTests_;
+            using filesystem::path;
+            path jsonTestRoot = path{"."} / "52" / "JSONTestData";
+            // hack a bit to find jsonTestRoot, since sometimes run from different places; no need to do good/formal job here
+            // since this is for a rarely used test suite
+            if (not filesystem::exists (jsonTestRoot)) {
+                jsonTestRoot = path{"."} / "Tests" / "52" / "JSONTestData";
+            }
+            if (not filesystem::exists (jsonTestRoot)) {
+                jsonTestRoot = path{".."} / "Tests" / "52" / "JSONTestData";
+            }
+            if (not filesystem::exists (jsonTestRoot)) {
+                jsonTestRoot = path{".."} / path{".."} / "Tests" / "52" / "JSONTestData";
+            }
+            if (not filesystem::exists (jsonTestRoot)) {
+                jsonTestRoot = path{".."} / path{".."} / path{".."} / "52" / "JSONTestData";
+            }
+            //DoJSONParse_ (jsonTestRoot / "large-dict.json", 1, DoStroikaJSONParse_, "foo");
+            DoJSONParse_ (jsonTestRoot / "large-dict.json", 1, DoStroikaJSONParse_boost_json2Stk, "foo");
+            return;
+        }
+#endif
+
         DateTime startedAt = DateTime::Now ();
         GetOutStream_ () << "Performance score 1.0 means both sides equal (ratio), and tests setup so lower is generally better" << endl
                          << endl;
