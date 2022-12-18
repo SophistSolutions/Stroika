@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Memory {
      * 
      *  This is mainly used as a performance tweek, for objects that don't need to be initialized, and can just be copied into.
      * 
-     *  \note the APIS that use this typically require  static_assert (is_trivial_v<T>);
+     *  \note the APIS that use this typically require  static_assert (is_trivially_copyable_v<T>);
      */
     enum class UninitializedConstructorFlag { eUninitialized };
 
@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Memory {
      * 
      *  This is mainly used as a performance tweek, for objects that don't need to be initialized, and can just be copied into.
      * 
-     *  \note the APIS that use this typically require  static_assert (is_trivial_v<T>);
+     *  \note the APIS that use this typically require  static_assert (is_trivially_copyable_v<T>);
      */
     constexpr UninitializedConstructorFlag eUninitialized = UninitializedConstructorFlag::eUninitialized;
 
