@@ -35,11 +35,10 @@ namespace Stroika::Foundation::Streams {
     public:
         /**
          *  \note Do NOT use the InputStream<ElementType>::Ptr passed in at the same time as its being used by the
-         *        StreamReader, or grave disorder may result. StreamReader assumes its the only way seeking and reading
+         *        StreamReader, or grave disorder may result. StreamReader assumes its the only one seeking and reading
          *        through the input stream.
          * 
-         *  \note At destruction, StreamReader automatically calls SyncrhonizeWithUnderlyingStream, so
-         *        you can (TBD)...
+         *  \note At destruction, StreamReader automatically calls SyncrhonizeToUnderlyingStream
          */
         StreamReader (const typename InputStream<ElementType>::Ptr& underlyingReadFromStreamAdopted);
         StreamReader ()                    = delete;
@@ -84,12 +83,19 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /**
-        // Since all we do is read from that stream, our OUR offset may DIVERGE from that stream - otherwise
-        // we are the smae. So this just means - set that stream to have the same seek offset as our caching reader
-
-                TBD - Snc COULD be send TO underlyingStream state or the other way around! - may want BOTH methods and update docs to make clear
+         *  If you must use the underlying stream along-side StreamReader, you can use
+         *  SyncrhonizeToUnderlyingStream and SyncrhonizeFromUnderlyingStream to allow each class to update
+         *  each other.
          */
-        nonvirtual void SyncrhonizeWithUnderlyingStream ();
+        nonvirtual void SyncrhonizeToUnderlyingStream ();
+
+    public:
+        /**
+         *  If you must use the underlying stream along-side StreamReader, you can use
+         *  SyncrhonizeToUnderlyingStream and SyncrhonizeFromUnderlyingStream to allow each class to update
+         *  each other.
+         */
+        nonvirtual void SyncrhonizeFromUnderlyingStream ();
 
     public:
         nonvirtual bool IsAtEOF ();
