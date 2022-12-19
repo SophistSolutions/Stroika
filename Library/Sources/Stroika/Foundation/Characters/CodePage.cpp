@@ -2925,6 +2925,229 @@ namespace Stroika::Foundation::Characters::UTFConvert {
         }
     }
 
+#if qPlatform_Windows
+    ConversionResult ConvertQuietly_Platform_Windows_ (const char16_t** sourceStart, const char16_t* sourceEnd, char** targetStart, char* targetEnd, [[maybe_unused]] ConversionFlags flags)
+    {
+        if (*sourceStart == sourceEnd) {
+            return ConversionResult::conversionOK;
+        }
+        else {
+            int srcLen          = static_cast<int> (sourceEnd - *sourceStart);
+            int trgLen          = static_cast<int> (targetEnd - *targetStart);
+            int convertedLength = ::WideCharToMultiByte (CP_UTF8, 0, reinterpret_cast<const WCHAR*> (*sourceStart), srcLen, *targetStart, trgLen, nullptr, nullptr);
+            *sourceStart        = sourceEnd; // wag - dont think WideCharToMultiByte tells us how much source consumed
+            *targetStart        = *targetStart + convertedLength;
+            return convertedLength == 0 ? ConversionResult::sourceIllegal : ConversionResult::conversionOK;
+        }
+    }
+    ConversionResult ConvertQuietly_Platform_Windows_ (const char** sourceStart, const char* sourceEnd, char16_t** targetStart, char16_t* targetEnd, [[maybe_unused]] ConversionFlags flags)
+    {
+        if (*sourceStart == sourceEnd) {
+            return ConversionResult::conversionOK;
+        }
+        else {
+            int srcLen          = static_cast<int> (sourceEnd - *sourceStart);
+            int trgLen          = static_cast<int> (targetEnd - *targetStart);
+            int convertedLength = ::MultiByteToWideChar (CP_UTF8, 0, *sourceStart, srcLen, reinterpret_cast<LPWSTR> (*targetStart), trgLen);
+            *sourceStart        = sourceEnd; // wag - dont think MultiByteToWideChar tells us how much source consumed
+            *targetStart        = *targetStart + convertedLength;
+            return convertedLength == 0 ? ConversionResult::sourceIllegal : ConversionResult::conversionOK;
+        }
+    }
+#endif
+
+// At least on windows - tried and very slow (besides being deprecated)
+#if 0
+    ConversionResult ConvertUTF16toUTF8_codecvt_utf8_utf16_ (const char** sourceStart, const char* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
+    {
+        // SIGH - DEPRECATED but ALSO more than twice as slow as my (lifted) implementation (not sure why - looks similar).
+        //      --LGP 2022-12-17
+        //  https://en.cppreference.com/w/cpp/locale/codecvt_utf8_utf16
+        static const std::codecvt_utf8_utf16<char16_t>             cvt;
+        mbstate_t                                                  state{};
+        const char*                                                cursorB   = *sourceStart;
+        char16_t*                                                  outCursor = *targetStart;
+        [[maybe_unused]] std::codecvt_utf8_utf16<char16_t>::result rr        = cvt.in (state, *sourceStart, sourceEnd, cursorB, *targetStart, targetEnd, outCursor);
+        *sourceStart                                                         = reinterpret_cast<const char*> (cursorB);
+        *targetStart                                                         = outCursor;
+        return cvt_stdcodecvt_results_ (rr);
+    }
+#endif
+
+    ConversionResult ConvertUTF16toUTF8_ (const char16_t** sourceStart, const char16_t* sourceEnd, char** targetStart, char* targetEnd, ConversionFlags flags)
+    {
+        ConversionResult result = conversionOK;
+        const char16_t*  source = *sourceStart;
+        UTF8_*           target = reinterpret_cast<UTF8_*> (*targetStart);
+        while (source < sourceEnd) {
+            char32_t           ch;
+            unsigned short     bytesToWrite = 0;
+            constexpr char32_t byteMask     = 0xBF;
+            constexpr char32_t byteMark     = 0x80;
+            const char16_t*    oldSource    = source; /* In case we have to back up because of target overflow. */
+            ch                              = *source++;
+            /* If we have a surrogate pair, convert to char32_t first. */
+            if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_HIGH_END) [[unlikely]] {
+                /* If the 16 bits following the high surrogate are in the source buffer... */
+                if (source < sourceEnd) [[likely]] {
+                    char32_t ch2 = *source;
+                    /* If it's a low surrogate, convert to char32_t. */
+                    if (ch2 >= UNI_SUR_LOW_START && ch2 <= UNI_SUR_LOW_END) {
+                        ch = ((ch - UNI_SUR_HIGH_START) << halfShift) + (ch2 - UNI_SUR_LOW_START) + halfBase;
+                        ++source;
+                    }
+                    else if (flags == strictConversion) { /* it's an unpaired high surrogate */
+                        --source;                         /* return to the illegal value itself */
+                        result = sourceIllegal;
+                        break;
+                    }
+                }
+                else {        /* We don't have the 16 bits following the high surrogate. */
+                    --source; /* return to the high surrogate */
+                    result = sourceExhausted;
+                    break;
+                }
+            }
+            else if (flags == strictConversion) {
+                /* UTF-16 surrogate values are illegal in UTF-32 */
+                if (ch >= UNI_SUR_LOW_START && ch <= UNI_SUR_LOW_END) {
+                    --source; /* return to the illegal value itself */
+                    result = sourceIllegal;
+                    break;
+                }
+            }
+            /* Figure out how many bytes the result will require */
+            if (ch < (char32_t)0x80) {
+                bytesToWrite = 1;
+            }
+            else if (ch < (char32_t)0x800) {
+                bytesToWrite = 2;
+            }
+            else if (ch < (char32_t)0x10000) {
+                bytesToWrite = 3;
+            }
+            else if (ch < (char32_t)0x110000) {
+                bytesToWrite = 4;
+            }
+            else {
+                bytesToWrite = 3;
+                ch           = UNI_REPLACEMENT_CHAR;
+            }
+
+            target += bytesToWrite;
+            if (target > reinterpret_cast<UTF8_*> (targetEnd)) {
+                source = oldSource; /* Back up source pointer! */
+                target -= bytesToWrite;
+                result = targetExhausted;
+                break;
+            }
+            switch (bytesToWrite) { /* note: everything falls through. */
+                case 4:
+                    *--target = (UTF8_)((ch | byteMark) & byteMask);
+                    ch >>= 6;
+                case 3:
+                    *--target = (UTF8_)((ch | byteMark) & byteMask);
+                    ch >>= 6;
+                case 2:
+                    *--target = (UTF8_)((ch | byteMark) & byteMask);
+                    ch >>= 6;
+                case 1:
+                    *--target = (UTF8_)(ch | firstByteMark[bytesToWrite]);
+            }
+            target += bytesToWrite;
+        }
+        *sourceStart = source;
+        *targetStart = reinterpret_cast<char*> (target);
+        return result;
+    }
+    ConversionResult ConvertUTF8toUTF16_ (const char** sourceStart, const char* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
+    {
+        ConversionResult result = conversionOK;
+        const UTF8_*     source = reinterpret_cast<const UTF8_*> (*sourceStart);
+        char16_t*        target = *targetStart;
+        while (source < reinterpret_cast<const UTF8_*> (sourceEnd)) {
+            char32_t       ch               = 0;
+            unsigned short extraBytesToRead = trailingBytesForUTF8[*source];
+            if (source + extraBytesToRead >= reinterpret_cast<const UTF8_*> (sourceEnd)) {
+                result = sourceExhausted;
+                break;
+            }
+            /* Do this check whether lenient or strict */
+            if (!isLegalUTF8_ (source, extraBytesToRead + 1)) {
+                result = sourceIllegal;
+                break;
+            }
+            /*
+             * The cases all fall through. See "Note A" below.
+             */
+            switch (extraBytesToRead) {
+                case 5:
+                    ch += *source++;
+                    ch <<= 6; /* remember, illegal UTF-8 */
+                case 4:
+                    ch += *source++;
+                    ch <<= 6; /* remember, illegal UTF-8 */
+                case 3:
+                    ch += *source++;
+                    ch <<= 6;
+                case 2:
+                    ch += *source++;
+                    ch <<= 6;
+                case 1:
+                    ch += *source++;
+                    ch <<= 6;
+                case 0:
+                    ch += *source++;
+            }
+            ch -= offsetsFromUTF8[extraBytesToRead];
+
+            if (target >= targetEnd) [[unlikely]] {
+                source -= (extraBytesToRead + 1); /* Back up source pointer! */
+                result = targetExhausted;
+                break;
+            }
+            if (ch <= UNI_MAX_BMP) { /* Target is a character <= 0xFFFF */
+                /* UTF-16 surrogate values are illegal in UTF-32 */
+                if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) {
+                    if (flags == strictConversion) {
+                        source -= (extraBytesToRead + 1); /* return to the illegal value itself */
+                        result = sourceIllegal;
+                        break;
+                    }
+                    else {
+                        *target++ = UNI_REPLACEMENT_CHAR;
+                    }
+                }
+                else {
+                    *target++ = (char16_t)ch; /* normal case */
+                }
+            }
+            else if (ch > UNI_MAX_UTF16) {
+                if (flags == strictConversion) {
+                    result = sourceIllegal;
+                    source -= (extraBytesToRead + 1); /* return to the start */
+                    break;                            /* Bail out; shouldn't continue */
+                }
+                else {
+                    *target++ = UNI_REPLACEMENT_CHAR;
+                }
+            }
+            else {
+                /* target is a character in range 0xFFFF - 0x10FFFF. */
+                if (target + 1 >= targetEnd) {
+                    source -= (extraBytesToRead + 1); /* Back up source pointer! */
+                    result = targetExhausted;
+                    break;
+                }
+                ch -= halfBase;
+                *target++ = (char16_t)((ch >> halfShift) + UNI_SUR_HIGH_START);
+                *target++ = (char16_t)((ch & halfMask) + UNI_SUR_LOW_START);
+            }
+        }
+        *sourceStart = reinterpret_cast<const char*> (source);
+        *targetStart = target;
+        return result;
+    }
     template <>
     ConversionResult ConvertQuietly (const char32_t** sourceStart, const char32_t* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
     {
@@ -3045,109 +3268,30 @@ namespace Stroika::Foundation::Characters::UTFConvert {
     {
         Require (*sourceStart <= sourceEnd);
         Require (*targetStart <= targetEnd);
+
+#if qDebug && qPlatform_Windows
+        ConversionResult referenceResult;
+        string           referenceConvertedString;
+        {
+            const char16_t* ss       = *sourceStart;
+            char*           ts       = *targetStart;
+            referenceResult          = ConvertUTF16toUTF8_ (&ss, sourceEnd, &ts, targetEnd, flags);
+            referenceConvertedString = string{*targetStart, ts};
+        }
+#endif
+
         // After super-primiive testing (not even this code - elswhere) - this probably faster. Really must test.
         //
         //  There is also https://github.com/boostorg/nowide to look at (not yet)
         //          -LGP 2022-12-17
 #if qPlatform_Windows
-        {
-            if (*sourceStart == sourceEnd) {
-                return ConversionResult::conversionOK;
-            }
-            else {
-                int stringLength = ::WideCharToMultiByte (CP_UTF8, 0, reinterpret_cast<const WCHAR*> (*sourceStart), static_cast<int> (sourceEnd - sourceEnd), *targetStart, static_cast<int> (targetEnd - *targetStart), nullptr, nullptr);
-                *sourceStart     = sourceEnd; // wag - dont think MultiByteToWideChar tells us this
-                *targetStart     = *targetStart + stringLength;
-                return stringLength == 0 ? ConversionResult::sourceIllegal : ConversionResult::conversionOK;
-            }
-        }
+        [[maybe_unused]] char* savedTargetStart = *targetStart;
+        ConversionResult       result           = ConvertQuietly_Platform_Windows_ (sourceStart, sourceEnd, targetStart, targetEnd, flags);
+        Ensure (result == referenceResult);
+        Ensure ((string{savedTargetStart, *targetStart} == referenceConvertedString));
+        return result;
 #endif
-        {
-            //  was ConvertUTF16toUTF8
-            ConversionResult result = conversionOK;
-            const char16_t*  source = *sourceStart;
-            UTF8_*           target = reinterpret_cast<UTF8_*> (*targetStart);
-            while (source < sourceEnd) {
-                char32_t           ch;
-                unsigned short     bytesToWrite = 0;
-                constexpr char32_t byteMask     = 0xBF;
-                constexpr char32_t byteMark     = 0x80;
-                const char16_t*    oldSource    = source; /* In case we have to back up because of target overflow. */
-                ch                              = *source++;
-                /* If we have a surrogate pair, convert to char32_t first. */
-                if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_HIGH_END) [[unlikely]] {
-                    /* If the 16 bits following the high surrogate are in the source buffer... */
-                    if (source < sourceEnd) [[likely]] {
-                        char32_t ch2 = *source;
-                        /* If it's a low surrogate, convert to char32_t. */
-                        if (ch2 >= UNI_SUR_LOW_START && ch2 <= UNI_SUR_LOW_END) {
-                            ch = ((ch - UNI_SUR_HIGH_START) << halfShift) + (ch2 - UNI_SUR_LOW_START) + halfBase;
-                            ++source;
-                        }
-                        else if (flags == strictConversion) { /* it's an unpaired high surrogate */
-                            --source;                         /* return to the illegal value itself */
-                            result = sourceIllegal;
-                            break;
-                        }
-                    }
-                    else {        /* We don't have the 16 bits following the high surrogate. */
-                        --source; /* return to the high surrogate */
-                        result = sourceExhausted;
-                        break;
-                    }
-                }
-                else if (flags == strictConversion) {
-                    /* UTF-16 surrogate values are illegal in UTF-32 */
-                    if (ch >= UNI_SUR_LOW_START && ch <= UNI_SUR_LOW_END) {
-                        --source; /* return to the illegal value itself */
-                        result = sourceIllegal;
-                        break;
-                    }
-                }
-                /* Figure out how many bytes the result will require */
-                if (ch < (char32_t)0x80) {
-                    bytesToWrite = 1;
-                }
-                else if (ch < (char32_t)0x800) {
-                    bytesToWrite = 2;
-                }
-                else if (ch < (char32_t)0x10000) {
-                    bytesToWrite = 3;
-                }
-                else if (ch < (char32_t)0x110000) {
-                    bytesToWrite = 4;
-                }
-                else {
-                    bytesToWrite = 3;
-                    ch           = UNI_REPLACEMENT_CHAR;
-                }
-
-                target += bytesToWrite;
-                if (target > reinterpret_cast<UTF8_*> (targetEnd)) {
-                    source = oldSource; /* Back up source pointer! */
-                    target -= bytesToWrite;
-                    result = targetExhausted;
-                    break;
-                }
-                switch (bytesToWrite) { /* note: everything falls through. */
-                    case 4:
-                        *--target = (UTF8_)((ch | byteMark) & byteMask);
-                        ch >>= 6;
-                    case 3:
-                        *--target = (UTF8_)((ch | byteMark) & byteMask);
-                        ch >>= 6;
-                    case 2:
-                        *--target = (UTF8_)((ch | byteMark) & byteMask);
-                        ch >>= 6;
-                    case 1:
-                        *--target = (UTF8_)(ch | firstByteMark[bytesToWrite]);
-                }
-                target += bytesToWrite;
-            }
-            *sourceStart = source;
-            *targetStart = reinterpret_cast<char*> (target);
-            return result;
-        }
+        return ConvertUTF16toUTF8_ (sourceStart, sourceEnd, targetStart, targetEnd, flags);
     }
 
 #if __cpp_char8_t >= 201811L
@@ -3163,129 +3307,29 @@ namespace Stroika::Foundation::Characters::UTFConvert {
     {
         Require (*sourceStart <= sourceEnd);
         Require (*targetStart <= targetEnd);
-#if qPlatform_Windows
+#if qDebug && qPlatform_Windows
+        ConversionResult referenceResult;
+        wstring          referenceConvertedString;
         {
-            // After super-primiive testing, it appears this windows code is significantly faster
-            // then the ConvertUTF8toUTF16 code, which in turn, is significantly faster than
-            // (the deprecated) std::codecvt_utf8_utf16<char16_t> - tested on 64-bit windows
-            //
-            //  There is also https://github.com/boostorg/nowide to look at (not yet)
-            //          -LGP 2022-12-17
-            if (*sourceStart == sourceEnd) {
-                return ConversionResult::conversionOK;
-            }
-            else {
-                int stringLength = ::MultiByteToWideChar (CP_UTF8, 0, *sourceStart, static_cast<int> (sourceEnd - *sourceStart), reinterpret_cast<LPWSTR> (*targetStart), static_cast<int> (targetEnd - *targetStart));
-                *sourceStart     = sourceEnd; // wag - dont think MultiByteToWideChar tells us this
-                *targetStart     = *targetStart + stringLength;
-                return stringLength == 0 ? ConversionResult::sourceIllegal : ConversionResult::conversionOK;
-            }
+            const char* ss           = *sourceStart;
+            char16_t*   ts           = *targetStart;
+            referenceResult          = ConvertUTF8toUTF16_ (&ss, sourceEnd, &ts, targetEnd, flags);
+            referenceConvertedString = wstring{*targetStart, ts};
         }
 #endif
-#if false
-        {
-            // SIGH - DEPRECATED but ALSO more than twice as slow as my (lifted) implementation (not sure why - looks similar).
-            //      --LGP 2022-12-17
-            //  https://en.cppreference.com/w/cpp/locale/codecvt_utf8_utf16
-            static const std::codecvt_utf8_utf16<char16_t>             cvt;
-            mbstate_t                                                  state{};
-            const char*                                                cursorB   = *sourceStart;
-            char16_t*                                                  outCursor = *targetStart;
-            [[maybe_unused]] std::codecvt_utf8_utf16<char16_t>::result rr        = cvt.in (state, *sourceStart, sourceEnd, cursorB, *targetStart, targetEnd, outCursor);
-            *sourceStart                                                         = reinterpret_cast<const char*> (cursorB);
-            *targetStart                                                         = outCursor;
-            return cvt_stdcodecvt_results_ (rr);
-        }
-#else
-        {
-            //  was ConvertUTF8toUTF16
-            ConversionResult result = conversionOK;
-            const UTF8_* source = reinterpret_cast<const UTF8_*> (*sourceStart);
-            char16_t* target = *targetStart;
-            while (source < reinterpret_cast<const UTF8_*> (sourceEnd)) {
-                char32_t ch = 0;
-                unsigned short extraBytesToRead = trailingBytesForUTF8[*source];
-                if (source + extraBytesToRead >= reinterpret_cast<const UTF8_*> (sourceEnd)) {
-                    result = sourceExhausted;
-                    break;
-                }
-                /* Do this check whether lenient or strict */
-                if (!isLegalUTF8_ (source, extraBytesToRead + 1)) {
-                    result = sourceIllegal;
-                    break;
-                }
-                /*
-             * The cases all fall through. See "Note A" below.
-             */
-                switch (extraBytesToRead) {
-                    case 5:
-                        ch += *source++;
-                        ch <<= 6; /* remember, illegal UTF-8 */
-                    case 4:
-                        ch += *source++;
-                        ch <<= 6; /* remember, illegal UTF-8 */
-                    case 3:
-                        ch += *source++;
-                        ch <<= 6;
-                    case 2:
-                        ch += *source++;
-                        ch <<= 6;
-                    case 1:
-                        ch += *source++;
-                        ch <<= 6;
-                    case 0:
-                        ch += *source++;
-                }
-                ch -= offsetsFromUTF8[extraBytesToRead];
 
-                if (target >= targetEnd) [[unlikely]] {
-                    source -= (extraBytesToRead + 1); /* Back up source pointer! */
-                    result = targetExhausted;
-                    break;
-                }
-                if (ch <= UNI_MAX_BMP) { /* Target is a character <= 0xFFFF */
-                    /* UTF-16 surrogate values are illegal in UTF-32 */
-                    if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) {
-                        if (flags == strictConversion) {
-                            source -= (extraBytesToRead + 1); /* return to the illegal value itself */
-                            result = sourceIllegal;
-                            break;
-                        }
-                        else {
-                            *target++ = UNI_REPLACEMENT_CHAR;
-                        }
-                    }
-                    else {
-                        *target++ = (char16_t)ch; /* normal case */
-                    }
-                }
-                else if (ch > UNI_MAX_UTF16) {
-                    if (flags == strictConversion) {
-                        result = sourceIllegal;
-                        source -= (extraBytesToRead + 1); /* return to the start */
-                        break;                            /* Bail out; shouldn't continue */
-                    }
-                    else {
-                        *target++ = UNI_REPLACEMENT_CHAR;
-                    }
-                }
-                else {
-                    /* target is a character in range 0xFFFF - 0x10FFFF. */
-                    if (target + 1 >= targetEnd) {
-                        source -= (extraBytesToRead + 1); /* Back up source pointer! */
-                        result = targetExhausted;
-                        break;
-                    }
-                    ch -= halfBase;
-                    *target++ = (char16_t)((ch >> halfShift) + UNI_SUR_HIGH_START);
-                    *target++ = (char16_t)((ch & halfMask) + UNI_SUR_LOW_START);
-                }
-            }
-            *sourceStart = reinterpret_cast<const char*> (source);
-            *targetStart = target;
-            return result;
-        }
+        // After super-primiive testing (not even this code - elswhere) - this probably faster. Really must test.
+        //
+        //  There is also https://github.com/boostorg/nowide to look at (not yet)
+        //          -LGP 2022-12-17
+#if qPlatform_Windows
+        [[maybe_unused]] char16_t* savedTargetStart = *targetStart;
+        ConversionResult           result           = ConvertQuietly_Platform_Windows_ (sourceStart, sourceEnd, targetStart, targetEnd, flags);
+        Ensure (result == referenceResult);
+        Ensure ((wstring{savedTargetStart, *targetStart} == referenceConvertedString));
+        return result;
 #endif
+        return ConvertUTF8toUTF16_ (sourceStart, sourceEnd, targetStart, targetEnd, flags);
     }
 
 #if __cpp_char8_t >= 201811L
