@@ -187,7 +187,8 @@ namespace {
     // NOTE: THIS STARTS SEEKED JUST PAST OPENING '{'
     VariantValue Reader_Object_ (MyBufferedStreamReader_& in)
     {
-        Mapping<String, VariantValue> result;
+        // @todo consider using other optimizations like Mapping_hashmap<>
+        Containers::Concrete::Mapping_stdmap<String, VariantValue>::STDMAP<> result;    // slight tweak using stl map, and move-construct Stroika map at the end
 
         // accumulate elements, and check for close-array
         enum LookingFor { eName,
@@ -207,7 +208,7 @@ namespace {
             if (nextChar == '}') {
                 if (lf == eName or lf == eComma) {
                     // skip char
-                    return VariantValue{result};
+                    return VariantValue{Containers::Concrete::Mapping_stdmap<String, VariantValue>{move( result)}};
                 }
                 else {
                     in.Seek (Streams::Whence::eFromCurrent, -1);
@@ -240,11 +241,11 @@ namespace {
             else {
                 in.Seek (Streams::Whence::eFromCurrent, -1);
                 if (lf == eName) {
-                    curName = Reader_String_ (in).As<wstring> ();
+                    curName = Reader_String_ (in).As<String> ();
                     lf      = eColon;
                 }
                 else if (lf == eValue) [[likely]] {
-                    result.Add (Memory::ValueOf (curName), Reader_value_ (in));
+                    result.insert ({Memory::ValueOf (curName), Reader_value_ (in)});
                     curName = nullopt;
                     lf      = eComma;
                 }
@@ -271,7 +272,7 @@ namespace {
                     // allow ending ',' - harmless - could  be more aggressive - but if so - careful of zero-sized array special case
                 }
                 in.AdvanceOne ();
-                return VariantValue{result};
+                return VariantValue{Containers::Concrete::Sequence_stdvector<VariantValue>{move (result)}};
             }
             else if (in.Peek () == ',') {
                 if (lookingForElt) [[unlikely]] {
