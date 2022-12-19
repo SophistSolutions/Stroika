@@ -223,12 +223,12 @@ namespace Stroika::Foundation::DataExchange {
         VariantValue (const wchar_t* val);
         VariantValue (const String& val);
         explicit VariantValue (const map<wstring, VariantValue>& val);
-        explicit VariantValue (const Mapping<String, VariantValue>& val);
         explicit VariantValue (Mapping<String, VariantValue>&& val);
+        explicit VariantValue (const Mapping<String, VariantValue>& val);
         explicit VariantValue (const vector<VariantValue>& val);
+        explicit VariantValue (Sequence<VariantValue>&& val);
         explicit VariantValue (const Sequence<VariantValue>& val);
         explicit VariantValue (const Traversal::Iterable<VariantValue>& val);
-        explicit VariantValue (Sequence<VariantValue>&& val);
         VariantValue (const VariantValue& src) = default;
         VariantValue (VariantValue&& src) noexcept;
         template <typename T>

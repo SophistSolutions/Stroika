@@ -208,6 +208,11 @@ VariantValue::VariantValue (Mapping<String, VariantValue>&& val)
 {
 }
 
+VariantValue::VariantValue (Sequence<VariantValue>&& val)
+    : fVal_{MakeSharedPtr_<TIRep_<Sequence<VariantValue>>> (move (val))}
+{
+}
+
 VariantValue::VariantValue (const Sequence<VariantValue>& val)
     : fVal_{MakeSharedPtr_<TIRep_<Sequence<VariantValue>>> (val)}
 {
@@ -215,11 +220,6 @@ VariantValue::VariantValue (const Sequence<VariantValue>& val)
 
 VariantValue::VariantValue (const Traversal::Iterable<VariantValue>& val)
     : fVal_{MakeSharedPtr_<TIRep_<Sequence<VariantValue>>> (Sequence<VariantValue> (val))}
-{
-}
-
-VariantValue::VariantValue (Sequence<VariantValue>&& val)
-    : fVal_{MakeSharedPtr_<TIRep_<Sequence<VariantValue>>> (move (val))}
 {
 }
 
@@ -243,8 +243,7 @@ VariantValue::VariantValue (const boost::json::value& val)
             *this = val.as_uint64 ();
             break;
         case json::kind::string: {
-            // boost::json::string documents it represents a string as a series of UTF-8 characters
-            const json::string& bs = val.as_string ();
+            const json::string& bs = val.as_string (); // boost::json::string documents it represents a string as a series of UTF-8 characters
             *this                  = String::FromUTF8 (bs.begin (), bs.end ());
         } break;
         case json::kind::array: {
