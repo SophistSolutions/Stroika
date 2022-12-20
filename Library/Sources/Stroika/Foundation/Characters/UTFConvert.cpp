@@ -49,7 +49,6 @@ namespace {
         static constexpr char32_t UNI_REPLACEMENT_CHAR = (char32_t)0x0000FFFD;
         static constexpr char32_t UNI_MAX_BMP          = (char32_t)0x0000FFFF;
         static constexpr char32_t UNI_MAX_UTF16        = (char32_t)0x0010FFFF;
-        static constexpr char32_t UNI_MAX_UTF32        = (char32_t)0x7FFFFFFF;
         static constexpr char32_t UNI_MAX_LEGAL_UTF32  = (char32_t)0x0010FFFF;
 
         enum ConversionResult {
