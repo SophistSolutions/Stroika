@@ -9,6 +9,10 @@
 #include <optional>
 #include <span>
 
+#if __has_include("boost/locale/encoding_utf.hpp")
+#include <boost/locale/encoding_utf.hpp>
+#endif
+
 /**
  *  \file
  *      This module is designed to provide mappings between various UTF encodings of UNICODE characters.</p>
@@ -58,9 +62,9 @@ namespace Stroika::Foundation::Characters {
                 // Based on libutfxx
                 eStroikaPortable,
 
-#if 0
+#if __has_include("boost/locale/encoding_utf.hpp")
                 // unteseted/unimplmeneted so far
-                eBoostNoWide,
+                eBoost_Locale,
 #endif
 
 #if qPlatform_Windows
@@ -222,6 +226,12 @@ namespace Stroika::Foundation::Characters {
         static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char32_t> source, const span<char16_t> target);
         static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char32_t> source, const span<char8_t> target);
         static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char16_t> source, const span<char8_t> target);
+
+
+#if __has_include("boost/locale/encoding_utf.hpp")
+    private:
+        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_boost_locale_ (span<const char8_t> source, const span<char16_t> target);
+#endif
 
     private:
         // this API allows multibyteConversionState == nullptr, even though public APIs don't

@@ -328,6 +328,38 @@ namespace Stroika::Foundation::Characters {
                 Throw_ (cr);
         }
     }
+#if __has_include("boost/locale/encoding_utf.hpp")
+    inline auto UTFConverter::ConvertQuietly_boost_locale_ (span<const char8_t> source, const span<char16_t> target) -> tuple<ConversionResults, size_t, size_t>
+    {
+        if (source.empty ()) {
+            return make_tuple (ConversionResults::ok, 0, 0);
+        }
+        basic_string<char8_t> src = basic_string<char8_t>{reinterpret_cast<const char8_t*> (&*source.begin ()), reinterpret_cast<const char8_t*> (&*source.begin ()) + source.size ()};
+        auto                  r   = boost::locale::conv::utf_to_utf<char16_t> (src.c_str ());
+        #if 0
+        // do something more like this loop/inserter stuff
+        std::basic_string<CharOut> result;
+                result.reserve(end-begin);
+                typedef std::back_insert_iterator<std::basic_string<CharOut> > inserter_type;
+                inserter_type inserter(result);
+                utf::code_point c;
+                while(begin!=end) {
+                    c=utf::utf_traits<CharIn>::template decode<CharIn const *>(begin,end);
+                    if(c==utf::illegal || c==utf::incomplete) {
+                        if(how==stop)
+                            throw conversion_error();
+                    }
+                    else {
+                        utf::utf_traits<CharOut>::template encode<inserter_type>(c,inserter);
+                    }
+                }
+                return result;
+                #endif
+
+        //tmphack to test
+        return make_tuple (ConversionResults::ok, 0, 0);
+    }
+#endif
 
 }
 #endif /*_Stroika_Foundation_Characters_UTFConvert_inl_*/
