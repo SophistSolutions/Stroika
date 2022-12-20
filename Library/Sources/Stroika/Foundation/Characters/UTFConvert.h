@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Characters {
         };
 
     public:
-        constexpr UTFConverter (const Options& options = Options{})
+        constexpr UTFConverter (const Options& options /*= Options{}*/)
             : fOriginalOptions_{options}
             , fUsingOptions{options}
         {
@@ -85,6 +85,8 @@ namespace Stroika::Foundation::Characters {
 #endif
             }
         }
+        constexpr UTFConverter (const Options& options);
+         
 
     private:
         Options fOriginalOptions_;
@@ -181,6 +183,15 @@ namespace Stroika::Foundation::Characters {
     private:
         static void ThrowIf_ (ConversionResults cr);
     };
+
+    // Need BUG DEFINE for this workaround for ??? at leats macos/xcode
+    constexpr UTFConverter::UTFConverter (const Options& options)
+        : UTFConverter{Options{}}
+    {
+        
+    }
+
+
     inline constexpr UTFConverter UTFConverter::kThe;
 
 }
