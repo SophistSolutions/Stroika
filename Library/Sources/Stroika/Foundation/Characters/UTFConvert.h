@@ -26,6 +26,11 @@ namespace Stroika::Foundation::Characters {
      *      o   Boost no-wide       (untested so not sure about this)
      *      o   Windows API         (appears most performant, but doesn't support mbstate_t)
      *      o   Stroika portable implementation, based on libutfxx (slow but portable, and works, NOT supporting mbstate_t
+     * 
+     *  Design Choices:
+     *      o   Could have API to COMPUTE size of output buffer. But thats as much work to compute as actually doing the conversion (generally close).
+     *          So - instead - have QuickComputeConversionOutputBufferSize () API, which quickly computes a reasonable buffer size, and just
+     *          assert we never run out of space. Not a great plan, but probably pretty good, most of the time.
      */
     class UTFConverter {
     public:
@@ -101,8 +106,16 @@ namespace Stroika::Foundation::Characters {
          *  @See ConvertQuietly ()
          *  @See Convert ()
          */
+
+        /// @todo REDO WITH SPAN ONLY
         template <typename FROM, typename TO>
         static size_t QuickComputeConversionOutputBufferSize (const FROM* sourceStart, const FROM* sourceEnd);
+
+        template <typename FROM, typename TO>
+        static size_t QuickComputeConversionOutputBufferSize (span<FROM> src)
+        {
+            return QuickComputeConversionOutputBufferSize (&*src.begin (), &*src.begin () + src.size ());
+        }
 
     public:
         enum class ConversionResults {
@@ -118,6 +131,19 @@ namespace Stroika::Foundation::Characters {
          *  \req size of target span large enuf  (SEE XXX FOR REQUIREMNET)
          * 
          *  \note overload taking mbstate_t maybe used if converting a large stream in parts which don't necesarily fall on multibyte boundaries.
+         * 
+         *  Wrapper on ConvertQuietly, that throws when bad source data input, and asserts out when bad target size (insuffiient for buffer).
+         *
+         *  \par Example Usage
+         *      \code
+         *          size_t                    cvtBufSize = UTFConverter::QuickComputeConversionOutputBufferSize<char8_t, wchar_t> (src);
+         *          StackBuffer<wchar_t>      buf{Memory::eUninitialized, cvtBufSize};
+         *          span<char8_t>                  outStr = span<char8_t> (buf);
+         *          auto result = UTFConverter::kThe.Convert (src, span<char8_t> (buf));
+         *          return String{buf.begin (), buf.begin () + get<2> (result)};
+         *      \endcode
+         *
+         *  @see ConvertQuietly
          */
         nonvirtual tuple<size_t, size_t> Convert (const span<const char8_t> source, const span<char16_t> target) const;
         nonvirtual tuple<size_t, size_t> Convert (const span<const char8_t> source, const span<char16_t> target, mbstate_t* multibyteConversionState) const;
@@ -141,6 +167,10 @@ namespace Stroika::Foundation::Characters {
 #endif
     private:
         static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (const span<const char8_t> source, const span<char16_t> target);
+        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (const span<const char8_t> source, const span<char32_t> target);
+        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (const span<const char16_t> source, const span<char32_t> target);
+        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (const span<const char32_t> source, const span<char16_t> target);
+        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (const span<const char32_t> source, const span<char8_t> target);
         static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (const span<const char16_t> source, const span<char8_t> target);
 
     private:

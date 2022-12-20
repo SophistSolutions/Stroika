@@ -36,7 +36,6 @@ namespace Stroika::Foundation::Characters {
         // answer if translating only characters from UTF-16 to UTF-8: 4 bytes
         return (sourceEnd - sourceStart) * 4;
     }
-#if __cpp_char8_t >= 201811L
     template <>
     inline size_t UTFConverter::QuickComputeConversionOutputBufferSize<char16_t, char8_t> (const char16_t* sourceStart, const char16_t* sourceEnd)
     {
@@ -44,19 +43,16 @@ namespace Stroika::Foundation::Characters {
         // answer if translating only characters from UTF-16 to UTF-8: 4 bytes
         return (sourceEnd - sourceStart) * 4;
     }
-#endif
     template <>
     inline size_t UTFConverter::QuickComputeConversionOutputBufferSize<char, char16_t> (const char* sourceStart, const char* sourceEnd)
     {
         return sourceEnd - sourceStart;
     }
-#if __cpp_char8_t >= 201811L
     template <>
     inline size_t UTFConverter::QuickComputeConversionOutputBufferSize<char8_t, char16_t> (const char8_t* sourceStart, const char8_t* sourceEnd)
     {
         return sourceEnd - sourceStart;
     }
-#endif
     template <>
     inline size_t UTFConverter::QuickComputeConversionOutputBufferSize<char32_t, char> (const char32_t* sourceStart, const char32_t* sourceEnd)
     {
@@ -64,7 +60,6 @@ namespace Stroika::Foundation::Characters {
         // the maximum number of bytes for a character in UTF-8 is ... 6 bytes
         return (sourceEnd - sourceStart) * 6;
     }
-#if __cpp_char8_t >= 201811L
     template <>
     inline size_t UTFConverter::QuickComputeConversionOutputBufferSize<char32_t, char8_t> (const char32_t* sourceStart, const char32_t* sourceEnd)
     {
@@ -72,33 +67,28 @@ namespace Stroika::Foundation::Characters {
         // the maximum number of bytes for a character in UTF-8 is ... 6 bytes
         return (sourceEnd - sourceStart) * 6;
     }
-#endif
     template <>
     inline size_t UTFConverter::QuickComputeConversionOutputBufferSize<char, char32_t> (const char* sourceStart, const char* sourceEnd)
     {
         return sourceEnd - sourceStart;
     }
-#if __cpp_char8_t >= 201811L
     template <>
     inline size_t UTFConverter::QuickComputeConversionOutputBufferSize<char8_t, char32_t> (const char8_t* sourceStart, const char8_t* sourceEnd)
     {
         return sourceEnd - sourceStart;
     }
-#endif
     template <>
     inline size_t UTFConverter::QuickComputeConversionOutputBufferSize<char, wchar_t> (const char* sourceStart, const char* sourceEnd)
     {
         using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
         return QuickComputeConversionOutputBufferSize<char, ReplaceCharType> (sourceStart, sourceEnd);
     }
-#if __cpp_char8_t >= 201811L
     template <>
     inline size_t UTFConverter::QuickComputeConversionOutputBufferSize<char8_t, wchar_t> (const char8_t* sourceStart, const char8_t* sourceEnd)
     {
         using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
         return QuickComputeConversionOutputBufferSize<char8_t, ReplaceCharType> (sourceStart, sourceEnd);
     }
-#endif
     template <>
     inline size_t UTFConverter::QuickComputeConversionOutputBufferSize<char16_t, wchar_t> (const char16_t* sourceStart, const char16_t* sourceEnd)
     {
@@ -117,14 +107,12 @@ namespace Stroika::Foundation::Characters {
         using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
         return QuickComputeConversionOutputBufferSize<ReplaceCharType, char> (reinterpret_cast<const ReplaceCharType*> (sourceStart), reinterpret_cast<const ReplaceCharType*> (sourceEnd));
     }
-#if __cpp_char8_t >= 201811L
     template <>
     inline size_t UTFConverter::QuickComputeConversionOutputBufferSize<wchar_t, char8_t> (const wchar_t* sourceStart, const wchar_t* sourceEnd)
     {
         using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
         return QuickComputeConversionOutputBufferSize<ReplaceCharType, char8_t> (reinterpret_cast<const ReplaceCharType*> (sourceStart), reinterpret_cast<const ReplaceCharType*> (sourceEnd));
     }
-#endif
     template <>
     inline size_t UTFConverter::QuickComputeConversionOutputBufferSize<wchar_t, char16_t> (const wchar_t* sourceStart, const wchar_t* sourceEnd)
     {
