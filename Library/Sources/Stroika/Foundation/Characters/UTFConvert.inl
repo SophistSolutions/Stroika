@@ -281,6 +281,9 @@ namespace Stroika::Foundation::Characters {
     template <typename FromT>
     constexpr auto UTFConverter::ConvertCompatibleSpan_ (span<FromT> f) -> span<CompatibleT_<FromT>>
     {
+        if (f.empty ()) {
+            return span<CompatibleT_<FromT>>{}; // avoid the appearance of dereferencing an empty span (important for msvc runtime)
+        }
         return span{(CompatibleT_<FromT>*)&*f.begin (), (CompatibleT_<FromT>*)&*f.begin () + f.size ()};
     }
 

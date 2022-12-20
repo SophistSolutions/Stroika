@@ -718,7 +718,7 @@ namespace {
  ***************************** Characters::UTFConverter *************************
  ********************************************************************************
  */
-    // @todo refactor with template ConvertQuietly_StroikaPortable_ to avoid all the duplication
+// @todo refactor with template ConvertQuietly_StroikaPortable_ to avoid all the duplication
 auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char8_t> source, const span<char16_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
     if (source.empty ()) {
