@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Characters {
         }
     }
 
-/*
+    /*
      ********************************************************************************
      *************************** Characters::UTFConverter ***************************
      ********************************************************************************
@@ -55,29 +55,29 @@ namespace Stroika::Foundation::Characters {
     template <typename FROM, typename TO>
     constexpr size_t UTFConverter::ComputeOutputBufferSize (span<FROM> src)
     {
-        if constexpr (sizeof (TO) == 1) {
-            // shrinking width of T, so easy to compute bufsize
+        if constexpr (sizeof (FROM) == 1) {
+            // worst case is each src byte is a character
             return src.size ();
         }
-        else if constexpr (sizeof (TO) == 2) {
-            if constexpr (sizeof (FROM) == 1) {
+        else if constexpr (sizeof (FROM) == 2) {
+            if constexpr (sizeof (TO) == 1) {
                 // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
                 // answer if translating only characters from UTF-16 to UTF-8: 4 bytes
                 return 4 * src.size ();
             }
             else {
-                static_assert (sizeof (FROM) == 4);
-                return src.size ();
+                static_assert (sizeof (TO) == 4);
+                return src.size (); // worst case is no surrogate pairs
             }
         }
-        else if constexpr (sizeof (TO) == 4) {
-            if constexpr (sizeof (FROM) == 1) {
+        else if constexpr (sizeof (FROM) == 4) {
+            if constexpr (sizeof (TO) == 1) {
                 // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
                 // the maximum number of bytes for a character in UTF-8 is ... 6 bytes
                 return 6 * src.size ();
             }
             else {
-                static_assert (sizeof (FROM) == 2);
+                static_assert (sizeof (TO) == 2);
                 return 2 * src.size ();
             }
         }
@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Characters {
     inline tuple<size_t, size_t> UTFConverter::Convert (span<const SRC_T> source, span<TRG_T> target) const
         requires (sizeof (SRC_T) != sizeof (TRG_T))
     {
-        return Convert (_ConvertCompatibleSpan (source), _ConvertCompatibleSpan (target));
+        return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
     }
 
     inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char16_t> target) const -> tuple<ConversionResults, size_t, size_t>
@@ -275,7 +275,13 @@ namespace Stroika::Foundation::Characters {
     inline auto UTFConverter::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const -> tuple<ConversionResults, size_t, size_t>
         requires (sizeof (SRC_T) != sizeof (TRG_T))
     {
-        return ConvertQuietly (_ConvertCompatibleSpan (source), _ConvertCompatibleSpan (target));
+        return ConvertQuietly (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
+    }
+
+    template <typename FromT>
+    constexpr auto UTFConverter::ConvertCompatibleSpan_ (span<FromT> f) -> span<CompatibleT_<FromT>>
+    {
+        return span{(CompatibleT_<FromT>*)&*f.begin (), (CompatibleT_<FromT>*)&*f.begin () + f.size ()};
     }
 
 #if qPlatform_Windows

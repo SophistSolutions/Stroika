@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Characters {
      *          UTFConverter::kThe
      *      \endcode
      */
-    class UTFConverter {
+    class UTFConverter final {
     public:
         /**
          */
@@ -158,6 +158,9 @@ namespace Stroika::Foundation::Characters {
             requires (sizeof (SRC_T) != sizeof (TRG_T));
 
     public:
+        /**
+         *  \brief used for ConvertQuietly
+         */
         enum class ConversionResults {
             ok,              /* conversion successful */
             sourceExhausted, /* partial character in source, but hit end */
@@ -184,6 +187,9 @@ namespace Stroika::Foundation::Characters {
             requires (sizeof (SRC_T) != sizeof (TRG_T));
 
     public:
+        /**
+         *  \brief Nearly always use this default UTFConverter.
+         */
         static const UTFConverter kThe;
 
     private:
@@ -195,13 +201,10 @@ namespace Stroika::Foundation::Characters {
         template <typename SRC_T>
         using CompatibleT_ = AddConstIfMatching_<SRC_T, MapSizes_<SRC_T>>;
 
-    protected:
+    private:
         // need generic way to convert char to char8_t, and wchar_t to char16_t or char32_t
         template <typename FromT>
-        static span<CompatibleT_<FromT>> _ConvertCompatibleSpan (span<FromT> f)
-        {
-            return span{(CompatibleT_<FromT>*)&*f.begin (), (CompatibleT_<FromT>*)&*f.begin () + f.size ()};
-        }
+        static constexpr span<CompatibleT_<FromT>> ConvertCompatibleSpan_ (span<FromT> f);
 
     private:
         Options fOriginalOptions_;
