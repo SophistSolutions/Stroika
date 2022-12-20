@@ -840,6 +840,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Function.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2132,6 +2135,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\StreamReader.h">
       <Filter>Sources\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.h">
+      <Filter>Sources\Characters</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3503,6 +3509,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\StreamReader.inl">
       <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.inl">
+      <Filter>Sources\Characters</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

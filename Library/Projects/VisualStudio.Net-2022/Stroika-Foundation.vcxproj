@@ -80,6 +80,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\ToString.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\GUID.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Platform\Windows\Registry.cpp" />
@@ -302,6 +303,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String_Constant.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\ToString.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\GUID.h" />
@@ -744,6 +746,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String_Constant.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToDo.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToString.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\Compare.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\GUID.inl" />
