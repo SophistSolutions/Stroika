@@ -193,7 +193,7 @@ namespace {
     VariantValue Reader_Object_ (MyBufferedStreamReader_& in)
     {
         // @todo consider using other optimizations like Mapping_hashmap<>
-        Containers::Concrete::Mapping_stdmap<String, VariantValue>::STDMAP<> result;    // slight tweak using stl map, and move-construct Stroika map at the end
+        Containers::Concrete::Mapping_stdmap<String, VariantValue>::STDMAP<> result; // slight tweak using stl map, and move-construct Stroika map at the end
 
         // accumulate elements, and check for close-array
         enum LookingFor { eName,
@@ -213,7 +213,7 @@ namespace {
             if (nextChar == '}') {
                 if (lf == eName or lf == eComma) {
                     // skip char
-                    return VariantValue{Containers::Concrete::Mapping_stdmap<String, VariantValue>{move( result)}};
+                    return VariantValue{Containers::Concrete::Mapping_stdmap<String, VariantValue>{move (result)}};
                 }
                 else {
                     static const auto kException_{BadFormatException{L"JSON: Unexpected '}' reading object"sv}};
