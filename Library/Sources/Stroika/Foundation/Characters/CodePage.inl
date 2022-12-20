@@ -18,6 +18,8 @@
 #include "Platform/Windows/CodePage.h"
 #endif
 
+#include "UTFConvert.h"
+
 namespace Stroika::Foundation::Characters {
 
     /*
@@ -47,239 +49,60 @@ namespace Stroika::Foundation::Characters {
      *********************************** UTFConvert *********************************
      ********************************************************************************
      */
+
     namespace UTFConvert {
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<char32_t, char16_t> (const char32_t* sourceStart, const char32_t* sourceEnd)
+
+        enum [[deprecated ("Since Stroika v3, use class UTFConverter")]] ConversionResult{
+            conversionOK,    /* conversion successful */
+            sourceExhausted, /* partial character in source, but hit end */
+            targetExhausted, /* insuff. room in target for conversion */
+            sourceIllegal    /* source sequence is illegal/malformed */
+        };
+        enum [[deprecated ("Since Stroika v3, use class UTFConverter")]] ConversionFlags{
+            strictConversion = 0,
+            lenientConversion};
+
+        /**
+         */
+        [[deprecated ("Since Stroika v3, could support, but not clearly any reason")]] bool IsLegalUTF8Sequence (const char* source, const char* sourceEnd);
+        [[deprecated ("Since Stroika v3, could support, but not clearly any reason")]] bool IsLegalUTF8Sequence (const char8_t* source, const char8_t* sourceEnd);
+
+        template <typename FROM, typename TO>
+        [[deprecated ("Since Stroika v3, use class UTFConverter")]] inline size_t QuickComputeConversionOutputBufferSize (const FROM* sourceStart, const FROM* sourceEnd)
         {
-            return (sourceEnd - sourceStart) * 2;
+            return UTFConverter::ComputeOutputBufferSize<FROM, TO> (sourceStart, sourceEnd);
         }
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<char16_t, char32_t> (const char16_t* sourceStart, const char16_t* sourceEnd)
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        template <typename FROM, typename TO>
+        [[deprecated ("Since Stroika v3, use class UTFConverter::kThe")]] ConversionResult ConvertQuietly (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags)
         {
-            return sourceEnd - sourceStart;
-        }
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<char16_t, char> (const char16_t* sourceStart, const char16_t* sourceEnd)
-        {
-            // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
-            // answer if translating only characters from UTF-16 to UTF-8: 4 bytes
-            return (sourceEnd - sourceStart) * 4;
-        }
-#if __cpp_char8_t >= 201811L
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<char16_t, char8_t> (const char16_t* sourceStart, const char16_t* sourceEnd)
-        {
-            // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
-            // answer if translating only characters from UTF-16 to UTF-8: 4 bytes
-            return (sourceEnd - sourceStart) * 4;
-        }
-#endif
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<char, char16_t> (const char* sourceStart, const char* sourceEnd)
-        {
-            return sourceEnd - sourceStart;
-        }
-#if __cpp_char8_t >= 201811L
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<char8_t, char16_t> (const char8_t* sourceStart, const char8_t* sourceEnd)
-        {
-            return sourceEnd - sourceStart;
-        }
-#endif
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<char32_t, char> (const char32_t* sourceStart, const char32_t* sourceEnd)
-        {
-            // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
-            // the maximum number of bytes for a character in UTF-8 is ... 6 bytes
-            return (sourceEnd - sourceStart) * 6;
-        }
-#if __cpp_char8_t >= 201811L
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<char32_t, char8_t> (const char32_t* sourceStart, const char32_t* sourceEnd)
-        {
-            // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
-            // the maximum number of bytes for a character in UTF-8 is ... 6 bytes
-            return (sourceEnd - sourceStart) * 6;
-        }
-#endif
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<char, char32_t> (const char* sourceStart, const char* sourceEnd)
-        {
-            return sourceEnd - sourceStart;
-        }
-#if __cpp_char8_t >= 201811L
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<char8_t, char32_t> (const char8_t* sourceStart, const char8_t* sourceEnd)
-        {
-            return sourceEnd - sourceStart;
-        }
-#endif
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<char, wchar_t> (const char* sourceStart, const char* sourceEnd)
-        {
-            using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
-            return QuickComputeConversionOutputBufferSize<char, ReplaceCharType> (sourceStart, sourceEnd);
-        }
-#if __cpp_char8_t >= 201811L
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<char8_t, wchar_t> (const char8_t* sourceStart, const char8_t* sourceEnd)
-        {
-            using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
-            return QuickComputeConversionOutputBufferSize<char8_t, ReplaceCharType> (sourceStart, sourceEnd);
-        }
-#endif
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<char16_t, wchar_t> (const char16_t* sourceStart, const char16_t* sourceEnd)
-        {
-            using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
-            return QuickComputeConversionOutputBufferSize<char16_t, ReplaceCharType> (sourceStart, sourceEnd);
-        }
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<char32_t, wchar_t> (const char32_t* sourceStart, const char32_t* sourceEnd)
-        {
-            using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
-            return QuickComputeConversionOutputBufferSize<char32_t, ReplaceCharType> (sourceStart, sourceEnd);
-        }
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<wchar_t, char> (const wchar_t* sourceStart, const wchar_t* sourceEnd)
-        {
-            using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
-            return QuickComputeConversionOutputBufferSize<ReplaceCharType, char> (reinterpret_cast<const ReplaceCharType*> (sourceStart), reinterpret_cast<const ReplaceCharType*> (sourceEnd));
-        }
-#if __cpp_char8_t >= 201811L
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<wchar_t, char8_t> (const wchar_t* sourceStart, const wchar_t* sourceEnd)
-        {
-            using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
-            return QuickComputeConversionOutputBufferSize<ReplaceCharType, char8_t> (reinterpret_cast<const ReplaceCharType*> (sourceStart), reinterpret_cast<const ReplaceCharType*> (sourceEnd));
-        }
-#endif
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<wchar_t, char16_t> (const wchar_t* sourceStart, const wchar_t* sourceEnd)
-        {
-            using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
-            return QuickComputeConversionOutputBufferSize<ReplaceCharType, char16_t> (reinterpret_cast<const ReplaceCharType*> (sourceStart), reinterpret_cast<const ReplaceCharType*> (sourceEnd));
-        }
-        template <>
-        inline size_t QuickComputeConversionOutputBufferSize<wchar_t, char32_t> (const wchar_t* sourceStart, const wchar_t* sourceEnd)
-        {
-            using ReplaceCharType = conditional_t<sizeof (wchar_t) == sizeof (char16_t), char16_t, char32_t>;
-            return QuickComputeConversionOutputBufferSize<ReplaceCharType, char32_t> (reinterpret_cast<const ReplaceCharType*> (sourceStart), reinterpret_cast<const ReplaceCharType*> (sourceEnd));
-        }
-        template <>
-        inline ConversionResult ConvertQuietly (const wchar_t** sourceStart, const wchar_t* sourceEnd, char** targetStart, char* targetEnd, ConversionFlags flags)
-        {
-            if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
-                return ConvertQuietly (reinterpret_cast<const char16_t**> (sourceStart), reinterpret_cast<const char16_t*> (sourceEnd), targetStart, targetEnd, flags);
+            auto r = UTFConverter::kThe.ConvertQuietly (span{*sourceStart, sourceEnd}, span{*targetStart, targetEnd});
+            *sourceStart += get<1> (r);
+            *targetStart += get<2> (r);
+            switch (get<0> (r)) {
+                case UTFConverter::ConversionResults::ok:
+                    return ConversionResult::conversionOK;
+                case UTFConverter::ConversionResults::sourceExhausted:
+                    return ConversionResult::sourceExhausted;
+                case UTFConverter::ConversionResults::sourceIllegal:
+                    return ConversionResult::sourceIllegal;
+                default:
+                    AssertNotReached ();
+                    return ConversionResult::sourceIllegal;
             }
-            if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
-                return ConvertQuietly (reinterpret_cast<const char32_t**> (sourceStart), reinterpret_cast<const char32_t*> (sourceEnd), targetStart, targetEnd, flags);
-            }
-            AssertNotReached ();
-            return sourceIllegal;
-        }
-#if __cpp_char8_t >= 201811L
-        template <>
-        inline ConversionResult ConvertQuietly (const wchar_t** sourceStart, const wchar_t* sourceEnd, char8_t** targetStart, char8_t* targetEnd, ConversionFlags flags)
-        {
-            if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
-                return ConvertQuietly (reinterpret_cast<const char16_t**> (sourceStart), reinterpret_cast<const char16_t*> (sourceEnd), targetStart, targetEnd, flags);
-            }
-            if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
-                return ConvertQuietly (reinterpret_cast<const char32_t**> (sourceStart), reinterpret_cast<const char32_t*> (sourceEnd), targetStart, targetEnd, flags);
-            }
-            AssertNotReached ();
-            return sourceIllegal;
-        }
-#endif
-        template <>
-        inline ConversionResult ConvertQuietly (const wchar_t** sourceStart, const wchar_t* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
-        {
-            if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
-                return ConvertQuietly (reinterpret_cast<const char16_t**> (sourceStart), reinterpret_cast<const char16_t*> (sourceEnd), targetStart, targetEnd, flags);
-            }
-            if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
-                return ConvertQuietly (reinterpret_cast<const char32_t**> (sourceStart), reinterpret_cast<const char32_t*> (sourceEnd), targetStart, targetEnd, flags);
-            }
-            AssertNotReached ();
-            return sourceIllegal;
-        }
-        template <>
-        inline ConversionResult ConvertQuietly (const wchar_t** sourceStart, const wchar_t* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags)
-        {
-            if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
-                return ConvertQuietly (reinterpret_cast<const char16_t**> (sourceStart), reinterpret_cast<const char16_t*> (sourceEnd), targetStart, targetEnd, flags);
-            }
-            if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
-                return ConvertQuietly (reinterpret_cast<const char32_t**> (sourceStart), reinterpret_cast<const char32_t*> (sourceEnd), targetStart, targetEnd, flags);
-            }
-            AssertNotReached ();
-            return sourceIllegal;
-        }
-        template <>
-        inline ConversionResult ConvertQuietly (const char** sourceStart, const char* sourceEnd, wchar_t** targetStart, wchar_t* targetEnd, ConversionFlags flags)
-        {
-            if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
-                return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char16_t**> (targetStart), reinterpret_cast<char16_t*> (targetEnd), flags);
-            }
-            if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
-                return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char32_t**> (targetStart), reinterpret_cast<char32_t*> (targetEnd), flags);
-            }
-            AssertNotReached ();
-            return sourceIllegal;
-        }
-#if __cpp_char8_t >= 201811L
-        template <>
-        inline ConversionResult ConvertQuietly (const char8_t** sourceStart, const char8_t* sourceEnd, wchar_t** targetStart, wchar_t* targetEnd, ConversionFlags flags)
-        {
-            if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
-                return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char16_t**> (targetStart), reinterpret_cast<char16_t*> (targetEnd), flags);
-            }
-            if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
-                return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char32_t**> (targetStart), reinterpret_cast<char32_t*> (targetEnd), flags);
-            }
-            AssertNotReached ();
-            return sourceIllegal;
-        }
-#endif
-        template <>
-        inline ConversionResult ConvertQuietly (const char16_t** sourceStart, const char16_t* sourceEnd, wchar_t** targetStart, wchar_t* targetEnd, ConversionFlags flags)
-        {
-            if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
-                return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char32_t**> (targetStart), reinterpret_cast<char32_t*> (targetEnd), flags);
-            }
-            AssertNotImplemented ();
-            return sourceIllegal;
-        }
-        template <>
-        inline ConversionResult ConvertQuietly (const char32_t** sourceStart, const char32_t* sourceEnd, wchar_t** targetStart, wchar_t* targetEnd, ConversionFlags flags)
-        {
-            if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
-                return ConvertQuietly (sourceStart, sourceEnd, reinterpret_cast<char16_t**> (targetStart), reinterpret_cast<char16_t*> (targetEnd), flags);
-            }
-            AssertNotImplemented ();
-            return sourceIllegal;
         }
         template <typename FROM, typename TO>
-        inline void Convert (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags)
+        [[deprecated ("Since Stroika v3, use class UTFConverter::kThe")]] inline void Convert (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags /*flags*/)
         {
             RequireNotNull (sourceStart);
             RequireNotNull (targetStart);
             Require ((static_cast<size_t> (targetEnd - *targetStart) >= QuickComputeConversionOutputBufferSize<FROM, TO> (*sourceStart, sourceEnd)));
-            ConversionResult cr = ConvertQuietly (sourceStart, sourceEnd, targetStart, targetEnd, flags);
-            switch (cr) {
-                case ConversionResult::conversionOK:
-                    return;
-                case ConversionResult::sourceIllegal:
-                    Private_::DoThrowBadSourceString_ThrowSourceIllegal_ ();
-                case ConversionResult::sourceExhausted:
-                    Private_::DoThrowBadSourceString_ThrowSourceExhausted_ ();
-                case ConversionResult::targetExhausted:
-                    AssertNotReached (); // this means you didn't pass in a large enough buffer, but we checked that!
-                default:
-                    AssertNotReached ();
-            }
+
+            auto r = UTFConverter::kThe.Convert (span{*sourceStart, sourceEnd}, span{*targetStart, targetEnd});
+            *sourceStart += get<0> (r);
+            *targetStart += get<1> (r);
         }
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
     }
 
     /*
