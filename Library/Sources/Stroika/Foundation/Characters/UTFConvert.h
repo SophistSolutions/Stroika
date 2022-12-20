@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Characters {
 #endif
             }
         }
-        constexpr UTFConverter (const Options& options);
+        constexpr UTFConverter ();
          
 
     private:
@@ -185,7 +185,7 @@ namespace Stroika::Foundation::Characters {
     };
 
     // Need BUG DEFINE for this workaround for ??? at leats macos/xcode
-    constexpr UTFConverter::UTFConverter (const Options& options)
+    constexpr UTFConverter::UTFConverter ()
         : UTFConverter{Options{}}
     {
         
