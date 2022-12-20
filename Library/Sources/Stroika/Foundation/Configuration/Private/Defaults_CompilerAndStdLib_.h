@@ -944,6 +944,14 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 * https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be
 * 
 * 
+*  file included from UTFConvert.cpp:8:
+./UTFConvert.h:86:66: error: default member initializer for 'fStrictMode' needed within definition of enclosing class 'UTFConverter' outside of member functions
+        constexpr UTFConverter (const Options& options = Options{});
+                                                                 ^
+./UTFConvert.h:51:18: note: default member initializer declared here
+            bool fStrictMode{false};
+      OR
+* 
 In file included from Writer.cpp:8:
 Writer.h:61:50: error: default member initializer for ‘Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines::Writer::Options::fSeparator’ required before the end of its enclosing class
    61 |         Writer (const Options& options = Options{});
