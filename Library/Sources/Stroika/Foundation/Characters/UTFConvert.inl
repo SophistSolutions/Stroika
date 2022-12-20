@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Characters {
     inline constexpr UTFConverter UTFConverter::kThe;
 
     template <typename FROM, typename TO>
-    constexpr size_t UTFConverter::ComputeOutputBufferSize (span<FROM> src)
+    constexpr size_t UTFConverter::ComputeOutputBufferSize (span<const FROM> src)
     {
         if constexpr (sizeof (FROM) == 1) {
             // worst case is each src byte is a character
@@ -73,8 +73,8 @@ namespace Stroika::Foundation::Characters {
         else if constexpr (sizeof (FROM) == 4) {
             if constexpr (sizeof (TO) == 1) {
                 // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
-                // the maximum number of bytes for a character in UTF-8 is ... 6 bytes
-                return 6 * src.size ();
+                // the maximum number of bytes for a character in UTF-8 is ... 4 (really 4 safe now so use that - was 6 bytes)
+                return 4 * src.size ();
             }
             else {
                 static_assert (sizeof (TO) == 2);
@@ -85,11 +85,6 @@ namespace Stroika::Foundation::Characters {
             AssertNotReached (); // not reaached
             return 0;
         }
-    }
-    template <typename FROM, typename TO>
-    constexpr size_t UTFConverter::ComputeOutputBufferSize (const FROM* sourceStart, const FROM* sourceEnd)
-    {
-        return ComputeOutputBufferSize<const FROM, TO> (span{sourceStart, sourceEnd});
     }
 
     inline auto UTFConverter::Convert (span<const char8_t> source, span<char16_t> target) const -> tuple<size_t, size_t>

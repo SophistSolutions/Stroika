@@ -111,9 +111,7 @@ namespace Stroika::Foundation::Characters {
          *  \Alias used to be called ComputeOutputBufferSize
          */
         template <typename FROM, typename TO>
-        static constexpr size_t ComputeOutputBufferSize (span<FROM> src);
-        template <typename FROM, typename TO>
-        static constexpr size_t ComputeOutputBufferSize (const FROM* sourceStart, const FROM* sourceEnd);
+        static constexpr size_t ComputeOutputBufferSize (span<const FROM> src);
 
     public:
         /**
