@@ -32,8 +32,7 @@ namespace Stroika::Foundation::Characters {
      *************************** Characters::UTFConverter ***************************
      ********************************************************************************
      */
-// Need BUG DEFINE for this workaround for ??? at leats macos/xcode
-#if 0
+#if qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
     constexpr UTFConverter::UTFConverter ()
         : UTFConverter{Options{}}
     {
@@ -165,7 +164,7 @@ namespace Stroika::Foundation::Characters {
                 return ConvertQuietly_codeCvt_ (source, target, nullptr);
             }
             default: {
-                return ConvertQuietly_StroikaPortable_ (source, target);        // default if preferred not available
+                return ConvertQuietly_StroikaPortable_ (source, target); // default if preferred not available
             }
         }
     }

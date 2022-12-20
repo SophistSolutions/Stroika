@@ -82,8 +82,12 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          */
-        // constexpr UTFConverter ();
+#if qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
+        constexpr UTFConverter ();
         constexpr UTFConverter (const Options& options = Options{});
+#else
+        constexpr UTFConverter (const Options& options = Options{});
+#endif
 
     public:
         /*
@@ -106,13 +110,6 @@ namespace Stroika::Foundation::Characters {
         static constexpr size_t ComputeOutputBufferSize (span<FROM> src);
         template <typename FROM, typename TO>
         static constexpr size_t ComputeOutputBufferSize (const FROM* sourceStart, const FROM* sourceEnd);
-
-    public:
-        enum class ConversionResults {
-            ok,              /* conversion successful */
-            sourceExhausted, /* partial character in source, but hit end */
-            sourceIllegal    /* source sequence is illegal/malformed */
-        };
 
     public:
         /**
@@ -160,22 +157,12 @@ namespace Stroika::Foundation::Characters {
         nonvirtual tuple<size_t, size_t> Convert (span<const SRC_T> source, span<TRG_T> target) const
             requires (sizeof (SRC_T) != sizeof (TRG_T));
 
-    private:
-        // find same size, and then remove_const, and then add back const
-        template <typename SRC_OF_CONSTNESS_T, typename TYPE_T>
-        using AddConstIfMatching_ = conditional_t<is_const_v<SRC_OF_CONSTNESS_T>, add_const_t<TYPE_T>, TYPE_T>;
-        template <typename SRC_T>
-        using MapSizes_ = conditional_t<sizeof (SRC_T) == 1, char8_t, conditional_t<sizeof (SRC_T) == 2, char16_t, char32_t>>;
-        template <typename SRC_T>
-        using CompatibleT_ = AddConstIfMatching_<SRC_T, MapSizes_<SRC_T>>;
-
-    protected:
-        // need generic way to convert char to char8_t, and wchar_t to char16_t or char32_t
-        template <typename FromT>
-        static span<CompatibleT_<FromT>> _ConvertCompatibleSpan (span<FromT> f)
-        {
-            return span{(CompatibleT_<FromT>*)&*f.begin (), (CompatibleT_<FromT>*)&*f.begin () + f.size ()};
-        }
+    public:
+        enum class ConversionResults {
+            ok,              /* conversion successful */
+            sourceExhausted, /* partial character in source, but hit end */
+            sourceIllegal    /* source sequence is illegal/malformed */
+        };
 
     public:
         /**
@@ -198,6 +185,23 @@ namespace Stroika::Foundation::Characters {
 
     public:
         static const UTFConverter kThe;
+
+    private:
+        // find same size, and then remove_const, and then add back const
+        template <typename SRC_OF_CONSTNESS_T, typename TYPE_T>
+        using AddConstIfMatching_ = conditional_t<is_const_v<SRC_OF_CONSTNESS_T>, add_const_t<TYPE_T>, TYPE_T>;
+        template <typename SRC_T>
+        using MapSizes_ = conditional_t<sizeof (SRC_T) == 1, char8_t, conditional_t<sizeof (SRC_T) == 2, char16_t, char32_t>>;
+        template <typename SRC_T>
+        using CompatibleT_ = AddConstIfMatching_<SRC_T, MapSizes_<SRC_T>>;
+
+    protected:
+        // need generic way to convert char to char8_t, and wchar_t to char16_t or char32_t
+        template <typename FromT>
+        static span<CompatibleT_<FromT>> _ConvertCompatibleSpan (span<FromT> f)
+        {
+            return span{(CompatibleT_<FromT>*)&*f.begin (), (CompatibleT_<FromT>*)&*f.begin () + f.size ()};
+        }
 
     private:
         Options fOriginalOptions_;
