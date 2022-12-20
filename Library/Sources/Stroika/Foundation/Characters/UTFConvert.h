@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \brief Convert UTF8 -> UTF16, throw on failure, return tuple of n source/target elements consumed.
          * 
-         *  \req size of target span large enuf  (SEE XXX FOR REQUIREMNET)
+         *  \req size of target span must be at least as large as specified by QuickComputeConversionOutputBufferSize
          * 
          *  \note overload taking mbstate_t maybe used if converting a large stream in parts which don't necesarily fall on multibyte boundaries.
          * 

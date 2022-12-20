@@ -680,7 +680,7 @@ namespace {
  ***************************** Characters::UTFConverter *************************
  ********************************************************************************
  */
-auto UTFConverter::ConvertQuietly_StroikaPortable_ ( span<const char8_t> source, const span<char16_t> target) -> tuple<ConversionResults, size_t, size_t>
+auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char8_t> source, const span<char16_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
     if (source.empty ()) {
         return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
@@ -693,7 +693,7 @@ auto UTFConverter::ConvertQuietly_StroikaPortable_ ( span<const char8_t> source,
     ConversionResult r           = ConvertUTF8toUTF16_ (&sourceStart, sourceEnd, &targetStart, targetEnd, ConversionFlags::lenientConversion); // look at options
     return make_tuple (cvt_ (r), sourceStart - reinterpret_cast<const char*> (&*source.begin ()), targetStart - reinterpret_cast<const char16_t*> (&*target.begin ()));
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ ( span<const char8_t> source, const span<char32_t> target) -> tuple<ConversionResults, size_t, size_t>
+auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char8_t> source, const span<char32_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
     if (source.empty ()) {
         return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
@@ -706,7 +706,7 @@ auto UTFConverter::ConvertQuietly_StroikaPortable_ ( span<const char8_t> source,
     ConversionResult r           = ConvertUTF8toUTF32_ (&sourceStart, sourceEnd, &targetStart, targetEnd, ConversionFlags::lenientConversion); // look at options
     return make_tuple (cvt_ (r), sourceStart - reinterpret_cast<const char8_t*> (&*source.begin ()), targetStart - reinterpret_cast<const char32_t*> (&*target.begin ()));
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ ( span<const char16_t> source, const span<char32_t> target) -> tuple<ConversionResults, size_t, size_t>
+auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char16_t> source, const span<char32_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
     if (source.empty ()) {
         return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
@@ -719,7 +719,7 @@ auto UTFConverter::ConvertQuietly_StroikaPortable_ ( span<const char16_t> source
     ConversionResult r           = ConvertUTF16toUTF32_ (&sourceStart, sourceEnd, &targetStart, targetEnd, ConversionFlags::lenientConversion); // look at options
     return make_tuple (cvt_ (r), sourceStart - reinterpret_cast<const char16_t*> (&*source.begin ()), targetStart - reinterpret_cast<const char32_t*> (&*target.begin ()));
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ ( span<const char32_t> source, const span<char16_t> target) -> tuple<ConversionResults, size_t, size_t>
+auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char32_t> source, const span<char16_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
     if (source.empty ()) {
         return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
@@ -732,7 +732,7 @@ auto UTFConverter::ConvertQuietly_StroikaPortable_ ( span<const char32_t> source
     ConversionResult r           = ConvertUTF32toUTF16_ (&sourceStart, sourceEnd, &targetStart, targetEnd, ConversionFlags::lenientConversion); // look at options
     return make_tuple (cvt_ (r), sourceStart - reinterpret_cast<const char32_t*> (&*source.begin ()), targetStart - reinterpret_cast<const char16_t*> (&*target.begin ()));
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ ( span<const char32_t> source, const span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
+auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char32_t> source, const span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
     if (source.empty ()) {
         return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
@@ -745,7 +745,7 @@ auto UTFConverter::ConvertQuietly_StroikaPortable_ ( span<const char32_t> source
     ConversionResult r           = ConvertUTF32toUTF8_ (&sourceStart, sourceEnd, &targetStart, targetEnd, ConversionFlags::lenientConversion); // look at options
     return make_tuple (cvt_ (r), sourceStart - reinterpret_cast<const char32_t*> (&*source.begin ()), targetStart - reinterpret_cast<const char8_t*> (&*target.begin ()));
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ ( span<const char16_t> source, const span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
+auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char16_t> source, const span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
     if (source.empty ()) {
         return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
@@ -759,7 +759,7 @@ auto UTFConverter::ConvertQuietly_StroikaPortable_ ( span<const char16_t> source
     return make_tuple (cvt_ (r), sourceStart - reinterpret_cast<const char*> (&*source.begin ()), targetStart - reinterpret_cast<const char16_t*> (&*target.begin ()));
 }
 
-auto UTFConverter::ConvertQuietly_codeCvt_ ( span<const char8_t> source,  span<char16_t> target, mbstate_t* multibyteConversionState) -> tuple<ConversionResults, size_t, size_t>
+auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) -> tuple<ConversionResults, size_t, size_t>
 {
     if (source.empty ()) {
         return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
@@ -778,7 +778,7 @@ auto UTFConverter::ConvertQuietly_codeCvt_ ( span<const char8_t> source,  span<c
     }
 }
 
-auto UTFConverter::ConvertQuietly_codeCvt_ ( span<const char16_t> source,  span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
+auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char16_t> source, span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
     if (source.empty ()) {
         return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
