@@ -672,6 +672,44 @@ namespace {
             return cvt_stdcodecvt_results_ (rr);
             DISABLE_COMPILER_MSC_WARNING_END (4996);
         }
+        inline UTFConverter::ConversionResults ConvertUTF8toUTF32_codecvt_ (mbstate_t* multibyteConversionState, const char8_t** sourceStart, const char8_t* sourceEnd, char32_t** targetStart, char32_t* targetEnd)
+        {
+            DISABLE_COMPILER_MSC_WARNING_START (4996); // warning STL4020: std::codecvt<char16_t, char, mbstate_t> DEPRECATED
+            // SIGH - DEPRECATED but ALSO more than twice as slow as my (lifted) implementation (not sure why - looks similar).
+            //      --LGP 2022-12-17
+            //  https://en.cppreference.com/w/cpp/locale/codecvt_utf8_utf16
+            static const std::codecvt_utf8_utf16<char32_t> cvt;
+            mbstate_t                                      state{};
+            if (multibyteConversionState != nullptr) {
+                state = *multibyteConversionState;
+            }
+            const char*                                          sourceCursor = reinterpret_cast<const char*> (*sourceStart);
+            char32_t*                                            outCursor    = *targetStart;
+            [[maybe_unused]] std::codecvt_utf8<char32_t>::result rr           = cvt.in (state, reinterpret_cast<const char*> (*sourceStart), reinterpret_cast<const char*> (sourceEnd), sourceCursor, *targetStart, targetEnd, outCursor);
+            *sourceStart                                                      = reinterpret_cast<const char8_t*> (sourceCursor);
+            *targetStart                                                      = outCursor;
+            if (multibyteConversionState != nullptr) {
+                *multibyteConversionState = state;
+            }
+            return cvt_stdcodecvt_results_ (rr);
+            DISABLE_COMPILER_MSC_WARNING_END (4996);
+        }
+        inline UTFConverter::ConversionResults ConvertUTF32toUTF8_codecvt_ (const char32_t** sourceStart, const char32_t* sourceEnd, char8_t** targetStart, char8_t* targetEnd)
+        {
+            DISABLE_COMPILER_MSC_WARNING_START (4996); // warning STL4020: std::codecvt<char16_t, char, mbstate_t> DEPRECATED
+            // SIGH - DEPRECATED but ALSO more than twice as slow as my (lifted) implementation (not sure why - looks similar).
+            //      --LGP 2022-12-17
+            //  https://en.cppreference.com/w/cpp/locale/codecvt_utf8_utf16
+            static const std::codecvt_utf8<char32_t>                   cvt;
+            mbstate_t                                                  state{};
+            const char32_t*                                            sourceCursor = *sourceStart;
+            char*                                                      outCursor    = reinterpret_cast<char*> (*targetStart);
+            [[maybe_unused]] std::codecvt_utf8_utf16<char32_t>::result rr           = cvt.out (state, *sourceStart, sourceEnd, sourceCursor, reinterpret_cast<char*> (*targetStart), reinterpret_cast<char*> (targetEnd), outCursor);
+            *sourceStart                                                            = reinterpret_cast<const char32_t*> (sourceCursor);
+            *targetStart                                                            = reinterpret_cast<char8_t*> (outCursor);
+            return cvt_stdcodecvt_results_ (rr);
+            DISABLE_COMPILER_MSC_WARNING_END (4996);
+        }
     }
 }
 
@@ -794,5 +832,58 @@ auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char16_t> source, span<ch
     }
     else {
         return make_tuple (r, 0, 0);
+    }
+}
+auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) -> tuple<ConversionResults, size_t, size_t>
+{
+    if (source.empty ()) {
+        return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
+    }
+    using namespace UTFConvert_codecvSupport_;
+    const char8_t*    sourceStart = reinterpret_cast<const char8_t*> (&*source.begin ());
+    const char8_t*    sourceEnd   = sourceStart + source.size ();
+    char32_t*         targetStart = reinterpret_cast<char32_t*> (&*target.begin ());
+    char32_t*         targetEnd   = targetStart + target.size ();
+    ConversionResults r           = ConvertUTF8toUTF32_codecvt_ (multibyteConversionState, &sourceStart, sourceEnd, &targetStart, targetEnd);
+    if (r == ConversionResults::ok) {
+        return make_tuple (ConversionResults::ok, sourceStart - reinterpret_cast<const char8_t*> (&*source.begin ()), targetStart - reinterpret_cast<const char32_t*> (&*target.begin ()));
+    }
+    else {
+        return make_tuple (r, 0, 0);
+    }
+}
+
+auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char32_t> source, span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
+{
+    if (source.empty ()) {
+        return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
+    }
+    using namespace UTFConvert_codecvSupport_;
+    const char32_t*   sourceStart = reinterpret_cast<const char32_t*> (&*source.begin ());
+    const char32_t*   sourceEnd   = sourceStart + source.size ();
+    char8_t*          targetStart = reinterpret_cast<char8_t*> (&*target.begin ());
+    char8_t*          targetEnd   = targetStart + target.size ();
+    ConversionResults r           = ConvertUTF32toUTF8_codecvt_ (&sourceStart, sourceEnd, &targetStart, targetEnd);
+    if (r == ConversionResults::ok) {
+        return make_tuple (ConversionResults::ok, sourceStart - reinterpret_cast<const char32_t*> (&*source.begin ()), targetStart - reinterpret_cast<const char8_t*> (&*target.begin ()));
+    }
+    else {
+        return make_tuple (r, 0, 0);
+    }
+}
+
+void UTFConverter::Throw_ (ConversionResults cr)
+{
+    switch (cr) {
+        case ConversionResults::sourceExhausted: {
+            static const auto kException_ = Execution::RuntimeErrorException{L"Invalid UNICODE source string (incomplete UTF character)"sv};
+            Execution::Throw (kException_);
+        }
+        case ConversionResults::sourceIllegal: {
+            static const auto kException_ = Execution::RuntimeErrorException{L"Invalid UNICODE source string"sv};
+            Execution::Throw (kException_);
+        }
+        default:
+            AssertNotReached ();
     }
 }
