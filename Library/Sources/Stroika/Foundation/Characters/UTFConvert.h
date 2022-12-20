@@ -142,8 +142,7 @@ namespace Stroika::Foundation::Characters {
          *      \code
          *          size_t                    cvtBufSize = UTFConverter::ComputeOutputBufferSize<char8_t, wchar_t> (src);
          *          StackBuffer<wchar_t>      buf{Memory::eUninitialized, cvtBufSize};
-         *          span<char8_t>                  outStr = span<char8_t> (buf);
-         *          auto result = UTFConverter::kThe.Convert (src, span<char8_t> (buf));
+         *          auto result = UTFConverter::kThe.Convert (src, span<char8_t>{buf});
          *          return String{buf.begin (), buf.begin () + get<2> (result)};
          *      \endcode
          *
@@ -226,7 +225,6 @@ namespace Stroika::Foundation::Characters {
         static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char32_t> source, const span<char16_t> target);
         static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char32_t> source, const span<char8_t> target);
         static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char16_t> source, const span<char8_t> target);
-
 
 #if __has_include("boost/locale/encoding_utf.hpp")
     private:

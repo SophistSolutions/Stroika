@@ -336,7 +336,7 @@ namespace Stroika::Foundation::Characters {
         }
         basic_string<char8_t> src = basic_string<char8_t>{reinterpret_cast<const char8_t*> (&*source.begin ()), reinterpret_cast<const char8_t*> (&*source.begin ()) + source.size ()};
         auto                  r   = boost::locale::conv::utf_to_utf<char16_t> (src.c_str ());
-        #if 0
+#if 0
         // do something more like this loop/inserter stuff
         std::basic_string<CharOut> result;
                 result.reserve(end-begin);
@@ -354,7 +354,7 @@ namespace Stroika::Foundation::Characters {
                     }
                 }
                 return result;
-                #endif
+#endif
 
         //tmphack to test
         return make_tuple (ConversionResults::ok, 0, 0);
