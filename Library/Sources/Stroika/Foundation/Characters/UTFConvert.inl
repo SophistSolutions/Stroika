@@ -157,6 +157,11 @@ namespace Stroika::Foundation::Characters {
                 return ConvertQuietly_Win32_ (source, target);
             }
 #endif
+#if __has_include("boost/locale/encoding_utf.hpp")
+            case Options::Implementation::eBoost_Locale: {
+                return ConvertQuietly_boost_locale_ (source, target);
+            }
+#endif
             case Options::Implementation::eStroikaPortable: {
                 return ConvertQuietly_StroikaPortable_ (source, target);
             }
@@ -335,8 +340,25 @@ namespace Stroika::Foundation::Characters {
             return make_tuple (ConversionResults::ok, 0, 0);
         }
         basic_string<char8_t> src = basic_string<char8_t>{reinterpret_cast<const char8_t*> (&*source.begin ()), reinterpret_cast<const char8_t*> (&*source.begin ()) + source.size ()};
-        auto                  r   = boost::locale::conv::utf_to_utf<char16_t> (src.c_str ());
+        u16string             r   = boost::locale::conv::utf_to_utf<char16_t> (src.c_str ());
+        copy (r.begin (), r.end (), target.begin ());
+        return make_tuple (ConversionResults::ok, source.size (), r.size ());
 #if 0
+         utf::code_point c;
+         char16_t* p = target.begin ();
+        while(begin!=end) {
+            c=utf::utf_traits<char8_t>::template decode<char8_t const *>(begin,end);
+            if(c==utf::illegal || c==utf::incomplete) {
+                // throw or ignore 
+
+            }
+            else {
+                utf::utf_traits<char16_t>::template encode(c,p);
+            }
+       }
+
+
+
         // do something more like this loop/inserter stuff
         std::basic_string<CharOut> result;
                 result.reserve(end-begin);
