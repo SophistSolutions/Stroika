@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Characters {
          */
 #if qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
         constexpr UTFConverter ();
-        constexpr UTFConverter (const Options& options = Options{});
+        constexpr UTFConverter (const Options& options);
 #else
         constexpr UTFConverter (const Options& options = Options{});
 #endif
