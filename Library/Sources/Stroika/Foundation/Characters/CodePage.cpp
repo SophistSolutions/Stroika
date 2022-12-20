@@ -64,26 +64,6 @@ namespace {
 }
 #endif
 
-namespace {
-    UTFConvert::ConversionResult cvt_stdcodecvt_results_ (int i)
-    {
-        using namespace UTFConvert;
-        switch (i) {
-            case std::codecvt_utf8_utf16<char16_t>::ok:
-                return ConversionResult::conversionOK;
-            case std::codecvt_utf8_utf16<char16_t>::error:
-                return ConversionResult::sourceIllegal;
-            case std::codecvt_utf8_utf16<char16_t>::partial:
-                return ConversionResult::sourceExhausted; // not quite - couldbe target exhuasted?
-            case std::codecvt_utf8_utf16<char16_t>::noconv:
-                return ConversionResult::sourceIllegal; // not quite
-            default:
-                Assert (false);
-                return ConversionResult::sourceIllegal;
-        }
-    }
-}
-
 /*
  ********************************************************************************
  **************************** Characters::GetCharsetString **********************
