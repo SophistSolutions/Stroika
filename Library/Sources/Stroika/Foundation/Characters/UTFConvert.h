@@ -117,13 +117,13 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \brief Convert UTF8 -> UTF16, throw on failure, return tuple of n source/target elements consumed.
+         *  \brief Convert UTFN -> UTFM (e.g. UTF8 to UTF32), throw on failure, return tuple of n source/target elements consumed/produced.
          * 
          *  \req size of target span must be at least as large as specified by ComputeOutputBufferSize
          * 
          *  \note overload taking mbstate_t maybe used if converting a large stream in parts which don't necesarily fall on multibyte boundaries.
          * 
-         *  Wrapper on ConvertQuietly, that throws when bad source data input, and asserts out when bad target size (insuffiient for buffer).
+         *  Wrapper on ConvertQuietly, that throws when bad source data input, and asserts out when bad target size (insuffient for buffer).
          *
          *  Convert these combinations:
          *      o   char8_t
@@ -142,8 +142,8 @@ namespace Stroika::Foundation::Characters {
          *      \code
          *          size_t                    cvtBufSize = UTFConverter::ComputeOutputBufferSize<char8_t, wchar_t> (src);
          *          StackBuffer<wchar_t>      buf{Memory::eUninitialized, cvtBufSize};
-         *          auto result = UTFConverter::kThe.Convert (src, span<char8_t>{buf});
-         *          return String{buf.begin (), buf.begin () + get<2> (result)};
+         *          auto result = UTFConverter::kThe.Convert (src, span<wchar_t>{buf});
+         *          return String{buf.begin (), buf.begin () + get<1> (result)};
          *      \endcode
          *
          *  @see ConvertQuietly

@@ -94,42 +94,49 @@ namespace Stroika::Foundation::Characters {
 
     inline auto UTFConverter::Convert (span<const char8_t> source, span<char16_t> target) const -> tuple<size_t, size_t>
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const char8_t, char16_t> (source)));
         auto result = ConvertQuietly (source, target);
         ThrowIf_ (get<0> (result));
         return make_tuple (get<1> (result), get<2> (result));
     }
     inline auto UTFConverter::Convert (span<const char16_t> source, span<char8_t> target) const -> tuple<size_t, size_t>
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const char16_t, char8_t> (source)));
         auto result = ConvertQuietly (source, target);
         ThrowIf_ (get<0> (result));
         return make_tuple (get<1> (result), get<2> (result));
     }
     inline auto UTFConverter::Convert (span<const char8_t> source, span<char32_t> target) const -> tuple<size_t, size_t>
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const char8_t, char32_t> (source)));
         auto result = ConvertQuietly (source, target);
         ThrowIf_ (get<0> (result));
         return make_tuple (get<1> (result), get<2> (result));
     }
     inline auto UTFConverter::Convert (span<const char32_t> source, span<char8_t> target) const -> tuple<size_t, size_t>
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const char32_t, char8_t> (source)));
         auto result = ConvertQuietly (source, target);
         ThrowIf_ (get<0> (result));
         return make_tuple (get<1> (result), get<2> (result));
     }
     inline auto UTFConverter::Convert (span<const char16_t> source, span<char32_t> target) const -> tuple<size_t, size_t>
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const char16_t, char32_t> (source)));
         auto result = ConvertQuietly (source, target);
         ThrowIf_ (get<0> (result));
         return make_tuple (get<1> (result), get<2> (result));
     }
     inline auto UTFConverter::Convert (span<const char32_t> source, span<char16_t> target) const -> tuple<size_t, size_t>
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const char32_t, char16_t> (source)));
         auto result = ConvertQuietly (source, target);
         ThrowIf_ (get<0> (result));
         return make_tuple (get<1> (result), get<2> (result));
     }
     inline auto UTFConverter::Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const -> tuple<size_t, size_t>
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const char8_t, char16_t> (source)));
         RequireNotNull (multibyteConversionState);
         auto result = ConvertQuietly (source, target, multibyteConversionState);
         ThrowIf_ (get<0> (result));
@@ -137,6 +144,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline auto UTFConverter::Convert (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const -> tuple<size_t, size_t>
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const char8_t, char32_t> (source)));
         RequireNotNull (multibyteConversionState);
         auto result = ConvertQuietly (source, target, multibyteConversionState);
         ThrowIf_ (get<0> (result));
@@ -151,6 +159,7 @@ namespace Stroika::Foundation::Characters {
 
     inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char16_t> target) const -> tuple<ConversionResults, size_t, size_t>
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const char8_t, char16_t> (source)));
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
 #if qPlatform_Windows
             case Options::Implementation::eWin32Wide2FromMultibyte: {
@@ -175,6 +184,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline auto UTFConverter::ConvertQuietly (span<const char16_t> source, span<char8_t> target) const -> tuple<ConversionResults, size_t, size_t>
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const char16_t, char8_t> (source)));
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
 #if qPlatform_Windows
             case Options::Implementation::eWin32Wide2FromMultibyte: {
@@ -194,6 +204,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char32_t> target) const -> tuple<ConversionResults, size_t, size_t>
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const char8_t, char32_t> (source)));
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
             case Options::Implementation::eStroikaPortable: {
                 return ConvertQuietly_StroikaPortable_ (source, target);
@@ -208,6 +219,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline auto UTFConverter::ConvertQuietly (span<const char32_t> source, span<char8_t> target) const -> tuple<ConversionResults, size_t, size_t>
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const char32_t, char8_t> (source)));
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
             case Options::Implementation::eStroikaPortable: {
                 return ConvertQuietly_StroikaPortable_ (source, target);
@@ -222,6 +234,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline auto UTFConverter::ConvertQuietly (span<const char16_t> source, span<char32_t> target) const -> tuple<ConversionResults, size_t, size_t>
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const char16_t, char32_t> (source)));
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
             case Options::Implementation::eStroikaPortable: {
                 return ConvertQuietly_StroikaPortable_ (source, target);
@@ -238,6 +251,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline auto UTFConverter::ConvertQuietly (span<const char32_t> source, span<char16_t> target) const -> tuple<ConversionResults, size_t, size_t>
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const char32_t, char16_t> (source)));
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
             case Options::Implementation::eStroikaPortable: {
                 return ConvertQuietly_StroikaPortable_ (source, target);
@@ -254,6 +268,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const -> tuple<ConversionResults, size_t, size_t>
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const char8_t, char16_t> (source)));
         RequireNotNull (multibyteConversionState);
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
             case Options::Implementation::eCodeCVT: {
@@ -266,6 +281,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const -> tuple<ConversionResults, size_t, size_t>
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const char8_t, char32_t> (source)));
         RequireNotNull (multibyteConversionState);
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
             case Options::Implementation::eCodeCVT: {
