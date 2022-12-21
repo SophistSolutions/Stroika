@@ -521,7 +521,7 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
         // @todo - decide if we should use Streams::TextWriter::Format::eUTF8WithoutBOM
         if (not cmdStdInValue.empty ()) {
             // for now while we write BOM, don't write empty string as just a BOM!
-            Streams::TextWriter::New (useStdIn).Write (cmdStdInValue.c_str ());
+            Streams::TextWriter::New (useStdIn).Write (cmdStdInValue.As<wstring> ().c_str ());
         }
         Assert (useStdIn.GetReadOffset () == 0);
 
@@ -925,7 +925,7 @@ namespace {
         const Streams::OutputStream<byte>::Ptr&                   err,
         const String&                                             effectiveCmdLine)
     {
-        TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_Windows_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ())};
+        TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_Windows_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.As<wstring> ().c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ())};
 
         /*
          *  o   Build directory into which we can copy the JAR file plugin,

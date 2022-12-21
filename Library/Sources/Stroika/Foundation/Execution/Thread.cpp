@@ -857,7 +857,7 @@ void Thread::Ptr::SetThreadName (const String& threadName) const
 {
     RequireNotNull (fRep_);
     AssertExternallySynchronizedMutex::ReadLock critSec{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
-    TraceContextBumper                          ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::Thread::SetThreadName", L"thisThreadID=%s, threadName = '%s'", Characters::ToString (GetID ()).c_str (), threadName.c_str ())};
+    TraceContextBumper                          ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::Thread::SetThreadName", L"thisThreadID=%s, threadName = '%s'", Characters::ToString (GetID ()).c_str (), threadName.As<wstring> ().c_str ())};
     if (fRep_->fThreadName_ != threadName) {
         fRep_->fThreadName_ = threadName.As<wstring> ();
         fRep_->ApplyThreadName2OSThreadObject ();

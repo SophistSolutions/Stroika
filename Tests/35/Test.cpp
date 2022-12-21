@@ -186,9 +186,9 @@ namespace {
             {
                 auto dumpCT = [] (const String& label, InternetMediaType i) {
                     [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
-                    DbgTrace (L"SUFFIX(%s)=%s", label.c_str (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str ());
-                    DbgTrace (L"ASSOCFILESUFFIXES(%s)=%s", label.c_str (), Characters::ToString (r.GetAssociatedFileSuffixes (i)).c_str ());
-                    DbgTrace (L"GetAssociatedPrettyName(%s)=%s", label.c_str (), Characters::ToString (r.GetAssociatedPrettyName (i)).c_str ());
+                    DbgTrace (L"SUFFIX(%s)=%s", label.As<wstring> ().c_str (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str ());
+                    DbgTrace (L"ASSOCFILESUFFIXES(%s)=%s", label.As<wstring> ().c_str (), Characters::ToString (r.GetAssociatedFileSuffixes (i)).c_str ());
+                    DbgTrace (L"GetAssociatedPrettyName(%s)=%s", label.As<wstring> ().c_str (), Characters::ToString (r.GetAssociatedPrettyName (i)).c_str ());
                 };
                 auto checkCT = [] (InternetMediaType i, const Set<String>& possibleFileSuffixes) {
                     [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();

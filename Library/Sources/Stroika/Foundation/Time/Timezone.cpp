@@ -132,7 +132,7 @@ optional<Timezone> Timezone::ParseTimezoneOffsetString (const wchar_t* tzStr)
 
 optional<Timezone> Timezone::ParseTimezoneOffsetString (const Characters::String& tzStr)
 {
-    return ParseTimezoneOffsetString (tzStr.c_str ());
+    return ParseTimezoneOffsetString (tzStr.As<wstring> ().c_str ());
 }
 
 String Timezone::AsHHMM (const Date& date, const TimeOfDay& tod, bool insertColon) const

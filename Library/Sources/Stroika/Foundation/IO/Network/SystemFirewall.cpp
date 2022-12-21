@@ -151,7 +151,7 @@ namespace {
                 pFwRule->Release ();
             }
         });
-        HRESULT                 hr                = pFwRules->Item (SmartBSTR{ruleName.c_str ()}, &pFwRule);
+        HRESULT                 hr                = pFwRules->Item (SmartBSTR{ruleName.As<wstring> ().c_str ()}, &pFwRule);
         if (hr == S_OK and pFwRule != nullptr) {
             return ReadRule_ (pFwRule);
         }
@@ -198,14 +198,14 @@ bool SystemFirewall::Manager::Register (const Rule& rule)
     ThrowIfErrorHRESULT (::CoCreateInstance (__uuidof(NetFwRule), NULL, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), (void**)&pFwRule));
 
     // Populate the Firewall Rule object
-    ThrowIfErrorHRESULT (pFwRule->put_Name (SmartBSTR{rule.fName.c_str ()}));
-    ThrowIfErrorHRESULT (pFwRule->put_Description (SmartBSTR{rule.fDescription.c_str ()}));
+    ThrowIfErrorHRESULT (pFwRule->put_Name (SmartBSTR{rule.fName.As<wstring> ().c_str ()}));
+    ThrowIfErrorHRESULT (pFwRule->put_Description (SmartBSTR{rule.fDescription.As<wstring> ().c_str ()}));
     ThrowIfErrorHRESULT (pFwRule->put_ApplicationName (SmartBSTR{rule.fApplication.c_str ()}));
     ThrowIfErrorHRESULT (pFwRule->put_Protocol (rule.fProtocol));
-    ThrowIfErrorHRESULT (pFwRule->put_LocalPorts (SmartBSTR{rule.fLocalPorts.c_str ()}));
-    ThrowIfErrorHRESULT (pFwRule->put_RemotePorts (SmartBSTR{rule.fRemotePorts.c_str ()}));
+    ThrowIfErrorHRESULT (pFwRule->put_LocalPorts (SmartBSTR{rule.fLocalPorts.As<wstring> ().c_str ()}));
+    ThrowIfErrorHRESULT (pFwRule->put_RemotePorts (SmartBSTR{rule.fRemotePorts.As<wstring> ().c_str ()}));
     ThrowIfErrorHRESULT (pFwRule->put_Direction (rule.fDirection));
-    ThrowIfErrorHRESULT (pFwRule->put_Grouping (SmartBSTR{rule.fGroup.c_str ()}));
+    ThrowIfErrorHRESULT (pFwRule->put_Grouping (SmartBSTR{rule.fGroup.As<wstring> ().c_str ()}));
     ThrowIfErrorHRESULT (pFwRule->put_Profiles (rule.fProfileMask));
     ThrowIfErrorHRESULT (pFwRule->put_Action (rule.fAction));
     ThrowIfErrorHRESULT (pFwRule->put_Enabled (rule.fEnabled ? VARIANT_TRUE : VARIANT_FALSE));

@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Debug {
     {
         warnIfLongerThan,
 #if qDefaultTracingOn
-            [=] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace (L"%s (timeTaken=%f seconds)", label.c_str (), timeTaken); }
+            [=] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace (L"%s (timeTaken=%f seconds)", label.As<wstring> ().c_str (), timeTaken); }
 #else
             nullptr
 #endif

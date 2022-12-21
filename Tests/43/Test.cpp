@@ -54,7 +54,7 @@ namespace {
         wchar_t outBuf[10 * 1024];
 
         String canonical;
-        ThrowIfErrorHRESULT (::CoInternetParseUrl (CComBSTR (w.c_str ()), PARSE_CANONICALIZE, 0, outBuf, static_cast<DWORD> (Memory::NEltsOf (outBuf)), &ignr, 0));
+        ThrowIfErrorHRESULT (::CoInternetParseUrl (CComBSTR{w.As<wstring> ().c_str ()}, PARSE_CANONICALIZE, 0, outBuf, static_cast<DWORD> (Memory::NEltsOf (outBuf)), &ignr, 0));
         canonical = outBuf;
 
         {
@@ -64,7 +64,7 @@ namespace {
             }
         }
 
-        if (SUCCEEDED (::CoInternetParseUrl (CComBSTR (canonical.c_str ()), PARSE_DOMAIN, 0, outBuf, static_cast<DWORD> (Memory::NEltsOf (outBuf)), &ignr, 0))) {
+        if (SUCCEEDED (::CoInternetParseUrl (CComBSTR{canonical.As<wstring> ().c_str ()}, PARSE_DOMAIN, 0, outBuf, static_cast<DWORD> (Memory::NEltsOf (outBuf)), &ignr, 0))) {
             *host = outBuf;
         }
 

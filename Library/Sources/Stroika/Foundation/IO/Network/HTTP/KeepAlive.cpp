@@ -39,11 +39,11 @@ KeepAlive KeepAlive::Parse (const String& headerValue)
                 return r;
             }
             else {
-                DbgTrace (L"Keep-Alive header bad: %s", token.c_str ());
+                DbgTrace (L"Keep-Alive header bad: %s", token.As<wstring> ().c_str ());
             }
         }
         else {
-            DbgTrace (L"Keep-Alive header bad: %s", token.c_str ());
+            DbgTrace (L"Keep-Alive header bad: %s", token.As<wstring> ().c_str ());
         }
     }
     return r;

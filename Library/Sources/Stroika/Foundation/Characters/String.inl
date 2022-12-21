@@ -585,6 +585,14 @@ namespace Stroika::Foundation::Characters {
         Ensure (result[size ()] == '\0');
         return result;
     }
+    inline const wchar_t* String::c_str ()
+    {
+        // @todo must totally re-impelemnt use switches rep!!!
+        const wchar_t* result = (wchar_t*)_SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
+        EnsureNotNull (result);
+        Ensure (result[size ()] == '\0');
+        return result;
+    }
     inline size_t String::find (wchar_t c, size_t startAt) const
     {
         return Find (c, startAt, CompareOptions::eWithCase).value_or (npos);

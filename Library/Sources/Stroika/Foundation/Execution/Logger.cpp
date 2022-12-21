@@ -93,7 +93,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                             tmp->Log (i->fKey.first, i->fKey.second);
                             break;
                         default:
-                            tmp->Log (i->fKey.first, Characters::Format (L"[%d duplicates suppressed]: %s", i->fValue.fRepeatCount_ - 1, i->fKey.second.c_str ()));
+                            tmp->Log (i->fKey.first, Characters::Format (L"[%d duplicates suppressed]: %s", i->fValue.fRepeatCount_ - 1, i->fKey.second.As<wstring> ().c_str ()));
                             break;
                     }
                     lastMsgsLocked->Remove (i, &i);
@@ -450,7 +450,7 @@ public:
     void Log (Priority logLevel, const String& message)
     {
         //@todo tmphack - write date and write logLevel??? and use TextStream API that does \r or \r\n as appropriate
-        fWriter_.rwget ()->Write (Characters::Format (L"[%5s][%16s] %s\n", Configuration::DefaultNames<Logger::Priority>{}.GetName (logLevel), Time::DateTime::Now ().Format ().c_str (), message.c_str ()));
+        fWriter_.rwget ()->Write (Characters::Format (L"[%5s][%16s] %s\n", Configuration::DefaultNames<Logger::Priority>{}.GetName (logLevel), Time::DateTime::Now ().Format ().c_str (), message.As<wstring> ().c_str ()));
     }
 
 private:

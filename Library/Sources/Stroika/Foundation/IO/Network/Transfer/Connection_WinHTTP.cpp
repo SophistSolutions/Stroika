@@ -532,7 +532,7 @@ void Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAgent)
         fSessionHandle_.reset ();
     }
     if (fSessionHandle_ == nullptr) {
-        fSessionHandle_           = make_shared<AutoWinHINTERNET_> (::WinHttpOpen (userAgent.c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
+        fSessionHandle_           = make_shared<AutoWinHINTERNET_> (::WinHttpOpen (userAgent.As<wstring> ().c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
         fSessionHandle_UserAgent_ = userAgent;
         if (fOptions_.fMaxAutomaticRedirects == 0) {
             DWORD dwOptions = WINHTTP_OPTION_REDIRECT_POLICY_NEVER;

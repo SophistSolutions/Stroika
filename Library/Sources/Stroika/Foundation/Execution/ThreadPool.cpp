@@ -417,7 +417,7 @@ String ThreadPool::ToString () const
     StringBuilder           sb;
     sb += L"{";
     if (fThreadPoolName_) {
-        sb += Characters::Format (L"pool-name: '%s'", fThreadPoolName_->c_str ()) + L", ";
+        sb += Characters::Format (L"pool-name: '%s'", fThreadPoolName_->As<wstring> ().c_str ()) + L", ";
     }
     sb += Characters::Format (L"pending-task-count: %d", GetPendingTasksCount ()) + L", ";
     sb += Characters::Format (L"running-task-count: %d", GetRunningTasks ().size ()) + L", ";

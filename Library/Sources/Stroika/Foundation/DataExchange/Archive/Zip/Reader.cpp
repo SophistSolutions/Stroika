@@ -2798,7 +2798,7 @@ public:
     virtual Memory::BLOB GetData (const String& fileName) const override
     {
         if (unzLocateFile_ (fZipFile_, fileName.AsNarrowSDKString ().c_str (), 1) != UNZ_OK) [[unlikely]] {
-            Execution::Throw (Execution::RuntimeErrorException{Characters::Format (L"File '%s' not found", fileName.c_str ())});
+            Execution::Throw (Execution::RuntimeErrorException{Characters::Format (L"File '%s' not found", fileName.As<wstring> ().c_str ())});
         }
         const char*                      password = nullptr;
         int                              err      = unzOpenCurrentFilePassword (fZipFile_, password);
@@ -2808,7 +2808,7 @@ public:
             byte buf[10 * 1024];
             err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (Memory::NEltsOf (buf)));
             if (err < 0) [[unlikely]] {
-                Execution::Throw (Execution::RuntimeErrorException{Characters::Format (L"File '%s' error %d extracting", fileName.c_str (), err)});
+                Execution::Throw (Execution::RuntimeErrorException{Characters::Format (L"File '%s' error %d extracting", fileName.As<wstring> ().c_str (), err)});
             }
             else if (err > 0) {
                 Assert (static_cast<size_t> (err) <= Memory::NEltsOf (buf));

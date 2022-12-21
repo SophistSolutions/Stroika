@@ -685,7 +685,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
                 using Characters::Format;
                 using Configuration::Platform::Windows::RegistryKey;
                 // only do registry lookup if needed, since (probably) more costly than local map lookup
-                if (auto oct = RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Format (L"%s\\Content Type", fileSuffix.c_str ()))) {
+                if (auto oct = RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Format (L"%s\\Content Type", fileSuffix.As<wstring> ().c_str ()))) {
                     InternetMediaType mediaType{oct.As<String> ()};
                     return mediaType;
                 }

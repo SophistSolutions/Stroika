@@ -206,7 +206,7 @@ void IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::Nam
     AssertNotNull (fContext.GetTop ());
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext.fTraceThisReader) {
-        DbgTrace (L"%sCalling IConsumerDelegateToContext::HandleChildStart ('%s')...", fContext.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
+        DbgTrace (L"%sCalling IConsumerDelegateToContext::HandleChildStart ('%s')...", fContext.TraceLeader_ ().c_str (), name.fLocalName.As<wstring> ().c_str ());
     }
 #endif
     shared_ptr<IElementConsumer> eltToPush = fContext.GetTop ()->HandleChildStart (name);
@@ -218,7 +218,7 @@ void IConsumerDelegateToContext::EndElement ([[maybe_unused]] const StructuredSt
     AssertNotNull (fContext.GetTop ());
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext.fTraceThisReader) {
-        DbgTrace (L"%sCalling IConsumerDelegateToContext::EndElement ('%s')...", fContext.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
+        DbgTrace (L"%sCalling IConsumerDelegateToContext::EndElement ('%s')...", fContext.TraceLeader_ ().c_str (), name.fLocalName.As<wstring> ().c_str ());
     }
 #endif
     fContext.Pop ();
@@ -281,5 +281,5 @@ shared_ptr<IElementConsumer> ReadDownToReader::HandleChildStart (const Name& nam
  */
 [[noreturn]] void StructuredStreamEvents::ObjectReader::ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name)
 {
-    Execution::Throw (BadFormatException{Characters::CString::Format (L"Unrecognized start tag '%s'", name.fLocalName.c_str ())});
+    Execution::Throw (BadFormatException{Characters::CString::Format (L"Unrecognized start tag '%s'", name.fLocalName.As<wstring> ().c_str ())});
 }

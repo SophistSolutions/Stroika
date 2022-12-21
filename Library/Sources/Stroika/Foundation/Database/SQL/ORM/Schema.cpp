@@ -120,7 +120,7 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String,
                     resultFields.Add (fi.fName, oFieldVal->ConvertTo (*fi.fVariantValueType));
                 }
                 catch (...) {
-                    DbgTrace (L"IN ORM::Schema::Table::MapToDB for field %s: %s", fi.fName.c_str (), Characters::ToString (current_exception ()).c_str ());
+                    DbgTrace (L"IN ORM::Schema::Table::MapToDB for field %s: %s", fi.fName.As<wstring> ().c_str (), Characters::ToString (current_exception ()).c_str ());
                     throw; // dont call Execution::ReThrow () to avoid extra log entry - above enuf
                 }
             }
@@ -131,7 +131,7 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String,
         }
         else if (fi.fRequired) {
             // throw or assert?
-            DbgTrace (L"IN ORM::Schema::Table::MapToDB for field %s: field required, but not present in the argument list to Map function", fi.fName.c_str ());
+            DbgTrace (L"IN ORM::Schema::Table::MapToDB for field %s: field required, but not present in the argument list to Map function", fi.fName.As<wstring> ().c_str ());
             AssertNotReached ();
         }
     }

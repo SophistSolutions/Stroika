@@ -76,10 +76,10 @@ Again:
 String FileSystem::AssureLongFileName (const String& fileName)
 {
 #if qPlatform_Windows
-    DWORD r = ::GetLongPathNameW (fileName.c_str (), nullptr, 0);
+    DWORD r = ::GetLongPathNameW (fileName.As<wstring> ().c_str (), nullptr, 0);
     if (r != 0) {
         StackBuffer<wchar_t> buf{Memory::eUninitialized, r};
-        r = ::GetLongPathNameW (fileName.c_str (), buf, r);
+        r = ::GetLongPathNameW (fileName.As<wstring> ().c_str (), buf, r);
         if (r != 0) {
             return static_cast<const wchar_t*> (buf);
         }

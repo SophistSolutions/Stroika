@@ -1255,7 +1255,8 @@ namespace Stroika::Foundation::Characters {
          *
          *  @see GetData ()
          */
-        nonvirtual const wchar_t* c_str () const noexcept;
+        [[deprecated ("Since Stroika v3.0d1 - use As<wstring> ().c_str ()")]] nonvirtual const wchar_t* c_str () const noexcept;
+        nonvirtual const wchar_t*                                                                       c_str ();
 
     public:
         /**

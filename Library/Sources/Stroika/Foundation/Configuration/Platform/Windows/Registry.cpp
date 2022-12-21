@@ -160,7 +160,7 @@ VariantValue RegistryKey::Lookup (const String& valuePath) const
             }
         }
     }
-    return ExtractValue_ (fKey_, valuePath.c_str (), true);
+    return ExtractValue_ (fKey_, valuePath.As<wstring> ().c_str (), true);
 }
 
 Traversal::Iterable<shared_ptr<RegistryKey>> RegistryKey::EnumerateSubKeys () const
