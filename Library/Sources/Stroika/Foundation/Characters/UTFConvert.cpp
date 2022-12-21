@@ -806,7 +806,6 @@ auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char8_t> source, span<cha
 {
     return ConvertQuietly_codeCvt_helper_ (source, target, multibyteConversionState, UTFConvert_codecvSupport_::ConvertUTF8toUTF16_codecvt_);
 }
-
 auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char16_t> source, span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
     return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvSupport_::ConvertUTF16toUTF8_codecvt_);
@@ -815,7 +814,6 @@ auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char8_t> source, span<cha
 {
     return ConvertQuietly_codeCvt_helper_ (source, target, multibyteConversionState, UTFConvert_codecvSupport_::ConvertUTF8toUTF32_codecvt_);
 }
-
 auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char32_t> source, span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
     return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvSupport_::ConvertUTF32toUTF8_codecvt_);
