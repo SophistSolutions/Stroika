@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  @See ConvertQuietly ()
          *  @See Convert ()
-         *  \Alias used to be called ComputeOutputBufferSize
+         *  \Alias used to be called QuickComputeConversionOutputBufferSize
          */
         template <typename FROM, typename TO>
         static constexpr size_t ComputeOutputBufferSize (span<const FROM> src);

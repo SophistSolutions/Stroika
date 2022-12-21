@@ -187,7 +187,7 @@ namespace {
             return true;
         }
 
-        inline ConversionResult ConvertUTF8toUTF16_ (const char** sourceStart, const char* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
+        inline ConversionResult ConvertUTF8toUTF16_ (const char8_t** sourceStart, const char8_t* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
         {
             ConversionResult result = conversionOK;
             const UTF8_*     source = reinterpret_cast<const UTF8_*> (*sourceStart);
@@ -205,8 +205,8 @@ namespace {
                     break;
                 }
                 /*
-             * The cases all fall through. See "Note A" below.
-             */
+                 * The cases all fall through. See "Note A" below.
+                 */
                 switch (extraBytesToRead) {
                     case 5:
                         ch += *source++;
@@ -271,11 +271,11 @@ namespace {
                     *target++ = (char16_t)((ch & halfMask) + UNI_SUR_LOW_START);
                 }
             }
-            *sourceStart = reinterpret_cast<const char*> (source);
+            *sourceStart = reinterpret_cast<const char8_t*> (source);
             *targetStart = target;
             return result;
         }
-        inline ConversionResult ConvertUTF16toUTF8_ (const char16_t** sourceStart, const char16_t* sourceEnd, char** targetStart, char* targetEnd, ConversionFlags flags)
+        inline ConversionResult ConvertUTF16toUTF8_ (const char16_t** sourceStart, const char16_t* sourceEnd, char8_t** targetStart, char8_t* targetEnd, ConversionFlags flags)
         {
             ConversionResult result = conversionOK;
             const char16_t*  source = *sourceStart;
@@ -358,7 +358,7 @@ namespace {
                 target += bytesToWrite;
             }
             *sourceStart = source;
-            *targetStart = reinterpret_cast<char*> (target);
+            *targetStart = reinterpret_cast<char8_t*> (target);
             return result;
         }
         DISABLE_COMPILER_MSC_WARNING_START (4701)                                                // potentially uninitialized local variable 'ch' used (WRONG cuz if we get into loop, initialized
@@ -488,8 +488,8 @@ namespace {
                     break;
                 }
                 /*
-             * The cases all fall through. See "Note A" below.
-             */
+                 * The cases all fall through. See "Note A" below.
+                 */
                 switch (extraBytesToRead) {
                     case 5:
                         ch += *source++;
@@ -564,9 +564,9 @@ namespace {
                     }
                 }
                 /*
-             * Figure out how many bytes the result will require. Turn any
-             * illegally large UTF32 things (> Plane 17) into replacement chars.
-             */
+                 * Figure out how many bytes the result will require. Turn any
+                 * illegally large UTF32 things (> Plane 17) into replacement chars.
+                 */
                 if (ch < (char32_t)0x80) {
                     bytesToWrite = 1;
                 }
@@ -727,9 +727,9 @@ namespace {
             return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
         }
         using namespace UTFConvert_libutfxx_;
-        const IN_T*      sourceStart = reinterpret_cast<const char*> (&*source.begin ());
+        const IN_T*      sourceStart = reinterpret_cast<const IN_T*> (&*source.begin ());
         const IN_T*      sourceEnd   = sourceStart + source.size ();
-        OUT_T*           targetStart = reinterpret_cast<char16_t*> (&*target.begin ());
+        OUT_T*           targetStart = reinterpret_cast<OUT_T*> (&*target.begin ());
         OUT_T*           targetEnd   = targetStart + target.size ();
         ConversionResult r           = realWork (&sourceStart, sourceEnd, &targetStart, targetEnd, ConversionFlags::lenientConversion); // look at options
         return make_tuple (cvt_ (r), sourceStart - reinterpret_cast<const IN_T*> (&*source.begin ()), targetStart - reinterpret_cast<const OUT_T*> (&*target.begin ()));
@@ -757,7 +757,7 @@ auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char32_t> source,
 }
 auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char16_t> source, const span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
-    return ConvertQuietly_StroikaPortable_helper_ (source, target, UTFConvert_libutfxx_::ConvertUTF8toUTF16_);
+    return ConvertQuietly_StroikaPortable_helper_ (source, target, UTFConvert_libutfxx_::ConvertUTF16toUTF8_);
 }
 
 namespace {
