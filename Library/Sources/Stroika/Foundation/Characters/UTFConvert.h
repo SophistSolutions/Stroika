@@ -16,6 +16,10 @@
 /**
  *  \file
  *      This module is designed to provide mappings between various UTF encodings of UNICODE characters.</p>
+ * 
+ *  TODO:
+ *      @todo   Cleanup the option 'lenient' support - not respected in thourough way, and the bad-character / missing
+ *              character support not thoroughly supported or documented when not. ALL VERY MINOR though.
  */
 
 namespace Stroika::Foundation::Characters {
