@@ -395,8 +395,7 @@ String::_SharedPtrIRep String::mk_ (const char32_t* from, const char32_t* to)
     else {
         size_t               cvtBufSize = UTFConverter::ComputeOutputBufferSize<wchar_t> (span{from, to});
         StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
-        wchar_t*             outStr = buf.begin ();
-        auto                 r      = UTFConverter::kThe.Convert (span{from, to}, span{outStr, buf.end ()});
+        auto                 r      = UTFConverter::kThe.Convert (span{from, to}, span{buf});
         return mk_ (buf.begin (), buf.begin () + get<1> (r));
     }
 }
