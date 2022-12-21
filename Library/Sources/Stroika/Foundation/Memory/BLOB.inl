@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Memory {
         AdoptRep_ (const AdoptRep_&) = delete;
         AdoptRep_ (const byte* start, const byte* end);
         ~AdoptRep_ ();
-        AdoptRep_&                             operator= (const AdoptRep_&) = delete;
+        AdoptRep_&               operator= (const AdoptRep_&) = delete;
         virtual span<const byte> GetBounds () const override;
     };
 
@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Memory {
         AdoptAppLifetimeRep_ ()                            = delete;
         AdoptAppLifetimeRep_ (const AdoptAppLifetimeRep_&) = delete;
         AdoptAppLifetimeRep_ (const byte* start, const byte* end);
-        AdoptAppLifetimeRep_&                  operator= (const AdoptAppLifetimeRep_&) = delete;
+        AdoptAppLifetimeRep_&    operator= (const AdoptAppLifetimeRep_&) = delete;
         virtual span<const byte> GetBounds () const override;
     };
 
@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)>*>
     inline BLOB::BLOB (const CONTAINER_OF_BYTE& data)
-        : BLOB{as_bytes(span{data})}
+        : BLOB{as_bytes (span{data})}
     {
     }
     inline BLOB::BLOB (const initializer_list<byte>& bytes)
@@ -209,7 +209,7 @@ namespace Stroika::Foundation::Memory {
         RequireNotNull (into);
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
         auto                                               s = fRep_->GetBounds ();
-        *into                                             = span<const uint8_t>{reinterpret_cast<const uint8_t*> (SafeBegin (s)), s.size ()};
+        *into                                                = span<const uint8_t>{reinterpret_cast<const uint8_t*> (SafeBegin (s)), s.size ()};
     }
     template <>
     inline vector<byte> BLOB::As () const
@@ -287,7 +287,7 @@ namespace Stroika::Foundation::Memory {
     {
         RequireNotNull (into);
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        span<const byte>                     tmp = fRep_->GetBounds ();
+        span<const byte>                                   tmp = fRep_->GetBounds ();
         Assert (tmp.begin () <= tmp.end ());
         into->clear ();
         into->assign (reinterpret_cast<const char*> (SafeBegin (tmp)), reinterpret_cast<const char*> (SafeEnd (tmp)));
@@ -376,10 +376,10 @@ namespace Stroika::Foundation::Memory {
         if (fRep_ == rhs.fRep_) {
             return true; // cheap optimization for not super uncommon case
         }
-        span<const byte>               l     = fRep_->GetBounds ();
-        span<const byte>               r     = rhs.fRep_->GetBounds ();
-        size_t                         lSize = l.size ();
-        size_t                         rSize = r.size ();
+        span<const byte> l     = fRep_->GetBounds ();
+        span<const byte> r     = rhs.fRep_->GetBounds ();
+        size_t           lSize = l.size ();
+        size_t           rSize = r.size ();
         if (lSize != rSize) {
             return false;
         }

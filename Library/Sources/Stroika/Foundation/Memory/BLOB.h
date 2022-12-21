@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Memory {
         /**
          *  \par Example Usage
          *      \code
-         *           BLOB    b1  =   BLOB { 0x29, 0x14, 0x4a, };
+         *           BLOB    b1  =   BLOB{ 0x29, 0x14, 0x4a, };
          *      \endcode
          */
         BLOB ();
@@ -363,6 +363,10 @@ namespace Stroika::Foundation::Memory {
     template <>
     vector<uint8_t> BLOB::As () const;
     template <>
+    span<const byte> BLOB::As () const;
+    template <>
+    span<const uint8_t> BLOB::As () const;
+    template <>
     pair<const byte*, const byte*> BLOB::As () const;
     template <>
     pair<const uint8_t*, const uint8_t*> BLOB::As () const;
@@ -374,6 +378,10 @@ namespace Stroika::Foundation::Memory {
     template <>
     void BLOB::As (vector<uint8_t>* into) const;
     template <>
+    void BLOB::As (span<const byte>* into) const;
+    template <>
+    void BLOB::As (span<const uint8_t>* into) const;
+    template <>
     void BLOB::As (pair<const byte*, const byte*>* into) const;
     template <>
     void BLOB::As (pair<const uint8_t*, const uint8_t*>* into) const;
@@ -384,9 +392,9 @@ namespace Stroika::Foundation::Memory {
      * This abstract interface defines the behavior of a BLOB.
      */
     struct BLOB::_IRep {
-        _IRep ()                                                  = default;
-        _IRep (const _IRep&)                                      = delete;
-        virtual ~_IRep ()                                         = default;
+        _IRep ()                                    = default;
+        _IRep (const _IRep&)                        = delete;
+        virtual ~_IRep ()                           = default;
         virtual span<const byte> GetBounds () const = 0;
 
         nonvirtual const _IRep& operator= (const _IRep&) = delete;
