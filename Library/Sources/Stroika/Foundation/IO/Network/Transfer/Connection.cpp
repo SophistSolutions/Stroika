@@ -32,7 +32,7 @@ using namespace Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
- *********************** Connection::Options::Authentication ********************
+ ********************* Connection::Options::Authentication **********************
  ********************************************************************************
  */
 String Connection::Options::Authentication::GetAuthToken () const
@@ -43,7 +43,7 @@ String Connection::Options::Authentication::GetAuthToken () const
     else if (fUsernamePassword_) {
         // See https://tools.ietf.org/html/rfc2617#section-2
         // This spec says nothing of the character encoding of the username / password (at least not that section) - so assume utf8
-        string tmp{fUsernamePassword_->first.AsUTF8 () + ":" + fUsernamePassword_->second.AsUTF8 ()};
+        u8string tmp{fUsernamePassword_->first.AsUTF8 () + u8":" + fUsernamePassword_->second.AsUTF8 ()};
         using namespace Stroika::Foundation::Cryptography;
         return String::FromASCII (Encoding::Algorithm::EncodeBase64 (BLOB::Raw (tmp.c_str (), tmp.length ())));
     }

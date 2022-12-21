@@ -165,13 +165,11 @@ auto String::_IRep::Find (const function<bool (Configuration::ArgByValueType<val
  */
 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 
-#if __cpp_char8_t >= 201811L
 String::String (const char8_t* cString)
     : String{cString, cString + Characters::CString::Length (cString)}
 {
     RequireNotNull (cString);
 }
-#endif
 
 String::String (const char16_t* cString)
     : String{cString, cString + Characters::CString::Length (cString)}
@@ -395,7 +393,7 @@ String::_SharedPtrIRep String::mk_ (const char32_t* from, const char32_t* to)
     else {
         size_t               cvtBufSize = UTFConverter::ComputeOutputBufferSize<wchar_t> (span{from, to});
         StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
-        auto                 r      = UTFConverter::kThe.Convert (span{from, to}, span{buf});
+        auto                 r = UTFConverter::kThe.Convert (span{from, to}, span{buf});
         return mk_ (buf.begin (), buf.begin () + get<1> (r));
     }
 }
@@ -1118,7 +1116,6 @@ void String::AsUTF8 (string* into) const
     into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcpe}, span{buf})));
 }
 
-#if __cpp_char8_t >= 201811L
 template <>
 void String::AsUTF8 (u8string* into) const
 {
@@ -1132,7 +1129,6 @@ void String::AsUTF8 (u8string* into) const
     StackBuffer<char8_t> buf{Memory::eUninitialized, cvtBufSize};
     into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcpe}, span{buf})));
 }
-#endif
 
 void String::AsUTF16 (u16string* into) const
 {

@@ -117,7 +117,7 @@ pair<optional<String>, optional<InternetAddress>> Host::ParseRaw_ (const String&
         return pair<optional<String>, optional<InternetAddress>>{nullopt, InternetAddress{raw.SubString (1, -1), InternetAddress::AddressFamily::V6}};
     }
     else {
-        return pair<optional<String>, optional<InternetAddress>>{PCTDecode2String (raw.AsUTF8 ()), nullopt};
+        return pair<optional<String>, optional<InternetAddress>>{PCTDecode2String (raw.AsUTF8<string> ()), nullopt};
     }
 }
 
@@ -397,9 +397,9 @@ string UniformResourceIdentification::EncodeURLQueryStringField (const String& s
     //
     // From http://tools.ietf.org/html/rfc3986#section-2.3
     //      unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
-    string utf8Query = s.AsUTF8 ();
-    string result;
-    size_t sLength = utf8Query.length ();
+    u8string utf8Query = s.AsUTF8 ();
+    string   result;
+    size_t   sLength = utf8Query.length ();
     result.reserve (sLength);
     for (size_t i = 0; i < sLength; ++i) {
         Containers::Support::ReserveTweaks::Reserve4Add1 (result);
@@ -408,7 +408,7 @@ string UniformResourceIdentification::EncodeURLQueryStringField (const String& s
                 result += "+";
                 break;
             default: {
-                wchar_t ccode = utf8Query[i];
+                char8_t ccode = utf8Query[i];
                 if (isascii (ccode) and (isalnum (ccode) or (ccode == '-') or (ccode == '.') or (ccode == '_') or (ccode == '~'))) {
                     result += static_cast<char> (utf8Query[i]);
                 }
@@ -512,7 +512,7 @@ string UniformResourceIdentification::PCTEncode (const string& s, const PCTEncod
 
 string UniformResourceIdentification::PCTEncode (const String& s, const PCTEncodeOptions& options)
 {
-    return PCTEncode (s.AsUTF8 (), options);
+    return PCTEncode (s.AsUTF8<string> (), options);
 }
 
 String UniformResourceIdentification::PCTEncode2String (const String& s, const PCTEncodeOptions& options)

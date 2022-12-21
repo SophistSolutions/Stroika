@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Time {
     {
         //Require (not isnan (duration)); // inf is allowed
     }
-    inline string Duration::AsUTF8 () const
+    inline u8string Duration::AsUTF8 () const
     {
         return As<Characters::String> ().AsUTF8 ();
     }

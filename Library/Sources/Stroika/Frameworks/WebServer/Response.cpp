@@ -257,18 +257,18 @@ void Response::Flush ()
     // @todo See https://stroika.atlassian.net/browse/STK-758 - zip compression support
     if (fState_ == State::ePreparingHeaders or fState_ == State::ePreparingBodyBeforeHeadersSent) {
         {
-            auto    curStatusInfo = this->statusAndOverrideReason ();
-            Status  curStatus     = get<0> (curStatusInfo);
-            String  statusMsg     = Memory::NullCoalesce (get<1> (curStatusInfo), IO::Network::HTTP::Exception::GetStandardTextForStatus (curStatus, true));
-            wstring version       = L"1.1";
-            wstring tmp           = Characters::CString::Format (L"HTTP/%s %d %s\r\n", version.c_str (), curStatus, statusMsg.c_str ());
-            string  utf8          = String{tmp}.AsUTF8 ();
+            auto     curStatusInfo = this->statusAndOverrideReason ();
+            Status   curStatus     = get<0> (curStatusInfo);
+            String   statusMsg     = Memory::NullCoalesce (get<1> (curStatusInfo), IO::Network::HTTP::Exception::GetStandardTextForStatus (curStatus, true));
+            wstring  version       = L"1.1";
+            wstring  tmp           = Characters::CString::Format (L"HTTP/%s %d %s\r\n", version.c_str (), curStatus, statusMsg.c_str ());
+            u8string utf8          = String{tmp}.AsUTF8 ();
             fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
         }
         {
             Assert (InChunkedMode_ () or this->headers ().contentLength ().has_value ()); // I think is is always required, but double check...
             for (const auto& i : this->headers ().As<> ()) {
-                string utf8 = Characters::Format (L"%s: %s\r\n", i.fKey.c_str (), i.fValue.c_str ()).AsUTF8 ();
+                u8string utf8 = Characters::Format (L"%s: %s\r\n", i.fKey.c_str (), i.fValue.c_str ()).AsUTF8 ();
                 fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
             }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

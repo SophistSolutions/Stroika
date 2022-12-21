@@ -85,7 +85,7 @@ namespace {
     void ShowUsage_ (const Main& m, const Execution::InvalidCommandLineArgument& e = Execution::InvalidCommandLineArgument ())
     {
         if (not e.fMessage.empty ()) {
-            cerr << "Error: " << e.fMessage.AsUTF8 () << endl;
+            cerr << "Error: " << e.fMessage.AsUTF8<string> () << endl;
             cerr << endl;
         }
         cerr << "Usage: " << m.GetServiceDescription ().fRegistrationName.AsNarrowSDKString () << " [options] where options can be :\n ";

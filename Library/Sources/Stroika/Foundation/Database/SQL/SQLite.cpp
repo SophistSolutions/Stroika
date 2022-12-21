@@ -284,7 +284,7 @@ struct Connection::Rep_ final : IRep {
     {
         Debug::AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         [[maybe_unused]] char*                              db_err{}; // could use but its embedded in the fDB_ error string anyhow, and thats already peeked at by ThrowSQLiteErrorIfNotOK_ and it generates better exceptions (maps some to std c++ exceptions)
-        int                                                 e = ::sqlite3_exec (fDB_, sql.AsUTF8 ().c_str (), NULL, 0, &db_err);
+        int                                                 e = ::sqlite3_exec (fDB_, sql.AsUTF8<string> ().c_str (), NULL, 0, &db_err);
         if (e != SQLITE_OK) [[unlikely]] {
             ThrowSQLiteErrorIfNotOK_ (e, fDB_);
         }
@@ -453,7 +453,7 @@ struct Statement::MyRep_ : IRep {
 #if qDebug
         SetAssertExternallySynchronizedMutexContext (fConnectionPtr_.GetSharedContext ());
 #endif
-        string                                       queryUTF8 = query.AsUTF8 ();
+        string                                       queryUTF8 = query.AsUTF8<string> ();
         AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         const char*                                  pzTail = nullptr;
         ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db->Peek (), queryUTF8.c_str (), -1, &fStatementObj_, &pzTail), db->Peek ());
@@ -538,7 +538,7 @@ struct Statement::MyRep_ : IRep {
             case VariantValue::eDate:
             case VariantValue::eDateTime:
             case VariantValue::eString: {
-                string u = v.As<String> ().AsUTF8 ();
+                string u = v.As<String> ().AsUTF8<string> ();
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fStatementObj_, parameterIndex + 1, u.c_str (), static_cast<int> (u.length ()), SQLITE_TRANSIENT), fConnectionPtr_->Peek ());
             } break;
             case VariantValue::eBoolean:

@@ -58,14 +58,14 @@ namespace {
         l->AddOnFoundCallback ([] (const SSDP::Advertisement& d) {
             lock_guard<mutex> critSection{kStdOutMutex_};
             cout << "\tFound device (NOTIFY):" << endl;
-            cout << "\t\tUSN:      " << d.fUSN.AsUTF8 () << endl;
+            cout << "\t\tUSN:      " << d.fUSN.AsUTF8<string> () << endl;
             if (d.fAlive.has_value ()) {
-                cout << "\t\tAlive:    " << Characters::ToString (d.fAlive).AsUTF8 () << endl;
+                cout << "\t\tAlive:    " << Characters::ToString (d.fAlive).AsUTF8<string> () << endl;
             }
-            cout << "\t\tST:       " << d.fTarget.AsUTF8 () << endl;
-            cout << "\t\tLocation: " << Characters::ToString (d.fLocation).AsUTF8 () << endl;
+            cout << "\t\tST:       " << d.fTarget.AsUTF8<string> () << endl;
+            cout << "\t\tLocation: " << Characters::ToString (d.fLocation).AsUTF8<string> () << endl;
             if (not d.fServer.empty ()) {
-                cout << "\t\tServer:   " << d.fServer.AsUTF8 () << endl;
+                cout << "\t\tServer:   " << d.fServer.AsUTF8<string> () << endl;
             }
             DoPrintDeviceDescription_ (d.fLocation);
             cout << endl;
@@ -77,15 +77,15 @@ namespace {
 namespace {
     void DoSearching_ (Search* searcher, const String& searchFor)
     {
-        cout << "Searching for '" << searchFor.AsUTF8 () << "'..." << endl;
+        cout << "Searching for '" << searchFor.AsUTF8<string> () << "'..." << endl;
         searcher->AddOnFoundCallback ([] (const SSDP::Advertisement& d) {
             lock_guard<mutex> critSection{kStdOutMutex_};
             cout << "\tFound device (MATCHED SEARCH):" << endl;
-            cout << "\t\tUSN:      " << d.fUSN.AsUTF8 () << endl;
-            cout << "\t\tLocation: " << Characters::ToString (d.fLocation).AsUTF8 () << endl;
-            cout << "\t\tST:       " << d.fTarget.AsUTF8 () << endl;
+            cout << "\t\tUSN:      " << d.fUSN.AsUTF8<string> () << endl;
+            cout << "\t\tLocation: " << Characters::ToString (d.fLocation).AsUTF8<string> () << endl;
+            cout << "\t\tST:       " << d.fTarget.AsUTF8<string> () << endl;
             if (not d.fServer.empty ()) {
-                cout << "\t\tServer:   " << d.fServer.AsUTF8 () << endl;
+                cout << "\t\tServer:   " << d.fServer.AsUTF8<string> () << endl;
             }
             DoPrintDeviceDescription_ (d.fLocation);
             cout << endl;

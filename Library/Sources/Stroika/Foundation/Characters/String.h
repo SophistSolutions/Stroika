@@ -62,9 +62,6 @@
  *              indexing (must be index in terms of characters but that doesnt work right now on windows due to
  *              using utf16 and not handling surrogates).
  *
- *      @todo   Consider if AsUTF8 () should start returning u8string instead of string, after Stroika v2.2, when we directly
- *              support C++20.
- *
  *      @todo   PROBALY get rid of
  *                                      nonvirtual  void        SetCharAt (Character c, size_t i);
  *              and force people to use StringBUilder. I think that maybe only mutator except operator+= which is
@@ -312,15 +309,11 @@ namespace Stroika::Foundation::Characters {
          *       c-string nul-terminated (which happens automatically with L"xxx"sv)
          */
         String ();
-#if __cpp_char8_t >= 201811L
         String (const char8_t* cString);
-#endif
         String (const char16_t* cString);
         String (const char32_t* cString);
         String (const wchar_t* cString);
-#if __cpp_char8_t >= 201811L
         explicit String (const char8_t* from, const char8_t* to);
-#endif
         explicit String (const char16_t* from, const char16_t* to);
         explicit String (const char32_t* from, const char32_t* to);
         explicit String (const wchar_t* from, const wchar_t* to);
@@ -378,11 +371,9 @@ namespace Stroika::Foundation::Characters {
         static String FromUTF8 (const char* from);
         static String FromUTF8 (const char* from, const char* to);
         static String FromUTF8 (const string& from);
-#if __cpp_char8_t >= 201811L
         static String FromUTF8 (const char8_t* from);
         static String FromUTF8 (const char8_t* from, const char8_t* to);
         static String FromUTF8 (const u8string& from);
-#endif
 
     public:
         /**
@@ -1111,9 +1102,9 @@ namespace Stroika::Foundation::Characters {
          *      string
          *      u8string        // C++2a or higher
          */
-        template <typename T = string>
+        template <typename T = u8string>
         nonvirtual T AsUTF8 () const;
-        template <typename T = string>
+        template <typename T = u8string>
         nonvirtual void AsUTF8 (T* into) const;
 
     public:
@@ -1336,12 +1327,10 @@ namespace Stroika::Foundation::Characters {
     void String::AsUTF8 (string* into) const;
     template <>
     string String::AsUTF8 () const;
-#if __cpp_char8_t >= 201811L
     template <>
     void String::AsUTF8 (u8string* into) const;
     template <>
     u8string String::AsUTF8 () const;
-#endif
 
     template <>
     void String::AsASCII (string* into) const;

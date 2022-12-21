@@ -114,9 +114,9 @@ public:
                             return UniformResourceIdentification::Authority{};
                     }
                 }();
-                requestBuf << "Host: " << hostAuthority.As<String> ().AsUTF8 () << "\r\n";
+                requestBuf << "Host: " << hostAuthority.As<String> ().AsUTF8<string> () << "\r\n";
                 requestBuf << "Man: \"ssdp:discover\"\r\n";
-                requestBuf << "ST: " << serviceType.AsUTF8 ().c_str () << "\r\n";
+                requestBuf << "ST: " << serviceType.AsUTF8<string> ().c_str () << "\r\n";
                 requestBuf << "MX: " << kMaxHops_ << "\r\n";
                 requestBuf << "\r\n";
                 request = requestBuf.str ();

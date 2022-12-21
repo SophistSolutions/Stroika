@@ -611,7 +611,7 @@ boost::json::value VariantValue::As () const
         }
         case Type::eString: {
             // I think boost uses / expects UTF8?
-            return As<String> ().AsUTF8 ().c_str ();
+            return As<String> ().AsUTF8<string> ().c_str ();
         }
         case Type::eInteger: {
             return As<IntegerType_> ();
@@ -643,7 +643,7 @@ boost::json::value VariantValue::As () const
             Mapping<String, VariantValue> srcMap = As<Mapping<String, VariantValue>> ();
             json::object                  result;
             for (const auto& i : srcMap) {
-                result.insert (json::key_value_pair{i.fKey.As<String> ().AsUTF8 ().c_str (), i.fValue.As<json::value> ()});
+                result.insert (json::key_value_pair{i.fKey.As<String> ().AsUTF8<string> ().c_str (), i.fValue.As<json::value> ()});
             }
             return result;
         }

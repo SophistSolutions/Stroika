@@ -137,7 +137,6 @@ namespace Stroika::Foundation::Characters {
     {
         _AssertRepValidType ();
     }
-#if __cpp_char8_t >= 201811L
     inline String::String (const char8_t* from, const char8_t* to)
         : inherited{(from == to) ? mkEmpty_ () : FromUTF8 (from, to)}
     {
@@ -145,7 +144,6 @@ namespace Stroika::Foundation::Characters {
         Require (from <= to);
         _AssertRepValidType (); // just make sure non-null and right type
     }
-#endif
     inline String::String (const char16_t* from, const char16_t* to)
         : inherited{(from == to) ? mkEmpty_ () : mk_ (from, to)}
     {
@@ -196,7 +194,6 @@ namespace Stroika::Foundation::Characters {
     {
         return FromUTF8 (from.c_str (), from.c_str () + from.length ());
     }
-#if __cpp_char8_t >= 201811L
     inline String String::FromUTF8 (const char8_t* from, const char8_t* to)
     {
         return FromUTF8 (reinterpret_cast<const char*> (from), reinterpret_cast<const char*> (to));
@@ -209,7 +206,6 @@ namespace Stroika::Foundation::Characters {
     {
         return FromUTF8 (from.c_str (), from.c_str () + from.length ());
     }
-#endif
     inline String String::FromISOLatin1 (const char* from)
     {
         return FromISOLatin1 (from, from + ::strlen (from));
@@ -501,7 +497,6 @@ namespace Stroika::Foundation::Characters {
         AsUTF8 (&r);
         return r;
     }
-#if __cpp_char8_t >= 201811L
     template <>
     inline u8string String::AsUTF8 () const
     {
@@ -509,7 +504,6 @@ namespace Stroika::Foundation::Characters {
         AsUTF8 (&r);
         return r;
     }
-#endif
     inline u16string String::AsUTF16 () const
     {
         u16string r;

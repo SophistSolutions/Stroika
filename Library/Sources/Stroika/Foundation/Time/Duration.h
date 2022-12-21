@@ -228,7 +228,7 @@ namespace Stroika::Foundation::Time {
         /**
          *  Shorthand for As<String> ().AsUTF8 ()
          */
-        nonvirtual string AsUTF8 () const;
+        nonvirtual u8string AsUTF8 () const;
 
     public:
         /**

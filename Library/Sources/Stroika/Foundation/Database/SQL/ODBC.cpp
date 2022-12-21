@@ -203,7 +203,7 @@ struct Statement::MyRep_ : IRep {
 #if qDebug
         SetAssertExternallySynchronizedMutexContext (fConnectionPtr_.GetSharedContext ());
 #endif
-        string                                       queryUTF8 = query.AsUTF8 ();
+        u8string                                     queryUTF8 = query.AsUTF8 ();
         AssertExternallySynchronizedMutex::WriteLock critSec{*this};
         AssertNotImplemented ();
     }

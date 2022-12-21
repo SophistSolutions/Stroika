@@ -134,10 +134,24 @@ namespace {
 Memory::BLOB Algorithm::DecodeBase64 (const Characters::String& s)
 {
     //@todo - improve/fix this
-    return DecodeBase64 (s.AsUTF8 ());
+    return DecodeBase64 (s.AsUTF8<string> ());
 }
 
 Memory::BLOB Algorithm::DecodeBase64 (const string& s)
+{
+    if (s.empty ()) {
+        return Memory::BLOB{};
+    }
+    size_t              dataSize1 = s.length ();
+    StackBuffer<byte>   buf1{Memory::eUninitialized, dataSize1}; // MUCH more than big enuf
+    base64_decodestate_ state{};
+    size_t              r = base64_decode_block_ (reinterpret_cast<const signed char*> (Containers::Start (s)), s.length (), buf1.begin (), &state);
+    Assert (r <= dataSize1);
+    // @todo - should validate this produced a good result? - maybe check resulting state?
+    return Memory::BLOB{buf1.begin (), buf1.begin () + r};
+}
+
+Memory::BLOB Algorithm::DecodeBase64 (const u8string& s)
 {
     if (s.empty ()) {
         return Memory::BLOB{};
