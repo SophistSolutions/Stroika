@@ -79,9 +79,11 @@ namespace Stroika::Foundation::Characters {
                 // the maximum number of bytes for a character in UTF-8 is ... 4 (really 4 safe now so use that - was 6 bytes)
                 return 4 * src.size ();
             }
-            else {
-                static_assert (sizeof (TO) == 2);
+            else if (sizeof (TO) == 2) {
                 return 2 * src.size ();
+            }
+            else  {
+                return src.size ();
             }
         }
         else {
