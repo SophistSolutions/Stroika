@@ -52,23 +52,23 @@ namespace Stroika::Foundation::Characters {
 
     namespace UTFConvert {
 
-        enum [[deprecated ("Since Stroika v3, use class UTFConverter")]] ConversionResult{
+        enum [[deprecated ("Since Stroika v3.0d1, use class UTFConverter")]] ConversionResult{
             conversionOK,    /* conversion successful */
             sourceExhausted, /* partial character in source, but hit end */
             targetExhausted, /* insuff. room in target for conversion */
             sourceIllegal    /* source sequence is illegal/malformed */
         };
-        enum [[deprecated ("Since Stroika v3, use class UTFConverter")]] ConversionFlags{
+        enum [[deprecated ("Since Stroika v3.0d1, use class UTFConverter")]] ConversionFlags{
             strictConversion = 0,
             lenientConversion};
 
         /**
          */
-        [[deprecated ("Since Stroika v3, could support, but not clearly any reason")]] bool IsLegalUTF8Sequence (const char* source, const char* sourceEnd);
-        [[deprecated ("Since Stroika v3, could support, but not clearly any reason")]] bool IsLegalUTF8Sequence (const char8_t* source, const char8_t* sourceEnd);
+        [[deprecated ("Since Stroika v3.0d1, could support, but not clearly any reason")]] bool IsLegalUTF8Sequence (const char* source, const char* sourceEnd);
+        [[deprecated ("Since Stroika v3.0d1, could support, but not clearly any reason")]] bool IsLegalUTF8Sequence (const char8_t* source, const char8_t* sourceEnd);
 
         template <typename FROM, typename TO>
-        [[deprecated ("Since Stroika v3, use class UTFConverter")]] inline size_t QuickComputeConversionOutputBufferSize (const FROM* sourceStart, const FROM* sourceEnd)
+        [[deprecated ("Since Stroika v3.0d1, use class UTFConverter")]] inline size_t QuickComputeConversionOutputBufferSize (const FROM* sourceStart, const FROM* sourceEnd)
         {
             return UTFConverter::ComputeOutputBufferSize<TO> (span<const FROM>{sourceStart, sourceEnd});
         }
@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Characters {
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         template <typename FROM, typename TO>
-        [[deprecated ("Since Stroika v3, use class UTFConverter::kThe")]] ConversionResult ConvertQuietly (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags)
+        [[deprecated ("Since Stroika v3.0d1, use class UTFConverter::kThe")]] ConversionResult ConvertQuietly (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags)
         {
             auto r = UTFConverter::kThe.ConvertQuietly (span{*sourceStart, sourceEnd}, span{*targetStart, targetEnd});
             *sourceStart += get<1> (r);
@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Characters {
             }
         }
         template <typename FROM, typename TO>
-        [[deprecated ("Since Stroika v3, use class UTFConverter::kThe")]] inline void Convert (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags /*flags*/)
+        [[deprecated ("Since Stroika v3.0d1, use class UTFConverter::kThe")]] inline void Convert (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags /*flags*/)
         {
             RequireNotNull (sourceStart);
             RequireNotNull (targetStart);
