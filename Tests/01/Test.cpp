@@ -350,7 +350,7 @@ namespace {
                 CIDR                             cidr{L"192.168.243.0/24"};
                 BloomFilter<InternetAddress>     f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints ()}}; // way more than needed so SB small # of false positives
                 Containers::Set<InternetAddress> oracle;
-                for (InternetAddress ia : cidr.GetRange ()) {
+                for (const InternetAddress& ia : cidr.GetRange ()) {
                     default_random_engine      gen (random_device{}()); //Standard mersenne_twister_engine seeded with rd()
                     uniform_int_distribution<> uniformDist{0, 1};
                     if (uniformDist (gen) == 0) {
@@ -359,7 +359,7 @@ namespace {
                     }
                 }
                 unsigned int falsePositives{};
-                for (InternetAddress ia : cidr.GetRange ()) {
+                for (const InternetAddress& ia : cidr.GetRange ()) {
                     if (oracle.Contains (ia)) {
                         VerifyTestResult (f.Contains (ia));
                     }
@@ -386,12 +386,12 @@ namespace {
                 using Characters::String;
                 using IO::Network::CIDR;
                 using IO::Network::InternetAddress;
-                auto                             hashFunction = [] (const InternetAddress& a) -> size_t { return hash<string>{}(a.As<String> ().AsUTF8 ()); };
+                auto                             hashFunction = [] (const InternetAddress& a) -> size_t { return hash<string>{}(a.As<String> ().AsUTF8<string> ()); };
                 CIDR                             cidr{L"192.168.243.0/24"};
                 BloomFilter<InternetAddress>     f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints (), hashFunction}}; // way more than needed so SB small # of false positives
                 Containers::Set<InternetAddress> oracle;
-                for (InternetAddress ia : cidr.GetRange ()) {
-                    default_random_engine      gen (random_device{}()); //Standard mersenne_twister_engine seeded with rd()
+                for (const InternetAddress& ia : cidr.GetRange ()) {
+                    default_random_engine      gen{random_device{}()}; //Standard mersenne_twister_engine seeded with rd()
                     uniform_int_distribution<> uniformDist{0, 1};
                     if (uniformDist (gen) == 0) {
                         f.Add (ia);
@@ -399,7 +399,7 @@ namespace {
                     }
                 }
                 unsigned int falsePositives{};
-                for (InternetAddress ia : cidr.GetRange ()) {
+                for (const InternetAddress& ia : cidr.GetRange ()) {
                     if (oracle.Contains (ia)) {
                         VerifyTestResult (f.Contains (ia));
                     }
@@ -431,7 +431,7 @@ namespace {
                 CIDR                             cidr{L"192.168.243.0/24"};
                 BloomFilter<InternetAddress>     f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints (), hashFunction}};
                 Containers::Set<InternetAddress> oracle;
-                for (InternetAddress ia : cidr.GetRange ()) {
+                for (const InternetAddress& ia : cidr.GetRange ()) {
                     default_random_engine      gen (random_device{}()); //Standard mersenne_twister_engine seeded with rd()
                     uniform_int_distribution<> uniformDist{0, 1};
                     if (uniformDist (gen) == 0) {
@@ -440,7 +440,7 @@ namespace {
                     }
                 }
                 unsigned int falsePositives{};
-                for (InternetAddress ia : cidr.GetRange ()) {
+                for (const InternetAddress& ia : cidr.GetRange ()) {
                     if (oracle.Contains (ia)) {
                         VerifyTestResult (f.Contains (ia));
                     }

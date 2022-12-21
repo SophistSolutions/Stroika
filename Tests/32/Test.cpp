@@ -554,7 +554,7 @@ namespace Test_05_ParseRegressionTest_1_ {
             }
             {
                 // Verify change of locale has no effect on results
-                locale                           prevLocale = locale::global (locale ("C"));
+                locale                           prevLocale = locale::global (locale{"C"});
                 Streams::MemoryStream<byte>::Ptr tmpStrm    = Streams::MemoryStream<byte>::New ();
                 DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
                 VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
