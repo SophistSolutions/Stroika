@@ -225,7 +225,7 @@ String String::FromUTF8 (const char* from, const char* to)
     RequireNotNull (from);
     RequireNotNull (to);
     Require (from <= to);
-    size_t               cvtBufSize = UTFConverter::kThe.ComputeOutputBufferSize<char, wchar_t> (span{from, to});
+    size_t               cvtBufSize = UTFConverter::kThe.ComputeOutputBufferSize<wchar_t> (span{from, to});
     StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
     return String{buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{from, to}, span{buf}))};
 }
@@ -378,7 +378,7 @@ String::_SharedPtrIRep String::mk_ (const char16_t* from, const char16_t* to)
         return mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to));
     }
     else {
-        size_t               cvtBufSize = UTFConverter::ComputeOutputBufferSize<char16_t, wchar_t> (span{from, to});
+        size_t               cvtBufSize = UTFConverter::ComputeOutputBufferSize<wchar_t> (span{from, to});
         StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
         return mk_ (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{from, to}, span{buf})));
     }
@@ -393,7 +393,7 @@ String::_SharedPtrIRep String::mk_ (const char32_t* from, const char32_t* to)
         return mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to));
     }
     else {
-        size_t               cvtBufSize = UTFConverter::ComputeOutputBufferSize<char32_t, wchar_t> (span{from, to});
+        size_t               cvtBufSize = UTFConverter::ComputeOutputBufferSize<wchar_t> (span{from, to});
         StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
         wchar_t*             outStr = buf.begin ();
         auto                 r      = UTFConverter::kThe.Convert (span{from, to}, span{outStr, buf.end ()});
@@ -1114,7 +1114,7 @@ void String::AsUTF8 (string* into) const
     Assert (sizeof (Character) == sizeof (wchar_t));
     const wchar_t*    wcp        = (const wchar_t*)lhsD.first;
     const wchar_t*    wcpe       = (const wchar_t*)lhsD.second;
-    size_t            cvtBufSize = UTFConverter::ComputeOutputBufferSize<wchar_t, char> (span{wcp, wcpe});
+    size_t            cvtBufSize = UTFConverter::ComputeOutputBufferSize<char> (span{wcp, wcpe});
     StackBuffer<char> buf{Memory::eUninitialized, cvtBufSize};
     into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcpe}, span{buf})));
 }
@@ -1129,7 +1129,7 @@ void String::AsUTF8 (u8string* into) const
     Assert (sizeof (Character) == sizeof (wchar_t));
     const wchar_t*       wcp        = (const wchar_t*)lhsD.first;
     const wchar_t*       wcpe       = (const wchar_t*)lhsD.second;
-    size_t               cvtBufSize = UTFConverter::ComputeOutputBufferSize<wchar_t, char8_t> (span{wcp, wcpe});
+    size_t               cvtBufSize = UTFConverter::ComputeOutputBufferSize<char8_t> (span{wcp, wcpe});
     StackBuffer<char8_t> buf{Memory::eUninitialized, cvtBufSize};
     into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcpe}, span{buf})));
 }
@@ -1149,7 +1149,7 @@ void String::AsUTF16 (u16string* into) const
     else {
         Assert (sizeof (Character) == sizeof (wchar_t));
         const wchar_t*        wcp        = (const wchar_t*)cp;
-        size_t                cvtBufSize = UTFConverter::ComputeOutputBufferSize<wchar_t, char16_t> (span{wcp, wcp + n});
+        size_t                cvtBufSize = UTFConverter::ComputeOutputBufferSize<char16_t> (span{wcp, wcp + n});
         StackBuffer<char16_t> buf{Memory::eUninitialized, cvtBufSize};
         into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcp + n}, span{buf})));
     }
@@ -1169,7 +1169,7 @@ void String::AsUTF32 (u32string* into) const
     else {
         Assert (sizeof (Character) == sizeof (wchar_t));
         const wchar_t*        wcp        = (const wchar_t*)cp;
-        size_t                cvtBufSize = UTFConverter::ComputeOutputBufferSize<wchar_t, char32_t> (span{wcp, wcp + n});
+        size_t                cvtBufSize = UTFConverter::ComputeOutputBufferSize<char32_t> (span{wcp, wcp + n});
         StackBuffer<char32_t> buf{Memory::eUninitialized, cvtBufSize};
         into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcp + n}, span{buf})));
     }

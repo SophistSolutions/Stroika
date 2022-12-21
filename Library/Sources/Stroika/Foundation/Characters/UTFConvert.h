@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Characters {
          *  @See Convert ()
          *  \Alias used to be called QuickComputeConversionOutputBufferSize
          */
-        template <typename FROM, typename TO>
+        template <typename TO, typename FROM>
         static constexpr size_t ComputeOutputBufferSize (span<const FROM> src);
 
     public:
@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \par Example Usage
          *      \code
-         *          size_t                    cvtBufSize = UTFConverter::ComputeOutputBufferSize<char8_t, wchar_t> (src);
+         *          size_t                    cvtBufSize = UTFConverter::ComputeOutputBufferSize<wchar_t> (src);
          *          StackBuffer<wchar_t>      buf{Memory::eUninitialized, cvtBufSize};
          *          auto result = UTFConverter::kThe.Convert (src, span<wchar_t>{buf});
          *          return String{buf.begin (), buf.begin () + get<1> (result)};

@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Characters {
         template <typename FROM, typename TO>
         [[deprecated ("Since Stroika v3, use class UTFConverter")]] inline size_t QuickComputeConversionOutputBufferSize (const FROM* sourceStart, const FROM* sourceEnd)
         {
-            return UTFConverter::ComputeOutputBufferSize<FROM, TO> (span<const FROM>{sourceStart, sourceEnd});
+            return UTFConverter::ComputeOutputBufferSize<TO> (span<const FROM>{sourceStart, sourceEnd});
         }
         DISABLE_COMPILER_MSC_WARNING_START (4996);
         template <typename FROM, typename TO>

@@ -2501,7 +2501,7 @@ size_t CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* 
             resultSize = inCharCnt * 6;
             break; // ITHINK thats right... BOM appears to be 5 chars long? LGP 2001-09-11
         case kCodePage_UTF8:
-            resultSize = UTFConverter::ComputeOutputBufferSize<wchar_t, char> (span{inChars, inChars + inCharCnt});
+            resultSize = UTFConverter::ComputeOutputBufferSize<char> (span{inChars, inChars + inCharCnt});
         default:
             resultSize = inCharCnt * 8;
             break; // I THINK that should always be enough - but who knows...
