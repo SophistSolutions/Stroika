@@ -78,6 +78,11 @@ namespace {
     };
 }
 
+#if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
+using std::span;
+#endif
+
+
 /*
  ********************************************************************************
  ******* Characters::Private_::RegularExpression_GetCompiled ********************

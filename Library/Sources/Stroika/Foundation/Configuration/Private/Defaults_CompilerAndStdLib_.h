@@ -652,6 +652,25 @@ make[3]: *** [/Sandbox/Str
 
 #endif
 
+
+
+/**
+error: no matching constructor for initialization of 'std::span<wchar_t, 18446744073709551615>'
+    return String{buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{from, to}, span{buf}))};
+                                                                                                   ^   ~~~~~
+                                                                                                   
+ * 
+ */
+#ifndef qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#else
+#define qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy 0
+#endif
+
+#endif
+
 /*
     http://stackoverflow.com/questions/15438968/vswprintf-fails-for-certain-unicode-codepoints-under-mac-os-x
     http://stackoverflow.com/questions/11713745/why-does-the-printf-family-of-functions-care-about-locale

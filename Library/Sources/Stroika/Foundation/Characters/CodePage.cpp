@@ -2776,6 +2776,9 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 
 void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
+    #if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
+    using std::span;
+    #endif
     // @todo fix weak implementation (slow)
     // First convert to char16_t, and then apply that overload
     StackBuffer<char16_t> char16Buf{Memory::eUninitialized, *outCharCnt};
