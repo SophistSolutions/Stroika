@@ -14,6 +14,7 @@
 
 #include "../Characters/ToString.h"
 #include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
 
 /**
  */
