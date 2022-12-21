@@ -25,14 +25,10 @@ namespace Stroika::Foundation::Memory {
         //  'rep' type tuned to their application.
         InlineBuffer<byte, 64> fData;
 
-        template <typename BYTE_ITERATOR>
-        BasicRep_ (BYTE_ITERATOR start, BYTE_ITERATOR end)
-            : fData{Memory::eUninitialized, static_cast<size_t> (end - start)}
+        BasicRep_ (span<const byte> s)
+            : fData{Memory::eUninitialized, s.size ()}
         {
-            // use memcpy instead of std::copy because std::copy doesn't work between uint8_t, and byte arrays.
-            static_assert (sizeof (*start) == 1);
-            static_assert (is_trivially_copyable_v<typename iterator_traits<BYTE_ITERATOR>::value_type>);
-            (void)::memcpy (fData.begin (), Traversal::Iterator2Pointer (start), end - start);
+            copy (s.begin (), s.end (), fData.begin ());
         }
 
         BasicRep_ (const initializer_list<pair<const byte*, const byte*>>& startEndPairs);
@@ -40,11 +36,11 @@ namespace Stroika::Foundation::Memory {
         BasicRep_ (const BasicRep_&)            = delete;
         BasicRep_& operator= (const BasicRep_&) = delete;
 
-        virtual pair<const byte*, const byte*> GetBounds () const override;
+        virtual span<const byte> GetBounds () const override;
     };
 
     struct BLOB::ZeroRep_ : public _IRep, public Memory::UseBlockAllocationIfAppropriate<ZeroRep_> {
-        virtual pair<const byte*, const byte*> GetBounds () const override;
+        virtual span<const byte> GetBounds () const override;
         ZeroRep_ ()                           = default;
         ZeroRep_ (const ZeroRep_&)            = delete;
         ZeroRep_& operator= (const ZeroRep_&) = delete;
@@ -58,7 +54,7 @@ namespace Stroika::Foundation::Memory {
         AdoptRep_ (const byte* start, const byte* end);
         ~AdoptRep_ ();
         AdoptRep_&                             operator= (const AdoptRep_&) = delete;
-        virtual pair<const byte*, const byte*> GetBounds () const override;
+        virtual span<const byte> GetBounds () const override;
     };
 
     struct BLOB::AdoptAppLifetimeRep_ : public _IRep, public Memory::UseBlockAllocationIfAppropriate<AdoptAppLifetimeRep_> {
@@ -69,7 +65,7 @@ namespace Stroika::Foundation::Memory {
         AdoptAppLifetimeRep_ (const AdoptAppLifetimeRep_&) = delete;
         AdoptAppLifetimeRep_ (const byte* start, const byte* end);
         AdoptAppLifetimeRep_&                  operator= (const AdoptAppLifetimeRep_&) = delete;
-        virtual pair<const byte*, const byte*> GetBounds () const override;
+        virtual span<const byte> GetBounds () const override;
     };
 
     /*
@@ -98,24 +94,29 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)>*>
     inline BLOB::BLOB (const CONTAINER_OF_BYTE& data)
-        : fRep_{(std::begin (data) == std::end (data)) ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (data.begin (), data.end ()))}
+        : BLOB{as_bytes(span{data})}
     {
     }
     inline BLOB::BLOB (const initializer_list<byte>& bytes)
-        : fRep_{bytes.size () == 0 ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (bytes.begin (), bytes.end ()))}
+        : BLOB{span{bytes}}
     {
     }
     inline BLOB::BLOB (const initializer_list<uint8_t>& bytes)
-        : fRep_{bytes.size () == 0 ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (bytes.begin (), bytes.end ()))}
+        : BLOB{as_bytes (span{bytes})}
     {
     }
+    inline BLOB::BLOB (span<const byte> s)
+        : fRep_{s.empty () ? _SharedIRep{_MakeSharedPtr<ZeroRep_> ()} : _SharedIRep{_MakeSharedPtr<BasicRep_> (s)}}
+    {
+        Ensure (s.size () == size ());
+    }
     inline BLOB::BLOB (const byte* start, const byte* end)
-        : fRep_{start == end ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (start, end))}
+        : BLOB{span{start, end}}
     {
         Ensure (static_cast<size_t> (end - start) == size ());
     }
     inline BLOB::BLOB (const uint8_t* start, const uint8_t* end)
-        : fRep_{start == end ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (start, end))}
+        : BLOB{as_bytes (span{start, end})}
     {
         Ensure (static_cast<size_t> (end - start) == size ());
     }
@@ -180,6 +181,10 @@ namespace Stroika::Foundation::Memory {
         Require (start <= end);
         return BLOB{_MakeSharedPtr<AdoptRep_> (start, end)};
     }
+    inline BLOB BLOB::Attach (span<const byte> s)
+    {
+        return Attach (SafeBegin (s), SafeEnd (s));
+    }
     inline BLOB BLOB::AttachApplicationLifetime (const byte* start, const byte* end)
     {
         Require ((start == nullptr and end == nullptr) or (start != nullptr and end != nullptr));
@@ -192,17 +197,48 @@ namespace Stroika::Foundation::Memory {
         return AttachApplicationLifetime (Containers::Start (data), Containers::Start (data) + SIZE);
     }
     template <>
+    inline void BLOB::As (span<const byte>* into) const
+    {
+        RequireNotNull (into);
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        *into = fRep_->GetBounds ();
+    }
+    template <>
+    inline void BLOB::As (span<const uint8_t>* into) const
+    {
+        RequireNotNull (into);
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        auto                                               s = fRep_->GetBounds ();
+        *into                                             = span<const uint8_t>{reinterpret_cast<const uint8_t*> (SafeBegin (s)), s.size ()};
+    }
+    template <>
     inline vector<byte> BLOB::As () const
     {
         vector<byte> result;
-        As<vector<byte>> (&result);
+        As (&result);
         return result;
     }
     template <>
     inline vector<uint8_t> BLOB::As () const
     {
         vector<uint8_t> result;
-        As<vector<uint8_t>> (&result);
+        As (&result);
+        return result;
+    }
+    template <>
+    inline span<const byte> BLOB::As () const
+    {
+        span<const byte>                                   result;
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        As (&result);
+        return result;
+    }
+    template <>
+    inline span<const uint8_t> BLOB::As () const
+    {
+        span<const uint8_t>                                result;
+        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        As (&result);
         return result;
     }
     template <>
@@ -210,7 +246,7 @@ namespace Stroika::Foundation::Memory {
     {
         pair<const byte*, const byte*>                     result;
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        As<pair<const byte*, const byte*>> (&result);
+        As (&result);
         return result;
     }
     template <>
@@ -218,7 +254,7 @@ namespace Stroika::Foundation::Memory {
     {
         pair<const uint8_t*, const uint8_t*>               result;
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        As<pair<const uint8_t*, const uint8_t*>> (&result);
+        As (&result);
         return result;
     }
     template <typename T>
@@ -233,29 +269,29 @@ namespace Stroika::Foundation::Memory {
     {
         RequireNotNull (into);
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        pair<const byte*, const byte*>                     tmp = fRep_->GetBounds ();
-        Assert (tmp.first <= tmp.second);
-        into->assign (tmp.first, tmp.second);
+        span<const byte>                                   tmp = fRep_->GetBounds ();
+        Assert (tmp.begin () <= tmp.end ());
+        into->assign (tmp.begin (), tmp.end ());
     }
     template <>
     inline void BLOB::As (vector<uint8_t>* into) const
     {
         RequireNotNull (into);
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        pair<const byte*, const byte*>                     tmp = fRep_->GetBounds ();
-        Assert (tmp.first <= tmp.second);
-        into->assign (reinterpret_cast<const uint8_t*> (tmp.first), reinterpret_cast<const uint8_t*> (tmp.second));
+        span<const byte>                                   tmp = fRep_->GetBounds ();
+        Assert (tmp.begin () <= tmp.end ());
+        into->assign (reinterpret_cast<const uint8_t*> (SafeBegin (tmp)), reinterpret_cast<const uint8_t*> (SafeEnd (tmp)));
     }
     template <>
     inline void BLOB::As (string* into) const
     {
         RequireNotNull (into);
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        pair<const byte*, const byte*>                     tmp = fRep_->GetBounds ();
-        Assert (tmp.first <= tmp.second);
+        span<const byte>                     tmp = fRep_->GetBounds ();
+        Assert (tmp.begin () <= tmp.end ());
         into->clear ();
-        into->append (reinterpret_cast<const char*> (tmp.first), reinterpret_cast<const char*> (tmp.second));
-        Ensure (into->size () == static_cast<size_t> (tmp.second - tmp.first));
+        into->assign (reinterpret_cast<const char*> (SafeBegin (tmp)), reinterpret_cast<const char*> (SafeEnd (tmp)));
+        Ensure (into->size () == tmp.size ());
     }
     template <>
     inline string BLOB::As () const
@@ -269,16 +305,16 @@ namespace Stroika::Foundation::Memory {
     {
         RequireNotNull (into);
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        *into = fRep_->GetBounds ();
+        auto                                               s = fRep_->GetBounds ();
+        *into                                                = make_pair (SafeBegin (s), SafeEnd (s));
     }
     template <>
     inline void BLOB::As (pair<const uint8_t*, const uint8_t*>* into) const
     {
         RequireNotNull (into);
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        auto                                               t = fRep_->GetBounds ();
-        into->first                                          = reinterpret_cast<const uint8_t*> (t.first);
-        into->second                                         = reinterpret_cast<const uint8_t*> (t.second);
+        auto                                               s = fRep_->GetBounds ();
+        *into                                                = make_pair (reinterpret_cast<const uint8_t*> (SafeBegin (s)), reinterpret_cast<const uint8_t*> (SafeEnd (s)));
     }
     template <typename T>
     inline void BLOB::As (T* into) const
@@ -298,26 +334,26 @@ namespace Stroika::Foundation::Memory {
     inline bool BLOB::empty () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        pair<const byte*, const byte*>                     tmp = fRep_->GetBounds ();
-        Assert (tmp.first <= tmp.second);
-        return tmp.first == tmp.second;
+        span<const byte>                                   tmp = fRep_->GetBounds ();
+        Assert (tmp.begin () <= tmp.end ());
+        return tmp.empty ();
     }
     inline const byte* BLOB::begin () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        return fRep_->GetBounds ().first;
+        return SafeBegin (fRep_->GetBounds ());
     }
     inline const byte* BLOB::end () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        return fRep_->GetBounds ().second;
+        return SafeEnd (fRep_->GetBounds ());
     }
     inline size_t BLOB::GetSize () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        pair<const byte*, const byte*>                     tmp = fRep_->GetBounds ();
-        Assert (tmp.first <= tmp.second);
-        return tmp.second - tmp.first;
+        span<const byte>                                   tmp = fRep_->GetBounds ();
+        Assert (tmp.begin () <= tmp.end ());
+        return tmp.size ();
     }
     inline size_t BLOB::length () const
     {
@@ -340,17 +376,17 @@ namespace Stroika::Foundation::Memory {
         if (fRep_ == rhs.fRep_) {
             return true; // cheap optimization for not super uncommon case
         }
-        pair<const byte*, const byte*> l     = fRep_->GetBounds ();
-        pair<const byte*, const byte*> r     = rhs.fRep_->GetBounds ();
-        size_t                         lSize = l.second - l.first;
-        size_t                         rSize = r.second - r.first;
+        span<const byte>               l     = fRep_->GetBounds ();
+        span<const byte>               r     = rhs.fRep_->GetBounds ();
+        size_t                         lSize = l.size ();
+        size_t                         rSize = r.size ();
         if (lSize != rSize) {
             return false;
         }
         if (lSize == 0) {
             return true; // see http://stackoverflow.com/questions/16362925/can-i-pass-a-null-pointer-to-memcmp -- illegal to pass nullptr to memcmp() even if size 0
         }
-        return ::memcmp (l.first, r.first, lSize) == 0;
+        return ::memcmp (SafeBegin (l), SafeBegin (r), lSize) == 0;
     }
     inline BLOB BLOB::operator+ (const BLOB& rhs) const
     {
@@ -361,14 +397,14 @@ namespace Stroika::Foundation::Memory {
     {
         Debug::AssertExternallySynchronizedMutex::ReadLock readLockL{lhs.fThisAssertExternallySynchronized_}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
         Debug::AssertExternallySynchronizedMutex::ReadLock readLockR{rhs.fThisAssertExternallySynchronized_};
-        pair<const byte*, const byte*>                     l            = lhs.fRep_->GetBounds ();
-        pair<const byte*, const byte*>                     r            = rhs.fRep_->GetBounds ();
-        size_t                                             lSize        = l.second - l.first;
-        size_t                                             rSize        = r.second - r.first;
+        span<const byte>                                   l            = lhs.fRep_->GetBounds ();
+        span<const byte>                                   r            = rhs.fRep_->GetBounds ();
+        size_t                                             lSize        = l.size ();
+        size_t                                             rSize        = r.size ();
         size_t                                             nCommonBytes = min (lSize, rSize);
         if (nCommonBytes != 0) {
             // see http://stackoverflow.com/questions/16362925/can-i-pass-a-null-pointer-to-memcmp -- illegal to pass nullptr to memcmp() even if size 0
-            if (int tmp = ::memcmp (l.first, r.first, nCommonBytes)) {
+            if (int tmp = ::memcmp (SafeBegin (l), SafeBegin (r), nCommonBytes)) {
                 return tmp <=> 0;
             }
         }

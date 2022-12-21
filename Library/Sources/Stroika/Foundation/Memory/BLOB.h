@@ -125,6 +125,7 @@ namespace Stroika::Foundation::Memory {
         // clang-format on
         template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)>* = nullptr>
         BLOB (const CONTAINER_OF_BYTE& data);
+        BLOB (span<const byte> s);
         BLOB (const byte* start, const byte* end);
         BLOB (const uint8_t* start, const uint8_t* end);
         BLOB (const initializer_list<pair<const byte*, const byte*>>& startEndPairs);
@@ -202,6 +203,7 @@ namespace Stroika::Foundation::Memory {
          *  @see AttachApplicationLifetime
          */
         static BLOB Attach (const byte* start, const byte* end);
+        static BLOB Attach (span<const byte> s);
 
     public:
         /*
@@ -235,6 +237,8 @@ namespace Stroika::Foundation::Memory {
         /**
          *  Convert BLOB losslessly into a standard C++ type.
          *      Supported Types for 'T' include:
+         *          o   span<byte>
+         *          o   span<uint8_t>
          *          o   vector<byte>
          *          o   vector<uint8_t>
          *          o   pair<const byte*, const byte*>
@@ -242,6 +246,9 @@ namespace Stroika::Foundation::Memory {
          *          o   Streams::InputStream<byte>::Ptr
          *          o   string      (bytes as characters - note this MAY include NUL-bytes - https://stackoverflow.com/questions/2845769/can-a-stdstring-contain-embedded-nulls)
          *          o   any T where is_trivially_copyable
+         * 
+         *  \note If T is span<> or pair<> (byte or uint8_t) - this returns INTERNAL pointers into the BLOB storage,
+         *        so use with care.
          */
         template <typename T>
         nonvirtual T As () const;
@@ -380,7 +387,7 @@ namespace Stroika::Foundation::Memory {
         _IRep ()                                                  = default;
         _IRep (const _IRep&)                                      = delete;
         virtual ~_IRep ()                                         = default;
-        virtual pair<const byte*, const byte*> GetBounds () const = 0;
+        virtual span<const byte> GetBounds () const = 0;
 
         nonvirtual const _IRep& operator= (const _IRep&) = delete;
     };

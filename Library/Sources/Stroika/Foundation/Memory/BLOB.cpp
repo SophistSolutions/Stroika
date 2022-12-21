@@ -75,10 +75,10 @@ BLOB::BasicRep_::BasicRep_ (const initializer_list<BLOB>& list2Concatenate)
     Ensure (pb == fData.end ());
 }
 
-pair<const byte*, const byte*> BLOB::BasicRep_::GetBounds () const
+span<const byte> BLOB::BasicRep_::GetBounds () const
 {
     Ensure (fData.begin () <= fData.end ());
-    return pair<const byte*, const byte*> (fData.begin (), fData.end ());
+    return span<const byte>{fData.begin (), fData.end ()};
 }
 
 /*
@@ -86,9 +86,9 @@ pair<const byte*, const byte*> BLOB::BasicRep_::GetBounds () const
  ************************** Memory::BLOB::ZeroRep_ ******************************
  ********************************************************************************
  */
-pair<const byte*, const byte*> BLOB::ZeroRep_::GetBounds () const
+span<const byte> BLOB::ZeroRep_::GetBounds () const
 {
-    return pair<const byte*, const byte*>{nullptr, nullptr};
+    return span<const byte>{};
 }
 
 /*
@@ -108,10 +108,10 @@ BLOB::AdoptRep_::~AdoptRep_ ()
     delete[] fStart;
 }
 
-pair<const byte*, const byte*> BLOB::AdoptRep_::GetBounds () const
+span<const byte> BLOB::AdoptRep_::GetBounds () const
 {
     Ensure (fStart <= fEnd);
-    return pair<const byte*, const byte*>{fStart, fEnd};
+    return span<const byte>{fStart, fEnd};
 }
 
 /*
@@ -126,10 +126,10 @@ BLOB::AdoptAppLifetimeRep_::AdoptAppLifetimeRep_ (const byte* start, const byte*
     Require (start <= end);
 }
 
-pair<const byte*, const byte*> BLOB::AdoptAppLifetimeRep_::GetBounds () const
+span<const byte> BLOB::AdoptAppLifetimeRep_::GetBounds () const
 {
     Ensure (fStart <= fEnd);
-    return pair<const byte*, const byte*>{fStart, fEnd};
+    return span<const byte>{fStart, fEnd};
 }
 
 /*
