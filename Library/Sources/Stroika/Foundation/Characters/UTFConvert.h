@@ -155,8 +155,7 @@ namespace Stroika::Foundation::Characters {
         nonvirtual tuple<size_t, size_t> Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const;
         nonvirtual tuple<size_t, size_t> Convert (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
         template <typename SRC_T, typename TRG_T>
-        nonvirtual tuple<size_t, size_t> Convert (span<const SRC_T> source, span<TRG_T> target) const
-            requires (sizeof (SRC_T) != sizeof (TRG_T));
+        nonvirtual tuple<size_t, size_t> Convert (span<const SRC_T> source, span<TRG_T> target) const;
 
     public:
         /**

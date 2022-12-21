@@ -55,6 +55,9 @@ namespace Stroika::Foundation::Characters {
     template <typename FROM, typename TO>
     constexpr size_t UTFConverter::ComputeOutputBufferSize (span<const FROM> src)
     {
+        if constexpr (sizeof (FROM) == sizeof (TO)) {
+            return src.size ();     // not super useful to do this conversion, but given how if constexpr works/evaluates, its often important than this code compiles, even if it doesn't execute
+        }
         if constexpr (sizeof (FROM) == 1) {
             // worst case is each src byte is a character
             return src.size ();
@@ -66,7 +69,7 @@ namespace Stroika::Foundation::Characters {
                 return 4 * src.size ();
             }
             else {
-                static_assert (sizeof (TO) == 4);
+                Require (sizeof (TO) == 4);
                 return src.size (); // worst case is no surrogate pairs
             }
         }
@@ -82,7 +85,7 @@ namespace Stroika::Foundation::Characters {
             }
         }
         else {
-            AssertNotReached (); // not reaached
+            AssertNotReached ();
             return 0;
         }
     }
@@ -147,8 +150,12 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename SRC_T, typename TRG_T>
     inline tuple<size_t, size_t> UTFConverter::Convert (span<const SRC_T> source, span<TRG_T> target) const
-        requires (sizeof (SRC_T) != sizeof (TRG_T))
     {
+        Require ((target.size () >= ComputeOutputBufferSize<const SRC_T, TRG_T> (source)));
+        if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
+            copy (source, target, source.size ());  // pointless conversion, but if requested...
+            return source.size ();
+        }
         return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
     }
 
