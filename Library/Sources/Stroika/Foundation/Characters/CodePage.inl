@@ -73,6 +73,8 @@ namespace Stroika::Foundation::Characters {
             return UTFConverter::ComputeOutputBufferSize<TO> (span<const FROM>{sourceStart, sourceEnd});
         }
         DISABLE_COMPILER_MSC_WARNING_START (4996);
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         template <typename FROM, typename TO>
         [[deprecated ("Since Stroika v3, use class UTFConverter::kThe")]] ConversionResult ConvertQuietly (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags)
         {
@@ -103,6 +105,8 @@ namespace Stroika::Foundation::Characters {
             *targetStart += get<1> (r);
         }
         DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     }
 
     /*
