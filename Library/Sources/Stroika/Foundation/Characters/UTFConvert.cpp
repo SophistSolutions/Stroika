@@ -80,10 +80,6 @@ namespace {
             }
         }
 
-        // Most of the comparisons we need to do in this code are with unsigned characters, but we want the public
-        // API to use UTF8=char, since that will work best with calling code (e.g. class basic_string<char>).
-        using UTF8_ = unsigned char;
-
         constexpr int halfShift = 10; /* used for shifting by 10 bits */
 
         constexpr char32_t halfBase = 0x0010000UL;
@@ -108,7 +104,7 @@ namespace {
          * (I.e., one byte sequence, two byte... etc.). Remember that sequencs
          * for *legal* UTF-8 will be 4 or fewer bytes total.
          */
-        constexpr UTF8_ firstByteMark[7] = {0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC};
+        constexpr char8_t firstByteMark[7] = {0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC};
 
         /*
          * Index into the table below with the first byte of a UTF-8 sequence to
@@ -137,10 +133,10 @@ namespace {
          * If presented with a length > 4, this returns false.  The Unicode
          * definition of UTF-8 goes up to 4-byte sequences.
          */
-        bool isLegalUTF8_ (const UTF8_* source, int length)
+        bool isLegalUTF8_ (const char8_t* source, int length)
         {
-            UTF8_        a;
-            const UTF8_* srcptr = source + length;
+            char8_t      a;
+            const char8_t* srcptr = source + length;
             switch (length) {
                 default:
                     return false;
@@ -190,12 +186,12 @@ namespace {
         inline ConversionResult ConvertUTF8toUTF16_ (const char8_t** sourceStart, const char8_t* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
         {
             ConversionResult result = conversionOK;
-            const UTF8_*     source = reinterpret_cast<const UTF8_*> (*sourceStart);
+            const char8_t*   source = reinterpret_cast<const char8_t*> (*sourceStart);
             char16_t*        target = *targetStart;
-            while (source < reinterpret_cast<const UTF8_*> (sourceEnd)) {
+            while (source < reinterpret_cast<const char8_t*> (sourceEnd)) {
                 char32_t       ch               = 0;
                 unsigned short extraBytesToRead = trailingBytesForUTF8[*source];
-                if (source + extraBytesToRead >= reinterpret_cast<const UTF8_*> (sourceEnd)) {
+                if (source + extraBytesToRead >= reinterpret_cast<const char8_t*> (sourceEnd)) {
                     result = sourceExhausted;
                     break;
                 }
@@ -279,7 +275,7 @@ namespace {
         {
             ConversionResult result = conversionOK;
             const char16_t*  source = *sourceStart;
-            UTF8_*           target = reinterpret_cast<UTF8_*> (*targetStart);
+            char8_t*         target = reinterpret_cast<char8_t*> (*targetStart);
             while (source < sourceEnd) {
                 char32_t           ch;
                 unsigned short     bytesToWrite = 0;
@@ -336,7 +332,7 @@ namespace {
                 }
 
                 target += bytesToWrite;
-                if (target > reinterpret_cast<UTF8_*> (targetEnd)) {
+                if (target > reinterpret_cast<char8_t*> (targetEnd)) {
                     source = oldSource; /* Back up source pointer! */
                     target -= bytesToWrite;
                     result = targetExhausted;
@@ -344,16 +340,16 @@ namespace {
                 }
                 switch (bytesToWrite) { /* note: everything falls through. */
                     case 4:
-                        *--target = (UTF8_)((ch | byteMark) & byteMask);
+                        *--target = (char8_t)((ch | byteMark) & byteMask);
                         ch >>= 6;
                     case 3:
-                        *--target = (UTF8_)((ch | byteMark) & byteMask);
+                        *--target = (char8_t)((ch | byteMark) & byteMask);
                         ch >>= 6;
                     case 2:
-                        *--target = (UTF8_)((ch | byteMark) & byteMask);
+                        *--target = (char8_t)((ch | byteMark) & byteMask);
                         ch >>= 6;
                     case 1:
-                        *--target = (UTF8_)(ch | firstByteMark[bytesToWrite]);
+                        *--target = (char8_t)(ch | firstByteMark[bytesToWrite]);
                 }
                 target += bytesToWrite;
             }
@@ -473,12 +469,12 @@ namespace {
         inline ConversionResult ConvertUTF8toUTF32_ (const char8_t** sourceStart, const char8_t* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags)
         {
             ConversionResult result = conversionOK;
-            const UTF8_*     source = reinterpret_cast<const UTF8_*> (*sourceStart);
+            const char8_t*   source = reinterpret_cast<const char8_t*> (*sourceStart);
             char32_t*        target = *targetStart;
-            while (source < reinterpret_cast<const UTF8_*> (sourceEnd)) {
+            while (source < reinterpret_cast<const char8_t*> (sourceEnd)) {
                 char32_t       ch               = 0;
                 unsigned short extraBytesToRead = trailingBytesForUTF8[*source];
-                if (source + extraBytesToRead >= reinterpret_cast<const UTF8_*> (sourceEnd)) [[unlikely]] {
+                if (source + extraBytesToRead >= reinterpret_cast<const char8_t*> (sourceEnd)) [[unlikely]] {
                     result = sourceExhausted;
                     break;
                 }
@@ -548,7 +544,7 @@ namespace {
         {
             ConversionResult result = conversionOK;
             const char32_t*  source = *sourceStart;
-            UTF8_*           target = reinterpret_cast<UTF8_*> (*targetStart);
+            char8_t*         target = reinterpret_cast<char8_t*> (*targetStart);
             while (source < sourceEnd) {
                 char32_t       ch;
                 unsigned short bytesToWrite = 0;
@@ -586,7 +582,7 @@ namespace {
                 }
 
                 target += bytesToWrite;
-                if (target > reinterpret_cast<UTF8_*> (targetEnd)) {
+                if (target > reinterpret_cast<char8_t*> (targetEnd)) {
                     --source; /* Back up source pointer! */
                     target -= bytesToWrite;
                     result = targetExhausted;
@@ -594,16 +590,16 @@ namespace {
                 }
                 switch (bytesToWrite) { /* note: everything falls through. */
                     case 4:
-                        *--target = (UTF8_)((ch | byteMark) & byteMask);
+                        *--target = (char8_t)((ch | byteMark) & byteMask);
                         ch >>= 6;
                     case 3:
-                        *--target = (UTF8_)((ch | byteMark) & byteMask);
+                        *--target = (char8_t)((ch | byteMark) & byteMask);
                         ch >>= 6;
                     case 2:
-                        *--target = (UTF8_)((ch | byteMark) & byteMask);
+                        *--target = (char8_t)((ch | byteMark) & byteMask);
                         ch >>= 6;
                     case 1:
-                        *--target = (UTF8_)(ch | firstByteMark[bytesToWrite]);
+                        *--target = (char8_t)(ch | firstByteMark[bytesToWrite]);
                 }
                 target += bytesToWrite;
             }
