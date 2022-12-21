@@ -319,7 +319,7 @@ namespace Stroika::Foundation::Memory {
     inline void StackBuffer<T, BUF_SIZE>::DestroyElts_ (T* start, T* end) noexcept
     {
         for (auto i = start; i != end; ++i) {
-            ::destroy_at (i);
+            destroy_at (i);
         }
     }
     template <typename T, size_t BUF_SIZE>
