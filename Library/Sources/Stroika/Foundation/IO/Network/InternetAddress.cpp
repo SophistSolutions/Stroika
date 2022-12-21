@@ -120,23 +120,26 @@ InternetAddress::InternetAddress (const string& s, AddressFamily af)
                 af = AddressFamily::V6;
             }
         }
-        // queer API betware - inet_pton returns 0 (not negative) on error
+        // queer API beware - inet_pton returns 0 (not negative) on error
         switch (af) {
             case AddressFamily::V4: {
                 if (::inet_pton (AF_INET, s.c_str (), &fV4_) == 0) {
-                    Execution::Throw (Execution::RuntimeErrorException{L"unable to parse string as IPv4 internet address"sv});
+                    static const auto kException_{Execution::RuntimeErrorException{L"unable to parse string as IPv4 internet address"sv}};
+                    Execution::Throw (kException_);
                 }
                 fAddressFamily_ = af;
             } break;
             case AddressFamily::V6: {
                 if (::inet_pton (AF_INET6, s.c_str (), &fV6_) == 0) {
-                    Execution::Throw (Execution::RuntimeErrorException{L"unable to parse string as IPv6 internet address"sv});
+                    static const auto kException_{Execution::RuntimeErrorException{L"unable to parse string as IPv6 internet address"sv}};
+                    Execution::Throw (kException_);
                 }
                 fAddressFamily_ = af;
             } break;
             default: {
                 // @todo need better exception
-                Execution::Throw (Execution::RuntimeErrorException{L"Unrecognized address family"sv});
+                static const auto kException_{Execution::RuntimeErrorException{L"Unrecognized address family"sv}};
+                Execution::Throw (kException_);
             } break;
         }
     }
@@ -437,7 +440,7 @@ InternetAddress InternetAddress::PinLowOrderBitsToMax (unsigned int o) const
 
 /*
  ********************************************************************************
- ***************** IO::Network::InternetAddresses_Any ***************************
+ ********************* IO::Network::InternetAddresses_Any ***********************
  ********************************************************************************
  */
 Traversal::Iterable<InternetAddress> Network::InternetAddresses_Any (InternetProtocol::IP::IPVersionSupport ipSupport)
