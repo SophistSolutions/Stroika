@@ -156,7 +156,7 @@ InternetAddress::InternetAddress (const char* s, AddressFamily af)
 }
 
 InternetAddress::InternetAddress (const String& s, AddressFamily af)
-    : InternetAddress{s.AsUTF8 (), af}
+    : InternetAddress{s.AsUTF8<string> (), af}
 {
 }
 
