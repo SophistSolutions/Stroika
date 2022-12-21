@@ -2501,7 +2501,7 @@ size_t CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* 
             resultSize = inCharCnt * 6;
             break; // ITHINK thats right... BOM appears to be 5 chars long? LGP 2001-09-11
         case kCodePage_UTF8:
-            resultSize = UTFConvert::QuickComputeConversionOutputBufferSize<wchar_t, char> (inChars, inChars + inCharCnt);
+            resultSize = UTFConverter::ComputeOutputBufferSize<wchar_t, char> (span{inChars, inChars + inCharCnt});
         default:
             resultSize = inCharCnt * 8;
             break; // I THINK that should always be enough - but who knows...
@@ -2582,8 +2582,7 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
         } break;
         case kCodePage_UTF8: {
             char16_t* outCharsPtr = outChars;
-            UTFConvert::Convert (&inMBChars, inMBChars + inMBCharCnt, &outCharsPtr, outChars + *outCharCnt, UTFConvert::lenientConversion);
-            *outCharCnt = outCharsPtr - outChars;
+            *outCharCnt           = get<1> (UTFConverter::kThe.Convert (span{inMBChars, inMBChars + inMBCharCnt}, span{outCharsPtr, outChars + *outCharCnt}));
         } break;
         default: {
 #if qPlatform_Windows
@@ -2740,8 +2739,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
             {
                 auto  ic          = inChars;
                 char* outCharsPtr = useOutChars;
-                UTFConvert::Convert (&ic, inChars + inCharCnt, &outCharsPtr, outCharsPtr + useOutCharCount, UTFConvert::lenientConversion);
-                useOutCharCount = outCharsPtr - useOutChars;
+                useOutCharCount   = get<1> (UTFConverter::kThe.Convert (span{ic, inChars + inCharCnt}, span{outCharsPtr, outCharsPtr + useOutCharCount}));
             }
             if (GetHandleBOM ()) {
                 if (*outCharCnt >= 3) {
@@ -2782,9 +2780,8 @@ void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCn
     // First convert to char16_t, and then apply that overload
     StackBuffer<char16_t> char16Buf{Memory::eUninitialized, *outCharCnt};
     {
-        char16_t* tmpOutCharsResult = char16Buf;
-        UTFConvert::Convert (&inChars, inChars + inCharCnt, &tmpOutCharsResult, tmpOutCharsResult + char16Buf.size (), UTFConvert::lenientConversion);
-        char16Buf.resize (tmpOutCharsResult - char16Buf);
+        auto r = UTFConverter::kThe.Convert (span{inChars, inChars + inCharCnt}, span{char16Buf});
+        char16Buf.resize (get<1> (r));
     }
     MapFromUNICODE (char16Buf, char16Buf.size (), outChars, outCharCnt);
 }
