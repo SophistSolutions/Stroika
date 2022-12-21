@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Characters {
     constexpr size_t UTFConverter::ComputeOutputBufferSize (span<const FROM> src)
     {
         if constexpr (sizeof (FROM) == sizeof (TO)) {
-            return src.size ();     // not super useful to do this conversion, but given how if constexpr works/evaluates, its often important than this code compiles, even if it doesn't execute
+            return src.size (); // not super useful to do this conversion, but given how if constexpr works/evaluates, its often important than this code compiles, even if it doesn't execute
         }
         if constexpr (sizeof (FROM) == 1) {
             // worst case is each src byte is a character
@@ -153,7 +153,7 @@ namespace Stroika::Foundation::Characters {
     {
         Require ((target.size () >= ComputeOutputBufferSize<const SRC_T, TRG_T> (source)));
         if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
-            copy (source, target, source.size ());  // pointless conversion, but if requested...
+            copy (source, target, source.size ()); // pointless conversion, but if requested...
             return source.size ();
         }
         return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
