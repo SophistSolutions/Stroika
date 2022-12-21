@@ -760,79 +760,65 @@ auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char16_t> source,
     return ConvertQuietly_StroikaPortable_helper_ (source, target, UTFConvert_libutfxx_::ConvertUTF8toUTF16_);
 }
 
+namespace {
+    template <typename IN_T, typename OUT_T, typename FUN2DO_REAL_WORK>
+    inline auto ConvertQuietly_codeCvt_helper_ (span<const IN_T> source, const span<OUT_T> target, FUN2DO_REAL_WORK&& realWork) -> tuple<UTFConverter::ConversionResults, size_t, size_t>
+    {
+        using ConversionResults = UTFConverter::ConversionResults;
+        if (source.empty ()) {
+            return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
+        }
+        using namespace UTFConvert_codecvSupport_;
+        const IN_T*       sourceStart = reinterpret_cast<const IN_T*> (&*source.begin ());
+        const IN_T*       sourceEnd   = sourceStart + source.size ();
+        OUT_T*            targetStart = reinterpret_cast<OUT_T*> (&*target.begin ());
+        OUT_T*            targetEnd   = targetStart + target.size ();
+        ConversionResults r           = realWork (&sourceStart, sourceEnd, &targetStart, targetEnd);
+        if (r == ConversionResults::ok) {
+            return make_tuple (ConversionResults::ok, sourceStart - reinterpret_cast<const IN_T*> (&*source.begin ()), targetStart - reinterpret_cast<const OUT_T*> (&*target.begin ()));
+        }
+        else {
+            return make_tuple (r, 0, 0);
+        }
+    }
+    template <typename IN_T, typename OUT_T, typename FUN2DO_REAL_WORK>
+    inline auto ConvertQuietly_codeCvt_helper_ (span<const IN_T> source, const span<OUT_T> target, mbstate_t* multibyteConversionState, FUN2DO_REAL_WORK&& realWork) -> tuple<UTFConverter::ConversionResults, size_t, size_t>
+    {
+        using ConversionResults = UTFConverter::ConversionResults;
+        if (source.empty ()) {
+            return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
+        }
+        using namespace UTFConvert_codecvSupport_;
+        const IN_T*       sourceStart = reinterpret_cast<const IN_T*> (&*source.begin ());
+        const IN_T*       sourceEnd   = sourceStart + source.size ();
+        OUT_T*            targetStart = reinterpret_cast<OUT_T*> (&*target.begin ());
+        OUT_T*            targetEnd   = targetStart + target.size ();
+        ConversionResults r           = realWork (multibyteConversionState, &sourceStart, sourceEnd, &targetStart, targetEnd);
+        if (r == ConversionResults::ok) {
+            return make_tuple (ConversionResults::ok, sourceStart - reinterpret_cast<const IN_T*> (&*source.begin ()), targetStart - reinterpret_cast<const OUT_T*> (&*target.begin ()));
+        }
+        else {
+            return make_tuple (r, 0, 0);
+        }
+    }
+}
 auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) -> tuple<ConversionResults, size_t, size_t>
 {
-    if (source.empty ()) {
-        return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
-    }
-    using namespace UTFConvert_codecvSupport_;
-    const char8_t*    sourceStart = reinterpret_cast<const char8_t*> (&*source.begin ());
-    const char8_t*    sourceEnd   = sourceStart + source.size ();
-    char16_t*         targetStart = reinterpret_cast<char16_t*> (&*target.begin ());
-    char16_t*         targetEnd   = targetStart + target.size ();
-    ConversionResults r           = ConvertUTF8toUTF16_codecvt_ (multibyteConversionState, &sourceStart, sourceEnd, &targetStart, targetEnd);
-    if (r == ConversionResults::ok) {
-        return make_tuple (ConversionResults::ok, sourceStart - reinterpret_cast<const char8_t*> (&*source.begin ()), targetStart - reinterpret_cast<const char16_t*> (&*target.begin ()));
-    }
-    else {
-        return make_tuple (r, 0, 0);
-    }
+    return ConvertQuietly_codeCvt_helper_ (source, target, multibyteConversionState, UTFConvert_codecvSupport_::ConvertUTF8toUTF16_codecvt_);
 }
 
 auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char16_t> source, span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
-    if (source.empty ()) {
-        return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
-    }
-    using namespace UTFConvert_codecvSupport_;
-    const char16_t*   sourceStart = reinterpret_cast<const char16_t*> (&*source.begin ());
-    const char16_t*   sourceEnd   = sourceStart + source.size ();
-    char8_t*          targetStart = reinterpret_cast<char8_t*> (&*target.begin ());
-    char8_t*          targetEnd   = targetStart + target.size ();
-    ConversionResults r           = ConvertUTF16toUTF8_codecvt_ (&sourceStart, sourceEnd, &targetStart, targetEnd);
-    if (r == ConversionResults::ok) {
-        return make_tuple (ConversionResults::ok, sourceStart - reinterpret_cast<const char16_t*> (&*source.begin ()), targetStart - reinterpret_cast<const char8_t*> (&*target.begin ()));
-    }
-    else {
-        return make_tuple (r, 0, 0);
-    }
+    return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvSupport_::ConvertUTF16toUTF8_codecvt_);
 }
 auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) -> tuple<ConversionResults, size_t, size_t>
 {
-    if (source.empty ()) {
-        return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
-    }
-    using namespace UTFConvert_codecvSupport_;
-    const char8_t*    sourceStart = reinterpret_cast<const char8_t*> (&*source.begin ());
-    const char8_t*    sourceEnd   = sourceStart + source.size ();
-    char32_t*         targetStart = reinterpret_cast<char32_t*> (&*target.begin ());
-    char32_t*         targetEnd   = targetStart + target.size ();
-    ConversionResults r           = ConvertUTF8toUTF32_codecvt_ (multibyteConversionState, &sourceStart, sourceEnd, &targetStart, targetEnd);
-    if (r == ConversionResults::ok) {
-        return make_tuple (ConversionResults::ok, sourceStart - reinterpret_cast<const char8_t*> (&*source.begin ()), targetStart - reinterpret_cast<const char32_t*> (&*target.begin ()));
-    }
-    else {
-        return make_tuple (r, 0, 0);
-    }
+    return ConvertQuietly_codeCvt_helper_ (source, target, multibyteConversionState, UTFConvert_codecvSupport_::ConvertUTF8toUTF32_codecvt_);
 }
 
 auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char32_t> source, span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
-    if (source.empty ()) {
-        return make_tuple (ConversionResults::ok, 0, 0); // avoid dereferncing empty iterators
-    }
-    using namespace UTFConvert_codecvSupport_;
-    const char32_t*   sourceStart = reinterpret_cast<const char32_t*> (&*source.begin ());
-    const char32_t*   sourceEnd   = sourceStart + source.size ();
-    char8_t*          targetStart = reinterpret_cast<char8_t*> (&*target.begin ());
-    char8_t*          targetEnd   = targetStart + target.size ();
-    ConversionResults r           = ConvertUTF32toUTF8_codecvt_ (&sourceStart, sourceEnd, &targetStart, targetEnd);
-    if (r == ConversionResults::ok) {
-        return make_tuple (ConversionResults::ok, sourceStart - reinterpret_cast<const char32_t*> (&*source.begin ()), targetStart - reinterpret_cast<const char8_t*> (&*target.begin ()));
-    }
-    else {
-        return make_tuple (r, 0, 0);
-    }
+    return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvSupport_::ConvertUTF32toUTF8_codecvt_);
 }
 
 void UTFConverter::Throw_ (ConversionResults cr)
