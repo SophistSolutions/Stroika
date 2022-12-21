@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <memory>
+#include <span>
 
 #include "../Configuration/Common.h"
 
@@ -23,6 +24,22 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename ARRAY_TYPE, size_t SIZE_OF_ARRAY>
     constexpr size_t NEltsOf ([[maybe_unused]] const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY]);
+
+    /**
+     *  Return the beginning address (not iterator) of a span - nullptr if its empty
+     * 
+     *  \note this is helpful because its TECHNICALLY not legal C++ (and fails on visual studio) to just use &*s.begin ()
+     */
+    template <class T, size_t E>
+    constexpr T* SafeBegin (span<T, E> s)
+    {
+        return s.empty () ? nullptr : &*s.begin ();
+    }
+    template <class T, size_t E>
+    constexpr T* SafeEnd (span<T, E> s)
+    {
+        return s.empty () ? nullptr : &*s.begin () + s.size ();
+    }
 
     /**
      *  API to return memory allocation statistics. Generally - these will be inaccurate,
