@@ -15,7 +15,7 @@
 
 #include "../Containers/Support/ReserveTweaks.h"
 #include "../Debug/Assertions.h"
-#include "../Execution/Throw.h"
+//#include "../Execution/Throw.h"   // avoid include cuz creates deadly embrace, and not critical to resolve
 #include "Common.h"
 
 namespace Stroika::Foundation::Memory {
@@ -319,7 +319,7 @@ namespace Stroika::Foundation::Memory {
     inline void StackBuffer<T, BUF_SIZE>::DestroyElts_ (T* start, T* end) noexcept
     {
         for (auto i = start; i != end; ++i) {
-            destroy_at (i);
+            ::destroy_at (i);
         }
     }
     template <typename T, size_t BUF_SIZE>
@@ -333,7 +333,11 @@ namespace Stroika::Foundation::Memory {
     {
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"") // crazy warning from g++-11
         void* p = ::malloc (bytes);
-        Execution::ThrowIfNull (p);
+        //Execution::ThrowIfNull (p);       // avoid include which is creating deadly embrace
+        if (p == nullptr) {
+            //DbgTrace ("***THROW BAD ALLOC***");
+            throw bad_alloc{};
+        }
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"") // crazy warning from g++-11
         return reinterpret_cast<byte*> (p);
     }
@@ -347,7 +351,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline bool StackBuffer<T, BUF_SIZE>::UsingInlinePreallocatedBuffer_ () const
     {
-        return (fLiveData_ == BufferAsT_ ());
+        return fLiveData_ == BufferAsT_ ();
     }
 
 }
