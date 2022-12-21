@@ -376,7 +376,7 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
     // grab initial headers and do POST/etc based on args in request...
     curl_slist* tmpH = nullptr;
     for (const auto& i : overrideHeaders) {
-        tmpH = ::curl_slist_append (tmpH, (i.fKey + L": "sv + i.fValue).AsUTF8 ().c_str ());
+        tmpH = ::curl_slist_append (tmpH, (i.fKey + L": "sv + i.fValue).AsUTF8<string> ().c_str ());
     }
     AssertNotNull (fCurlHandle_);
     ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPHEADER, tmpH));

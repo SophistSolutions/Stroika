@@ -1134,7 +1134,7 @@ namespace {
                     }
                 }
                 {
-                    string tmp     = l[3].AsUTF8 ();
+                    string tmp     = l[3].AsUTF8<string> ();
                     int    hours   = 0;
                     int    minutes = 0;
                     int    seconds = 0;
