@@ -56,6 +56,9 @@ namespace Stroika::Foundation::Common {
         uint8_t  Data4[8]{};
 
     public:
+        using value_type = std::byte;
+
+    public:
         /**
          *  Allow iterating and modifying in place of the GUID as a sequence of bytes
          */
@@ -102,6 +105,7 @@ namespace Stroika::Foundation::Common {
         nonvirtual Characters::String ToString () const;
     };
     static_assert (sizeof (GUID) == 16);
+    static_assert (Configuration::IsIterable_v<GUID>);
 
     template <>
     Characters::String GUID::As () const;
