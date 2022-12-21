@@ -14,6 +14,7 @@
 #endif
 
 #include "../Debug/Assertions.h"
+#include "../Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Characters {
 
@@ -159,6 +160,21 @@ namespace Stroika::Foundation::Characters {
             return source.size ();
         }
         return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
+    }
+    template <typename TO, typename FROM>
+    inline TO UTFConverter::Convert (const FROM& from) const
+        requires (
+            (is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
+            (is_same_v<FROM, string> or is_same_v<FROM, wstring> or is_same_v<FROM, u8string> or is_same_v<FROM, u16string> or is_same_v<FROM, u32string>))
+    {
+        if constexpr (is_same_v<TO, FROM>) {
+            return from;
+        }
+        else {
+            size_t                                       cvtBufSize = ComputeOutputBufferSize<typename TO::value_type> (span{from});
+            Memory::StackBuffer<typename TO::value_type> buf{Memory::eUninitialized, cvtBufSize};
+            return TO{buf.begin (), get<1> (Convert (span{from}, span{buf}))};
+        }
     }
 
     inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char16_t> target) const -> tuple<ConversionResults, size_t, size_t>

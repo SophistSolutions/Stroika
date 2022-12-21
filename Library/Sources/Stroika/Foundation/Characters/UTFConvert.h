@@ -144,7 +144,16 @@ namespace Stroika::Foundation::Characters {
          *          return String{buf.begin (), buf.begin () + get<1> (result)};
          *      \endcode
          *
-         *  @see ConvertQuietly
+         *  @see ConvertQuietly for span overloads
+         * 
+         *  String overloads are simple wrappers on the span code but with simpler to use arguments
+         * 
+         *  \par Example Usage
+         *      \code
+         *          wstring wide_fred = UTFConverter::kThe.Convert<wstring> (u8"fred");
+         *          u16string u16_fred = UTFConverter::kThe.Convert<u16string> (u32"fred");
+         *      \endcode
+         *
          */
         nonvirtual tuple<size_t, size_t> Convert (span<const char8_t> source, span<char16_t> target) const;
         nonvirtual tuple<size_t, size_t> Convert (span<const char16_t> source, span<char8_t> target) const;
@@ -156,6 +165,11 @@ namespace Stroika::Foundation::Characters {
         nonvirtual tuple<size_t, size_t> Convert (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
         template <typename SRC_T, typename TRG_T>
         nonvirtual tuple<size_t, size_t> Convert (span<const SRC_T> source, span<TRG_T> target) const;
+        template <typename TO, typename FROM>
+        nonvirtual TO Convert (const FROM& from) const
+            requires (
+                (is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
+                (is_same_v<FROM, string> or is_same_v<FROM, wstring> or is_same_v<FROM, u8string> or is_same_v<FROM, u16string> or is_same_v<FROM, u32string>));
 
     public:
         /**
