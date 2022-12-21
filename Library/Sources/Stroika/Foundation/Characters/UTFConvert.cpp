@@ -135,7 +135,7 @@ namespace {
          */
         bool isLegalUTF8_ (const char8_t* source, int length)
         {
-            char8_t      a;
+            char8_t        a;
             const char8_t* srcptr = source + length;
             switch (length) {
                 default:
