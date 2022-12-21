@@ -379,13 +379,8 @@ String::_SharedPtrIRep String::mk_ (const char16_t* from, const char16_t* to)
     }
     else {
         size_t cvtBufSize = UTFConverter::ComputeOutputBufferSize<char16_t, wchar_t> (span{from, to});
-#if qPlatform_Windows
-        Assert (false);
-        return nullptr; // workaround msft compiler bug - shouldn't evaluate this branc of if constexpr, I think? Ormust this be #if???
-#else
         StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
         return mk_ (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{from, to}, span{buf})));
-#endif
     }
 }
 
