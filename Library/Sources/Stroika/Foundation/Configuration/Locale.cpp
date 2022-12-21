@@ -119,7 +119,7 @@ optional<Characters::String> Configuration::FindLocaleNameQuietly (const Charact
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"***trying locale (i1 + i2 + i3 + i4).AsUTF8 ().c_str ()=%s", (i1 + i2 + i3 + i4).c_str ());
 #endif
-                    IgnoreExceptionsForCall (return String::FromNarrowSDKString (locale{(i1 + i2 + i3 + i4).AsUTF8 ().c_str ()}.name ()));
+                    IgnoreExceptionsForCall (return String::FromNarrowSDKString (locale{(i1 + i2 + i3 + i4).AsNarrowSDKString ().c_str ()}.name ()));
                 }
             }
         }
