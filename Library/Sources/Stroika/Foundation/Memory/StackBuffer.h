@@ -32,7 +32,12 @@ namespace Stroika::Foundation::Memory {
      *  std::vector, but performance more like std::array.
      *
      *  Since StackBuffer is just intended for local stack use, the objects cannot be copied or moved.
-     *  (we may not achieve this, but the intent is to try to get this working with alloca).
+     * 
+     *  \note About Alloca support
+     *      Considered the possability of somehow implementing this via alloca. The problem lies with the
+     *      interaction between this class, and the compiler generated frame allocations. I think these
+     *      are fundementally inconsistent. At least likely hard to reconcile.
+     *      So PROBABLY not possible, but enuf of a possible win to leave open the possability.
      *
      *  All allocated objects are default initialized, unless they are allocated through a call to resize_uninitialized(), or
      *  the constructor with the argument eUninitialized
@@ -71,6 +76,7 @@ namespace Stroika::Foundation::Memory {
      *          }
      *          // and simialar in delete. MAYBE have kMaxBytesAlloca and trakc how much we allocate and then switch to new
      *          // in whcih case need flag for DTOR to delete.
+     *          (note see other note about alloca - I think this is not possible)
      *
      *  \note   Future implementations of StackBuffer will REQUIRE they are actually allocated on the stack, and probably use alloca()
      *
