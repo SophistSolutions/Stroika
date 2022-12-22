@@ -23,18 +23,6 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
-#if qCompilerAndStdLib_strong_ordering_equals_Buggy
-namespace std {
-    inline bool operator== (const strong_ordering& lhs, const strong_ordering& rhs)
-    {
-        if (((lhs == 0) == (rhs == 0)) and ((lhs > 0) == (rhs > 0)) and ((lhs < 0) == (rhs < 0))) {
-            return true;
-        }
-        return false;
-    }
-}
-#endif
-
 // Quirky workaround for clang++-14 on XCode 14 (and probably others).
 // No bug define for now - specific to clang++, because not sure what it depends on besides this, and this is bad enuf...
 // this value being too low...
