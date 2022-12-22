@@ -664,13 +664,13 @@ error: no matching constructor for initialization of 'std::span<wchar_t, 1844674
  * 
  *  This really has todo with the LIBC++ (works fine with clang++-12 and libstdc++ - gnu library)
  */
-#ifndef qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
+#ifndef qCompilerAndStdLib_spanOfContainer_Buggy
 #if defined(_LIBCPP_VERSION)
 // known broken in libc++ version 12
 // tested on Ubuntu 22.04, and broken in clang++-14 (and LIBCPP version 14)
-#define qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy _LIBCPP_VERSION < 15000
+#define qCompilerAndStdLib_spanOfContainer_Buggy _LIBCPP_VERSION < 15000
 #else
-#define qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy 0
+#define qCompilerAndStdLib_spanOfContainer_Buggy 0
 #endif
 
 #endif

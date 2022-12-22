@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Memory {
         return s.empty () ? nullptr : &*s.begin () + s.size ();
     }
 
-#if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
+#if qCompilerAndStdLib_spanOfContainer_Buggy
     template <typename CONTAINER>
     auto mkSpan_BWA_ (CONTAINER& c)
     {
