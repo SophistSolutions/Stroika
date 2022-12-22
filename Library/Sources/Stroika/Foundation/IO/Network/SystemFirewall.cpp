@@ -219,7 +219,7 @@ bool SystemFirewall::Manager::Register (const Rule& rule)
 
 optional<Rule> SystemFirewall::Manager::Lookup (const String& ruleName) const
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SystemFirewall::Manager::Lookup", L"ruleName=%s", ruleName.c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SystemFirewall::Manager::Lookup", L"ruleName=%s", ruleName.As<wstring> ().c_str ())};
 #if qPlatform_Windows
     COMInitializer          comInitializeContext{COINIT_APARTMENTTHREADED};
     INetFwPolicy2*          pNetFwPolicy2     = nullptr;
@@ -245,7 +245,7 @@ optional<Rule> SystemFirewall::Manager::Lookup (const String& ruleName) const
 
 Traversal::Iterable<Rule> SystemFirewall::Manager::LookupByGroup (const String& groupName) const
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SystemFirewall::Manager::LookupByGroup", L"groupName=%s", groupName.c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SystemFirewall::Manager::LookupByGroup", L"groupName=%s", groupName.As<wstring> ().c_str ())};
     Collection<Rule>          rules;
     for (const Rule& r : LookupAll ()) {
         if (r.fGroup == groupName) {
