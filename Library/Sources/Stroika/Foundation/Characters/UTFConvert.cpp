@@ -716,7 +716,7 @@ namespace {
  */
 namespace {
     template <typename IN_T, typename OUT_T, typename FUN2DO_REAL_WORK>
-    inline auto ConvertQuietly_StroikaPortable_helper_ (span<const IN_T> source,  span<OUT_T> target, FUN2DO_REAL_WORK&& realWork) -> tuple<UTFConverter::ConversionResults, size_t, size_t>
+    inline auto ConvertQuietly_StroikaPortable_helper_ (span<const IN_T> source, span<OUT_T> target, FUN2DO_REAL_WORK&& realWork) -> tuple<UTFConverter::ConversionResults, size_t, size_t>
     {
         using ConversionResults = UTFConverter::ConversionResults;
         if (source.empty ()) {
@@ -731,27 +731,27 @@ namespace {
         return make_tuple (cvt_ (r), sourceStart - reinterpret_cast<const IN_T*> (&*source.begin ()), targetStart - reinterpret_cast<const OUT_T*> (&*target.begin ()));
     }
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char8_t> source,  span<char16_t> target) -> tuple<ConversionResults, size_t, size_t>
+auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char8_t> source, span<char16_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
     return ConvertQuietly_StroikaPortable_helper_ (source, target, UTFConvert_libutfxx_::ConvertUTF8toUTF16_);
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char8_t> source,  span<char32_t> target) -> tuple<ConversionResults, size_t, size_t>
+auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char8_t> source, span<char32_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
     return ConvertQuietly_StroikaPortable_helper_ (source, target, UTFConvert_libutfxx_::ConvertUTF8toUTF32_);
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char16_t> source,  span<char32_t> target) -> tuple<ConversionResults, size_t, size_t>
+auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char16_t> source, span<char32_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
     return ConvertQuietly_StroikaPortable_helper_ (source, target, UTFConvert_libutfxx_::ConvertUTF16toUTF32_);
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char32_t> source,  span<char16_t> target) -> tuple<ConversionResults, size_t, size_t>
+auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char32_t> source, span<char16_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
     return ConvertQuietly_StroikaPortable_helper_ (source, target, UTFConvert_libutfxx_::ConvertUTF32toUTF16_);
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char32_t> source,  span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
+auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char32_t> source, span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
     return ConvertQuietly_StroikaPortable_helper_ (source, target, UTFConvert_libutfxx_::ConvertUTF32toUTF8_);
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char16_t> source,  span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
+auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char16_t> source, span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
 {
     return ConvertQuietly_StroikaPortable_helper_ (source, target, UTFConvert_libutfxx_::ConvertUTF16toUTF8_);
 }

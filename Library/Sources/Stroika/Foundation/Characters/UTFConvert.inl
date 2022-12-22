@@ -153,6 +153,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename SRC_T, typename TRG_T>
     inline tuple<size_t, size_t> UTFConverter::Convert (span<const SRC_T> source, span<TRG_T> target) const
+        requires (not is_const_v<TRG_T>)
     {
         Require ((target.size () >= ComputeOutputBufferSize<TRG_T> (source)));
         if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
@@ -314,8 +315,12 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename SRC_T, typename TRG_T>
     inline auto UTFConverter::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const -> tuple<ConversionResults, size_t, size_t>
-        requires (sizeof (SRC_T) != sizeof (TRG_T))
+        requires (not is_const_v<TRG_T>)
     {
+        if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
+            copy (source, target, source.size ()); // pointless conversion, but if requested...
+            return source.size ();
+        }
         return ConvertQuietly (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
     }
 

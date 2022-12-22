@@ -168,7 +168,8 @@ namespace Stroika::Foundation::Characters {
         nonvirtual tuple<size_t, size_t> Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const;
         nonvirtual tuple<size_t, size_t> Convert (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
         template <typename SRC_T, typename TRG_T>
-        nonvirtual tuple<size_t, size_t> Convert (span<const SRC_T> source, span<TRG_T> target) const;
+        nonvirtual tuple<size_t, size_t> Convert (span<const SRC_T> source, span<TRG_T> target) const
+            requires (not is_const_v<TRG_T>);
         template <typename TO, typename FROM>
         nonvirtual TO Convert (const FROM& from) const
             requires (
@@ -202,7 +203,7 @@ namespace Stroika::Foundation::Characters {
         nonvirtual tuple<ConversionResults, size_t, size_t> ConvertQuietly (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
         template <typename SRC_T, typename TRG_T>
         nonvirtual tuple<ConversionResults, size_t, size_t> ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const
-            requires (sizeof (SRC_T) != sizeof (TRG_T));
+            requires (not is_const_v<TRG_T>);
 
     public:
         /**
