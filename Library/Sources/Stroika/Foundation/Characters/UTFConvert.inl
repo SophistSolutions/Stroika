@@ -325,7 +325,7 @@ namespace Stroika::Foundation::Characters {
         if (f.empty ()) {
             return span<CompatibleT_<FromT>>{}; // avoid the appearance of dereferencing an empty span (important for msvc runtime)
         }
-        return span{(CompatibleT_<FromT>*)&*f.begin (), (CompatibleT_<FromT>*)&*f.begin () + f.size ()};
+        return span{(CompatibleT_<FromT>*)&*f.begin (), f.size ()};
     }
 
 #if qPlatform_Windows
