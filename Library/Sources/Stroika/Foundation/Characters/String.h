@@ -1262,6 +1262,7 @@ namespace Stroika::Foundation::Characters {
          */
         [[deprecated ("Since Stroika v3.0d1 - use As<wstring> ().c_str ()")]] nonvirtual const wchar_t* c_str () const noexcept;
         nonvirtual const wchar_t*                                                                       c_str ();
+        nonvirtual const wchar_t*                                                                       c_str (Memory::StackBuffer<wchar_t>* useBuf) const;
 
     public:
         /**

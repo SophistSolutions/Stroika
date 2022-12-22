@@ -61,14 +61,15 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
         return static_cast<uint8_t> (l);
     };
 
-    const wchar_t* i        = prettyVersionString.c_str ();
+    Memory::StackBuffer<wchar_t> prettyVersionStringBuf;
+    const wchar_t*               i        = prettyVersionString.c_str (&prettyVersionStringBuf);
     wchar_t*       tokenEnd = nullptr;
     major                   = my_wcstol_ (i, &tokenEnd); // @todo should validate, but no biggie
     if (i == tokenEnd) [[unlikely]] {
         DbgTrace (L"prettyVersionString=%s", prettyVersionString.As<wstring> ().c_str ());
         Execution::Throw (Execution::RuntimeErrorException{L"Invalid Version String"sv});
     }
-    Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
+    Assert (static_cast<size_t> (i - prettyVersionStringBuf.begin ()) <= prettyVersionString.length ());
     i = tokenEnd + 1; // end plus '.' separator
 
     minor = my_wcstol_ (i, &tokenEnd);
@@ -76,7 +77,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
         DbgTrace (L"prettyVersionString=%s", prettyVersionString.As<wstring> ().c_str ());
         Execution::Throw (Execution::RuntimeErrorException{L"Invalid Version String"sv}); // require form 1.0a3, or at least 1.0, but no 1
     }
-    Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
+    Assert (static_cast<size_t> (i - prettyVersionStringBuf.begin ()) <= prettyVersionString.length ());
     i = tokenEnd;
 
     VersionStage verStage = VersionStage::Release;
@@ -107,7 +108,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
             i += 1;
         } break;
     }
-    Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
+    Assert (static_cast<size_t> (i - prettyVersionStringBuf.begin ()) <= prettyVersionString.length ());
     uint8_t verSubStage = my_wcstol_ (i, &tokenEnd);
     if (i == tokenEnd) [[unlikely]] {
         DbgTrace (L"prettyVersionString=%s", prettyVersionString.As<wstring> ().c_str ());
@@ -118,7 +119,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     if (*i == 'x') {
         finalBuild = false;
     }
-    Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
+    Assert (static_cast<size_t> (i - prettyVersionStringBuf.begin ()) <= prettyVersionString.length ());
     return Version{major, minor, verStage, verSubStage, finalBuild};
 }
 

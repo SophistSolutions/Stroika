@@ -597,6 +597,16 @@ namespace Stroika::Foundation::Characters {
         Ensure (result[size ()] == '\0');
         return result;
     }
+    inline const wchar_t* String::c_str (Memory::StackBuffer<wchar_t>* useBuf) const
+    {
+        RequireNotNull (useBuf);
+        // quickie weak implementation
+        wstring tmp{As<wstring> ()};
+        useBuf->resize_uninitialized (tmp.size () + 1);
+        copy (tmp.begin (), tmp.end (), useBuf->begin ());
+        (*useBuf)[tmp.length ()] = '\0';   // assure NUL-terminated
+        return useBuf->begin ();
+    }
     inline size_t String::find (wchar_t c, size_t startAt) const
     {
         return Find (c, startAt, CompareOptions::eWithCase).value_or (npos);
