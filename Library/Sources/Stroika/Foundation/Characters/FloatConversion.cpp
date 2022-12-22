@@ -220,11 +220,11 @@ namespace {
     inline RETURN_TYPE String2Float_LegacyStr2DHelper_ (const String& s, String* remainder, FUNCTION F)
     {
         RequireNotNull (remainder);
-        wchar_t*       e   = nullptr;
+        wchar_t*                     e = nullptr;
         Memory::StackBuffer<wchar_t> cstMaybeBuf;
-        const wchar_t* cst= get<0> (s.c_str (&cstMaybeBuf));
-        RETURN_TYPE    d   = F (cst, &e);
-        *remainder         = e;
+        const wchar_t*               cst = get<0> (s.c_str (&cstMaybeBuf));
+        RETURN_TYPE                  d   = F (cst, &e);
+        *remainder                       = e;
         return d;
     }
 

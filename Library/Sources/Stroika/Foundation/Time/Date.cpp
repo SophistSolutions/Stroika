@@ -92,8 +92,8 @@ optional<Date> Date::ParseQuietly_ (const wstring& rep, const time_get<wchar_t>&
         }
     }
     Memory::StackBuffer<wchar_t> formatPattern_BackingStore;
-    auto[formatPattern_CStr, formatPattern_SV] = formatPattern.c_str (&formatPattern_BackingStore);
-    ios::iostate                 errState = ios::goodbit;
+    auto [formatPattern_CStr, formatPattern_SV] = formatPattern.c_str (&formatPattern_BackingStore);
+    ios::iostate                 errState       = ios::goodbit;
     tm                           when{};
     wistringstream               iss{rep};
     istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
@@ -166,10 +166,10 @@ String Date::Format (const String& formatPattern) const
 String Date::Format (const locale& l, const String& formatPattern) const
 {
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
-    ::tm                     when  = As<::tm> ();
+    ::tm                         when = As<::tm> ();
     Memory::StackBuffer<wchar_t> formatBuf;
     auto [formatPatternCStr, formatPatternSV] = formatPattern.c_str (&formatBuf);
-    const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
+    const time_put<wchar_t>& tmput            = use_facet<time_put<wchar_t>> (l);
     wostringstream           oss;
     tmput.put (oss, oss, ' ', &when, formatPatternCStr, formatPatternCStr + formatPatternSV.length ());
     return oss.str ();

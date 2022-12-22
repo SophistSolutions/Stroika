@@ -52,7 +52,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     uint8_t minor = 0;
 
     Memory::StackBuffer<wchar_t> prettyVersionStringBuf;
-    auto                         [prettyPrintVersionCStr, prettyPrintVersionSV] = prettyVersionString.c_str (&prettyVersionStringBuf);
+    auto [prettyPrintVersionCStr, prettyPrintVersionSV] = prettyVersionString.c_str (&prettyVersionStringBuf);
 
     // Helper to throw if out of range
     auto my_wcstol_ = [=] (const wchar_t* i, wchar_t** endResult) -> uint8_t {
@@ -64,9 +64,9 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
         return static_cast<uint8_t> (l);
     };
 
-    const wchar_t* i                      = prettyPrintVersionCStr;
-    wchar_t*                     tokenEnd = nullptr;
-    major                                 = my_wcstol_ (i, &tokenEnd); // @todo should validate, but no biggie
+    const wchar_t* i        = prettyPrintVersionCStr;
+    wchar_t*       tokenEnd = nullptr;
+    major                   = my_wcstol_ (i, &tokenEnd); // @todo should validate, but no biggie
     if (i == tokenEnd) [[unlikely]] {
         DbgTrace (L"prettyVersionString=%s", prettyPrintVersionCStr);
         Execution::Throw (Execution::RuntimeErrorException{L"Invalid Version String"sv});

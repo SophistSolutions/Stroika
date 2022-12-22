@@ -39,7 +39,7 @@ long long int Characters::Private_::String2Int_ (const String& s)
 {
     Memory::StackBuffer<wchar_t> sPossibleBackingStore;
     wchar_t*                     endptr = nullptr;
-    unsigned long long int l      = wcstoll (get<0> (s.c_str (&sPossibleBackingStore)), &endptr, 10);
+    unsigned long long int       l      = wcstoll (get<0> (s.c_str (&sPossibleBackingStore)), &endptr, 10);
     return *endptr == '\0' ? l : 0; // weird but I document default is zero if failed to fully parse
 }
 
