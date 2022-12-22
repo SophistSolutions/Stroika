@@ -128,7 +128,11 @@
 			"charconv": "cpp",
 			"scoped_allocator": "cpp",
 			"bit": "cpp",
-			"numbers": "cpp"
+			"numbers": "cpp",
+			"__bits": "cpp",
+			"__errc": "cpp",
+			"__node_handle": "cpp",
+			"semaphore": "cpp"
 		},
 		"git.ignoreLimitWarning": true,
 		"files.watcherExclude": {
