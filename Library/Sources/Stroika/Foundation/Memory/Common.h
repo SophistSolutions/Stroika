@@ -43,6 +43,10 @@ namespace Stroika::Foundation::Memory {
 
 #if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
     template <typename CONTAINER>
+    auto mkSpan_BWA_ ( CONTAINER& c) {
+        return std::span< remove_const_t<typename CONTAINER::value_type>>{&*c.begin (), c.size ()};
+    }
+    template <typename CONTAINER>
     auto mkSpan_BWA_ (const CONTAINER& c) {
         return std::span<const typename CONTAINER::value_type>{&*c.begin (), c.size ()};
     }
