@@ -213,14 +213,6 @@ namespace {
     }
 }
 
-#if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
- template <typename CONTAINER> 
- auto mkSpan_BWA_ (CONTAINER&& c) {
-    return span{c.begin (), c.end ()};
- }
-//static_assert (__is_span_compatible_container<StackBuffer<char>,char>::value);    // trying to debug why needed?
-#endif
-
 String::String (const Iterable<Character>& src)
     : String{mkWS_ (src)}
 {
@@ -239,7 +231,7 @@ String String::FromUTF8 (const char* from, const char* to)
     size_t               cvtBufSize = UTFConverter::kThe.ComputeOutputBufferSize<wchar_t> (span{from, to});
     StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
 #if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
-    return String{buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{from, to}, mkSpan_BWA_(buf)))};
+    return String{buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{from, to}, Memory::mkSpan_BWA_(buf)))};
 #else
     return String{buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{from, to}, span{buf}))};
 #endif
@@ -396,7 +388,7 @@ String::_SharedPtrIRep String::mk_ (const char16_t* from, const char16_t* to)
         size_t               cvtBufSize = UTFConverter::ComputeOutputBufferSize<wchar_t> (span{from, to});
         StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
 #if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
-        return mk_ (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{from, to}, mkSpan_BWA_(buf))));
+        return mk_ (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{from, to}, Memory::mkSpan_BWA_(buf))));
 #else
         return mk_ (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{from, to}, span{buf})));
 #endif
@@ -415,7 +407,7 @@ String::_SharedPtrIRep String::mk_ (const char32_t* from, const char32_t* to)
         size_t               cvtBufSize = UTFConverter::ComputeOutputBufferSize<wchar_t> (span{from, to});
         StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
 #if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
-        auto                 r = UTFConverter::kThe.Convert (span{from, to}, mkSpan_BWA_(buf));
+        auto                 r = UTFConverter::kThe.Convert (span{from, to}, Memory::mkSpan_BWA_(buf));
 #else
         auto                 r = UTFConverter::kThe.Convert (span{from, to}, span{buf});
 #endif
@@ -1139,7 +1131,7 @@ void String::AsUTF8 (string* into) const
     size_t            cvtBufSize = UTFConverter::ComputeOutputBufferSize<char> (span{wcp, wcpe});
     StackBuffer<char> buf{Memory::eUninitialized, cvtBufSize};
 #if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
-    into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcpe}, mkSpan_BWA_(buf))));
+    into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcpe}, Memory::mkSpan_BWA_(buf))));
 #else
     into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcpe}, span{buf})));
 #endif
@@ -1157,7 +1149,7 @@ void String::AsUTF8 (u8string* into) const
     size_t               cvtBufSize = UTFConverter::ComputeOutputBufferSize<char8_t> (span{wcp, wcpe});
     StackBuffer<char8_t> buf{Memory::eUninitialized, cvtBufSize};
 #if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
-     into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcpe}, mkSpan_BWA_(buf))));
+     into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcpe}, Memory::mkSpan_BWA_(buf))));
 #else
      into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcpe}, span{buf})));
 #endif
@@ -1180,7 +1172,7 @@ void String::AsUTF16 (u16string* into) const
         size_t                cvtBufSize = UTFConverter::ComputeOutputBufferSize<char16_t> (span{wcp, wcp + n});
         StackBuffer<char16_t> buf{Memory::eUninitialized, cvtBufSize};
 #if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
-        into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcp + n}, mkSpan_BWA_(buf))));
+        into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcp + n}, Memory::mkSpan_BWA_(buf))));
 #else
         into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcp + n}, span{buf})));
 #endif
@@ -1204,7 +1196,7 @@ void String::AsUTF32 (u32string* into) const
         size_t                cvtBufSize = UTFConverter::ComputeOutputBufferSize<char32_t> (span{wcp, wcp + n});
         StackBuffer<char32_t> buf{Memory::eUninitialized, cvtBufSize};
 #if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
-        into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcp + n}, mkSpan_BWA_(buf))));
+        into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcp + n}, Memory::mkSpan_BWA_(buf))));
 #else
         into->assign (buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{wcp, wcp + n}, span{buf})));
 #endif

@@ -41,6 +41,15 @@ namespace Stroika::Foundation::Memory {
         return s.empty () ? nullptr : &*s.begin () + s.size ();
     }
 
+
+#if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
+ template <typename CONTAINER> 
+ auto mkSpan_BWA_ (CONTAINER&& c) {
+    return span{c.begin (), c.end ()};
+ }
+//static_assert (__is_span_compatible_container<StackBuffer<char>,char>::value);    // trying to debug why needed?
+#endif
+
     /**
      *  API to return memory allocation statistics. Generally - these will be inaccurate,
      *  unless certain defines are set in Memory.cpp - but at least some stats can be

@@ -95,15 +95,27 @@ namespace Stroika::Foundation::Memory {
     template <typename CONTAINER_OF_BYTE>
     inline BLOB::BLOB (const CONTAINER_OF_BYTE& data)
         requires Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)
-    : BLOB{as_bytes (span{data})}
+#if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
+   : BLOB{as_bytes (mkSpan_BWA_(data))}
+ #else
+   : BLOB{as_bytes (span{data})}
+ #endif
     {
     }
     inline BLOB::BLOB (const initializer_list<byte>& bytes)
+#if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
+        : BLOB{mkSpan_BWA_(bytes)}
+#else
         : BLOB{span{bytes}}
+ #endif
     {
     }
     inline BLOB::BLOB (const initializer_list<uint8_t>& bytes)
+#if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
+        : BLOB{as_bytes (mkSpan_BWA_ (bytes))}
+#else
         : BLOB{as_bytes (span{bytes})}
+#endif
     {
     }
     inline BLOB::BLOB (span<const byte> s)
