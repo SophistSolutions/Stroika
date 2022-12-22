@@ -260,7 +260,11 @@ namespace Stroika::Foundation::Characters {
      *      @see   Concrete::String_ExternalMemoryOwnership_StackLifetime
      *      @see   Concrete::String_Common
      *
-     *          Uses immutable string rep pattern.
+     *  \note   Design note - mutability vs. immutability
+     *          String objects are MUTABLE
+     *          String reps are IMMUTABLE.
+     *          Changes to string like +=, create new string reps (and so WORK but are quite costly). Consider
+     *          Use StringBuilder for that purpose in performance sensative code.
      *
      *  \note   Design Choice - Iterable<T> / Iterator<T> behavior
      *      We have two basic choices of how to define the behavior of iterators:
@@ -374,6 +378,7 @@ namespace Stroika::Foundation::Characters {
         static String FromUTF8 (const char8_t* from);
         static String FromUTF8 (const char8_t* from, const char8_t* to);
         static String FromUTF8 (const u8string& from);
+        static String FromUTF8 (span<const char8_t> from);
 
     public:
         /**
