@@ -234,12 +234,12 @@ namespace Stroika::Foundation::Characters {
         static tuple<ConversionResults, size_t, size_t> ConvertQuietly_Win32_ (span<const char16_t> source, span<char8_t> target);
 #endif
     private:
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char8_t> source, const span<char16_t> target);
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char8_t> source, const span<char32_t> target);
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char16_t> source, const span<char32_t> target);
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char32_t> source, const span<char16_t> target);
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char32_t> source, const span<char8_t> target);
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char16_t> source, const span<char8_t> target);
+        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char8_t> source, span<char16_t> target);
+        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char8_t> source, span<char32_t> target);
+        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char16_t> source, span<char32_t> target);
+        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char32_t> source, span<char16_t> target);
+        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char32_t> source, span<char8_t> target);
+        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char16_t> source, span<char8_t> target);
 
 #if __has_include("boost/locale/encoding_utf.hpp")
     private:
