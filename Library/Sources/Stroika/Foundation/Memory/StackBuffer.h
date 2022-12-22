@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Memory {
      *  the safety and flexability of using the free store (malloc).
      *
      *  Think of it as a hybrid between std::vector<> and std::array - with functionality like
-     *  std::vector, but performance more like std::array.
+     *  std::vector, but performance more like std::array (except where array always declared on the stack).
      *
      *  Since StackBuffer is just intended for local stack use, the objects cannot be copied or moved.
      * 
@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Memory {
      *  All allocated objects are default initialized, unless they are allocated through a call to resize_uninitialized(), or
      *  the constructor with the argument eUninitialized
      *
-     *  \note The default INLINE_SIZE (size allocated on the stack) will vary by type T, and platform. Its
+     *  \note The default BUF_SIZE (size allocated on the stack) will vary by type T, and platform. Its
      *        intended to be a tradeoff between avoiding malloc, and avoiding other costs (like Windows _chkstk)
      *
      *  \par Example Usage
