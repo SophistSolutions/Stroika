@@ -607,7 +607,7 @@ namespace Stroika::Foundation::Characters {
         possibleBackingStore->resize_uninitialized (tmp.size () + 1);
         copy (tmp.begin (), tmp.end (), possibleBackingStore->begin ());
         (*possibleBackingStore)[tmp.length ()] = '\0'; // assure NUL-terminated
-        return make_tuple (possibleBackingStore->begin (), wstring_view{possibleBackingStore->begin (), possibleBackingStore->begin () + tmp.length ()});
+        return make_tuple (possibleBackingStore->begin (), wstring_view{possibleBackingStore->begin (), tmp.length ()});
     }
     inline size_t String::find (wchar_t c, size_t startAt) const
     {
