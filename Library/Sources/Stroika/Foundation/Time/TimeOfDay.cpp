@@ -111,7 +111,7 @@ namespace {
         }
         ::DATE d{};
         try {
-            ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
+            ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR{rep.As<wstring> ().c_str ()}, lcid, VAR_TIMEVALUEONLY, &d));
         }
         catch (...) {
             // Apparently military time (e.g. 1300 hours - where colon missing) - is rejected as mal-formed.
@@ -120,7 +120,7 @@ namespace {
             if (newRep.length () == 4 and
                 newRep[0].IsDigit () and newRep[1].IsDigit () and newRep[2].IsDigit () and newRep[3].IsDigit ()) {
                 newRep = newRep.substr (0, 2) + L":" + newRep.substr (2, 2);
-                ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (newRep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
+                ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR{newRep.c_str ()}, lcid, VAR_TIMEVALUEONLY, &d));
             }
             else {
                 Execution::Throw (TimeOfDay::FormatException::kThe);
@@ -272,7 +272,7 @@ optional<TimeOfDay> TimeOfDay::ParseQuietly_ (const wstring& rep, const String& 
 
 optional<TimeOfDay> TimeOfDay::ParseQuietly_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern)
 {
-    ios::iostate                 errState = ios::goodbit;
+    ios::iostate                 errState        = ios::goodbit;
     tm                           when{};
     wistringstream               iss{rep};
     istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
@@ -288,7 +288,8 @@ optional<TimeOfDay> TimeOfDay::ParseQuietly_ (const wstring& rep, const time_get
         DISABLE_COMPILER_MSC_WARNING_END (4996);
     }
 #else
-    (void)tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
+    wstring wsFormatPattern = formatPattern.As<wstring> ();
+    (void)tmget.get (itbegin, itend, iss, errState, &when, wsFormatPattern.c_str (), wsFormatPattern.c_str () + wsFormatPattern.length ());
 #endif
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[unlikely]] {
 #if qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy
@@ -369,8 +370,9 @@ String TimeOfDay::Format (const locale& l, const String& formatPattern) const
     when.tm_min                    = GetMinutes ();
     when.tm_sec                    = GetSeconds ();
     const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
+    wstring                  wsFormatPattern = formatPattern.As<wstring> ();
     wostringstream           oss;
-    tmput.put (oss, oss, ' ', &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
+    tmput.put (oss, oss, ' ', &when, wsFormatPattern.c_str (), wsFormatPattern.c_str () + wsFormatPattern.length ());
     return oss.str ();
 }
 
