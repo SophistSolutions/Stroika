@@ -185,7 +185,7 @@
  */
 #if defined(_LIBCPP_VERSION)
 #if _LIBCPP_VERSION < 11000
-#error "Stroika v3 requires a more c++-20 compliant version of std-c++ library than libc++11 (missing new chrono code for example); try newer libc++, older version of Stroika (e.g. 2.1), or libstdc++"
+#error "Stroika v3 requires a more c++-20 compliant version of std-c++ library than libc++10 (missing new chrono code for example); try newer libc++, older version of Stroika (e.g. 2.1), or libstdc++"
 #endif
 #endif
 
@@ -1762,14 +1762,6 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 #ifndef qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy
 
 #if defined(_LIBCPP_VERSION)
-// Broken in _LIBCPP_VERSION  3900
-// Broken in _LIBCPP_VERSION  4000
-// Broken in _LIBCPP_VERSION  5000
-// Broken in _LIBCPP_VERSION  6000
-// Broken in _LIBCPP_VERSION  7000
-// Broken in _LIBCPP_VERSION  8000
-// never tested 9000
-// Broken in _LIBCPP_VERSION  10000
 // Broken in _LIBCPP_VERSION  11000
 // Broken in _LIBCPP_VERSION  12000
 // Broken in _LIBCPP_VERSION  13000
@@ -1779,63 +1771,6 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 #define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy 0
 #endif
 
-#endif
-
-#ifndef qCompilerAndStdLib_strong_ordering_equals_Buggy
-
-#if defined(_LIBCPP_VERSION)
-// Broken in _LIBCPP_VERSION  10000
-#define qCompilerAndStdLib_strong_ordering_equals_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 10000))
-#else
-#define qCompilerAndStdLib_strong_ordering_equals_Buggy 0
-#endif
-
-#endif
-
-/**
- *  @see https://bugs.llvm.org/show_bug.cgi?id=37818
- *
-        condition_variable::wait_for(unique_lock<mutex>& __lk,
-                                     const chrono::duration<_Rep, _Period>& __d)
-        {
-            using namespace chrono;
-            if (__d <= __d.zero())
-                return cv_status::timeout;
-           ...
-        }
-
-    But http://en.cppreference.com/w/cpp/thread/condition_variable/wait_for says:
-        Atomically releases lock, blocks the current executing thread, and adds it to the list of threads waiting...
-
-    but this wont ever unlock if time <= 0. Now that happens if you set sThreadAbortCheckFrequency_Default = 0 (maybe crazy) - but
-    still - this is buggy for the C++ lib I think...
-
-NOTE:
-    libstdc++ does (https://gcc.gnu.org/onlinedocs/gcc-4.6.2/libstdc++/api/a00818_source.html)
-    template<typename _Lock, typename _Clock, typename _Duration>
-        00217       cv_status
-        00218       wait_until(_Lock& __lock,
-        00219          const chrono::time_point<_Clock, _Duration>& __atime)
-        00220       {
-        00221         unique_lock<mutex> __my_lock(_M_mutex);
-        00222         __lock.unlock();
-        00223         cv_status __status = _M_cond.wait_until(__my_lock, __atime);
-        00224         __lock.lock();
-        00225         return __status;
-        00226       }
- */
-#ifndef qCompilerAndStdLib_conditionvariable_waitfor_nounlock_Buggy
-
-#if defined(_LIBCPP_VERSION)
-#define qCompilerAndStdLib_conditionvariable_waitfor_nounlock_Buggy (_LIBCPP_VERSION <= 6000)
-#else
-#define qCompilerAndStdLib_conditionvariable_waitfor_nounlock_Buggy 0
-#endif
-
-#endif
-#if qCompilerAndStdLib_conditionvariable_waitfor_nounlock_Buggy
-// Since Stroika 3.0d1
-#error "DONT THINK WE NEED THIS BUG DEFINE ANYMORE"
 #endif
 
 #ifndef qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy
