@@ -2773,17 +2773,24 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
     }
 #endif
 }
+#if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
+ template <typename CONTAINER> 
+ auto mkSpan_BWA_ (CONTAINER&& c) {
+    return span{c.begin (), c.end ()};
+ }
+#endif
 
 void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
-    #if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
-    using std::span;
-    #endif
     // @todo fix weak implementation (slow)
     // First convert to char16_t, and then apply that overload
     StackBuffer<char16_t> char16Buf{Memory::eUninitialized, *outCharCnt};
     {
+        #if qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
+        auto r = UTFConverter::kThe.Convert (span{inChars, inChars + inCharCnt}, mkSpan_BWA_{char16Buf});
+        #else
         auto r = UTFConverter::kThe.Convert (span{inChars, inChars + inCharCnt}, span{char16Buf});
+        #endif
         char16Buf.resize (get<1> (r));
     }
     MapFromUNICODE (char16Buf, char16Buf.size (), outChars, outCharCnt);
