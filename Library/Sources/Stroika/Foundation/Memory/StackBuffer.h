@@ -329,6 +329,7 @@ namespace Stroika::Foundation::Memory {
     private:
         static void DestroyElts_ (T* start, T* end) noexcept;
     };
+
 }
 
 /*
