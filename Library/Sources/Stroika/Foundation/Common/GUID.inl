@@ -48,6 +48,10 @@ namespace Stroika::Foundation::Common {
     {
         return reinterpret_cast<const std::byte*> (this) + 16;
     }
+    constexpr size_t Common::GUID::size () const
+    {
+        return 16;
+    }
 
 }
 
