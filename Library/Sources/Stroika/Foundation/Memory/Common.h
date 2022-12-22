@@ -45,11 +45,17 @@ namespace Stroika::Foundation::Memory {
     template <typename CONTAINER>
     auto mkSpan_BWA_ (CONTAINER& c)
     {
+        if (c.size () == 0) {
+            return std::span<remove_const_t< typename CONTAINER::value_type>>{};
+        }
         return std::span<remove_const_t<typename CONTAINER::value_type>>{&*c.begin (), c.size ()};
     }
     template <typename CONTAINER>
     auto mkSpan_BWA_ (const CONTAINER& c)
     {
+        if (c.size () == 0) {
+            return std::span<const typename CONTAINER::value_type>{};
+        }
         return std::span<const typename CONTAINER::value_type>{&*c.begin (), c.size ()};
     }
 //static_assert (__is_span_compatible_container<StackBuffer<char>,char>::value);    // trying to debug why needed?
