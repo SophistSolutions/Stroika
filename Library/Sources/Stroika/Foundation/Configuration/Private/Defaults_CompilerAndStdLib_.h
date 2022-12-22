@@ -658,13 +658,19 @@ make[3]: *** [/Sandbox/Str
 error: no matching constructor for initialization of 'std::span<wchar_t, 18446744073709551615>'
     return String{buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{from, to}, span{buf}))};
                                                                                                    ^   ~~~~~
-                                                                                                   
+              ...
+
+
+ note: candidate template ignored: requirement '__is_span_compatible_container<const Stroika::Foundation::Memory::StackBuffer<char16_t, 2048>, char16_t, void>::value' was not satisfied [with _Container = Stroika::Foundation::Memory::StackBuffer<char16_t, 2048>]
+        constexpr span(const _Container& __c,                                                                                     
  * 
+ *  This really has todo with the LIBC++ (works fine with clang++-12 and libstdc++ - gnu library)
  */
 #ifndef qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
-
-#if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#if defined(_LIBCPP_VERSION)
+// known broken in libc++ version 12
+// tested on Ubuntu 22.04, and broken in clang++-14 (and LIBCPP version 14)
+#define qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy _LIBCPP_VERSION < 15
 #else
 #define qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy 0
 #endif
