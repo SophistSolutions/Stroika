@@ -28,7 +28,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::CPU {
 
 // @todo now we say iff Linux, but also available on BSD, Solaris, and could fetch with procfs
 #ifndef qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-#define qSupport_SystemPerformance_Instruments_CPU_LoadAverage (qPlatform_Linux)
+#define qSupport_SystemPerformance_Instruments_CPU_LoadAverage (qPlatform_Linux or qPlatform_MacOS)
 #endif
 
     using DataExchange::ObjectVariantMapper;

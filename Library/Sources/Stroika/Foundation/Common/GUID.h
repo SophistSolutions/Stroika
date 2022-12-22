@@ -76,6 +76,11 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
+        constexpr size_t size () const;
+
+    public:
+        /**
+         */
         nonvirtual explicit operator Memory::BLOB () const;
 
     public:
