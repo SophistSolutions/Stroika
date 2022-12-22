@@ -597,15 +597,17 @@ namespace Stroika::Foundation::Characters {
         Ensure (result[size ()] == '\0');
         return result;
     }
-    inline const wchar_t* String::c_str (Memory::StackBuffer<wchar_t>* useBuf) const
+    inline tuple<const wchar_t*, wstring_view> String::c_str (Memory::StackBuffer<wchar_t>* possibleBackingStore) const
     {
-        RequireNotNull (useBuf);
+        // @todo FIRST check if default impl already returns c_str () and just use it if we can. ONLY if that fails, do we
+        // convert, and write to possibleBackingStore
+        RequireNotNull (possibleBackingStore);
         // quickie weak implementation
         wstring tmp{As<wstring> ()};
-        useBuf->resize_uninitialized (tmp.size () + 1);
-        copy (tmp.begin (), tmp.end (), useBuf->begin ());
-        (*useBuf)[tmp.length ()] = '\0'; // assure NUL-terminated
-        return useBuf->begin ();
+        possibleBackingStore->resize_uninitialized (tmp.size () + 1);
+        copy (tmp.begin (), tmp.end (), possibleBackingStore->begin ());
+        (*possibleBackingStore)[tmp.length ()] = '\0'; // assure NUL-terminated
+        return make_tuple (possibleBackingStore->begin (), wstring_view{possibleBackingStore->begin (), possibleBackingStore->begin () + tmp.length ()});
     }
     inline size_t String::find (wchar_t c, size_t startAt) const
     {

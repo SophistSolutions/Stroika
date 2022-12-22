@@ -198,8 +198,9 @@ namespace {
     template <typename RETURN_TYPE, typename FUNCTION>
     inline RETURN_TYPE String2Float_LegacyStr2DHelper_ (const String& s, FUNCTION F)
     {
-        wchar_t*       e   = nullptr;
-        const wchar_t* cst = s.c_str ();
+        wchar_t*                     e = nullptr;
+        Memory::StackBuffer<wchar_t> cstBackingStoreBuf;
+        const wchar_t*               cst = get<0> (s.c_str (&cstBackingStoreBuf));
         if (::iswspace (*cst)) {
             return Math::nan<RETURN_TYPE> (); // this was a bug in the 2.1b14 and earlier code according to docs - we should REJECT strings with leading space in this case
         }
@@ -220,7 +221,8 @@ namespace {
     {
         RequireNotNull (remainder);
         wchar_t*       e   = nullptr;
-        const wchar_t* cst = s.c_str ();
+        Memory::StackBuffer<wchar_t> cstMaybeBuf;
+        const wchar_t* cst= get<0> (s.c_str (&cstMaybeBuf));
         RETURN_TYPE    d   = F (cst, &e);
         *remainder         = e;
         return d;

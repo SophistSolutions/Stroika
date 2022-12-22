@@ -1245,24 +1245,32 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  \note BREAKING change between Stroika 2.1 and v3 - const c_str/0 no longer guaraneed to return non-null
+         * 
+         *        Mitigating this, the non-const c_str() still will return non-null, and the const overload taking
+         *        StackBuffer<wchar_t> will also guarantee returning non-null.
+         * 
+         *        In the case of the overloads taking no arguments, the lifetime of the returned pointer is until the
+         *        next change to this string.  In the case of the StackBuffer overload, the guarantee extends for the lifetime
+         *        of the argument buffer (typically just the next few lines of code).
+         * 
          *  This will always return a value which is NUL-terminated.
-         *
-         *  The lifetime of the pointer returned is guaranteed until the next non-const call to this String
-         *  envelope class (that is if other reps change, or are acceessed this data will not be modified)
-         *  Note also that Stroika strings ALLOW internal nul bytes, so though the Stroika string
-         *  class NUL-terminates, it does nothing to prevent already existng NUL bytes from causing
-         *  confusion elsewhere.
-         *
-         *  Lifetime is ONLY up until next non-const method access to String, so this API is intrinsically not threadsafe.
-         *  That is - if you call this on a String, you better not be updating the string at the same time!
-         *
-         *  \note THREAD-SAFETY - small risk - be sure reference to returned pointer cleaered before String modified
-         *
-         *  @see GetData ()
+         * 
+         *  Note also - the c_str () function CAN now be somewhat EXPENSIVE, causing a mutation of the String object, so use
+         *  one of the const overloads where possible (or where performance matters).
+         * 
+         *  \note Why does c_str (StackBuffer) return a tuple?
+         *        Sometimes you just want a plain const wchar_t* you can use with an old C pointer based API. But that
+         *        fails/asserts out if you happen to have an empty string and try to get the pointer. Sometimes - you just need
+         *        the pointer!
+         * 
+         *        And why the string-view part? Because sometimes you want the LENGTH. Sure - you can just compute it again. But
+         *        that is costly. Sure you can just use the original string length. BUT THAT WOULD BE A BUG once I support
+         *        surrogates properly (at least on windows where wchar_t isn't char32_t).
          */
-        [[deprecated ("Since Stroika v3.0d1 - use As<wstring> ().c_str ()")]] nonvirtual const wchar_t* c_str () const noexcept;
-        nonvirtual const wchar_t*                                                                       c_str ();
-        nonvirtual const wchar_t*                                                                       c_str (Memory::StackBuffer<wchar_t>* useBuf) const;
+        nonvirtual const wchar_t* c_str ();
+        nonvirtual tuple<const wchar_t*, wstring_view>                                                                                              c_str (Memory::StackBuffer<wchar_t>* possibleBackingStore) const;
+        [[deprecated ("Since Stroika v3.0d1 - use As<wstring> ().c_str () or other c_str() overload (*UNSAFE TO USE*)")]] nonvirtual const wchar_t* c_str () const noexcept;
 
     public:
         /**

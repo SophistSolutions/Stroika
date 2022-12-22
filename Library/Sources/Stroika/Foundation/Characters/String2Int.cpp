@@ -22,7 +22,8 @@ using namespace Stroika::Foundation::Characters;
  */
 unsigned int Characters::HexString2Int (const String& s)
 {
-    unsigned long l = wcstoul (s.c_str (), nullptr, 16);
+    Memory::StackBuffer<wchar_t> sPossibleBackingStore;
+    unsigned long                l = wcstoul (get<0> (s.c_str (&sPossibleBackingStore)), nullptr, 16);
     if (l >= numeric_limits<unsigned int>::max ()) {
         return numeric_limits<unsigned int>::max ();
     }
@@ -36,8 +37,9 @@ unsigned int Characters::HexString2Int (const String& s)
  */
 long long int Characters::Private_::String2Int_ (const String& s)
 {
-    wchar_t*               endptr = nullptr;
-    unsigned long long int l      = wcstoll (s.c_str (), &endptr, 10);
+    Memory::StackBuffer<wchar_t> sPossibleBackingStore;
+    wchar_t*                     endptr = nullptr;
+    unsigned long long int l      = wcstoll (get<0> (s.c_str (&sPossibleBackingStore)), &endptr, 10);
     return *endptr == '\0' ? l : 0; // weird but I document default is zero if failed to fully parse
 }
 
@@ -48,7 +50,8 @@ long long int Characters::Private_::String2Int_ (const String& s)
  */
 unsigned long long int Characters::Private_::String2UInt_ (const String& s)
 {
-    wchar_t*      endptr = nullptr;
-    long long int l      = wcstoull (s.c_str (), &endptr, 10);
+    Memory::StackBuffer<wchar_t> sPossibleBackingStore;
+    wchar_t*                     endptr = nullptr;
+    long long int                l      = wcstoull (get<0> (s.c_str (&sPossibleBackingStore)), &endptr, 10);
     return *endptr == '\0' ? l : 0; // weird but I document default is zero if failed to fully parse
 }
