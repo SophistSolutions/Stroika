@@ -720,6 +720,7 @@ bool String::StartsWith (const Character& c, CompareOptions co) const
 
 bool String::StartsWith (const String& subString, CompareOptions co) const
 {
+    _SafeReadRepAccessor subStrAccessor{&subString};
     _SafeReadRepAccessor accessor{this};
     size_t               subStrLen = subString.size ();
     if (subStrLen > accessor._ConstGetRep ()._GetLength ()) {
@@ -728,9 +729,9 @@ bool String::StartsWith (const String& subString, CompareOptions co) const
 #if qDebug
     bool referenceResult = ThreeWayComparer{co}(SubString (0, subString.size ()), subString) == 0;
 #endif
-    const Character*                         subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
-    pair<const Character*, const Character*> thisData    = accessor._ConstGetRep ().GetData ();
-    bool                                     result      = Character::Compare (thisData.first, thisData.first + subStrLen, subStrStart, subStrStart + subStrLen, co) == 0;
+    pair<const Character*, const Character*> subStrData = subStrAccessor._ConstGetRep ().GetData ();
+    pair<const Character*, const Character*> thisData   = accessor._ConstGetRep ().GetData ();
+    bool                                     result     = Character::Compare (thisData.first, thisData.first + subStrLen, subStrData.first, subStrData.second, co) == 0;
     Assert (result == referenceResult);
     return result;
 }
@@ -748,6 +749,7 @@ bool String::EndsWith (const Character& c, CompareOptions co) const
 
 bool String::EndsWith (const String& subString, CompareOptions co) const
 {
+    _SafeReadRepAccessor subStrAccessor{&subString};
     _SafeReadRepAccessor accessor{this};
     size_t               thisStrLen = accessor._ConstGetRep ()._GetLength ();
     size_t               subStrLen  = subString.size ();
@@ -757,9 +759,9 @@ bool String::EndsWith (const String& subString, CompareOptions co) const
 #if qDebug
     bool referenceResult = String::EqualsComparer{co}(SubString (thisStrLen - subStrLen, thisStrLen), subString);
 #endif
-    const Character*                         subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
-    pair<const Character*, const Character*> thisData    = accessor._ConstGetRep ().GetData ();
-    bool                                     result      = (Character::Compare (thisData.first + thisStrLen - subStrLen, thisData.first + thisStrLen, subStrStart, subStrStart + subStrLen, co) == 0);
+    pair<const Character*, const Character*> subStrData = subStrAccessor._ConstGetRep ().GetData ();
+    pair<const Character*, const Character*> thisData   = accessor._ConstGetRep ().GetData ();
+    bool                                     result     = (Character::Compare (thisData.first + thisStrLen - subStrLen, thisData.first + thisStrLen, subStrData.first, subStrData.second, co) == 0);
     Assert (result == referenceResult);
     return result;
 }

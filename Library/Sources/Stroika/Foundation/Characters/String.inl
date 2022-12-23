@@ -461,11 +461,31 @@ namespace Stroika::Foundation::Characters {
         into->assign (wcp, wcp + n);
     }
     template <>
+    inline void String::As (u8string* into) const
+    {
+        AsUTF8 (into);
+    }
+    template <>
+    inline void String::As (u16string* into) const
+    {
+        AsUTF16 (into);
+    }
+    template <>
+    inline void String::As (u32string* into) const
+    {
+        AsUTF32 (into);
+    }
+    template <>
     inline wstring String::As () const
     {
         wstring r;
         As (&r);
         return r;
+    }
+    template <>
+    inline String String::As () const
+    {
+        return *this;
     }
     template <>
     inline u16string String::As () const
@@ -476,23 +496,6 @@ namespace Stroika::Foundation::Characters {
     inline u32string String::As () const
     {
         return AsUTF32 ();
-    }
-    template <>
-    inline const wchar_t* String::As () const
-    {
-        _SafeReadRepAccessor accessor{this};
-        return (const wchar_t*)accessor._ConstGetRep ()._Peek ();
-    }
-    template <>
-    inline const Character* String::As () const
-    {
-        _SafeReadRepAccessor accessor{this};
-        return accessor._ConstGetRep ()._Peek ();
-    }
-    template <>
-    inline String String::As () const
-    {
-        return *this;
     }
     template <>
     inline string String::AsUTF8 () const
@@ -577,10 +580,6 @@ namespace Stroika::Foundation::Characters {
     inline size_t String::length () const
     {
         return size ();
-    }
-    inline const wchar_t* String::data () const
-    {
-        return As<const wchar_t*> ();
     }
     inline const wchar_t* String::c_str () const noexcept
     {

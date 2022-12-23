@@ -58,15 +58,7 @@
  * TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-684 - 
  *              Change internal format / rep for String class to UTF8
- *              so strings generally represented more compactly. Adds cost for computing length (maybe cache). And for
- *              indexing (must be index in terms of characters but that doesnt work right now on windows due to
- *              using utf16 and not handling surrogates).
- *
- *      @todo   PROBALY get rid of
- *                                      nonvirtual  void        SetCharAt (Character c, size_t i);
- *              and force people to use StringBUilder. I think that maybe only mutator except operator+= which is
- *              (or can be) safe, and is just wildly helpful, so proabby keep that. But document rationale!
- *              (well - .clear() is also mutaotr and operator= obvously).
+ *              .. WORKING...
  *
  *      @todo   EXPLAIN why InsertAt () returns string and Append() doesn't! Or - change it!
  *              Basic idea is that append is SO convnentit (+=) - that we just must support that
@@ -76,21 +68,6 @@
  *              returning a new string.
  *
  *              Weak arguemnt! BUt best I can come up with...
- *
- *      @todo   Handle few remaining cases of '// @todo - NOT ENVELOPE THREADSAFE' in implementaiton - mostly on
- *              Appends and Removes.
- *
- *              NO WORSE THAN THAT - MUCH IS NOT ENVELOPE THREADSAFE. Issue is that even with no sharing (sharecount=1)
- *              if I have one thread reading and one writing - that's intrinsically not safe!
- *
- *              I THINK the only ways out are:
- *                  o   lock every operation (makes reads too costly)
- *                  o   Do all multistep operations in reps (so they can manage locking (I think that
- *                      still means read/write locks like we have for Containers).
- *                  o   OR every changing operation makes a new string rep. THAT - as it turns out- maybe
- *                      the way to go (lisp/functional programming).
- *
- *              That may mean the CopyOnWrite stuff is useless here?
  *
  *      @todo   Cleanup SubString (), and String::SubString_ use of SharedByValue<TRAITS>::ReadOnlyReference for
  *              performance. At some level - in String::SubString_ - we have a (hidden) sharedPtr and it would
@@ -103,18 +80,6 @@
  *
  *      @todo   Change APIs that return vector to return Iterable<> using CreateGenerator (). Tried once and worked
  *              very nicely.
- *
- *      @todo   Annotate basic string aliases as (basic_string alias - as below). At least try and think
- *              through if this seems ugly/pointless.
- *
- *      @todo   Add AsSDKString(TCHAR BUF) overload - as performance tweek. Not sure can be easily done safely so
- *              not sure of this, but could be a significant performance advantage. Test more...
- *
- *              Maybe better - AsTChar* - which takes BUFFER arg. And OPTIONALLY uses that buffer arg (depending
- *              on sizeof TCHAR???
- *
- *              Or maybe better - just change code that uses TSTring version of APIs to use W version of APIS!!!
- *              I THINK THAT IS BEST!
  *
  *      @todo   Add PadLeft/PadRight or FillLeft/FilLRight() - not sure which name is better. But idea is to
  *              produce a string which is indentical to the orig except that IF start len < n, then expand it with
@@ -207,10 +172,6 @@
  *                  public:
  *                      explicit String_Common (const String& from);
  *              };
- *
- *      @todo   Add a String_UTF8 backend - (maybe a number of variants). Key is that these can be more compact
- *              and for many operaitons, just fine, but for insert, and a[i] = quite sucky.
- *              [RETHINK - See String_AsciiOnlyOptimized - and probably don't do this]
  *
  *      @todo   Handle Turkish toupper('i') problem. Maybe use ICU. Maybe add optional LOCALE parameter to routines where this matters.
  *              Maybe use per-thread global LOCALE settings. Discuss with KDJ.
@@ -494,6 +455,8 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  \brief - PREFER USING StringBuilder if you are using this. This is very slow;
+         *  \todo Consider losing this method...
          */
         nonvirtual void SetCharAt (Character c, size_t i);
 
@@ -1068,15 +1031,19 @@ namespace Stroika::Foundation::Characters {
          *
          *  Only specifically specialized variants are supported. Supported type 'T' values include:
          *      o   wstring
-         *      o   const wchar_t*
-         *      o   const Character*
+         *      o   u8string
          *      o   u16string
          *      o   u32string
          *      o   String    (return *this; handy sometimes in templated usage; harmless)
          *
+         *  DEPRECATED AS OF v3.0d1 because As is const method - could do non-const As<> overload for these, but that would be confusing
+         *      o   const wchar_t*
+         *      o   const Character*
+         *
          *  \note
-         *      o   As<u16string> () equivilent to AsUTF16 () calll
-         *      o   As<u32string> () equivilent to AsUTF32 () calll
+         *      o   As<u8string> () equivilent to AsUTF8 () call
+         *      o   As<u16string> () equivilent to AsUTF16 () call
+         *      o   As<u32string> () equivilent to AsUTF32 () call
          *
          *  \note   We tried to also have template<typename T> explicit operator T () const; - conversion operator - but
          *          We got too frequent confusion in complex combinations of templates, like with:
@@ -1232,19 +1199,6 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  As with STL, the return value of the data () function should NOT be assumed to be
-         *  NUL-terminated
-         *
-         *  The lifetime of the pointer returned is guaranteed until the next non-const call to this String
-         *  envelope class (that is if other reps change, or are acceessed this data will not
-         *  be modified)
-         *
-         *  \note THREAD-SAFETY - small risk - be sure reference to returned pointer cleaered before String modified
-         */
-        nonvirtual const wchar_t* data () const;
-
-    public:
-        /**
          *  \note BREAKING change between Stroika 2.1 and v3 - const c_str/0 no longer guaraneed to return non-null
          * 
          *        Mitigating this, the non-const c_str() still will return non-null, and the const overload taking
@@ -1315,6 +1269,9 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual String substr (size_t from, size_t count = npos) const;
 
+    public:
+        [[deprecated ("Since Stroika v3.0d1 due to https://stroika.atlassian.net/browse/STK-965 - NOT IMPLEMENTED")]] nonvirtual const wchar_t* data () const;
+
     protected:
         nonvirtual void _AssertRepValidType () const;
 
@@ -1326,11 +1283,17 @@ namespace Stroika::Foundation::Characters {
     template <>
     void String::As (wstring* into) const;
     template <>
+    void String::As (u8string* into) const;
+    template <>
+    void String::As (u16string* into) const;
+    template <>
+    void String::As (u32string* into) const;
+    template <>
+    void String::As (String* into) const;
+    template <>
     wstring String::As () const;
     template <>
-    const wchar_t* String::As () const;
-    template <>
-    const Character* String::As () const;
+    u8string String::As () const;
     template <>
     u16string String::As () const;
     template <>
