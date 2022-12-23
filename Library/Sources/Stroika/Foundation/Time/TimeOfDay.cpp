@@ -272,7 +272,7 @@ optional<TimeOfDay> TimeOfDay::ParseQuietly_ (const wstring& rep, const String& 
 
 optional<TimeOfDay> TimeOfDay::ParseQuietly_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern)
 {
-    ios::iostate                 errState        = ios::goodbit;
+    ios::iostate                 errState = ios::goodbit;
     tm                           when{};
     wistringstream               iss{rep};
     istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
@@ -366,10 +366,10 @@ String TimeOfDay::Format (const locale& l, const String& formatPattern) const
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
     // http://en.cppreference.com/w/cpp/locale/time_put/put
     tm when{};
-    when.tm_hour                   = GetHours ();
-    when.tm_min                    = GetMinutes ();
-    when.tm_sec                    = GetSeconds ();
-    const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
+    when.tm_hour                             = GetHours ();
+    when.tm_min                              = GetMinutes ();
+    when.tm_sec                              = GetSeconds ();
+    const time_put<wchar_t>& tmput           = use_facet<time_put<wchar_t>> (l);
     wstring                  wsFormatPattern = formatPattern.As<wstring> ();
     wostringstream           oss;
     tmput.put (oss, oss, ' ', &when, wsFormatPattern.c_str (), wsFormatPattern.c_str () + wsFormatPattern.length ());

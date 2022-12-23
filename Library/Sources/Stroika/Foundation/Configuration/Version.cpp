@@ -22,12 +22,12 @@ using namespace Stroika::Foundation::Configuration;
  */
 Version Version::FromWin32Version4DotString (const Characters::String& win32Version4DotString)
 {
-    int major            = 0;
-    int minor            = 0;
-    int verStageOctet    = 0;
-    int verSubStageOctet = 0;
-    String win32Version4DotStr = win32Version4DotString;    // copy so can call c_str() on copy
-    DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
+    int    major               = 0;
+    int    minor               = 0;
+    int    verStageOctet       = 0;
+    int    verSubStageOctet    = 0;
+    String win32Version4DotStr = win32Version4DotString; // copy so can call c_str() on copy
+    DISABLE_COMPILER_MSC_WARNING_START (4996)            // MSVC SILLY WARNING ABOUT USING swscanf_s
     int nMatchingItems = ::swscanf (win32Version4DotStr.c_str (), L"%d.%d.%d.%d", &major, &minor, &verStageOctet, &verSubStageOctet);
     DISABLE_COMPILER_MSC_WARNING_END (4996)
     if (major < 0 or major > 255) [[unlikely]] {
@@ -52,13 +52,13 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     uint8_t major = 0;
     uint8_t minor = 0;
 
-    wstring ppv = prettyVersionString.As<wstring> ();   // copy so can c_str()
+    wstring ppv = prettyVersionString.As<wstring> (); // copy so can c_str()
 
     // Helper to throw if out of range
     auto my_wcstol_ = [&ppv] (const wchar_t* i, wchar_t** endResult) -> uint8_t {
         long l = wcstol (i, endResult, 10);
         if (l < 0 or l > numeric_limits<uint8_t>::max ()) [[unlikely]] {
-            DbgTrace (L"prettyVersionString=%s",  ppv.c_str ());
+            DbgTrace (L"prettyVersionString=%s", ppv.c_str ());
             Execution::Throw (Execution::RuntimeErrorException{L"Invalid Version String: component out of range"_k});
         }
         return static_cast<uint8_t> (l);
@@ -68,18 +68,18 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     wchar_t*       tokenEnd = nullptr;
     major                   = my_wcstol_ (i, &tokenEnd); // @todo should validate, but no biggie
     if (i == tokenEnd) [[unlikely]] {
-        DbgTrace (L"prettyVersionString=%s",  ppv.c_str ());
+        DbgTrace (L"prettyVersionString=%s", ppv.c_str ());
         Execution::Throw (Execution::RuntimeErrorException{L"Invalid Version String"sv});
     }
-    Assert (static_cast<size_t> (i -  ppv.c_str ()) <= prettyVersionString.length ());
+    Assert (static_cast<size_t> (i - ppv.c_str ()) <= prettyVersionString.length ());
     i = tokenEnd + 1; // end plus '.' separator
 
     minor = my_wcstol_ (i, &tokenEnd);
     if (i == tokenEnd) [[unlikely]] {
-        DbgTrace (L"prettyVersionString=%s",  ppv.c_str ());
+        DbgTrace (L"prettyVersionString=%s", ppv.c_str ());
         Execution::Throw (Execution::RuntimeErrorException{L"Invalid Version String"sv}); // require form 1.0a3, or at least 1.0, but no 1
     }
-    Assert (static_cast<size_t> (i -  ppv.c_str ()) <= ppv.length ());
+    Assert (static_cast<size_t> (i - ppv.c_str ()) <= ppv.length ());
     i = tokenEnd;
 
     VersionStage verStage = VersionStage::Release;
@@ -110,10 +110,10 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
             i += 1;
         } break;
     }
-    Assert (static_cast<size_t> (i -  ppv.c_str ()) <= ppv.size ());
+    Assert (static_cast<size_t> (i - ppv.c_str ()) <= ppv.size ());
     uint8_t verSubStage = my_wcstol_ (i, &tokenEnd);
     if (i == tokenEnd) [[unlikely]] {
-        DbgTrace (L"prettyVersionString=%s",  ppv.c_str ());
+        DbgTrace (L"prettyVersionString=%s", ppv.c_str ());
         Execution::Throw (Execution::RuntimeErrorException{L"Invalid Version String"sv}); // require form 1.0a3, or at least 1.0, but no 1
     }
     i               = tokenEnd;
@@ -121,7 +121,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     if (*i == 'x') {
         finalBuild = false;
     }
-    Assert (static_cast<size_t> (i -  ppv.c_str ()) <= ppv.size ());
+    Assert (static_cast<size_t> (i - ppv.c_str ()) <= ppv.size ());
     return Version{major, minor, verStage, verSubStage, finalBuild};
 }
 

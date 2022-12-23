@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Memory {
     auto mkSpan_BWA_ (CONTAINER& c)
     {
         if (c.size () == 0) {
-            return std::span<remove_const_t< typename CONTAINER::value_type>>{};
+            return std::span<remove_const_t<typename CONTAINER::value_type>>{};
         }
         return std::span<remove_const_t<typename CONTAINER::value_type>>{&*c.begin (), c.size ()};
     }

@@ -295,12 +295,13 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                 if (nItems < 3 or numCharsConsumed < 8) [[unlikely]] {
                     return nullopt;
                 }
-                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
+                d = Date{Year{year}, MonthOfYear (month), DayOfMonth (day)};
             }
             Assert (d);
             optional<TimeOfDay> t;
             {
-                const wchar_t* startOfTimePart = rep.c_str () + numCharsConsumed;
+                String         timePart        = rep.SubString (numCharsConsumed);
+                const wchar_t* startOfTimePart = timePart.c_str ();
                 // nb: OK to not check strlen cuz string NUL terminated
                 // https://www.rfc-editor.org/rfc/rfc822#section-5 says can be upper or lower case T, or even ' ', but 'T' preferred/most common/recommended
                 if (*startOfTimePart == 'T' or *startOfTimePart == 't' or *startOfTimePart == ' ') [[likely]] {
@@ -320,14 +321,15 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                     else {
                         return nullopt;
                     }
-                    numCharsConsumed += ncc;
+                    numCharsConsumed += ncc; // @todo fix - this is count of wchar_t not necessilarly full 'char32_t' characters
                     t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second), DataExchange::ValidationStrategy::eThrow};
                 }
             }
             // see about timezone (aka time-offset)
             optional<Timezone> tz;
             if (t) { // only can be present - so only check - if there is a time
-                const wchar_t* startTZArea = rep.c_str () + numCharsConsumed;
+                String         tzArea      = rep.SubString (numCharsConsumed);
+                const wchar_t* startTZArea = tzArea.c_str ();
                 if (*startTZArea == 'Z' or *startTZArea == 'z') { // nb: OK to not check strlen cuz string NUL terminated
                     tz = Timezone::kUTC;
                     numCharsConsumed += 1;
@@ -534,9 +536,10 @@ optional<DateTime> DateTime::ParseQuietly_ (const wstring& rep, const time_get<w
     tm           when{};
     size_t       nCharsConsumed{};
     {
+        wstring                      formatPatternWS = formatPattern.As<wstring> ();
         wistringstream               iss{rep};
         istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
-        istreambuf_iterator<wchar_t> i = tmget.get (itbegin, istreambuf_iterator<wchar_t>{}, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
+        istreambuf_iterator<wchar_t> i = tmget.get (itbegin, istreambuf_iterator<wchar_t>{}, iss, errState, &when, formatPatternWS.c_str (), formatPatternWS.c_str () + formatPatternWS.length ());
         if (errState & ios::eofbit) {
             nCharsConsumed = rep.size ();
         }
@@ -770,13 +773,14 @@ String DateTime::Format (const locale& l, const String& formatPattern) const
     if constexpr (qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy) {
         if (l == locale::classic () and formatPattern == kLocaleStandardFormat) {
             // this seems a weird format, but from https://en.cppreference.com/w/cpp/chrono/c/strftime: writes standard date and time string, e.g. Sun Oct 17 04:41:13 2010 (locale dependent)
-            static const String kAltPattern_{L"%a %b %e %T %Y"sv};
-            tmput.put (oss, oss, ' ', &when, kAltPattern_.c_str (), kAltPattern_.c_str () + kAltPattern_.length ());
+            static const wstring_view kAltPattern_{L"%a %b %e %T %Y"sv};
+            tmput.put (oss, oss, ' ', &when, &*kAltPattern_.begin (), &*kAltPattern_.begin () + kAltPattern_.length ());
             return String{oss.str ()};
         }
     }
 
-    tmput.put (oss, oss, ' ', &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
+    wstring formatPatternWS = formatPattern.As<wstring> ();
+    tmput.put (oss, oss, ' ', &when, formatPatternWS.c_str (), formatPatternWS.c_str () + formatPatternWS.length ());
     // docs aren't clear about expectations, but glibc (gcc8) produces trailing whitespace which
     // is not good. Unsure if thats glibc bug or my correction here makes sense -- LGP 2018-10-16
     return String{oss.str ()}.RTrim ();
