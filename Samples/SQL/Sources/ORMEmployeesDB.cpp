@@ -203,7 +203,7 @@ namespace {
             try {
                 for (const auto& employee : employeeTableConnection->GetAll ()) {
                     Assert (employee.ID != nullopt);
-                    DbgTrace (L"Writing paycheck for employee #%d (%s) amount %f", *employee.ID, employee.fName.c_str (), employee.fSalary);
+                    DbgTrace (L"Writing paycheck for employee #%d (%s) amount %f", *employee.ID, employee.fName.As<wstring> ().c_str (), employee.fSalary);
                     paycheckTableConnection->AddNew (Paycheck{nullopt, *employee.ID, employee.fSalary / 12, DateTime::Now ().GetDate ()});
                 }
             }

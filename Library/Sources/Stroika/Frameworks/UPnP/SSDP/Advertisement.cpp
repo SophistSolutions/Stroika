@@ -76,10 +76,10 @@ Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNot
     Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, Streams::TextWriter::Format::eUTF8WithoutBOM);
 
     //// SUPER ROUGH FIRST DRAFT
-    textOut.Write (Characters::Format (L"%s\r\n", headLine.c_str ()));
-    textOut.Write (Characters::Format (L"Host: %s:%d\r\n", SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().c_str (), SSDP::V4::kSocketAddress.GetPort ()));
+    textOut.Write (Characters::Format (L"%s\r\n", headLine.As<wstring> ().c_str ()));
+    textOut.Write (Characters::Format (L"Host: %s:%d\r\n", SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().As<wstring> ().c_str (), SSDP::V4::kSocketAddress.GetPort ()));
     textOut.Write (Characters::Format (L"Cache-Control: max-age=60\r\n")); // @todo fix
-    textOut.Write (Characters::Format (L"Location: %s\r\n", ad.fLocation.As<String> ().c_str ()));
+    textOut.Write (Characters::Format (L"Location: %s\r\n", ad.fLocation.As<String> ().As<wstring> ().c_str ()));
     if (ad.fAlive.has_value ()) {
         if (*ad.fAlive) {
             textOut.Write (Characters::Format (L"NTS: ssdp:alive\r\n"));
@@ -89,15 +89,15 @@ Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNot
         }
     }
     if (not ad.fServer.empty ()) {
-        textOut.Write (Characters::Format (L"Server: %s\r\n", ad.fServer.c_str ()));
+        textOut.Write (Characters::Format (L"Server: %s\r\n", ad.fServer.As<wstring> ().c_str ()));
     }
     if (searchOrNotify == SearchOrNotify::SearchResponse) {
-        textOut.Write (Characters::Format (L"ST: %s\r\n", ad.fTarget.c_str ()));
+        textOut.Write (Characters::Format (L"ST: %s\r\n", ad.fTarget.As<wstring> ().c_str ()));
     }
     else {
-        textOut.Write (Characters::Format (L"NT: %s\r\n", ad.fTarget.c_str ()));
+        textOut.Write (Characters::Format (L"NT: %s\r\n", ad.fTarget.As<wstring> ().c_str ()));
     }
-    textOut.Write (Characters::Format (L"USN: %s\r\n", ad.fUSN.c_str ()));
+    textOut.Write (Characters::Format (L"USN: %s\r\n", ad.fUSN.As<wstring> ().c_str ()));
 
     // Terminate list of headers
     textOut.Write (L"\r\n");

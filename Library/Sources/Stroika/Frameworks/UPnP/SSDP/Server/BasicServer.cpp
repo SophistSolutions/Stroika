@@ -48,16 +48,16 @@ public:
             dan.fServer = d.fServer;
             {
                 dan.fTarget = kTarget_UPNPRootDevice;
-                dan.fUSN    = Format (L"uuid:%s::%s", d.fDeviceID.c_str (), kTarget_UPNPRootDevice.c_str ());
+                dan.fUSN    = Format (L"uuid:%s::%s", d.fDeviceID.As<wstring> ().c_str (), kTarget_UPNPRootDevice.As<wstring> ().c_str ());
                 fAdvertisements.Append (dan);
             }
             {
-                dan.fUSN    = Format (L"uuid:%s", d.fDeviceID.c_str ());
+                dan.fUSN    = Format (L"uuid:%s", d.fDeviceID.As<wstring> ().c_str ());
                 dan.fTarget = dan.fUSN;
                 fAdvertisements.Append (dan);
             }
             if (not dd.fDeviceType.empty ()) {
-                dan.fUSN    = Format (L"uuid:%s::%s", d.fDeviceID.c_str (), dd.fDeviceType.c_str ());
+                dan.fUSN    = Format (L"uuid:%s::%s", d.fDeviceID.As<wstring> ().c_str (), dd.fDeviceType.As<wstring> ().c_str ());
                 dan.fTarget = dd.fDeviceType;
                 fAdvertisements.Append (dan);
             }

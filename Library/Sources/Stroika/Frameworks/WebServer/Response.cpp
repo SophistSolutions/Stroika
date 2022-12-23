@@ -268,7 +268,7 @@ void Response::Flush ()
         {
             Assert (InChunkedMode_ () or this->headers ().contentLength ().has_value ()); // I think is is always required, but double check...
             for (const auto& i : this->headers ().As<> ()) {
-                u8string utf8 = Characters::Format (L"%s: %s\r\n", i.fKey.c_str (), i.fValue.c_str ()).AsUTF8 ();
+                u8string utf8 = Characters::Format (L"%s: %s\r\n", i.fKey.As<wstring> ().c_str (), i.fValue.As<wstring> ().c_str ()).AsUTF8 ();
                 fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
             }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

@@ -41,7 +41,7 @@ void WebService::Server::ExpectedMethod (const Request& request, const Iterable<
     if (not Set<String> (String::EqualsComparer{CompareOptions::eCaseInsensitive}, methods).Contains (request.httpMethod ())) {
         Execution::Throw (
             ClientErrorException (
-                Characters::Format (L"Received HTTP method '%s'%s, but expected one from %s", request.httpMethod ().c_str (), (fromInMessage ? (L" from '" + *fromInMessage + L"'").c_str () : L""), Characters::ToString (methods).c_str ())));
+                Characters::Format (L"Received HTTP method '%s'%s, but expected one from %s", request.httpMethod ().As<wstring> ().c_str (), (fromInMessage ? (L" from '" + *fromInMessage + L"'").As<wstring> ().c_str () : L""), Characters::ToString (methods).As<wstring> ().c_str ())));
     }
 }
 
@@ -73,8 +73,8 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
     response->writeln (docsOptions.fCSSSection);
     response->writeln (L"</style>");
     response->writeln (L"<body>");
-    response->printf (L"<h1>%s</h1>", docsOptions.fH1Text.c_str ());
-    response->printf (L"<div class='introduction'>%s</div>", docsOptions.fIntroductoryText.c_str ());
+    response->printf (L"<h1>%s</h1>", docsOptions.As<wstring> ().fH1Text.c_str ());
+    response->printf (L"<div class='introduction'>%s</div>", docsOptions.fIntroductoryText.As<wstring> ().c_str ());
     response->writeln (L"<ul>");
     auto substVars = [=] (const String& origStr) {
         String str = origStr;
@@ -85,9 +85,9 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
     };
     auto writeDocs = [=] (const String& methodName, const String& docs, const String& exampleCall) {
         response->writeln (L"<li>");
-        response->printf (L"<a href=\"/%s\">%s</a>", methodName.c_str (), methodName.c_str ());
-        response->printf (L"<div class='mainDocs'>%s</div>", docs.c_str ());
-        response->printf (L"<div class='curlExample'>%s</div>", exampleCall.c_str ());
+        response->printf (L"<a href=\"/%s\">%s</a>", methodName.As<wstring> ().c_str (), methodName.As<wstring> ().c_str ());
+        response->printf (L"<div class='mainDocs'>%s</div>", docs.As<wstring> ().c_str ());
+        response->printf (L"<div class='curlExample'>%s</div>", exampleCall.As<wstring> ().c_str ());
         response->writeln (L"</li>");
     };
     for (const WebServiceMethodDescription& i : operations) {

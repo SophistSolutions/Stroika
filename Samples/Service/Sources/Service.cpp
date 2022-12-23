@@ -89,7 +89,7 @@ void SampleAppServiceRep::MainLoop (const std::function<void ()>& startedCB)
     startedCB (); // Notify service control mgr that the service has started
 
 #if qUseLogger
-    Logger::sThe.Log (Logger::eInfo, L"%s (version %s) service started successfully", kServiceDescription_.fPrettyName.c_str (), Characters::ToString (AppVersion::kVersion).c_str ());
+    Logger::sThe.Log (Logger::eInfo, L"%s (version %s) service started successfully", kServiceDescription_.fPrettyName.As<wstring> ().c_str (), Characters::ToString (AppVersion::kVersion).As<wstring> ().c_str ());
     successfullyStarted = true;
 
     // the final object delcared on the stack before we wait, so its the first run when we are handling the
