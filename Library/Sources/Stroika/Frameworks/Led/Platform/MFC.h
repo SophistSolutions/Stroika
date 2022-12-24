@@ -365,9 +365,9 @@ namespace Stroika::Frameworks::Led::Platform {
             {
             }
 
-            Led_SDK_String fDragCommandName;
-            Led_SDK_String fDropCommandName;
-            Led_SDK_String fDragNDropCommandName;
+            SDKString fDragCommandName;
+            SDKString fDropCommandName;
+            SDKString fDragNDropCommandName;
         };
 
         // This class builds commands with command names. The UI may wish to change these
@@ -711,7 +711,7 @@ namespace Stroika::Frameworks::Led::Platform {
         virtual bool          GetEnabled () const override;
         virtual void          SetEnabled (bool enabled) override;
         virtual void          SetChecked (bool checked) override;
-        virtual void          SetText (const Led_SDK_Char* text) override;
+        virtual void          SetText (const SDKChar* text) override;
 
     public:
         operator CCmdUI* ();

@@ -23,7 +23,7 @@ namespace {
  *********************************** GetUsableFontNames *************************
  ********************************************************************************
  */
-const vector<Led_SDK_String>& GetUsableFontNames ()
+const vector<SDKString>& GetUsableFontNames ()
 {
     return sInstalledFonts.GetUsableFontNames ();
 }
@@ -33,10 +33,10 @@ const vector<Led_SDK_String>& GetUsableFontNames ()
  *********************************** CmdNumToFontName ***************************
  ********************************************************************************
  */
-Led_SDK_String CmdNumToFontName (UINT cmdNum)
+SDKString CmdNumToFontName (UINT cmdNum)
 {
     Require (cmdNum >= kBaseFontNameCmd);
     Require (cmdNum <= kLastFontNameCmd);
-    const vector<Led_SDK_String>& fontNames = GetUsableFontNames ();
+    const vector<SDKString>& fontNames = GetUsableFontNames ();
     return (fontNames[cmdNum - kBaseFontNameCmd]);
 }

@@ -181,14 +181,14 @@ bool SimpleEmbeddedObjectStyleMarker::IsCmdEnabled (PrivateCmdNumber /*cmd*/) co
 @DESCRIPTION:   <p>For all commands specified in overrides of @'SimpleEmbeddedObjectStyleMarker::GetCmdNumbers' (ie all private commands
             supported) return the command name text.</p>
 */
-Led_SDK_String SimpleEmbeddedObjectStyleMarker::GetCmdText (PrivateCmdNumber cmd)
+SDKString SimpleEmbeddedObjectStyleMarker::GetCmdText (PrivateCmdNumber cmd)
 {
     switch (cmd) {
         case eOpenCmdNum:
             return GetCommandNames ().fOpenCommandName;
         default:
             Assert (false);
-            return Led_SDK_String ();
+            return SDKString{};
     }
 }
 
@@ -751,7 +751,7 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
         Verify (font1.CreateFontIndirect (&lf));
     }
     GDI_Obj_Selector font1Selector (tablet, font1);
-    DistanceType     string1Width = name == nullptr ? 0 : dc->GetTextExtent (Led_ANSI2SDKString (name).c_str (), nameStrLen).cx;
+    DistanceType     string1Width = name == nullptr ? 0 : dc->GetTextExtent (NarrowSDK2SDKString (name).c_str (), nameStrLen).cx;
 
     FontObject font2;
     {
@@ -762,7 +762,7 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
         lf.lfHeight = -8;
     }
     GDI_Obj_Selector font2Selector (tablet, font2);
-    DistanceType     string2Width = dc->GetTextExtent (Led_ANSI2SDKString (url).c_str (), urlStrLen).cx;
+    DistanceType     string2Width = dc->GetTextExtent (NarrowSDK2SDKString (url).c_str (), urlStrLen).cx;
 
     distanceResults[0] += max (string1Width, string2Width) + 2 * kDefaultEmbeddingMargin.h;
 #endif

@@ -265,19 +265,6 @@ when debugging is ON, then you may want to turn this flag ON.</p>
 #endif
 
 /*
-@CONFIGVAR:     qSDK_UNICODE
-@DESCRIPTION:   <p>Roughly this corresponds to the MSDEV -DUNICODE -D_UNICODE define. But can
-    be used for other things as well on other platforms? Maybe?</p>
- */
-#ifndef qSDK_UNICODE
-#ifdef _UNICODE
-#define qSDK_UNICODE 1
-#else
-#define qSDK_UNICODE 0
-#endif
-#endif
-
-/*
 @CONFIGVAR:     qProvideIMESupport
 @DESCRIPTION:   <p>Do we need to explictly support the IME?</p>
         <p>NB: qProvideIMESupport used to be called qRequireIMESupport, but now we

@@ -68,7 +68,7 @@ inline void GDI_TextSize (short size)
 #if qPlatform_Windows
 inline bool LogFontsEqual (LOGFONT lhs, LOGFONT rhs)
 {
-    size_t bytesToCompare = offsetof (LOGFONT, lfFaceName) + (::_tcslen (lhs.lfFaceName) + 1) * sizeof (Led_SDK_Char);
+    size_t bytesToCompare = offsetof (LOGFONT, lfFaceName) + (::_tcslen (lhs.lfFaceName) + 1) * sizeof (Characters::SDKChar);
     Require (bytesToCompare <= sizeof (LOGFONT)); // else we were passed bogus LogFont (and we should validate them before here!)
     return ::memcmp (&lhs, &rhs, bytesToCompare) == 0;
 }
@@ -427,16 +427,16 @@ static int FAR PASCAL EnumFontCallback (const LOGFONT* lplf, const TEXTMETRIC* /
         switch (potentialResult.fDesiredCharset) {
             case SHIFTJIS_CHARSET: {
                 if (
-                    potentialResult.fBestFont.lfFaceName == Led_SDK_String{Led_SDK_TCHAROF ("MS P Gothic")} or
-                    potentialResult.fBestFont.lfFaceName == Led_SDK_String{Led_SDK_TCHAROF ("MS Gothic")} or
-                    potentialResult.fBestFont.lfFaceName == Led_SDK_String{Led_SDK_TCHAROF ("MS PGothic")}) {
+                    potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MS P Gothic")} or
+                    potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MS Gothic")} or
+                    potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MS PGothic")}) {
                     potentialResult.fIsFavoriteForCharset = true;
                 }
             } break;
             case CHINESEBIG5_CHARSET: {
                 if (
-                    potentialResult.fBestFont.lfFaceName == Led_SDK_String{Led_SDK_TCHAROF ("MS HEI")} or
-                    potentialResult.fBestFont.lfFaceName == Led_SDK_String{Led_SDK_TCHAROF ("MingLiU")}) {
+                    potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MS HEI")} or
+                    potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MingLiU")}) {
                     potentialResult.fIsFavoriteForCharset = true;
                 }
             } break;

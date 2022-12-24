@@ -459,17 +459,17 @@ void Led_MFC_ControlItem::PostCreateSpecifyExtraInfo (TWIPS_Point size)
     fSize = Led_Size (Led_CvtScreenPixelsFromTWIPSV (size.v), Led_CvtScreenPixelsFromTWIPSH (size.h));
 }
 
-Led_SDK_String Led_MFC_ControlItem::GetObjClassName () const
+SDKString Led_MFC_ControlItem::GetObjClassName () const
 {
     CLSID clsid;
     GetClassID (&clsid);
     LPOLESTR oleStr = NULL;
     if (::ProgIDFromCLSID (clsid, &oleStr) == S_OK) {
-        Led_SDK_String result = Led_SDK_String{::CString (oleStr)};
+        SDKString result = SDKString{::CString (oleStr)};
         ::CoTaskMemFree (oleStr);
         return result;
     }
-    return Led_SDK_String{};
+    return SDKString{};
 }
 
 struct MyOLEStream_output : OLESTREAM {

@@ -146,7 +146,7 @@ namespace Stroika::Frameworks::Led::Platform {
     */
     void SimpleWin32WndProcHelper::Create (DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle, int x, int y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance)
     {
-        Led_SDK_String tmpClassName;
+        SDKString tmpClassName;
         if (lpClassName == NULL) {
             tmpClassName = Characters::CString::Format (_T("LED_SimpleWin32WndProcHelper-%d-%p"), ::GetCurrentProcessId (), &StaticWndProc);
             lpClassName  = tmpClassName.c_str ();
@@ -302,8 +302,8 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         if (fIdleWnd == NULL) {
             // Because of SPR#1549 - make sure the className depends on the ADDRESS of StaticWndProc
-            Led_SDK_String        className = Characters::CString::Format (Led_SDK_TCHAROF ("Led::IdleManagerOSImpl_Win32 (%p)"), &StaticWndProc);
-            static Led_SDK_String sRegisteredClassName;
+            SDKString        className = Characters::CString::Format (Led_SDK_TCHAROF ("Led::IdleManagerOSImpl_Win32 (%p)"), &StaticWndProc);
+            static SDKString sRegisteredClassName;
             if (sRegisteredClassName != className) {
                 WNDCLASSEX wcex;
                 memset (&wcex, 0, sizeof (wcex));

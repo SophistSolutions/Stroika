@@ -185,7 +185,7 @@ protected:
 #endif
 };
 
-Led_SDK_String ExtractFileSuffix (const Led_SDK_String& from);
+SDKString ExtractFileSuffix (const SDKString& from);
 
 /*
  ********************************************************************************

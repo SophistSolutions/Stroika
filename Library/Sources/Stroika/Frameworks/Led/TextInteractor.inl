@@ -11,6 +11,7 @@
  */
 
 namespace Stroika::Frameworks::Led {
+
     /*
      ********************************************************************************
      ***************************** Implementation Details ***************************
@@ -145,7 +146,7 @@ namespace Stroika::Frameworks::Led {
     {
         fChecked = checked;
     }
-    inline void SimpleCommandUpdater::SetText (const Led_SDK_Char* text)
+    inline void SimpleCommandUpdater::SetText (const SDKChar* text)
     {
         RequireNotNull (text);
         fText = text;
@@ -215,7 +216,7 @@ namespace Stroika::Frameworks::Led {
                 @'TextInteractor::GetCommandHandler' returns non-nullptr.
                 See also @'TextInteractor::SuppressCommandBreaksContext'</p>
     */
-    inline void TextInteractor::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName)
+    inline void TextInteractor::BreakInGroupedCommandsIfDifferentCommand (const SDKString& cmdName)
     {
         if (fCommandHandler != nullptr and not fSuppressCommandBreaksContext) {
             fCommandHandler->BreakInGroupedCommandsIfDifferentCommand (cmdName);

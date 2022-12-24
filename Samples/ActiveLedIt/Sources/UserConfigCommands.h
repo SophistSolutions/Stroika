@@ -683,7 +683,7 @@ public:
     void    FinalRelease ();
 };
 
-string mkFontNameCMDName (const Led_SDK_String& fName);
+string mkFontNameCMDName (const SDKString& fName);
 
 CComPtr<IDispatch> GenerateBuiltinCommandsObject ();
 

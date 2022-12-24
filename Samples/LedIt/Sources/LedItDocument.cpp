@@ -380,7 +380,7 @@ ReRead:
                  *  First look at file suffix. THAT takes precedence over guessing file format based on
                  *  contents.
                  */
-            Led_SDK_String suffix = ExtractFileSuffix (fPathName);
+            SDKString suffix = ExtractFileSuffix (fPathName);
             if (suffix == ".rtf") {
                 fFileFormat = eRTFFormat;
                 goto ReRead;
@@ -1634,14 +1634,14 @@ void LedItDocument::AssertValid () const
  **************************** ExtractFileSuffix *********************************
  ********************************************************************************
  */
-Led_SDK_String ExtractFileSuffix (const Led_SDK_String& from)
+SDKString ExtractFileSuffix (const SDKString& from)
 {
     size_t i = from.rfind ('.');
-    if (i == Led_SDK_String::npos) {
-        return Led_SDK_String{};
+    if (i == SDKString::npos) {
+        return SDKString{};
     }
     else {
-        Led_SDK_String suffix = from.substr (i);
+        SDKString suffix = from.substr (i);
         for (size_t j = 0; j < suffix.length (); ++j) {
             if (isascii (suffix[j]) and isupper (suffix[j])) {
                 suffix[j] = static_cast<Led_tChar> (tolower (suffix[j]));

@@ -1832,7 +1832,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Retrieve the 'FontName' attribute of the given font specification. This name is a string, and corresponds to the font family name.</p>
                     <p>See also @'FontSpecification::SetFontName'.</p>
     */
-    inline Led_SDK_String FontSpecification::GetFontName () const
+    inline SDKString FontSpecification::GetFontName () const
     {
 #if qPlatform_MacOS
         Str255 fontName;
@@ -2373,7 +2373,7 @@ namespace Stroika::Frameworks::Led {
 #endif
         inherited::SetFontNameSpecifier (fontNameSpecifier);
     }
-    inline void IncrementalFontSpecification::SetFontName (const Led_SDK_String& fontName)
+    inline void IncrementalFontSpecification::SetFontName (const SDKString& fontName)
     {
         fFontSpecifierValid = true;
 #if qPlatform_Windows
@@ -2998,7 +2998,7 @@ namespace Stroika::Frameworks::Led {
     }
 
     //  class   InstalledFonts
-    inline const vector<Led_SDK_String>& InstalledFonts::GetUsableFontNames () const
+    inline const vector<SDKString>& InstalledFonts::GetUsableFontNames () const
     {
         return fFontNames;
     }

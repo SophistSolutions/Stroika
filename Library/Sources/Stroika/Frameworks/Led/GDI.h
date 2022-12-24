@@ -33,6 +33,8 @@
 
 namespace Stroika::Frameworks::Led {
 
+    using Foundation::Characters::SDKChar;
+
     /**
      * <code>CoordinateType</code> is the <code>signed</code> analog of @'DistanceType'.
      *    @'Led_Point' is a tuple of <code>Coordinates</code>s
@@ -538,21 +540,21 @@ namespace Stroika::Frameworks::Led {
 #elif qPlatform_Windows
         struct FontNameSpecifier { // So struct copies etc will work and so we can define op==
             FontNameSpecifier ();
-            FontNameSpecifier (const Led_SDK_Char* from);
-            Led_SDK_Char fName[LF_FACESIZE];
-            bool         operator== (const FontNameSpecifier& rhs) const
+            FontNameSpecifier (const SDKChar* from);
+            SDKChar fName[LF_FACESIZE];
+            bool    operator== (const FontNameSpecifier& rhs) const
             {
                 return ::_tcscmp (fName, rhs.fName) == 0;
             }
         };
 #elif qStroika_FeatureSupported_XWindows
-        using FontNameSpecifier = Led_SDK_String;
+        using FontNameSpecifier = SDKString;
 #endif
 
     public:
         // string/name wrapper. Trivial for PC, and for Mac - converts between name under NUMBER ID
-        nonvirtual Led_SDK_String GetFontName () const;
-        nonvirtual void           SetFontName (const Led_SDK_String& fontName);
+        nonvirtual SDKString GetFontName () const;
+        nonvirtual void      SetFontName (const SDKString& fontName);
 
         // FontName info
         nonvirtual FontNameSpecifier GetFontNameSpecifier () const;
@@ -692,7 +694,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual bool              GetFontNameSpecifier_Valid () const;
         nonvirtual void              InvalidateFontNameSpecifier ();
         nonvirtual void              SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier);
-        nonvirtual void              SetFontName (const Led_SDK_String& fontName);
+        nonvirtual void              SetFontName (const SDKString& fontName);
 
         // Style info
         nonvirtual bool GetStyle_Plain () const; // special composite of all other styles...
@@ -836,11 +838,11 @@ namespace Stroika::Frameworks::Led {
             FilterOptions filterOptions = eDefaultFilterOptions);
 
     public:
-        nonvirtual const vector<Led_SDK_String>& GetUsableFontNames () const;
+        nonvirtual const vector<SDKString>& GetUsableFontNames () const;
 
     private:
-        FilterOptions          fFilterOptions;
-        vector<Led_SDK_String> fFontNames;
+        FilterOptions     fFilterOptions;
+        vector<SDKString> fFontNames;
 
 #if qPlatform_Windows
     private:
@@ -1098,10 +1100,10 @@ namespace Stroika::Frameworks::Led {
 
 #if qStroika_FeatureSupported_XWindows
     private:
-        nonvirtual Led_SDK_String BestMatchFont (const FontSpecification& fsp, const vector<Led_SDK_String>& fontsList);
+        nonvirtual SDKString BestMatchFont (const FontSpecification& fsp, const vector<SDKString>& fontsList);
 
     public:
-        static void ParseFontName (const Led_SDK_String& fontName, Led_SDK_String* familyName, Led_SDK_String* fontSize, Led_SDK_String* fontWeight, Led_SDK_String* fontSlant);
+        static void ParseFontName (const SDKString& fontName, SDKString* familyName, SDKString* fontSize, SDKString* fontWeight, SDKString* fontSlant);
 #endif
 
     public:

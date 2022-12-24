@@ -108,7 +108,7 @@ inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortDa
         fontSize = 12; // a reasonable default for bogus/corrupt data
     }
     fsp.SetPointSize (fontSize);
-    fsp.SetFontName (Led_ANSI2SDKString (srcData.fFontName));
+    fsp.SetFontName (NarrowSDK2SDKString (srcData.fFontName));
     return (StandardStyledTextImager::InfoSummaryRecord (fsp, BufToUInt32 (&srcData.fLength)));
 }
 
@@ -173,7 +173,7 @@ inline PortableStyleRunData_Version5 mkPortableStyleRunData_Version5 (const Stan
     (void)::memset (&data, 0, sizeof data); // A nice feature of data file formats, is that if you make no changes to the content
     // and write it again, they 'diff' equal. Even though this memset isn't needed for
     // accuracy, its nice todo anyhow, and pretty cheap - LGP 960531
-    string fontName = Led_SDKString2ANSI (isr.GetFontName ());
+    string fontName = SDKString2NarrowSDK (isr.GetFontName ());
     Characters::CString::Copy (data.fFontName, Memory::NEltsOf (data.fFontName), fontName.c_str ());
     data.fThisRecordLength = data.RecordLenFromNameLen (fontName.length ());
 
@@ -216,7 +216,7 @@ inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortDa
     fsp.SetPointSize (fontSize);
     {
         size_t fontNameLen = srcData.NameLenFromRecordLen (srcData.fThisRecordLength);
-        fsp.SetFontName (Led_ANSI2SDKString (string{srcData.fFontName, fontNameLen}));
+        fsp.SetFontName (NarrowSDK2SDKString (string{srcData.fFontName, fontNameLen}));
     }
     return (StandardStyledTextImager::InfoSummaryRecord (fsp, BufToUInt32 (&srcData.fLength)));
 }
@@ -284,7 +284,7 @@ inline PortableStyleRunData_Version6 mkPortableStyleRunData_Version6 (const Stan
     (void)::memset (&data, 0, sizeof data); // A nice feature of data file formats, is that if you make no changes to the content
     // and write it again, they 'diff' equal. Even though this memset isn't needed for
     // accuracy, its nice todo anyhow, and pretty cheap - LGP 960531
-    string fontName = Led_SDKString2ANSI (isr.GetFontName ());
+    string fontName = SDKString2NarrowSDK (isr.GetFontName ());
     Characters::CString::Copy (data.fFontName, Memory::NEltsOf (data.fFontName), fontName.c_str ());
     data.fThisRecordLength = data.RecordLenFromNameLen (fontName.length ());
 
@@ -341,7 +341,7 @@ inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortDa
     fsp.SetPointSize (fontSize);
     {
         size_t fontNameLen = srcData.NameLenFromRecordLen (srcData.fThisRecordLength);
-        fsp.SetFontName (Led_ANSI2SDKString (string{srcData.fFontName, fontNameLen}));
+        fsp.SetFontName (NarrowSDK2SDKString (string{srcData.fFontName, fontNameLen}));
     }
     return (StandardStyledTextImager::InfoSummaryRecord (fsp, BufToUInt32 (&srcData.fLength)));
 }

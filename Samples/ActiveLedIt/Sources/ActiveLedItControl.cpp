@@ -885,7 +885,7 @@ void ActiveLedItControl::ExchangeTextAsRTFBlob (CPropExchange* pPX)
                 if (data != NULL) {
                     size_t size = *(size_t*)data;
                     string s    = string{((const char*)data) + sizeof (size_t), size};
-                    SetBufferTextAsRTF (Led_ANSI2SDKString (s).c_str ());
+                    SetBufferTextAsRTF (NarrowSDK2SDKString (s).c_str ());
                 }
                 ::GlobalFree (hglobal);
             }
@@ -1027,9 +1027,9 @@ void ActiveLedItControl::AboutBox ()
 Led_FileFormat ActiveLedItControl::GuessFormatFromName (LPCTSTR name)
 {
     Led_FileFormat format   = eUnknownFormat;
-    Led_SDK_String pathName = name;
-    Led_SDK_String fileName = pathName.substr (pathName.rfind (_T ("\\")) + 1);
-    Led_SDK_String suffix   = (fileName.rfind (_T (".")) == Led_SDK_String::npos) ? _T ("") : fileName.substr (fileName.rfind (_T (".")) + 1);
+    SDKString      pathName = name;
+    SDKString      fileName = pathName.substr (pathName.rfind (_T ("\\")) + 1);
+    SDKString      suffix   = (fileName.rfind (_T (".")) == SDKString::npos) ? _T ("") : fileName.substr (fileName.rfind (_T (".")) + 1);
     if (::_tcsicmp (suffix.c_str (), _T ("txt")) == 0) {
         format = eTextFormat;
     }
@@ -1500,7 +1500,7 @@ void ActiveLedItControl::OnAboutBoxCommand ()
 #endif
                 ::SetWindowText (w,
                                  (
-                                     Led_SDK_String{_T (qLed_ShortVersionString) kUNICODE_NAME_ADORNER _T (" (") _T (__DATE__) _T (")")})
+                                     SDKString{_T (qLed_ShortVersionString) kUNICODE_NAME_ADORNER _T (" (") _T (__DATE__) _T (")")})
                                      .c_str ());
             }
 
@@ -2149,7 +2149,7 @@ void ActiveLedItControl::SetBufferTextAsRTF (LPCTSTR text)
         TextInteractor::TemporarilySetUpdateMode tsum (fEditor, m_hWnd == NULL ? TextInteractor::eNoUpdate : TextInteractor::eDefaultUpdate);
         fCommandHandler.Commit ();
 
-        string                                       s = Led_SDKString2ANSI (text);
+        string                                       s = SDKString2NarrowSDK (text);
         StyledTextIOSrcStream_Memory                 source (s.c_str (), s.length ());
         WordProcessor::WordProcessorTextIOSinkStream sink (&fEditor);
         StyledTextIOReader_RTF                       textReader (&source, &sink);
@@ -2183,7 +2183,7 @@ void ActiveLedItControl::SetBufferTextAsHTML (LPCTSTR text)
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
-        string                                       s = Led_SDKString2ANSI (text);
+        string                                       s = SDKString2NarrowSDK (text);
         StyledTextIOSrcStream_Memory                 source (s.c_str (), s.length ());
         WordProcessor::WordProcessorTextIOSinkStream sink (&fEditor);
         StyledTextIOReader_HTML                      textReader (&source, &sink);
@@ -2776,7 +2776,7 @@ namespace {
             o->put_Name (CComBSTR (L"Font"));
             o->put_InternalName (CComBSTR (kName_FontNameMenu));
 
-            const vector<Led_SDK_String>& fontNames = GetUsableFontNames ();
+            const vector<SDKString>& fontNames = GetUsableFontNames ();
             Assert (fontNames.size () <= kLastFontNameCmd - kBaseFontNameCmd + 1);
             for (size_t i = 0; i < fontNames.size (); i++) {
                 WORD cmdNum = static_cast<WORD> (kBaseFontNameCmd + i);
@@ -2784,7 +2784,7 @@ namespace {
                     break; // asserted out before above - now just ignore extra font names...
                 }
                 ActiveLedIt_BuiltinCommand* c = ActiveLedIt_BuiltinCommand::mk (BuiltinCmdSpec (cmdNum, mkFontNameCMDName (fontNames[i]).c_str ()));
-                c->SetName (Led_SDKString2Wide (fontNames[i]));
+                c->SetName (SDKString2Wide (fontNames[i]));
                 o->Insert (c);
             }
 

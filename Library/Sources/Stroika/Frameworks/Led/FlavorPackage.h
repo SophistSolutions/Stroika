@@ -27,6 +27,7 @@ namespace Stroika::Frameworks::Led {
     using std::byte;
 
     using Foundation::Characters::CodePage;
+    using Foundation::Characters::SDKChar;
 
     class ReaderFlavorPackage;
     class WriterFlavorPackage;
@@ -85,7 +86,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
             const FSSpec* fileName,
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
-            const Led_SDK_Char* fileName,
+            const SDKChar* fileName,
 #endif
             Led_ClipFormat* suggestedClipFormat,
             CodePage*       suggestedCodePage,
@@ -94,7 +95,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
             const FSSpec* fileName,
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
-            const Led_SDK_Char* fileName,
+            const SDKChar* fileName,
 #endif
             Led_ClipFormat* suggestedClipFormat,
             CodePage*       suggestedCodePage);

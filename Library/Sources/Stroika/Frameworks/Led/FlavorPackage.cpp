@@ -214,7 +214,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEData (
 #if qPlatform_MacOS
     const FSSpec* fileName,
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
-    const Led_SDK_Char* fileName,
+    const Characters::SDKChar* fileName,
 #endif
     Led_ClipFormat* suggestedClipFormat,
     CodePage*       suggestedCodePage,
@@ -240,7 +240,7 @@ void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (
 #if qPlatform_MacOS
     const FSSpec* fileName,
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
-    const Led_SDK_Char* fileName,
+    const Characters::SDKChar* fileName,
 #endif
     Led_ClipFormat*            suggestedClipFormat,
     [[maybe_unused]] CodePage* suggestedCodePage)

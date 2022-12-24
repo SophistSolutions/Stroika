@@ -258,7 +258,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         using UDDictionaryName = FSSpec;
 #else
-        using UDDictionaryName = Led_SDK_String;
+        using UDDictionaryName = SDKString;
 #endif
         nonvirtual UDDictionaryName GetUserDictionary () const;
         nonvirtual void             SetUserDictionary (const UDDictionaryName& userDictionary);

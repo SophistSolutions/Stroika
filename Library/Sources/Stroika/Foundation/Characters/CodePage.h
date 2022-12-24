@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Characters {
 
     /*
     @METHOD:        GetDefaultSDKCodePage
-    @DESCRIPTION:   <p>Returns the assumed code page of @'Led_SDK_Char'.</p>
+    @DESCRIPTION:   <p>Returns the assumed code page of @'SDKChar'.</p>
     */
     CodePage GetDefaultSDKCodePage ();
 

@@ -784,7 +784,7 @@ StandardStyledTextIOSrcStream::Table* StandardStyledTextIOSrcStream::GetTableAt 
     return nullptr;
 }
 
-void StandardStyledTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Color>* colorsUsed) const
+void StandardStyledTextIOSrcStream::SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const
 {
     using InfoSummaryRecord = StandardStyledTextImager::InfoSummaryRecord;
     if (fontNames != nullptr or colorsUsed != nullptr) {
@@ -825,7 +825,7 @@ void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFrom
 #if qPlatform_MacOS
     const FSSpec* fileName,
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
-    const Led_SDK_Char* fileName,
+    const Characters::SDKChar* fileName,
 #endif
     Led_ClipFormat* suggestedClipFormat,
     CodePage*       suggestedCodePage)

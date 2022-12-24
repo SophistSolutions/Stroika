@@ -23,6 +23,8 @@
 
 namespace Stroika::Frameworks::Led {
 
+    using Foundation::Characters::SDKChar;
+
 // Private Led Macro utility to define command numbers (cannot use Math::RoundUpTo use used to init enums - at least on msvc2k17)
 #define RoundUpToNearest_CMDNUMs_MACRO(x, n) (((x + 1) & ~(n - 1)) + n)
 
@@ -68,7 +70,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual void BreakInGroupedCommands ();
-        nonvirtual void BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName);
+        nonvirtual void BreakInGroupedCommandsIfDifferentCommand (const SDKString& cmdName);
 
     public:
         class SuppressCommandBreaksContext;
@@ -495,9 +497,9 @@ namespace Stroika::Frameworks::Led {
         // utilities to help with undo
     public:
         virtual void PreInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd);
-        virtual void PostInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const Led_SDK_String& cmdName);
-        virtual void PostInteractiveSimpleCharInsertUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const Led_SDK_String& cmdName);
-        virtual void PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, InteractiveReplaceCommand::SavedTextRep** afterRep, size_t startOfInsert, const Led_SDK_String& cmdName);
+        virtual void PostInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const SDKString& cmdName);
+        virtual void PostInteractiveSimpleCharInsertUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const SDKString& cmdName);
+        virtual void PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, InteractiveReplaceCommand::SavedTextRep** afterRep, size_t startOfInsert, const SDKString& cmdName);
 
     protected:
         virtual InteractiveReplaceCommand::SavedTextRep* InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd);
@@ -729,15 +731,15 @@ namespace Stroika::Frameworks::Led {
                     <p>See also @'WordProcessor::CommandNames'.</p>
     */
     struct TextInteractor::CommandNames {
-        Led_SDK_String fTypingCommandName;
-        Led_SDK_String fCutCommandName;
-        Led_SDK_String fClearCommandName;
-        Led_SDK_String fPasteCommandName;
-        Led_SDK_String fUndoFormatString;
-        Led_SDK_String fRedoFormatString;
-        Led_SDK_String fReplaceCommandName;
-        Led_SDK_String fReplaceAllCommandName;
-        Led_SDK_String fReplaceAllInSelectionCommandName;
+        SDKString fTypingCommandName;
+        SDKString fCutCommandName;
+        SDKString fClearCommandName;
+        SDKString fPasteCommandName;
+        SDKString fUndoFormatString;
+        SDKString fRedoFormatString;
+        SDKString fReplaceCommandName;
+        SDKString fReplaceAllCommandName;
+        SDKString fReplaceAllInSelectionCommandName;
     };
 
     /*
@@ -749,11 +751,11 @@ namespace Stroika::Frameworks::Led {
         using CommandNumber = TextInteractor::CommandNumber;
 
     public:
-        virtual CommandNumber GetCmdID () const                  = 0;
-        virtual bool          GetEnabled () const                = 0;
-        virtual void          SetEnabled (bool enabled)          = 0;
-        virtual void          SetChecked (bool checked)          = 0;
-        virtual void          SetText (const Led_SDK_Char* text) = 0;
+        virtual CommandNumber GetCmdID () const             = 0;
+        virtual bool          GetEnabled () const           = 0;
+        virtual void          SetEnabled (bool enabled)     = 0;
+        virtual void          SetChecked (bool checked)     = 0;
+        virtual void          SetText (const SDKChar* text) = 0;
     };
 
     /*
@@ -861,9 +863,9 @@ namespace Stroika::Frameworks::Led {
         using SavedTextRep = InteractiveReplaceCommand::SavedTextRep;
 
     public:
-        UndoableContextHelper (TextInteractor& ti, const Led_SDK_String& cmdName, bool allowSmartCNPExpansion);
-        UndoableContextHelper (TextInteractor& ti, const Led_SDK_String& cmdName, size_t regionAndSelStart, size_t regionAndSelEnd, bool allowSmartCNPExpansion);
-        UndoableContextHelper (TextInteractor& ti, const Led_SDK_String& cmdName, size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd, bool allowSmartCNPExpansion);
+        UndoableContextHelper (TextInteractor& ti, const SDKString& cmdName, bool allowSmartCNPExpansion);
+        UndoableContextHelper (TextInteractor& ti, const SDKString& cmdName, size_t regionAndSelStart, size_t regionAndSelEnd, bool allowSmartCNPExpansion);
+        UndoableContextHelper (TextInteractor& ti, const SDKString& cmdName, size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd, bool allowSmartCNPExpansion);
         ~UndoableContextHelper ();
 
     public:
@@ -883,7 +885,7 @@ namespace Stroika::Frameworks::Led {
 
     private:
         TextInteractor& fTextInteractor;
-        Led_SDK_String  fCmdName;
+        SDKString       fCmdName;
         size_t          fSelStart;
         size_t          fSelEnd;
         SavedTextRep*   fBefore;
@@ -1001,13 +1003,13 @@ namespace Stroika::Frameworks::Led {
         virtual bool          GetEnabled () const override;
         virtual void          SetEnabled (bool enabled) override;
         virtual void          SetChecked (bool checked) override;
-        virtual void          SetText (const Led_SDK_Char* text) override;
+        virtual void          SetText (const SDKChar* text) override;
 
     public:
-        CommandNumber  fCommandNumber;
-        bool           fEnabled;
-        bool           fChecked;
-        Led_SDK_String fText;
+        CommandNumber fCommandNumber;
+        bool          fEnabled;
+        bool          fChecked;
+        SDKString     fText;
     };
 
     DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning

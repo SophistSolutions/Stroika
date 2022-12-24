@@ -743,10 +743,10 @@ string FontSpecification::GetOSRep () const
 
 void FontSpecification::SetFromOSRep (const string& osRep)
 {
-    Led_SDK_String familyName;
-    Led_SDK_String fontSize;
-    Led_SDK_String fontWeight;
-    Led_SDK_String fontSlant;
+    SDKString familyName;
+    SDKString fontSize;
+    SDKString fontWeight;
+    SDKString fontSlant;
     Tablet::ParseFontName (osRep, &familyName, &fontSize, &fontWeight, &fontSlant);
     SetFontName (familyName);
     if (fontSlant == "i") {
@@ -779,7 +779,7 @@ void FontSpecification::SetFromOSRep (const string& osRep)
 @METHOD:        FontSpecification::SetFontName
 @DESCRIPTION:   <p>See also @'FontSpecification::GetFontName'.</p>
 */
-void FontSpecification::SetFontName (const Led_SDK_String& fontName)
+void FontSpecification::SetFontName (const SDKString& fontName)
 {
 #if qPlatform_MacOS
     Str255 pFontName;
@@ -799,7 +799,7 @@ void FontSpecification::SetFontName (const Led_SDK_String& fontName)
 }
 
 #if qPlatform_Windows
-FontSpecification::FontNameSpecifier::FontNameSpecifier (const Led_SDK_Char* from)
+FontSpecification::FontNameSpecifier::FontNameSpecifier (const Characters::SDKChar* from)
 {
     Characters::CString::Copy (fName, Memory::NEltsOf (fName), from);
 }
@@ -2208,20 +2208,20 @@ static bool FontNamesEqual (const string& lhs, const string& rhs)
     }
     return true;
 }
-Led_SDK_String Tablet::BestMatchFont (const FontSpecification& fsp, const vector<Led_SDK_String>& fontsList)
+SDKString Tablet::BestMatchFont (const FontSpecification& fsp, const vector<SDKString>& fontsList)
 {
-    Led_SDK_String bestAnswer;
-    float          bestScore    = 0.0f;
-    Led_SDK_String fspName      = fsp.GetFontName ();
-    int            fspPointSize = fsp.GetPointSize ();
-    Led_SDK_String fspWeight    = fsp.GetStyle_Bold () ? "bold" : "medium";
-    Led_SDK_String fspItalics   = fsp.GetStyle_Italic () ? "i" : "r";
-    const string   kMatchAny    = "*";
+    SDKString    bestAnswer;
+    float        bestScore    = 0.0f;
+    SDKString    fspName      = fsp.GetFontName ();
+    int          fspPointSize = fsp.GetPointSize ();
+    SDKString    fspWeight    = fsp.GetStyle_Bold () ? "bold" : "medium";
+    SDKString    fspItalics   = fsp.GetStyle_Italic () ? "i" : "r";
+    const string kMatchAny    = "*";
     for (auto i = fontsList.begin (); i != fontsList.end (); ++i) {
-        Led_SDK_String name;
-        Led_SDK_String size;
-        Led_SDK_String weight;
-        Led_SDK_String slant;
+        SDKString name;
+        SDKString size;
+        SDKString weight;
+        SDKString slant;
         ParseFontName (*i, &name, &size, &weight, &slant);
         bool rightFontName = (FontNamesEqual (fspName, name));
 
@@ -2256,24 +2256,24 @@ int Tablet::IgnoreXErrorHandler (Display* /*display*/, XErrorEvent* /*error*/)
     return 0;
 }
 
-void Tablet::ParseFontName (const Led_SDK_String& fontName, Led_SDK_String* familyName, Led_SDK_String* fontSize, Led_SDK_String* fontWeight, Led_SDK_String* fontSlant)
+void Tablet::ParseFontName (const SDKString& fontName, SDKString* familyName, SDKString* fontSize, SDKString* fontWeight, SDKString* fontSlant)
 {
     RequireNotNull (familyName);
     RequireNotNull (fontSize);
     RequireNotNull (fontWeight);
 
-    Led_SDK_String foundry;
-    Led_SDK_String family;
-    Led_SDK_String weight;
-    Led_SDK_String slant;
-    Led_SDK_String setwidth;
-    Led_SDK_String pixels;
-    Led_SDK_String points;
-    Led_SDK_String hRes;
-    Led_SDK_String vRes;
-    Led_SDK_String spacing;
-    Led_SDK_String aveWidth;
-    Led_SDK_String charset;
+    SDKString foundry;
+    SDKString family;
+    SDKString weight;
+    SDKString slant;
+    SDKString setwidth;
+    SDKString pixels;
+    SDKString points;
+    SDKString hRes;
+    SDKString vRes;
+    SDKString spacing;
+    SDKString aveWidth;
+    SDKString charset;
 
     size_t start = 1;
     size_t end   = fontName.find ('-', start);
@@ -2622,7 +2622,7 @@ InstalledFonts::InstalledFonts (
     WindowDC screenDC (nullptr);
     ::EnumFontFamiliesEx (screenDC.m_hDC, &lf, (FONTENUMPROC)FontFamilyAdderProc, reinterpret_cast<LPARAM> (this), 0);
     sort (fFontNames.begin (), fFontNames.end ());
-    vector<Led_SDK_String>::iterator rest = unique (fFontNames.begin (), fFontNames.end ());
+    vector<SDKString>::iterator rest = unique (fFontNames.begin (), fFontNames.end ());
     fFontNames.erase (rest, fFontNames.end ()); // remove the duplicates
 #elif qStroika_FeatureSupported_XWindows
     int fontListSize = 0;

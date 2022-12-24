@@ -304,8 +304,8 @@ void FontComboBox::EnumFontFamiliesEx ()
     CString str;
     GetTheText (str);
     ResetContent ();
-    vector<Led_SDK_String> fonts = LedItApplication::Get ().GetUsableFontNames ();
-    for (vector<Led_SDK_String>::const_iterator i = fonts.begin (); i != fonts.end (); ++i) {
+    vector<SDKString> fonts = LedItApplication::Get ().GetUsableFontNames ();
+    for (vector<SDKString>::const_iterator i = fonts.begin (); i != fonts.end (); ++i) {
         AddString ((*i).c_str ());
     }
     SetTheText (str);

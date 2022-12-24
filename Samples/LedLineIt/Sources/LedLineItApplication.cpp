@@ -149,7 +149,7 @@ public:
 };
 
 // Make sure the given name isn't a mangled 8.3 name
-inline Led_SDK_String GetLongPathName (const Led_SDK_String& pathName)
+inline SDKString GetLongPathName (const SDKString& pathName)
 {
     TCHAR szPath[_MAX_PATH];
     Require (pathName.length () < _MAX_PATH);
@@ -374,7 +374,7 @@ BOOL LedLineItApplication::InitInstance ()
         // and other spellchecking options (see SPR#1591)
         TCHAR defaultPath[MAX_PATH + 1];
         Verify (::SHGetSpecialFolderPath (NULL, defaultPath, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, true));
-        fSpellCheckEngine->SetUserDictionary (Led_SDK_String{defaultPath} + Led_SDK_TCHAROF ("\\My LedLineIt Dictionary.txt"));
+        fSpellCheckEngine->SetUserDictionary (SDKString{defaultPath} + Led_SDK_TCHAROF ("\\My LedLineIt Dictionary.txt"));
     }
 #endif
 #endif
@@ -410,8 +410,8 @@ BOOL LedLineItApplication::InitInstance ()
             }
         };
         MyRegistrationHelper fileAssocHelper;
-        Led_SDK_String       txtDocIcon = Win32UIFileAssociationInfo::kNoChange;
-        Led_SDK_String       batDocIcon = Win32UIFileAssociationInfo::kNoChange;
+        SDKString            txtDocIcon = Win32UIFileAssociationInfo::kNoChange;
+        SDKString            batDocIcon = Win32UIFileAssociationInfo::kNoChange;
         fileAssocHelper.Add (Win32UIFileAssociationInfo (
             Led_SDK_TCHAROF (".txt"),
             Led_SDK_TCHAROF ("txtfile"),

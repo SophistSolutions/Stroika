@@ -92,10 +92,10 @@ namespace Stroika::Frameworks::Led::Platform {
             <p>This is probably somewhat error prone or risky. It is for that reason that I'm making this bug workaround
         optional - and easy to shut off. But I leave it on - by default (when building for UNICODE - but without -D_UNICODE), since
         in that case - you will almost certainly want that to work.</p>
-            <p>Default Value:   (qWideCharacters && !qSDK_UNICODE)</p>
+            <p>Default Value:   (qWideCharacters && !qTargetPlatformSDKUseswchar_t)</p>
         */
 #ifndef qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
-#define qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug (qWideCharacters && !qSDK_UNICODE)
+#define qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug (qWideCharacters && !qTargetPlatformSDKUseswchar_t)
 #endif
 
     /*
@@ -638,7 +638,7 @@ namespace Stroika::Frameworks::Led::Platform {
     void
     Led_Win32_Helper<BASE_INTERACTOR>::OnChar_Msg (UINT nChar, LPARAM /*lKeyData*/)
     {
-#if qWideCharacters && !qSDK_UNICODE
+#if qWideCharacters && !qTargetPlatformSDKUseswchar_t
         {
             CodePage useCodePage = Characters::Platform::Windows::Win32PrimaryLangIDToCodePage (LOWORD (::GetKeyboardLayout (nullptr)));
             char     ccc         = nChar;
@@ -753,13 +753,13 @@ namespace Stroika::Frameworks::Led::Platform {
         }
 
 #if qWideCharacters
-        if (qSDK_UNICODE || ::IsWindowUnicode (this->GetValidatedHWND ())) {
+        if (qTargetPlatformSDKUseswchar_t || ::IsWindowUnicode (this->GetValidatedHWND ())) {
             // do nothing - 'nChar' is already a fine UNICODE character
-            // NB: we COULD just check qSDK_UNICODE. But be nicer that MSFT. Allow for that a user
+            // NB: we COULD just check qTargetPlatformSDKUseswchar_t. But be nicer that MSFT. Allow for that a user
             // might want to create a UNICODE window without defining -D_UNICODE (see comments in
             // qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug)
         }
-#if !qSDK_UNICODE
+#if !qTargetPlatformSDKUseswchar_t
         else {
             wstring tmpIMEBugWorkaroundCompString = IME::Get ().GetCompositionResultStringW (this->GetValidatedHWND ());
             if (fIMECurCharIdx < tmpIMEBugWorkaroundCompString.length ()) {
@@ -2697,12 +2697,12 @@ namespace Stroika::Frameworks::Led::Platform {
         size_t                         len = ::_tcslen (text);
         Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
 
-#if qWideCharacters == qSDK_UNICODE
+#if qWideCharacters == qTargetPlatformSDKUseswchar_t
         //::_tcscpy (buf, text);
         (void)::memcpy (buf.begin (), text, (len + 1) * sizeof (text[0]));
-#elif qWideCharacters && !qSDK_UNICODE
+#elif qWideCharacters && !qTargetPlatformSDKUseswchar_t
         len = ::MultiByteToWideChar (CP_ACP, 0, text, len, buf, len); // Assume they want ANSI code page text?
-#elif !qWideCharacters && qSDK_UNICODE
+#elif !qWideCharacters && qTargetPlatformSDKUseswchar_t
         Assert (false); // NOT IMPLEMENTED - WHY WOULD YOU DO THIS?
 #endif
         size_t nLen = Characters::NormalizeTextToNL<Led_tChar> (buf.data (), len, buf.data (), len);
@@ -2833,7 +2833,7 @@ namespace Stroika::Frameworks::Led::Platform {
     }
     inline LRESULT SimpleWin32WndProcHelper::SendMessage (UINT msg, WPARAM wParam, LPARAM lParam)
     {
-#if !qSDK_UNICODE
+#if !qTargetPlatformSDKUseswchar_t
         if (IsWindowUNICODE ()) {
             return ::SendMessageW (this->GetValidatedHWND (), msg, wParam, lParam);
         }
@@ -2907,7 +2907,7 @@ namespace Stroika::Frameworks::Led::Platform {
     }
     inline LRESULT SimpleWin32WndProcHelper::DefWindowProc (UINT message, WPARAM wParam, LPARAM lParam)
     {
-#if !qSDK_UNICODE
+#if !qTargetPlatformSDKUseswchar_t
         if (IsWindowUNICODE ()) {
             if (fSuperWindowProc == nullptr) {
                 return ::DefWindowProcW (this->GetValidatedHWND (), message, wParam, lParam);
@@ -2957,7 +2957,7 @@ namespace Stroika::Frameworks::Led::Platform {
     void
     Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>::Create (DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle, int x, int y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance)
     {
-        Led_SDK_String tmpClassName;
+        SDKString tmpClassName;
         if (lpClassName == nullptr) {
             tmpClassName = Foundation::Characters::CString::Format (_T("Led_Win32_SimpleWndProc_Helper<>-%d-%p"), ::GetCurrentProcessId (), &StaticWndProc);
             lpClassName  = tmpClassName.c_str ();

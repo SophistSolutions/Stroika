@@ -180,7 +180,7 @@ namespace Stroika::Frameworks::Led {
                     <p>See also @'TextInteractor::CommandNames'.</p>
     */
     struct StandardStyledTextInteractor::CommandNames {
-        Led_SDK_String fFontChangeCommandName;
+        SDKString fFontChangeCommandName;
     };
 
     /*
@@ -275,7 +275,7 @@ namespace Stroika::Frameworks::Led {
         virtual vector<InfoSummaryRecord>                GetStyleInfo (size_t from, size_t len) const override;
         virtual vector<SimpleEmbeddedObjectStyleMarker*> CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const override;
         virtual Table*                                   GetTableAt (size_t at) const override;
-        virtual void                                     SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Color>* colorsUsed) const override;
+        virtual void                                     SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const override;
         virtual size_t                                   GetEmbeddingMarkerPosOffset () const override;
 
     public:
@@ -312,7 +312,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
             const FSSpec* fileName,
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
-            const Led_SDK_Char* fileName,
+            const SDKChar* fileName,
 #endif
             Led_ClipFormat* suggestedClipFormat,
             CodePage*       suggestedCodePage) override;

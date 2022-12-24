@@ -317,7 +317,7 @@ public:
 #elif qPlatform_Windows
         return LedItApplication::Get ().CmdNumToFontName (MFC_CommandNumberMapping::Get ().ReverseLookup (cmdNum)).c_str ();
 #elif qStroika_FeatureSupported_XWindows
-        const vector<Led_SDK_String>& fontNames = LedItApplication::Get ().fInstalledFonts.GetUsableFontNames ();
+        const vector<SDKString>& fontNames = LedItApplication::Get ().fInstalledFonts.GetUsableFontNames ();
         Led_Assert (cmdNum - LedItView::kFontMenuFirst_CmdID < fontNames.size ());
         return (fontNames[cmdNum - LedItView::kFontMenuFirst_CmdID]);
 #endif
@@ -423,7 +423,7 @@ public:
     }
 #endif
 #if qPlatform_MacOS || qPlatform_Windows
-    virtual void ShowSimpleEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName) override
+    virtual void ShowSimpleEmbeddingInfoDialog (const SDKString& embeddingTypeName) override
     {
 // unknown embedding...
 #if qPlatform_MacOS
@@ -438,7 +438,7 @@ public:
     }
 #endif
 #if qPlatform_MacOS || qPlatform_Windows
-    virtual bool ShowURLEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName, Led_SDK_String* urlTitle, Led_SDK_String* urlValue) override
+    virtual bool ShowURLEmbeddingInfoDialog (const SDKString& embeddingTypeName, SDKString* urlTitle, SDKString* urlValue) override
     {
 #if qPlatform_MacOS
         Led_StdDialogHelper_URLXEmbeddingInfoDialog infoDialog;
@@ -463,7 +463,7 @@ public:
     }
 #endif
 #if qPlatform_MacOS || qPlatform_Windows
-    virtual bool ShowAddURLEmbeddingInfoDialog (Led_SDK_String* urlTitle, Led_SDK_String* urlValue) override
+    virtual bool ShowAddURLEmbeddingInfoDialog (SDKString* urlTitle, SDKString* urlValue) override
     {
 #if qPlatform_MacOS
         Led_StdDialogHelper_AddURLXEmbeddingInfoDialog infoDialog;

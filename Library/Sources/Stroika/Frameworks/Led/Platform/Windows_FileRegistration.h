@@ -20,15 +20,15 @@ namespace Stroika::Frameworks::Led::Platform {
 #if qPlatform_Windows
     class Win32FileAssociationRegistrationHelper {
     public:
-        Win32FileAssociationRegistrationHelper (const Led_SDK_String& fileSuffix);
+        Win32FileAssociationRegistrationHelper (const SDKString& fileSuffix);
 
-        nonvirtual Led_SDK_String GetAssociatedProgID () const;
-        nonvirtual Led_SDK_String GetAssociatedDefaultIcon () const;
-        nonvirtual Led_SDK_String GetAssociatedEditCommand () const;
-        nonvirtual Led_SDK_String GetAssociatedOpenCommand () const;
+        nonvirtual SDKString GetAssociatedProgID () const;
+        nonvirtual SDKString GetAssociatedDefaultIcon () const;
+        nonvirtual SDKString GetAssociatedEditCommand () const;
+        nonvirtual SDKString GetAssociatedOpenCommand () const;
 
     public:
-        nonvirtual void SetAssociatedProgIDAndOpenCommand (const Led_SDK_String& progID, const Led_SDK_String& progIDPrettyName, const Led_SDK_String& defaultIcon, const Led_SDK_String& editCommandLine, const Led_SDK_String& openCommandLine);
+        nonvirtual void SetAssociatedProgIDAndOpenCommand (const SDKString& progID, const SDKString& progIDPrettyName, const SDKString& defaultIcon, const SDKString& editCommandLine, const SDKString& openCommandLine);
 
     private:
         struct KeyHolder {
@@ -42,7 +42,7 @@ namespace Stroika::Frameworks::Led::Platform {
         };
 
     private:
-        Led_SDK_String fFileSuffix;
+        SDKString fFileSuffix;
     };
 #endif
 
@@ -50,29 +50,29 @@ namespace Stroika::Frameworks::Led::Platform {
     class Win32UIFileAssociationInfo {
     public:
         Win32UIFileAssociationInfo (
-            const Led_SDK_String& fileSuffix,
-            const Led_SDK_String& fileProgID,
-            const Led_SDK_String& fileProgIDPrettyName,
-            const Led_SDK_String& defaultIcon,
-            const Led_SDK_String& shellEditNOpenCommandLine);
+            const SDKString& fileSuffix,
+            const SDKString& fileProgID,
+            const SDKString& fileProgIDPrettyName,
+            const SDKString& defaultIcon,
+            const SDKString& shellEditNOpenCommandLine);
         Win32UIFileAssociationInfo (
-            const Led_SDK_String& fileSuffix,
-            const Led_SDK_String& fileProgID,
-            const Led_SDK_String& fileProgIDPrettyName,
-            const Led_SDK_String& defaultIcon,
-            const Led_SDK_String& shellEditCommandLine,
-            const Led_SDK_String& shellOpenCommandLine);
+            const SDKString& fileSuffix,
+            const SDKString& fileProgID,
+            const SDKString& fileProgIDPrettyName,
+            const SDKString& defaultIcon,
+            const SDKString& shellEditCommandLine,
+            const SDKString& shellOpenCommandLine);
 
     public:
-        Led_SDK_String fFileSuffix;
-        Led_SDK_String fFileProgID;
-        Led_SDK_String fFileProgIDPrettyName;
-        Led_SDK_String fDefaultIcon;
-        Led_SDK_String fShellEditCommandLine;
-        Led_SDK_String fShellOpenCommandLine;
+        SDKString fFileSuffix;
+        SDKString fFileProgID;
+        SDKString fFileProgIDPrettyName;
+        SDKString fDefaultIcon;
+        SDKString fShellEditCommandLine;
+        SDKString fShellOpenCommandLine;
 
     public:
-        static Led_SDK_String kNoChange;
+        static SDKString kNoChange;
     };
 #endif
 
@@ -92,7 +92,7 @@ namespace Stroika::Frameworks::Led::Platform {
         nonvirtual bool RegisteredToSomeoneElse () const;
         nonvirtual void ApplyChangesSilently ();
         virtual bool    CheckUserSaysOKToUpdate () const;
-        virtual void    ExpandVariables (Led_SDK_String* valWithVars) const;
+        virtual void    ExpandVariables (SDKString* valWithVars) const;
 
     private:
         HINSTANCE                          fHINSTANCE;

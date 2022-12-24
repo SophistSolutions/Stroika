@@ -430,7 +430,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         @DESCRIPTION:   <p>Produce a list of all fontnames and colors used in the document. This is needed for some formats
                     like RTF which require a list of all font names and colors before writing any of the rest of the document.</p>
         */
-        virtual void SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Color>* colorsUsed) const = 0;
+        virtual void SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const = 0;
 
     public:
         /*

@@ -58,78 +58,78 @@ inline Win32FileAssociationRegistrationHelper::KeyHolder::operator HKEY ()
  ***************** Win32FileAssociationRegistrationHelper ***********************
  ********************************************************************************
  */
-Win32FileAssociationRegistrationHelper::Win32FileAssociationRegistrationHelper (const Led_SDK_String& fileSuffix)
+Win32FileAssociationRegistrationHelper::Win32FileAssociationRegistrationHelper (const SDKString& fileSuffix)
     : fFileSuffix (fileSuffix)
 {
 }
 
-Led_SDK_String Win32FileAssociationRegistrationHelper::GetAssociatedProgID () const
+SDKString Win32FileAssociationRegistrationHelper::GetAssociatedProgID () const
 {
     try {
         LONG itemLen = 0;
         ThrowIfRegError (::RegQueryValue (HKEY_CLASSES_ROOT, fFileSuffix.c_str (), NULL, &itemLen));
-        StackBuffer<Led_SDK_Char> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
+        StackBuffer<Characters::SDKChar> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
         ThrowIfRegError (::RegQueryValue (HKEY_CLASSES_ROOT, fFileSuffix.c_str (), buf.data (), &itemLen));
-        return Led_SDK_String{buf.data ()};
+        return SDKString{buf.data ()};
     }
     catch (...) {
-        return Led_SDK_String{};
+        return SDKString{};
     }
 }
 
-Led_SDK_String Win32FileAssociationRegistrationHelper::GetAssociatedDefaultIcon () const
+SDKString Win32FileAssociationRegistrationHelper::GetAssociatedDefaultIcon () const
 {
     try {
-        Led_SDK_String progID = GetAssociatedProgID ();
-        KeyHolder      progIDKey (HKEY_CLASSES_ROOT, progID.c_str ());
-        LONG           itemLen = 0;
+        SDKString progID = GetAssociatedProgID ();
+        KeyHolder progIDKey (HKEY_CLASSES_ROOT, progID.c_str ());
+        LONG      itemLen = 0;
         ThrowIfRegError (::RegQueryValue (progIDKey, Led_SDK_TCHAROF ("DefaultIcon"), NULL, &itemLen));
-        StackBuffer<Led_SDK_Char> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
+        StackBuffer<Characters::SDKChar> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
         ThrowIfRegError (::RegQueryValue (progIDKey, Led_SDK_TCHAROF ("DefaultIcon"), buf.data (), &itemLen));
-        return Led_SDK_String{buf.data ()};
+        return SDKString{buf.data ()};
     }
     catch (...) {
-        return Led_SDK_String{};
+        return SDKString{};
     }
 }
 
-Led_SDK_String Win32FileAssociationRegistrationHelper::GetAssociatedEditCommand () const
+SDKString Win32FileAssociationRegistrationHelper::GetAssociatedEditCommand () const
 {
     try {
-        Led_SDK_String progID = GetAssociatedProgID ();
-        KeyHolder      progIDKey (HKEY_CLASSES_ROOT, progID.c_str ());
-        KeyHolder      shellKey (progIDKey, Led_SDK_TCHAROF ("shell"));
-        KeyHolder      openKey (shellKey, Led_SDK_TCHAROF ("edit"));
-        LONG           itemLen = 0;
+        SDKString progID = GetAssociatedProgID ();
+        KeyHolder progIDKey (HKEY_CLASSES_ROOT, progID.c_str ());
+        KeyHolder shellKey (progIDKey, Led_SDK_TCHAROF ("shell"));
+        KeyHolder openKey (shellKey, Led_SDK_TCHAROF ("edit"));
+        LONG      itemLen = 0;
         ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), NULL, &itemLen));
-        StackBuffer<Led_SDK_Char> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
+        StackBuffer<Characters::SDKChar> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
         ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), buf.data (), &itemLen));
-        return Led_SDK_String{buf.data ()};
+        return SDKString{buf.data ()};
     }
     catch (...) {
-        return Led_SDK_String{};
+        return SDKString{};
     }
 }
 
-Led_SDK_String Win32FileAssociationRegistrationHelper::GetAssociatedOpenCommand () const
+SDKString Win32FileAssociationRegistrationHelper::GetAssociatedOpenCommand () const
 {
     try {
-        Led_SDK_String progID = GetAssociatedProgID ();
-        KeyHolder      progIDKey (HKEY_CLASSES_ROOT, progID.c_str ());
-        KeyHolder      shellKey (progIDKey, Led_SDK_TCHAROF ("shell"));
-        KeyHolder      openKey (shellKey, Led_SDK_TCHAROF ("open"));
-        LONG           itemLen = 0;
+        SDKString progID = GetAssociatedProgID ();
+        KeyHolder progIDKey (HKEY_CLASSES_ROOT, progID.c_str ());
+        KeyHolder shellKey (progIDKey, Led_SDK_TCHAROF ("shell"));
+        KeyHolder openKey (shellKey, Led_SDK_TCHAROF ("open"));
+        LONG      itemLen = 0;
         ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), NULL, &itemLen));
-        StackBuffer<Led_SDK_Char> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
+        StackBuffer<Characters::SDKChar> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
         ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), buf.data (), &itemLen));
-        return Led_SDK_String{buf.data ()};
+        return SDKString{buf.data ()};
     }
     catch (...) {
-        return Led_SDK_String{};
+        return SDKString{};
     }
 }
 
-void Win32FileAssociationRegistrationHelper::SetAssociatedProgIDAndOpenCommand (const Led_SDK_String& progID, const Led_SDK_String& progIDPrettyName, const Led_SDK_String& defaultIcon, const Led_SDK_String& editCommandLine, const Led_SDK_String& openCommandLine)
+void Win32FileAssociationRegistrationHelper::SetAssociatedProgIDAndOpenCommand (const SDKString& progID, const SDKString& progIDPrettyName, const SDKString& defaultIcon, const SDKString& editCommandLine, const SDKString& openCommandLine)
 {
     /*
      *  Make HKCR/SUFFIX point to the progID
@@ -162,13 +162,13 @@ void Win32FileAssociationRegistrationHelper::SetAssociatedProgIDAndOpenCommand (
  ************************ Win32UIFileAssociationInfo ****************************
  ********************************************************************************
  */
-Led_SDK_String Win32UIFileAssociationInfo::kNoChange;
+SDKString Win32UIFileAssociationInfo::kNoChange;
 Win32UIFileAssociationInfo::Win32UIFileAssociationInfo (
-    const Led_SDK_String& fileSuffix,
-    const Led_SDK_String& fileProgID,
-    const Led_SDK_String& fileProgIDPrettyName,
-    const Led_SDK_String& defaultIcon,
-    const Led_SDK_String& shellEditNOpenCommandLine)
+    const SDKString& fileSuffix,
+    const SDKString& fileProgID,
+    const SDKString& fileProgIDPrettyName,
+    const SDKString& defaultIcon,
+    const SDKString& shellEditNOpenCommandLine)
     : fFileSuffix{fileSuffix}
     , fFileProgID{fileProgID}
     , fFileProgIDPrettyName{fileProgIDPrettyName}
@@ -179,12 +179,12 @@ Win32UIFileAssociationInfo::Win32UIFileAssociationInfo (
 }
 
 Win32UIFileAssociationInfo::Win32UIFileAssociationInfo (
-    const Led_SDK_String& fileSuffix,
-    const Led_SDK_String& fileProgID,
-    const Led_SDK_String& fileProgIDPrettyName,
-    const Led_SDK_String& defaultIcon,
-    const Led_SDK_String& shellEditCommandLine,
-    const Led_SDK_String& shellOpenCommandLine)
+    const SDKString& fileSuffix,
+    const SDKString& fileProgID,
+    const SDKString& fileProgIDPrettyName,
+    const SDKString& defaultIcon,
+    const SDKString& shellEditCommandLine,
+    const SDKString& shellOpenCommandLine)
     : fFileSuffix (fileSuffix)
     , fFileProgID (fileProgID)
     , fFileProgIDPrettyName (fileProgIDPrettyName)
@@ -246,11 +246,11 @@ bool Win32UIFileAssociationRegistrationHelper::RegisteredToSomeoneElse () const
          */
         try {
             Win32FileAssociationRegistrationHelper registryAssoc ((*i).fFileSuffix);
-            Led_SDK_String                         progid          = registryAssoc.GetAssociatedProgID ();
-            Led_SDK_String                         assocEditCmd    = registryAssoc.GetAssociatedEditCommand ();
-            Led_SDK_String                         assocOpenCmd    = registryAssoc.GetAssociatedOpenCommand ();
-            Led_SDK_String                         editCommandLine = (*i).fShellEditCommandLine;
-            Led_SDK_String                         openCommandLine = (*i).fShellOpenCommandLine;
+            SDKString                              progid          = registryAssoc.GetAssociatedProgID ();
+            SDKString                              assocEditCmd    = registryAssoc.GetAssociatedEditCommand ();
+            SDKString                              assocOpenCmd    = registryAssoc.GetAssociatedOpenCommand ();
+            SDKString                              editCommandLine = (*i).fShellEditCommandLine;
+            SDKString                              openCommandLine = (*i).fShellOpenCommandLine;
             ExpandVariables (&editCommandLine);
             ExpandVariables (&openCommandLine);
             if (progid != (*i).fFileProgID or
@@ -271,9 +271,9 @@ void Win32UIFileAssociationRegistrationHelper::ApplyChangesSilently ()
     // for each info guy - check that ALL already pointed to our app
     for (auto i = fInfoRecs.begin (); i != fInfoRecs.end (); ++i) {
         Win32FileAssociationRegistrationHelper registryAssoc ((*i).fFileSuffix);
-        Led_SDK_String                         defaultIcon     = (*i).fDefaultIcon;
-        Led_SDK_String                         editCommandLine = (*i).fShellEditCommandLine;
-        Led_SDK_String                         openCommandLine = (*i).fShellOpenCommandLine;
+        SDKString                              defaultIcon     = (*i).fDefaultIcon;
+        SDKString                              editCommandLine = (*i).fShellEditCommandLine;
+        SDKString                              openCommandLine = (*i).fShellOpenCommandLine;
         ExpandVariables (&defaultIcon);
         ExpandVariables (&editCommandLine);
         ExpandVariables (&openCommandLine);
@@ -294,13 +294,13 @@ bool Win32UIFileAssociationRegistrationHelper::CheckUserSaysOKToUpdate () const
     return true;
 }
 
-void Win32UIFileAssociationRegistrationHelper::ExpandVariables (Led_SDK_String* valWithVars) const
+void Win32UIFileAssociationRegistrationHelper::ExpandVariables (SDKString* valWithVars) const
 {
     /*
      *  Search for strings like $EXE$ and replace them with the value of the EXE location.
      */
     size_t varAt = 0;
-    if ((varAt = valWithVars->find (Led_SDK_TCHAROF ("$EXE$"))) != Led_SDK_String::npos) {
+    if ((varAt = valWithVars->find (Led_SDK_TCHAROF ("$EXE$"))) != SDKString::npos) {
         TCHAR szLongPathName[_MAX_PATH];
         ::GetModuleFileName (fHINSTANCE, szLongPathName, _MAX_PATH);
         valWithVars->replace (varAt, 5, szLongPathName);

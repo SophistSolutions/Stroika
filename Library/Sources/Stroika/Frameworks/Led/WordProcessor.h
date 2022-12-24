@@ -487,7 +487,7 @@ namespace Stroika::Frameworks::Led {
         virtual void OnShowHideGlyphCommand (CommandNumber cmdNum);
 
     protected:
-        virtual Led_SDK_String                      GetPrettyTypeName (SimpleEmbeddedObjectStyleMarker* m);
+        virtual SDKString                           GetPrettyTypeName (SimpleEmbeddedObjectStyleMarker* m);
         nonvirtual SimpleEmbeddedObjectStyleMarker* GetSoleSelectedEmbedding () const;
 
     public:
@@ -1019,7 +1019,7 @@ namespace Stroika::Frameworks::Led {
         virtual Led_tChar              GetSoftLineBreakCharacter () const override;
         virtual DiscontiguousRun<bool> GetHidableTextRuns () const override;
         virtual Table*                 GetTableAt (size_t at) const override;
-        virtual void                   SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Color>* colorsUsed) const override;
+        virtual void                   SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const override;
 
     protected:
         class TableIOMapper;
@@ -1673,7 +1673,7 @@ namespace Stroika::Frameworks::Led {
         bool                 fActiveEditCell;
 
     public:
-        virtual void PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, InteractiveReplaceCommand::SavedTextRep** afterRep, size_t startOfInsert, const Led_SDK_String& cmdName) override;
+        virtual void PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, InteractiveReplaceCommand::SavedTextRep** afterRep, size_t startOfInsert, const SDKString& cmdName) override;
 
     protected:
         virtual InteractiveReplaceCommand::SavedTextRep* InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd) override;
@@ -1850,34 +1850,34 @@ namespace Stroika::Frameworks::Led {
                     <p>See also @'WordProcessor::GetCommandNames'.</p>
     */
     struct WordProcessor::CommandNames {
-        Led_SDK_String fJustificationCommandName;
-        Led_SDK_String fStandardTabStopListCommandName;
-        Led_SDK_String fMarginsCommandName;
-        Led_SDK_String fFirstIndentCommandName;
-        Led_SDK_String fMarginsAndFirstIndentCommandName;
-        Led_SDK_String fParagraphSpacingCommandName;
-        Led_SDK_String fHideCommandName;
-        Led_SDK_String fUnHideCommandName;
-        Led_SDK_String fSetListStyleCommandName;
-        Led_SDK_String fIndentLevelChangeCommandName;
-        Led_SDK_String fInsertTableCommandName;
-        Led_SDK_String fInsertTableRowAboveCommandName;
-        Led_SDK_String fInsertTableRowBelowCommandName;
-        Led_SDK_String fInsertTableColBeforeCommandName;
-        Led_SDK_String fInsertTableColAfterCommandName;
-        Led_SDK_String fInsertURLCommandName;
-        Led_SDK_String fRemoveTableRowsCommandName;
-        Led_SDK_String fRemoveTableColumnsCommandName;
-        Led_SDK_String fEmbeddingTypeName_ImageDIB;
-        Led_SDK_String fEmbeddingTypeName_URL;
-        Led_SDK_String fEmbeddingTypeName_ImageMacPict;
-        Led_SDK_String fEmbeddingTypeName_Table;
-        Led_SDK_String fEmbeddingTypeName_Unknown;
-        Led_SDK_String fFontSizeChange_Other_NoArg;
-        Led_SDK_String fFontSizeChange_Other_OneArg;
-        Led_SDK_String fTablePropertiesCommandName;
-        Led_SDK_String fGenericEmbeddingPropertiesCommandName;
-        Led_SDK_String fChangeTablePropertiesCommandName;
+        SDKString fJustificationCommandName;
+        SDKString fStandardTabStopListCommandName;
+        SDKString fMarginsCommandName;
+        SDKString fFirstIndentCommandName;
+        SDKString fMarginsAndFirstIndentCommandName;
+        SDKString fParagraphSpacingCommandName;
+        SDKString fHideCommandName;
+        SDKString fUnHideCommandName;
+        SDKString fSetListStyleCommandName;
+        SDKString fIndentLevelChangeCommandName;
+        SDKString fInsertTableCommandName;
+        SDKString fInsertTableRowAboveCommandName;
+        SDKString fInsertTableRowBelowCommandName;
+        SDKString fInsertTableColBeforeCommandName;
+        SDKString fInsertTableColAfterCommandName;
+        SDKString fInsertURLCommandName;
+        SDKString fRemoveTableRowsCommandName;
+        SDKString fRemoveTableColumnsCommandName;
+        SDKString fEmbeddingTypeName_ImageDIB;
+        SDKString fEmbeddingTypeName_URL;
+        SDKString fEmbeddingTypeName_ImageMacPict;
+        SDKString fEmbeddingTypeName_Table;
+        SDKString fEmbeddingTypeName_Unknown;
+        SDKString fFontSizeChange_Other_NoArg;
+        SDKString fFontSizeChange_Other_OneArg;
+        SDKString fTablePropertiesCommandName;
+        SDKString fGenericEmbeddingPropertiesCommandName;
+        SDKString fChangeTablePropertiesCommandName;
     };
 
     /*
@@ -1900,9 +1900,9 @@ namespace Stroika::Frameworks::Led {
         virtual CommandNumber     FontColorToCmd (Color color);
         virtual bool              PickOtherFontColor (Color* color);
         virtual bool              ChooseFont (IncrementalFontSpecification* font); // display UI (e.g. CFontDialog) to pick a new font/color
-        virtual void              ShowSimpleEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName);
-        virtual bool              ShowURLEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName, Led_SDK_String* urlTitle, Led_SDK_String* urlValue);
-        virtual bool              ShowAddURLEmbeddingInfoDialog (Led_SDK_String* urlTitle, Led_SDK_String* urlValue);
+        virtual void              ShowSimpleEmbeddingInfoDialog (const SDKString& embeddingTypeName);
+        virtual bool              ShowURLEmbeddingInfoDialog (const SDKString& embeddingTypeName, SDKString* urlTitle, SDKString* urlValue);
+        virtual bool              ShowAddURLEmbeddingInfoDialog (SDKString* urlTitle, SDKString* urlValue);
         virtual bool              AddNewTableDialog (size_t* nRows, size_t* nCols);
         struct TableSelectionPropertiesInfo;
         virtual bool EditTablePropertiesDialog (TableSelectionPropertiesInfo* tableProperties);

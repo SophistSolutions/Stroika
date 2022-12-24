@@ -12,6 +12,8 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
+using Characters::SDKChar;
+
 /*
  ********************************************************************************
  *************************************** Command ********************************
@@ -22,7 +24,7 @@ using namespace Stroika::Frameworks::Led;
 @DESCRIPTION:   <p>Returns the name associated with a command. This is used for UI purposes in constructing the
     text of the Undo command name.</p>
 */
-const Led_SDK_Char* Command::GetName () const
+const SDKChar* Command::GetName () const
 {
     return Led_SDK_TCHAROF ("");
 }
@@ -98,7 +100,7 @@ void SingleUndoCommandHandler::BreakInGroupedCommands ()
 {
 }
 
-void SingleUndoCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& /*cmdName*/)
+void SingleUndoCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const SDKString& /*cmdName*/)
 {
 }
 
@@ -172,7 +174,7 @@ bool SingleUndoCommandHandler::GetDone () const
     return (fLastCmd != nullptr and fLastCmd->GetDone ());
 }
 
-const Led_SDK_Char* SingleUndoCommandHandler::GetUndoCmdName ()
+const SDKChar* SingleUndoCommandHandler::GetUndoCmdName ()
 {
     if (CanUndo ()) {
         return fLastCmd->GetName ();
@@ -182,7 +184,7 @@ const Led_SDK_Char* SingleUndoCommandHandler::GetUndoCmdName ()
     }
 }
 
-const Led_SDK_Char* SingleUndoCommandHandler::GetRedoCmdName ()
+const SDKChar* SingleUndoCommandHandler::GetRedoCmdName ()
 {
     if (CanRedo ()) {
         return fLastCmd->GetName ();
@@ -320,7 +322,7 @@ void MultiLevelUndoCommandHandler::BreakInGroupedCommands ()
     }
 }
 
-void MultiLevelUndoCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName)
+void MultiLevelUndoCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const SDKString& cmdName)
 {
     if (fCommands.size () != 0 and fCommands.back () != nullptr and fCommands.back ()->GetName () != cmdName) {
         BreakInGroupedCommands ();
@@ -424,7 +426,7 @@ bool MultiLevelUndoCommandHandler::CanRedo ()
     return (fUndoneGroupCount > 0);
 }
 
-const Led_SDK_Char* MultiLevelUndoCommandHandler::GetUndoCmdName ()
+const SDKChar* MultiLevelUndoCommandHandler::GetUndoCmdName ()
 {
     if (CanUndo ()) {
         size_t                start;
@@ -439,7 +441,7 @@ const Led_SDK_Char* MultiLevelUndoCommandHandler::GetUndoCmdName ()
     }
 }
 
-const Led_SDK_Char* MultiLevelUndoCommandHandler::GetRedoCmdName ()
+const SDKChar* MultiLevelUndoCommandHandler::GetRedoCmdName ()
 {
     if (CanRedo ()) {
         size_t                start;
@@ -592,7 +594,7 @@ void SnoopingCommandHandler::BreakInGroupedCommands ()
     }
 }
 
-void SnoopingCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName)
+void SnoopingCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const SDKString& cmdName)
 {
     if (fRealHandler != nullptr) {
         fRealHandler->BreakInGroupedCommandsIfDifferentCommand (cmdName);
@@ -644,7 +646,7 @@ bool SnoopingCommandHandler::CanRedo ()
     }
 }
 
-const Led_SDK_Char* SnoopingCommandHandler::GetUndoCmdName ()
+const SDKChar* SnoopingCommandHandler::GetUndoCmdName ()
 {
     if (fRealHandler == nullptr) {
         return Led_SDK_TCHAROF ("");
@@ -654,7 +656,7 @@ const Led_SDK_Char* SnoopingCommandHandler::GetUndoCmdName ()
     }
 }
 
-const Led_SDK_Char* SnoopingCommandHandler::GetRedoCmdName ()
+const SDKChar* SnoopingCommandHandler::GetRedoCmdName ()
 {
     if (fRealHandler == nullptr) {
         return Led_SDK_TCHAROF ("");
@@ -678,7 +680,7 @@ const Led_SDK_Char* SnoopingCommandHandler::GetRedoCmdName ()
     command (not used intenrally - but saved as an attribute so menu handling code can report what is to be UNDONE).</p>
 */
 InteractiveReplaceCommand::InteractiveReplaceCommand (SavedTextRep* beforeRegion,
-                                                      SavedTextRep* afterRegion, size_t at, const Led_SDK_String& cmdName)
+                                                      SavedTextRep* afterRegion, size_t at, const SDKString& cmdName)
     : inherited (true)
     , fBeforeRegion (beforeRegion)
     , fAfterRegion (afterRegion)
@@ -733,7 +735,7 @@ bool InteractiveReplaceCommand::UpdateSimpleTextInsert (size_t insertAt, Led_tCh
     return false;
 }
 
-const Led_SDK_Char* InteractiveReplaceCommand::GetName () const
+const SDKChar* InteractiveReplaceCommand::GetName () const
 {
     return fCmdName.c_str ();
 }

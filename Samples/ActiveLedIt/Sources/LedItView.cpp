@@ -389,14 +389,14 @@ public:
         }
     }
 #endif
-    virtual void ShowSimpleEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName) override
+    virtual void ShowSimpleEmbeddingInfoDialog (const SDKString& embeddingTypeName) override
     {
         // unknown embedding...
         Led_StdDialogHelper_UnknownEmbeddingInfoDialog infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
         infoDialog.fEmbeddingTypeName = embeddingTypeName;
         (void)infoDialog.DoModal ();
     }
-    virtual bool ShowURLEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName, Led_SDK_String* urlTitle, Led_SDK_String* urlValue) override
+    virtual bool ShowURLEmbeddingInfoDialog (const SDKString& embeddingTypeName, SDKString* urlTitle, SDKString* urlValue) override
     {
         Led_StdDialogHelper_URLXEmbeddingInfoDialog infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
         infoDialog.fEmbeddingTypeName = embeddingTypeName;
@@ -411,7 +411,7 @@ public:
             return false;
         }
     }
-    virtual bool ShowAddURLEmbeddingInfoDialog (Led_SDK_String* urlTitle, Led_SDK_String* urlValue) override
+    virtual bool ShowAddURLEmbeddingInfoDialog (SDKString* urlTitle, SDKString* urlValue) override
     {
         Led_StdDialogHelper_AddURLXEmbeddingInfoDialog infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
         infoDialog.fTitleText = *urlTitle;
@@ -865,7 +865,7 @@ void LedItView::OnUpdateOLEUserCommand (CCmdUI* pCmdUI)
         pCmdUI->Enable (enabled);
         pCmdUI->SetCheck (checked);
         if (not name.empty ()) {
-            pCmdUI->SetText (Led_Wide2SDKString (name).c_str ());
+            pCmdUI->SetText (Wide2SDKString (name).c_str ());
         }
     }
 }

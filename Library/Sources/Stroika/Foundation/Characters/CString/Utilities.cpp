@@ -180,7 +180,7 @@ wstring Characters::CString::Format (const wchar_t* format, ...)
  */
 namespace {
     template <typename STRING>
-    inline STRING LimitLength_HLPR (const STRING& str, size_t maxLen, bool keepLeft, const STRING& kELIPSIS)
+    inline STRING LimitLength_HLPR_ (const STRING& str, size_t maxLen, bool keepLeft, const STRING& kELIPSIS)
     {
         if (str.length () <= maxLen) {
             return str;
@@ -202,12 +202,12 @@ namespace {
 }
 string Characters::CString::LimitLength (const string& str, size_t maxLen, bool keepLeft)
 {
-    return LimitLength_HLPR<string> (str, maxLen, keepLeft, "...");
+    return LimitLength_HLPR_<string> (str, maxLen, keepLeft, "...");
 }
 
 wstring Characters::CString::LimitLength (const wstring& str, size_t maxLen, bool keepLeft)
 {
-    return LimitLength_HLPR<wstring> (str, maxLen, keepLeft, L"...");
+    return LimitLength_HLPR_<wstring> (str, maxLen, keepLeft, L"...");
 }
 
 /*
@@ -217,7 +217,7 @@ wstring Characters::CString::LimitLength (const wstring& str, size_t maxLen, boo
  */
 namespace {
     template <typename STRING>
-    inline STRING StripTrailingCharIfAny_HLPR (const STRING& str, typename STRING::value_type c)
+    inline STRING StripTrailingCharIfAny_HLPR_ (const STRING& str, typename STRING::value_type c)
     {
         if (str.size () > 0 and str[str.size () - 1] == c) {
             STRING tmp = str;
@@ -230,12 +230,12 @@ namespace {
 
 string Characters::CString::StripTrailingCharIfAny (const string& s, char c)
 {
-    return StripTrailingCharIfAny_HLPR (s, c);
+    return StripTrailingCharIfAny_HLPR_ (s, c);
 }
 
 wstring Characters::CString::StripTrailingCharIfAny (const wstring& s, wchar_t c)
 {
-    return StripTrailingCharIfAny_HLPR (s, c);
+    return StripTrailingCharIfAny_HLPR_ (s, c);
 }
 
 /*

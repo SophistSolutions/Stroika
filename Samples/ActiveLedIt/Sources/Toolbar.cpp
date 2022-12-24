@@ -902,7 +902,7 @@ void ActiveLedIt_ComboBoxToolbarElement::UpdatePopupObj ()
                     CComBSTR name;
                     Led_ThrowIfErrorHRESULT (alc->get_Name (&name));
                     fCommandListCache.push_back (alc);
-                    Led_SDK_String itemPrintName = Led_Wide2SDKString (wstring (name));
+                    SDKString itemPrintName = Wide2SDKString (wstring (name));
                     Verify (fComboBox.SendMessage (CB_ADDSTRING, 0, reinterpret_cast<LPARAM> (itemPrintName.c_str ())) != CB_ERR);
                     SIZE sz;
                     memset (&sz, 0, sizeof (sz));

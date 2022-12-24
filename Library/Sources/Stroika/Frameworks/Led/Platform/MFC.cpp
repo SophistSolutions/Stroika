@@ -252,7 +252,7 @@ void Led_MFC_TmpCmdUpdater::SetChecked (bool checked)
     fCmdUI->SetCheck (checked);
 }
 
-void Led_MFC_TmpCmdUpdater::SetText (const Led_SDK_Char* text)
+void Led_MFC_TmpCmdUpdater::SetText (const Characters::SDKChar* text)
 {
     EnsureNotNull (fCmdUI);
     fCmdUI->SetText (text);

@@ -18,7 +18,7 @@ using namespace Stroika::Frameworks::Led;
 class CMenu;
 void FixupFontMenu (CMenu* fontMenu);
 
-Led_SDK_String CmdNumToFontName (UINT cmdNum);
+SDKString CmdNumToFontName (UINT cmdNum);
 
 /*
  ********************************************************************************

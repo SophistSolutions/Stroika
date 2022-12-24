@@ -83,26 +83,6 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
-#if qSDK_UNICODE
-    inline Led_SDK_String Led_Wide2SDKString (const wstring& s)
-    {
-        return s;
-    }
-    inline wstring Led_SDKString2Wide (const Led_SDK_String& s)
-    {
-        return s;
-    }
-#else
-    inline Led_SDK_String Led_ANSI2SDKString (const string& s)
-    {
-        return s;
-    }
-    inline string Led_SDKString2ANSI (const Led_SDK_String& s)
-    {
-        return s;
-    }
-#endif
-
 #if qWideCharacters
     inline Led_tString Led_WideString2tString (const wstring& s)
     {
@@ -125,16 +105,21 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
-#if qWideCharacters == qSDK_UNICODE
-    inline Led_SDK_String Led_tString2SDKString (const Led_tString& s)
-    {
-        return s;
-    }
-    inline Led_tString Led_SDKString2tString (const Led_SDK_String& s)
+#if qWideCharacters == qTargetPlatformSDKUseswchar_t
+    inline SDKString Led_tString2SDKString (const Led_tString& s)
     {
         return s;
     }
 #endif
+
+    inline Led_tString Led_SDKString2tString (const SDKString& s)
+    {
+#if qWideCharacters
+        return SDKString2Wide (s);
+#else
+        return SDKString2NarrowSDK (s);
+#endif
+    }
 
 #if qPlatform_Windows
     //  class   Win32ErrorException

@@ -292,7 +292,7 @@ void TextInteractor::DialogSupport::DisplaySpellCheckDialog (SpellCheckDialogCal
  ******************** TextInteractor::UndoableContextHelper *********************
  ********************************************************************************
  */
-TextInteractor::UndoableContextHelper::UndoableContextHelper (TextInteractor& ti, const Led_SDK_String& cmdName, bool allowSmartCNPExpansion)
+TextInteractor::UndoableContextHelper::UndoableContextHelper (TextInteractor& ti, const SDKString& cmdName, bool allowSmartCNPExpansion)
     : fSimplePlainTextInsertOptimization (false)
     , fTextInteractor (ti)
     , fCmdName (cmdName)
@@ -309,7 +309,7 @@ TextInteractor::UndoableContextHelper::UndoableContextHelper (TextInteractor& ti
     }
 }
 
-TextInteractor::UndoableContextHelper::UndoableContextHelper (TextInteractor& ti, const Led_SDK_String& cmdName, size_t regionAndSelStart, size_t regionAndSelEnd, bool allowSmartCNPExpansion)
+TextInteractor::UndoableContextHelper::UndoableContextHelper (TextInteractor& ti, const SDKString& cmdName, size_t regionAndSelStart, size_t regionAndSelEnd, bool allowSmartCNPExpansion)
     : fSimplePlainTextInsertOptimization (false)
     , fTextInteractor (ti)
     , fCmdName (cmdName)
@@ -326,7 +326,7 @@ TextInteractor::UndoableContextHelper::UndoableContextHelper (TextInteractor& ti
     }
 }
 
-TextInteractor::UndoableContextHelper::UndoableContextHelper (TextInteractor& ti, const Led_SDK_String& cmdName, size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd, bool allowSmartCNPExpansion)
+TextInteractor::UndoableContextHelper::UndoableContextHelper (TextInteractor& ti, const SDKString& cmdName, size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd, bool allowSmartCNPExpansion)
     : fSimplePlainTextInsertOptimization (false)
     , fTextInteractor (ti)
     , fCmdName (cmdName)
@@ -674,13 +674,13 @@ void TextInteractor::OnUpdateUndoRedoCommand (CommandUpdater* enabler)
         if (enabler->GetCmdID () == kUndo_CmdID) {
             enabler->SetEnabled (GetCommandHandler ()->CanUndo ());
 
-            Led_SDK_String menuItemText = Characters::CString::Format (GetCommandNames ().fUndoFormatString.c_str (), GetCommandHandler ()->GetUndoCmdName ());
+            SDKString menuItemText = Characters::CString::Format (GetCommandNames ().fUndoFormatString.c_str (), GetCommandHandler ()->GetUndoCmdName ());
             enabler->SetText (menuItemText.c_str ());
         }
         else if (enabler->GetCmdID () == kRedo_CmdID) {
             enabler->SetEnabled (GetCommandHandler ()->CanRedo ());
 
-            Led_SDK_String menuItemText = Characters::CString::Format (GetCommandNames ().fRedoFormatString.c_str (), GetCommandHandler ()->GetRedoCmdName ());
+            SDKString menuItemText = Characters::CString::Format (GetCommandNames ().fRedoFormatString.c_str (), GetCommandHandler ()->GetRedoCmdName ());
             enabler->SetText (menuItemText.c_str ());
         }
     }
@@ -2322,7 +2322,7 @@ void TextInteractor::PreInteractiveUndoHelper (InteractiveReplaceCommand::SavedT
             beforeRep argument given this function and an afterRep computed herein.</p>
                 <p>NB: As of Led 3.1a6 - we require that fCommandHandler != nullptr to call this.</p>
 */
-void TextInteractor::PostInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const Led_SDK_String& cmdName)
+void TextInteractor::PostInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const SDKString& cmdName)
 {
     RequireNotNull (beforeRep);
     RequireNotNull (*beforeRep); // This shouldn't be called if there was a problem creating beforeRep (exception)
@@ -2346,7 +2346,7 @@ void TextInteractor::PostInteractiveUndoHelper (InteractiveReplaceCommand::Saved
 @DESCRIPTION:   <p>Utility function for optimized undo support - keeping smaller objects in the undo buffer, and trying re-use/tweek
             an existing one in the common case of multiple consecutive characters typed.</p>
 */
-void TextInteractor::PostInteractiveSimpleCharInsertUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const Led_SDK_String& cmdName)
+void TextInteractor::PostInteractiveSimpleCharInsertUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const SDKString& cmdName)
 {
     RequireNotNull (beforeRep);
     RequireNotNull (*beforeRep); // This shouldn't be called if there was a problem creating beforeRep (exception)
@@ -2379,7 +2379,7 @@ void TextInteractor::PostInteractiveSimpleCharInsertUndoHelper (InteractiveRepla
 */
 void TextInteractor::PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep,
                                                     InteractiveReplaceCommand::SavedTextRep** afterRep,
-                                                    size_t startOfInsert, const Led_SDK_String& cmdName)
+                                                    size_t startOfInsert, const SDKString& cmdName)
 {
     RequireNotNull (beforeRep);
     RequireNotNull (afterRep);

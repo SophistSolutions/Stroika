@@ -103,14 +103,14 @@ struct DoIt_SetJustification {
     {
         wp->SetJustification (selStart, selEnd, justification);
     }
-    static Led_SDK_String GetName (WordProcessor* wp) { return wp->GetCommandNames ().fJustificationCommandName; }
+    static SDKString GetName (WordProcessor* wp) { return wp->GetCommandNames ().fJustificationCommandName; }
 };
 struct DoIt_SetStandardTabStopList {
     static void DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, WordProcessor::StandardTabStopList tabStops)
     {
         wp->SetStandardTabStopList (selStart, selEnd, tabStops);
     }
-    static Led_SDK_String GetName (WordProcessor* wp) { return wp->GetCommandNames ().fStandardTabStopListCommandName; }
+    static SDKString GetName (WordProcessor* wp) { return wp->GetCommandNames ().fStandardTabStopListCommandName; }
 };
 struct DoIt_SetMargins {
     struct Margins {
@@ -126,14 +126,14 @@ struct DoIt_SetMargins {
     {
         wp->SetMargins (selStart, selEnd, margins.fLHS, margins.fRHS);
     }
-    static Led_SDK_String GetName (WordProcessor* wp) { return wp->GetCommandNames ().fMarginsCommandName; }
+    static SDKString GetName (WordProcessor* wp) { return wp->GetCommandNames ().fMarginsCommandName; }
 };
 struct DoIt_SetFirstIndent {
     static void DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, TWIPS firstIndent)
     {
         wp->SetFirstIndent (selStart, selEnd, firstIndent);
     }
-    static Led_SDK_String GetName (WordProcessor* wp) { return wp->GetCommandNames ().fFirstIndentCommandName; }
+    static SDKString GetName (WordProcessor* wp) { return wp->GetCommandNames ().fFirstIndentCommandName; }
 };
 struct DoIt_SetMarginsAndFirstIndent {
     struct MarginsAndFirstIndent {
@@ -152,7 +152,7 @@ struct DoIt_SetMarginsAndFirstIndent {
         wp->SetMargins (selStart, selEnd, marginsEtc.fLHS, marginsEtc.fRHS);
         wp->SetFirstIndent (selStart, selEnd, marginsEtc.fFirstIndent);
     }
-    static Led_SDK_String GetName (WordProcessor* wp) { return wp->GetCommandNames ().fMarginsAndFirstIndentCommandName; }
+    static SDKString GetName (WordProcessor* wp) { return wp->GetCommandNames ().fMarginsAndFirstIndentCommandName; }
 };
 struct DoIt_SetParagraphSpacing {
     struct AllSpacingArgs {
@@ -182,14 +182,14 @@ struct DoIt_SetParagraphSpacing {
             wp->SetLineSpacing (selStart, selEnd, spacingArgs.fLineSpacing);
         }
     }
-    static Led_SDK_String GetName (WordProcessor* wp) { return wp->GetCommandNames ().fParagraphSpacingCommandName; }
+    static SDKString GetName (WordProcessor* wp) { return wp->GetCommandNames ().fParagraphSpacingCommandName; }
 };
 struct DoIt_SetListStyle {
     static void DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, ListStyle listStyle)
     {
         wp->SetListStyle (selStart, selEnd, listStyle, true);
     }
-    static Led_SDK_String GetName (WordProcessor* wp) { return wp->GetCommandNames ().fSetListStyleCommandName; }
+    static SDKString GetName (WordProcessor* wp) { return wp->GetCommandNames ().fSetListStyleCommandName; }
 };
 struct DoIt_IndentUnIndentList {
     static void DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, bool indent)
@@ -213,7 +213,7 @@ struct DoIt_IndentUnIndentList {
         }
         wp->SetListIndentLevel (selStart, selEnd, indentLevel, true);
     }
-    static Led_SDK_String GetName (WordProcessor* wp) { return wp->GetCommandNames ().fIndentLevelChangeCommandName; }
+    static SDKString GetName (WordProcessor* wp) { return wp->GetCommandNames ().fIndentLevelChangeCommandName; }
 };
 
 /*
@@ -814,18 +814,18 @@ bool WordProcessor::DialogSupport::ChooseFont ([[maybe_unused]] IncrementalFontS
     return false;
 }
 
-void WordProcessor::DialogSupport::ShowSimpleEmbeddingInfoDialog (const Led_SDK_String& /*embeddingTypeName*/)
+void WordProcessor::DialogSupport::ShowSimpleEmbeddingInfoDialog (const SDKString& /*embeddingTypeName*/)
 {
     Assert (false); // You must implement this yourself in your own subclass - or don't enable commands that call it.
 }
 
-bool WordProcessor::DialogSupport::ShowURLEmbeddingInfoDialog (const Led_SDK_String& /*embeddingTypeName*/, Led_SDK_String* /*urlTitle*/, Led_SDK_String* /*urlValue*/)
+bool WordProcessor::DialogSupport::ShowURLEmbeddingInfoDialog (const SDKString& /*embeddingTypeName*/, SDKString* /*urlTitle*/, SDKString* /*urlValue*/)
 {
     Assert (false); // You must implement this yourself in your own subclass - or don't enable commands that call it.
     return false;
 }
 
-bool WordProcessor::DialogSupport::ShowAddURLEmbeddingInfoDialog (Led_SDK_String* /*urlTitle*/, Led_SDK_String* /*urlValue*/)
+bool WordProcessor::DialogSupport::ShowAddURLEmbeddingInfoDialog (SDKString* /*urlTitle*/, SDKString* /*urlValue*/)
 {
     Assert (false); // You must implement this yourself in your own subclass - or don't enable commands that call it.
     return false;
@@ -2934,12 +2934,12 @@ void WordProcessor::OnInsertURLCommand ()
 {
     InteractiveModeUpdater iuMode (*this);
     BreakInGroupedCommands ();
-    Led_SDK_String title;
-    Led_SDK_String url;
+    SDKString title;
+    SDKString url;
     if (GetDialogSupport ().ShowAddURLEmbeddingInfoDialog (&title, &url)) {
         UndoableContextHelper context (*this, GetCommandNames ().fInsertURLCommandName, false);
         {
-            SimpleEmbeddedObjectStyleMarker* e = new StandardURLStyleMarker (Led_URLD (Led_SDKString2ANSI (url).c_str (), Led_SDKString2ANSI (title).c_str ()));
+            SimpleEmbeddedObjectStyleMarker* e = new StandardURLStyleMarker (Led_URLD (SDKString2NarrowSDK (url).c_str (), SDKString2NarrowSDK (title).c_str ()));
             AddEmbedding (e, GetTextStore (), GetSelectionStart (), GetStyleDatabase ().get ());
             SetSelection (e->GetEnd (), e->GetEnd ());
         }
@@ -2996,13 +2996,13 @@ bool WordProcessor::OnSelectedEmbeddingExtendedCommand (CommandNumber cmdNum)
     if (cmdNum == kSelectedEmbeddingProperties_CmdID) {
         if (dynamic_cast<StandardURLStyleMarker*> (embedding) != nullptr) {
             StandardURLStyleMarker* e     = dynamic_cast<StandardURLStyleMarker*> (embedding);
-            Led_SDK_String          title = Led_ANSI2SDKString (e->GetURLData ().GetTitle ());
-            Led_SDK_String          url   = Led_ANSI2SDKString (e->GetURLData ().GetURL ());
+            SDKString               title = NarrowSDK2SDKString (e->GetURLData ().GetTitle ());
+            SDKString               url   = NarrowSDK2SDKString (e->GetURLData ().GetURL ());
             if (GetDialogSupport ().ShowURLEmbeddingInfoDialog (GetPrettyTypeName (embedding), &title, &url)) {
                 // Change URL contents...
                 {
                     TextStore::SimpleUpdater updater (GetTextStore (), e->GetStart (), e->GetEnd ());
-                    e->SetURLData (Led_URLD (Led_SDKString2ANSI (url).c_str (), Led_SDKString2ANSI (title).c_str ()));
+                    e->SetURLData (Led_URLD{SDKString2NarrowSDK (url).c_str (), SDKString2NarrowSDK (title).c_str ()});
                 }
             }
         }
@@ -3321,7 +3321,7 @@ void WordProcessor::OnShowHideGlyphCommand (CommandNumber cmdNum)
     }
 }
 
-Led_SDK_String WordProcessor::GetPrettyTypeName (SimpleEmbeddedObjectStyleMarker* m)
+SDKString WordProcessor::GetPrettyTypeName (SimpleEmbeddedObjectStyleMarker* m)
 {
     if (dynamic_cast<StandardDIBStyleMarker*> (m) != nullptr) {
         return GetCommandNames ().fEmbeddingTypeName_ImageDIB;
@@ -5188,7 +5188,7 @@ WordProcessorTextIOSrcStream::Table* WordProcessorTextIOSrcStream::GetTableAt (s
     }
 }
 
-void WordProcessorTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Color>* colorsUsed) const
+void WordProcessorTextIOSrcStream::SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const
 {
     inherited::SummarizeFontAndColorTable (fontNames, colorsUsed);
 
@@ -5631,7 +5631,7 @@ private:
     using inherited = InteractiveReplaceCommand;
 
 public:
-    TableCMD (size_t tableAt, size_t tRow, size_t tCol, SavedTextRep* beforeRegion, SavedTextRep* afterRegion, size_t at, const Led_SDK_String& cmdName)
+    TableCMD (size_t tableAt, size_t tRow, size_t tCol, SavedTextRep* beforeRegion, SavedTextRep* afterRegion, size_t at, const SDKString& cmdName)
         : inherited (beforeRegion, afterRegion, at, cmdName)
         , fTableAt (tableAt)
         , fTableRow (tRow)
@@ -7911,7 +7911,7 @@ void WordProcessor::Table::EmbeddedTableWordProcessor::GetLayoutMargins (RowRefe
     }
 }
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, InteractiveReplaceCommand::SavedTextRep** afterRep, size_t startOfInsert, const Led_SDK_String& cmdName)
+void WordProcessor::Table::EmbeddedTableWordProcessor::PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, InteractiveReplaceCommand::SavedTextRep** afterRep, size_t startOfInsert, const SDKString& cmdName)
 {
     RequireNotNull (beforeRep);
     RequireNotNull (afterRep);

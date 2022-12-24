@@ -168,7 +168,7 @@ namespace Stroika::Frameworks::Led {
                                 eMaxPrivateCmdNum = 100 };
         virtual vector<PrivateCmdNumber> GetCmdNumbers () const;
         virtual bool                     IsCmdEnabled (PrivateCmdNumber cmd) const;
-        virtual Led_SDK_String           GetCmdText (PrivateCmdNumber cmd);
+        virtual SDKString                GetCmdText (PrivateCmdNumber cmd);
         virtual void                     DoCommand (PrivateCmdNumber cmd);
 
     public:
@@ -193,7 +193,7 @@ namespace Stroika::Frameworks::Led {
                 @'SimpleEmbeddedObjectStyleMarker' module.</p>
     */
     struct SimpleEmbeddedObjectStyleMarker::CommandNames {
-        Led_SDK_String fOpenCommandName;
+        SDKString fOpenCommandName;
     };
 
 #if qPlatform_MacOS || qPlatform_Windows

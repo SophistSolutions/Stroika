@@ -386,7 +386,7 @@ public:
 #if qPlatform_MacOS
         const short    kPictHeight = 273;
         const short    kPictWidth  = 437;
-        Led_SDK_String verStr      = Led_SDK_String{qLed_ShortVersionString} + kUNICODE_NAME_ADORNER " (" + __DATE__ + ")";
+        SDKString      verStr      = SDKString{qLed_ShortVersionString} + kUNICODE_NAME_ADORNER " (" + __DATE__ + ")";
         const int      kVERWidth   = 230;
         SimpleLayoutHelper (kPictHeight, kPictWidth, Led_Rect (159, 15, 17, 142), Led_Rect (159, 227, 17, 179), verStr);
 #elif qPlatform_Windows
@@ -455,7 +455,7 @@ public:
 
         /* a pixmap widget to contain the pixmap */
         GtkWidget*     pixmapwid = gtk_pixmap_new (pixmap, mask);
-        Led_SDK_String verStr    = Led_SDK_String{qLed_ShortVersionString} + " (" + __DATE__ + ")";
+        SDKString  verStr    = SDKString{qLed_ShortVersionString} + " (" + __DATE__ + ")";
 
         GtkWidget* label = gtk_label_new (verStr.c_str ());
 
@@ -504,7 +504,7 @@ private:
     using inherited = StdFilePickBox;
 
 public:
-    LedItFilePickBox (GtkWindow* modalParentWindow, const Led_SDK_String& title, bool saveDialog, const Led_SDK_String& fileName, FileFormat fileFormat)
+    LedItFilePickBox (GtkWindow* modalParentWindow, const SDKString& title, bool saveDialog, const SDKString& fileName, FileFormat fileFormat)
         : inherited (modalParentWindow, title, saveDialog, fileName)
         , fFileFormat (fileFormat)
         , fFileTypeChoice (NULL)
@@ -551,7 +551,7 @@ protected:
                     // Should add a separator...TOO!
                 }
                 struct FileFilterDesc {
-                    Led_SDK_String fDescription;
+                    SDKString  fDescription;
                     FileFormat     fFormat;
                 };
                 static FileFilterDesc typeList[] = {
@@ -1306,7 +1306,7 @@ BOOL LedItApplication::InitInstance ()
         // and other spellchecking options (see SPR#1591)
         TCHAR defaultPath[MAX_PATH + 1];
         Verify (::SHGetSpecialFolderPath (nullptr, defaultPath, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, true));
-        fSpellCheckEngine->SetUserDictionary (Led_SDK_String{defaultPath} + Led_SDK_TCHAROF ("\\My LedIt Dictionary.txt"));
+        fSpellCheckEngine->SetUserDictionary (SDKString{defaultPath} + Led_SDK_TCHAROF ("\\My LedIt Dictionary.txt"));
     }
 #endif
 
@@ -1390,7 +1390,7 @@ BOOL LedItApplication::InitInstance ()
             }
         };
         MyRegistrationHelper fileAssocHelper;
-        Led_SDK_String       rtfDocIcon = Characters::CString::Format (Led_SDK_TCHAROF ("$EXE$,%d"), -kLedItRTFDocumentIconID);
+        SDKString            rtfDocIcon = Characters::CString::Format (Led_SDK_TCHAROF ("$EXE$,%d"), -kLedItRTFDocumentIconID);
         fileAssocHelper.Add (Win32UIFileAssociationInfo (Led_SDK_TCHAROF (".rtf"), Led_SDK_TCHAROF ("rtffile"), Led_SDK_TCHAROF ("Rich Text Document"), rtfDocIcon, Led_SDK_TCHAROF ("$EXE$ \"%1\"")));
         fileAssocHelper.DoIt ();
     }
@@ -1701,7 +1701,7 @@ void LedItApplication::OnNewDocumentCommand ()
 
 void LedItApplication::OnOpenDocumentCommand ()
 {
-    LedItFilePickBox filePickerDlg (GTK_WINDOW (fAppWindow), Led_SDK_TCHAROF ("Open new document"), false, Led_SDK_String{}, eUnknownFormat);
+    LedItFilePickBox filePickerDlg (GTK_WINDOW (fAppWindow), Led_SDK_TCHAROF ("Open new document"), false, SDKString{}, eUnknownFormat);
     if (filePickerDlg.DoModal ()) {
         try {
             LoadFromFile (filePickerDlg.GetFileName (), filePickerDlg.GetFileFormat ());
@@ -1758,10 +1758,10 @@ void LedItApplication::LoadFromFile (const string& fileName, FileFormat fileForm
     UpdateFrameWindowTitle ();
 }
 
-inline Led_SDK_String StripKnownSuffix (const Led_SDK_String& from)
+inline SDKString StripKnownSuffix (const SDKString& from)
 {
-    Led_SDK_String result = from;
-    Led_SDK_String suffix = ExtractFileSuffix (from);
+    SDKString      result = from;
+    SDKString suffix = ExtractFileSuffix (from);
     if (suffix == ".rtf" or suffix == ".txt" or suffix == ".led" or suffix == ".htm" or suffix == ".html") {
         result.erase (result.length () - suffix.length ());
     }
@@ -1778,7 +1778,7 @@ void LedItApplication::SaveAs (const string& fileName, FileFormat fileFormat)
      *  Adjust file suffix - if needed.
      */
     {
-        Led_SDK_String suffix = ExtractFileSuffix (fileName);
+        SDKString suffix = ExtractFileSuffix (fileName);
         switch (fileFormat) {
             case eHTMLFormat: {
                 if (suffix != ".htm" and suffix != ".html") {
@@ -1814,11 +1814,11 @@ void LedItApplication::Save ()
 void LedItApplication::UpdateFrameWindowTitle ()
 {
     AssertNotNull (fAppWindow);
-    Led_SDK_String docName = Led_SDK_TCHAROF ("untitled");
+    SDKString docName = Led_SDK_TCHAROF ("untitled");
     if (fDocument != NULL and not fDocument->fPathName.empty ()) {
         docName = fDocument->fPathName;
     }
-    Led_SDK_String appTitle = Led_SDK_TCHAROF ("LedIt! [") + docName + Led_SDK_TCHAROF ("]");
+    SDKString appTitle = Led_SDK_TCHAROF ("LedIt! [") + docName + Led_SDK_TCHAROF ("]");
     gtk_window_set_title (GTK_WINDOW (fAppWindow), appTitle.c_str ());
 }
 
@@ -2126,8 +2126,8 @@ GtkWidget* LedItApplication::get_main_menu (GtkWidget* window)
     {
         const string           kFontMenuPath = "/Format/Font Name";
         GtkWidget*             fontNameMenu  = gtk_item_factory_get_widget (item_factory, kFontMenuPath.c_str ());
-        vector<Led_SDK_String> fontNames     = LedItApplication::Get ().fInstalledFonts.GetUsableFontNames ();
-        for (vector<Led_SDK_String>::const_iterator i = fontNames.begin (); i != fontNames.end (); ++i) {
+        vector<SDKString>      fontNames     = LedItApplication::Get ().fInstalledFonts.GetUsableFontNames ();
+        for (vector<SDKString>::const_iterator i = fontNames.begin (); i != fontNames.end (); ++i) {
             GtkItemFactoryEntry entry;
             memset (&entry, 0, sizeof (entry));
             string fontName       = *i; // really should munge it so its assured not to have any bad chars in it!!!
@@ -2172,7 +2172,7 @@ GtkWidget* LedItApplication::get_main_menu (GtkWidget* window)
 #endif
 
 #if qPlatform_Windows
-const vector<Led_SDK_String>& LedItApplication::GetUsableFontNames ()
+const vector<SDKString>& LedItApplication::GetUsableFontNames ()
 {
     return fInstalledFonts.GetUsableFontNames ();
 }
@@ -2180,7 +2180,7 @@ const vector<Led_SDK_String>& LedItApplication::GetUsableFontNames ()
 void LedItApplication::FixupFontMenu (CMenu* fontMenu)
 {
     AssertMember (fontMenu, CMenu);
-    const vector<Led_SDK_String>& fontNames = GetUsableFontNames ();
+    const vector<SDKString>& fontNames = GetUsableFontNames ();
 
     // delete all menu items
     while (fontMenu->DeleteMenu (0, MF_BYPOSITION) != 0) {
@@ -2193,9 +2193,9 @@ void LedItApplication::FixupFontMenu (CMenu* fontMenu)
     }
 }
 
-Led_SDK_String LedItApplication::CmdNumToFontName (UINT cmdNum)
+SDKString LedItApplication::CmdNumToFontName (UINT cmdNum)
 {
-    const vector<Led_SDK_String>& fontNames = GetUsableFontNames ();
+    const vector<SDKString>& fontNames = GetUsableFontNames ();
     return (fontNames[cmdNum - kBaseFontNameCmd]);
 }
 #endif
@@ -2277,7 +2277,7 @@ CDocument* LedItDocManager::OpenDocumentFile (LPCTSTR lpszFileName)
     return OpenDocumentFile (lpszFileName, eUnknownFormat);
 }
 
-inline Led_SDK_String GetLongPathName (const Led_SDK_String& pathName)
+inline SDKString GetLongPathName (const SDKString& pathName)
 {
     TCHAR szPath[_MAX_PATH];
     Require (pathName.length () < _MAX_PATH);

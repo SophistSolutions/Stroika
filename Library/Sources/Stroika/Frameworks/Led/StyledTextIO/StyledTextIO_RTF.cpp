@@ -291,7 +291,7 @@ const FontTableEntry* FontTable::LookupEntryByNumber (int fontNumber)
     return nullptr;
 }
 
-const FontTableEntry* FontTable::LookupEntryByName (const Led_SDK_String& name)
+const FontTableEntry* FontTable::LookupEntryByName (const SDKString& name)
 {
     for (size_t i = 0; i < fEntries.size (); ++i) {
         const FontTableEntry& fte = fEntries[i];
@@ -3361,7 +3361,7 @@ ReadRest:
 
     size_t startOfName = GetSrcStream ().current_offset ();
     ScanForwardFor ("{;");
-    entry.fFontName = Led_ANSI2SDKString (GrabString (startOfName));
+    entry.fFontName = NarrowSDK2SDKString (GrabString (startOfName));
 
     // SEE SPR#0749 - can also get these funky groups after the font name - skip them til I better understand them...
     if (PeekNextChar () == RTFIO::kRTFOpenGroupChar) {
@@ -4672,7 +4672,7 @@ bool StyledTextIOWriter_RTF::PossiblyWriteOLERTFEmbedding (WriterContext& /*writ
         //      WriteTagNValue ("objw", 100);   // get real values here!
         //&&&FIX&&&objw ETC
 
-        string className = Led_SDKString2ANSI (anRTFOLEEmbedding->GetObjClassName ());
+        string className = SDKString2NarrowSDK (anRTFOLEEmbedding->GetObjClassName ());
         if (not className.empty ()) {
             write ("{\\*\\objclass ");
             // probably SHOULD check className doesn't have any bad characters, like a "{" - or some such...
@@ -4965,7 +4965,7 @@ void StyledTextIOWriter_RTF::WriteFontTablesEntry (const FontTableEntry& entry)
         WriteTagNValue ("fprq", entry.fPitch);
     }
 
-    write (Led_SDKString2ANSI (entry.fFontName));
+    write (SDKString2NarrowSDK (entry.fFontName));
 
     write (';');
 
@@ -5149,13 +5149,13 @@ void StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerContext)
     if (fFontTable == nullptr) {
         fFontTable = new FontTable (); // no need to try/catch cuz its stored in instance var, and will get destroyed
         // on StyledTextIOWriter_RTF::DTOR
-        set<Led_SDK_String> fontNames;
+        set<SDKString> fontNames;
         writerContext.GetSrcStream ().SummarizeFontAndColorTable (&fontNames, nullptr);
 #if qPlatform_Windows
         WindowDC screenDC (nullptr);
 #endif
-        for (set<Led_SDK_String>::const_iterator i = fontNames.begin (); i != fontNames.end (); ++i) {
-            const Led_SDK_String& name = *i;
+        for (set<SDKString>::const_iterator i = fontNames.begin (); i != fontNames.end (); ++i) {
+            const SDKString& name = *i;
             if (fFontTable->LookupEntryByName (name) == nullptr) {
                 FontTableEntry fte;
                 fte.fFontName = name;

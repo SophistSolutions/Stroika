@@ -69,8 +69,8 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 
-const vector<Led_SDK_String>& GetUsableFontNames ();
-Led_SDK_String                CmdNumToFontName (UINT cmdNum);
+const vector<SDKString>& GetUsableFontNames ();
+SDKString                CmdNumToFontName (UINT cmdNum);
 
 /*
  ********************************************************************************

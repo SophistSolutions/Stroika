@@ -43,11 +43,11 @@ namespace {
         return ((*theMenuData)->mHandle);
     }
 #endif
-    Led_SDK_String FormatINTAsString (int t)
+    SDKString FormatINTAsString (int t)
     {
         return Characters::CString::Format (Led_SDK_TCHAROF ("%d"), t);
     }
-    bool ParseStringToINT (const Led_SDK_String& s, int* t)
+    bool ParseStringToINT (const SDKString& s, int* t)
     {
 #if 1
         // get rid of this function - COULD do better API - but this is fine for how we currently use it...
@@ -57,7 +57,7 @@ namespace {
         return true;
 #else
         int l = 0;
-#if qSDK_UNICODE
+#if qTargetPlatformSDKUseswchar_t
         if (::swscanf (s.c_str (), L"%d", &l) < 1) {
             return false;
         }
@@ -77,11 +77,11 @@ namespace {
 #endif
     }
     // Later revise these so they take into account UNITS - like CM, or IN, or TWIPS, or pt, etc...
-    Led_SDK_String FormatTWIPSAsString (TWIPS t)
+    SDKString FormatTWIPSAsString (TWIPS t)
     {
         return FormatINTAsString (t);
     }
-    bool ParseStringToTWIPS (const Led_SDK_String& s, TWIPS* t)
+    bool ParseStringToTWIPS (const SDKString& s, TWIPS* t)
     {
         int  i = 0;
         bool r = ParseStringToINT (s, &i);
@@ -340,7 +340,7 @@ void StdColorPopupHelper::DoMenuAppends ()
 #endif
 
 #if qPlatform_MacOS || qPlatform_Windows
-void StdColorPopupHelper::AppendMenuString (const Led_SDK_String& s)
+void StdColorPopupHelper::AppendMenuString (const SDKString& s)
 {
 #if qPlatform_MacOS
     MenuHandle mhPopup = GetControlPopupMenuHandle (fControl);
@@ -833,7 +833,7 @@ LRESULT LedComboBoxWidget::OnCreate_Msg (WPARAM wParam, LPARAM lParam)
 
         // Next - create the POPUP Listbox (hidden initially)
         {
-#if !qSDK_UNICODE
+#if !qTargetPlatformSDKUseswchar_t
             // Try creating a UNICODE popup window - even if we aren't building a UNICODE app. This is OK - since this window isn't
             // handled directly through MFC (which doesn't support UNICODE windows in non-UNICODE apps, but just through
             // Led's code directly - which does support this - LGP 2003-12-29
@@ -846,7 +846,7 @@ LRESULT LedComboBoxWidget::OnCreate_Msg (WPARAM wParam, LPARAM lParam)
             }
 #endif
             fComboListBoxPopup.SubclassWindow (::CreateWindowEx (WS_EX_TOPMOST, _T("ListBox"), NULL, WS_POPUP | LBS_NOTIFY | WS_BORDER | WS_TABSTOP, 0, 0, 0, 0, GetHWND (), NULL, NULL, NULL));
-#if !qSDK_UNICODE
+#if !qTargetPlatformSDKUseswchar_t
         alreadyCreated:;
 #endif
         }
@@ -976,7 +976,7 @@ Led_StdDialogHelper::Led_StdDialogHelper (int resID)
     fWasOK         = false;
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper::Led_StdDialogHelper (HINSTANCE hInstance, const Led_SDK_Char* resID, HWND parentWnd)
+Led_StdDialogHelper::Led_StdDialogHelper (HINSTANCE hInstance, const Characters::SDKChar* resID, HWND parentWnd)
     : fSetFocusItemCalled{false}
 {
     fHWnd = NULL;
@@ -1068,7 +1068,7 @@ bool Led_StdDialogHelper::DoModal ()
     return GetWasOK ();
 }
 
-void Led_StdDialogHelper::ReplaceAllTokens (Led_SDK_String* m, const Led_SDK_String& token, const Led_SDK_String& with)
+void Led_StdDialogHelper::ReplaceAllTokens (SDKString* m, const SDKString& token, const SDKString& with)
 {
     using Characters::String;
     RequireNotNull (m);
@@ -1181,7 +1181,7 @@ BOOL Led_StdDialogHelper::DialogProc (UINT message, [[maybe_unused]] WPARAM wPar
 #endif
 
 #if qPlatform_MacOS || qPlatform_Windows || (qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs)
-Led_SDK_String Led_StdDialogHelper::GetItemText (DialogItemID itemID) const
+SDKString Led_StdDialogHelper::GetItemText (DialogItemID itemID) const
 {
 #if qPlatform_MacOS
     Handle itemHandle;
@@ -1190,9 +1190,9 @@ Led_SDK_String Led_StdDialogHelper::GetItemText (DialogItemID itemID) const
     ::GetDialogItem (GetDialogPtr (), itemID, &itemType, &itemHandle, &itemRect);
     Str255 textPStr;
     ::GetDialogItemText (itemHandle, textPStr);
-    return Led_SDK_String{(char*)&textPStr[1], textPStr[0]};
+    return SDKString{(char*)&textPStr[1], textPStr[0]};
 #elif qPlatform_Windows
-    Led_SDK_Char widgetText[2 * 1024]; // sb big enough for the most part???
+    Characters::SDKChar widgetText[2 * 1024]; // sb big enough for the most part???
     (void)::GetDlgItemText (GetHWND (), itemID, widgetText, static_cast<UINT> (Memory::NEltsOf (widgetText)));
     return widgetText;
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
@@ -1200,7 +1200,7 @@ Led_SDK_String Led_StdDialogHelper::GetItemText (DialogItemID itemID) const
 #endif
 }
 
-void Led_StdDialogHelper::SetItemText (DialogItemID itemID, const Led_SDK_String& text)
+void Led_StdDialogHelper::SetItemText (DialogItemID itemID, const SDKString& text)
 {
 #if qPlatform_MacOS
     Handle itemHandle;
@@ -1479,7 +1479,7 @@ Led_StdDialogHelper_AboutBox::Led_StdDialogHelper_AboutBox (int resID)
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_AboutBox::Led_StdDialogHelper_AboutBox (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
+Led_StdDialogHelper_AboutBox::Led_StdDialogHelper_AboutBox (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
 {
 }
@@ -1496,7 +1496,7 @@ void Led_StdDialogHelper_AboutBox::PreDoModalHook ()
     inherited::PreDoModalHook ();
 }
 
-void Led_StdDialogHelper_AboutBox::SimpleLayoutHelper (short pictHeight, short pictWidth, Led_Rect infoField, Led_Rect webPageField, const Led_SDK_String versionStr)
+void Led_StdDialogHelper_AboutBox::SimpleLayoutHelper (short pictHeight, short pictWidth, Led_Rect infoField, Led_Rect webPageField, const SDKString versionStr)
 {
     Handle itemHandle = NULL;
     Rect   itemRect;
@@ -1648,7 +1648,7 @@ Led_StdDialogHelper_FindDialog::Led_StdDialogHelper_FindDialog (int resID)
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_FindDialog::Led_StdDialogHelper_FindDialog (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
+Led_StdDialogHelper_FindDialog::Led_StdDialogHelper_FindDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fFindText ()
     , fRecentFindTextStrings ()
@@ -1838,7 +1838,7 @@ Led_StdDialogHelper_ReplaceDialog::Led_StdDialogHelper_ReplaceDialog (int resID)
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_ReplaceDialog::Led_StdDialogHelper_ReplaceDialog (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
+Led_StdDialogHelper_ReplaceDialog::Led_StdDialogHelper_ReplaceDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fFindText ()
     , fRecentFindTextStrings ()
@@ -2261,7 +2261,7 @@ void StdColorPickBox::OnOK ()
  ********************************** StdFilePickBox ******************************
  ********************************************************************************
  */
-StdFilePickBox::StdFilePickBox (GtkWindow* modalParentWindow, const Led_SDK_String& title, bool saveDialog, const Led_SDK_String& fileName)
+StdFilePickBox::StdFilePickBox (GtkWindow* modalParentWindow, const SDKString& title, bool saveDialog, const SDKString& fileName)
     : inherited (modalParentWindow)
     , fTitle (title)
     , fSaveDialog (saveDialog)
@@ -2291,7 +2291,7 @@ void StdFilePickBox::OnOK ()
 {
     inherited::OnOK ();
 
-    Led_SDK_String fileName = gtk_file_selection_get_filename (GTK_FILE_SELECTION (GetWindow ()));
+    SDKString fileName = gtk_file_selection_get_filename (GTK_FILE_SELECTION (GetWindow ()));
     try {
         if (fileName.empty ()) {
             throw "EMPTY";
@@ -2303,7 +2303,7 @@ void StdFilePickBox::OnOK ()
     }
 }
 
-Led_SDK_String StdFilePickBox::GetFileName () const
+SDKString StdFilePickBox::GetFileName () const
 {
     return fFileName;
 }
@@ -2316,7 +2316,7 @@ Led_SDK_String StdFilePickBox::GetFileName () const
  ********************************************************************************
  */
 
-Led_StdDialogHelper_UpdateWin32FileAssocsDialog::Led_StdDialogHelper_UpdateWin32FileAssocsDialog (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
+Led_StdDialogHelper_UpdateWin32FileAssocsDialog::Led_StdDialogHelper_UpdateWin32FileAssocsDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fAppName ()
     , fTypeList ()
@@ -2328,9 +2328,9 @@ void Led_StdDialogHelper_UpdateWin32FileAssocsDialog::PreDoModalHook ()
 {
 #if qPlatform_Windows
     ::SetForegroundWindow (GetHWND ());
-    Led_SDK_Char messageText[1024];
+    Characters::SDKChar messageText[1024];
     (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_Msg, messageText, static_cast<int> (Memory::NEltsOf (messageText)));
-    Led_SDK_String m = messageText;
+    SDKString m = messageText;
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%0"), fAppName);
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%1"), fTypeList);
     (void)::SetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_Msg, m.c_str ());
@@ -2381,7 +2381,7 @@ Led_StdDialogHelper_ParagraphIndentsDialog::Led_StdDialogHelper_ParagraphIndents
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_ParagraphIndentsDialog::Led_StdDialogHelper_ParagraphIndentsDialog (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
+Led_StdDialogHelper_ParagraphIndentsDialog::Led_StdDialogHelper_ParagraphIndentsDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fLeftMargin_Valid (false)
     , fLeftMargin_Orig (TWIPS{0})
@@ -2432,17 +2432,17 @@ void Led_StdDialogHelper_ParagraphIndentsDialog::PreDoModalHook ()
 DISABLE_COMPILER_MSC_WARNING_START (4706)
 void Led_StdDialogHelper_ParagraphIndentsDialog::OnOK ()
 {
-    Led_SDK_String leftMargin = GetItemText (kLedStdDlg_ParagraphIndents_LeftMarginFieldID);
+    SDKString leftMargin = GetItemText (kLedStdDlg_ParagraphIndents_LeftMarginFieldID);
     if (not(fLeftMargin_Valid = ParseStringToTWIPS (leftMargin, &fLeftMargin_Result))) {
         fLeftMargin_Result = fLeftMargin_Orig;
     }
 
-    Led_SDK_String rightMargin = GetItemText (kLedStdDlg_ParagraphIndents_RightMarginFieldID);
+    SDKString rightMargin = GetItemText (kLedStdDlg_ParagraphIndents_RightMarginFieldID);
     if (not(fRightMargin_Valid = ParseStringToTWIPS (rightMargin, &fRightMargin_Result))) {
         fRightMargin_Result = fRightMargin_Orig;
     }
 
-    Led_SDK_String firstIndent = GetItemText (kLedStdDlg_ParagraphIndents_FirstIndentFieldID);
+    SDKString firstIndent = GetItemText (kLedStdDlg_ParagraphIndents_FirstIndentFieldID);
     if (not(fLeftMargin_Valid = ParseStringToTWIPS (firstIndent, &fFirstIndent_Result))) {
         fFirstIndent_Result = fFirstIndent_Orig;
     }
@@ -2473,7 +2473,7 @@ Led_StdDialogHelper_ParagraphSpacingDialog::Led_StdDialogHelper_ParagraphSpacing
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_ParagraphSpacingDialog::Led_StdDialogHelper_ParagraphSpacingDialog (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
+Led_StdDialogHelper_ParagraphSpacingDialog::Led_StdDialogHelper_ParagraphSpacingDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fSpaceBefore_Valid (false)
     , fSpaceBefore_Orig (TWIPS{0})
@@ -2557,12 +2557,12 @@ void Led_StdDialogHelper_ParagraphSpacingDialog::PreDoModalHook ()
 DISABLE_COMPILER_MSC_WARNING_START (4706)
 void Led_StdDialogHelper_ParagraphSpacingDialog::OnOK ()
 {
-    Led_SDK_String spaceBefore = GetItemText (kParagraphSpacing_Dialog_SpaceBeforeFieldID);
+    SDKString spaceBefore = GetItemText (kParagraphSpacing_Dialog_SpaceBeforeFieldID);
     if (not(fSpaceBefore_Valid = ParseStringToTWIPS (spaceBefore, &fSpaceBefore_Result))) {
         fSpaceBefore_Result = fSpaceBefore_Orig;
     }
 
-    Led_SDK_String spaceAfter = GetItemText (kParagraphSpacing_Dialog_SpaceAfterFieldID);
+    SDKString spaceAfter = GetItemText (kParagraphSpacing_Dialog_SpaceAfterFieldID);
     if (not(fSpaceAfter_Valid = ParseStringToTWIPS (spaceAfter, &fSpaceAfter_Result))) {
         fSpaceAfter_Result = fSpaceAfter_Orig;
     }
@@ -2580,8 +2580,8 @@ void Led_StdDialogHelper_ParagraphSpacingDialog::OnOK ()
     if (r >= 0 and r <= 5) {
         fLineSpacing_Valid = true;
         if (r == LineSpacing::eAtLeastTWIPSSpacing or r == LineSpacing::eExactTWIPSSpacing) {
-            Led_SDK_String arg  = GetItemText (kParagraphSpacing_Dialog_SpaceAfterFieldID);
-            TWIPS          argT = TWIPS{0};
+            SDKString arg  = GetItemText (kParagraphSpacing_Dialog_SpaceAfterFieldID);
+            TWIPS     argT = TWIPS{0};
             if (ParseStringToTWIPS (arg, &argT)) {
                 fLineSpacing_Result = LineSpacing (LineSpacing::Rule (r), argT);
             }
@@ -2590,8 +2590,8 @@ void Led_StdDialogHelper_ParagraphSpacingDialog::OnOK ()
             }
         }
         else if (r == LineSpacing::eExactLinesSpacing) {
-            Led_SDK_String arg  = GetItemText (kParagraphSpacing_Dialog_LineSpaceArgFieldID);
-            int            argI = 0;
+            SDKString arg  = GetItemText (kParagraphSpacing_Dialog_LineSpaceArgFieldID);
+            int       argI = 0;
             if (ParseStringToINT (arg, &argI)) {
                 fLineSpacing_Result = LineSpacing (LineSpacing::Rule (r), argI);
             }
@@ -2624,7 +2624,7 @@ Led_StdDialogHelper_OtherFontSizeDialog::Led_StdDialogHelper_OtherFontSizeDialog
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_OtherFontSizeDialog::Led_StdDialogHelper_OtherFontSizeDialog (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
+Led_StdDialogHelper_OtherFontSizeDialog::Led_StdDialogHelper_OtherFontSizeDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fFontSize_Orig (0)
     , fFontSize_Result (0)
@@ -2674,7 +2674,7 @@ Led_StdDialogHelper_UnknownEmbeddingInfoDialog::Led_StdDialogHelper_UnknownEmbed
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_UnknownEmbeddingInfoDialog::Led_StdDialogHelper_UnknownEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
+Led_StdDialogHelper_UnknownEmbeddingInfoDialog::Led_StdDialogHelper_UnknownEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fEmbeddingTypeName ()
 {
@@ -2696,10 +2696,10 @@ void Led_StdDialogHelper_UnknownEmbeddingInfoDialog::PreDoModalHook ()
     ::ParamText (tmp, "\p", "\p", "\p");
     ::SetDialogDefaultItem (GetDialogPtr (), 1);
 #elif qPlatform_Windows
-    Led_SDK_Char messageText[1024];
+    Characters::SDKChar messageText[1024];
     (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UnknownEmbeddingInfoBox_TypeTextMsg, messageText, static_cast<int> (Memory::NEltsOf (messageText)));
 
-    Led_SDK_String m = messageText;
+    SDKString m = messageText;
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%0"), fEmbeddingTypeName);
     (void)::SetDlgItemText (GetHWND (), kLedStdDlg_UnknownEmbeddingInfoBox_TypeTextMsg, m.c_str ());
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
@@ -2737,7 +2737,7 @@ Led_StdDialogHelper_URLXEmbeddingInfoDialog::Led_StdDialogHelper_URLXEmbeddingIn
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_URLXEmbeddingInfoDialog::Led_StdDialogHelper_URLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
+Led_StdDialogHelper_URLXEmbeddingInfoDialog::Led_StdDialogHelper_URLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fEmbeddingTypeName ()
     , fTitleText ()
@@ -2781,10 +2781,10 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::PreDoModalHook ()
         ::SetDialogItemText (itemHandle, str);
     }
 #elif qPlatform_Windows
-    Led_SDK_Char messageText[1024];
+    Characters::SDKChar messageText[1024];
     (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_TypeTextMsg, messageText, static_cast<int> (Memory::NEltsOf (messageText)));
 
-    Led_SDK_String m = messageText;
+    SDKString m = messageText;
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%0"), fEmbeddingTypeName);
     (void)::SetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_TypeTextMsg, m.c_str ());
 
@@ -2823,16 +2823,16 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::OnOK ()
     {
         Str255 textPStr;
         ::GetDialogItemText (itemHandle, textPStr);
-        fTitleText = Led_SDK_String ((char*)&textPStr[1], textPStr[0]);
+        fTitleText = SDKString ((char*)&textPStr[1], textPStr[0]);
     }
     ::GetDialogItem (GetDialogPtr (), kLedStdDlg_URLXEmbeddingInfoBox_URLText, &itemType, &itemHandle, &itemRect);
     {
         Str255 textPStr;
         ::GetDialogItemText (itemHandle, textPStr);
-        fURLText = Led_SDK_String ((char*)&textPStr[1], textPStr[0]);
+        fURLText = SDKString ((char*)&textPStr[1], textPStr[0]);
     }
 #elif qPlatform_Windows
-    Led_SDK_Char bufText[1024];
+    Characters::SDKChar bufText[1024];
     (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_TitleText, bufText, static_cast<int> (Memory::NEltsOf (bufText)));
     fTitleText = bufText;
     (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_URLText, bufText, static_cast<int> (Memory::NEltsOf (bufText)));
@@ -2860,7 +2860,7 @@ Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::Led_StdDialogHelper_AddURLXEmbed
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::Led_StdDialogHelper_AddURLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
+Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::Led_StdDialogHelper_AddURLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fTitleText ()
     , fURLText ()
@@ -2935,16 +2935,16 @@ void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::OnOK ()
     {
         Str255 textPStr;
         ::GetDialogItemText (itemHandle, textPStr);
-        fTitleText = Led_SDK_String ((char*)&textPStr[1], textPStr[0]);
+        fTitleText = SDKString ((char*)&textPStr[1], textPStr[0]);
     }
     ::GetDialogItem (GetDialogPtr (), kLedStdDlg_AddURLXEmbeddingInfoBox_URLText, &itemType, &itemHandle, &itemRect);
     {
         Str255 textPStr;
         ::GetDialogItemText (itemHandle, textPStr);
-        fURLText = Led_SDK_String{(char*)&textPStr[1], textPStr[0]};
+        fURLText = SDKString{(char*)&textPStr[1], textPStr[0]};
     }
 #elif qPlatform_Windows
-    Led_SDK_Char bufText[1024];
+    Characters::SDKChar bufText[1024];
     (void)::GetDlgItemText (GetHWND (), kLedStdDlg_AddURLXEmbeddingInfoBox_TitleText, bufText, static_cast<int> (Memory::NEltsOf (bufText)));
     fTitleText = bufText;
     (void)::GetDlgItemText (GetHWND (), kLedStdDlg_AddURLXEmbeddingInfoBox_URLText, bufText, static_cast<int> (Memory::NEltsOf (bufText)));
@@ -2969,7 +2969,7 @@ Led_StdDialogHelper_AddNewTableDialog::Led_StdDialogHelper_AddNewTableDialog (in
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_AddNewTableDialog::Led_StdDialogHelper_AddNewTableDialog (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
+Led_StdDialogHelper_AddNewTableDialog::Led_StdDialogHelper_AddNewTableDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fRows (0)
     , fColumns (0)
@@ -3037,7 +3037,7 @@ Led_StdDialogHelper_EditTablePropertiesDialog::Led_StdDialogHelper_EditTableProp
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_EditTablePropertiesDialog::Led_StdDialogHelper_EditTablePropertiesDialog (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
+Led_StdDialogHelper_EditTablePropertiesDialog::Led_StdDialogHelper_EditTablePropertiesDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fInfo ()
     , fBorderColorPopup (false)
@@ -3201,7 +3201,7 @@ Led_StdDialogHelper_SpellCheckDialog::Led_StdDialogHelper_SpellCheckDialog (Spel
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_SpellCheckDialog::Led_StdDialogHelper_SpellCheckDialog (SpellCheckDialogCallback& callback, HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
+Led_StdDialogHelper_SpellCheckDialog::Led_StdDialogHelper_SpellCheckDialog (SpellCheckDialogCallback& callback, HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fCallback (callback)
     , fCurrentMisspellInfo (NULL)

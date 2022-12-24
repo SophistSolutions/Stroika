@@ -55,6 +55,8 @@ namespace Stroika::Frameworks::Led {
 
     using std::byte;
 
+    using Foundation::Characters::SDKString;
+
     constexpr size_t kBadIndex = size_t (-1);
 
     /*
@@ -172,71 +174,26 @@ namespace Stroika::Frameworks::Led {
     */
     const Led_tChar* Led_tStrChr (const Led_tChar* s, Led_tChar c);
 
-    /*
-    @CLASS:         Led_SDK_Char
-    @DESCRIPTION:   <p>See @'Led_SDK_String'</p>
-    */
-#if qSDK_UNICODE
-    using Led_SDK_Char = wchar_t;
-#else
-    using Led_SDK_Char                   = char;
-#endif
-
-/*
-    @CLASS:         Led_SDK_String
-    @DESCRIPTION:   <p>Expands to either the ANSI @'string' or the ANSI @'wstring' class, depending on the
-        value of the configuration define @'qSDK_UNICODE'.</p>
-            <p>This is rarely used - but is used for things like font names, and other system IO strings
-        that may need to be in one format or another.</p>
-    */
-#if qSDK_UNICODE
-    using Led_SDK_String = wstring;
-#else
-    using Led_SDK_String                 = string;
-#endif
-
 /*
     @CLASS:         Led_SDK_TCHAROF
-    @DESCRIPTION:   <p>Like the Win32SDK macro _T(). See @'Led_SDK_String'.</p>
+    @DESCRIPTION:   <p>Like the Win32SDK macro _T(). See @'SDKString'.</p>
     */
-#if qSDK_UNICODE
+#if qTargetPlatformSDKUseswchar_t
 #define Led_SDK_TCHAROF(X) LED_TCHAR_OF__ (X)
 #else
 #define Led_SDK_TCHAROF(X) X
 #endif
-
-    wstring ACP2WideString (const string& s);
-    string  Wide2ACPString (const wstring& s);
-
-    /*
-    @METHOD:        Led_ANSI2SDKString
-    @DESCRIPTION:
-    */
-    Led_SDK_String Led_ANSI2SDKString (const string& s);
-
-    /*
-    @METHOD:        Led_Wide2SDKString
-    @DESCRIPTION:
-    */
-    Led_SDK_String Led_Wide2SDKString (const wstring& s);
-
-    /*
-    @METHOD:        Led_SDKString2ANSI
-    @DESCRIPTION:
-    */
-    string Led_SDKString2ANSI (const Led_SDK_String& s);
-
-    /*
-    @METHOD:        Led_SDKString2Wide
-    @DESCRIPTION:
-    */
-    wstring Led_SDKString2Wide (const Led_SDK_String& s);
+    using Foundation::Characters::NarrowSDK2SDKString;
+    using Foundation::Characters::NarrowSDKStringToWide;
+    using Foundation::Characters::SDKString2NarrowSDK;
+    using Foundation::Characters::SDKString2Wide;
+    using Foundation::Characters::Wide2SDKString;
 
     /*
     @METHOD:        Led_tString2SDKString
     @DESCRIPTION:
     */
-    Led_SDK_String Led_tString2SDKString (const Led_tString& s);
+    SDKString Led_tString2SDKString (const Led_tString& s);
 
     /*
     @METHOD:        Led_WideString2tString
@@ -248,7 +205,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        Led_SDKString2tString
     @DESCRIPTION:
     */
-    Led_tString Led_SDKString2tString (const Led_SDK_String& s);
+    Led_tString Led_SDKString2tString (const SDKString& s);
 
     /*
     @METHOD:        Led_ANSIString2tString
@@ -412,27 +369,26 @@ namespace Stroika::Frameworks::Led {
     template <typename DATA>
     struct DiscontiguousRunElement {
         DiscontiguousRunElement (size_t offset, size_t length)
-            : fOffsetFromPrev (offset)
-            , fElementLength (length)
-            , fData ()
+            : fOffsetFromPrev{offset}
+            , fElementLength{length}
         {
         }
         DiscontiguousRunElement (size_t offset, size_t length, const DATA& data)
-            : fOffsetFromPrev (offset)
-            , fElementLength (length)
-            , fData (data)
+            : fOffsetFromPrev{offset}
+            , fElementLength{length}
+            , fData{data}
         {
         }
 
         size_t fOffsetFromPrev;
         size_t fElementLength;
-        DATA   fData;
+        DATA   fData{};
     };
     template <>
     struct DiscontiguousRunElement<void> {
         DiscontiguousRunElement (size_t offset, size_t length)
-            : fOffsetFromPrev (offset)
-            , fElementLength (length)
+            : fOffsetFromPrev{offset}
+            , fElementLength{length}
         {
         }
         size_t fOffsetFromPrev;

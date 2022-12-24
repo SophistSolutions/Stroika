@@ -33,15 +33,15 @@ void FixupFontMenu (CMenu* fontMenu)
         ;
     }
 
-    vector<Led_SDK_String> fontNames = sInstalledFonts.GetUsableFontNames ();
+    vector<SDKString> fontNames = sInstalledFonts.GetUsableFontNames ();
     for (UINT i = 0; i < fontNames.size (); ++i) {
         int cmdNum = cmdFontMenuFirst + i;
         fontMenu->AppendMenu (MF_STRING, cmdNum, fontNames[i].c_str ());
     }
 }
 
-Led_SDK_String CmdNumToFontName (UINT cmdNum)
+SDKString CmdNumToFontName (UINT cmdNum)
 {
-    vector<Led_SDK_String> fontNames = sInstalledFonts.GetUsableFontNames ();
+    vector<SDKString> fontNames = sInstalledFonts.GetUsableFontNames ();
     return (fontNames[cmdNum - cmdFontMenuFirst]);
 }

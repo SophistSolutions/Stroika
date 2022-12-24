@@ -44,7 +44,7 @@ using Stroika::Foundation::Memory::StackBuffer;
 static void AppendFilterSuffix (CString& filter, OPENFILENAME& ofn, CString strFilterExt, CString strFilterName);
 static void AppendFilterSuffix (CString& filter, OPENFILENAME& ofn, CDocTemplate* pTemplate);
 
-static Led_SDK_String MapCodePageToPrettyName (CodePage cp)
+static SDKString MapCodePageToPrettyName (CodePage cp)
 {
     switch (cp) {
         case kAutomaticallyGuessCodePage:
@@ -119,7 +119,7 @@ END_MESSAGE_MAP ()
 namespace {
     class LineTooLongOnReadDialog : public CDialog {
     public:
-        LineTooLongOnReadDialog (const Led_SDK_String& message, size_t breakCount)
+        LineTooLongOnReadDialog (const SDKString& message, size_t breakCount)
             : CDialog (kLineTooLongOnRead_DialogID)
             , fMessage (message)
             , fBreakCount (breakCount)
@@ -145,7 +145,7 @@ namespace {
         }
 
     private:
-        Led_SDK_String fMessage;
+        SDKString fMessage;
 
     public:
         size_t fBreakCount;

@@ -106,7 +106,7 @@ namespace Stroika::Frameworks::Led::Platform {
         virtual shared_ptr<FlavorPackageInternalizer> MakeDefaultInternalizer () override;
 #endif
     public:
-        virtual Led_SDK_String GetPrettyTypeName (SimpleEmbeddedObjectStyleMarker* m) override;
+        virtual SDKString GetPrettyTypeName (SimpleEmbeddedObjectStyleMarker* m) override;
 
     protected:
         DECLARE_MESSAGE_MAP ()
@@ -182,10 +182,10 @@ namespace Stroika::Frameworks::Led::Platform {
 
         // Support RTFIO::RTFOLEEmbedding API
     public:
-        virtual void           PostCreateSpecifyExtraInfo (TWIPS_Point size) override;
-        virtual Led_SDK_String GetObjClassName () const override;
-        virtual void           DoWriteToOLE1Stream (size_t* nBytes, byte** resultData) override;
-        virtual Led_Size       GetSize () override;
+        virtual void      PostCreateSpecifyExtraInfo (TWIPS_Point size) override;
+        virtual SDKString GetObjClassName () const override;
+        virtual void      DoWriteToOLE1Stream (size_t* nBytes, byte** resultData) override;
+        virtual Led_Size  GetSize () override;
 
     public:
         virtual const char* GetTag () const override;
@@ -260,7 +260,7 @@ namespace Stroika::Frameworks::Led::Platform {
     }
 #endif
     template <typename BASECLASS>
-    Led_SDK_String WordProcessorCommonCommandHelper_MFC<BASECLASS>::GetPrettyTypeName (SimpleEmbeddedObjectStyleMarker* m)
+    SDKString WordProcessorCommonCommandHelper_MFC<BASECLASS>::GetPrettyTypeName (SimpleEmbeddedObjectStyleMarker* m)
     {
 #if qSupportOLEControlEmbedding
         if (dynamic_cast<Led_MFC_ControlItem*> (m) != NULL) {

@@ -306,12 +306,12 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
                               eBidi };
 
         public:
-            Led_SDK_String fFontName; //  font name
-            int            fFNum;     //  font number
-            FontFamily     fFamily;   //  font family
-            uint8_t        fCharSet;  //  font charset (from https://msdn.microsoft.com/en-us/library/windows/desktop/dd145037(v=vs.85).aspx - this is a byte)
-            int            fPitch;    //  font pitch
-            int            fCodePage; //  font code page
+            SDKString  fFontName; //  font name
+            int        fFNum;     //  font number
+            FontFamily fFamily;   //  font family
+            uint8_t    fCharSet;  //  font charset (from https://msdn.microsoft.com/en-us/library/windows/desktop/dd145037(v=vs.85).aspx - this is a byte)
+            int        fPitch;    //  font pitch
+            int        fCodePage; //  font code page
         };
 
         /*
@@ -325,10 +325,10 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             FontTable (const vector<FontTableEntry>& fontTable);
 
         public:
-            nonvirtual IncrementalFontSpecification GetFontSpec (int fontNumber);                   // throws if not present
-            nonvirtual const FontTableEntry*        LookupEntryByNumber (int fontNumber);           // return nullptr if not present
-            nonvirtual const FontTableEntry*        LookupEntryByName (const Led_SDK_String& name); // return nullptr if not present
-            nonvirtual FontTableEntry               Add (const FontTableEntry& newEntry);           // ignores the fFNum, and supplies its own! - returns same entry but with revised fFNum
+            nonvirtual IncrementalFontSpecification GetFontSpec (int fontNumber);              // throws if not present
+            nonvirtual const FontTableEntry*        LookupEntryByNumber (int fontNumber);      // return nullptr if not present
+            nonvirtual const FontTableEntry*        LookupEntryByName (const SDKString& name); // return nullptr if not present
+            nonvirtual FontTableEntry               Add (const FontTableEntry& newEntry);      // ignores the fFNum, and supplies its own! - returns same entry but with revised fFNum
             nonvirtual int                          FindSmallestUnusedFontNumber () const;
 
         public:
@@ -403,10 +403,10 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         public:
             static const Led_PrivateEmbeddingTag kEmbeddingTag;
 
-            virtual void           PostCreateSpecifyExtraInfo (TWIPS_Point size)           = 0;
-            virtual Led_SDK_String GetObjClassName () const                                = 0;
-            virtual void           DoWriteToOLE1Stream (size_t* nBytes, byte** resultData) = 0;
-            virtual Led_Size       GetSize ()                                              = 0;
+            virtual void      PostCreateSpecifyExtraInfo (TWIPS_Point size)           = 0;
+            virtual SDKString GetObjClassName () const                                = 0;
+            virtual void      DoWriteToOLE1Stream (size_t* nBytes, byte** resultData) = 0;
+            virtual Led_Size  GetSize ()                                              = 0;
         };
     };
 

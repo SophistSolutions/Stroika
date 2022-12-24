@@ -1015,7 +1015,7 @@ STDMETHODIMP ActiveLedIt_MenuItemPopup::AppendSelfToMenu (HMENU menu, IDispatch*
     try {
         HMENU subMenu = NULL;
         Led_ThrowIfErrorHRESULT (GeneratePopupMenu (acceleratorTable, &subMenu));
-        ::AppendMenu (menu, MF_POPUP, reinterpret_cast<UINT_PTR> (subMenu), Led_Wide2SDKString (L"&" + fName).c_str ());
+        ::AppendMenu (menu, MF_POPUP, reinterpret_cast<UINT_PTR> (subMenu), Wide2SDKString (L"&" + fName).c_str ());
         return S_OK;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ()
@@ -1097,7 +1097,7 @@ STDMETHODIMP AL_CommandHelper::AppendSelfToMenu (HMENU menu, IDispatch* accelera
                     }
                     if (modFlag & eVIRTKEY) {
                         if (VK_F1 <= key and key <= VK_F12) {
-                            suffix += Led_SDKString2Wide (Characters::CString::Format (Led_SDK_TCHAROF ("F%d"), key + 1 - VK_F1));
+                            suffix += SDKString2Wide (Characters::CString::Format (Led_SDK_TCHAROF ("F%d"), key + 1 - VK_F1));
                         }
                         else if (key == VK_SUBTRACT) {
                             suffix += L"Num-";
@@ -1130,7 +1130,7 @@ STDMETHODIMP AL_CommandHelper::AppendSelfToMenu (HMENU menu, IDispatch* accelera
                 }
             }
         }
-        ::AppendMenu (menu, fCommandNumber == 0 ? MF_SEPARATOR : MF_STRING, fCommandNumber, Led_Wide2SDKString ((fCommandNumber == 0 ? L"" : L"&") + fName + suffix).c_str ());
+        ::AppendMenu (menu, fCommandNumber == 0 ? MF_SEPARATOR : MF_STRING, fCommandNumber, Wide2SDKString ((fCommandNumber == 0 ? L"" : L"&") + fName + suffix).c_str ());
         return S_OK;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ()
@@ -1195,13 +1195,13 @@ ActiveLedIt_BuiltinCommand* ActiveLedIt_BuiltinCommand::mk (const BuiltinCmdSpec
     Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_BuiltinCommand>::CreateInstance (&o));
     try {
         if constexpr (qCompilerAndStdLib_ATL_Assign_wstring_COMOBJ_Buggy) {
-            wstring tmp = ACP2WideString (cmdSpec.fCmdName);
+            wstring tmp = NarrowSDKStringToWide (cmdSpec.fCmdName);
             o->fName    = move (tmp);
         }
         else {
-            o->fName = ACP2WideString (cmdSpec.fCmdName);
+            o->fName = NarrowSDKStringToWide (cmdSpec.fCmdName);
         }
-        o->fInternalName  = NormalizeCmdNameToInternal (ACP2WideString (cmdSpec.fInternalCmdName));
+        o->fInternalName  = NormalizeCmdNameToInternal (NarrowSDKStringToWide (cmdSpec.fInternalCmdName));
         o->fCommandNumber = cmdSpec.fCmdNum;
         return o;
     }
@@ -1225,9 +1225,9 @@ void ActiveLedIt_BuiltinCommand::FinalRelease ()
  ********************************** mkFontNameCMDName ***************************
  ********************************************************************************
  */
-string mkFontNameCMDName (const Led_SDK_String& fontName)
+string mkFontNameCMDName (const SDKString& fontName)
 {
-    return kFontNameCMDPrefix + Led_SDKString2ANSI (fontName);
+    return kFontNameCMDPrefix + SDKString2NarrowSDK (fontName);
 }
 
 /*
@@ -1244,7 +1244,7 @@ CComPtr<IDispatch> GenerateBuiltinCommandsObject ()
 
     o->AppendBuiltinCmds (kAllCmds, kAllCmds + Memory::NEltsOf (kAllCmds));
     {
-        const vector<Led_SDK_String>& fontNames = GetUsableFontNames ();
+        const vector<SDKString>& fontNames = GetUsableFontNames ();
         Assert (fontNames.size () <= kLastFontNameCmd - kBaseFontNameCmd + 1);
         for (UINT i = 0; i < fontNames.size (); ++i) {
             UINT cmdNum = kBaseFontNameCmd + i;
@@ -1252,7 +1252,7 @@ CComPtr<IDispatch> GenerateBuiltinCommandsObject ()
                 break; // asserted out before above - now just ignore extra font names...
             }
             ActiveLedIt_BuiltinCommand* c = ActiveLedIt_BuiltinCommand::mk (BuiltinCmdSpec (cmdNum, mkFontNameCMDName (fontNames[i]).c_str ()));
-            c->SetName (Led_SDKString2Wide (fontNames[i]));
+            c->SetName (SDKString2Wide (fontNames[i]));
             o->Append (c);
         }
     }
@@ -1270,20 +1270,20 @@ UINT CmdObjOrName2Num (const VARIANT& cmdObjOrName)
     if (SUCCEEDED (c.ChangeType (VT_BSTR))) {
         wstring lookForCmdName = c.bstrVal == NULL ? wstring () : wstring (c.bstrVal);
         for (const BuiltinCmdSpec* i = kAllCmds; i != kAllCmds + Memory::NEltsOf (kAllCmds); ++i) {
-            if (NormalizeCmdNameToInternal (ACP2WideString ((*i).fInternalCmdName)) == lookForCmdName) {
+            if (NormalizeCmdNameToInternal (NarrowSDKStringToWide ((*i).fInternalCmdName)) == lookForCmdName) {
                 return (*i).fCmdNum;
             }
         }
 
-        if (lookForCmdName.length () > kFontNameCMDPrefix.length () and lookForCmdName.substr (0, kFontNameCMDPrefix.length ()) == ACP2WideString (kFontNameCMDPrefix)) {
-            const vector<Led_SDK_String>& fontNames = GetUsableFontNames ();
+        if (lookForCmdName.length () > kFontNameCMDPrefix.length () and lookForCmdName.substr (0, kFontNameCMDPrefix.length ()) == NarrowSDKStringToWide (kFontNameCMDPrefix)) {
+            const vector<SDKString>& fontNames = GetUsableFontNames ();
             Assert (fontNames.size () <= kLastFontNameCmd - kBaseFontNameCmd + 1);
             for (UINT i = 0; i < fontNames.size (); ++i) {
                 UINT cmdNum = kBaseFontNameCmd + i;
                 if (cmdNum > kLastFontNameCmd) {
                     break; // asserted out before above - now just ignore extra font names...
                 }
-                if (lookForCmdName == NormalizeCmdNameToInternal (ACP2WideString (mkFontNameCMDName (fontNames[i])))) {
+                if (lookForCmdName == NormalizeCmdNameToInternal (NarrowSDKStringToWide (mkFontNameCMDName (fontNames[i])))) {
                     return cmdNum;
                 }
             }
@@ -1327,17 +1327,17 @@ wstring CmdNum2Name (UINT cmdNum)
     // regular builtin CMD
     for (const BuiltinCmdSpec* i = kAllCmds; i != kAllCmds + Memory::NEltsOf (kAllCmds); ++i) {
         if ((*i).fCmdNum == cmdNum) {
-            return NormalizeCmdNameToInternal (ACP2WideString ((*i).fInternalCmdName));
+            return NormalizeCmdNameToInternal (NarrowSDKStringToWide ((*i).fInternalCmdName));
         }
     }
 
     // Dynamic font name command
     if (kBaseFontNameCmd <= cmdNum and cmdNum <= kLastFontNameCmd) {
-        const vector<Led_SDK_String>& fontNames = GetUsableFontNames ();
+        const vector<SDKString>& fontNames      = GetUsableFontNames ();
         size_t                        i         = cmdNum - kBaseFontNameCmd;
         i                                       = max (fontNames.size () - 1, i);
         i                                       = max (fontNames.size (), i);
-        return NormalizeCmdNameToInternal (ACP2WideString (mkFontNameCMDName (fontNames[i])));
+        return NormalizeCmdNameToInternal (NarrowSDKStringToWide (mkFontNameCMDName (fontNames[i])));
     }
 
     // USER command

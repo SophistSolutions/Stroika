@@ -21,6 +21,8 @@
 
 namespace Stroika::Frameworks::Led {
 
+    using Foundation::Characters::SDKChar;
+
     class TextInteractor;
 
     /*
@@ -45,7 +47,7 @@ namespace Stroika::Frameworks::Led {
         virtual bool UpdateSimpleTextInsert (size_t insertAt, Led_tChar c);
 
     public:
-        virtual const Led_SDK_Char* GetName () const;
+        virtual const SDKChar* GetName () const;
 
     public:
         nonvirtual bool GetDone () const; // true if DONE or REDONE
@@ -91,7 +93,7 @@ namespace Stroika::Frameworks::Led {
         @DESCRIPTION:   <p>Like @'CommandHandler::BreakInGroupedCommands', except that it only calls BreakInGroupedCommands
                     if the given command name is different than the previous command posted (@'CommandHandler::Post').</p>
         */
-        virtual void BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName) = 0;
+        virtual void BreakInGroupedCommandsIfDifferentCommand (const SDKString& cmdName) = 0;
         /*
         @METHOD:        CommandHandler::DoUndo
         @DESCRIPTION:   <p>Perform a single undo action. This will undo all the command objects in the current group of commands
@@ -126,9 +128,9 @@ namespace Stroika::Frameworks::Led {
         @DESCRIPTION:   <p>Retreives the text associated with each command to denote in a UI what command is being undone,
             or redone.</p>
         */
-        virtual size_t              GetUndoRedoWhatMessageText (char* buf, size_t bufSize); // return nbytes - not NUL term string...
-        virtual const Led_SDK_Char* GetUndoCmdName () = 0;                                  // don't free result - we keep
-        virtual const Led_SDK_Char* GetRedoCmdName () = 0;                                  // don't free result - we keep
+        virtual size_t         GetUndoRedoWhatMessageText (char* buf, size_t bufSize); // return nbytes - not NUL term string...
+        virtual const SDKChar* GetUndoCmdName () = 0;                                  // don't free result - we keep
+        virtual const SDKChar* GetRedoCmdName () = 0;                                  // don't free result - we keep
     };
 
     /*
@@ -142,17 +144,17 @@ namespace Stroika::Frameworks::Led {
         SingleUndoCommandHandler ();
 
     public:
-        virtual void                Post (Command* newCommand) override;
-        virtual bool                PostUpdateSimpleTextInsert (size_t insertAt, Led_tChar c) override;
-        virtual void                BreakInGroupedCommands () override;
-        virtual void                BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName) override;
-        virtual void                DoUndo (TextInteractor& interactor) override;
-        virtual void                DoRedo (TextInteractor& interactor) override;
-        virtual void                Commit () override;
-        virtual bool                CanUndo () override;
-        virtual bool                CanRedo () override;
-        virtual const Led_SDK_Char* GetUndoCmdName () override;
-        virtual const Led_SDK_Char* GetRedoCmdName () override;
+        virtual void           Post (Command* newCommand) override;
+        virtual bool           PostUpdateSimpleTextInsert (size_t insertAt, Led_tChar c) override;
+        virtual void           BreakInGroupedCommands () override;
+        virtual void           BreakInGroupedCommandsIfDifferentCommand (const SDKString& cmdName) override;
+        virtual void           DoUndo (TextInteractor& interactor) override;
+        virtual void           DoRedo (TextInteractor& interactor) override;
+        virtual void           Commit () override;
+        virtual bool           CanUndo () override;
+        virtual bool           CanRedo () override;
+        virtual const SDKChar* GetUndoCmdName () override;
+        virtual const SDKChar* GetRedoCmdName () override;
 
         virtual bool GetDone () const;
 
@@ -177,17 +179,17 @@ namespace Stroika::Frameworks::Led {
         virtual ~MultiLevelUndoCommandHandler ();
 
     public:
-        virtual void                Post (Command* newCommand) override;
-        virtual bool                PostUpdateSimpleTextInsert (size_t insertAt, Led_tChar c) override;
-        virtual void                BreakInGroupedCommands () override;
-        virtual void                BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName) override;
-        virtual void                DoUndo (TextInteractor& interactor) override;
-        virtual void                DoRedo (TextInteractor& interactor) override;
-        virtual void                Commit () override; // Commit all commands currently owned - something has happened to invalidate them...
-        virtual bool                CanUndo () override;
-        virtual bool                CanRedo () override;
-        virtual const Led_SDK_Char* GetUndoCmdName () override;
-        virtual const Led_SDK_Char* GetRedoCmdName () override;
+        virtual void           Post (Command* newCommand) override;
+        virtual bool           PostUpdateSimpleTextInsert (size_t insertAt, Led_tChar c) override;
+        virtual void           BreakInGroupedCommands () override;
+        virtual void           BreakInGroupedCommandsIfDifferentCommand (const SDKString& cmdName) override;
+        virtual void           DoUndo (TextInteractor& interactor) override;
+        virtual void           DoRedo (TextInteractor& interactor) override;
+        virtual void           Commit () override; // Commit all commands currently owned - something has happened to invalidate them...
+        virtual bool           CanUndo () override;
+        virtual bool           CanRedo () override;
+        virtual const SDKChar* GetUndoCmdName () override;
+        virtual const SDKChar* GetRedoCmdName () override;
 
     public:
         nonvirtual size_t GetMaxUnDoLevels ();
@@ -232,16 +234,16 @@ namespace Stroika::Frameworks::Led {
         nonvirtual CommandHandler* GetRealHandler () const;
 
     public:
-        virtual void                Post (Command* newCommand) override;
-        virtual void                BreakInGroupedCommands () override;
-        virtual void                BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName) override;
-        virtual void                DoUndo (TextInteractor& interactor) override;
-        virtual void                DoRedo (TextInteractor& interactor) override;
-        virtual void                Commit () override;
-        virtual bool                CanUndo () override;
-        virtual bool                CanRedo () override;
-        virtual const Led_SDK_Char* GetUndoCmdName () override;
-        virtual const Led_SDK_Char* GetRedoCmdName () override;
+        virtual void           Post (Command* newCommand) override;
+        virtual void           BreakInGroupedCommands () override;
+        virtual void           BreakInGroupedCommandsIfDifferentCommand (const SDKString& cmdName) override;
+        virtual void           DoUndo (TextInteractor& interactor) override;
+        virtual void           DoRedo (TextInteractor& interactor) override;
+        virtual void           Commit () override;
+        virtual bool           CanUndo () override;
+        virtual bool           CanRedo () override;
+        virtual const SDKChar* GetUndoCmdName () override;
+        virtual const SDKChar* GetRedoCmdName () override;
 
     protected:
         virtual void Snoop (Command* newCommand) = 0;
@@ -271,7 +273,7 @@ namespace Stroika::Frameworks::Led {
         class PlainTextRep;
 
     public:
-        InteractiveReplaceCommand (SavedTextRep* beforeRegion, SavedTextRep* afterRegion, size_t at, const Led_SDK_String& cmdName);
+        InteractiveReplaceCommand (SavedTextRep* beforeRegion, SavedTextRep* afterRegion, size_t at, const SDKString& cmdName);
         ~InteractiveReplaceCommand ();
 
     public:
@@ -283,13 +285,13 @@ namespace Stroika::Frameworks::Led {
         virtual bool UpdateSimpleTextInsert (size_t insertAt, Led_tChar c) override;
 
     public:
-        virtual const Led_SDK_Char* GetName () const override;
+        virtual const SDKChar* GetName () const override;
 
     protected:
-        SavedTextRep*  fBeforeRegion;
-        SavedTextRep*  fAfterRegion;
-        size_t         fAt;
-        Led_SDK_String fCmdName;
+        SavedTextRep* fBeforeRegion;
+        SavedTextRep* fAfterRegion;
+        size_t        fAt;
+        SDKString     fCmdName;
     };
 
     /*

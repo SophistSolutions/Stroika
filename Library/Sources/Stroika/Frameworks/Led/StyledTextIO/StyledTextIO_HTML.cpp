@@ -1074,7 +1074,7 @@ IncrementalFontSpecification StyledTextIOReader_HTML::ExtractFontSpecFromCSSStyl
         if (comma != string::npos) {
             itemValue = itemValue.substr (0, comma);
         }
-        f.SetFontName (Led_ANSI2SDKString (itemValue));
+        f.SetFontName (NarrowSDK2SDKString (itemValue));
     }
     if (ParseCSSTagArgOut (fullCSSString, "font-size", &itemValue)) {
         if (itemValue.length () >= 3 and
@@ -1323,7 +1323,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_font (bool start, const char* 
             if (tagValue.find (',') != string::npos) {
                 tagValue = tagValue.substr (0, tagValue.find (','));
             }
-            fsp.SetFontName (Led_ANSI2SDKString (tagValue));
+            fsp.SetFontName (NarrowSDK2SDKString (tagValue));
 #if qPlatform_MacOS
             // cuz the mac does so badly on this, and just sets the font to chicago if its unknown, and cuz
             // this looks so bad, try a nicer default font...
@@ -2522,7 +2522,7 @@ void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerConte
         if (not IsTagOnStack (writerContext, "span")) {
             char   sprintfBuffer[1024];
             string cssInfo = "style=\"";
-            cssInfo += "font-family: '" + Led_SDKString2ANSI (newOne.GetFontName ()) + "'; ";
+            cssInfo += "font-family: '" + SDKString2NarrowSDK (newOne.GetFontName ()) + "'; ";
             cssInfo += (snprintf (sprintfBuffer, Memory::NEltsOf (sprintfBuffer), "font-size: %dpt; ", newOne.GetPointSize ()), sprintfBuffer);
             cssInfo += "color: " + PrintColorString (newOne.GetTextColor ());
             cssInfo += "\"";
@@ -2530,7 +2530,7 @@ void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerConte
 #if 1
                           cssInfo
 #else
-                          "face=\"" + Led_SDKString2ANSI (newOne.GetFontName ()) +
+                          "face=\"" + SDKString2NarrowSDK (newOne.GetFontName ()) +
                               "\" size=\"" + Led_NumberToDigitChar (HTMLInfo::RealFontSizeToHTMLFontSize (newOne.GetPointSize ())) +
                               "\" color=" + PrintColorString (newOne.GetTextColor ())
 #endif

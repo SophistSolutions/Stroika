@@ -583,7 +583,7 @@ void LedLineItView::OnUpdateFontNameChangeCommand (CCmdUI* pCmdUI)
 
     // check the item iff it is the currently selected font.
     // But always enable them...
-    Led_SDK_String fontName = CmdNumToFontName (pCmdUI->m_nID);
+    SDKString fontName = CmdNumToFontName (pCmdUI->m_nID);
 
     pCmdUI->SetCheck (fontName == GetDefaultFont ().GetFontName ());
     pCmdUI->Enable (true);
@@ -591,7 +591,7 @@ void LedLineItView::OnUpdateFontNameChangeCommand (CCmdUI* pCmdUI)
 
 void LedLineItView::OnFontNameChangeCommand (UINT cmdNum)
 {
-    Led_SDK_String               fontName = CmdNumToFontName (cmdNum);
+    SDKString                    fontName = CmdNumToFontName (cmdNum);
     IncrementalFontSpecification applyFontSpec;
     applyFontSpec.SetFontName (fontName);
     SetDefaultFont (applyFontSpec);
