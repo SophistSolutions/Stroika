@@ -382,13 +382,13 @@ namespace {
     }
 }
 Logger::SysLogAppender::SysLogAppender (const String& applicationName)
-    : fApplicationName_ (mkMsg_ (applicationName))
+    : fApplicationName_{mkMsg_ (applicationName)}
 {
     ::openlog (fApplicationName_.c_str (), 0, LOG_DAEMON); // not sure what facility to pass?
 }
 
 Logger::SysLogAppender::SysLogAppender (const String& applicationName, int facility)
-    : fApplicationName_ (mkMsg_ (applicationName))
+    : fApplicationName_{mkMsg_ (applicationName)}
 {
     ::openlog (fApplicationName_.c_str (), 0, facility);
 }
