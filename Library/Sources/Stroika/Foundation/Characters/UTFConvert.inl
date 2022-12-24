@@ -153,16 +153,14 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename SRC_T, typename TRG_T>
     inline auto UTFConverter::Convert (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResult
-        requires (not is_const_v<TRG_T>) 
-    {
-        Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
-        if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
-            copy (source, target, source.size ()); // pointless conversion, but if requested...
-            return source.size ();
-        }
-        return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
-    }
-    template <typename TO, typename FROM>
+        requires (not is_const_v<TRG_T>) {
+            Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
+            if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
+                copy (source, target, source.size ()); // pointless conversion, but if requested...
+                return source.size ();
+            }
+            return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
+        } template <typename TO, typename FROM>
         inline TO UTFConverter::Convert (const FROM& from) const
         requires (
             (is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
