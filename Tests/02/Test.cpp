@@ -602,12 +602,12 @@ namespace {
         wstring                   w = L"<PHRMode";
         using namespace Characters;
         using namespace Memory;
-        CodePageConverter cpc (kCodePage_UTF8, CodePageConverter::eHandleBOM);
+        CodePageConverter cpc {kCodePage_UTF8, CodePageConverter::eHandleBOM};
         size_t            sz = cpc.MapFromUNICODE_QuickComputeOutBufSize (w.c_str (), w.length ());
         StackBuffer<char> buf{sz + 1};
         size_t            charCnt = sz;
         cpc.MapFromUNICODE (w.c_str (), w.length (), buf.data (), &charCnt);
-        VerifyTestResult ((string{buf.begin (), buf.begin () + charCnt} == "﻿<PHRMode"));
+        VerifyTestResult ((string{buf.begin (), charCnt} == "﻿<PHRMode"));
     }
 }
 
