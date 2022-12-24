@@ -1787,7 +1787,7 @@ void WordProcessor::OnTypedNormalCharacter (Led_tChar theChar, bool optionPresse
             size_t                         scanBackTo    = static_cast<size_t> (max (0, static_cast<int> (selStart) - static_cast<int> (kScanBackSize)));
             Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, kScanBackSize};
             size_t                         scanBackCount = selStart - scanBackTo;
-            CopyOut (scanBackTo, scanBackCount, buf);
+            CopyOut (scanBackTo, scanBackCount, buf.data ());
             for (size_t i = scanBackCount; i != 0; --i) {
                 if (buf[i - 1] == kSpecialCloseQuote) {
                     // then last thing was a close quote - so next is OPEN
@@ -3422,8 +3422,8 @@ DistanceType WordProcessor::GetListLeaderLength (size_t paragraphMarkerPos) cons
         FontSpecification                 useBulletFont      = GetStaticDefaultFont ();
         useBulletFont.SetPointSize (max (static_cast<unsigned short> (14), nextCharsFontStyle.GetPointSize ()));
         MeasureSegmentWidth_ (useBulletFont, paragraphMarkerPos, paragraphMarkerPos + len,
-                              leader.c_str (), distanceResults);
-        (void)ResetTabStopsWithMargin (lhs, paragraphMarkerPos, leader.c_str (), len, distanceResults, 0);
+                              leader.c_str (), distanceResults.data ());
+        (void)ResetTabStopsWithMargin (lhs, paragraphMarkerPos, leader.c_str (), len, distanceResults.data (), 0);
         DistanceType result = distanceResults[len - 1];
         return result;
     }
@@ -4347,7 +4347,7 @@ DistanceType WordProcessor::CalcSpaceToEat (size_t rowContainingCharPos) const
     {
         size_t                         lenOfText = rowEnd - rowStart;
         Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, lenOfText};
-        CopyOut (rowStart, lenOfText, buf);
+        CopyOut (rowStart, lenOfText, buf.data ());
         // Throw away trailing space characters
         while (rowStart < rowEnd) {
             size_t i = rowEnd - rowStart - 1;
@@ -5560,7 +5560,7 @@ void WordProcessor::WPPartition::Invariant_ () const
             --len; // Last partition extends past end of text
         }
         Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
-        CopyOut (start, len, buf);
+        CopyOut (start, len, buf.data ());
         for (size_t i = 1; i < len; ++i) {
             Assert (buf[i - 1] != '\n');
             vector<Table*> tables = GetTablesInRange (start + i - 1, start + i);

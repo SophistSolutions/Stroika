@@ -267,9 +267,13 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          * All the constructors are obvious, except to note that NUL-character ARE allowed in strings,
-         * except for the case of single char* argument constructors - which find the length based on
+         * except for the case of single charX* argument constructors - which find the length based on
          * the terminating NUL-character.
          *
+         *  \note about lifetime of argument data
+         *        All data is copied out / saved by the end of the constructor for all constructors EXCEPT
+         *        the basic_string_view<wchar_t> constructor - where it is REQUIRED the data last 'forever'.
+         * 
          *  \req for String (const basic_string_view<wchar_t>& str) - str[str.length()]=='\0';   
          *       c-string nul-terminated (which happens automatically with L"xxx"sv)
          */
@@ -278,15 +282,21 @@ namespace Stroika::Foundation::Characters {
         String (const char16_t* cString);
         String (const char32_t* cString);
         String (const wchar_t* cString);
-        explicit String (const char8_t* from, const char8_t* to);
-        explicit String (const char16_t* from, const char16_t* to);
-        explicit String (const char32_t* from, const char32_t* to);
-        explicit String (const wchar_t* from, const wchar_t* to);
-        explicit String (const Character* from, const Character* to);
+        String (const char8_t* from, const char8_t* to);
+        String (const char16_t* from, const char16_t* to);
+        String (const char32_t* from, const char32_t* to);
+        String (const wchar_t* from, const wchar_t* to);
+        String (const Character* from, const Character* to);
+        String (span<const char8_t> s);
+        String (span<const char16_t> s);
+        String (span<const char32_t> s);
+        String (span<const wchar_t> s);
+        String (span<const Character> s);
         String (const basic_string_view<wchar_t>& str);
-        String (const wstring& r);
+        String (const u8string& r);
         String (const u16string& r);
         String (const u32string& r);
+        String (const wstring& r);
         String (const Iterable<Character>& src);
         explicit String (const Character& c);
         String (String&& from) noexcept      = default;
@@ -351,6 +361,7 @@ namespace Stroika::Foundation::Characters {
          *
          */
         static String FromSDKString (const SDKChar* from);
+        static String FromSDKString (span<const SDKChar> s);
         static String FromSDKString (const SDKChar* from, const SDKChar* to);
         static String FromSDKString (const SDKString& from);
 

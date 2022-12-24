@@ -2477,13 +2477,13 @@ namespace Stroika::Frameworks::Led::Platform {
 
         size_t                         len = this->GetLength ();
         Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
-        this->CopyOut (0, len, buf);
+        this->CopyOut (0, len, buf.data ());
         size_t                         len2 = 2 * len;
         Memory::StackBuffer<Led_tChar> buf2{Memory::eUninitialized, len2};
-        len2 = Characters::NLToNative<Led_tChar> (buf, len, buf2, len2);
+        len2 = Characters::NLToNative<Led_tChar> (buf.data (), len, buf2.data (), len2);
 #if qWideCharacters
         // Assume they want ANSI code page text?
-        int nChars = ::WideCharToMultiByte (CP_ACP, 0, buf2, static_cast<int> (len2), lpText, cchTextMax - 1, nullptr, nullptr);
+        int nChars = ::WideCharToMultiByte (CP_ACP, 0, buf2.data (), static_cast<int> (len2), lpText, cchTextMax - 1, nullptr, nullptr);
 #else
         size_t nChars = min (size_t (cchTextMax) - 1, len2);
         (void)::memcpy (lpText, buf2, nChars);
@@ -2509,12 +2509,12 @@ namespace Stroika::Frameworks::Led::Platform {
             Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
 #if qWideCharacters
             // Assume they want ANSI code page text?
-            len = static_cast<size_t> (::MultiByteToWideChar (CP_ACP, 0, lpText, static_cast<int> (len), buf, static_cast<int> (len)));
+            len = static_cast<size_t> (::MultiByteToWideChar (CP_ACP, 0, lpText, static_cast<int> (len), buf.data (), static_cast<int> (len)));
 #else
-            (void)::memcpy (buf, lpText, len);
+            (void)::memcpy (buf.data (), lpText, len);
 #endif
-            len = Characters::NormalizeTextToNL<Led_tChar> (buf, len, buf, len);
-            this->Replace (0, 0, buf, len);
+            len = Characters::NormalizeTextToNL<Led_tChar> (buf.data (), len, buf.data (), len);
+            this->Replace (0, 0, buf.data (), len);
         }
 
         return 0;
@@ -2705,9 +2705,9 @@ namespace Stroika::Frameworks::Led::Platform {
 #elif !qWideCharacters && qSDK_UNICODE
         Assert (false); // NOT IMPLEMENTED - WHY WOULD YOU DO THIS?
 #endif
-        size_t nLen = Characters::NormalizeTextToNL<Led_tChar> (buf, len, buf, len);
-        Assert (ValidateTextForCharsetConformance (buf, nLen));
-        this->Replace (this->GetSelectionStart (), this->GetSelectionEnd (), buf, nLen);
+        size_t nLen = Characters::NormalizeTextToNL<Led_tChar> (buf.data (), len, buf.data (), len);
+        Assert (ValidateTextForCharsetConformance (buf.data (), nLen));
+        this->Replace (this->GetSelectionStart (), this->GetSelectionEnd (), buf.data (), nLen);
         return 0; // result ignored...
     }
     template <typename BASECLASS>

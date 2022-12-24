@@ -43,21 +43,21 @@ string Characters::CString::FormatV (const char* format, va_list argsList)
     va_copy (argListCopy, argsList);
 
 #if __STDC_WANT_SECURE_LIB__
-    while (::vsnprintf_s (msgBuf, msgBuf.GetSize (), msgBuf.GetSize () - 1, format, argListCopy) < 0) {
+    while (::vsnprintf_s (msgBuf.data (), msgBuf.GetSize (), msgBuf.GetSize () - 1, format, argListCopy) < 0) {
         msgBuf.GrowToSize_uninitialized (msgBuf.GetSize () * 2);
         va_end (argListCopy);
         va_copy (argListCopy, argsList);
     }
 #else
-    while (vsnprintf (msgBuf, msgBuf.GetSize (), format, argListCopy) < 0) {
+    while (vsnprintf (msgBuf.data (), msgBuf.GetSize (), format, argListCopy) < 0) {
         msgBuf.GrowToSize_uninitialized (msgBuf.GetSize () * 2);
         va_end (argListCopy);
         va_copy (argListCopy, argsList);
     }
 #endif
     va_end (argListCopy);
-    Assert (::strlen (msgBuf) < msgBuf.GetSize ());
-    return string{msgBuf};
+    Assert (::strlen (msgBuf.data ()) < msgBuf.GetSize ());
+    return string{msgBuf.data ()};
 }
 
 DISABLE_COMPILER_MSC_WARNING_START (6262)
@@ -132,7 +132,7 @@ wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
 
     // Assume only reason for failure is not enuf bytes, so allocate more.
     // If I'm wrong, we'll just runout of memory and throw out...
-    while (::vswprintf (msgBuf, msgBuf.GetSize (), useFormat, argListCopy) < 0) {
+    while (::vswprintf (msgBuf.data (), msgBuf.GetSize (), useFormat, argListCopy) < 0) {
 #if qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy
         if (errno == EILSEQ and tmpLocale == nullptr) {
             tmpLocale  = ::newlocale (LC_CTYPE, "en_US.UTF-8", NULL);
@@ -145,8 +145,8 @@ wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
         va_copy (argListCopy, argsList);
     }
     va_end (argListCopy);
-    Assert (::wcslen (msgBuf) < msgBuf.GetSize ());
-    return wstring{msgBuf};
+    Assert (::wcslen (msgBuf.data ()) < msgBuf.GetSize ());
+    return wstring{msgBuf.data ()};
 }
 DISABLE_COMPILER_MSC_WARNING_END (6262)
 

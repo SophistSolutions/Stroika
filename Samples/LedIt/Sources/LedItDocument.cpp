@@ -1256,10 +1256,10 @@ void LedItDocument::Serialize (CArchive& ar)
         ASSERT_VALID (file);
         DWORD             nLen = static_cast<DWORD> (file->GetLength ()); // maybe should subtract current offset?
         StackBuffer<char> buf{Memory::eUninitialized, nLen};
-        if (ar.Read (buf, nLen) != nLen) {
+        if (ar.Read (buf.data (), nLen) != nLen) {
             AfxThrowArchiveException (CArchiveException::endOfFile);
         }
-        StyledTextIOSrcStream_Memory                 source (buf, nLen);
+        StyledTextIOSrcStream_Memory                 source (buf.data (), nLen);
         WordProcessor::WordProcessorTextIOSinkStream sink (&fTextStore, fStyleDatabase, fParagraphDatabase, fHidableTextDatabase);
 
     ReRead:

@@ -417,8 +417,8 @@ TextLayoutBlock_Copy PartitioningTextImager::GetTextLayoutBlock (size_t rowStart
     else {
         size_t                         rowLen = rowEnd - rowStart;
         Memory::StackBuffer<Led_tChar> rowBuf{Memory::eUninitialized, rowLen};
-        CopyOut (rowStart, rowLen, rowBuf);
-        return TextLayoutBlock_Copy (TextLayoutBlock_Basic (rowBuf, rowBuf + rowLen, GetPrimaryPartitionTextDirection (rowStart)));
+        CopyOut (rowStart, rowLen, rowBuf.data ());
+        return TextLayoutBlock_Copy (TextLayoutBlock_Basic{rowBuf.data (), rowBuf.data () + rowLen, GetPrimaryPartitionTextDirection (rowStart)});
     }
 }
 
@@ -484,7 +484,7 @@ DistanceType PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, siz
         Require (to <= rowEnd);       //  ''
         size_t                            rowLen = rowEnd - startOfRow;
         Memory::StackBuffer<DistanceType> distanceVector{Memory::eUninitialized, rowLen};
-        CalcSegmentSize_FillIn (startOfRow, rowEnd, distanceVector);
+        CalcSegmentSize_FillIn (startOfRow, rowEnd, distanceVector.data ());
         Assert (to > startOfRow);                                                                 // but from could be == startOfRow, so must be careful of that...
         Assert (to - startOfRow - 1 < (GetEndOfRowContainingPosition (startOfRow) - startOfRow)); // now buffer overflows!
         DistanceType result = distanceVector[to - startOfRow - 1];
@@ -520,10 +520,10 @@ DistanceType PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, size_
         size_t                     rowEnd = GetEndOfRowContainingPosition (startOfRow);
         size_t                     rowLen = rowEnd - startOfRow;
         newCE.fMeasurementsCache.GrowToSize (rowLen);
-        CalcSegmentSize_FillIn (startOfRow, rowEnd, newCE.fMeasurementsCache);
+        CalcSegmentSize_FillIn (startOfRow, rowEnd, newCE.fMeasurementsCache.data ());
         return newCE;
     });
-    const DistanceType*        measurementsCache = ce.fMeasurementsCache;
+    const DistanceType*        measurementsCache = ce.fMeasurementsCache.data ();
 
     Assert (to > startOfRow);                                                                 // but from could be == startOfRow, so must be careful of that...
     Assert (to - startOfRow - 1 < (GetEndOfRowContainingPosition (startOfRow) - startOfRow)); // now buffer overflows!
@@ -552,10 +552,10 @@ void PartitioningTextImager::CalcSegmentSize_FillIn (size_t rowStart, size_t row
     size_t len = rowEnd - rowStart;
 
     Memory::StackBuffer<Led_tChar> fullRowTextBuf{Memory::eUninitialized, len};
-    CopyOut (rowStart, len, fullRowTextBuf);
+    CopyOut (rowStart, len, fullRowTextBuf.data ());
 
-    MeasureSegmentWidth (rowStart, rowEnd, fullRowTextBuf, distanceVector);
-    (void)ResetTabStops (rowStart, fullRowTextBuf, len, distanceVector, 0);
+    MeasureSegmentWidth (rowStart, rowEnd, fullRowTextBuf.data (), distanceVector);
+    (void)ResetTabStops (rowStart, fullRowTextBuf.data (), len, distanceVector, 0);
 }
 
 /*

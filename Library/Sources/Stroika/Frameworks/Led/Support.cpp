@@ -60,8 +60,8 @@ wstring Led::ACP2WideString (const string& s)
     size_t                       nChars = s.length () + 1; // convert null byte, too
     Memory::StackBuffer<wchar_t> result{Memory::eUninitialized, nChars};
     CodePageConverter            cpg (GetDefaultSDKCodePage ());
-    cpg.MapToUNICODE (s.c_str (), s.length () + 1, result, &nChars);
-    return wstring (result);
+    cpg.MapToUNICODE (s.c_str (), s.length () + 1, result.data (), &nChars);
+    return wstring{result.data ()};
 }
 
 /*
@@ -73,8 +73,8 @@ string Led::Wide2ACPString (const wstring& s)
     size_t                    nChars = s.length () * sizeof (wchar_t) + 1; // convert null byte, too
     Memory::StackBuffer<char> result{Memory::eUninitialized, nChars};
     CodePageConverter         cpg (GetDefaultSDKCodePage ());
-    cpg.MapFromUNICODE (s.c_str (), s.length () + 1, result, &nChars);
-    return string{result};
+    cpg.MapFromUNICODE (s.c_str (), s.length () + 1, result.data (), &nChars);
+    return string{result.data ()};
 }
 
 #if qSDK_UNICODE
@@ -86,8 +86,8 @@ Led_SDK_String Led::Led_ANSI2SDKString (const string& s)
 {
     size_t                            nChars = s.length () + 1; // convert null byte, too
     Memory::StackBuffer<Led_SDK_Char> result{Memory::eUninitialized, nChars};
-    CodePageConverter{GetDefaultSDKCodePage ()}.MapToUNICODE (s.c_str (), s.length () + 1, result, &nChars);
-    return Led_SDK_String{result};
+    CodePageConverter{GetDefaultSDKCodePage ()}.MapToUNICODE (s.c_str (), s.length () + 1, result.data (), &nChars);
+    return Led_SDK_String{result.data ()};
 }
 #else
 Led_SDK_String Led::Led_Wide2SDKString (const wstring& s)
@@ -95,8 +95,8 @@ Led_SDK_String Led::Led_Wide2SDKString (const wstring& s)
     size_t                    nChars = s.length () * sizeof (wchar_t) + 1; // convert null byte, too
     Memory::StackBuffer<char> result{Memory::eUninitialized, nChars};
     CodePageConverter         cpg (GetDefaultSDKCodePage ());
-    cpg.MapFromUNICODE (s.c_str (), s.length () + 1, result, &nChars);
-    return Led_SDK_String{result};
+    cpg.MapFromUNICODE (s.c_str (), s.length () + 1, result.data (), &nChars);
+    return Led_SDK_String{result.data ()};
 }
 wstring Led::Led_SDKString2Wide (const Led_SDK_String& s)
 {
@@ -113,8 +113,8 @@ string Led::Led_SDKString2ANSI (const Led_SDK_String& s)
 {
     size_t                    nChars = s.length () * sizeof (wchar_t) + 1; // convert null byte, too
     Memory::StackBuffer<char> result{Memory::eUninitialized, nChars};
-    CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (s.c_str (), s.length () + 1, result, &nChars);
-    return string{result};
+    CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (s.c_str (), s.length () + 1, result.data (), &nChars);
+    return string{result.data ()};
 }
 #endif
 
@@ -140,13 +140,13 @@ Led_SDK_String Led::Led_tString2SDKString (const Led_tString& s)
 #if qWideCharacters && !qSDK_UNICODE
     size_t                            nChars = s.length () * sizeof (wchar_t) + 1; // convert null byte, too
     Memory::StackBuffer<Led_SDK_Char> result{Memory::eUninitialized, nChars};
-    CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (s.c_str (), s.length () + 1, result, &nChars);
-    return Led_SDK_String{result};
+    CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (s.c_str (), s.length () + 1, result.data (), &nChars);
+    return Led_SDK_String{result.data ()};
 #elif !qWideCharacters && qSDK_UNICODE
     size_t                            nChars = s.length () + 1; // convert null byte, too
     Memory::StackBuffer<Led_SDK_Char> result{Memory::eUninitialized, nChars};
-    CodePageConverter{GetDefaultSDKCodePage ()}.MapToUNICODE (s.c_str (), s.length () + 1, result, &nChars);
-    return Led_SDK_String{result};
+    CodePageConverter{GetDefaultSDKCodePage ()}.MapToUNICODE (s.c_str (), s.length () + 1, result.data (), &nChars);
+    return Led_SDK_String{result.data ()};
 #else
 #error "Hmm"
 #endif
@@ -163,12 +163,12 @@ Led_tString Led::Led_SDKString2tString (const Led_SDK_String& s)
 #if qWideCharacters && !qSDK_UNICODE
     size_t                         nChars = s.length () + 1; // convert null byte, too
     Memory::StackBuffer<Led_tChar> result{Memory::eUninitialized, nChars};
-    CodePageConverter{GetDefaultSDKCodePage ()}.MapToUNICODE (s.c_str (), s.length () + 1, result, &nChars);
-    return Led_tString{result};
+    CodePageConverter{GetDefaultSDKCodePage ()}.MapToUNICODE (s.c_str (), s.length () + 1, result.data (), &nChars);
+    return Led_tString{result.data ()};
 #elif !qWideCharacters && qSDK_UNICODE
     size_t                         nChars = s.length () * sizeof (wchar_t) + 1; // convert null byte, too
     Memory::StackBuffer<Led_tChar> result{Memory::eUninitialized, nChars};
-    CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (s.c_str (), s.length () + 1, result, &nChars);
+    CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (s.c_str (), s.length () + 1, result.data (), &nChars);
     return Led_tString{result};
 #else
 #error "Hmm"
@@ -185,8 +185,8 @@ Led_tString Led::Led_ANSIString2tString (const string& s)
 {
     size_t                         nChars = s.length () + 1; // convert null byte, too
     Memory::StackBuffer<Led_tChar> result{Memory::eUninitialized, nChars};
-    CodePageConverter{GetDefaultSDKCodePage ()}.MapToUNICODE (s.c_str (), s.length () + 1, result, &nChars);
-    return Led_tString{result};
+    CodePageConverter{GetDefaultSDKCodePage ()}.MapToUNICODE (s.c_str (), s.length () + 1, result.data (), &nChars);
+    return Led_tString{result.data ()};
 }
 #endif
 
@@ -199,8 +199,8 @@ string Led::Led_tString2ANSIString (const Led_tString& s)
 {
     size_t                    nChars = s.length () * sizeof (wchar_t) + 1; // convert null byte, too
     Memory::StackBuffer<char> result{Memory::eUninitialized, nChars};
-    CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (s.c_str (), s.length () + 1, result, &nChars);
-    return string{result};
+    CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (s.c_str (), s.length () + 1, result.data (), &nChars);
+    return string{result.data ()};
 }
 #endif
 
@@ -1044,7 +1044,7 @@ void Led_URLManager::Open_ActiveX (const string& url)
 {
     Memory::StackBuffer<wchar_t> wideURLBuf{Memory::eUninitialized, url.length () + 1};
     {
-        int nWideChars         = ::MultiByteToWideChar (CP_ACP, 0, url.c_str (), static_cast<int> (url.length ()), wideURLBuf, static_cast<int> (url.length ()));
+        int nWideChars         = ::MultiByteToWideChar (CP_ACP, 0, url.c_str (), static_cast<int> (url.length ()), wideURLBuf.data (), static_cast<int> (url.length ()));
         wideURLBuf[nWideChars] = '\0';
     }
     IUnknown* pUnk = nullptr; // implies we are an OLE-ignorant app. But I'm not sure what else I'm supposed to pass here!
@@ -1067,9 +1067,9 @@ void Led_URLManager::Open_ActiveX (const string& url)
     if (hlinkNavigateString == nullptr) {
         Execution::Throw (bad_alloc{});
     }
-    HRESULT result = (*hlinkNavigateString) (pUnk, wideURLBuf);
+    HRESULT result = (*hlinkNavigateString) (pUnk, wideURLBuf.data ());
 #else
-    HRESULT result = ::HlinkNavigateString (pUnk, wideURLBuf);
+    HRESULT result = ::HlinkNavigateString (pUnk, wideURLBuf.data ());
 #endif
     if (not SUCCEEDED (result)) {
         throw result;

@@ -541,7 +541,7 @@ void LedLineItView::OnTypedNormalCharacter (Led_tChar theChar, bool optionPresse
             Assert (prevRowEnd >= prevRowStart);
             size_t                 prevRowLen = prevRowEnd - prevRowStart;
             StackBuffer<Led_tChar> buf{Memory::eUninitialized, prevRowLen};
-            CopyOut (prevRowStart, prevRowLen, buf);
+            CopyOut (prevRowStart, prevRowLen, buf.data ());
             size_t nTChars = 0;
             for (size_t i = 0; i < prevRowLen; ++i) {
                 // use ANY space characters to auto-indent - should only use SPACE and TAB?
@@ -550,7 +550,7 @@ void LedLineItView::OnTypedNormalCharacter (Led_tChar theChar, bool optionPresse
                 }
                 ++nTChars;
             }
-            InteractiveReplace (buf, nTChars);
+            InteractiveReplace (buf.data (), nTChars);
         }
     }
 }
@@ -811,7 +811,7 @@ void LedLineItView::OnShiftNCommand (bool shiftRight)
                 size_t                 pmLength     = pm->GetLength ();
                 size_t                 lookAtLength = min<size_t> (pmLength - 1, kCharsPerTab);
                 StackBuffer<Led_tChar> buf{Memory::eUninitialized, lookAtLength};
-                CopyOut (pm->GetStart (), lookAtLength, buf);
+                CopyOut (pm->GetStart (), lookAtLength, buf.data ());
                 size_t deleteLength = lookAtLength; // default to deleting all if all whitespace..
                 for (size_t i = 0; i < lookAtLength; ++i) {
                     if (buf[i] == '\t') {

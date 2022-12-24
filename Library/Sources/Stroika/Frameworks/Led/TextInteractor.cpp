@@ -170,8 +170,8 @@ namespace {
                 size_t                         origSelStart = fTI.GetSelectionStart ();
                 size_t                         origSelEnd   = fTI.GetSelectionEnd ();
                 Memory::StackBuffer<Led_tChar> text{Memory::eUninitialized, origSelEnd - origSelStart + 1};
-                fTI.CopyOut (origSelStart, origSelEnd - origSelStart, text);
-                Led_tString ignoredWord = Led_tString{text, origSelEnd - origSelStart};
+                fTI.CopyOut (origSelStart, origSelEnd - origSelStart, text.data ());
+                Led_tString ignoredWord = Led_tString{text.data (), origSelEnd - origSelStart};
                 fIgnoredWords.insert (ignoredWord);
             }
             DoIgnore ();
@@ -183,8 +183,8 @@ namespace {
             TextInteractor::SearchParameters sp;
             {
                 Memory::StackBuffer<Led_tChar> text{Memory::eUninitialized, origSelEnd - origSelStart + 1};
-                fTI.CopyOut (origSelStart, origSelEnd - origSelStart, text);
-                sp.fMatchString = Led_tString{text, origSelEnd - origSelStart};
+                fTI.CopyOut (origSelStart, origSelEnd - origSelStart, text.data ());
+                sp.fMatchString = Led_tString{text.data (), origSelEnd - origSelStart};
             }
             fTI.SetSelection (origSelStart, origSelStart); // cuz OnDoReplaceCommand () looks from selectionEND
             fTI.OnDoReplaceCommand (sp, changeTo);
@@ -196,8 +196,8 @@ namespace {
             TextInteractor::SearchParameters sp;
             {
                 Memory::StackBuffer<Led_tChar> text{Memory::eUninitialized, origSelEnd - origSelStart + 1};
-                fTI.CopyOut (origSelStart, origSelEnd - origSelStart, text);
-                sp.fMatchString = Led_tString{text, origSelEnd - origSelStart};
+                fTI.CopyOut (origSelStart, origSelEnd - origSelStart, text.data ());
+                sp.fMatchString = Led_tString{text.data (), origSelEnd - origSelStart};
             }
             fTI.OnDoReplaceAllCommand (sp, changeTo);
         }
@@ -904,8 +904,8 @@ void TextInteractor::OnEnterFindString ()
     size_t selLength = selEnd - selStart;
 
     Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, selLength};
-    CopyOut (selStart, selLength, buf);
-    parameters.fMatchString       = Led_tString{buf, selLength};
+    CopyOut (selStart, selLength, buf.data ());
+    parameters.fMatchString       = Led_tString{buf.data (), selLength};
     parameters.fRecentFindStrings = MergeRecentFindStrings (parameters.fMatchString, parameters.fRecentFindStrings);
     SetSearchParameters (parameters);
 }
@@ -2849,7 +2849,7 @@ bool TextInteractor::PasteLooksLikeSmartCNP (SmartCNPInfo* scnpInfo) const
         Led_ClipFormat textFormat = kTEXTClipFormat;
 
         Memory::StackBuffer<char> buf{Memory::eUninitialized, length}; // could use bufsize=(len+1)/sizeof (Led_tChar)
-        length = clipData.ReadFlavorData (textFormat, length, buf);
+        length = clipData.ReadFlavorData (textFormat, length, buf.data ());
         if (doSmartCNP) {
             Led_tChar* buffp   = reinterpret_cast<Led_tChar*> (static_cast<char*> (buf));
             size_t     nTChars = length / sizeof (Led_tChar);

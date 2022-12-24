@@ -837,13 +837,13 @@ string StyledTextIOReader::GrabString (size_t from, size_t to)
     size_t                    strLen = effectiveTo - from;
     Memory::StackBuffer<char> buf{Memory::eUninitialized, strLen + 1};
     GetSrcStream ().seek_to (from);
-    if (GetSrcStream ().read (buf, strLen) != strLen) {
+    if (GetSrcStream ().read (buf.data (), strLen) != strLen) {
         GetSrcStream ().seek_to (onEntrySeekPos);
         HandleBadlyFormattedInput (true);
     }
     GetSrcStream ().seek_to (onEntrySeekPos);
     buf[strLen] = '\0';
-    return string (buf);
+    return string{buf.data ()};
 }
 
 /*
@@ -878,8 +878,7 @@ void StyledTextIOWriter::write (const string& str)
  ********************************************************************************
  */
 EmbeddingSinkStream::EmbeddingSinkStream (StyledTextIOWriter::SinkStream& realSinkStream)
-    : SimpleEmbeddedObjectStyleMarker::SinkStream ()
-    , fRealSinkStream (realSinkStream)
+    : fRealSinkStream{realSinkStream}
 {
 }
 

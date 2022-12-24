@@ -290,7 +290,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                 int month{};
                 int day{};
                 DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
-                int nItems = ::swscanf (rep.c_str (), L"%d-%d-%d%n", &year, &month, &day, &numCharsConsumed);
+                int nItems = ::swscanf (rep.As<wstring> ().c_str (), L"%d-%d-%d%n", &year, &month, &day, &numCharsConsumed);
                 DISABLE_COMPILER_MSC_WARNING_END (4996)
                 if (nItems < 3 or numCharsConsumed < 8) [[unlikely]] {
                     return nullopt;

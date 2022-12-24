@@ -33,7 +33,7 @@ uid_t Platform::POSIX::UserName2UID (const String& name)
     struct passwd pwd {
     };
     struct passwd* result = nullptr;
-    int            err    = ::getpwnam_r (name.AsNarrowSDKString ().c_str (), &pwd, buf, bufsize, &result);
+    int            err    = ::getpwnam_r (name.AsNarrowSDKString ().c_str (), &pwd, buf.data (), bufsize, &result);
     if (err < 0) [[unlikely]] {
         ThrowPOSIXErrNo (err);
     }
@@ -59,7 +59,7 @@ String Platform::POSIX::uid_t2UserName (uid_t uid)
     struct passwd pwd {
     };
     struct passwd* result = nullptr;
-    int            err    = ::getpwuid_r (uid, &pwd, buf, bufsize, &result);
+    int            err    = ::getpwuid_r (uid, &pwd, buf.data (), bufsize, &result);
     if (err < 0) {
         ThrowPOSIXErrNo (err);
     }

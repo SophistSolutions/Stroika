@@ -86,14 +86,14 @@ String Characters::FormatV (const wchar_t* format, va_list argsList)
     va_copy (argListCopy, argsList);
     // Assume only reason for failure is not enuf bytes, so allocate more.
     // If I'm wrong, we'll just runout of memory and throw out...
-    while (::vswprintf (msgBuf, msgBuf.GetSize (), useFormat, argListCopy) < 0) {
+    while (::vswprintf (msgBuf.data (), msgBuf.GetSize (), useFormat, argListCopy) < 0) {
         msgBuf.GrowToSize_uninitialized (msgBuf.GetSize () * 2);
         va_end (argListCopy);
         va_copy (argListCopy, argsList);
     }
     va_end (argListCopy);
-    Assert (::wcslen (msgBuf) < msgBuf.GetSize ());
-    return String{msgBuf};
+    Assert (::wcslen (msgBuf.data ()) < msgBuf.GetSize ());
+    return String{msgBuf.data ()};
 }
 DISABLE_COMPILER_MSC_WARNING_END (6262)
 

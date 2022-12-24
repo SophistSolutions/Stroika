@@ -574,7 +574,7 @@ void MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t start
 
     size_t                         partLen = end - start;
     Memory::StackBuffer<Led_tChar> partitionBuf{Memory::eUninitialized, partLen};
-    CopyOut (start, partLen, partitionBuf);
+    CopyOut (start, partLen, partitionBuf.data ());
 
     for (size_t subRow = startSubRow; subRow <= endSubRow; ++subRow) {
         Led_Rect currentRowRect     = *remainingDrawArea;

@@ -1777,7 +1777,7 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
                 GCP_RESULTSW gcpResult;
                 memset (&gcpResult, 0, sizeof (gcpResult));
                 gcpResult.lStructSize = sizeof (GCP_RESULTS);
-                gcpResult.lpGlyphs = glyphs;
+                gcpResult.lpGlyphs = glyphs.data ();
                 gcpResult.nGlyphs = static_cast<UINT> (len);
                 if (::GetCharacterPlacementW (m_hDC, textCursor, static_cast<int> (len), 0, &gcpResult, GCP_GLYPHSHAPE | GCP_LIGATE) != 0) {
                     Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, nullptr, gcpResult.lpGlyphs, gcpResult.nGlyphs, nullptr));
@@ -1790,8 +1790,8 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
             {
                 size_t len = nextTabAt - textCursor;
                 Memory::StackBuffer<wchar_t> glyphs{len};
-                if (Win9x_Workaround_GetCharPlacementFunction (m_hDC, textCursor, len, glyphs) != 0) {
-                    Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, nullptr, glyphs, static_cast<UINT> (len), nullptr));
+                if (Win9x_Workaround_GetCharPlacementFunction (m_hDC, textCursor, len, glyphs.data ()) != 0) {
+                    Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, nullptr, glyphs.data (), static_cast<UINT> (len), nullptr));
                     goto Succeeded_But_Need_To_Adjust_Width;
                 }
             }

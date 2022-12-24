@@ -137,8 +137,8 @@ namespace {
         DWORD error = GetLastError ();
         if (error == ERROR_INSUFFICIENT_BUFFER) {
             StackBuffer<wchar_t> buf{Memory::eUninitialized, size + 1};
-            (void)::memset (buf, 0, buf.GetSize ());
-            ThrowIfZeroGetLastError (::WinHttpQueryHeaders (hRequest, dwInfoLevel, pwszName, buf, &size, lpdwIndex));
+            (void)::memset (buf.data (), 0, buf.GetSize ());
+            ThrowIfZeroGetLastError (::WinHttpQueryHeaders (hRequest, dwInfoLevel, pwszName, buf.data (), &size, lpdwIndex));
             return buf.begin ();
         }
         else {
@@ -354,9 +354,9 @@ RetryWithAuth:
             dwSize = 0;
             ThrowIfZeroGetLastError (::WinHttpQueryDataAvailable (hRequest, &dwSize));
             StackBuffer<byte> outBuffer{Memory::eUninitialized, dwSize};
-            memset (outBuffer, 0, dwSize);
+            memset (outBuffer.data (), 0, dwSize);
             DWORD dwDownloaded = 0;
-            ThrowIfZeroGetLastError (::WinHttpReadData (hRequest, outBuffer, dwSize, &dwDownloaded));
+            ThrowIfZeroGetLastError (::WinHttpReadData (hRequest, outBuffer.data (), dwSize, &dwDownloaded));
             Assert (dwDownloaded <= dwSize);
             totalBytes += dwDownloaded;
             bytesRead.push_back (vector<byte>{outBuffer.begin (), outBuffer.begin () + dwDownloaded});

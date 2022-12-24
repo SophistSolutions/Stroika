@@ -1268,8 +1268,8 @@ TextLayoutBlock_Copy TextImager::GetTextLayoutBlock (size_t rowStart, size_t row
 {
     size_t                         rowLen = rowEnd - rowStart;
     Memory::StackBuffer<Led_tChar> rowBuf{Memory::eUninitialized, rowLen};
-    CopyOut (rowStart, rowLen, rowBuf);
-    TextLayoutBlock_Basic text (rowBuf, rowBuf + rowLen);
+    CopyOut (rowStart, rowLen, rowBuf.data ());
+    TextLayoutBlock_Basic text{rowBuf.data (), rowBuf.data () + rowLen};
     return TextLayoutBlock_Copy (text);
 }
 
@@ -1834,15 +1834,15 @@ void TextImager::DrawSegment_ (Tablet* tablet, const FontSpecification& fontSpec
         /*
          *  Process 'mapped display characters'
          */
-        Led_tChar*                     drawText    = useVirtualText;
+        Led_tChar*                     drawText    = useVirtualText.data ();
         size_t                         drawTextLen = runLength;
         Memory::StackBuffer<Led_tChar> mappedDisplayBuf{1};
         if (ContainsMappedDisplayCharacters (drawText, drawTextLen)) {
             mappedDisplayBuf.GrowToSize (drawTextLen);
-            ReplaceMappedDisplayCharacters (drawText, mappedDisplayBuf, drawTextLen);
-            size_t newLength = RemoveMappedDisplayCharacters (mappedDisplayBuf, drawTextLen);
+            ReplaceMappedDisplayCharacters (drawText, mappedDisplayBuf.data (), drawTextLen);
+            size_t newLength = RemoveMappedDisplayCharacters (mappedDisplayBuf.data (), drawTextLen);
             Assert (newLength <= drawTextLen);
-            drawText    = mappedDisplayBuf;
+            drawText    = mappedDisplayBuf.data ();
             drawTextLen = newLength;
         }
 
@@ -1892,9 +1892,9 @@ void TextImager::MeasureSegmentWidth_ (const FontSpecification& fontSpec, size_t
 
     if (ContainsMappedDisplayCharacters (text, length)) {
         Memory::StackBuffer<Led_tChar> buf2{Memory::eUninitialized, length};
-        ReplaceMappedDisplayCharacters (text, buf2, length);
-        tablet->MeasureText (fCachedFontInfo, buf2, length, distanceResults);
-        PatchWidthRemoveMappedDisplayCharacters (buf2, distanceResults, length);
+        ReplaceMappedDisplayCharacters (text, buf2.data (), length);
+        tablet->MeasureText (fCachedFontInfo, buf2.data (), length, distanceResults);
+        PatchWidthRemoveMappedDisplayCharacters (buf2.data (), distanceResults, length);
     }
     else {
         tablet->MeasureText (fCachedFontInfo, text, length, distanceResults);

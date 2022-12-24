@@ -1153,7 +1153,7 @@ void SpellCheckEngine_Basic_Simple::WriteToUD ()
     CodePageConverter cpc        = CodePageConverter{kCodePage_UTF8, CodePageConverter::eHandleBOM};
     size_t            outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (Traversal::Iterator2Pointer (data.begin ()), data.size ());
     StackBuffer<char> fileData2{Memory::eUninitialized, outCharCnt};
-    cpc.MapFromUNICODE (Traversal::Iterator2Pointer (data.begin ()), data.size (), fileData2, &outCharCnt);
+    cpc.MapFromUNICODE (Traversal::Iterator2Pointer (data.begin ()), data.size (), fileData2.data (), &outCharCnt);
     writer.Write (reinterpret_cast<const byte*> (static_cast<char*> (fileData2)), reinterpret_cast<const byte*> (static_cast<char*> (fileData2)) + outCharCnt);
 #else
     writer.Append (reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (data.begin ())), data.size ());

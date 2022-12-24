@@ -139,7 +139,7 @@ void LineBasedPartition::Invariant_ () const
             --len; // Last partition extends past end of text
         }
         Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
-        CopyOut (start, len, buf);
+        CopyOut (start, len, buf.data ());
         for (size_t i = 1; i < len; ++i) {
             Assert (buf[i - 1] != '\n');
         }

@@ -94,11 +94,11 @@ void FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
 #endif
     if (length != 0) {
         Memory::StackBuffer<Led_tChar> buf2{length};
-        GetTextStore ().CopyOut (start, length, buf2);
+        GetTextStore ().CopyOut (start, length, buf2.data ());
 #if qPlatform_MacOS || qStroika_FeatureSupported_XWindows
         length = Characters::NLToNative<Led_tChar> (buf2, length, buf, length);
 #elif qPlatform_Windows
-        length = Characters::NLToNative<Led_tChar> (buf2, length, buf, 2 * length + 1);
+        length = Characters::NLToNative<Led_tChar> (buf2.data (), length, buf.data (), 2 * length + 1);
 #endif
     }
 
@@ -106,13 +106,13 @@ void FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
     // apps. Don't know about Mac. But I doubt they help any there either. Since for this stuff
     // we aren't going todo the right thing for sentinals ANYHOW - we may as well eliminate them
     // (or any other NUL-chars)
-    length = Led_SkrunchOutSpecialChars (buf, length, '\0');
+    length = Led_SkrunchOutSpecialChars (buf.data (), length, '\0');
 
 #if qPlatform_Windows
     buf[length] = '\0'; // Windows always expects CF_TEXT to be NUL char terminated
     length++;           // so AddFlavorData() writes out the NUL-byte
 #endif
-    flavorPackage.AddFlavorData (kTEXTClipFormat, length * sizeof (Led_tChar), buf);
+    flavorPackage.AddFlavorData (kTEXTClipFormat, length * sizeof (Led_tChar), buf.data ());
 }
 
 /*
@@ -145,7 +145,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_TEXT (ReaderFlavorPackage& fla
         // but allocate enuf space for converting TO UNICODE - in case of
         // qWorkAroundWin95BrokenUNICODESupport workaround below - we may
         // want to copy UNICODE chars in there instead.
-        length = flavorPackage.ReadFlavorData (textFormat, length, buf);
+        length = flavorPackage.ReadFlavorData (textFormat, length, buf.data ());
 
         Led_tChar* buffp   = reinterpret_cast<Led_tChar*> (static_cast<char*> (buf)); // INTERPRET array of bytes as Led_tChars
         size_t     nTChars = length / sizeof (Led_tChar);
@@ -177,7 +177,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
     if (flavorPackage.GetFlavorAvailable (kFILEClipFormat)) {
         size_t                    fileSpecBufferLength = flavorPackage.GetFlavorSize (kFILEClipFormat);
         Memory::StackBuffer<char> fileSpecBuffer{fileSpecBufferLength};
-        fileSpecBufferLength = flavorPackage.ReadFlavorData (kFILEClipFormat, fileSpecBufferLength, fileSpecBuffer);
+        fileSpecBufferLength = flavorPackage.ReadFlavorData (kFILEClipFormat, fileSpecBufferLength, fileSpecBuffer.data ());
 
 // Unpack the filename
 #if qPlatform_MacOS
@@ -191,7 +191,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
         {
             HDROP hdrop = (HDROP)::GlobalAlloc (GMEM_FIXED, fileSpecBufferLength);
             Execution::ThrowIfNull (hdrop);
-            (void)::memcpy (hdrop, fileSpecBuffer, fileSpecBufferLength);
+            (void)::memcpy (hdrop, fileSpecBuffer.data (), fileSpecBufferLength);
             size_t nChars = ::DragQueryFile (hdrop, 0, nullptr, 0);
             Verify (::DragQueryFile (hdrop, 0, realFileName, static_cast<UINT> (nChars + 1)) == nChars);
             ::GlobalFree (hdrop);
@@ -322,8 +322,8 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (
     memcpy (fileData2, (char*)rawBytes, nRawBytes);
     size_t charsRead = nRawBytes;
 #endif
-    charsRead = Characters::NormalizeTextToNL<Led_tChar> (fileData2, charsRead, fileData2, charsRead);
-    GetTextStore ().Replace (from, to, fileData2, charsRead);
+    charsRead = Characters::NormalizeTextToNL<Led_tChar> (fileData2.data (), charsRead, fileData2.data (), charsRead);
+    GetTextStore ().Replace (from, to, fileData2.data (), charsRead);
     return true;
 }
 
@@ -438,9 +438,9 @@ void WriterClipboardFlavorPackage::AddFlavorData (Led_ClipFormat clipFormat, siz
  ********************************************************************************
  */
 ReadWriteMemBufferPackage::ReadWriteMemBufferPackage ()
-    : ReaderFlavorPackage ()
-    , WriterFlavorPackage ()
-    , fPackages ()
+    : ReaderFlavorPackage{}
+    , WriterFlavorPackage{}
+    , fPackages{}
 {
     // Tuned to the MWERKS CWPro1 STL implementation. If you don't call vector::reserve () it uses 361 (pagesize/size(T) apx)
     // which means this is HUGE. And since we keep several of these (one per char typed for undo), it helps mem usage

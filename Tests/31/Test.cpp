@@ -82,7 +82,7 @@ namespace {
                         Memory::StackBuffer<char> relBuf{0};
                         int                       relEncodedSize = ATL::Base64EncodeGetRequiredLength (static_cast<int> (totalSize));
                         relBuf.GrowToSize (relEncodedSize);
-                        VerifyTestResult (ATL::Base64Encode (reinterpret_cast<const BYTE*> (Containers::Start (b)), static_cast<int> (totalSize), relBuf, &relEncodedSize));
+                        VerifyTestResult (ATL::Base64Encode (reinterpret_cast<const BYTE*> (Containers::Start (b)), static_cast<int> (totalSize), relBuf.data (), &relEncodedSize));
                         relBuf[relEncodedSize] = '\0';
                         if (lb == LineBreak::eCRLF_LB) {
                             return (static_cast<const char*> (relBuf));

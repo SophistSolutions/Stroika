@@ -69,8 +69,8 @@ void StyledTextIOReader_MIMETextEnriched::Read ()
             size_t                 len = currentOffset - lastOffset;
             StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
             GetSrcStream ().seek_to (lastOffset);
-            GetSrcStream ().read (buf, len);
-            len = Characters::NormalizeTextToNL<Led_tChar> (buf, len, buf, len);
+            GetSrcStream ().read (buf.data (), len);
+            len = Characters::NormalizeTextToNL<Led_tChar> (buf.data (), len, buf.data (), len);
             if (fNoFillMode == 0) {
                 // Strip xtra CRLF, and merge spaces - not really sure what should be done here.
                 // Just take a WILD STAB GUESS!!!
@@ -90,10 +90,10 @@ void StyledTextIOReader_MIMETextEnriched::Read ()
                     }
                     buf2[i2++] = buf[i];
                 }
-                GetSinkStream ().AppendText (buf2, i2, &fontSpec);
+                GetSinkStream ().AppendText (buf2.data (), i2, &fontSpec);
             }
             else {
-                GetSinkStream ().AppendText (buf, len, &fontSpec);
+                GetSinkStream ().AppendText (buf.data (), len, &fontSpec);
             }
         }
 
@@ -119,45 +119,45 @@ void StyledTextIOReader_MIMETextEnriched::Read ()
                 size_t            len = GetSrcStream ().current_offset () - currentOffset;
                 StackBuffer<char> cmdBuf{Memory::eUninitialized, len + 1};
                 GetSrcStream ().seek_to (currentOffset);
-                GetSrcStream ().read (cmdBuf, len);
+                GetSrcStream ().read (cmdBuf.data (), len);
                 cmdBuf[len] = '\0';
-                if (strcmp (cmdBuf, "<bold>") == 0) {
+                if (strcmp (cmdBuf.data (), "<bold>") == 0) {
                     ++fBoldMode;
                 }
-                else if (strcmp (cmdBuf, "</bold>") == 0 and fBoldMode > 0) {
+                else if (strcmp (cmdBuf.data (), "</bold>") == 0 and fBoldMode > 0) {
                     --fBoldMode;
                 }
-                else if (strcmp (cmdBuf, "<italic>") == 0) {
+                else if (strcmp (cmdBuf.data (), "<italic>") == 0) {
                     ++fItalicMode;
                 }
-                else if (strcmp (cmdBuf, "</italic>") == 0 and fItalicMode > 0) {
+                else if (strcmp (cmdBuf.data (), "</italic>") == 0 and fItalicMode > 0) {
                     --fItalicMode;
                 }
-                else if (strcmp (cmdBuf, "<underline>") == 0) {
+                else if (strcmp (cmdBuf.data (), "<underline>") == 0) {
                     ++fItalicMode;
                 }
-                else if (strcmp (cmdBuf, "</underline>") == 0 and fUnderlineMode > 0) {
+                else if (strcmp (cmdBuf.data (), "</underline>") == 0 and fUnderlineMode > 0) {
                     --fUnderlineMode;
                 }
-                else if (strcmp (cmdBuf, "<fixed>") == 0) {
+                else if (strcmp (cmdBuf.data (), "<fixed>") == 0) {
                     ++fFixedWidthMode;
                 }
-                else if (strcmp (cmdBuf, "</fixed>") == 0 and fFixedWidthMode > 0) {
+                else if (strcmp (cmdBuf.data (), "</fixed>") == 0 and fFixedWidthMode > 0) {
                     --fFixedWidthMode;
                 }
-                else if ((strcmp (cmdBuf, "<smaller>") == 0) or (strcmp (cmdBuf, "</bigger>") == 0)) {
+                else if ((strcmp (cmdBuf.data (), "<smaller>") == 0) or (strcmp (cmdBuf.data (), "</bigger>") == 0)) {
                     fFontSizeAdjust -= 2;
                 }
-                else if ((strcmp (cmdBuf, "</smaller>") == 0) or (strcmp (cmdBuf, "<bigger>") == 0)) {
+                else if ((strcmp (cmdBuf.data (), "</smaller>") == 0) or (strcmp (cmdBuf.data (), "<bigger>") == 0)) {
                     fFontSizeAdjust += 2;
                 }
-                else if (strcmp (cmdBuf, "<nofill>") == 0) {
+                else if (strcmp (cmdBuf.data (), "<nofill>") == 0) {
                     ++fNoFillMode;
                 }
-                else if (strcmp (cmdBuf, "</nofill>") == 0 and fNoFillMode > 0) {
+                else if (strcmp (cmdBuf.data (), "</nofill>") == 0 and fNoFillMode > 0) {
                     --fNoFillMode;
                 }
-                else if (strcmp (cmdBuf, "<param>") == 0) {
+                else if (strcmp (cmdBuf.data (), "<param>") == 0) {
                     ScanFor ("</param>"); // skip/ignore
                 }
             }

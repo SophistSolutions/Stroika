@@ -71,7 +71,7 @@ void WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
     Assert (end <= GetEnd ());
 
     Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
-    CopyOut (start, len, buf);
+    CopyOut (start, len, buf.data ());
 
     Tablet_Acquirer tablet (this);
 
@@ -80,7 +80,7 @@ void WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
     try {
         Memory::StackBuffer<DistanceType> distanceVector{Memory::eUninitialized, len};
         if (start != end) {
-            MeasureSegmentWidth (start, end, buf, distanceVector);
+            MeasureSegmentWidth (start, end, buf.data (), distanceVector.data ());
         }
 
         size_t startSoFar = 0; // make this ZERO relative from start of THIS array
@@ -98,7 +98,7 @@ void WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
             cacheInfo.IncrementRowCountAndFixCacheBuffers (startSoFar, 0);
 
             if (lastTabIndex >= startSoFar) {
-                lastTabIndex = ResetTabStops (start, buf, leftToGo, distanceVector, startSoFar);
+                lastTabIndex = ResetTabStops (start, buf.data (), leftToGo, distanceVector.data (), startSoFar);
             }
 
             DistanceType wrapWidth;
@@ -110,7 +110,7 @@ void WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
                 Assert (lhsMargin < rhsMargin);
                 wrapWidth = rhsMargin - lhsMargin;
             }
-            size_t bestRowLength = FindWrapPointForMeasuredText (buf + startSoFar, leftToGo, wrapWidth, start + startSoFar, distanceVector, startSoFar);
+            size_t bestRowLength = FindWrapPointForMeasuredText (buf.data () + startSoFar, leftToGo, wrapWidth, start + startSoFar, distanceVector.data (), startSoFar);
 
             Assert (bestRowLength != 0); // FindWrapPoint() could only do this if we gave it a zero leftToGo - but we wouldn't
             // be in the loop in that case!!!
@@ -118,7 +118,7 @@ void WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
             // Now OVERRIDE the above for soft-breaks...
             {
                 Assert (bestRowLength > 0);
-                const Led_tChar* text    = buf + startSoFar;
+                const Led_tChar* text    = buf.data () + startSoFar;
                 const Led_tChar* textEnd = &text[min (bestRowLength + 1, leftToGo)];
                 AdjustBestRowLength (start + startSoFar, text, textEnd, &bestRowLength);
                 Assert (bestRowLength > 0);

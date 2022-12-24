@@ -49,13 +49,13 @@ namespace Stroika::Foundation::Memory {
      *      @see Samples/SimpleService project
      *      \code
      *          Memory::StackBuffer<byte> useKey{keyLen};  // no need to default initialize cuz done automatically
-     *          (void)::memcpy (useKey.begin (), key.begin (), min (keyLen, key.size ()));
+     *          (void)::memcpy (useKey.data (), key.begin (), min (keyLen, key.size ()));
      *      \endcode
      * OR
      *      \code
      *          Memory::StackBuffer<byte> useKey{Memory::eUninitiialized, keyLen};
-     *          (void)::memset (useKey.begin (), 0, keyLen);
-     *          (void)::memcpy (useKey.begin (), key.begin (), min (keyLen, key.size ()));
+     *          (void)::memset (useKey.data (), 0, keyLen);
+     *          (void)::memcpy (useKey.data (), key.begin (), min (keyLen, key.size ()));
      *      \endcode
      * 
      *  \todo   MAYBE - add constexpr member saying kInlineControlSupported_ = true for ??? maybe gcc and msvc;
@@ -105,6 +105,12 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          */
+        using pointer       = T*;
+        using const_pointer = const T*;
+
+    public:
+        /**
+         */
         using iterator       = T*;
         using const_iterator = const T*;
 
@@ -120,7 +126,7 @@ namespace Stroika::Foundation::Memory {
          *  StackBuffer::default-ctor creates a zero-sized stack buffer (so resize with resize, or push_back etc).
          */
         StackBuffer ();
-        StackBuffer (size_t nElements);
+        explicit StackBuffer (size_t nElements);
         StackBuffer (UninitializedConstructorFlag, size_t nElements);
         StackBuffer (const StackBuffer& src) = delete;
         StackBuffer (StackBuffer&& src)      = delete;
@@ -135,9 +141,12 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
+         *  \brief returns the same value as data () - a live pointer to the start of the buffer.
+         * 
+         *  \note This was changed from non-explicit to explicit in Stroika v3.0d1
          */
-        nonvirtual operator const T* () const;
-        nonvirtual operator T* ();
+        nonvirtual explicit operator const T* () const;
+        nonvirtual explicit operator T* ();
 
     public:
         /**
@@ -153,9 +162,23 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
+         *  \brief returns a (possibly const) pointer to the start of the live buffer data. This return value can be invalidated
+         *         by any changes in size/capacity of the stackbuffer (but not by other changes, like at).
+         */
+        nonvirtual pointer       data ();
+        nonvirtual const_pointer data () const;
+
+    public:
+        /**
          */
         nonvirtual reference       at (size_t i);
         nonvirtual const_reference at (size_t i) const;
+
+    public:
+        /**
+         */
+        reference       operator[] (size_t i) { return at (i); }
+        const_reference operator[] (size_t i) const { return at (i); }
 
     public:
         /**

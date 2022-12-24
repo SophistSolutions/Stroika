@@ -79,7 +79,7 @@ String FileSystem::AssureLongFileName (const String& fileName)
     DWORD r = ::GetLongPathNameW (fileName.As<wstring> ().c_str (), nullptr, 0);
     if (r != 0) {
         StackBuffer<wchar_t> buf{Memory::eUninitialized, r};
-        r = ::GetLongPathNameW (fileName.As<wstring> ().c_str (), buf, r);
+        r = ::GetLongPathNameW (fileName.As<wstring> ().c_str (), buf.data (), r);
         if (r != 0) {
             return static_cast<const wchar_t*> (buf);
         }

@@ -273,6 +273,16 @@ namespace Stroika::Foundation::Memory {
         return fLiveData_ + fSize_;
     }
     template <typename T, size_t BUF_SIZE>
+    inline typename InlineBuffer<T, BUF_SIZE>::pointer InlineBuffer<T, BUF_SIZE>::data ()
+    {
+        return fLiveData_;
+    }
+    template <typename T, size_t BUF_SIZE>
+    inline typename InlineBuffer<T, BUF_SIZE>::const_pointer InlineBuffer<T, BUF_SIZE>::data () const
+    {
+        return fLiveData_;
+    }
+    template <typename T, size_t BUF_SIZE>
     inline size_t InlineBuffer<T, BUF_SIZE>::capacity () const
     {
         return UsingInlinePreallocatedBuffer_ () ? BUF_SIZE : fCapacityOfFreeStoreAllocation_; // @see class Design Note

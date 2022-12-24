@@ -239,6 +239,11 @@ String String::FromSDKString (const SDKChar* from)
     return String{SDKString2Wide (from)};
 }
 
+String String::FromSDKString (span<const SDKChar> s)
+{
+    return s.empty () ? String{} : FromSDKString (&*s.begin (), &*s.begin () + s.size ());
+}
+
 String String::FromSDKString (const SDKChar* from, const SDKChar* to)
 {
 // @todo FIX PERFORMANCE

@@ -429,21 +429,21 @@ Led_tString LedDialogWidget::GetText () const
 {
     size_t                 len = GetLength ();
     StackBuffer<Led_tChar> buf{Memory::eUninitialized, len + 1};
-    CopyOut (0, len, buf);
+    CopyOut (0, len, buf.data ());
     buf[len]                    = '\0';
     size_t                 len2 = 2 * len + 1;
     StackBuffer<Led_tChar> buf2{Memory::eUninitialized, len2};
-    len2       = Characters::NLToNative<Led_tChar> (buf, len, buf2, len2);
+    len2       = Characters::NLToNative<Led_tChar> (buf.data (), len, buf2.data (), len2);
     buf2[len2] = '\0';
-    return Led_tString{buf2};
+    return Led_tString{buf2.data ()};
 }
 
 void LedDialogWidget::SetText (const Led_tString& t)
 {
     size_t                 len = t.length ();
     StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
-    len = Characters::NormalizeTextToNL<Led_tChar> (t.c_str (), len, buf, len);
-    Replace (0, GetEnd (), buf, len);
+    len = Characters::NormalizeTextToNL<Led_tChar> (t.c_str (), len, buf.data (), len);
+    Replace (0, GetEnd (), buf.data (), len);
 }
 #endif
 

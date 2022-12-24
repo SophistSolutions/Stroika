@@ -69,8 +69,8 @@ Led_SDK_String Win32FileAssociationRegistrationHelper::GetAssociatedProgID () co
         LONG itemLen = 0;
         ThrowIfRegError (::RegQueryValue (HKEY_CLASSES_ROOT, fFileSuffix.c_str (), NULL, &itemLen));
         StackBuffer<Led_SDK_Char> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
-        ThrowIfRegError (::RegQueryValue (HKEY_CLASSES_ROOT, fFileSuffix.c_str (), buf, &itemLen));
-        return Led_SDK_String{buf};
+        ThrowIfRegError (::RegQueryValue (HKEY_CLASSES_ROOT, fFileSuffix.c_str (), buf.data (), &itemLen));
+        return Led_SDK_String{buf.data ()};
     }
     catch (...) {
         return Led_SDK_String{};
@@ -85,8 +85,8 @@ Led_SDK_String Win32FileAssociationRegistrationHelper::GetAssociatedDefaultIcon 
         LONG           itemLen = 0;
         ThrowIfRegError (::RegQueryValue (progIDKey, Led_SDK_TCHAROF ("DefaultIcon"), NULL, &itemLen));
         StackBuffer<Led_SDK_Char> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
-        ThrowIfRegError (::RegQueryValue (progIDKey, Led_SDK_TCHAROF ("DefaultIcon"), buf, &itemLen));
-        return Led_SDK_String{buf};
+        ThrowIfRegError (::RegQueryValue (progIDKey, Led_SDK_TCHAROF ("DefaultIcon"), buf.data (), &itemLen));
+        return Led_SDK_String{buf.data ()};
     }
     catch (...) {
         return Led_SDK_String{};
@@ -103,8 +103,8 @@ Led_SDK_String Win32FileAssociationRegistrationHelper::GetAssociatedEditCommand 
         LONG           itemLen = 0;
         ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), NULL, &itemLen));
         StackBuffer<Led_SDK_Char> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
-        ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), buf, &itemLen));
-        return Led_SDK_String{buf};
+        ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), buf.data (), &itemLen));
+        return Led_SDK_String{buf.data ()};
     }
     catch (...) {
         return Led_SDK_String{};
@@ -121,8 +121,8 @@ Led_SDK_String Win32FileAssociationRegistrationHelper::GetAssociatedOpenCommand 
         LONG           itemLen = 0;
         ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), NULL, &itemLen));
         StackBuffer<Led_SDK_Char> buf{Memory::eUninitialized, static_cast<size_t> (itemLen + 1)};
-        ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), buf, &itemLen));
-        return Led_SDK_String{buf};
+        ThrowIfRegError (::RegQueryValue (openKey, Led_SDK_TCHAROF ("command"), buf.data (), &itemLen));
+        return Led_SDK_String{buf.data ()};
     }
     catch (...) {
         return Led_SDK_String{};
@@ -169,12 +169,12 @@ Win32UIFileAssociationInfo::Win32UIFileAssociationInfo (
     const Led_SDK_String& fileProgIDPrettyName,
     const Led_SDK_String& defaultIcon,
     const Led_SDK_String& shellEditNOpenCommandLine)
-    : fFileSuffix (fileSuffix)
-    , fFileProgID (fileProgID)
-    , fFileProgIDPrettyName (fileProgIDPrettyName)
-    , fDefaultIcon (defaultIcon)
-    , fShellEditCommandLine (shellEditNOpenCommandLine)
-    , fShellOpenCommandLine (shellEditNOpenCommandLine)
+    : fFileSuffix{fileSuffix}
+    , fFileProgID{fileProgID}
+    , fFileProgIDPrettyName{fileProgIDPrettyName}
+    , fDefaultIcon{defaultIcon}
+    , fShellEditCommandLine{shellEditNOpenCommandLine}
+    , fShellOpenCommandLine{shellEditNOpenCommandLine}
 {
 }
 

@@ -44,13 +44,13 @@ namespace {
     //  void    StreamUtils::WriteTextStream (const wstring& w, ostream& out)
     void WriteTextStream_ (const wstring& w, ostream& out)
     {
-        CodePageConverter         cpc (kCodePage_UTF8, CodePageConverter::eHandleBOM);
+        CodePageConverter         cpc{kCodePage_UTF8, CodePageConverter::eHandleBOM};
         size_t                    sz = cpc.MapFromUNICODE_QuickComputeOutBufSize (w.c_str (), w.length ());
         Memory::StackBuffer<char> buf{sz + 1};
         size_t                    charCnt = sz;
-        cpc.MapFromUNICODE (w.c_str (), w.length (), buf, &charCnt);
+        cpc.MapFromUNICODE (w.c_str (), w.length (), buf.data (), &charCnt);
         Assert (charCnt <= sz);
-        out.write (buf, charCnt);
+        out.write (buf.data (), charCnt);
     }
 }
 
@@ -62,11 +62,11 @@ namespace {
         //NYI
         //Schema    gSchema     =   Schema (kNSTest);
         wstring newDocXML =
-            L"<PHRModel xmlns=\"" + wstring (kNSTest) + L"\">\n"
-                                                        L"      <BasicInformation id=\"id=101\">\n"
-                                                        L"              <ContactInfo>\n"
-                                                        L"                      <PersonName/>\n"
-                                                        L"                      <Locations>\n";
+            L"<PHRModel xmlns=\"" + wstring{kNSTest} + L"\">\n"
+                                                       L"      <BasicInformation id=\"id=101\">\n"
+                                                       L"              <ContactInfo>\n"
+                                                       L"                      <PersonName/>\n"
+                                                       L"                      <Locations>\n";
         newDocXML +=
             L"                          <Location id=\"id=102\">\n"
             L"                                  <Name>Primary Residence</Name>\n"

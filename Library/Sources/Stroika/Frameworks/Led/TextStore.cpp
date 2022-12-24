@@ -53,7 +53,7 @@ void TextStore::VectorMarkerSink::Append (Marker* m)
 void TextStore::InlineBufferMarkerSink::Append (Marker* m)
 {
     RequireNotNull (m);
-    AssertNotNull (fMarkers);
+    AssertNotNull (fMarkers.data ());
     fMarkers.push_back (m);
 }
 
@@ -476,7 +476,7 @@ void TextStore::FindWordBreaks (size_t afterPosition, size_t* wordStartResult, s
     size_t len             = endOfThisLine - startOfThisLine;
 
     Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
-    CopyOut (startOfThisLine, len, buf);
+    CopyOut (startOfThisLine, len, buf.data ());
 
     Assert (afterPosition >= startOfThisLine);
     Assert (afterPosition <= endOfThisLine);
@@ -486,7 +486,7 @@ void TextStore::FindWordBreaks (size_t afterPosition, size_t* wordStartResult, s
         useTextBreaker = GetTextBreaker ().get ();
     }
     AssertNotNull (useTextBreaker);
-    useTextBreaker->FindWordBreaks (buf, len, afterPosition - startOfThisLine, &zeroBasedStart, &zeroBasedEnd, wordReal);
+    useTextBreaker->FindWordBreaks (buf.data (), len, afterPosition - startOfThisLine, &zeroBasedStart, &zeroBasedEnd, wordReal);
     Assert (zeroBasedStart <= zeroBasedEnd);
     Assert (zeroBasedEnd <= len);
     *wordStartResult = zeroBasedStart + startOfThisLine;
@@ -508,7 +508,7 @@ void TextStore::FindLineBreaks (size_t afterPosition, size_t* wordEndResult, boo
     size_t len             = endOfThisLine - startOfThisLine;
 
     Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
-    CopyOut (startOfThisLine, len, buf);
+    CopyOut (startOfThisLine, len, buf.data ());
 
     Assert (afterPosition >= startOfThisLine);
     Assert (afterPosition <= endOfThisLine);
@@ -517,7 +517,7 @@ void TextStore::FindLineBreaks (size_t afterPosition, size_t* wordEndResult, boo
         useTextBreaker = GetTextBreaker ().get ();
     }
     AssertNotNull (useTextBreaker);
-    useTextBreaker->FindLineBreaks (buf, len, afterPosition - startOfThisLine, &zeroBasedEnd, wordReal);
+    useTextBreaker->FindLineBreaks (buf.data (), len, afterPosition - startOfThisLine, &zeroBasedEnd, wordReal);
     Assert (zeroBasedEnd <= len);
     *wordEndResult = zeroBasedEnd + startOfThisLine;
 }
@@ -641,7 +641,7 @@ searchSMORE:
     }
 
     // See if pattern matches current text
-    CopyOut (searchIdx, patternLen, lookingAtData);
+    CopyOut (searchIdx, patternLen, lookingAtData.data ());
     for (size_t i = 0; i < patternLen; ++i) {
         bool charsEqual = (lookingAtData[i] == pattern[i]);
         if (not matchCase and not charsEqual) {
@@ -849,8 +849,8 @@ void TextStore::Invariant_ () const
 {
     size_t                         len = GetLength ();
     Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
-    CopyOut (0, len, buf);
-    const Led_tChar* start   = buf;
+    CopyOut (0, len, buf.data ());
+    const Led_tChar* start   = buf.data ();
     const Led_tChar* end     = &start[len];
     const Led_tChar* curChar = start;
     for (; curChar < end; curChar = Led_NextChar (curChar)) {

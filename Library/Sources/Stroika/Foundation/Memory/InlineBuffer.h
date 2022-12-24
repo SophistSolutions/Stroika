@@ -82,6 +82,12 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          */
+        using pointer       = T*;
+        using const_pointer = const T*;
+
+    public:
+        /**
+         */
         using iterator       = T*;
         using const_iterator = const T*;
 
@@ -123,9 +129,20 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
+         *  \brief returns the same value as data () - a live pointer to the start of the buffer.
+         * 
+         *  \note This was changed from non-explicit to explicit in Stroika v3.0d1
          */
-        nonvirtual operator const T* () const;
-        nonvirtual operator T* ();
+        nonvirtual explicit operator const T* () const;
+        nonvirtual explicit operator T* ();
+
+    public:
+        /**
+         *  \brief returns a (possibly const) pointer to the start of the live buffer data. This return value can be invalidated
+         *         by any changes in size/capacity of the InlineBuffer (but not by other changes, like at).
+         */
+        nonvirtual pointer       data ();
+        nonvirtual const_pointer data () const;
 
     public:
         /**
@@ -144,6 +161,12 @@ namespace Stroika::Foundation::Memory {
          */
         nonvirtual reference       at (size_t i);
         nonvirtual const_reference at (size_t i) const;
+
+    public:
+        /**
+         */
+        nonvirtual reference       operator[] (size_t i) { return at (i); }
+        nonvirtual const_reference operator[] (size_t i) const { return at (i); }
 
     public:
         /**

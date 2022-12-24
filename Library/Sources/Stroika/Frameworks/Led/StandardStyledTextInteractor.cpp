@@ -1012,7 +1012,7 @@ bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_RTF (ReaderFlavorPac
             return false;
         }
         Memory::StackBuffer<char> buf{Memory::eUninitialized, length};
-        length = flavorPackage.ReadFlavorData (kRTFClipFormat, length, buf);
+        length = flavorPackage.ReadFlavorData (kRTFClipFormat, length, buf.data ());
 
         size_t start = from;
         size_t end   = to;
@@ -1021,9 +1021,9 @@ bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_RTF (ReaderFlavorPac
         GetTextStore ().Replace (start, end, LED_TCHAR_OF (""), 0); // clear current selection before insert
         {
             // Be sure these guys in scope like this so caches get flusehd before we update cursor position
-            StyledTextIOSrcStream_Memory               source (buf, length);
-            unique_ptr<StandardStyledTextIOSinkStream> sink (mkStandardStyledTextIOSinkStream (start));
-            StyledTextIOReader_RTF                     textReader (&source, sink.get ());
+            StyledTextIOSrcStream_Memory               source{buf.data (), length};
+            unique_ptr<StandardStyledTextIOSinkStream> sink{mkStandardStyledTextIOSinkStream (start)};
+            StyledTextIOReader_RTF                     textReader{&source, sink.get ()};
             textReader.Read ();
             sink->Flush (); // would be called implcitly in DTOR, but call like this so exceptions get propagates...
         }
@@ -1039,7 +1039,7 @@ bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_HTML (ReaderFlavorPa
     if (flavorPackage.GetFlavorAvailable (kHTMLClipFormat)) {
         size_t                    length = flavorPackage.GetFlavorSize (kHTMLClipFormat);
         Memory::StackBuffer<char> buf{Memory::eUninitialized, length};
-        length = flavorPackage.ReadFlavorData (kHTMLClipFormat, length, buf);
+        length = flavorPackage.ReadFlavorData (kHTMLClipFormat, length, buf.data ());
 
         size_t start = from;
         size_t end   = to;
@@ -1048,9 +1048,9 @@ bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_HTML (ReaderFlavorPa
         GetTextStore ().Replace (start, end, LED_TCHAR_OF (""), 0); // clear current selection before insert
         {
             // Be sure these guys in scope like this so caches get flusehd before we update cursor position
-            StyledTextIOSrcStream_Memory               source (buf, length);
-            unique_ptr<StandardStyledTextIOSinkStream> sink (mkStandardStyledTextIOSinkStream (start));
-            StyledTextIOReader_HTML                    textReader (&source, sink.get ());
+            StyledTextIOSrcStream_Memory               source{buf.data (), length};
+            unique_ptr<StandardStyledTextIOSinkStream> sink{mkStandardStyledTextIOSinkStream (start)};
+            StyledTextIOReader_HTML                    textReader{&source, sink.get ()};
             textReader.Read ();
             sink->Flush (); // would be called implcitly in DTOR, but call like this so exceptions get propagates...
         }

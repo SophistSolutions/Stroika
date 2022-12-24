@@ -691,7 +691,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             Verify (::GetFileVersionInfoExW (FILE_VER_GET_NEUTRAL, kkernel32_, dummy, static_cast<DWORD> (buffer.size ()), &buffer[0]));
             void* p    = nullptr;
             UINT  size = 0;
-            Verify (::VerQueryValueW (buffer, L"\\", &p, &size));
+            Verify (::VerQueryValueW (buffer.data (), L"\\", &p, &size));
             Assert (size >= sizeof (VS_FIXEDFILEINFO));
             Assert (p != nullptr);
             auto pFixed          = static_cast<const VS_FIXEDFILEINFO*> (p);
@@ -882,7 +882,7 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
     DWORD                          dwSize          = 0;
     (void)::GetComputerNameEx (kUseNameFormat_, nullptr, &dwSize);
     StackBuffer<SDKChar> buf{Memory::eUninitialized, dwSize};
-    Execution::Platform::Windows::ThrowIfZeroGetLastError (::GetComputerNameEx (kUseNameFormat_, buf, &dwSize));
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (::GetComputerNameEx (kUseNameFormat_, buf.data (), &dwSize));
     result.fHostname = String::FromSDKString (buf);
 #else
     AssertNotImplemented ();

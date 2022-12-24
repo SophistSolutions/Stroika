@@ -107,23 +107,13 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (cString);
         _AssertRepValidType ();
     }
-    inline String::String (const wchar_t* from, const wchar_t* to)
-        : inherited{(from == to) ? mkEmpty_ () : mk_ (from, to)}
-    {
-        Require (from <= to);
-        Require (from != nullptr or from == to);
-        _AssertRepValidType ();
-    }
-    inline String::String (const Character* from, const Character* to)
-        : inherited{(from == to) ? mkEmpty_ () : mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to))}
-    {
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        Require (from <= to);
-        Require (from != nullptr or from == to);
-        _AssertRepValidType ();
-    }
     inline String::String (const wstring& r)
         : inherited{r.empty () ? mkEmpty_ () : mk_ (r.data (), r.data () + r.length ())}
+    {
+        _AssertRepValidType ();
+    }
+    inline String::String (const u8string& r)
+        : inherited{r.empty () ? mkEmpty_ () : FromUTF8 (r.data (), r.data () + r.length ())}
     {
         _AssertRepValidType ();
     }
@@ -156,6 +146,46 @@ namespace Stroika::Foundation::Characters {
     {
         Require ((from == nullptr) == (to == nullptr));
         Require (from <= to);
+        _AssertRepValidType (); // just make sure non-null and right type
+    }
+    inline String::String (const wchar_t* from, const wchar_t* to)
+        : inherited{(from == to) ? mkEmpty_ () : mk_ (from, to)}
+    {
+        Require (from <= to);
+        Require (from != nullptr or from == to);
+        _AssertRepValidType ();
+    }
+    inline String::String (const Character* from, const Character* to)
+        : inherited{(from == to) ? mkEmpty_ () : mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to))}
+    {
+        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+        Require (from <= to);
+        Require (from != nullptr or from == to);
+        _AssertRepValidType ();
+    }
+    inline String::String (span<const char8_t> s)
+        : inherited{s.empty () ? mkEmpty_ () : FromUTF8 (&*s.begin (), &*s.begin () + s.size ())}
+    {
+        _AssertRepValidType (); // just make sure non-null and right type
+    }
+    inline String::String (span<const char16_t> s)
+        : inherited{s.empty () ? mkEmpty_ () : mk_ (&*s.begin (), &*s.begin () + s.size ())}
+    {
+        _AssertRepValidType (); // just make sure non-null and right type
+    }
+    inline String::String (span<const char32_t> s)
+        : inherited{s.empty () ? mkEmpty_ () : mk_ (&*s.begin (), &*s.begin () + s.size ())}
+    {
+        _AssertRepValidType (); // just make sure non-null and right type
+    }
+    inline String::String (span<const wchar_t> s)
+        : inherited{s.empty () ? mkEmpty_ () : String (&*s.begin (), &*s.begin () + s.size ())}
+    {
+        _AssertRepValidType (); // just make sure non-null and right type
+    }
+    inline String::String (span<const Character> s)
+        : inherited{s.empty () ? mkEmpty_ () : String (&*s.begin (), &*s.begin () + s.size ())}
+    {
         _AssertRepValidType (); // just make sure non-null and right type
     }
     inline String String::FromNarrowString (const char* from, const locale& l)

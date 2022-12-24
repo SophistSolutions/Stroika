@@ -63,7 +63,7 @@ void StyledTextIOReader_PlainText::Read ()
     }
 #endif
 #if qWideCharacters
-    CodePage                       useCodePage = CodePagesGuesser{}.Guess (buf, len);
+    CodePage                       useCodePage = CodePagesGuesser{}.Guess (buf.data (), len);
     CodePageConverter              cpc         = CodePageConverter{useCodePage};
     size_t                         outCharCnt  = cpc.MapToUNICODE_QuickComputeOutBufSize (static_cast<const char*> (buf), len + 1);
     Memory::StackBuffer<Led_tChar> wbuf{Memory::eUninitialized, outCharCnt};
@@ -71,7 +71,7 @@ void StyledTextIOReader_PlainText::Read ()
     cpc.MapToUNICODE (static_cast<const char*> (buf), len, static_cast<wchar_t*> (wbuf), &outCharCnt);
     size_t charsRead = outCharCnt;
     Assert (charsRead <= len);
-    Led_tChar* useBuf = wbuf;
+    Led_tChar* useBuf = wbuf.data ();
 #else
     size_t             charsRead = len;
     Led_tChar*         useBuf    = buf;
@@ -86,12 +86,12 @@ bool StyledTextIOReader_PlainText::QuickLookAppearsToBeRightFormat ()
 #if qWideCharacters
     return true;
 #else
-    SrcStreamSeekSaver savePos (GetSrcStream ());
+    SrcStreamSeekSaver savePos{GetSrcStream ()};
 
     char   buf[1024];
     size_t bytesRead = GetSrcStream ().read (buf, sizeof (buf));
 
-    return (ValidateTextForCharsetConformance (buf, bytesRead));
+    return ValidateTextForCharsetConformance (buf, bytesRead);
 #endif
 }
 
@@ -119,11 +119,11 @@ void StyledTextIOWriter_PlainText::Write ()
 #if qWideCharacters
         Memory::StackBuffer<char> ansiBuf{Memory::eUninitialized, bytesRead * sizeof (Led_tChar)};
         size_t                    nChars = bytesRead * sizeof (Led_tChar);
-        CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (buf2, bytesRead, ansiBuf, &nChars);
+        CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (buf2, bytesRead, ansiBuf.data (), &nChars);
         bytesRead = nChars;
-        write (ansiBuf, bytesRead);
+        write (ansiBuf.data (), bytesRead);
 #else
-        write (buf2, bytesRead);
+        write (buf2.data (), bytesRead);
 #endif
     }
 }

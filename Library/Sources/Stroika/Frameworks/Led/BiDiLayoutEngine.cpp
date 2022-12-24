@@ -826,16 +826,16 @@ void TextLayoutBlock_Basic::PeekAtRealText_ (const Led_tChar** startText, const 
 {
     RequireNotNull (startText);
     RequireNotNull (endText);
-    *startText = fRealText;
-    *endText   = fRealText + fTextLength;
+    *startText = fRealText.data ();
+    *endText   = fRealText.data () + fTextLength;
 }
 
 void TextLayoutBlock_Basic::PeekAtVirtualText_ (const Led_tChar** startText, const Led_tChar** endText) const
 {
     RequireNotNull (startText);
     RequireNotNull (endText);
-    *startText = fVirtualText;
-    *endText   = fVirtualText + fTextLength;
+    *startText = fVirtualText.data ();
+    *endText   = fVirtualText.data () + fTextLength;
 }
 
 vector<TextLayoutBlock::ScriptRunElt> TextLayoutBlock_Basic::GetScriptRuns () const
@@ -849,8 +849,6 @@ vector<TextLayoutBlock::ScriptRunElt> TextLayoutBlock_Basic::GetScriptRuns () co
  ********************************************************************************
  */
 TextLayoutBlock_Copy::TextLayoutBlock_Copy (const TextLayoutBlock& from)
-    : inherited ()
-    , fRep ()
 {
     /*
      *  Compute size - and then copy all the data into a continguous block of RAM.
@@ -979,9 +977,9 @@ TextLayoutBlock_VirtualSubset::TextLayoutBlock_VirtualSubset (const TextLayoutBl
             Assert (runRelEnd >= runRelStart);
             size_t runEltLen = runRelEnd - runRelStart;
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-            Memory::Private::VC_BWA_std_copy (fullRealText + s.fRealStart, fullRealText + s.fRealStart + runEltLen, fRealText + offsetSoFar);
+            Memory::Private::VC_BWA_std_copy (fullRealText + s.fRealStart, fullRealText + s.fRealStart + runEltLen, fRealText.data () + offsetSoFar);
 #else
-            copy (fullRealText + s.fRealStart, fullRealText + s.fRealStart + runEltLen, fRealText + offsetSoFar);
+            copy (fullRealText + s.fRealStart, fullRealText + s.fRealStart + runEltLen, fRealText.data () + offsetSoFar);
 #endif
             s.fRealStart = offsetSoFar;
             offsetSoFar += runEltLen;
@@ -998,7 +996,7 @@ void TextLayoutBlock_VirtualSubset::PeekAtRealText_ (const Led_tChar** startText
 {
     RequireNotNull (startText);
     RequireNotNull (endText);
-    *startText = fRealText;
+    *startText = fRealText.data ();
     *endText   = *startText + (fEnd - fStart);
 }
 

@@ -33,7 +33,7 @@ void TrivialRGBSyntaxAnalyzer::AddMarkers (TextStore* ts, TextInteractor* /*inte
 
     size_t                 len = lookBackTo - lookBackStart;
     StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
-    ts->CopyOut (lookBackStart, len, buf);
+    ts->CopyOut (lookBackStart, len, buf.data ());
     for (size_t i = 0; i < len; ++i) {
         Led_tChar c = buf[i];
         if (c == 'r' or c == 'R') {
@@ -407,7 +407,7 @@ void TableDrivenKeywordSyntaxAnalyzer::AddMarkers (TextStore* ts, TextInteractor
 
     size_t                 len = lookBackTo - lookBackStart;
     StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
-    ts->CopyOut (lookBackStart, len, buf);
+    ts->CopyOut (lookBackStart, len, buf.data ());
     for (size_t i = 0; i < len; ++i) {
         size_t kwl = fKeywordTable.KeywordLength (&buf[i], len - i);
         if (kwl != 0) {
@@ -596,7 +596,7 @@ void WindowedSyntaxColoringMarkerOwner::AboutToUpdateText (const UpdateInfo& upd
     if (updateInfo.fTextModified) {
         size_t                 len = updateInfo.fReplaceTo - updateInfo.fReplaceFrom;
         StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
-        fTextStore.CopyOut (updateInfo.fReplaceFrom, len, buf);
+        fTextStore.CopyOut (updateInfo.fReplaceFrom, len, buf.data ());
         for (size_t i = 0; i < len; ++i) {
             Led_tChar c = buf[i];
             if (c == '\n') {

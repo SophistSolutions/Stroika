@@ -282,8 +282,8 @@ SimpleEmbeddedObjectStyleMarker* StandardMacPictureStyleMarker::mk (ReaderFlavor
 {
     size_t                         length = flavorPackage.GetFlavorSize (kClipFormat);
     Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, length};
-    length = flavorPackage.ReadFlavorData (kClipFormat, length, buf);
-    return (mk (kEmbeddingTag, buf, length));
+    length = flavorPackage.ReadFlavorData (kClipFormat, length, buf.data ());
+    return (mk (kEmbeddingTag, buf.data (), length));
 }
 
 void StandardMacPictureStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet,
@@ -410,8 +410,8 @@ SimpleEmbeddedObjectStyleMarker* StandardDIBStyleMarker::mk (ReaderFlavorPackage
 {
     size_t                         length = flavorPackage.GetFlavorSize (kClipFormat);
     Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, length};
-    length = flavorPackage.ReadFlavorData (kClipFormat, length, buf);
-    return mk (kEmbeddingTag, buf, length);
+    length = flavorPackage.ReadFlavorData (kClipFormat, length, buf.data ());
+    return mk (kEmbeddingTag, buf.data (), length);
 }
 
 void StandardDIBStyleMarker::DrawSegment (const StyledTextImager* imager, [[maybe_unused]] const RunElement& runElement, Tablet* tablet,
@@ -526,18 +526,18 @@ SimpleEmbeddedObjectStyleMarker* StandardURLStyleMarker::mk (ReaderFlavorPackage
     if (flavorPackage.GetFlavorAvailable (kURLDClipFormat)) {
         size_t                         length = flavorPackage.GetFlavorSize (kURLDClipFormat);
         Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, length};
-        length = flavorPackage.ReadFlavorData (kURLDClipFormat, length, buf);
-        return (mk (kEmbeddingTag, buf, length));
+        length = flavorPackage.ReadFlavorData (kURLDClipFormat, length, buf.data ());
+        return (mk (kEmbeddingTag, buf.data (), length));
     }
 #if qPlatform_Windows
     if (flavorPackage.GetFlavorAvailable (kWin32URLClipFormat)) {
         size_t                    length = flavorPackage.GetFlavorSize (kWin32URLClipFormat);
         Memory::StackBuffer<char> buf{Memory::eUninitialized, length};
-        length = flavorPackage.ReadFlavorData (kWin32URLClipFormat, length, buf);
+        length = flavorPackage.ReadFlavorData (kWin32URLClipFormat, length, buf.data ());
         // tmp/medium term hack.. Seems both formats look roughly the same. URL first. Then title. At least for now,
         // we can take advtangage of this and share code on read. If not, we can read/reformat to fit so this below works.
         // LGP 961012
-        return (mk (kEmbeddingTag, buf, length));
+        return (mk (kEmbeddingTag, buf.data (), length));
     }
 #endif
     Execution::Throw (DataExchange::BadFormatException::kThe);
@@ -695,7 +695,7 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
     }
     else {
         Memory::StackBuffer<DistanceType> distRes{Memory::eUninitialized, displayText.length ()};
-        imager->MeasureSegmentWidth_ (fsp, from, from + displayText.length (), displayText.c_str (), distRes);
+        imager->MeasureSegmentWidth_ (fsp, from, from + displayText.length (), displayText.c_str (), distRes.data ());
         distanceResults[0] = distRes[displayText.length () - 1];
     }
 #else
@@ -800,9 +800,9 @@ void StandardURLStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPack
 #if qPlatform_Windows
     size_t                    len = fURLData.GetURLLength () + 1;
     Memory::StackBuffer<char> hackBuf{Memory::eUninitialized, len};
-    memcpy (hackBuf, fURLData.PeekAtURL (), len - 1);
+    memcpy (hackBuf.data (), fURLData.PeekAtURL (), len - 1);
     hackBuf[len] = '\0';
-    flavorPackage.AddFlavorData (kWin32URLClipFormat, len, hackBuf);
+    flavorPackage.AddFlavorData (kWin32URLClipFormat, len, hackBuf.data ());
 #endif
 }
 
@@ -974,13 +974,13 @@ SimpleEmbeddedObjectStyleMarker* StandardMacPictureWithURLStyleMarker::mk (Reade
 {
     size_t                    pictLength = flavorPackage.GetFlavorSize (kPICTClipFormat);
     Memory::StackBuffer<char> buf1{Memory::eUninitialized, pictLength};
-    pictLength          = flavorPackage.ReadFlavorData (kPICTClipFormat, pictLength, buf1);
+    pictLength          = flavorPackage.ReadFlavorData (kPICTClipFormat, pictLength, buf1.data ());
     Led_Picture* picBuf = (Led_Picture*)(char*)buf1;
 
     size_t                         urlSize = flavorPackage.GetFlavorSize (StandardURLStyleMarker::kURLDClipFormat);
     Memory::StackBuffer<Led_tChar> buf2{Memory::eUninitialized, urlSize};
-    urlSize = flavorPackage.ReadFlavorData (StandardURLStyleMarker::kURLDClipFormat, urlSize, buf2);
-    return new StandardMacPictureWithURLStyleMarker (picBuf, pictLength, Led_URLD (buf2, urlSize));
+    urlSize = flavorPackage.ReadFlavorData (StandardURLStyleMarker::kURLDClipFormat, urlSize, buf2.data ());
+    return new StandardMacPictureWithURLStyleMarker{picBuf, pictLength, Led_URLD{buf2.data (), urlSize}};
 }
 
 void StandardMacPictureWithURLStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet,
@@ -992,7 +992,7 @@ void StandardMacPictureWithURLStyleMarker::DrawSegment (const StyledTextImager* 
     Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
     MacPictureDrawSegment (GetPictureHandle (), tablet,
                            imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor), imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
-                           drawInto - Led_Point (0, imager->GetHScrollPos ()), useBaseLine, pixelsDrawn, Led_GetMacPictSize ((Led_Picture*)locker.GetPointer ()));
+                           drawInto - Led_Point{0, imager->GetHScrollPos ()}, useBaseLine, pixelsDrawn, Led_GetMacPictSize ((Led_Picture*)locker.GetPointer ()));
 }
 
 void StandardMacPictureWithURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to,
@@ -1143,7 +1143,7 @@ SimpleEmbeddedObjectStyleMarker* StandardDIBWithURLStyleMarker::mk (ReaderFlavor
 {
     size_t                    length = flavorPackage.GetFlavorSize (StandardDIBStyleMarker::kClipFormat);
     Memory::StackBuffer<char> buf{Memory::eUninitialized, length};
-    length = flavorPackage.ReadFlavorData (StandardDIBStyleMarker::kClipFormat, length, buf);
+    length = flavorPackage.ReadFlavorData (StandardDIBStyleMarker::kClipFormat, length, buf.data ());
     if (length < 40) {
         // This is less than we need to peek and see size of DIB...
         Execution::Throw (DataExchange::BadFormatException::kThe);
@@ -1166,9 +1166,9 @@ SimpleEmbeddedObjectStyleMarker* StandardDIBWithURLStyleMarker::mk (ReaderFlavor
 
     size_t                    urlSize = flavorPackage.GetFlavorSize (StandardURLStyleMarker::kURLDClipFormat);
     Memory::StackBuffer<char> buf2{Memory::eUninitialized, urlSize};
-    urlSize = flavorPackage.ReadFlavorData (StandardURLStyleMarker::kURLDClipFormat, urlSize, buf2);
+    urlSize = flavorPackage.ReadFlavorData (StandardURLStyleMarker::kURLDClipFormat, urlSize, buf2.data ());
 
-    return new StandardDIBWithURLStyleMarker ((const Led_DIB*)(char*)buf, Led_URLD (buf2, urlSize));
+    return new StandardDIBWithURLStyleMarker{(const Led_DIB*)(char*)buf, Led_URLD{buf2.data (), urlSize}};
 }
 
 void StandardDIBWithURLStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet,

@@ -407,13 +407,13 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                 cpc.MapToUNICODE (reinterpret_cast<const char*> (rawBytes), nRawBytes, static_cast<wchar_t*> (fileData2), &outCharCnt);
                 size_t charsRead = outCharCnt;
                 Assert (charsRead <= nRawBytes);
-                charsRead = Characters::NormalizeTextToNL<Led_tChar> (fileData2, charsRead, fileData2, charsRead);
+                charsRead = Characters::NormalizeTextToNL<Led_tChar> (fileData2.data (), charsRead, fileData2.data (), charsRead);
 
                 {
                     StackBuffer<Led_tChar> patchedData{Memory::eUninitialized, charsRead + charsRead / fBreakWidths};
                     size_t                 curLineSize = 0;
                     size_t                 ourIdx      = 0;
-                    for (const Led_tChar* p = fileData2; p != fileData2 + charsRead; ++p) {
+                    for (const Led_tChar* p = fileData2.data (); p != fileData2.data () + charsRead; ++p) {
                         if (*p == '\n' or *p == '\r') {
                             curLineSize = 0;
                         }
@@ -427,7 +427,7 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                         }
                     }
                     charsRead = ourIdx;
-                    GetTextStore ().Replace (from, to, patchedData, charsRead);
+                    GetTextStore ().Replace (from, to, patchedData.data (), charsRead);
                 }
                 return true;
 #else
@@ -520,7 +520,7 @@ void LedLineItDocument::Serialize (CArchive& ar)
         ASSERT_VALID (file);
         DWORD             nLen = static_cast<DWORD> (file->GetLength ()); // maybe should subtract current offset?
         StackBuffer<char> buf{Memory::eUninitialized, nLen};
-        if (ar.Read (buf, nLen) != nLen) {
+        if (ar.Read (buf.data (), nLen) != nLen) {
             AfxThrowArchiveException (CArchiveException::endOfFile);
         }
 
@@ -530,7 +530,7 @@ void LedLineItDocument::Serialize (CArchive& ar)
             if (useCodePage == kAutomaticallyGuessCodePage) {
                 CodePagesGuesser::Confidence conf         = CodePagesGuesser::Confidence::eLow;
                 size_t                       bytesToStrip = 0;
-                useCodePage                               = CodePagesGuesser ().Guess (buf, nLen, &conf, &bytesToStrip);
+                useCodePage                               = CodePagesGuesser ().Guess (buf.data (), nLen, &conf, &bytesToStrip);
             }
         }
 

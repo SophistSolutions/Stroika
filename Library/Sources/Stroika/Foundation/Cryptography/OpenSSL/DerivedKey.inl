@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     }
     inline BLOB DerivedKey::NormalizePassword (const String& passwd)
     {
-        return NormalizePassword (passwd.AsUTF8 ());
+        return NormalizePassword (passwd.AsUTF8<string> ());
     }
 
     /*

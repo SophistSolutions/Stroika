@@ -901,7 +901,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
                 accels[goodKeysFound].cmd = static_cast<WORD> (cmdNum);
                 ++goodKeysFound;
             }
-            *pVal = ::CreateAcceleratorTable (accels, static_cast<int> (goodKeysFound));
+            *pVal = ::CreateAcceleratorTable (accels.data (), static_cast<int> (goodKeysFound));
         }
     }
     CATCH_AND_HANDLE_EXCEPTIONS ()

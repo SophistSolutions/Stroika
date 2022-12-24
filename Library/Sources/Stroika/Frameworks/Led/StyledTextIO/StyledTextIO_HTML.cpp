@@ -724,9 +724,9 @@ Led_tString StyledTextIOReader_HTML::MapInputTextToTString (const string& text)
     Memory::StackBuffer<Led_tChar> wBuf{Memory::eUninitialized, text.length () + 1};
     CodePageConverter              cpc{kCodePage_ANSI};
     size_t                         outCharCnt = text.length ();
-    cpc.MapToUNICODE (text.c_str (), text.length (), wBuf, &outCharCnt);
+    cpc.MapToUNICODE (text.c_str (), text.length (), wBuf.data (), &outCharCnt);
     wBuf[outCharCnt] = '\0';
-    return Led_tString{wBuf};
+    return Led_tString{wBuf.data ()};
 #else
     return text;
 #endif
@@ -751,14 +751,14 @@ void StyledTextIOReader_HTML::EmitText (const Led_tChar* text, size_t nBytes, bo
     }
 
     Memory::StackBuffer<Led_tChar> outBuf{Memory::eUninitialized, nBytes};
-    nBytes = Characters::NormalizeTextToNL<Led_tChar> (text, nBytes, outBuf, nBytes);
+    nBytes = Characters::NormalizeTextToNL<Led_tChar> (text, nBytes, outBuf.data (), nBytes);
 
     if (not skipNLCheck and fNormalizeInputWhitespace) {
         Assert (fNormalizeInputWhitespace);
         Assert (not skipNLCheck);
 
         // Normalize space (including NLs) to one
-        Led_tChar* out = outBuf;
+        Led_tChar* out = outBuf.data ();
         for (size_t i = 0; i < nBytes; ++i) {
             Led_tChar c             = outBuf[i];
             bool      thisCharSpace = IsASCIISpace_ (c);
@@ -781,7 +781,7 @@ void StyledTextIOReader_HTML::EmitText (const Led_tChar* text, size_t nBytes, bo
 
     if (nBytes > 0) {
         fReadingBody = true;
-        GetSinkStream ().AppendText (outBuf, nBytes, &fFontStack.back ());
+        GetSinkStream ().AppendText (outBuf.data (), nBytes, &fFontStack.back ());
     }
 }
 
@@ -1159,11 +1159,11 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
                 CodePageConverter         cpc (kCodePage_ANSI);
                 size_t                    outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (fHiddenTextAccumulation.c_str (), fHiddenTextAccumulation.length ());
                 Memory::StackBuffer<char> buf{Memory::eUninitialized, outCharCnt};
-                cpc.MapFromUNICODE (fHiddenTextAccumulation.c_str (), fHiddenTextAccumulation.length (), buf, &outCharCnt);
+                cpc.MapFromUNICODE (fHiddenTextAccumulation.c_str (), fHiddenTextAccumulation.length (), buf.data (), &outCharCnt);
                 buf[outCharCnt] = '\0';
-                Led_URLD urld   = Led_URLD (tagValue.c_str (), buf);
+                Led_URLD urld   = Led_URLD{tagValue.c_str (), buf.data ()};
 #else
-                Led_URLD urld = Led_URLD (tagValue.c_str (), fHiddenTextAccumulation.c_str ());
+                Led_URLD urld = Led_URLD{tagValue.c_str (), fHiddenTextAccumulation.c_str ()};
 #endif
                 GetSinkStream ().AppendEmbedding ((assoc.fReadFromMemory) (StandardURLStyleMarker::kEmbeddingTag, urld.PeekAtURLD (), urld.GetURLDLength ()));
             }

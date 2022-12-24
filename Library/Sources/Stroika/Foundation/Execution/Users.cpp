@@ -43,7 +43,7 @@ String Execution::GetCurrentUserName ([[maybe_unused]] UserNameFormat format)
     ULONG sz = 0;
     ::GetUserName (nullptr, &sz);
     StackBuffer<Characters::SDKChar> buf{Memory::eUninitialized, sz + 1};
-    Execution::Platform::Windows::ThrowIfZeroGetLastError (::GetUserName (buf, &sz));
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (::GetUserName (buf.data (), &sz));
     return String::FromSDKString (buf);
 #elif qPlatform_POSIX
     return Platform::POSIX::uid_t2UserName (Platform::POSIX::GetUID ());

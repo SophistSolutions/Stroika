@@ -2448,7 +2448,7 @@ void Characters::MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, s
     RequireNotNull (outCharCnt);
     [[maybe_unused]] size_t      outBufSize = *outCharCnt;
     CodePagesGuesser::Confidence confidence = CodePagesGuesser::Confidence::eLow;
-    CodePage                     cp         = CodePagesGuesser ().Guess (inMBChars, inMBCharCnt, &confidence, nullptr);
+    CodePage                     cp         = CodePagesGuesser{}.Guess (inMBChars, inMBCharCnt, &confidence, nullptr);
     if (confidence <= CodePagesGuesser::Confidence::eLow) {
         cp = kCodePage_UTF8;
     }
@@ -2463,8 +2463,8 @@ void Characters::MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, s
  ********************************************************************************
  */
 CodePageConverter::CodePageNotSupportedException::CodePageNotSupportedException (CodePage codePage)
-    : fMsg_ (Characters::Format (L"Code page %d not supported", codePage).AsNarrowSDKString ())
-    , fCodePage_ (codePage)
+    : fMsg_{Characters::Format (L"Code page %d not supported", codePage).AsNarrowSDKString ()}
+    , fCodePage_{codePage}
 {
 }
 
@@ -2581,8 +2581,7 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
             }
         } break;
         case kCodePage_UTF8: {
-            char16_t* outCharsPtr = outChars;
-            *outCharCnt           = get<1> (UTFConverter::kThe.Convert (span{inMBChars, inMBChars + inMBCharCnt}, span{outCharsPtr, outChars + *outCharCnt}));
+            *outCharCnt = get<1> (UTFConverter::kThe.Convert (span{inMBChars, inMBChars + inMBCharCnt}, span{outChars, *outCharCnt}));
         } break;
         default: {
 #if qPlatform_Windows
@@ -2598,7 +2597,7 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
         // Assure my baked tables (and UTF8 converters) perform the same as the builtin Win32 API
         size_t               tstCharCnt = *outCharCnt;
         StackBuffer<wchar_t> tstBuf{Memory::eUninitialized, *outCharCnt};
-        Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, tstBuf, &tstCharCnt);
+        Characters::Platform::Windows::PlatformCodePageConverter{fCodePage}.MapToUNICODE (inMBChars, inMBCharCnt, tstBuf, &tstCharCnt);
         Assert (tstCharCnt == *outCharCnt);
         Assert (memcmp (tstBuf, outChars, sizeof (wchar_t) * tstCharCnt) == 0);
     }
@@ -2609,7 +2608,7 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 {
     // Not really right - but hopefully adquate for starters -- LGP 2011-09-06
     StackBuffer<char16_t> tmpBuf{Memory::eUninitialized, *outCharCnt};
-    MapToUNICODE (inMBChars, inMBCharCnt, tmpBuf, outCharCnt);
+    MapToUNICODE (inMBChars, inMBCharCnt, tmpBuf.data (), outCharCnt);
     for (size_t i = 0; i < *outCharCnt; ++i) {
         outChars[i] = tmpBuf[i];
     }
@@ -2709,7 +2708,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
                     useOutCharCount = 0;
                 }
             }
-            Characters::Platform::Windows::PlatformCodePageConverter (kCodePage_UTF7).MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt, useOutChars, &useOutCharCount);
+            Characters::Platform::Windows::PlatformCodePageConverter{kCodePage_UTF7}.MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt, useOutChars, &useOutCharCount);
             if (GetHandleBOM ()) {
                 if (*outCharCnt >= 5) {
                     useOutCharCount += 5;
@@ -2736,11 +2735,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
                     useOutCharCount = 0;
                 }
             }
-            {
-                auto  ic          = inChars;
-                char* outCharsPtr = useOutChars;
-                useOutCharCount   = get<1> (UTFConverter::kThe.Convert (span{ic, inChars + inCharCnt}, span{outCharsPtr, outCharsPtr + useOutCharCount}));
-            }
+            useOutCharCount = get<1> (UTFConverter::kThe.Convert (span{inChars, inCharCnt}, span{useOutChars, useOutCharCount}));
             if (GetHandleBOM ()) {
                 if (*outCharCnt >= 3) {
                     useOutCharCount += 3;
@@ -2763,36 +2758,26 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
         size_t            win32TstCharCnt = outBufferSize;
         StackBuffer<char> win32TstBuf{Memory::eUninitialized, win32TstCharCnt};
 
-        Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt, win32TstBuf, &win32TstCharCnt);
+        Characters::Platform::Windows::PlatformCodePageConverter{fCodePage}.MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt, win32TstBuf.data (), &win32TstCharCnt);
 
         // SPR#0813 (and SPR#1277) - assert this produces the right result OR a '?' character -
         // used for bad conversions. Reason is cuz for characters that don't map - our table and
         // the system table can differ in how they map depending on current OS code page.
         Assert ((win32TstCharCnt + countOfBOMCharsAdded) == *outCharCnt or outChars[0] == '?');
-        Assert (memcmp (win32TstBuf, outChars + countOfBOMCharsAdded, win32TstCharCnt) == 0 or outChars[0] == '?');
+        Assert (memcmp (win32TstBuf.data (), outChars + countOfBOMCharsAdded, win32TstCharCnt) == 0 or outChars[0] == '?');
     }
 #endif
 }
 
 void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
-    // @todo fix weak implementation (slow)
-    // First convert to char16_t, and then apply that overload
-    StackBuffer<char16_t> char16Buf{Memory::eUninitialized, *outCharCnt};
-    {
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-        auto r = UTFConverter::kThe.Convert (span{inChars, inChars + inCharCnt}, Memory::mkSpan_BWA_ (char16Buf));
-#else
-        auto r = UTFConverter::kThe.Convert (span{inChars, inChars + inCharCnt}, span{char16Buf});
-#endif
-        char16Buf.resize (get<1> (r));
-    }
-    MapFromUNICODE (char16Buf, char16Buf.size (), outChars, outCharCnt);
+    auto r      = UTFConverter::kThe.Convert (span{inChars, inCharCnt}, span{outChars, *outCharCnt});
+    *outCharCnt = get<1> (r);
 }
 
 /*
  ********************************************************************************
- ********************************** CodePagesInstalled **************************
+ ***************************** CodePagesInstalled *******************************
  ********************************************************************************
  */
 namespace {
@@ -2807,7 +2792,6 @@ namespace {
 }
 
 CodePagesInstalled::CodePagesInstalled ()
-    : fCodePages_ ()
 {
     Assert (fCodePages_.size () == 0);
 
@@ -2826,7 +2810,7 @@ CodePagesInstalled::CodePagesInstalled ()
     accum->insert (kCodePage_UNICODE_WIDE);
     accum->insert (kCodePage_UNICODE_WIDE_BIGENDIAN);
     accum->insert (kCodePage_UTF8);
-    fCodePages_ = vector<CodePage> (accum->begin (), accum->end ());
+    fCodePages_ = vector<CodePage>{accum->begin (), accum->end ()};
 }
 
 /*
@@ -3010,7 +2994,6 @@ void Characters::WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEn
 {
     RequireNotNull (intoResult);
     Require (wsStart <= wsEnd);
-
 #if qPlatform_Windows
     Platform::Windows::WideStringToNarrow (wsStart, wsEnd, codePage, intoResult);
 #else
@@ -3071,7 +3054,7 @@ wstring Characters::MapUNICODETextWithMaybeBOMTowstring (const char* start, cons
         size_t               outBufSize = end - start;
         StackBuffer<wchar_t> wideBuf{Memory::eUninitialized, outBufSize};
         size_t               outCharCount = outBufSize;
-        MapSBUnicodeTextWithMaybeBOMToUNICODE (start, end - start, wideBuf, &outCharCount);
+        MapSBUnicodeTextWithMaybeBOMToUNICODE (start, end - start, wideBuf.data (), &outCharCount);
         Assert (outCharCount <= outBufSize);
         if (outCharCount == 0) {
             return wstring{};
@@ -3080,7 +3063,7 @@ wstring Characters::MapUNICODETextWithMaybeBOMTowstring (const char* start, cons
         // The wideBuf may be NUL-terminated or not (depending on whether the input was NUL-terminated or not).
         // Be sure to construct the resuting string with the right end-of-string pointer (the length doesn't include
         // the NUL-char)
-        return wstring (wideBuf, wideBuf[outCharCount - 1] == '\0' ? (outCharCount - 1) : outCharCount);
+        return wstring{wideBuf.data (), wideBuf[outCharCount - 1] == '\0' ? (outCharCount - 1) : outCharCount};
     }
 }
 
@@ -3091,12 +3074,12 @@ wstring Characters::MapUNICODETextWithMaybeBOMTowstring (const char* start, cons
  */
 vector<byte> Characters::MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP)
 {
-    CodePageConverter cpc (useCP, CodePageConverter::eHandleBOM);
+    CodePageConverter cpc{useCP, CodePageConverter::eHandleBOM};
     size_t            outCharCount = cpc.MapFromUNICODE_QuickComputeOutBufSize (start, end - start);
     StackBuffer<char> buf{Memory::eUninitialized, outCharCount};
-    cpc.MapFromUNICODE (start, end - start, buf, &outCharCount);
+    cpc.MapFromUNICODE (start, end - start, buf.data (), &outCharCount);
     const byte* bs = reinterpret_cast<const byte*> (static_cast<const char*> (buf));
-    return vector<byte> (bs, bs + outCharCount);
+    return vector<byte>{bs, bs + outCharCount};
 }
 
 /*

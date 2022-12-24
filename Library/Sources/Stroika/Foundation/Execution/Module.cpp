@@ -69,7 +69,7 @@ filesystem::path Execution::GetEXEPath ()
     // double buf size and try again
     Memory::StackBuffer<Characters::SDKChar> buf{Memory::eUninitialized, 1024};
     ssize_t                                  n;
-    while ((n = ::readlink ("/proc/self/exe", buf, buf.GetSize ())) == buf.GetSize ()) {
+    while ((n = ::readlink ("/proc/self/exe", buf.data (), buf.GetSize ())) == buf.GetSize ()) {
         buf.GrowToSize_uninitialized (buf.GetSize () * 2);
     }
     if (n < 0) {
@@ -113,7 +113,7 @@ filesystem::path Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
     ssize_t                                  n;
     char                                     linkNameBuf[1024];
     (void)std::snprintf (linkNameBuf, sizeof (linkNameBuf), "/proc/%ld/exe", static_cast<long> (processID));
-    while ((n = ::readlink (linkNameBuf, buf, buf.GetSize ())) == buf.GetSize ()) {
+    while ((n = ::readlink (linkNameBuf, buf.data (), buf.GetSize ())) == buf.GetSize ()) {
         buf.GrowToSize_uninitialized (buf.GetSize () * 2);
     }
     if (n < 0) {

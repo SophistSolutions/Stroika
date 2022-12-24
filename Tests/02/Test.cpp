@@ -606,7 +606,7 @@ namespace {
         size_t            sz = cpc.MapFromUNICODE_QuickComputeOutBufSize (w.c_str (), w.length ());
         StackBuffer<char> buf{sz + 1};
         size_t            charCnt = sz;
-        cpc.MapFromUNICODE (w.c_str (), w.length (), buf, &charCnt);
+        cpc.MapFromUNICODE (w.c_str (), w.length (), buf.data (), &charCnt);
         VerifyTestResult ((string{buf.begin (), buf.begin () + charCnt} == "﻿<PHRMode"));
     }
 }
@@ -1277,13 +1277,11 @@ namespace {
             VerifyTestResult (out.str () == L"hi mom");
             out += L".";
             VerifyTestResult (out.str () == L"hi mom.");
-            VerifyTestResult (static_cast<String> (out) == L"hi mom.");
             VerifyTestResult (out.As<String> () == L"hi mom.");
             VerifyTestResult (out.As<wstring> () == L"hi mom.");
         }
         {
             StringBuilder out{L"x"};
-            VerifyTestResult (static_cast<String> (out) == L"x");
             VerifyTestResult (out.As<String> () == L"x");
         }
     }

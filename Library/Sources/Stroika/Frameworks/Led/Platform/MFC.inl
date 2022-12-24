@@ -1003,13 +1003,13 @@ namespace Stroika::Frameworks::Led::Platform {
             size_t                         length     = flavors.GetFlavorSize (kTEXTClipFormat);
             Led_ClipFormat                 textFormat = kTEXTClipFormat;
             Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, length}; // really could use smaller buffer
-            length = flavors.ReadFlavorData (textFormat, length, buf);
+            length = flavors.ReadFlavorData (textFormat, length, buf.data ());
             if (doSmartCNP) {
                 size_t nTChars = length / sizeof (Led_tChar);
                 if (nTChars > 0) {
                     --nTChars; // on windows, the text buffer contains a trailing NUL-byte
                 }
-                doSmartCNP = this->LooksLikeSmartPastableText (buf, nTChars, &smartCNPInfo);
+                doSmartCNP = this->LooksLikeSmartPastableText (buf.data (), nTChars, &smartCNPInfo);
             }
         }
 
@@ -1382,13 +1382,13 @@ namespace Stroika::Frameworks::Led::Platform {
         ASSERT_VALID (this);
 
         Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, nLen};
-        if (ar.Read (buf, nLen * sizeof (Led_tChar)) != nLen * sizeof (Led_tChar)) {
+        if (ar.Read (buf.data (), nLen * sizeof (Led_tChar)) != nLen * sizeof (Led_tChar)) {
             AfxThrowArchiveException (CArchiveException::endOfFile);
         }
         // Replace the editing edit buffer with the newly loaded data
-        nLen = static_cast<UINT> (Characters::NormalizeTextToNL<Led_tChar> (buf, nLen, buf, nLen));
-        if (ValidateTextForCharsetConformance (buf, nLen)) {
-            this->Replace (0, 0, buf, nLen);
+        nLen = static_cast<UINT> (Characters::NormalizeTextToNL<Led_tChar> (buf.data (), nLen, buf.data (), nLen));
+        if (ValidateTextForCharsetConformance (buf.data (), nLen)) {
+            this->Replace (0, 0, buf.data (), nLen);
         }
         else {
             this->OnBadUserInput ();
@@ -1406,10 +1406,10 @@ namespace Stroika::Frameworks::Led::Platform {
 
         size_t                         nLen = this->GetLength ();
         Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, nLen};
-        this->CopyOut (0, nLen, buf);
+        this->CopyOut (0, nLen, buf.data ());
         Memory::StackBuffer<Led_tChar> buf2{Memory::eUninitialized, 2 * nLen};
-        nLen = Characters::NLToNative<Led_tChar> (buf, nLen, buf2, 2 * nLen);
-        ar.Write (buf2, static_cast<UINT> (nLen * sizeof (Led_tChar)));
+        nLen = Characters::NLToNative<Led_tChar> (buf.data (), nLen, buf2.data (), 2 * nLen);
+        ar.Write (buf2.data (), static_cast<UINT> (nLen * sizeof (Led_tChar)));
 
         ASSERT_VALID (this);
     }

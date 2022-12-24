@@ -62,7 +62,7 @@ namespace {
         int minute = 0;
         int secs   = 0;
         DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
-        if (::swscanf (rep.c_str (), L"%d:%d:%d", &hour, &minute, &secs) >= 2) {
+        if (::swscanf (rep.As<wstring> ().c_str (), L"%d:%d:%d", &hour, &minute, &secs) >= 2) {
             hour   = std::max (hour, 0);
             hour   = std::min (hour, 23);
             minute = std::max (minute, 0);

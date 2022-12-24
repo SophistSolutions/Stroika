@@ -1063,7 +1063,7 @@ void ActiveLedItControl::DoReadFile (LPCTSTR filename, Memory::StackBuffer<char>
             *size = eof;
         }
         (void)::_lseek (fd, 0, SEEK_SET);
-        int nBytes = ::_read (fd, *buffer, eof);
+        int nBytes = ::_read (fd, buffer->data (), eof);
         if (nBytes != eof) {
             AfxThrowFileException (CFileException::genericException, -1, filename);
         }
@@ -1110,7 +1110,7 @@ void ActiveLedItControl::LoadFile (LPCTSTR filename)
     size_t                    size = 0;
     DoReadFile (filename, &buffer, &size);
 
-    StyledTextIOSrcStream_Memory                 source (buffer, size);
+    StyledTextIOSrcStream_Memory                 source{buffer.data (), size};
     WordProcessor::WordProcessorTextIOSinkStream sink (&fEditor);
 
     Led_FileFormat format = GuessFormatFromName (filename);
@@ -2069,9 +2069,9 @@ BSTR ActiveLedItControl::GetBufferText ()
 {
     size_t                         len = fEditor.GetLength ();
     Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len + 1};
-    fEditor.CopyOut (0, len, buf);
+    fEditor.CopyOut (0, len, buf.data ());
     buf[len] = '\0';
-    return CString (buf).AllocSysString ();
+    return CString (buf.data ()).AllocSysString ();
 }
 
 void ActiveLedItControl::SetBufferText (LPCTSTR text)
@@ -2084,7 +2084,7 @@ void ActiveLedItControl::SetBufferText (LPCTSTR text)
         Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, len + 1};
         buf[0] = 0xfeff;
         memcpy (&buf[1], text, len * sizeof (wchar_t));
-        StyledTextIOSrcStream_Memory source (buf, (len + 1) * sizeof (wchar_t));
+        StyledTextIOSrcStream_Memory source (buf.data (), (len + 1) * sizeof (wchar_t));
 #else
         StyledTextIOSrcStream_Memory source (text, text == NULL ? 0 : ::_tcslen (text));
 #endif
@@ -2102,12 +2102,12 @@ BSTR ActiveLedItControl::GetBufferTextCRLF ()
     try {
         size_t                         len = fEditor.GetLength ();
         Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len + 1};
-        fEditor.CopyOut (0, len, buf);
+        fEditor.CopyOut (0, len, buf.data ());
         buf[len] = '\0';
         Memory::StackBuffer<Led_tChar> buf2{Memory::eUninitialized, 2 * len + 1};
-        len       = Characters::NLToNative<Led_tChar> (buf, len, buf2, 2 * len + 1);
+        len       = Characters::NLToNative<Led_tChar> (buf.data (), len, buf2.data (), 2 * len + 1);
         buf2[len] = '\0';
-        return CString (buf2).AllocSysString ();
+        return CString (buf2.data ()).AllocSysString ();
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
     Assert (false); /*NOTREACHED*/
@@ -2137,7 +2137,7 @@ string ActiveLedItControl::GetBufferTextAsRTF_ ()
     textWriter.Write ();
     size_t                    len = sink.GetLength ();
     Memory::StackBuffer<char> buf{Memory::eUninitialized, len + 1};
-    memcpy (buf, sink.PeekAtData (), len);
+    memcpy (buf.data (), sink.PeekAtData (), len);
     buf[len] = '\0';
     return string{static_cast<char*> (buf)};
 }
@@ -2169,9 +2169,9 @@ BSTR ActiveLedItControl::GetBufferTextAsHTML ()
         textWriter.Write ();
         size_t                    len = sink.GetLength ();
         Memory::StackBuffer<char> buf{Memory::eUninitialized, len + 1};
-        memcpy (buf, sink.PeekAtData (), len);
+        memcpy (buf.data (), sink.PeekAtData (), len);
         buf[len] = '\0';
-        return CString{buf}.AllocSysString ();
+        return CString{buf.data ()}.AllocSysString ();
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
     Assert (false); /*NOTREACHED*/
@@ -3020,10 +3020,10 @@ HACCEL ActiveLedItControl::GetCurrentWin32AccelTable ()
                     size_t accelTableSize = static_cast<size_t> (::CopyAcceleratorTable (fWin32AccelTable, NULL, 0));
                     if (accelTableSize == static_cast<size_t> (::CopyAcceleratorTable (maybeNewAccelTable, NULL, 0))) {
                         Memory::StackBuffer<ACCEL> oldOne{accelTableSize};
-                        Verify (::CopyAcceleratorTable (fWin32AccelTable, oldOne, static_cast<int> (accelTableSize)) == static_cast<int> (accelTableSize));
+                        Verify (::CopyAcceleratorTable (fWin32AccelTable, oldOne.data (), static_cast<int> (accelTableSize)) == static_cast<int> (accelTableSize));
                         Memory::StackBuffer<ACCEL> newOne{accelTableSize};
-                        Verify (::CopyAcceleratorTable (maybeNewAccelTable, newOne, static_cast<int> (accelTableSize)) == static_cast<int> (accelTableSize));
-                        if (::memcmp (oldOne, newOne, accelTableSize * sizeof (ACCEL)) == 0) {
+                        Verify (::CopyAcceleratorTable (maybeNewAccelTable, newOne.data (), static_cast<int> (accelTableSize)) == static_cast<int> (accelTableSize));
+                        if (::memcmp (oldOne.data (), newOne.data (), accelTableSize * sizeof (ACCEL)) == 0) {
                             keepOld = true;
                         }
                     }
@@ -3667,9 +3667,9 @@ BSTR ActiveLedItControl::GetSelText ()
         fEditor.GetSelection (&s, &e);
         size_t                         len = e - s;
         Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len + 1};
-        fEditor.CopyOut (s, len, buf);
+        fEditor.CopyOut (s, len, buf.data ());
         buf[len] = '\0';
-        return CString (buf).AllocSysString ();
+        return CString{buf.data ()}.AllocSysString ();
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
     Assert (false); /*NOTREACHED*/
@@ -3681,11 +3681,11 @@ void ActiveLedItControl::SetSelText (LPCTSTR text)
     try {
         size_t                         len = ::_tcslen (text);
         Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len + 1};
-        len = Characters::NativeToNL<Led_tChar> (Led_SDKString2tString (text).c_str (), len, buf, len + 1);
+        len = Characters::NativeToNL<Led_tChar> (Led_SDKString2tString (text).c_str (), len, buf.data (), len + 1);
         size_t s;
         size_t e;
         fEditor.GetSelection (&s, &e);
-        fEditor.Replace (s, e, buf, len);
+        fEditor.Replace (s, e, buf.data (), len);
         if (s != e) {
             fEditor.SetSelection (s, s + len);
         }
@@ -3702,9 +3702,9 @@ BSTR ActiveLedItControl::GetSelTextAsRTF ()
         textWriter.Write ();
         size_t                    len = sink.GetLength ();
         Memory::StackBuffer<char> buf{Memory::eUninitialized, len + 1};
-        ::memcpy (buf, sink.PeekAtData (), len);
+        ::memcpy (buf.data (), sink.PeekAtData (), len);
         buf[len] = '\0';
-        return CString (buf).AllocSysString ();
+        return CString (buf.data ()).AllocSysString ();
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
     Assert (false); /*NOTREACHED*/
@@ -3737,9 +3737,9 @@ BSTR ActiveLedItControl::GetSelTextAsHTML ()
         textWriter.Write ();
         size_t                    len = sink.GetLength ();
         Memory::StackBuffer<char> buf{Memory::eUninitialized, len + 1};
-        ::memcpy (buf, sink.PeekAtData (), len);
+        ::memcpy (buf.data (), sink.PeekAtData (), len);
         buf[len] = '\0';
-        return CString (buf).AllocSysString ();
+        return CString (buf.data ()).AllocSysString ();
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
     Assert (false);
