@@ -48,13 +48,14 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
     {                                                   \
         AfxThrowOleException (hr);                      \
     }                                                   \
-    catch (Win32ErrorException & we)                    \
+    catch (const system_error& h)                       \
     {                                                   \
-        AfxThrowOleException (HRESULT_FROM_WIN32 (we)); \
-    }                                                   \
-    catch (HRESULTErrorException & h)                   \
-    {                                                   \
-        AfxThrowOleException (h);                       \
+        if (h.code ().category () == Stroika::Foundation::Execution::Platform::Windows::HRESULT_error_category ()) {\
+            AfxThrowOleException (HRESULT_FROM_WIN32(h.code ().value ())); \
+        }                                              \
+        if (h.code ().category () == system_category ()) {\
+            AfxThrowOleException (HRESULT_FROM_WIN32 (h.code ().value ()));\
+        }                                               \
     }                                                   \
     catch (...)                                         \
     {                                                   \
@@ -2533,6 +2534,7 @@ VARIANT ActiveLedItControl::OLE_GetSpellChecker ()
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    return VARIANT{};
 }
 
 void ActiveLedItControl::OLE_SetSpellChecker (VARIANT& newValue)
@@ -2603,6 +2605,8 @@ VARIANT ActiveLedItControl::OLE_GetContextMenu ()
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached ();
+    return VARIANT{};
 }
 
 void ActiveLedItControl::OLE_SetContextMenu (VARIANT& newValue)
@@ -2638,6 +2642,8 @@ VARIANT ActiveLedItControl::OLE_GetToolbarList ()
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached ();
+    return VARIANT{};
 }
 
 void ActiveLedItControl::OLE_SetToolbarList (VARIANT& newValue)
@@ -2697,6 +2703,8 @@ VARIANT ActiveLedItControl::OLE_GetBuiltinCommands ()
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached ();
+    return VARIANT{};
 }
 
 namespace {
@@ -2740,6 +2748,8 @@ namespace {
             return result;
         }
         CATCH_AND_HANDLE_EXCEPTIONS ();
+        AssertNotReached ();
+        return CComPtr<IDispatch>{};
     }
 
     CComPtr<IDispatch> mkMenu_Insert ()
@@ -2765,6 +2775,8 @@ namespace {
             return result;
         }
         CATCH_AND_HANDLE_EXCEPTIONS ();
+        AssertNotReached ();
+        return CComPtr<IDispatch>{};
     }
 
     CComPtr<IDispatch> mkMenu_Font ()
@@ -2792,6 +2804,8 @@ namespace {
             return result;
         }
         CATCH_AND_HANDLE_EXCEPTIONS ();
+        AssertNotReached ();
+        return CComPtr<IDispatch>{};
     }
 
     CComPtr<IDispatch> mkMenu_FontStyle ()
@@ -2818,6 +2832,8 @@ namespace {
             return result;
         }
         CATCH_AND_HANDLE_EXCEPTIONS ();
+        AssertNotReached ();
+        return CComPtr<IDispatch>{};
     }
 
     CComPtr<IDispatch> mkMenu_FontSize (bool forComboBox)
@@ -2854,6 +2870,8 @@ namespace {
             return result;
         }
         CATCH_AND_HANDLE_EXCEPTIONS ();
+        AssertNotReached ();
+        return CComPtr<IDispatch>{};
     }
 
     CComPtr<IDispatch> mkMenu_FontColor ()
@@ -2890,6 +2908,8 @@ namespace {
             return result;
         }
         CATCH_AND_HANDLE_EXCEPTIONS ();
+        AssertNotReached ();
+        return CComPtr<IDispatch>{};
     }
 
     CComPtr<IDispatch> mkMenu_ParagraphJustification ()
@@ -2910,6 +2930,8 @@ namespace {
             return result;
         }
         CATCH_AND_HANDLE_EXCEPTIONS ();
+        AssertNotReached ();
+        return CComPtr<IDispatch>{};
     }
 
     CComPtr<IDispatch> mkMenu_ListStyle ()
@@ -2928,6 +2950,8 @@ namespace {
             return result;
         }
         CATCH_AND_HANDLE_EXCEPTIONS ();
+        AssertNotReached ();
+        return CComPtr<IDispatch>{};
     }
 }
 
@@ -2960,6 +2984,7 @@ VARIANT ActiveLedItControl::OLE_GetPredefinedMenus ()
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    return VARIANT{};
 }
 
 VARIANT ActiveLedItControl::OLE_GetAcceleratorTable ()
@@ -2975,6 +3000,7 @@ VARIANT ActiveLedItControl::OLE_GetAcceleratorTable ()
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    return VARIANT{};
 }
 
 void ActiveLedItControl::OLE_SetAcceleratorTable (VARIANT& newValue)
@@ -3108,6 +3134,8 @@ IDispatch* ActiveLedItControl::OLE_GetDefaultContextMenu ()
         return saved;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached ();
+    return nullptr;
 }
 
 IDispatch* ActiveLedItControl::OLE_GetDefaultAcceleratorTable ()
@@ -3153,6 +3181,8 @@ IDispatch* ActiveLedItControl::OLE_GetDefaultAcceleratorTable ()
         return saved;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached ();
+    return nullptr;
 }
 
 IDispatch* ActiveLedItControl::OLE_MakeNewPopupMenuItem ()
@@ -3165,6 +3195,8 @@ IDispatch* ActiveLedItControl::OLE_MakeNewPopupMenuItem ()
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached ();
+    return nullptr;
 }
 
 IDispatch* ActiveLedItControl::OLE_MakeNewUserMenuItem ()
@@ -3177,6 +3209,8 @@ IDispatch* ActiveLedItControl::OLE_MakeNewUserMenuItem ()
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached ();
+    return nullptr;
 }
 
 IDispatch* ActiveLedItControl::OLE_MakeNewAcceleratorElement ()
@@ -3189,6 +3223,7 @@ IDispatch* ActiveLedItControl::OLE_MakeNewAcceleratorElement ()
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached(); return nullptr;
 }
 
 void ActiveLedItControl::OLE_InvokeCommand (const VARIANT& command)
@@ -3200,7 +3235,7 @@ void ActiveLedItControl::OLE_InvokeCommand (const VARIANT& command)
             (void)::SendMessage (fEditor.GetHWND (), WM_COMMAND, cmdNum, 0);
             return;
         }
-        throw HRESULTErrorException (TYPE_E_ELEMENTNOTFOUND);
+        ThrowIfErrorHRESULT (TYPE_E_ELEMENTNOTFOUND);
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
 }
@@ -3212,8 +3247,7 @@ BOOL ActiveLedItControl::OLE_CommandEnabled (const VARIANT& command)
 
         struct MyCmdUI : CCmdUI {
             MyCmdUI ()
-                : CCmdUI ()
-                , fEnabled (false)
+                : fEnabled{false}
             {
             }
             virtual void Enable (BOOL bOn) override
@@ -3236,6 +3270,8 @@ BOOL ActiveLedItControl::OLE_CommandEnabled (const VARIANT& command)
         return state.fEnabled;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached ();
+    return false;
 }
 
 BOOL ActiveLedItControl::OLE_CommandChecked (const VARIANT& command)
@@ -3269,6 +3305,8 @@ BOOL ActiveLedItControl::OLE_CommandChecked (const VARIANT& command)
         return state.fChecked;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached ();
+    return false;
 }
 
 IDispatch* ActiveLedItControl::OLE_MakeNewToolbarList ()
@@ -3281,6 +3319,8 @@ IDispatch* ActiveLedItControl::OLE_MakeNewToolbarList ()
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached ();
+    return nullptr;
 }
 
 CComPtr<IDispatch> ActiveLedItControl::MakeNewToolbar ()
@@ -3300,6 +3340,8 @@ IDispatch* ActiveLedItControl::OLE_MakeNewToolbar ()
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached ();
+    return nullptr;
 }
 
 IDispatch* ActiveLedItControl::OLE_MakeIconButtonToolbarItem ()
@@ -3312,6 +3354,8 @@ IDispatch* ActiveLedItControl::OLE_MakeIconButtonToolbarItem ()
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached ();
+    return nullptr;
 }
 
 CComPtr<IDispatch> ActiveLedItControl::MakeSeparatorToolbarItem ()
@@ -3331,6 +3375,8 @@ IDispatch* ActiveLedItControl::OLE_MakeSeparatorToolbarItem ()
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached ();
+    return nullptr;
 }
 
 CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinToolbarName)
@@ -3474,6 +3520,8 @@ IDispatch* ActiveLedItControl::OLE_MakeBuiltinToolbar (LPCOLESTR builtinToolbarN
         return MakeBuiltinToolbar (builtinToolbarName).Detach ();
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached ();
+    return nullptr;
 }
 
 CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbarItem (LPCOLESTR builtinToolbarItemName)
@@ -3535,6 +3583,8 @@ IDispatch* ActiveLedItControl::OLE_MakeBuiltinToolbarItem (LPCOLESTR builtinTool
         return NULL;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached ();
+    return nullptr;
 }
 
 CComPtr<IDispatch> ActiveLedItControl::mkIconElement (int iconResID)
@@ -3603,6 +3653,8 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinComboBoxToolbarItem (CComPtr<I
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
+    AssertNotReached ();
+    return CComPtr<IDispatch>{};
 }
 
 VARIANT ActiveLedItControl::OLE_GetCurrentEventArguments ()

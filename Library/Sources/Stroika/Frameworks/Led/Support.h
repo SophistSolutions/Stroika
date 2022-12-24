@@ -62,9 +62,9 @@ namespace Stroika::Frameworks::Led {
 
     constexpr size_t kBadIndex = size_t (-1);
 
-    #if qPlatform_Windows
+#if qPlatform_Windows
     using Foundation::Execution::Platform::Windows::ThrowIfErrorHRESULT;
-    #endif
+#endif
 
     /*
     @CLASS:         Led_tChar
@@ -254,7 +254,6 @@ namespace Stroika::Frameworks::Led {
     */
     void Led_Set_ThrowOSErrException_Handler (void (*throwOSErrExceptionCallback) (OSErr err));
 #endif
-
 
 #if qPlatform_MacOS
     void Led_ThrowIfOSErr (OSErr err);

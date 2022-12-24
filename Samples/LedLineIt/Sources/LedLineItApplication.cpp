@@ -40,11 +40,7 @@ using namespace Stroika::Frameworks::Led;
     {                                         \
         (APP).HandleBadAllocException ();     \
     }                                         \
-    catch (Win32ErrorException&)              \
-    {                                         \
-        (APP).HandleUnknownException ();      \
-    }                                         \
-    catch (HRESULTErrorException&)            \
+    catch (const system_error&)               \
     {                                         \
         (APP).HandleUnknownException ();      \
     }                                         \

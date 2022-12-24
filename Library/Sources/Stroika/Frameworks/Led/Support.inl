@@ -121,7 +121,6 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
-
 #if qPlatform_MacOS
     /*
     @METHOD:        Led_ThrowIfOSErr

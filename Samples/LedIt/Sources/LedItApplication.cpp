@@ -148,14 +148,6 @@ const char kAppName[] = "LedIt";
     {                                         \
         (APP).HandleBadAllocException ();     \
     }                                         \
-    catch (Win32ErrorException&)              \
-    {                                         \
-        (APP).HandleUnknownException ();      \
-    }                                         \
-    catch (HRESULTErrorException&)            \
-    {                                         \
-        (APP).HandleUnknownException ();      \
-    }                                         \
     catch (HRESULT hr)                        \
     {                                         \
         (APP).HandleHRESULTException (hr);    \

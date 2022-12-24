@@ -13,23 +13,6 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include "Toolbar.h"
 
-#define CATCH_AND_HANDLE_EXCEPTIONS()     \
-    catch (HRESULT hr)                    \
-    {                                     \
-        return hr;                        \
-    }                                     \
-    catch (Win32ErrorException & we)      \
-    {                                     \
-        return (HRESULT_FROM_WIN32 (we)); \
-    }                                     \
-    catch (HRESULTErrorException & h)     \
-    {                                     \
-        return static_cast<HRESULT> (h);  \
-    }                                     \
-    catch (...)                           \
-    {                                     \
-        return DISP_E_EXCEPTION;          \
-    }
 
 namespace {
     template <class EnumType, class CollType>
@@ -303,7 +286,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_PreferredHeight (UINT* pV
         *pVal = pixSize.cy + 2 * kBorderSize;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_PreferredWidth (UINT* pVal)
@@ -328,7 +311,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_PreferredWidth (UINT* pVa
         *pVal = pixSize.cx + kBorderSize * 2;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_X (INT* pVal)
@@ -340,7 +323,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_X (INT* pVal)
         *pVal = fBounds.left;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_Y (INT* pVal)
@@ -352,7 +335,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_Y (INT* pVal)
         *pVal = fBounds.top;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_Width (UINT* pVal)
@@ -364,7 +347,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_Width (UINT* pVal)
         *pVal = fBounds.GetWidth ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_Height (UINT* pVal)
@@ -376,7 +359,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_Height (UINT* pVal)
         *pVal = fBounds.GetHeight ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::SetRectangle (int X, int Y, UINT width, UINT height)
@@ -388,7 +371,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::SetRectangle (int X, int Y, U
         }
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::NotifyOfOwningToolbar (IDispatch* owningToolbar, IDispatch* owningActiveLedIt)
@@ -416,7 +399,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::NotifyOfOwningToolbar (IDispa
             }
         }
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -454,7 +437,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::UpdateEnableState ()
         }
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_ButtonImage (IDispatch** pVal)
@@ -469,7 +452,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_ButtonImage (IDispatch** 
         }
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::put_ButtonImage (IDispatch* val)
@@ -484,7 +467,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::put_ButtonImage (IDispatch* v
         UpdateButtonObj ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_Command (VARIANT* pVal)
@@ -496,7 +479,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_Command (VARIANT* pVal)
         CComVariant{fCommand}.Detach (pVal);
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::put_Command (VARIANT val)
@@ -507,7 +490,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::put_Command (VARIANT val)
         UpdateButtonObj ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_ButtonStyle (IconButtonStyle* pVal)
@@ -519,7 +502,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_ButtonStyle (IconButtonSt
         *pVal = fIconButtonStyle;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::put_ButtonStyle (IconButtonStyle val)
@@ -530,7 +513,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::put_ButtonStyle (IconButtonSt
         UpdateButtonObj ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 void ActiveLedIt_IconButtonToolbarElement::UpdateButtonObj ()
@@ -681,7 +664,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::get_PreferredHeight (UINT* pVal
         *pVal                          = ::GetSystemMetrics (SM_CYVSCROLL) + kWhiteSluff;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::get_PreferredWidth (UINT* pVal)
@@ -693,7 +676,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::get_PreferredWidth (UINT* pVal)
         *pVal = fPreferredWidth;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::get_X (INT* pVal)
@@ -705,7 +688,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::get_X (INT* pVal)
         *pVal = fBounds.left;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::get_Y (INT* pVal)
@@ -717,7 +700,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::get_Y (INT* pVal)
         *pVal = fBounds.top;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::get_Width (UINT* pVal)
@@ -729,7 +712,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::get_Width (UINT* pVal)
         *pVal = fBounds.GetWidth ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::get_Height (UINT* pVal)
@@ -741,7 +724,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::get_Height (UINT* pVal)
         *pVal = fBounds.GetHeight ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::SetRectangle (int X, int Y, UINT width, UINT height)
@@ -757,7 +740,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::SetRectangle (int X, int Y, UIN
         }
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::NotifyOfOwningToolbar (IDispatch* owningToolbar, IDispatch* owningActiveLedIt)
@@ -790,7 +773,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::NotifyOfOwningToolbar (IDispatc
             }
         }
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -842,7 +825,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::UpdateEnableState ()
         }
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::get_CommandList (IDispatch** pVal)
@@ -857,7 +840,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::get_CommandList (IDispatch** pV
         }
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::put_CommandList (IDispatch* val)
@@ -868,7 +851,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::put_CommandList (IDispatch* val
         CallInvalidateLayout ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 void ActiveLedIt_ComboBoxToolbarElement::UpdatePopupObj ()
@@ -965,7 +948,7 @@ STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::get_PreferredHeight (UINT* pVa
         *pVal = 1;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::get_PreferredWidth (UINT* pVal)
@@ -977,7 +960,7 @@ STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::get_PreferredWidth (UINT* pVal
         *pVal = 6;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::get_X (INT* pVal)
@@ -989,7 +972,7 @@ STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::get_X (INT* pVal)
         *pVal = fBounds.left;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::get_Y (INT* pVal)
@@ -1001,7 +984,7 @@ STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::get_Y (INT* pVal)
         *pVal = fBounds.top;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::get_Width (UINT* pVal)
@@ -1013,7 +996,7 @@ STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::get_Width (UINT* pVal)
         *pVal = fBounds.GetWidth ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::get_Height (UINT* pVal)
@@ -1025,7 +1008,7 @@ STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::get_Height (UINT* pVal)
         *pVal = fBounds.GetHeight ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::SetRectangle (int X, int Y, UINT width, UINT height)
@@ -1034,7 +1017,7 @@ STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::SetRectangle (int X, int Y, UI
         fBounds = Led_Rect (Y, X, height, width);
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::NotifyOfOwningToolbar (IDispatch* /*owningToolbar*/, IDispatch* /*owningActiveLedIt*/)
@@ -1042,7 +1025,7 @@ STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::NotifyOfOwningToolbar (IDispat
     try {
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::UpdateEnableState ()
@@ -1050,7 +1033,7 @@ STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::UpdateEnableState ()
     try {
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 /*
@@ -1198,7 +1181,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::get__NewEnum (IUnknown** ppUnk)
         }
         return CreateSTLEnumerator<VarVarEnum> (ppUnk, this, fToolbarItems);
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_Toolbar::get_Item (long Index, IDispatch** pVal)
@@ -1213,7 +1196,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::get_Item (long Index, IDispatch** pVal)
         *pVal = fToolbarItems[Index];
         (*pVal)->AddRef ();
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -1225,7 +1208,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::get_Count (long* pVal)
         }
         *pVal = static_cast<long> (fToolbarItems.size ());
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -1243,7 +1226,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::Add (IDispatch* newElt, UINT atIndex)
         }
         CallInvalidateLayout ();
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -1273,7 +1256,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::MergeAdd (IDispatch* newElts, UINT afterElt)
         }
         CallInvalidateLayout ();
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -1296,7 +1279,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::Remove (VARIANT eltIntNameOrIndex)
         CallInvalidateLayout ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_Toolbar::Clear ()
@@ -1315,7 +1298,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::Clear ()
         fToolbarItems.clear ();
         CallInvalidateLayout ();
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -1324,7 +1307,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::get_hWnd (HWND* pVal)
     try {
         *pVal = m_hWnd;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -1354,7 +1337,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::get_PreferredHeight (UINT* pVal)
 
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_Toolbar::get_PreferredWidth (UINT* pVal)
@@ -1380,7 +1363,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::get_PreferredWidth (UINT* pVal)
 
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_Toolbar::NotifyOfOwningActiveLedIt (IDispatch* owningActiveLedIt, IDispatch* owningALToolbar)
@@ -1416,7 +1399,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::NotifyOfOwningActiveLedIt (IDispatch* owningAc
             CallInvalidateLayout ();
         }
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -1428,7 +1411,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::SetRectangle (int X, int Y, UINT width, UINT h
         DoLayout ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 /*
@@ -1495,7 +1478,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::get__NewEnum (IUnknown** ppUnk)
     try {
         return CreateSTLEnumerator<VarVarEnum> (ppUnk, this, fToolbars);
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_ToolbarList::get_Item (long Index, IDispatch** pVal)
@@ -1510,7 +1493,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::get_Item (long Index, IDispatch** pVal)
         *pVal = fToolbars[Index];
         (*pVal)->AddRef ();
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -1522,7 +1505,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::get_Count (UINT* pVal)
     try {
         *pVal = static_cast<UINT> (fToolbars.size ());
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -1538,7 +1521,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::Add (IDispatch* newElt, UINT atIndex)
         fToolbars.insert (fToolbars.begin () + idx, newElt);
         CallInvalidateLayout ();
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -1559,7 +1542,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::Remove (VARIANT eltIntNameOrIndex)
         CallInvalidateLayout ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_ToolbarList::Clear ()
@@ -1576,7 +1559,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::Clear ()
         fToolbars.clear ();
         CallInvalidateLayout ();
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -1614,7 +1597,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::NotifyOfOwningActiveLedIt (IDispatch* owni
             CallInvalidateLayout ();
         }
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -1623,7 +1606,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::get_hWnd (HWND* pVal)
     try {
         *pVal = m_hWnd;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -1657,7 +1640,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::get_PreferredHeight (UINT* pVal)
 
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_ToolbarList::get_PreferredWidth (UINT* pVal)
@@ -1683,7 +1666,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::get_PreferredWidth (UINT* pVal)
 
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_ToolbarList::SetRectangle (int X, int Y, UINT width, UINT height)
@@ -1694,7 +1677,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::SetRectangle (int X, int Y, UINT width, UI
         DoLayout ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 void ActiveLedIt_ToolbarList::DoLayout ()

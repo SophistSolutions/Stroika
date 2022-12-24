@@ -587,9 +587,8 @@ STDMETHODIMP ActiveLedIt_UserCommand::put_InternalName (BSTR val)
     try {
         fInternalName  = val;
         fCommandNumber = UserCommandNameNumberRegistry::Get ().Enter (fInternalName);
-        ;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 

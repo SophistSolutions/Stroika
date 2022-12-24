@@ -31,28 +31,28 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
     /**
      *  Translate a standard C++ (or Stroika) exception into the appropriate HRESULT to return
      */
-#define CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION()         \
-    catch (HRESULT hr)                                            \
-    {                                                             \
-        return hr;                                                \
-    }                                                             \
-    catch (const system_error& h)                                 \
-    {                                                             \
-        if (h.code ().category () == HRESULT_error_category ()) { \
-            return h.code ().value ();                            \
-        }                                                         \
-        if (h.code ().category () == system_category ()) {        \
-            return (HRESULT_FROM_WIN32 (h.code ().value ()));     \
-        }                                                         \
-        return DISP_E_EXCEPTION;                                  \
-    }                                                             \
-    catch (const bad_alloc&)                                      \
-    {                                                             \
-        return E_OUTOFMEMORY;                                     \
-    }                                                             \
-    catch (...)                                                   \
-    {                                                             \
-        return DISP_E_EXCEPTION;                                  \
+#define CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION()                                                            \
+    catch (HRESULT hr)                                                                                               \
+    {                                                                                                                \
+        return hr;                                                                                                   \
+    }                                                                                                                \
+    catch (const system_error& h)                                                                                    \
+    {                                                                                                                \
+        if (h.code ().category () == Stroika::Foundation::Execution::Platform::Windows::HRESULT_error_category ()) { \
+            return h.code ().value ();                                                                               \
+        }                                                                                                            \
+        if (h.code ().category () == system_category ()) {                                                           \
+            return (HRESULT_FROM_WIN32 (h.code ().value ()));                                                        \
+        }                                                                                                            \
+        return DISP_E_EXCEPTION;                                                                                     \
+    }                                                                                                                \
+    catch (const bad_alloc&)                                                                                         \
+    {                                                                                                                \
+        return E_OUTOFMEMORY;                                                                                        \
+    }                                                                                                                \
+    catch (...)                                                                                                      \
+    {                                                                                                                \
+        return DISP_E_EXCEPTION;                                                                                     \
     }
 
     /**
