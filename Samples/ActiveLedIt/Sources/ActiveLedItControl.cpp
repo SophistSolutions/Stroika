@@ -882,7 +882,7 @@ void ActiveLedItControl::ExchangeTextAsRTFBlob (CPropExchange* pPX)
         if (hglobal != NULL) {
             try {
                 Memory::Platform::Windows::StackBasedHandleLocker hdl (hglobal);
-                const byte*                data = reinterpret_cast<byte*> (hdl.GetPointer ());
+                const byte*                                       data = reinterpret_cast<byte*> (hdl.GetPointer ());
                 if (data != NULL) {
                     size_t size = *(size_t*)data;
                     string s    = string{((const char*)data) + sizeof (size_t), size};
@@ -905,7 +905,7 @@ void ActiveLedItControl::ExchangeTextAsRTFBlob (CPropExchange* pPX)
         if (hglobal != NULL) {
             {
                 Memory::Platform::Windows::StackBasedHandleLocker hdl (hglobal);
-                void*                      pvBlob = hdl.GetPointer ();
+                void*                                             pvBlob = hdl.GetPointer ();
                 AssertNotNull (pvBlob);
                 *(size_t*)pvBlob = len;
                 ::memcpy (reinterpret_cast<char*> (pvBlob) + sizeof (size_t), s.c_str (), len);

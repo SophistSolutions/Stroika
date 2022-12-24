@@ -9,6 +9,9 @@
 #endif
 
 #include "../../Foundation/DataExchange/BadFormatException.h"
+#if qPlatform_Windows
+#include "../../Foundation/Memory/Platform/Windows/Handle.h"
+#endif
 
 #include "StandardStyledTextImager.h"
 
@@ -53,6 +56,10 @@ static PixMap** MakePixMapFromDIB (const Led_DIB* dib);
 
 struct UnsupportedFormat {
 };
+
+namespace {
+    using StackBasedHandleLocker = Memory::Platform::Windows::StackBasedHandleLocker;
+}
 
 /*
  ********************************************************************************
@@ -101,11 +108,6 @@ bool EmbeddedObjectCreatorRegistry::Lookup (const char* embeddingTag, Assoc* res
  ********************************************************************************
  */
 SimpleEmbeddedObjectStyleMarker::CommandNames SimpleEmbeddedObjectStyleMarker::sCommandNames = SimpleEmbeddedObjectStyleMarker::MakeDefaultCommandNames ();
-
-SimpleEmbeddedObjectStyleMarker::SimpleEmbeddedObjectStyleMarker ()
-    : inherited ()
-{
-}
 
 int SimpleEmbeddedObjectStyleMarker::GetPriority () const
 {
@@ -258,7 +260,7 @@ StandardMacPictureStyleMarker::StandardMacPictureStyleMarker (const Led_Picture*
     fPictureHandle = ::GlobalAlloc (GMEM_MOVEABLE, picSize);
     Execution::ThrowIfNull (fPictureHandle);
 #endif
-    Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
+    StackBasedHandleLocker locker (GetPictureHandle ());
     memcpy (locker.GetPointer (), pictData, picSize);
 }
 
@@ -292,7 +294,7 @@ void StandardMacPictureStyleMarker::DrawSegment (const StyledTextImager* imager,
 {
     Assert (from + 1 == to);
     Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
-    Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
+    StackBasedHandleLocker locker (GetPictureHandle ());
     MacPictureDrawSegment (GetPictureHandle (), tablet,
                            imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor), imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
                            drawInto - Led_Point (0, imager->GetHScrollPos ()), useBaseLine, pixelsDrawn, Led_GetMacPictSize ((Led_Picture*)locker.GetPointer ()));
@@ -315,26 +317,26 @@ void StandardMacPictureStyleMarker::MeasureSegmentWidth ([[maybe_unused]] const 
      *  character here. We know the right width here anyhow.
      *      See SPR#0821.
      */
-    Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
+    StackBasedHandleLocker locker (GetPictureHandle ());
     distanceResults[0] = Led_GetMacPictWidth ((Led_Picture*)locker.GetPointer ()) + 2 * kDefaultEmbeddingMargin.h;
 }
 
 DistanceType StandardMacPictureStyleMarker::MeasureSegmentHeight ([[maybe_unused]] const StyledTextImager* imager, [[maybe_unused]] const RunElement& runElement, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
 {
     Assert (from + 1 == to);
-    Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
+    StackBasedHandleLocker locker (GetPictureHandle ());
     return (Led_GetMacPictHeight ((Led_Picture*)locker.GetPointer ()) + 2 * kDefaultEmbeddingMargin.v);
 }
 
 void StandardMacPictureStyleMarker::Write (SinkStream& sink)
 {
-    Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
+    StackBasedHandleLocker locker (GetPictureHandle ());
     sink.write (locker.GetPointer (), GetPictureByteSize ());
 }
 
 void StandardMacPictureStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage)
 {
-    Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
+    StackBasedHandleLocker locker (GetPictureHandle ());
     flavorPackage.AddFlavorData (kClipFormat, GetPictureByteSize (), (Led_Picture*)locker.GetPointer ());
 }
 
@@ -917,7 +919,7 @@ StandardMacPictureWithURLStyleMarker::StandardMacPictureWithURLStyleMarker (cons
     Execution::ThrowIfNull (fPictureHandle);
 #endif
     {
-        Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
+        StackBasedHandleLocker locker (GetPictureHandle ());
         memcpy (locker.GetPointer (), pictData, picSize);
     }
 }
@@ -989,7 +991,7 @@ void StandardMacPictureWithURLStyleMarker::DrawSegment (const StyledTextImager* 
 {
     Assert (from + 1 == to);
     Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
-    Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
+    StackBasedHandleLocker locker (GetPictureHandle ());
     MacPictureDrawSegment (GetPictureHandle (), tablet,
                            imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor), imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
                            drawInto - Led_Point{0, imager->GetHScrollPos ()}, useBaseLine, pixelsDrawn, Led_GetMacPictSize ((Led_Picture*)locker.GetPointer ()));
@@ -1012,14 +1014,14 @@ void StandardMacPictureWithURLStyleMarker::MeasureSegmentWidth (const StyledText
      *  character here. We know the right width here anyhow.
      *      See SPR#0821.
      */
-    Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
+    StackBasedHandleLocker locker (GetPictureHandle ());
     distanceResults[0] = Led_GetMacPictWidth ((Led_Picture*)locker.GetPointer ()) + 2 * kDefaultEmbeddingMargin.h;
 }
 
 DistanceType StandardMacPictureWithURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
 {
     Assert (from + 1 == to);
-    Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
+    StackBasedHandleLocker locker (GetPictureHandle ());
     return (Led_GetMacPictHeight ((Led_Picture*)locker.GetPointer ()) + 2 * kDefaultEmbeddingMargin.v);
 }
 
@@ -1031,14 +1033,14 @@ void StandardMacPictureWithURLStyleMarker::Write (SinkStream& sink)
         Assert (sizeof (picSize) == 4);
         sink.write (&picSize, sizeof (picSize));
     }
-    Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
+    StackBasedHandleLocker locker (GetPictureHandle ());
     sink.write ((Led_Picture*)locker.GetPointer (), GetPictureByteSize ());
     sink.write (fURLData.PeekAtURLD (), fURLData.GetURLDLength ());
 }
 
 void StandardMacPictureWithURLStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage)
 {
-    Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
+    StackBasedHandleLocker locker (GetPictureHandle ());
     flavorPackage.AddFlavorData (StandardMacPictureStyleMarker::kClipFormat, GetPictureByteSize (), (Led_Picture*)locker.GetPointer ());
     flavorPackage.AddFlavorData (StandardURLStyleMarker::kURLDClipFormat, fURLData.GetURLDLength (), fURLData.PeekAtURLD ());
 }
@@ -1346,8 +1348,8 @@ TWIPS_Point StandardUnknownTypeStyleMarker::CalcStaticDefaultShownSize ()
 {
 #if qPlatform_MacOS
     RequireNotNull (sUnknownPict);
-    Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)sUnknownPict);
-    Led_Size                   pixelSize = Led_GetMacPictSize (sUnknownPict);
+    StackBasedHandleLocker locker (sUnknownPict);
+    Led_Size               pixelSize = Led_GetMacPictSize (sUnknownPict);
 #elif qPlatform_Windows
     RequireNotNull (sUnknownPict);
     Led_Size pixelSize = Led_GetDIBImageSize (sUnknownPict);
@@ -1473,7 +1475,7 @@ static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
 {
     RequireNotNull (pictureHandle);
 
-    Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)pictureHandle);
+    StackBasedHandleLocker locker (pictureHandle);
 
 #if qPlatform_MacOS
     tablet->SetPort ();

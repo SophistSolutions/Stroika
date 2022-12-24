@@ -130,7 +130,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = StyledTextImager::StyleMarker;
 
     protected:
-        SimpleEmbeddedObjectStyleMarker ();
+        SimpleEmbeddedObjectStyleMarker () = default;
 
     public:
         enum { eEmbeddedObjectPriority = eBaselinePriority + 100 };
