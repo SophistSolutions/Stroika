@@ -73,12 +73,12 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     : inherited{initialHeaders}
     , autoComputeETag{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Response*                             thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeETag);
+              const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeETag);
               AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
               return thisObj->fETagDigester_.has_value ();
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const bool newAutoComputeETag) {
-              Response*                                    thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeETag);
+              Response*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeETag);
               AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
               Require (thisObj->state () == State::ePreparingHeaders);
               Assert (thisObj->fBodyBytes_.empty ());
@@ -91,24 +91,24 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
           }}
     , autoComputeContentLength{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Response*                             thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeContentLength);
+              const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeContentLength);
               AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
               return thisObj->fAutoComputeContentLength_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const bool newAutoComputeValue) {
-              Response*                                    thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeContentLength);
+              Response*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeContentLength);
               AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
               Require (thisObj->state () == State::ePreparingHeaders);
               thisObj->fAutoComputeContentLength_ = newAutoComputeValue;
           }}
     , codePage{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Response*                             thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
+              const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
               AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
               return thisObj->fCodePage_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newCodePage) {
-              Response*                                    thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
+              Response*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
               AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
               Require (thisObj->headersCanBeSet ());
               Require (thisObj->fBodyBytes_.empty ());
@@ -122,27 +122,27 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
           }}
     , state{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Response*                             thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::state);
+              const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::state);
               AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
               return thisObj->fState_;
           }}
     , headersCanBeSet{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Response*                             thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headersCanBeSet);
+        const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headersCanBeSet);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         return thisObj->fState_ == State::ePreparingHeaders;
     }}
     , responseStatusSent{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Response*                             thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseStatusSent);
+        const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseStatusSent);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         return thisObj->fState_ != State::ePreparingHeaders and thisObj->fState_ != State::ePreparingBodyBeforeHeadersSent;
     }}
     , responseCompleted{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Response*                             thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseCompleted);
+        const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseCompleted);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         return thisObj->fState_ == State::eCompleted;
     }}
     , responseAborted{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Response*                             thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseAborted);
+        const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseAborted);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         return thisObj->fAborted_;
     }}
@@ -398,7 +398,7 @@ void Response::write (const wchar_t* s, const wchar_t* e)
 void Response::printf (const wchar_t* format, ...)
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-    va_list                                      argsList;
+    va_list                                         argsList;
     va_start (argsList, format);
     String tmp = Characters::FormatV (format, argsList);
     va_end (argsList);
@@ -408,7 +408,7 @@ void Response::printf (const wchar_t* format, ...)
 String Response::ToString () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-    StringBuilder                               sb = inherited::ToString ().SubString (0, -1); // strip trailing '}'
+    StringBuilder                                  sb = inherited::ToString ().SubString (0, -1); // strip trailing '}'
     sb += L"Socket: " + Characters::ToString (fSocket_) + L", ";
     sb += L"InChunkedMode: " + Characters::ToString (fInChunkedModeCache_) + L", ";
     sb += L"State: " + Characters::ToString (fState_) + L", ";

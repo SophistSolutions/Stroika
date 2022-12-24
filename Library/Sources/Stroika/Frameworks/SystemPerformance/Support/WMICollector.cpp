@@ -178,7 +178,7 @@ WMICollector& WMICollector::operator= (const WMICollector& rhs)
     Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::operator="};
 #endif
     if (this != &rhs) {
-        AssertExternallySynchronizedMutex::ReadContext     critSec1{rhs};
+        AssertExternallySynchronizedMutex::ReadContext  critSec1{rhs};
         AssertExternallySynchronizedMutex::WriteContext critSec2{*this};
         fInstanceData_.clear ();
         fObjectName_ = rhs.fObjectName_;

@@ -47,7 +47,7 @@ Request::Request (Request&& src)
 
 Request::Request (const Streams::InputStream<byte>::Ptr& inStream)
     : keepAliveRequested{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Request*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::keepAliveRequested);
+        const Request*                                 thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::keepAliveRequested);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         using ConnectionValue = IO::Network::HTTP::Headers::ConnectionValue;
         if (thisObj->httpVersion == IO::Network::HTTP::Versions::kOnePointZero) {
@@ -112,7 +112,7 @@ Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
 String Request::ToString () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-    StringBuilder                               sb = inherited::ToString ().SubString (0, -1); // strip trialing '{'
+    StringBuilder                                  sb = inherited::ToString ().SubString (0, -1); // strip trialing '{'
     // @todo add stuff about body
     sb += L"}";
     return sb.str ();

@@ -44,7 +44,7 @@ namespace Stroika::Frameworks::WebServer {
     inline void Response::writeln (const String& e)
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        constexpr wchar_t                            kEOL[] = L"\r\n";
+        constexpr wchar_t                               kEOL[] = L"\r\n";
         if (not e.empty ()) {
             wstring tmp{e.As<wstring> ()};
             write (Containers::Start (tmp), Containers::End (tmp));

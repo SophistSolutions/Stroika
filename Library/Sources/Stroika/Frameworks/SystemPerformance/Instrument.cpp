@@ -18,7 +18,7 @@ using Debug::AssertExternallySynchronizedMutex;
 Instrument::Instrument (InstrumentNameType instrumentName, unique_ptr<IRep>&& capturer, const Set<MeasurementType>& capturedMeasurements, const Mapping<type_index, MeasurementType>& typeToMeasurementTypeMap, const DataExchange::ObjectVariantMapper& objectVariantMapper)
     : pContext{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Instrument*                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::pContext);
+              const Instrument*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::pContext);
               AssertExternallySynchronizedMutex::ReadContext readLock{thisObj->fThisAssertExternallySynchronized_};
               return thisObj->fCaptureRep_->GetContext ();
           },
@@ -29,22 +29,22 @@ Instrument::Instrument (InstrumentNameType instrumentName, unique_ptr<IRep>&& ca
           }}
     , pInstrumentName{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Instrument*                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::pInstrumentName);
+              const Instrument*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::pInstrumentName);
               AssertExternallySynchronizedMutex::ReadContext readLock{thisObj->fThisAssertExternallySynchronized_};
               return thisObj->fInstrumentName_;
           }}
     , pCapturedMeasurementTypes{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Instrument*                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::pCapturedMeasurementTypes);
+        const Instrument*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::pCapturedMeasurementTypes);
         AssertExternallySynchronizedMutex::ReadContext readLock{thisObj->fThisAssertExternallySynchronized_};
         return thisObj->fCapturedMeasurementTypes_;
     }}
     , pObjectVariantMapper{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Instrument*                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::pObjectVariantMapper);
+        const Instrument*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::pObjectVariantMapper);
         AssertExternallySynchronizedMutex::ReadContext readLock{thisObj->fThisAssertExternallySynchronized_};
         return thisObj->fObjectVariantMapper_;
     }}
     , pType2MeasurementTypes{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Instrument*                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::pType2MeasurementTypes);
+        const Instrument*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::pType2MeasurementTypes);
         AssertExternallySynchronizedMutex::ReadContext readLock{thisObj->fThisAssertExternallySynchronized_};
         return thisObj->fType2MeasurementTypes_;
     }}
@@ -71,7 +71,7 @@ Instrument& Instrument::operator= (Instrument&& rhs) noexcept
 Instrument& Instrument::operator= (const Instrument& rhs)
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    AssertExternallySynchronizedMutex::ReadContext     readLock{rhs.fThisAssertExternallySynchronized_};
+    AssertExternallySynchronizedMutex::ReadContext  readLock{rhs.fThisAssertExternallySynchronized_};
     fInstrumentName_           = rhs.fInstrumentName_;
     fCaptureRep_               = rhs.fCaptureRep_->Clone ();
     fType2MeasurementTypes_    = rhs.fType2MeasurementTypes_;

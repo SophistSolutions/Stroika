@@ -147,17 +147,17 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
 Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain, const Headers& defaultResponseHeaders, const optional<Headers>& defaultGETResponseHeaders, const optional<bool> autoComputeETagResponse)
     : socket{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> ConnectionOrientedStreamSocket::Ptr {
-              const Connection*                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::socket);
+              const Connection*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::socket);
               AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
               return thisObj->fSocket_;
           }}
     , request{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Request& {
-        const Connection*                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::request);
+        const Connection*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::request);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         return thisObj->fMessage_->request ();
     }}
     , response{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Response& {
-        const Connection*                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::response);
+        const Connection*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::response);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         return thisObj->fMessage_->response ();
     }}
@@ -167,7 +167,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
         return thisObj->fMessage_->rwResponse ();
     }}
     , remainingConnectionLimits{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<HTTP::KeepAlive> {
-                                    const Connection*                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
+                                    const Connection*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
                                     AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
                                     return thisObj->fRemaining_;
                                 },
@@ -392,7 +392,7 @@ void Connection::WriteLogConnectionMsg_ (const String& msg) const
 String Connection::ToString (bool abbreviatedOutput) const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-    StringBuilder                               sb;
+    StringBuilder                                  sb;
     sb += L"{";
     sb += L"Socket: " + Characters::ToString (fSocket_) + L", ";
     if (not abbreviatedOutput) {
