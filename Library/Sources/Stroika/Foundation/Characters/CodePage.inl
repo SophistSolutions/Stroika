@@ -82,11 +82,11 @@ namespace Stroika::Foundation::Characters {
             *sourceStart += get<1> (r);
             *targetStart += get<2> (r);
             switch (get<0> (r)) {
-                case UTFConverter::ConversionResults::ok:
+                case UTFConverter::ConversionStatusFlag::ok:
                     return ConversionResult::conversionOK;
-                case UTFConverter::ConversionResults::sourceExhausted:
+                case UTFConverter::ConversionStatusFlag::sourceExhausted:
                     return ConversionResult::sourceExhausted;
-                case UTFConverter::ConversionResults::sourceIllegal:
+                case UTFConverter::ConversionStatusFlag::sourceIllegal:
                     return ConversionResult::sourceIllegal;
                 default:
                     AssertNotReached ();
