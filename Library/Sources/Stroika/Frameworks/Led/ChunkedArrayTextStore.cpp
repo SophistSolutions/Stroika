@@ -688,7 +688,7 @@ void ChunkedArrayTextStore::RemoveMarkerOwner (MarkerOwner* owner)
         if constexpr (qDebug) {
             if (camoh->fTotalMarkersPresent != 0) {
                 vector<Marker*>  markersWhichShouldHaveBeenDeleted;
-                VectorMarkerSink tmp (&markersWhichShouldHaveBeenDeleted);
+                VectorMarkerSink tmp{&markersWhichShouldHaveBeenDeleted};
                 CollectAllMarkersInRangeInto (0, GetEnd () + 2, owner, tmp);
             }
         }

@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Database::SQL {
     }
     inline void Statement::Bind (const String& parameterName, const VariantValue& v)
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext { * this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         RequireNotNull (_fRep); // Statement object moved
         _fRep->Bind (parameterName, v);
     }

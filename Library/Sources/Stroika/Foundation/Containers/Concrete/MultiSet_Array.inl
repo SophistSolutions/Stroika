@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Require (count > 0);
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            value_type                                             tmp (item);
+            value_type                                             tmp{item};
             size_t                                                 index = Find_ (tmp);
             if (index != kNotFound_) {
                 Assert (index < fData_.size ());
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual CounterType OccurrencesOf (ArgByValueType<T> item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            value_type                                            tmp (item);
+            value_type                                            tmp{item};
             size_t                                                index = Find_ (tmp);
             if (index == kNotFound_) {
                 return 0;

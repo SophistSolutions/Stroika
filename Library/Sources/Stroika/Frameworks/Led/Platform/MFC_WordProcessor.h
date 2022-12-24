@@ -94,7 +94,7 @@ namespace Stroika::Frameworks::Led::Platform {
         public:
             virtual bool InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) override
             {
-                typename Led_MFC_ControlItem::DocContextDefiner tmp (fDocument);
+                typename Led_MFC_ControlItem::DocContextDefiner tmp {fDocument};
                 return inherited::InternalizeBestFlavor (flavorPackage, from, to);
             }
 

@@ -251,8 +251,8 @@ namespace Stroika::Foundation::Cache {
     void LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> value)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
-        optional<KeyValuePair_>* v = AddNew_ (key);
-        *v                         = KeyValuePair_{key, value};
+        optional<KeyValuePair_>*                               v = AddNew_ (key);
+        *v                                                       = KeyValuePair_{key, value};
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     template <typename K1, typename V1, enable_if_t<is_same_v<K1, V1>>*>
@@ -275,7 +275,7 @@ namespace Stroika::Foundation::Cache {
     auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Elements () const -> Containers::Mapping<KEY, VALUE>
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-        Containers::Mapping<KEY, VALUE> result;
+        Containers::Mapping<KEY, VALUE>                       result;
         for (CacheIterator_ i = begin_ (); i != end_ (); ++i) {
             if (*i) {
                 result.Add ((*i)->fKey, (*i)->fValue);

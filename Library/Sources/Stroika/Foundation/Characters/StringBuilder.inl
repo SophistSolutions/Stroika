@@ -45,8 +45,8 @@ namespace Stroika::Foundation::Characters {
         Require (s == e or (s != nullptr and e != nullptr));
         Require (s <= e);
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
-        size_t     i      = fLength_;
-        size_t     rhsLen = e - s;
+        size_t                                                 i      = fLength_;
+        size_t                                                 rhsLen = e - s;
         fData_.GrowToSize_uninitialized (i + rhsLen);
         fLength_ = i + rhsLen;
         (void)::memcpy (fData_.begin () + i, s, sizeof (wchar_t) * rhsLen);

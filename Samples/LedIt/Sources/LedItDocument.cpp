@@ -1201,27 +1201,27 @@ void LedItDocument::Serialize (CArchive& ar)
     if (ar.IsStoring ()) {
         Require (fFileFormat != eUnknownFormat); // We must have chosen a file format by now...
 
-        WordProcessor::WordProcessorTextIOSrcStream source (&fTextStore, fStyleDatabase, fParagraphDatabase, fHidableTextDatabase);
+        WordProcessor::WordProcessorTextIOSrcStream source{&fTextStore, fStyleDatabase, fParagraphDatabase, fHidableTextDatabase};
         StyledTextIOWriterSinkStream_Memory         sink;
 
         switch (fFileFormat) {
             case eTextFormat: {
-                StyledTextIOWriter_PlainText textWriter (&source, &sink);
+                StyledTextIOWriter_PlainText textWriter{&source, &sink};
                 textWriter.Write ();
             } break;
 
             case eRTFFormat: {
-                StyledTextIOWriter_RTF textWriter (&source, &sink, &fRTFInfo);
+                StyledTextIOWriter_RTF textWriter{&source, &sink, &fRTFInfo};
                 textWriter.Write ();
             } break;
 
             case eHTMLFormat: {
-                StyledTextIOWriter_HTML textWriter (&source, &sink, &fHTMLInfo);
+                StyledTextIOWriter_HTML textWriter{&source, &sink, &fHTMLInfo};
                 textWriter.Write ();
             } break;
 
             case eLedPrivateFormat: {
-                StyledTextIOWriter_LedNativeFileFormat textWriter (&source, &sink);
+                StyledTextIOWriter_LedNativeFileFormat textWriter{&source, &sink};
                 textWriter.Write ();
             } break;
 
@@ -1259,41 +1259,41 @@ void LedItDocument::Serialize (CArchive& ar)
         if (ar.Read (buf.data (), nLen) != nLen) {
             AfxThrowArchiveException (CArchiveException::endOfFile);
         }
-        StyledTextIOSrcStream_Memory                 source (buf.data (), nLen);
-        WordProcessor::WordProcessorTextIOSinkStream sink (&fTextStore, fStyleDatabase, fParagraphDatabase, fHidableTextDatabase);
+        StyledTextIOSrcStream_Memory                 source{buf.data (), nLen};
+        WordProcessor::WordProcessorTextIOSinkStream sink{&fTextStore, fStyleDatabase, fParagraphDatabase, fHidableTextDatabase};
 
     ReRead:
         switch (fFileFormat) {
             case eTextFormat: {
-                StyledTextIOReader_PlainText textReader (&source, &sink);
+                StyledTextIOReader_PlainText textReader{&source, &sink};
                 textReader.Read ();
             } break;
 
             case eLedPrivateFormat: {
-                LedItControlItem::DocContextDefiner    tmp (this);
-                StyledTextIOReader_LedNativeFileFormat textReader (&source, &sink);
+                LedItControlItem::DocContextDefiner    tmp{this};
+                StyledTextIOReader_LedNativeFileFormat textReader{&source, &sink};
                 textReader.Read ();
             } break;
 
             case eRTFFormat: {
-                LedItControlItem::DocContextDefiner tmp (this);
-                StyledTextIOReader_RTF              textReader (&source, &sink, &fRTFInfo);
+                LedItControlItem::DocContextDefiner tmp{this};
+                StyledTextIOReader_RTF              textReader{&source, &sink, &fRTFInfo};
                 textReader.Read ();
             } break;
 
             case eHTMLFormat: {
-                StyledTextIOReader_HTML textReader (&source, &sink, &fHTMLInfo);
+                StyledTextIOReader_HTML textReader{&source, &sink, &fHTMLInfo};
                 textReader.Read ();
             } break;
 
             case eUnknownFormat: {
                 /*
-                     *  Should enhance this unknown/format reading code to take into account file suffix in our guess.
-                     */
+                 *  Should enhance this unknown/format reading code to take into account file suffix in our guess.
+                 */
 
                 // Try RTF
                 try {
-                    StyledTextIOReader_RTF reader (&source, &sink, &fRTFInfo);
+                    StyledTextIOReader_RTF reader{&source, &sink, &fRTFInfo};
                     if (reader.QuickLookAppearsToBeRightFormat ()) {
                         fFileFormat = eRTFFormat;
                         goto ReRead;
@@ -1305,7 +1305,7 @@ void LedItDocument::Serialize (CArchive& ar)
 
                 // Try LedNativeFileFormat
                 try {
-                    StyledTextIOReader_LedNativeFileFormat reader (&source, &sink);
+                    StyledTextIOReader_LedNativeFileFormat reader{&source, &sink};
                     if (reader.QuickLookAppearsToBeRightFormat ()) {
                         fFileFormat = eLedPrivateFormat;
                         goto ReRead;
@@ -1317,7 +1317,7 @@ void LedItDocument::Serialize (CArchive& ar)
 
                 // Try HTML
                 try {
-                    StyledTextIOReader_HTML reader (&source, &sink);
+                    StyledTextIOReader_HTML reader{&source, &sink};
                     if (reader.QuickLookAppearsToBeRightFormat ()) {
                         fFileFormat = eHTMLFormat;
                         goto ReRead;

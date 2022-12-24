@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Debug {
 #endif
     inline AssertExternallySynchronizedMutex& AssertExternallySynchronizedMutex::operator= ([[maybe_unused]] const AssertExternallySynchronizedMutex& rhs) noexcept
     {
-        ReadContext  readLockRHS{rhs};     // we must be able to read RHS
+        ReadContext  readLockRHS{rhs};                // we must be able to read RHS
         WriteContext declareWriteContext4This{*this}; // we must be able modify this
         return *this;
     }

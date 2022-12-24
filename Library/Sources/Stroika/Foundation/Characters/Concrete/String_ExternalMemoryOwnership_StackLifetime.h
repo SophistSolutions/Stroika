@@ -37,7 +37,7 @@
  *             void    f()
  *                 {
  *                     wchar_t buf[1024] = L"fred";
- *                     String_ExternalMemoryOwnership_StackLifetime tmp (buf);
+ *                     String_ExternalMemoryOwnership_StackLifetime tmp{buf};
  *
  *                     // Then call some function F() with tmp - where F() passes the value (as a String) to another thread, and that other thread runs for a very long time with the string - just READING
  *                     // the string - never MODIFYING it.
