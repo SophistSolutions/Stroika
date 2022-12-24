@@ -2532,7 +2532,7 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 
     if (GetHandleBOM ()) {
         size_t bytesToStrip = 0;
-        if (CodePagesGuesser ().Guess (inMBChars, inMBCharCnt, nullptr, &bytesToStrip) == fCodePage) {
+        if (CodePagesGuesser {}.Guess (inMBChars, inMBCharCnt, nullptr, &bytesToStrip) == fCodePage) {
             Assert (inMBCharCnt >= bytesToStrip);
             inMBChars += bytesToStrip;
             inMBCharCnt -= bytesToStrip;
@@ -2710,9 +2710,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
             }
             Characters::Platform::Windows::PlatformCodePageConverter{kCodePage_UTF7}.MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt, useOutChars, &useOutCharCount);
             if (GetHandleBOM ()) {
-                if (*outCharCnt >= 5) {
-                    useOutCharCount += 5;
-                }
+                useOutCharCount += 5;
             }
             *outCharCnt = useOutCharCount;
         } break;
@@ -2737,9 +2735,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
             }
             useOutCharCount = UTFConverter::kThe.Convert (span{inChars, inCharCnt}, span{useOutChars, useOutCharCount}).fTargetProduced;
             if (GetHandleBOM ()) {
-                if (*outCharCnt >= 3) {
-                    useOutCharCount += 3;
-                }
+                useOutCharCount += 3;
             }
             *outCharCnt = useOutCharCount;
         } break;
@@ -2747,7 +2743,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 #if qPlatform_Windows
             Characters::Platform::Windows::PlatformCodePageConverter{fCodePage}.MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt, outChars, outCharCnt);
 #else
-            Execution::Throw (CodePageNotSupportedException (fCodePage));
+            Execution::Throw (CodePageNotSupportedException{fCodePage});
 #endif
         }
     }
@@ -2771,7 +2767,22 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 
 void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
-    *outCharCnt = UTFConverter::kThe.Convert (span{inChars, inCharCnt}, span{outChars, *outCharCnt}).fTargetProduced;
+    char* useOutChars = outChars;
+    size_t useOutCharCount = *outCharCnt;
+    if (GetHandleBOM ()) {
+     if (useOutCharCount >= 3) {
+                    useOutChars += 3; // skip BOM
+                    useOutCharCount -= 3;
+                    reinterpret_cast<unsigned char*> (outChars)[0] = 0xef;
+                    reinterpret_cast<unsigned char*> (outChars)[1] = 0xbb;
+                    reinterpret_cast<unsigned char*> (outChars)[2] = 0xbf;
+                }
+    }
+
+    *outCharCnt = UTFConverter::kThe.Convert (span{inChars, inCharCnt}, span{useOutChars, useOutCharCount}).fTargetProduced;
+     if (useOutCharCount >= 3) {
+ *outCharCnt += 3;
+     }
 }
 
 /*
