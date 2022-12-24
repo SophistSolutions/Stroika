@@ -23,6 +23,7 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 #include <atlbase.h>
 
 #include "Stroika/Foundation/Characters/LineEndings.h"
+#include "Stroika/Foundation/Memory/Platform/Windows/Handle.h"
 
 #include "Stroika/Frameworks/Led/StdDialogs.h"
 #include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_LedNative.h"
@@ -880,7 +881,7 @@ void ActiveLedItControl::ExchangeTextAsRTFBlob (CPropExchange* pPX)
         PX_Blob (pPX, kTextAsRTFBlob, hglobal);
         if (hglobal != NULL) {
             try {
-                Led_StackBasedHandleLocker hdl (hglobal);
+                Memory::Platform::Windows::StackBasedHandleLocker hdl (hglobal);
                 const byte*                data = reinterpret_cast<byte*> (hdl.GetPointer ());
                 if (data != NULL) {
                     size_t size = *(size_t*)data;
@@ -903,7 +904,7 @@ void ActiveLedItControl::ExchangeTextAsRTFBlob (CPropExchange* pPX)
         HGLOBAL hglobal = ::GlobalAlloc (GMEM_MOVEABLE, len + sizeof (size_t));
         if (hglobal != NULL) {
             {
-                Led_StackBasedHandleLocker hdl (hglobal);
+                Memory::Platform::Windows::StackBasedHandleLocker hdl (hglobal);
                 void*                      pvBlob = hdl.GetPointer ();
                 AssertNotNull (pvBlob);
                 *(size_t*)pvBlob = len;

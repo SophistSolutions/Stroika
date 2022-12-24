@@ -718,7 +718,7 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
 #endif
 
 #if qPlatform_MacOS
-    Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)sURLPict);
+    Memory::Platform::MacOS locker ((Memory::Platform::MacOS::GenericHandle)sURLPict);
     // First add in width of picture
     distanceResults[0] = Led_GetMacPictWidth (sURLPict);
 
@@ -781,7 +781,7 @@ DistanceType StandardURLStyleMarker::MeasureSegmentHeight (const StyledTextImage
 // this '36' is something of a hack. Really we should set the font into a grafport, and measure font metrics etc.
 // but this is good enuf - I believe - LGP 960314
 #if qPlatform_MacOS
-    Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)sURLPict);
+    Memory::Platform::MacOS::StackBasedHandleLocker locker ((Memory::Platform::MacOS::StackBasedHandleLocker::GenericHandle)sURLPict);
     return max (Led_GetMacPictHeight (sURLPict), 36) + 2 * kDefaultEmbeddingMargin.v;
 #elif qPlatform_Windows
     return max (Led_GetDIBImageSize (sURLPict).v, 36) + 2 * kDefaultEmbeddingMargin.v;

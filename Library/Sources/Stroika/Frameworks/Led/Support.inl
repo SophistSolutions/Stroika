@@ -303,35 +303,6 @@ namespace Stroika::Frameworks::Led {
         return kBadIndex;
     }
 
-#if qPlatform_MacOS || qPlatform_Windows
-    inline Led_StackBasedHandleLocker::Led_StackBasedHandleLocker (GenericHandle h)
-        : fHandle (h)
-    {
-        RequireNotNull (h);
-#if qPlatform_MacOS
-        fOldState = ::HGetState (h);
-        ::HLock (h);
-#elif qPlatform_Windows
-        fPointer = ::GlobalLock (h);
-#endif
-    }
-    inline Led_StackBasedHandleLocker::~Led_StackBasedHandleLocker ()
-    {
-#if qPlatform_MacOS
-        ::HSetState (fHandle, fOldState);
-#elif qPlatform_Windows
-        ::GlobalUnlock (fHandle);
-#endif
-    }
-    inline void* Led_StackBasedHandleLocker::GetPointer () const
-    {
-#if qPlatform_MacOS
-        return *fHandle;
-#elif qPlatform_Windows
-        return fPointer;
-#endif
-    }
-#endif
 
 #if qMultiByteCharacters
     inline bool Led_IsLeadByte (unsigned char c)

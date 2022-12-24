@@ -333,33 +333,6 @@ namespace Stroika::Frameworks::Led {
     void   Led_CheckSomeLocalHeapRAMAvailable (size_t n = 1024); // only to avoid MacOS crashes on toolbox calls with little RAM left
 #endif
 
-#if qPlatform_MacOS || qPlatform_Windows
-    /*
-    @CLASS:         Led_StackBasedHandleLocker
-    @DESCRIPTION:   <p>A utility class to lock (and on exit from the block unlock) a handle.</p>
-    */
-    class Led_StackBasedHandleLocker {
-    public:
-#if qPlatform_MacOS
-        using GenericHandle = Handle;
-#elif qPlatform_Windows
-        using GenericHandle = HANDLE;
-#endif
-        Led_StackBasedHandleLocker (GenericHandle h);
-        ~Led_StackBasedHandleLocker ();
-
-        nonvirtual void* GetPointer () const;
-
-    private:
-        GenericHandle fHandle;
-#if qPlatform_MacOS
-        unsigned char fOldState;
-#elif qPlatform_Windows
-        void* fPointer;
-#endif
-    };
-#endif
-
     /*
     @CLASS:         DiscontiguousRunElement<DATA>
     @DESCRIPTION:   <p>We frequently need to keep track of runs of data. Sometimes - those elements are discontiguous.

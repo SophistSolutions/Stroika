@@ -91,7 +91,7 @@ public:
 
 #if qPlatform_Windows
 public:
-    nonvirtual void           FixupFontMenu (CMenu* fontMenu);
+    nonvirtual void      FixupFontMenu (CMenu* fontMenu);
     nonvirtual SDKString CmdNumToFontName (UINT cmdNum);
     nonvirtual const vector<SDKString>& GetUsableFontNames (); // perform whatever filtering will be done on sys installed fonts and return the names
 #endif

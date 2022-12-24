@@ -23,6 +23,7 @@ namespace Stroika::Foundation::Memory::Platform::Windows {
      */
     class StackBasedHandleLocker {
     public:
+        StackBasedHandleLocker () = delete;
         StackBasedHandleLocker (HANDLE h);
         StackBasedHandleLocker (const StackBasedHandleLocker&) = delete;
 

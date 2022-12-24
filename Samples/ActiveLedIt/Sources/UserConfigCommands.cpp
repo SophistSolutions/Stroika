@@ -1333,10 +1333,10 @@ wstring CmdNum2Name (UINT cmdNum)
 
     // Dynamic font name command
     if (kBaseFontNameCmd <= cmdNum and cmdNum <= kLastFontNameCmd) {
-        const vector<SDKString>& fontNames      = GetUsableFontNames ();
-        size_t                        i         = cmdNum - kBaseFontNameCmd;
-        i                                       = max (fontNames.size () - 1, i);
-        i                                       = max (fontNames.size (), i);
+        const vector<SDKString>& fontNames = GetUsableFontNames ();
+        size_t                   i         = cmdNum - kBaseFontNameCmd;
+        i                                  = max (fontNames.size () - 1, i);
+        i                                  = max (fontNames.size (), i);
         return NormalizeCmdNameToInternal (NarrowSDKStringToWide (mkFontNameCMDName (fontNames[i])));
     }
 

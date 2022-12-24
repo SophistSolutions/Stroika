@@ -384,10 +384,10 @@ public:
 #endif
 
 #if qPlatform_MacOS
-        const short    kPictHeight = 273;
-        const short    kPictWidth  = 437;
-        SDKString      verStr      = SDKString{qLed_ShortVersionString} + kUNICODE_NAME_ADORNER " (" + __DATE__ + ")";
-        const int      kVERWidth   = 230;
+        const short kPictHeight = 273;
+        const short kPictWidth  = 437;
+        SDKString   verStr      = SDKString{qLed_ShortVersionString} + kUNICODE_NAME_ADORNER " (" + __DATE__ + ")";
+        const int   kVERWidth   = 230;
         SimpleLayoutHelper (kPictHeight, kPictWidth, Led_Rect (159, 15, 17, 142), Led_Rect (159, 227, 17, 179), verStr);
 #elif qPlatform_Windows
         // Cuz of fact that dlog sizes specified in dlog units, and that doesn't work well for bitmaps
@@ -454,7 +454,7 @@ public:
         gtk_container_set_border_width (GTK_CONTAINER (box1), 2);
 
         /* a pixmap widget to contain the pixmap */
-        GtkWidget*     pixmapwid = gtk_pixmap_new (pixmap, mask);
+        GtkWidget* pixmapwid = gtk_pixmap_new (pixmap, mask);
         SDKString  verStr    = SDKString{qLed_ShortVersionString} + " (" + __DATE__ + ")";
 
         GtkWidget* label = gtk_label_new (verStr.c_str ());
@@ -552,7 +552,7 @@ protected:
                 }
                 struct FileFilterDesc {
                     SDKString  fDescription;
-                    FileFormat     fFormat;
+                    FileFormat fFormat;
                 };
                 static FileFilterDesc typeList[] = {
                     {"HTML file", eHTMLFormat},
@@ -1760,7 +1760,7 @@ void LedItApplication::LoadFromFile (const string& fileName, FileFormat fileForm
 
 inline SDKString StripKnownSuffix (const SDKString& from)
 {
-    SDKString      result = from;
+    SDKString result = from;
     SDKString suffix = ExtractFileSuffix (from);
     if (suffix == ".rtf" or suffix == ".txt" or suffix == ".led" or suffix == ".htm" or suffix == ".html") {
         result.erase (result.length () - suffix.length ());
@@ -2124,9 +2124,9 @@ GtkWidget* LedItApplication::get_main_menu (GtkWidget* window)
     gtk_window_add_accel_group (GTK_WINDOW (window), accel_group);
 
     {
-        const string           kFontMenuPath = "/Format/Font Name";
-        GtkWidget*             fontNameMenu  = gtk_item_factory_get_widget (item_factory, kFontMenuPath.c_str ());
-        vector<SDKString>      fontNames     = LedItApplication::Get ().fInstalledFonts.GetUsableFontNames ();
+        const string      kFontMenuPath = "/Format/Font Name";
+        GtkWidget*        fontNameMenu  = gtk_item_factory_get_widget (item_factory, kFontMenuPath.c_str ());
+        vector<SDKString> fontNames     = LedItApplication::Get ().fInstalledFonts.GetUsableFontNames ();
         for (vector<SDKString>::const_iterator i = fontNames.begin (); i != fontNames.end (); ++i) {
             GtkItemFactoryEntry entry;
             memset (&entry, 0, sizeof (entry));
