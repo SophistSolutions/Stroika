@@ -203,34 +203,34 @@ struct Statement::MyRep_ : IRep {
 #if qDebug
         SetAssertExternallySynchronizedMutexContext (fConnectionPtr_.GetSharedContext ());
 #endif
-        u8string                                     queryUTF8 = query.AsUTF8 ();
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        u8string                                        queryUTF8 = query.AsUTF8 ();
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         AssertNotImplemented ();
     }
     ~MyRep_ ()
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
     }
     virtual String GetSQL ([[maybe_unused]] WhichSQLFlag whichSQL) const override
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         AssertNotImplemented ();
         return String{};
     }
     virtual Sequence<ColumnDescription> GetColumns () const override
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         AssertNotImplemented ();
         return Sequence<ColumnDescription>{};
     };
     virtual Sequence<ParameterDescription> GetParameters () const override
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fParameters_;
     };
     virtual void Bind () override
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         for (auto i = fParameters_.begin (); i != fParameters_.end (); ++i) {
             auto p   = *i;
             p.fValue = VariantValue{};
@@ -240,14 +240,14 @@ struct Statement::MyRep_ : IRep {
     }
     virtual void Bind (unsigned int parameterIndex, const VariantValue& v) override
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         fParameters_[parameterIndex].fValue = v;
         AssertNotImplemented ();
     }
     virtual void Bind (const String& parameterName, const VariantValue& v) override
     {
         Require (not parameterName.empty ());
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         AssertNotImplemented ();
         String pn = parameterName;
         if (pn[0] != ':') {
@@ -267,7 +267,7 @@ struct Statement::MyRep_ : IRep {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"SQLite::Statement::MyRep_::Statement::Reset"};
 #endif
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         AssertNotImplemented ();
     }
     virtual optional<Row> GetNextRow () override
@@ -275,7 +275,7 @@ struct Statement::MyRep_ : IRep {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"SQLite::Statement::MyRep_::Statement::GetNextRow"};
 #endif
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         AssertNotImplemented ();
         return nullopt;
     }

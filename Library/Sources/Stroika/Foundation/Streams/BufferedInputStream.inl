@@ -54,14 +54,14 @@ namespace Stroika::Foundation::Streams {
         }
         virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             return fRealIn_.Read (intoStart, intoEnd);
         }
         virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
             // easy todo while no real buffer implementation ;-)
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             return fRealIn_.ReadNonBlocking (intoStart, intoEnd);
         }

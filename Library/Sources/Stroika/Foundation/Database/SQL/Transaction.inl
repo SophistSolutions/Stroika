@@ -41,19 +41,19 @@ namespace Stroika::Foundation::Database::SQL {
     }
     inline void Transaction::Rollback ()
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         RequireNotNull (_fRep);
         _fRep->Rollback ();
     }
     inline void Transaction::Commit ()
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         RequireNotNull (_fRep);
         _fRep->Commit ();
     }
     inline String Transaction::ToString () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         RequireNotNull (_fRep);
         Characters::StringBuilder sb;
         sb += L"{";

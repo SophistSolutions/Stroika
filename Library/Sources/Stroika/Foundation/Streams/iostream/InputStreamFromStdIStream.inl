@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Streams::iostream {
             RequireNotNull (intoEnd);
             Require (intoStart < intoEnd);
 
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             if (fOriginalStream_.eof ()) {
                 return 0;
@@ -89,8 +89,8 @@ namespace Stroika::Foundation::Streams::iostream {
         virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
             Require (IsOpenRead ());
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
-            streamsize                                          sz = fOriginalStream_.rdbuf ()->in_avail ();
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            streamsize                                             sz = fOriginalStream_.rdbuf ()->in_avail ();
             // http://en.cppreference.com/w/cpp/io/basic_streambuf/in_avail
             if (sz == 0) {
                 return {};
@@ -103,13 +103,13 @@ namespace Stroika::Foundation::Streams::iostream {
         virtual SeekOffsetType GetReadOffset () const override
         {
             // instead of tellg () - avoids issue with EOF where fail bit set???
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
         }
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             switch (whence) {
                 case Whence::eFromStart:

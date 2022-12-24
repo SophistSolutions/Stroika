@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Characters {
     {
         Require (s == e or (s != nullptr and e != nullptr));
         Require (s <= e);
-        lock_guard critSec{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         size_t     i      = fLength_;
         size_t     rhsLen = e - s;
         fData_.GrowToSize_uninitialized (i + rhsLen);
@@ -203,7 +203,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline void StringBuilder::push_back (Character c)
     {
-        lock_guard critSec{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fData_.GrowToSize_uninitialized (fLength_ + 1);
         fData_[fLength_] = c.GetCharacterCode ();
         ++fLength_;
@@ -224,12 +224,12 @@ namespace Stroika::Foundation::Characters {
     inline void StringBuilder::SetAt (Character item, size_t index)
     {
         Require (index < fLength_);
-        lock_guard critSec{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fData_[index] = item.GetCharacterCode ();
     }
     inline const wchar_t* StringBuilder::c_str () const
     {
-        shared_lock critSec{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         fData_.GrowToSize_uninitialized (fLength_ + 1);
         fData_[fLength_] = '\0';
         return fData_.begin ();
@@ -240,7 +240,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline String StringBuilder::str () const
     {
-        shared_lock critSec{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         return String{fData_.begin (), fData_.begin () + fLength_};
     }
     template <>
@@ -294,7 +294,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline void StringBuilder::reserve (size_t newCapacity)
     {
-        lock_guard critSec{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fData_.reserve (newCapacity);
     }
 

@@ -87,8 +87,8 @@ Socket::PlatformNativeHandle Socket::mkLowLevelSocket_ (SocketAddress::FamilyTyp
  */
 Socket::PlatformNativeHandle Socket::Ptr::Detach ()
 {
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
-    PlatformNativeHandle                         h = kINVALID_NATIVE_HANDLE_;
+    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    PlatformNativeHandle                            h = kINVALID_NATIVE_HANDLE_;
     if (fRep_ != nullptr) {
         h = fRep_->Detach ();
     }
@@ -98,14 +98,14 @@ Socket::PlatformNativeHandle Socket::Ptr::Detach ()
 
 Socket::Type Socket::Ptr::GetType () const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
     return getsockopt<Type> (SOL_SOCKET, SO_TYPE);
 }
 
 void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 {
-    Debug::TraceContextBumper                    ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Bind", L"sockAddr=%s bindFlags.fReUseAddr=%s", Characters::ToString (sockAddr).c_str (), Characters::ToString (bindFlags.fSO_REUSEADDR).c_str ())};
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+    Debug::TraceContextBumper                       ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Bind", L"sockAddr=%s bindFlags.fReUseAddr=%s", Characters::ToString (sockAddr).c_str (), Characters::ToString (bindFlags.fSO_REUSEADDR).c_str ())};
+    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
     RequireNotNull (fRep_); // Construct with Socket::Kind::SOCKET_STREAM?
 
     auto                    bindingActivity = Execution::LazyEvalActivity{[&] () -> Characters::String { return L"binding to " + Characters::ToString (sockAddr); }};
@@ -146,7 +146,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 
 bool Socket::Ptr::IsOpen () const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
     if (fRep_ != nullptr) {
         return fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE_;
     }
@@ -155,8 +155,8 @@ bool Socket::Ptr::IsOpen () const
 
 String Socket::Ptr::ToString () const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
-    StringBuilder                               sb;
+    AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+    StringBuilder                                  sb;
     if (fRep_ == nullptr) {
         sb += L"nullptr";
     }

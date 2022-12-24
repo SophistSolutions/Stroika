@@ -34,33 +34,33 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _IterableRepSharedPtr Clone () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterable<T>::template MakeSmartPtr<Rep_> (*this);
         }
         virtual Iterator<value_type> MakeIterator () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual size_t size () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return fData_.size ();
         }
         virtual bool empty () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return fData_.size () == 0;
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             fData_.Apply (doToElement);
         }
         virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
-            size_t                                             i = fData_.Find (that);
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            size_t                                                i = fData_.Find (that);
             if (i == fData_.size ()) {
                 return nullptr;
             }
@@ -79,21 +79,21 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void AddTail (ArgByValueType<value_type> item) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.InsertAt (fData_.size (), item);
             fChangeCounts_.PerformedChange ();
         }
         virtual value_type RemoveHead () override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fData_};
-            T                                                   item = fData_.GetAt (0);
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+            T                                                      item = fData_.GetAt (0);
             fData_.RemoveAt (0);
             fChangeCounts_.PerformedChange ();
             return item;
         }
         virtual optional<value_type> RemoveHeadIf () override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             if (fData_.size () == 0) {
                 return optional<value_type>{};
             }
@@ -104,12 +104,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual value_type Head () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return fData_.GetAt (0);
         }
         virtual optional<value_type> HeadIf () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             if (fData_.size () == 0) {
                 return optional<value_type>{};
             }

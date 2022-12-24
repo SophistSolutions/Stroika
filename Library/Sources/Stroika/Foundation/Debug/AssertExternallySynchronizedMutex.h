@@ -43,7 +43,7 @@
 namespace Stroika::Foundation::Debug {
 
     /**
-     *  \brief      NOT a real lock - just a debugging infrastructure support tool so in debug builds can be assured threadsafe
+     *  \brief      NOT a real mutex - just a debugging infrastructure support tool so in debug builds can be assured threadsafe
      *
      *  This class is a 'no op' in production builds, as a 'recursive mutex' for a class that needs
      *  no thread locking because its externally synchronized.
@@ -79,12 +79,12 @@ namespace Stroika::Foundation::Debug {
      *              [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
      *              inline  void    DoReadWriteStuffOnData ()
      *              {
-     *                  AssertExternallySynchronizedMutex::WriteLock writeLock { fThisAssertExternallySynchronized_ };
+     *                  AssertExternallySynchronizedMutex::WriteContext declareContext { fThisAssertExternallySynchronized_ };
      *                  // now do what you usually do for to modify locked data...
      *              }
      *              inline  void    DoReadOnlyStuffOnData ()
      *              {
-     *                  AssertExternallySynchronizedMutex::ReadLock readLock { fThisAssertExternallySynchronized_ };
+     *                  AssertExternallySynchronizedMutex::ReadContext declareContext { fThisAssertExternallySynchronized_ };
      *                  // now do what you usually do for DoReadOnlyStuffOnData - reading data only...
      *              }
      *          };
@@ -93,16 +93,16 @@ namespace Stroika::Foundation::Debug {
      *  \par Example Usage
      *      \code
      *          // this style of use - subclassing - is especially useful if the object foo will be subclassed, and checked throughtout the
-     *          // code (or subclasses) with Debug::AssertExternallySynchronizedMutex::ReadLock (or WriteLock)
+     *          // code (or subclasses) with Debug::AssertExternallySynchronizedMutex::ReadContext (or WriteContext)
      *          struct foo : public Debug::AssertExternallySynchronizedMutex {
      *              inline  void    DoReadWriteStuffOnData ()
      *              {
-     *                  AssertExternallySynchronizedMutex::WriteLock writeLock { *this };       // lock_guard or scopedLock or unique_lock
+     *                  AssertExternallySynchronizedMutex::WriteContext declareContext { *this };       // lock_guard or scopedLock or unique_lock
      *                  // now do what you usually do for to modify locked data...
      *              }
      *              inline  void    DoReadOnlyStuffOnData ()
      *              {
-     *                  AssertExternallySynchronizedMutex::ReadLock readLock { *this };
+     *                  AssertExternallySynchronizedMutex::ReadContext declareContext { *this };
      *                  // now do what you usually do for DoReadOnlyStuffOnData - reading data only...
      *              }
      *          };
@@ -238,35 +238,35 @@ namespace Stroika::Foundation::Debug {
 
     public:
         /**
-         *  \brief Instantiate AssertExternallySynchronizedMutex::ReadLock to designate an area of code where protected data will be read
+         *  \brief Instantiate AssertExternallySynchronizedMutex::ReadContext to designate an area of code where protected data will be read
          * 
          *  This type alias makes a little more clear in reading code that the 'lock' is really just an assertion about thread safety
          * 
          *  Since AssertExternallySynchronizedMutex follows the concpet 'mutex' you can obviously use any
-         *  of the standard lockers in std::c++, but using AssertExternallySynchronizedMutex::ReadLock - makes it a little more clear
+         *  of the standard lockers in std::c++, but using AssertExternallySynchronizedMutex::ReadContext - makes it a little more clear
          *  self-documenting in your code, that you are doing this in a context where you are only reading the pseduo-locked data.
          * 
          *  \note we get away with 'const' in shared_lock<const AssertExternallySynchronizedMutex> because we chose to make
          *        lock_shared, and unlock_shared const methods (see their docs above).
          */
-        using ReadLock = shared_lock<const AssertExternallySynchronizedMutex>;
+        using ReadContext = shared_lock<const AssertExternallySynchronizedMutex>;
 
     public:
         /**
-         *  \brief Instantiate AssertExternallySynchronizedMutex::WriteLock to designate an area of code where protected data will be written
+         *  \brief Instantiate AssertExternallySynchronizedMutex::WriteContext to designate an area of code where protected data will be written
          * 
          *  This type alias makes a little more clear in reading code that the 'lock' is really just an assertion about thread safety
          * 
-         *  Since AssertExternallySynchronizedMutex follows the concpet 'mutex' you can obviously use any
-         *  of the standard lockers in std::c++, but using AssertExternallySynchronizedMutex::WriteLock - makes it a little more clear
+         *  Since AssertExternallySynchronizedMutex follows the concept 'mutex' you can obviously use any
+         *  of the standard lockers in std::c++, but using AssertExternallySynchronizedMutex::WriteContext - makes it a little more clear
          *  self-documenting in your code, that you are doing this in a context where you are only writing the pseduo-locked data.
          * 
          *  Plus, the fact that it forces a non-const interpetation on the object in question (by using lock_guard of a non-const AssertExternallySynchronizedMutex)
-         *  makes it a little easier to catch cases where you accidentally use WriteLock and meant ReadLock.
+         *  makes it a little easier to catch cases where you accidentally use WriteContext and meant ReadContext.
          * 
          *  \note - considered using  scoped_lock, but it amounts to the same thing, and that gets some ambiguous construction issues (rare but why bother here)
          */
-        using WriteLock = lock_guard<AssertExternallySynchronizedMutex>;
+        using WriteContext = lock_guard<AssertExternallySynchronizedMutex>;
 
 #if qDebug
     private:

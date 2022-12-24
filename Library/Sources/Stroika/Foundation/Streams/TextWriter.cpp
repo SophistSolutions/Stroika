@@ -47,7 +47,7 @@ protected:
     virtual void CloseWrite () override
     {
         Require (IsOpenWrite ());
-        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         _fSource.Close ();
         Assert (_fSource == nullptr);
         Ensure (not IsOpenWrite ());
@@ -77,7 +77,7 @@ protected:
 
         char outBuf[10 * 1024];
         //char    outBuf[10]; // to test
-        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
     Again:
         char*                         p = std::begin (outBuf);
         codecvt_utf8<wchar_t>::result r = kConverter_.out (fMBState_, sc, ec, pc, std::begin (outBuf), std::end (outBuf), p);
@@ -123,7 +123,7 @@ protected:
     virtual void CloseWrite () override
     {
         Require (IsOpenWrite ());
-        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         _fSource.Close ();
         Assert (_fSource == nullptr);
         Ensure (not IsOpenWrite ());
@@ -146,13 +146,13 @@ protected:
     }
     virtual void Write (const Character* start, const Character* end) override
     {
-        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         Require (IsOpenWrite ());
         _fSource.Write (reinterpret_cast<const byte*> (start), reinterpret_cast<const byte*> (end));
     }
     virtual void Flush () override
     {
-        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         Require (IsOpenWrite ());
         _fSource.Flush ();
     }

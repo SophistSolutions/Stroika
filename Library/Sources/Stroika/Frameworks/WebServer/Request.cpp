@@ -48,7 +48,7 @@ Request::Request (Request&& src)
 Request::Request (const Streams::InputStream<byte>::Ptr& inStream)
     : keepAliveRequested{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
         const Request*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::keepAliveRequested);
-        AssertExternallySynchronizedMutex::ReadLock critSec{*thisObj};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         using ConnectionValue = IO::Network::HTTP::Headers::ConnectionValue;
         if (thisObj->httpVersion == IO::Network::HTTP::Versions::kOnePointZero) {
             return thisObj->headers ().connection ().value_or (ConnectionValue::eClose) == ConnectionValue::eKeepAlive;
@@ -67,7 +67,7 @@ Memory::BLOB Request::GetBody ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{L"Request::GetBody"};
 #endif
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
     if (not fBody_.has_value ()) {
         fBody_ = GetBodyStream ().ReadAll ();
     }
@@ -79,7 +79,7 @@ Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{L"Request::GetBodyStream"};
 #endif
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
     if (fBodyInputStream_ == nullptr) {
         /*
          *  According to https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html:
@@ -111,7 +111,7 @@ Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
 
 String Request::ToString () const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+    AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
     StringBuilder                               sb = inherited::ToString ().SubString (0, -1); // strip trialing '{'
     // @todo add stuff about body
     sb += L"}";

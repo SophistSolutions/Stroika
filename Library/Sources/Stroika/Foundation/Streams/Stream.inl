@@ -31,51 +31,51 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline auto Stream<ELEMENT_TYPE>::Ptr::_GetSharedRep () const -> _SharedIRep
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fRep_;
     }
     template <typename ELEMENT_TYPE>
     inline auto Stream<ELEMENT_TYPE>::Ptr::_GetRepConstRef () const -> const _IRep&
     {
         RequireNotNull (fRep_);
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return *fRep_.get ();
     }
     template <typename ELEMENT_TYPE>
     inline auto Stream<ELEMENT_TYPE>::Ptr::_GetRepRWRef () const -> _IRep&
     {
         RequireNotNull (fRep_);
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return *fRep_.get ();
     }
     template <typename ELEMENT_TYPE>
     inline bool Stream<ELEMENT_TYPE>::Ptr::IsSeekable () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fSeekable_;
     }
     template <typename ELEMENT_TYPE>
     inline SeekableFlag Stream<ELEMENT_TYPE>::Ptr::GetSeekability () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fSeekable_ ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable;
     }
     template <typename ELEMENT_TYPE>
     inline void Stream<ELEMENT_TYPE>::Ptr::reset () noexcept
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         fRep_.reset ();
     }
     template <typename ELEMENT_TYPE>
     inline bool Stream<ELEMENT_TYPE>::Ptr::operator== (nullptr_t) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fRep_.get () == nullptr;
     }
     template <typename ELEMENT_TYPE>
     inline Stream<ELEMENT_TYPE>::Ptr::operator bool () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fRep_.get () != nullptr;
     }
 

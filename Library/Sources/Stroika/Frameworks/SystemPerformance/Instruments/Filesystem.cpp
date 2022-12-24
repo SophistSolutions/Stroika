@@ -897,8 +897,8 @@ namespace {
         }
         nonvirtual Info _InternalCapture ()
         {
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
-            Debug::TraceContextBumper                    ctx{"Instruments::Filesystem _InternalCapture"};
+            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            Debug::TraceContextBumper                       ctx{"Instruments::Filesystem _InternalCapture"};
 #if qPlatform_Linux or qPlatform_Windows
             Info result = inherited::_InternalCapture ();
 #else

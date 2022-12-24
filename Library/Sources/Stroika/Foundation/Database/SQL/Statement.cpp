@@ -64,8 +64,8 @@ auto Statement::GetAllRemainingRows () -> Sequence<Row>
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
 #endif
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
-    Sequence<Row>                                result;
+    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    Sequence<Row>                                   result;
     while (auto o = GetNextRow ()) {
         result += *o;
     }
@@ -77,9 +77,9 @@ Sequence<VariantValue> Statement::GetAllRemainingRows (size_t restrictToColumn)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
 #endif
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
-    Sequence<VariantValue>                       result;
-    ColumnDescription                            col0 = GetColumns ()[restrictToColumn];
+    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    Sequence<VariantValue>                          result;
+    ColumnDescription                               col0 = GetColumns ()[restrictToColumn];
     while (auto o = GetNextRow ()) {
         result += *o->Lookup (col0.fName);
     }
@@ -91,10 +91,10 @@ Sequence<tuple<VariantValue, VariantValue>> Statement::GetAllRemainingRows (size
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
 #endif
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
-    Sequence<tuple<VariantValue, VariantValue>>  result;
-    ColumnDescription                            col0 = GetColumns ()[restrictToColumn1];
-    ColumnDescription                            col1 = GetColumns ()[restrictToColumn2];
+    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    Sequence<tuple<VariantValue, VariantValue>>     result;
+    ColumnDescription                               col0 = GetColumns ()[restrictToColumn1];
+    ColumnDescription                               col1 = GetColumns ()[restrictToColumn2];
     while (auto o = GetNextRow ()) {
         result += make_tuple (*o->Lookup (col0.fName), *o->Lookup (col1.fName));
     }
@@ -106,7 +106,7 @@ Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRemai
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
 #endif
-    AssertExternallySynchronizedMutex::WriteLock              critSec{*this};
+    AssertExternallySynchronizedMutex::WriteContext           critSec{*this};
     Sequence<tuple<VariantValue, VariantValue, VariantValue>> result;
     ColumnDescription                                         col0 = GetColumns ()[restrictToColumn1];
     ColumnDescription                                         col1 = GetColumns ()[restrictToColumn2];
@@ -119,8 +119,8 @@ Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRemai
 
 void Statement::Bind (const Traversal::Iterable<ParameterDescription>& parameters)
 {
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
-    int                                          idx = 0;
+    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    int                                             idx = 0;
     Bind ();
     for (const auto& i : parameters) {
         if (i.fName) {
@@ -135,7 +135,7 @@ void Statement::Bind (const Traversal::Iterable<ParameterDescription>& parameter
 
 void Statement::Bind (const Traversal::Iterable<Common::KeyValuePair<String, VariantValue>>& parameters)
 {
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
     Bind ();
     for (const auto& i : parameters) {
         Bind (i.fKey, i.fValue);
@@ -147,7 +147,7 @@ void Statement::Execute ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::Execute"};
 #endif
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
     Reset ();
     (void)_fRep->GetNextRow ();
 }
@@ -157,7 +157,7 @@ void Statement::Execute (const Traversal::Iterable<ParameterDescription>& parame
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::Execute"};
 #endif
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
     Reset ();
     Bind (parameters);
     (void)_fRep->GetNextRow ();
@@ -168,7 +168,7 @@ void Statement::Execute (const Traversal::Iterable<Common::KeyValuePair<String, 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SQL::Statement::Execute", L"parameters=%s", Characters::ToString (parameters).c_str ())};
 #endif
-    AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
     Reset ();
     Bind (parameters);
     (void)_fRep->GetNextRow ();
@@ -176,8 +176,8 @@ void Statement::Execute (const Traversal::Iterable<Common::KeyValuePair<String, 
 
 String Statement::ToString () const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
-    StringBuilder                               sb;
+    AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+    StringBuilder                                  sb;
     sb += L"{";
     sb += L"Parameter-Bindings: " + Characters::ToString (GetParameters ()) + L", ";
     sb += L"Column-Descriptions: " + Characters::ToString (GetColumns ()) + L", ";

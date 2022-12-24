@@ -43,7 +43,7 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline shared_ptr<Socket::_IRep> Socket::Ptr::_GetSharedRep () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fRep_;
     }
     inline Socket::_IRep& Socket::Ptr::_ref () const
@@ -58,17 +58,17 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline Socket::PlatformNativeHandle Socket::Ptr::GetNativeSocket () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return _cref ().GetNativeSocket ();
     }
     inline optional<IO::Network::SocketAddress> Socket::Ptr::GetLocalAddress () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return _cref ().GetLocalAddress ();
     }
     inline SocketAddress::FamilyType Socket::Ptr::GetAddressFamily () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return _cref ().GetAddressFamily ();
     }
     inline void Socket::Ptr::Shutdown (ShutdownTarget shutdownTarget)
@@ -80,7 +80,7 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline void Socket::Ptr::Close () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         // not important to null-out, but may as well...
         if (fRep_ != nullptr) {
             fRep_->Close ();
@@ -89,29 +89,29 @@ namespace Stroika::Foundation::IO::Network {
     template <typename RESULT_TYPE>
     inline RESULT_TYPE Socket::Ptr::getsockopt (int level, int optname) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
-        RESULT_TYPE                                 r{};
-        socklen_t                                   roptlen = sizeof (r);
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        RESULT_TYPE                                    r{};
+        socklen_t                                      roptlen = sizeof (r);
         _cref ().getsockopt (level, optname, &r, &roptlen);
         return r;
     }
     template <typename ARG_TYPE>
     inline void Socket::Ptr::setsockopt (int level, int optname, ARG_TYPE arg) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this}; // const on ptr, writes to envelope
-        socklen_t                                   optvallen = sizeof (arg);
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this}; // const on ptr, writes to envelope
+        socklen_t                                      optvallen = sizeof (arg);
         _ref ().setsockopt (level, optname, &arg, optvallen);
     }
     inline bool Socket::Ptr::operator== (const Ptr& rhs) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec1{*this}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
-        AssertExternallySynchronizedMutex::ReadLock critSec2{rhs};
+        AssertExternallySynchronizedMutex::ReadContext critSec1{*this}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
+        AssertExternallySynchronizedMutex::ReadContext critSec2{rhs};
         return _GetSharedRep () == rhs._GetSharedRep ();
     }
     inline strong_ordering Socket::Ptr::operator<=> (const Ptr& rhs) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec1{*this}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
-        AssertExternallySynchronizedMutex::ReadLock critSec2{rhs};
+        AssertExternallySynchronizedMutex::ReadContext critSec1{*this}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
+        AssertExternallySynchronizedMutex::ReadContext critSec2{rhs};
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
         return Common::compare_three_way_BWA{}(_GetSharedRep (), rhs._GetSharedRep ());
 #else

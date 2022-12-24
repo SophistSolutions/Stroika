@@ -44,48 +44,48 @@ Response::Response (Response&& src)
 Response::Response (const optional<Headers>& initialHeaders)
     : headers{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const IO::Network::HTTP::Headers& {
-              const Response*                             thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headers);
-              AssertExternallySynchronizedMutex::ReadLock critSec{*thisObj};
+              const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headers);
+              AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
               return thisObj->fHeaders_;
           }}
     , rwHeaders{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> IO::Network::HTTP::Headers& {
-                    const Response*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::rwHeaders);
-                    AssertExternallySynchronizedMutex::WriteLock critSec{*const_cast<Response*> (thisObj)}; // not ReadLock cuz rw object returned
+                    const Response*                                 thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::rwHeaders);
+                    AssertExternallySynchronizedMutex::WriteContext declareContext{*const_cast<Response*> (thisObj)}; // not ReadContext cuz rw object returned
                     return const_cast<IO::Network::HTTP::Headers&> (thisObj->fHeaders_);
                 },
                 [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newHeaders) {
-                    Response*                                    thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::rwHeaders);
-                    AssertExternallySynchronizedMutex::WriteLock critSec{*thisObj};
+                    Response*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::rwHeaders);
+                    AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
                     thisObj->fHeaders_ = newHeaders;
                 }}
     , status{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-                 const Response*                             thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::status);
-                 AssertExternallySynchronizedMutex::ReadLock critSec{*thisObj};
+                 const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::status);
+                 AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
                  return get<0> (thisObj->fStatusAndOverrideReason_);
              },
              [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto newStatus) {
-                 Response*                                    thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::status);
-                 AssertExternallySynchronizedMutex::WriteLock critSec{*thisObj};
+                 Response*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::status);
+                 AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
                  thisObj->fStatusAndOverrideReason_ = make_tuple (newStatus, optional<String>{}); // if setting status, clear override string
              }}
     , statusAndOverrideReason{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-                                  const Response*                             thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::statusAndOverrideReason);
-                                  AssertExternallySynchronizedMutex::ReadLock critSec{*thisObj};
+                                  const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::statusAndOverrideReason);
+                                  AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
                                   return thisObj->fStatusAndOverrideReason_;
                               },
                               [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newStatusAndOverride) {
-                                  Response*                                    thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::statusAndOverrideReason);
-                                  AssertExternallySynchronizedMutex::WriteLock critSec{*thisObj};
+                                  Response*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::statusAndOverrideReason);
+                                  AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
                                   thisObj->fStatusAndOverrideReason_ = newStatusAndOverride;
                               }}
     , contentType{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-                      const Response*                             thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::contentType);
-                      AssertExternallySynchronizedMutex::ReadLock critSec{*thisObj};
+                      const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::contentType);
+                      AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
                       return thisObj->headers ().contentType ();
                   },
                   [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newCT) {
-                      Response*                                    thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::contentType);
-                      AssertExternallySynchronizedMutex::WriteLock critSec{*thisObj};
+                      Response*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::contentType);
+                      AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
                       thisObj->rwHeaders ().contentType = newCT;
                   }}
     , fStatusAndOverrideReason_{make_tuple (StatusCodes::kOK, optional<String>{})}
@@ -103,8 +103,8 @@ void Response::SetAssertExternallySynchronizedMutexContext (const shared_ptr<Sha
 
 String Response::ToString () const
 {
-    AssertExternallySynchronizedMutex::ReadLock critSec{*this};
-    StringBuilder                               sb;
+    AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+    StringBuilder                                  sb;
     sb += L"{";
     sb += L"Status-And-Override-Reason: " + Characters::ToString (fStatusAndOverrideReason_) + L", ";
     sb += L"Headers: " + Characters::ToString (this->headers ()) + L", ";

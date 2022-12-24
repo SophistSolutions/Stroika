@@ -30,62 +30,62 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline void ConnectionOrientedStreamSocket::Ptr::Close () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         inherited::Close ();
     }
     inline void ConnectionOrientedStreamSocket::Ptr::Connect (const SocketAddress& sockAddr) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         _ref ().Connect (sockAddr, nullopt);
     }
     inline void ConnectionOrientedStreamSocket::Ptr::Connect (const SocketAddress& sockAddr, const Time::Duration& timeout) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         _ref ().Connect (sockAddr, timeout);
     }
     inline size_t ConnectionOrientedStreamSocket::Ptr::Read (byte* intoStart, byte* intoEnd) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return _ref ().Read (intoStart, intoEnd);
     }
     inline optional<size_t> ConnectionOrientedStreamSocket::Ptr::ReadNonBlocking (byte* intoStart, byte* intoEnd) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return _ref ().ReadNonBlocking (intoStart, intoEnd);
     }
     inline void ConnectionOrientedStreamSocket::Ptr::Write (const byte* start, const byte* end) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         _ref ().Write (start, end);
     }
     inline optional<IO::Network::SocketAddress> ConnectionOrientedStreamSocket::Ptr::GetPeerAddress () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return _cref ().GetPeerAddress ();
     }
     inline optional<Time::DurationSecondsType> ConnectionOrientedStreamSocket::Ptr::GetAutomaticTCPDisconnectOnClose () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return _cref ().GetAutomaticTCPDisconnectOnClose ();
     }
     inline void ConnectionOrientedStreamSocket::Ptr::SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& linger) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         _ref ().SetAutomaticTCPDisconnectOnClose (linger);
     }
     inline auto ConnectionOrientedStreamSocket::Ptr::GetKeepAlives () const -> KeepAliveOptions
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return _cref ().GetKeepAlives ();
     }
     inline void ConnectionOrientedStreamSocket::Ptr::SetKeepAlives (const KeepAliveOptions& keepAliveOptions) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         _ref ().SetKeepAlives (keepAliveOptions);
     }
     inline shared_ptr<ConnectionOrientedStreamSocket::_IRep> ConnectionOrientedStreamSocket::Ptr::_GetSharedRep () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return dynamic_pointer_cast<ConnectionOrientedStreamSocket::_IRep> (inherited::_GetSharedRep ());
     }
     inline ConnectionOrientedStreamSocket::_IRep& ConnectionOrientedStreamSocket::Ptr::_ref () const

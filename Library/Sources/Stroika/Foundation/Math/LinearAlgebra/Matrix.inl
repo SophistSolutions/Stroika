@@ -32,14 +32,14 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
 
         T GetAt (size_t row, size_t col) const
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             Require (row < fDimensions_.fRows);
             Require (col < fDimensions_.fColumns);
             return fData_[row * fDimensions_.fColumns + col];
         }
         void SetAt (size_t row, size_t col, T value)
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (row < fDimensions_.fRows);
             Require (col < fDimensions_.fColumns);
             //fData_.SetAt (row * fDimensions_.fColumns + col, value);
@@ -47,13 +47,13 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         }
         void push_back (Configuration::ArgByValueType<T> fillValue)
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             fData_.push_back (fillValue);
         }
 
         DimensionType GetDimensions () const
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             return fDimensions_;
         }
 

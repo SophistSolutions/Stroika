@@ -523,7 +523,7 @@ namespace {
         }
         Instruments::Network::Info _InternalCapture ()
         {
-            AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"Instruments::Network::capture_"};
 #endif

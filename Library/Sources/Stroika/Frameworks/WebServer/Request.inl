@@ -19,7 +19,7 @@ namespace Stroika::Frameworks::WebServer {
      */
     inline Streams::InputStream<byte>::Ptr Request::GetInputStream ()
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         return fInputStream_;
     }
 

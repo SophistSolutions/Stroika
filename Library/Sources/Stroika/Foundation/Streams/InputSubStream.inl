@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Streams {
         virtual void CloseRead () override
         {
             Require (IsOpenRead ());
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             fRealIn_.Close ();
             Assert (fRealIn_ == nullptr);
         }
@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Streams {
         virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
             Require (intoEnd - intoStart >= 1); // rule for InputStream<>::_IRep
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             if (fForcedEndInReal_) {
                 // adjust intoEnd to accomodate shortened stream
@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Streams {
         }
         virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             if (fForcedEndInReal_) {
                 // adjust intoEnd to accomodate shortened stream

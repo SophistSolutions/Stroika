@@ -103,8 +103,8 @@ public:
 public:
     nonvirtual Characters::String ToString (ToStringFormat format) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
-        StringBuilder                               sb;
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        StringBuilder                                  sb;
         sb += L"{";
         sb += L"Offset: " + Characters::Format (L"%d", fOffset_) + L", ";
         sb += L"HighWaterMark: " + Characters::Format (L"%d", fBufferFilledUpValidBytes_) + L", ";
@@ -145,7 +145,7 @@ protected:
     virtual void CloseRead () override
     {
         Require (IsOpenRead ());
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         fSource_.Close ();
         Assert (fSource_ == nullptr);
     }
@@ -163,7 +163,7 @@ protected:
             return 0;
         }
         AssertNotNull (intoStart);
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Assert (fBufferFilledUpValidBytes_ >= fOffset_); // limitation/feature of current implemetnation
         if (fBufferFilledUpValidBytes_ == fOffset_) {
             size_t roomLeftInBuf = fAllDataReadBuf_.GetSize () - fBufferFilledUpValidBytes_;
@@ -206,7 +206,7 @@ protected:
     {
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         Require (IsOpenRead ());
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         // See if data already in fAllDataReadBuf_. If yes, then data available. If no, ReadNonBlocking () from upstream, and return that result.
         if (fOffset_ < fBufferFilledUpValidBytes_) {
             return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fBufferFilledUpValidBytes_ - fOffset_);
@@ -218,13 +218,13 @@ protected:
     }
     virtual SeekOffsetType GetReadOffset () const override
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         Require (IsOpenRead ());
         return fOffset_;
     }
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
-        AssertExternallySynchronizedMutex::WriteLock critSec{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (IsOpenRead ());
         switch (whence) {
             case Whence::eFromStart: {

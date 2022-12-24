@@ -78,13 +78,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY, typename VALUE, typename TRAITS>
     inline size_t SkipList<KEY, VALUE, TRAITS>::size () const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fLength;
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     typename SkipList<KEY, VALUE, TRAITS>::Node* SkipList<KEY, VALUE, TRAITS>::FindNode (const KeyType& key) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         Assert (fHead.size () > 0);
 
         vector<Node*> const* startV = &fHead;
@@ -119,8 +119,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY, typename VALUE, typename TRAITS>
     bool SkipList<KEY, VALUE, TRAITS>::Find (const KeyType& key, ValueType* val) const
     {
-        AssertExternallySynchronizedMutex::ReadLock critSec{*this};
-        Node*                                       n = FindNode (key);
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Node*                                          n = FindNode (key);
         if (n != nullptr) {
             if (val != nullptr) {
                 *val = n->fEntry.GetValue ();

@@ -1289,8 +1289,8 @@ namespace Stroika::Foundation::Traversal {
         const REP_SUB_TYPE* fConstRef_;
 
 #if qDebug
-        Debug::AssertExternallySynchronizedMutex::ReadLock fAssertReadLock_;
-        const Iterable<T>*                                 fIterableEnvelope_;
+        Debug::AssertExternallySynchronizedMutex::ReadContext fAssertReadLock_;
+        const Iterable<T>*                                    fIterableEnvelope_;
 #endif
     };
 
@@ -1326,8 +1326,8 @@ namespace Stroika::Foundation::Traversal {
     private:
         REP_SUB_TYPE* fRepReference_;
 #if qDebug
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex::WriteLock fAssertWriteLock_;
-        Iterable<T>*                                                              fIterableEnvelope_; // mostly saved for assertions, but also for _UpdateRep- when we lose that - we can ifdef qDebug this field (as we do for read accessor)
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex::WriteContext fAssertWriteLock_;
+        Iterable<T>*                                                                 fIterableEnvelope_; // mostly saved for assertions, but also for _UpdateRep- when we lose that - we can ifdef qDebug this field (as we do for read accessor)
 #endif
     };
 

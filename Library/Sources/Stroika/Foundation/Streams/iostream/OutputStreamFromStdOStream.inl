@@ -38,31 +38,31 @@ namespace Stroika::Foundation::Streams::iostream {
     protected:
         virtual bool IsSeekable () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             return true;
         }
         virtual void CloseWrite () override
         {
             Require (IsOpenWrite ());
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             fOpen_ = false;
             Ensure (not IsOpenWrite ());
         }
         virtual bool IsOpenWrite () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             return fOpen_;
         }
         virtual SeekOffsetType GetWriteOffset () const override
         {
             // instead of tellg () - avoids issue with EOF where fail bit set???
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenWrite ());
             return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::out);
         }
         virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenWrite ());
             switch (whence) {
                 case Whence::eFromStart:
@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Streams::iostream {
             Require (end != nullptr or start == end);
             Require (IsOpenWrite ());
 
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
 
             using StreamElementType = typename OStreamType::char_type;
             fOriginalStream_.write (reinterpret_cast<const StreamElementType*> (start), end - start);
@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Streams::iostream {
         }
         virtual void Flush () override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenWrite ());
             fOriginalStream_.flush ();
             if (fOriginalStream_.fail ()) [[unlikely]] {

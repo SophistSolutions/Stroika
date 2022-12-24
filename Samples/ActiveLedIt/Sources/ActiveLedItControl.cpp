@@ -43,23 +43,23 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 // Not sure about this - experiment... See spr#0521
 #define qDisableEditorWhenNotActive 0
 
-#define CATCH_AND_HANDLE_EXCEPTIONS()                   \
-    catch (HRESULT hr)                                  \
-    {                                                   \
-        AfxThrowOleException (hr);                      \
-    }                                                   \
-    catch (const system_error& h)                       \
-    {                                                   \
-        if (h.code ().category () == Stroika::Foundation::Execution::Platform::Windows::HRESULT_error_category ()) {\
-            AfxThrowOleException (HRESULT_FROM_WIN32(h.code ().value ())); \
-        }                                              \
-        if (h.code ().category () == system_category ()) {\
-            AfxThrowOleException (HRESULT_FROM_WIN32 (h.code ().value ()));\
-        }                                               \
-    }                                                   \
-    catch (...)                                         \
-    {                                                   \
-        AfxThrowMemoryException ();                     \
+#define CATCH_AND_HANDLE_EXCEPTIONS()                                                                                \
+    catch (HRESULT hr)                                                                                               \
+    {                                                                                                                \
+        AfxThrowOleException (hr);                                                                                   \
+    }                                                                                                                \
+    catch (const system_error& h)                                                                                    \
+    {                                                                                                                \
+        if (h.code ().category () == Stroika::Foundation::Execution::Platform::Windows::HRESULT_error_category ()) { \
+            AfxThrowOleException (HRESULT_FROM_WIN32 (h.code ().value ()));                                          \
+        }                                                                                                            \
+        if (h.code ().category () == system_category ()) {                                                           \
+            AfxThrowOleException (HRESULT_FROM_WIN32 (h.code ().value ()));                                          \
+        }                                                                                                            \
+    }                                                                                                                \
+    catch (...)                                                                                                      \
+    {                                                                                                                \
+        AfxThrowMemoryException ();                                                                                  \
     }
 
 const int kEditorWindowID = 100;
@@ -3223,7 +3223,8 @@ IDispatch* ActiveLedItControl::OLE_MakeNewAcceleratorElement ()
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
-    AssertNotReached(); return nullptr;
+    AssertNotReached ();
+    return nullptr;
 }
 
 void ActiveLedItControl::OLE_InvokeCommand (const VARIANT& command)

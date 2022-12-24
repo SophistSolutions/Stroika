@@ -125,34 +125,34 @@ namespace Stroika::Foundation::Execution {
     {
     }
     inline Thread::Ptr::Ptr (const shared_ptr<Rep_>& rep)
-        : fRep_ (rep)
+        : fRep_{rep}
     {
     }
     inline Thread::Ptr::Ptr (const Ptr& src)
-        : fRep_ (src.fRep_)
+        : fRep_{src.fRep_}
     {
     }
     inline Thread::Ptr::Ptr (Ptr&& src) noexcept
-        : fRep_ (move (src.fRep_))
+        : fRep_{move (src.fRep_)}
     {
     }
     inline Thread::Ptr& Thread::Ptr::operator= (const Ptr& rhs)
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock  readLock1{rhs.fThisAssertExternallySynchronized_};
-        Debug::AssertExternallySynchronizedMutex::WriteLock critSec{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext  readLock1{rhs.fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         fRep_ = rhs.fRep_;
         return *this;
     }
     inline Thread::Ptr& Thread::Ptr::operator= (Ptr&& rhs) noexcept
     {
-        Debug::AssertExternallySynchronizedMutex::WriteLock critSec1{rhs.fThisAssertExternallySynchronized_};
-        Debug::AssertExternallySynchronizedMutex::WriteLock critSec2{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareWriteContext1{rhs.fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareWriteContext2{fThisAssertExternallySynchronized_};
         fRep_ = move (rhs.fRep_);
         return *this;
     }
     inline Thread::IDType Thread::Ptr::GetID () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
         if (fRep_ == nullptr) [[unlikely]] {
             return IDType{};
         }
@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline Thread::NativeHandleType Thread::Ptr::GetNativeHandle () const noexcept
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
         if (fRep_ == nullptr) [[unlikely]] {
             return NativeHandleType{};
         }
@@ -168,12 +168,12 @@ namespace Stroika::Foundation::Execution {
     }
     inline void Thread::Ptr::reset () noexcept
     {
-        Debug::AssertExternallySynchronizedMutex::WriteLock critSec{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         fRep_.reset ();
     }
     inline function<void ()> Thread::Ptr::GetFunction () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
         if (fRep_ == nullptr) [[unlikely]] {
             return nullptr;
         }
@@ -181,19 +181,19 @@ namespace Stroika::Foundation::Execution {
     }
     inline bool Thread::Ptr::operator== (const Ptr& rhs) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock1{fThisAssertExternallySynchronized_};
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock2{rhs.fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext readLock1{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext readLock2{rhs.fThisAssertExternallySynchronized_};
         return fRep_ == rhs.fRep_;
     }
     inline bool Thread::Ptr::operator== (nullptr_t) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock1{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext readLock1{fThisAssertExternallySynchronized_};
         return fRep_ == nullptr;
     }
     inline strong_ordering Thread::Ptr::operator<=> (const Ptr& rhs) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock1{fThisAssertExternallySynchronized_};
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock2{rhs.fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext readLock1{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext readLock2{rhs.fThisAssertExternallySynchronized_};
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
         return Common::compare_three_way_BWA{}(fRep_, rhs.fRep_);
 #else
@@ -202,7 +202,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline strong_ordering Thread::Ptr::operator<=> (nullptr_t) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock1{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext readLock1{fThisAssertExternallySynchronized_};
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
         return Common::compare_three_way_BWA{}(fRep_, nullptr);
 #else
@@ -211,19 +211,19 @@ namespace Stroika::Foundation::Execution {
     }
     inline Thread::Ptr::operator bool () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
         return fRep_ != nullptr;
     }
 #if qPlatform_Windows
     inline bool Thread::Ptr::ThrowInterruptExceptionInsideUserAPC () const noexcept
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
         return fRep_ == nullptr ? false : fRep_->fThrowInterruptExceptionInsideUserAPC_;
     }
     inline bool Thread::Ptr::ThrowInterruptExceptionInsideUserAPC (optional<bool> throwInterruptExceptionInsideUserAPC)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteLock critSec1{fThisAssertExternallySynchronized_};
-        bool                                                result = fRep_ == nullptr ? false : fRep_->fThrowInterruptExceptionInsideUserAPC_;
+        Debug::AssertExternallySynchronizedMutex::WriteContext critSec1{fThisAssertExternallySynchronized_};
+        bool                                                   result = fRep_ == nullptr ? false : fRep_->fThrowInterruptExceptionInsideUserAPC_;
         if (throwInterruptExceptionInsideUserAPC) {
             RequireNotNull (fRep_);
             fRep_->fThrowInterruptExceptionInsideUserAPC_ = throwInterruptExceptionInsideUserAPC.value ();
@@ -233,7 +233,7 @@ namespace Stroika::Foundation::Execution {
 #endif
     inline Thread::Status Thread::Ptr::GetStatus () const noexcept
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
         if (fRep_ == nullptr) [[unlikely]] {
             return Status::eNull;
         }
@@ -245,18 +245,18 @@ namespace Stroika::Foundation::Execution {
     }
     inline void Thread::Ptr::JoinUntil (Time::DurationSecondsType timeoutAt) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
         WaitForDoneUntil (timeoutAt);
         ThrowIfDoneWithException ();
     }
     inline void Thread::Ptr::WaitForDone (Time::DurationSecondsType timeout) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
         WaitForDoneUntil (timeout + Time::GetTickCount ());
     }
     inline void Thread::Ptr::AbortAndWaitForDone (Time::DurationSecondsType timeout) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
         AbortAndWaitForDoneUntil (timeout + Time::GetTickCount ());
     }
 

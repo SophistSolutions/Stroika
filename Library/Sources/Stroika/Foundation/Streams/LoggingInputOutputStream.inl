@@ -84,31 +84,31 @@ namespace Stroika::Foundation::Streams {
         virtual void CloseWrite () override
         {
             Require (IsOpenWrite ());
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             fRealStream_.CloseWrite ();
             Assert (fRealStream_ == nullptr);
         }
         virtual bool IsOpenWrite () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             return fRealStream_.IsOpenWrite ();
         }
         virtual SeekOffsetType GetWriteOffset () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             return fRealStream_.GetWriteOffset ();
         }
         virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
         {
             Require (IsOpenWrite ());
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
-            SeekOffsetType                                      o1 = fRealStream_.SeekWrite (whence, offset);
-            [[maybe_unused]] SeekOffsetType                     o2 = fLogOutput_.Seek (whence, offset); // @todo - not sure if/how mcuh to see - since not totally in sync
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            SeekOffsetType                                         o1 = fRealStream_.SeekWrite (whence, offset);
+            [[maybe_unused]] SeekOffsetType                        o2 = fLogOutput_.Seek (whence, offset); // @todo - not sure if/how mcuh to see - since not totally in sync
             return o1;
         }
         virtual void Flush () override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenWrite ());
             fRealStream_.Flush ();
         }
@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Streams {
         {
             Require (start < end); // for OutputStream<byte> - this function requires non-empty write
             Require (IsOpenWrite ());
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             fRealStream_.Write (start, end);
             fLogOutput_.Write (start, end);
         }

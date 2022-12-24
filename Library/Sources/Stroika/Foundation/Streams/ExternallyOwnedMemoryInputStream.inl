@@ -57,8 +57,8 @@ namespace Stroika::Foundation::Streams {
             RequireNotNull (intoEnd);
             Require (intoStart < intoEnd);
             Require (IsOpenRead ());
-            size_t                                              nRequested = intoEnd - intoStart;
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            size_t                                                 nRequested = intoEnd - intoStart;
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Assert ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
             size_t nAvail  = fEnd_ - fCursor_;
             size_t nCopied = min (nAvail, nRequested);
@@ -72,19 +72,19 @@ namespace Stroika::Foundation::Streams {
         }
         virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fEnd_ - fCursor_);
         }
         virtual SeekOffsetType GetReadOffset () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             return fCursor_ - fStart_;
         }
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             static const auto kRangeException_ = range_error{"seek"};
             switch (whence) {

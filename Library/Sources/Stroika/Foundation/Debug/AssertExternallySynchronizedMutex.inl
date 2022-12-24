@@ -78,34 +78,34 @@ namespace Stroika::Foundation::Debug {
     inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext, const AssertExternallySynchronizedMutex& src) noexcept
         : AssertExternallySynchronizedMutex{sharedContext}
     {
-        ReadLock readLockSrc{src}; // to copy, the src can have shared_locks, but no (write) locks
+        ReadContext readLockSrc{src}; // to copy, the src can have shared_locks, but no (write) locks
     }
     inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex (const AssertExternallySynchronizedMutex& src) noexcept
         : AssertExternallySynchronizedMutex{}
     {
-        ReadLock readLockSrc{src}; // to copy, the src can have shared_locks, but no (write) locks
+        ReadContext readLockSrc{src}; // to copy, the src can have shared_locks, but no (write) locks
     }
     inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext, [[maybe_unused]] AssertExternallySynchronizedMutex&& src) noexcept
         : AssertExternallySynchronizedMutex{sharedContext}
     {
-        WriteLock writeLockSrc{src}; // move we must be able to modify source
+        WriteContext declareWriteContext4Src{src}; // move we must be able to modify source
     }
     inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex ([[maybe_unused]] AssertExternallySynchronizedMutex&& src) noexcept
         : AssertExternallySynchronizedMutex{}
     {
-        WriteLock writeLockRHS{src}; // move we must be able to modify source
+        WriteContext writeLockRHS{src}; // move we must be able to modify source
     }
 #endif
     inline AssertExternallySynchronizedMutex& AssertExternallySynchronizedMutex::operator= ([[maybe_unused]] const AssertExternallySynchronizedMutex& rhs) noexcept
     {
-        ReadLock  readLockRHS{rhs};     // we must be able to read RHS
-        WriteLock writeLockThis{*this}; // we must be able modify this
+        ReadContext  readLockRHS{rhs};     // we must be able to read RHS
+        WriteContext declareWriteContext4This{*this}; // we must be able modify this
         return *this;
     }
     inline AssertExternallySynchronizedMutex& AssertExternallySynchronizedMutex::operator= ([[maybe_unused]] AssertExternallySynchronizedMutex&& rhs) noexcept
     {
-        WriteLock writeLockRHS{rhs};    // move we must be able to modify rhs to move it
-        WriteLock writeLockThis{*this}; // we must be able modify this
+        WriteContext writeLockRHS{rhs};    // move we must be able to modify rhs to move it
+        WriteContext writeLockThis{*this}; // we must be able modify this
         return *this;
     }
 #if qDebug

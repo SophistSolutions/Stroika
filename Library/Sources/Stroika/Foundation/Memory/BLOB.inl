@@ -213,16 +213,16 @@ namespace Stroika::Foundation::Memory {
     inline void BLOB::As (span<const byte>* into) const
     {
         RequireNotNull (into);
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         *into = fRep_->GetBounds ();
     }
     template <>
     inline void BLOB::As (span<const uint8_t>* into) const
     {
         RequireNotNull (into);
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        auto                                               s = fRep_->GetBounds ();
-        *into                                                = span<const uint8_t>{reinterpret_cast<const uint8_t*> (SafeBegin (s)), s.size ()};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        auto                                                  s = fRep_->GetBounds ();
+        *into                                                   = span<const uint8_t>{reinterpret_cast<const uint8_t*> (SafeBegin (s)), s.size ()};
     }
     template <>
     inline vector<byte> BLOB::As () const
@@ -241,32 +241,32 @@ namespace Stroika::Foundation::Memory {
     template <>
     inline span<const byte> BLOB::As () const
     {
-        span<const byte>                                   result;
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        span<const byte>                                      result;
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         As (&result);
         return result;
     }
     template <>
     inline span<const uint8_t> BLOB::As () const
     {
-        span<const uint8_t>                                result;
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        span<const uint8_t>                                   result;
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         As (&result);
         return result;
     }
     template <>
     inline pair<const byte*, const byte*> BLOB::As () const
     {
-        pair<const byte*, const byte*>                     result;
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        pair<const byte*, const byte*>                        result;
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         As (&result);
         return result;
     }
     template <>
     inline pair<const uint8_t*, const uint8_t*> BLOB::As () const
     {
-        pair<const uint8_t*, const uint8_t*>               result;
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        pair<const uint8_t*, const uint8_t*>                  result;
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         As (&result);
         return result;
     }
@@ -281,8 +281,8 @@ namespace Stroika::Foundation::Memory {
     inline void BLOB::As (vector<byte>* into) const
     {
         RequireNotNull (into);
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        span<const byte>                                   tmp = fRep_->GetBounds ();
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        span<const byte>                                      tmp = fRep_->GetBounds ();
         Assert (tmp.begin () <= tmp.end ());
         into->assign (tmp.begin (), tmp.end ());
     }
@@ -290,8 +290,8 @@ namespace Stroika::Foundation::Memory {
     inline void BLOB::As (vector<uint8_t>* into) const
     {
         RequireNotNull (into);
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        span<const byte>                                   tmp = fRep_->GetBounds ();
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        span<const byte>                                      tmp = fRep_->GetBounds ();
         Assert (tmp.begin () <= tmp.end ());
         into->assign (reinterpret_cast<const uint8_t*> (SafeBegin (tmp)), reinterpret_cast<const uint8_t*> (SafeEnd (tmp)));
     }
@@ -299,8 +299,8 @@ namespace Stroika::Foundation::Memory {
     inline void BLOB::As (string* into) const
     {
         RequireNotNull (into);
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        span<const byte>                                   tmp = fRep_->GetBounds ();
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        span<const byte>                                      tmp = fRep_->GetBounds ();
         Assert (tmp.begin () <= tmp.end ());
         into->clear ();
         into->assign (reinterpret_cast<const char*> (SafeBegin (tmp)), reinterpret_cast<const char*> (SafeEnd (tmp)));
@@ -317,17 +317,17 @@ namespace Stroika::Foundation::Memory {
     inline void BLOB::As (pair<const byte*, const byte*>* into) const
     {
         RequireNotNull (into);
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        auto                                               s = fRep_->GetBounds ();
-        *into                                                = make_pair (SafeBegin (s), SafeEnd (s));
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        auto                                                  s = fRep_->GetBounds ();
+        *into                                                   = make_pair (SafeBegin (s), SafeEnd (s));
     }
     template <>
     inline void BLOB::As (pair<const uint8_t*, const uint8_t*>* into) const
     {
         RequireNotNull (into);
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        auto                                               s = fRep_->GetBounds ();
-        *into                                                = make_pair (reinterpret_cast<const uint8_t*> (SafeBegin (s)), reinterpret_cast<const uint8_t*> (SafeEnd (s)));
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        auto                                                  s = fRep_->GetBounds ();
+        *into                                                   = make_pair (reinterpret_cast<const uint8_t*> (SafeBegin (s)), reinterpret_cast<const uint8_t*> (SafeEnd (s)));
     }
     template <typename T>
     inline void BLOB::As (T* into) const
@@ -338,44 +338,44 @@ namespace Stroika::Foundation::Memory {
     }
     inline byte BLOB::operator[] (const size_t i) const
     {
-        pair<const byte*, const byte*>                     result;
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        pair<const byte*, const byte*>                        result;
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         As<pair<const byte*, const byte*>> (&result);
         Assert (i < static_cast<size_t> (result.second - result.first));
         return result.first[i];
     }
     inline bool BLOB::empty () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        span<const byte>                                   tmp = fRep_->GetBounds ();
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        span<const byte>                                      tmp = fRep_->GetBounds ();
         Assert (tmp.begin () <= tmp.end ());
         return tmp.empty ();
     }
     inline const byte* BLOB::begin () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return SafeBegin (fRep_->GetBounds ());
     }
     inline const byte* BLOB::end () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return SafeEnd (fRep_->GetBounds ());
     }
     inline size_t BLOB::GetSize () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
-        span<const byte>                                   tmp = fRep_->GetBounds ();
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        span<const byte>                                      tmp = fRep_->GetBounds ();
         Assert (tmp.begin () <= tmp.end ());
         return tmp.size ();
     }
     inline size_t BLOB::length () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return GetSize ();
     }
     inline size_t BLOB::size () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return GetSize ();
     }
     inline strong_ordering BLOB::operator<=> (const BLOB& rhs) const
@@ -384,8 +384,8 @@ namespace Stroika::Foundation::Memory {
     }
     inline bool BLOB::operator== (const BLOB& rhs) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLockL{fThisAssertExternallySynchronized_}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLockR{rhs.fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext readLockL{fThisAssertExternallySynchronized_}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
+        Debug::AssertExternallySynchronizedMutex::ReadContext readLockR{rhs.fThisAssertExternallySynchronized_};
         if (fRep_ == rhs.fRep_) {
             return true; // cheap optimization for not super uncommon case
         }
@@ -403,18 +403,18 @@ namespace Stroika::Foundation::Memory {
     }
     inline BLOB BLOB::operator+ (const BLOB& rhs) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return BLOB ({*this, rhs});
     }
     inline strong_ordering BLOB::TWC_ (const BLOB& lhs, const BLOB& rhs)
     {
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLockL{lhs.fThisAssertExternallySynchronized_}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
-        Debug::AssertExternallySynchronizedMutex::ReadLock readLockR{rhs.fThisAssertExternallySynchronized_};
-        span<const byte>                                   l            = lhs.fRep_->GetBounds ();
-        span<const byte>                                   r            = rhs.fRep_->GetBounds ();
-        size_t                                             lSize        = l.size ();
-        size_t                                             rSize        = r.size ();
-        size_t                                             nCommonBytes = min (lSize, rSize);
+        Debug::AssertExternallySynchronizedMutex::ReadContext readLockL{lhs.fThisAssertExternallySynchronized_}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
+        Debug::AssertExternallySynchronizedMutex::ReadContext readLockR{rhs.fThisAssertExternallySynchronized_};
+        span<const byte>                                      l            = lhs.fRep_->GetBounds ();
+        span<const byte>                                      r            = rhs.fRep_->GetBounds ();
+        size_t                                                lSize        = l.size ();
+        size_t                                                rSize        = r.size ();
+        size_t                                                nCommonBytes = min (lSize, rSize);
         if (nCommonBytes != 0) {
             // see http://stackoverflow.com/questions/16362925/can-i-pass-a-null-pointer-to-memcmp -- illegal to pass nullptr to memcmp() even if size 0
             if (int tmp = ::memcmp (SafeBegin (l), SafeBegin (r), nCommonBytes)) {

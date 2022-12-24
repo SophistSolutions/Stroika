@@ -43,33 +43,33 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _IterableRepSharedPtr Clone () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
         }
         virtual Iterator<value_type> MakeIterator () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual size_t size () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return fData_.size ();
         }
         virtual bool empty () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return fData_.empty ();
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             fData_.Apply (doToElement);
         }
         virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
-            auto                                               iLink = const_cast<DataStructureImplType_&> (fData_).Find (that);
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            auto                                                  iLink = const_cast<DataStructureImplType_&> (fData_).Find (that);
             if (iLink == fData_.end ()) {
                 return nullptr;
             }
@@ -84,14 +84,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         virtual _SequenceRepSharedPtr CloneEmpty () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterable<value_type>::template MakeSmartPtr<Rep_> ();
         }
         virtual _SequenceRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
-            auto                                               result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            auto                                                  result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
             result->fData_.MoveIteratorHereAfterClone (&Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ()).fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Require (not empty ());
             Require (i == _kSentinalLastItemIndex or i < size ());
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             if (i == _kSentinalLastItemIndex) {
                 i = fData_.size () - 1;
             }
@@ -109,20 +109,20 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void SetAt (size_t i, ArgByValueType<value_type> item) override
         {
             Require (i < size ());
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_[i] = item;
             fChangeCounts_.PerformedChange ();
         }
         virtual size_t IndexOf (const Iterator<value_type>& i) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.CurrentIndex ();
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Require (not i.Done ());
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fData_};
-            auto&                                               mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+            auto&                                                  mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.GetReferredToData () == &fData_);
             auto newI = fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
             fChangeCounts_.PerformedChange ();
@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock              writeLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext           declareWriteContext{fData_};
             optional<typename DataStructureImplType_::UnderlyingIteratorRep> savedUnderlyingIndex;
             if (nextI != nullptr) {
                 savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Insert (size_t at, const value_type* from, const value_type* to) override
         {
             Require (at == _kSentinalLastItemIndex or at <= size ());
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             if (at == _kSentinalLastItemIndex) {
                 at = fData_.size ();
             }
@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (size_t from, size_t to) override
         {
             Require ((from <= to) and (to <= this->size ()));
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fData_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.erase (fData_.begin () + from, fData_.begin () + to);
             fChangeCounts_.PerformedChange ();
         }
@@ -232,8 +232,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline void Sequence_stdvector<T>::shrink_to_fit ()
     {
         using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
-        _SafeReadWriteRepAccessor                          accessor{this};
-        Debug::AssertExternallySynchronizedMutex::ReadLock lg{accessor._ConstGetRep ().fData_};
+        _SafeReadWriteRepAccessor                             accessor{this};
+        Debug::AssertExternallySynchronizedMutex::ReadContext lg{accessor._ConstGetRep ().fData_};
         accessor._GetWriteableRep ().fData_.shrink_to_fit ();
         accessor._GetWriteableRep ().fChangeCounts_.PerformedChange ();
     }
@@ -241,8 +241,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline size_t Sequence_stdvector<T>::capacity () const
     {
         using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<Rep_>;
-        _SafeReadRepAccessor                               accessor{this};
-        Debug::AssertExternallySynchronizedMutex::ReadLock critSec{accessor._ConstGetRep ().fData_};
+        _SafeReadRepAccessor                                  accessor{this};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{accessor._ConstGetRep ().fData_};
         return accessor._ConstGetRep ().fData_.capacity ();
     }
     template <typename T>
@@ -250,8 +250,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
         Require (slotsAlloced >= this->size ());
         using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
-        _SafeReadWriteRepAccessor                           accessor{this};
-        Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{accessor._GetWriteableRep ().fData_};
+        _SafeReadWriteRepAccessor                              accessor{this};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{accessor._GetWriteableRep ().fData_};
         if (accessor._ConstGetRep ().fData_.capacity () < slotsAlloced) {
             accessor._GetWriteableRep ().fData_.reserve (slotsAlloced);
             accessor._GetWriteableRep ().fChangeCounts_.PerformedChange ();

@@ -71,9 +71,9 @@ protected:
          *
          *  Since number of wchar_ts filled always <= number of bytes read, we can read up to that # of bytes from upstream binary stream.
          */
-        StackBuffer<wchar_t, 8 * 1024>               outBuf{Memory::eUninitialized, static_cast<size_t> (intoEnd - intoStart)};
-        wchar_t*                                     outCursor = begin (outBuf);
-        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+        StackBuffer<wchar_t, 8 * 1024>                  outBuf{Memory::eUninitialized, static_cast<size_t> (intoEnd - intoStart)};
+        wchar_t*                                        outCursor = begin (outBuf);
+        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         {
             StackBuffer<byte, 8 * 1024> inBuf{Memory::eUninitialized, size_t (intoEnd - intoStart)}; // wag at size
             size_t                      inBytes = _fSource.Read (begin (inBuf), end (inBuf));
@@ -165,14 +165,14 @@ protected:
 
     virtual SeekOffsetType GetReadOffset () const override
     {
-        AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         Require (IsOpenRead ());
         return _fOffset;
     }
 
     virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
     {
-        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         Require (IsOpenRead ());
         AssertNotReached (); // not seekable
         return _fOffset;
@@ -217,7 +217,7 @@ protected:
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
-        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         Require (IsOpenRead ());
 
         // if already cached, return from cache. Note - even if only one element is in the Cache, thats enough to return
@@ -285,7 +285,7 @@ protected:
     }
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
-        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         Require (IsOpenRead ());
         switch (whence) {
             case Whence::eFromStart: {
@@ -375,7 +375,7 @@ protected:
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {
         Require (intoEnd - intoStart >= 1);
-        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         Require (IsOpenRead ());
         Character* outI = intoStart;
         if (fPutBack_) {
@@ -398,7 +398,7 @@ protected:
     }
     virtual optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
     {
-        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         Require (IsOpenRead ());
         if (intoStart == nullptr) {
@@ -418,7 +418,7 @@ protected:
     }
     virtual SeekOffsetType GetReadOffset () const override
     {
-        AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         Require (IsOpenRead ());
         if (fPutBack_) {
             Assert (fOffset_ >= 1);
@@ -429,9 +429,9 @@ protected:
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         Require (IsOpenRead ());
-        AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
-        size_t                                       sourceLen = fSource_.size ();
-        SeekOffsetType                               newOffset{};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        size_t                                          sourceLen = fSource_.size ();
+        SeekOffsetType                                  newOffset{};
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0) [[unlikely]] {

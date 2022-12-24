@@ -42,12 +42,12 @@ namespace Stroika::Foundation ::Streams {
     public:
         nonvirtual size_t GetBufferSize () const
         {
-            Debug::AssertExternallySynchronizedMutex::ReadLock readLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             return fBuffer_.capacity ();
         }
         nonvirtual void SetBufferSize (size_t bufSize)
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             bufSize = max (bufSize, kMinBufSize_);
             if (bufSize < fBuffer_.size ()) {
                 Flush_ ();
@@ -59,7 +59,7 @@ namespace Stroika::Foundation ::Streams {
         // Throws away all data about to be written (buffered). Once this is called, its illegal to call Flush or another write
         nonvirtual void Abort ()
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             fAborted_ = true; // for debug sake track this
             fBuffer_.clear ();
         }
@@ -92,7 +92,7 @@ namespace Stroika::Foundation ::Streams {
         }
         virtual void Flush () override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenWrite ());
             Flush_ ();
         }
@@ -103,7 +103,7 @@ namespace Stroika::Foundation ::Streams {
             Require (start < end); // for OutputStream<byte> - this function requires non-empty write
             Require (not fAborted_);
             Require (IsOpenWrite ());
-            Debug::AssertExternallySynchronizedMutex::WriteLock writeLock{fThisAssertExternallySynchronized_};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             /*
              * Minimize the number of writes at the possible cost of extra copying.
              *
