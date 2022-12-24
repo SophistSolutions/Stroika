@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Characters {
         /*
          *  Quickly compute the buffer size needed for a call to Convert
          *
-         *  This will frequently (greatly) over-estimate the amount of space needed.
+         *  This will frequently (greatly) over-estimate the amount of space needed but it will always produce a sufficient answer without much computation.
          *
          *  FROM and TO can be
          *      char
@@ -111,6 +111,10 @@ namespace Stroika::Foundation::Characters {
          *      wchar_t
          * 
          *  \note buffer size NOT in 'bytes' but in units of 'TO' - so char32_t, or char8_t, or whatever.
+         * 
+         *  \note future implementations might do more work to compute a sometimes smaller, less wasteful buffer size. Maybe
+         *        look at size, and if small just overestimate, but if input span is large, maybe worth the trouble and count
+         *        multibyte characters?
          *
          *  @See ConvertQuietly ()
          *  @See Convert ()
@@ -191,6 +195,8 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  \brief used for ConvertQuietly
+         * 
+         *  \note no need to have status code for 'targetExhausted' because we assert error in that case. DONT DO IT.
          */
         enum class ConversionStatusFlag {
             ok,              /* conversion successful */
@@ -248,8 +254,8 @@ namespace Stroika::Foundation::Characters {
         Options fOriginalOptions_;
         Options fUsingOptions;
 
-    private:
 #if qPlatform_Windows
+    private:
         static ConversionResultWithStatus ConvertQuietly_Win32_ (span<const char8_t> source, span<char16_t> target);
         static ConversionResultWithStatus ConvertQuietly_Win32_ (span<const char16_t> source, span<char8_t> target);
 #endif
