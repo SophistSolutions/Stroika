@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     return formatBufferStart;
                 };
                 char format[100]; // intentionally uninitialized, cuz filled in with mkFmtWithPrecisionArg_
-                resultStrLen = ::snprintf (buf, buf.size (), mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), is_same_v<FLOAT_TYPE, long double> ? 'L' : '\0'), (int)precision, f);
+                resultStrLen = ::snprintf (buf.data (), buf.size (), mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), is_same_v<FLOAT_TYPE, long double> ? 'L' : '\0'), (int)precision, f);
             }
             else {
                 // THIS #if test should NOT be needed but g++ 9 didn't properly respect if constexpr (link errors)
@@ -296,7 +296,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 #endif
             }
             Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
-            return String::FromASCII (buf.begin (), buf.begin () + resultStrLen);
+            return String::FromASCII (buf.data (), buf.data () + resultStrLen);
         }
     }
 
